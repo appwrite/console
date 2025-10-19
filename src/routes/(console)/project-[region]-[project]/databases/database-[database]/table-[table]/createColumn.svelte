@@ -1,9 +1,8 @@
 <script lang="ts">
     import { page } from '$app/state';
-    import { type Columns, type ColumnDirection } from './store';
-    import { goto, invalidate } from '$app/navigation';
+    import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import { Layout } from '@appwrite.io/pink-svelte';
+    import { Alert, Layout, Link } from '@appwrite.io/pink-svelte';
     import { InputSelect, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
@@ -11,8 +10,10 @@
     import type { Column } from '$lib/helpers/types';
     import { preferences } from '$lib/stores/preferences';
     import { onMount } from 'svelte';
-    import { resolve } from '$app/paths';
-    import { Input as SuggestionsInput, tableColumnSuggestions } from '../(suggestions)/index';
+
+    import { showColumnsSuggestionsModal } from '../(suggestions)/store';
+    import IconAINotification from '../(suggestions)/icon/aiNotification.svelte';
+    import { type Columns, type ColumnDirection, showCreateColumnSheet } from './store';
 
     let {
         direction = null,
@@ -52,16 +53,6 @@
         columnOptions.find((option) => option.name === selectedOption).component
     );
 
-    function initSuggestionsStore() {
-        if (!isSuggestionsFeatureEnabled) return;
-
-        $tableColumnSuggestions.table = null;
-        $tableColumnSuggestions.enabled = false;
-
-        $tableColumnSuggestions.context = null;
-        $tableColumnSuggestions.thinking = false;
-    }
-
     function init() {
         key = null;
         $option = null;
@@ -74,9 +65,6 @@
         /* default to string */
         selectedOption = 'String';
         $option = columnOptions[0];
-
-        /* init suggestions */
-        initSuggestionsStore();
     }
 
     function insertColumnInOrder() {
@@ -155,33 +143,6 @@
     }
 
     export async function submit() {
-        if (isSuggestionsEnabled) {
-            const tableInUse = page.data.table;
-            // TODO: confirm what flow to use!
-            tableColumnSuggestions.update((store) => ({
-                ...store,
-                thinking: true,
-                table: {
-                    id: tableInUse.$id,
-                    name: tableInUse.name
-                }
-            }));
-
-            const { region, project, database, table } = page.params;
-            await goto(
-                resolve(
-                    '/(console)/project-[region]-[project]/databases/database-[database]/table-[table]',
-                    {
-                        region,
-                        project,
-                        database,
-                        table
-                    }
-                )
-            );
-            return true;
-        }
-
         try {
             await $option.create(databaseId, tableId, key, data);
 
@@ -222,15 +183,23 @@
             $option = columnOptions.find((option) => option.name === selectedOption);
         }
     });
-
-    const isSuggestionsEnabled = $derived(
-        isSuggestionsFeatureEnabled && $tableColumnSuggestions.enabled
-    );
 </script>
 
 <Layout.Stack gap="xl">
     {#if isSuggestionsFeatureEnabled}
-        <SuggestionsInput />
+        <div class="custom-inline-alert">
+            <Alert.Inline>
+                <svelte:fragment slot="icon">
+                    <IconAINotification />
+                </svelte:fragment>
+
+                Need help? Let AI <Link.Button
+                    on:click={() => {
+                        $showCreateColumnSheet.show = false;
+                        $showColumnsSuggestionsModal = true;
+                    }}>suggest columns</Link.Button> based on your data
+            </Alert.Inline>
+        </div>
     {/if}
 
     <Layout.Stack direction="row">
@@ -240,7 +209,7 @@
             placeholder="Enter key"
             bind:value={key}
             autofocus
-            disabled={selectedOption === 'Relationship' || isSuggestionsEnabled}
+            disabled={selectedOption === 'Relationship'}
             required
             pattern="^[A-Za-z0-9][A-Za-z0-9._\-]*$" />
 
@@ -248,7 +217,6 @@
             id="type"
             label="Type"
             bind:value={selectedOption}
-            disabled={isSuggestionsEnabled}
             options={columnOptions.map((attr) => {
                 return {
                     label: attr.name,
@@ -260,9 +228,22 @@
     </Layout.Stack>
 
     {#if selectedOption}
-        <ColumnComponent
-            disabled={isSuggestionsEnabled}
-            bind:data
-            onclose={() => ($option = null)} />
+        <ColumnComponent bind:data onclose={() => ($option = null)} />
     {/if}
 </Layout.Stack>
+
+<style lang="scss">
+    .custom-inline-alert {
+        & :global(article) {
+            padding: var(--space-4, 8px);
+        }
+
+        & :global(div:first-child > :nth-child(2)) {
+            align-self: center;
+        }
+
+        & :global(.ai-icon-holder.notification) {
+            height: 36px !important;
+        }
+    }
+</style>

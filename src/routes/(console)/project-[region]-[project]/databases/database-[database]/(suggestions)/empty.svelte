@@ -43,6 +43,12 @@
 
     import IconAINotification from './icon/aiNotification.svelte';
 
+    let {
+        userColumns = []
+    }: {
+        userColumns?: Column[];
+    } = $props();
+
     let resizeObserver: ResizeObserver;
     let spreadsheetContainer: HTMLElement;
 
@@ -394,6 +400,7 @@
                 ...baseColProps
             },
             ...finalCustomColumns,
+            /*...userColumns,*/
             {
                 id: 'actions',
                 title: '',
@@ -409,6 +416,8 @@
     const emptyCells = $derived(($isSmallViewport ? 14 : 17) + (!$expandTabs ? 2 : 0));
 
     onMount(async () => {
+        userColumns; /* silences lint check, variable not read */
+
         if (spreadsheetContainer) {
             resizeObserver = new ResizeObserver(recalcAll);
             resizeObserver.observe(spreadsheetContainer);
@@ -430,6 +439,7 @@
             $tableColumnSuggestions.enabled = false;
         }
 
+        $tableColumnSuggestions.force = undefined;
         $tableColumnSuggestions.context = null;
         $tableColumnSuggestions.thinking = false;
 
@@ -739,7 +749,7 @@
             tick().then(() => {
                 selectedColumnId = columnData.key;
                 selectedColumnName = columnData.key;
-            })
+            });
         });
     }
 
@@ -887,6 +897,8 @@
                 message: 'Columns created successfully',
                 timeout: NOTIFICATION_AND_MOCK_DELAY
             });
+
+            resetSuggestionsStore(true);
 
             // show index notification!
             showIndexSuggestionsNotification();

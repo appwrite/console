@@ -38,7 +38,11 @@
     import CreateRow from './rows/create.svelte';
     import { onDestroy } from 'svelte';
     import { isCloud } from '$lib/system';
-    import { Empty as SuggestionsEmptySheet, tableColumnSuggestions } from '../(suggestions)';
+    import {
+        Empty as SuggestionsEmptySheet,
+        tableColumnSuggestions,
+        showColumnsSuggestionsModal
+    } from '../(suggestions)';
     import EmptySheetCards from './layout/emptySheetCards.svelte';
     import IconAI from '../(suggestions)/icon/aiForButton.svelte';
 
@@ -201,7 +205,7 @@
     </Container>
 
     <div class="databases-spreadsheet">
-        {#if hasColumns && hasValidColumns}
+        {#if hasColumns && hasValidColumns && $tableColumnSuggestions.force === false}
             {#if data.rows.total}
                 <Divider />
                 <SpreadSheet {data} bind:showRowCreateSheet={$showRowCreateSheet} />
@@ -250,7 +254,7 @@
                 </EmptySheet>
             {/if}
         {:else if isCloud && canShowSuggestionsSheet}
-            <SuggestionsEmptySheet />
+            <SuggestionsEmptySheet userColumns={$tableColumns} />
         {:else}
             <EmptySheet mode="rows" showActions={$canWriteTables} title="You have no columns yet">
                 {#snippet actions()}
@@ -267,7 +271,7 @@
                         title="Suggest columns"
                         subtitle="Use AI to generate columns"
                         onClick={() => {
-                            // todo: add a modal and show input, no toggle.
+                            $showColumnsSuggestionsModal = true;
                         }} />
 
                     <EmptySheetCards

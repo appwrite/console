@@ -37,9 +37,9 @@
     import { showCreateColumnSheet } from '../store';
     import { isSmallViewport } from '$lib/stores/viewport';
     import { page } from '$app/state';
-    import { showIndexesSuggestions } from '../../(suggestions)';
+    import { showIndexesSuggestions, showColumnsSuggestionsModal } from '../../(suggestions)';
     import IconAI from '../../(suggestions)/icon/aiForButton.svelte';
-    import EmptySheetCards from '$routes/(console)/project-[region]-[project]/databases/database-[database]/table-[table]/layout/emptySheetCards.svelte';
+    import EmptySheetCards from '../layout/emptySheetCards.svelte';
 
     let {
         data
@@ -339,7 +339,7 @@
                     title="Suggest columns"
                     subtitle="Use AI to generate columns"
                     onClick={() => {
-                        // TODO: add a modal and show input, no toggle.
+                        $showColumnsSuggestionsModal = true;
                     }} />
             {/snippet}
         </EmptySheet>

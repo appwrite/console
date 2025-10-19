@@ -3,6 +3,7 @@ import { IndexType } from '@appwrite.io/console';
 import { columnOptions } from '../table-[table]/columns/store';
 
 export type TableColumnSuggestions = {
+    force?: boolean;
     enabled: boolean;
     thinking: boolean;
     context?: string | undefined;
@@ -47,6 +48,8 @@ export const tableColumnSuggestions = writable<TableColumnSuggestions>({
 });
 
 export const showIndexesSuggestions = writable<boolean>(false);
+
+export const showColumnsSuggestionsModal = writable<boolean>(false);
 
 export const mockSuggestions: { total: number; columns: ColumnInput[] } = {
     total: 7,
