@@ -1309,7 +1309,7 @@
                                     if (isUndoDeleteMode) {
                                         undoDelete();
                                     } else {
-                                        deleteColumn(selectedColumnName);
+                                        deleteColumn(selectedColumnId);
                                     }
                                 }}>
                                 {#if isUndoDeleteMode}
