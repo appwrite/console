@@ -45,7 +45,7 @@ export const tableColumnSuggestions = writable<TableColumnSuggestions>({
     context: null,
     thinking: false,
     table: null,
-    force: false,
+    force: false
 });
 
 export const showIndexesSuggestions = writable<boolean>(false);

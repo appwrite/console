@@ -680,7 +680,7 @@
         if (!columnId) return;
 
         let columnIndex = -1;
-        let columnSchema: SuggestedColumnSchema;
+        let columnSchema: SuggestedColumnSchema = null;
 
         for (let index = 0; index < customColumns.length; index++) {
             if (customColumns[index].key === columnId) {
@@ -690,9 +690,12 @@
             }
         }
 
-        if (columnIndex !== -1) {
-            customColumns.splice(columnIndex, 1);
+        if (columnIndex === -1 || !columnSchema) {
+            return;
         }
+
+        // remove the column
+        customColumns.splice(columnIndex, 1);
 
         // store column with its index for undo
         columnBeingDeleted = { ...columnSchema, deletedIndex: columnIndex };

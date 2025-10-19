@@ -205,7 +205,7 @@
     </Container>
 
     <div class="databases-spreadsheet">
-        {#if hasColumns && hasValidColumns && !$tableColumnSuggestions.force}
+        {#if hasColumns && hasValidColumns && $tableColumnSuggestions.force !== true}
             {#if data.rows.total}
                 <Divider />
                 <SpreadSheet {data} bind:showRowCreateSheet={$showRowCreateSheet} />
@@ -266,6 +266,7 @@
                             $showCreateColumnSheet.show = true;
                         }} />
 
+                    <!-- TODO: gate for cloud only! need design -->
                     <EmptySheetCards
                         icon={IconAI}
                         title="Suggest columns"
