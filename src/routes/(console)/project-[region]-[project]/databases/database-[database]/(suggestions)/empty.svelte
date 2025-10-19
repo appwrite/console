@@ -436,10 +436,10 @@
             // these are referenced in
             // `table-[table]/+page.svelte`
             $tableColumnSuggestions.table = null;
+            $tableColumnSuggestions.force = false;
             $tableColumnSuggestions.enabled = false;
         }
 
-        $tableColumnSuggestions.force = undefined;
         $tableColumnSuggestions.context = null;
         $tableColumnSuggestions.thinking = false;
 

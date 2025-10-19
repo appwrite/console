@@ -3,7 +3,7 @@ import { IndexType } from '@appwrite.io/console';
 import { columnOptions } from '../table-[table]/columns/store';
 
 export type TableColumnSuggestions = {
-    force?: boolean;
+    force: boolean;
     enabled: boolean;
     thinking: boolean;
     context?: string | undefined;
@@ -44,7 +44,8 @@ export const tableColumnSuggestions = writable<TableColumnSuggestions>({
     enabled: false,
     context: null,
     thinking: false,
-    table: null
+    table: null,
+    force: false,
 });
 
 export const showIndexesSuggestions = writable<boolean>(false);

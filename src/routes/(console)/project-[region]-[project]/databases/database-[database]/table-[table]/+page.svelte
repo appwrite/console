@@ -205,7 +205,7 @@
     </Container>
 
     <div class="databases-spreadsheet">
-        {#if hasColumns && hasValidColumns && $tableColumnSuggestions.force === false}
+        {#if hasColumns && hasValidColumns && !$tableColumnSuggestions.force}
             {#if data.rows.total}
                 <Divider />
                 <SpreadSheet {data} bind:showRowCreateSheet={$showRowCreateSheet} />

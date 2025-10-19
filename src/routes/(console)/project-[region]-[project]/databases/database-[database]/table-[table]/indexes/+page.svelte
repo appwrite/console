@@ -324,7 +324,7 @@
             </EmptySheet>
         {/if}
     {:else}
-        <EmptySheet mode="indexes" title="You have no columns yet">
+        <EmptySheet mode="indexes" title="You have no columns yet" showActions={$canWriteTables}>
             {#snippet actions()}
                 <EmptySheetCards
                     icon={IconPlus}

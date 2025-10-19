@@ -22,9 +22,9 @@
         $tableColumnSuggestions.table = null;
         $tableColumnSuggestions.context = null;
 
+        $tableColumnSuggestions.force = false;
         $tableColumnSuggestions.enabled = false;
         $tableColumnSuggestions.thinking = false;
-        $tableColumnSuggestions.force = undefined;
     }
 
     async function triggerColumnSuggestions() {
