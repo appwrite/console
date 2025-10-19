@@ -23,6 +23,7 @@
         Typography
     } from '@appwrite.io/pink-svelte';
     import {
+        IconBookOpen,
         IconDotsHorizontal,
         IconEye,
         IconPlus,
@@ -40,6 +41,7 @@
     import { showIndexesSuggestions, showColumnsSuggestionsModal } from '../../(suggestions)';
     import IconAI from '../../(suggestions)/icon/aiForButton.svelte';
     import EmptySheetCards from '../layout/emptySheetCards.svelte';
+    import { isCloud } from '$lib/system';
 
     let {
         data
@@ -292,25 +294,29 @@
         {:else}
             <EmptySheet mode="indexes" showActions={$canWriteTables}>
                 {#snippet subtitle()}
-                    <Typography.Text align="center">
-                        Need a hand? Learn more in the
-                        <Link.Anchor
-                            target="_blank"
-                            href="https://appwrite.io/docs/products/databases/tables#indexes">
-                            docs.
-                        </Link.Anchor>
-                    </Typography.Text>
+                    {#if isCloud}
+                        <Typography.Text align="center">
+                            Need a hand? Learn more in the
+                            <Link.Anchor
+                                target="_blank"
+                                href="https://appwrite.io/docs/products/databases/tables#indexes">
+                                docs.
+                            </Link.Anchor>
+                        </Typography.Text>
+                    {/if}
                 {/snippet}
 
                 {#snippet actions()}
-                    <EmptySheetCards
-                        icon={IconAI}
-                        title="Suggest indexes"
-                        disabled={!$table?.columns?.length}
-                        subtitle="Use AI to generate indexes"
-                        onClick={() => {
-                            showIndexesSuggestions.update(() => true);
-                        }} />
+                    {#if isCloud}
+                        <EmptySheetCards
+                            icon={IconAI}
+                            title="Suggest indexes"
+                            disabled={!$table?.columns?.length}
+                            subtitle="Use AI to generate indexes"
+                            onClick={() => {
+                                showIndexesSuggestions.update(() => true);
+                            }} />
+                    {/if}
 
                     <EmptySheetCards
                         icon={IconPlus}
@@ -320,11 +326,32 @@
                         onClick={() => {
                             showCreateIndex = true;
                         }} />
+
+                    {#if !isCloud}
+                        <EmptySheetCards
+                            icon={IconBookOpen}
+                            title="Documentation"
+                            subtitle="Read the Appwrite Databases docs"
+                            href="https://appwrite.io/docs/products/databases/tables#indexes" />
+                    {/if}
                 {/snippet}
             </EmptySheet>
         {/if}
     {:else}
         <EmptySheet mode="indexes" title="You have no columns yet" showActions={$canWriteTables}>
+            {#snippet subtitle()}
+                {#if isCloud}
+                    <Typography.Text align="center">
+                        Need a hand? Learn more in the
+                        <Link.Anchor
+                            target="_blank"
+                            href="https://appwrite.io/docs/products/databases/tables#indexes">
+                            docs.
+                        </Link.Anchor>
+                    </Typography.Text>
+                {/if}
+            {/snippet}
+
             {#snippet actions()}
                 <EmptySheetCards
                     icon={IconPlus}
@@ -334,13 +361,21 @@
                         $showCreateColumnSheet.show = true;
                     }} />
 
-                <EmptySheetCards
-                    icon={IconAI}
-                    title="Suggest columns"
-                    subtitle="Use AI to generate columns"
-                    onClick={() => {
-                        $showColumnsSuggestionsModal = true;
-                    }} />
+                {#if isCloud}
+                    <EmptySheetCards
+                        icon={IconAI}
+                        title="Suggest columns"
+                        subtitle="Use AI to generate columns"
+                        onClick={() => {
+                            $showColumnsSuggestionsModal = true;
+                        }} />
+                {:else}
+                    <EmptySheetCards
+                        icon={IconBookOpen}
+                        title="Documentation"
+                        subtitle="Read the Appwrite Databases docs"
+                        href="https://appwrite.io/docs/products/databases/tables#indexes" />
+                {/if}
             {/snippet}
         </EmptySheet>
     {/if}
