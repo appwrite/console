@@ -169,6 +169,51 @@
         }
     ];
 
+    const getDocumentsDbColumns = (): Column[] => [
+        {
+            id: '$id',
+            title: '$id',
+            width: 225,
+            minimumWidth: 225,
+            draggable: false,
+            type: 'string',
+            icon: IconFingerPrint,
+            isEditable: false,
+            isPrimary: false
+        },
+        {
+            id: '$createdAt',
+            title: '$createdAt',
+            width: 200,
+            minimumWidth: 200,
+            draggable: false,
+            type: 'datetime',
+            icon: IconCalendar,
+            isEditable: false
+        },
+        {
+            id: '$updatedAt',
+            title: '$updatedAt',
+            width: 200,
+            minimumWidth: 200,
+            draggable: false,
+            type: 'datetime',
+            icon: IconCalendar,
+            isEditable: false
+        },
+        {
+            id: 'actions',
+            title: '',
+            width: 40,
+            isAction: true,
+            draggable: false,
+            type: 'string',
+            resizable: false,
+            isEditable: false,
+            hide: false
+        }
+    ];
+
     const getIndexesColumns = (): Column[] =>
         [
             { id: 'key', title: 'Key', icon: null, isPrimary: false },
@@ -183,7 +228,13 @@
             }
         ] as Column[];
 
-    const spreadsheetColumns = $derived(mode === 'records' ? getRowColumns() : getIndexesColumns());
+    const spreadsheetColumns = $derived.by(() => {
+        return mode === 'records'
+            ? type !== 'documentsdb'
+                ? getRowColumns()
+                : getDocumentsDbColumns()
+            : getIndexesColumns();
+    });
 
     const emptyCells = $derived(
         ($isSmallViewport ? 14 : $isTabletViewport ? 17 : 24) + (!$expandTabs ? 2 : 0)
@@ -193,10 +244,12 @@
 </script>
 
 <div
-    class="databases-spreadsheet spreadsheet-container-outer"
     data-mode={mode}
-    bind:this={spreadsheetContainer}>
-    <SpreadsheetContainer>
+    data-type={type}
+    data-loading={$spreadsheetLoading}
+    bind:this={spreadsheetContainer}
+    class="databases-spreadsheet spreadsheet-container-outer">
+    <SpreadsheetContainer showEditorSideSheet={type === 'documentsdb'}>
         <Spreadsheet.Root
             {emptyCells}
             allowSelection
@@ -259,9 +312,7 @@
         </Spreadsheet.Root>
 
         {#snippet noSqlEditor()}
-            {#if type === 'documentsdb' && $spreadsheetLoading}
-                <NoSqlEditor loading />
-            {/if}
+            <NoSqlEditor loading />
         {/snippet}
     </SpreadsheetContainer>
 
@@ -350,6 +401,13 @@
         & :global([data-select='true']) {
             opacity: 0.85;
             pointer-events: none;
+        }
+
+        &[data-mode='records'][data-type='documentsdb'] {
+            position: unset;
+            &[data-loading='false'] :global(.skeleton) {
+                animation: none;
+            }
         }
     }
 
