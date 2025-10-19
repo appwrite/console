@@ -61,11 +61,18 @@
 
     let creatingColumns = $state(false);
     let selectedColumnId = $state<string | null>(null);
-    let selectedColumnName = $state<string | null>(null);
     let previousColumnId = $state<string | null>(null);
+    let selectedColumnName = $state<string | null>(null);
+
+    // for deleting a column + undo
+    let undoTimer: ReturnType<typeof setTimeout> | null = $state(null);
+    let columnBeingDeleted: (SuggestedColumnSchema & { deletedIndex?: number }) | null =
+        $state(null);
+
     const baseColProps = { draggable: false, resizable: false };
 
     const NOTIFICATION_AND_MOCK_DELAY = 1250;
+    const COLUMN_DELETION_UNDO_TIMER_LIMIT = 10000; // 10 seconds
 
     const getColumnWidth = (columnKey: string) => Math.max(180, columnKey.length * 8 + 60);
     const safeNumericValue = (value: number | undefined) =>
@@ -662,11 +669,36 @@
     function deleteColumn(columnId: string) {
         if (!columnId) return;
 
-        // remove the selected column from customColumns
-        const columnIndex = customColumns.findIndex((col) => col.key === columnId);
-        if (columnIndex !== -1) {
-            customColumns = customColumns.filter((_, index) => index !== columnIndex);
+        let columnIndex = -1;
+        let columnSchema: SuggestedColumnSchema;
+
+        for (let index = 0; index < customColumns.length; index++) {
+            if (customColumns[index].key === columnId) {
+                columnIndex = index;
+                columnSchema = customColumns[index];
+                break;
+            }
         }
+
+        if (columnIndex !== -1) {
+            customColumns.splice(columnIndex, 1);
+        }
+
+        // store column with its index for undo
+        columnBeingDeleted = { ...columnSchema, deletedIndex: columnIndex };
+
+        // clear any existing timer
+        if (undoTimer) {
+            clearTimeout(undoTimer);
+        }
+
+        // start 10-second undo timer
+        undoTimer = setTimeout(() => {
+            undoTimer = null;
+            selectedColumnId = null;
+            columnBeingDeleted = null;
+            selectedColumnName = null;
+        }, COLUMN_DELETION_UNDO_TIMER_LIMIT);
 
         // reset selection!
         resetSelectedColumn();
@@ -676,6 +708,39 @@
 
         // recalculate view after deletion
         requestAnimationFrame(() => recalcAll());
+    }
+
+    function undoDelete() {
+        if (!columnBeingDeleted) return;
+
+        const { deletedIndex, ...columnData } = columnBeingDeleted;
+
+        // restore column at its original index
+        if (deletedIndex !== undefined && deletedIndex >= 0) {
+            customColumns.splice(deletedIndex, 0, columnData);
+        } else {
+            // fallback: add at the end if index is missing
+            customColumns.push(columnData);
+        }
+
+        // clear undo state
+        columnBeingDeleted = null;
+
+        // clear timer
+        if (undoTimer) {
+            clearTimeout(undoTimer);
+            undoTimer = null;
+        }
+
+        // recalculate view after restore
+        requestAnimationFrame(() => {
+            recalcAll();
+
+            tick().then(() => {
+                selectedColumnId = columnData.key;
+                selectedColumnName = columnData.key;
+            })
+        });
     }
 
     function showIndexSuggestionsNotification() {
@@ -864,11 +929,9 @@
         } else {
             selectedColumnId = columnId;
         }
-    }
 
-    $effect(() => {
-        console.log('selectedColumnId changed:', selectedColumnId);
-    });
+        columnBeingDeleted = null;
+    }
 
     $effect(() => {
         if (!spreadsheetContainer) return;
@@ -1185,33 +1248,59 @@
             </FloatingActionBar>
         </div>
     {:else if customColumns.some((col) => !col.isPlaceholder) && showFloatingBar}
-        <!-- delete and cancel sub action -->
-        <div class="floating-action-wrapper expanded" class:selection={selectedColumnId !== null}>
+        <!-- undo or delete and cancel sub action -->
+        {@const isUndoDeleteMode = columnBeingDeleted && columnBeingDeleted?.key !== null}
+        {@const columnName = isUndoDeleteMode ? columnBeingDeleted?.key : selectedColumnName}
+
+        {@const hasSelection = selectedColumnId !== null || isUndoDeleteMode}
+        <div class="floating-action-wrapper expanded" class:selection={hasSelection}>
             <FloatingActionBar>
                 <svelte:fragment slot="start">
                     <Typography.Caption
                         variant="400"
                         color="--fgcolor-neutral-primary"
                         style="white-space: nowrap;">
-                        <Badge size="xs" content={selectedColumnName} variant="secondary" />
-                        column selected
+                        <Badge
+                            size="xs"
+                            variant="secondary"
+                            content={columnName}
+                            type={isUndoDeleteMode ? 'error' : undefined} />
+
+                        {#if isUndoDeleteMode}
+                            was deleted. You can undo this action.
+                        {:else}
+                            column selected
+                        {/if}
                     </Typography.Caption>
                 </svelte:fragment>
 
                 <svelte:fragment slot="end">
                     <Layout.Stack direction="row" gap="xs" alignItems="center" inline>
-                        <Button.Button
-                            size="xs"
-                            variant="text"
-                            on:click={() => (selectedColumnId = null)}>
-                            Cancel
-                        </Button.Button>
+                        {#if !isUndoDeleteMode}
+                            <Button.Button
+                                size="xs"
+                                variant="text"
+                                on:click={() => (selectedColumnId = null)}>
+                                Cancel
+                            </Button.Button>
+                        {/if}
                         <Button.Button
                             size="xs"
                             variant="secondary"
-                            disabled={customColumns.filter((col) => !col.isPlaceholder).length <= 1}
-                            on:click={() => deleteColumn(selectedColumnName)}>
-                            Delete
+                            disabled={!isUndoDeleteMode &&
+                                customColumns.filter((col) => !col.isPlaceholder).length <= 1}
+                            on:click={() => {
+                                if (isUndoDeleteMode) {
+                                    undoDelete();
+                                } else {
+                                    deleteColumn(selectedColumnName);
+                                }
+                            }}>
+                            {#if isUndoDeleteMode}
+                                Undo
+                            {:else}
+                                Delete
+                            {/if}
                         </Button.Button>
                     </Layout.Stack>
                 </svelte:fragment>
@@ -1223,7 +1312,7 @@
             class="floating-action-wrapper"
             class:expanded={!creatingColumns}
             class:creating-columns={creatingColumns}
-            class:has-selection={selectedColumnId !== null}>
+            class:has-selection={hasSelection}>
             <FloatingActionBar>
                 <svelte:fragment slot="start">
                     <Layout.Stack gap="xl" direction="row" alignItems="center">
@@ -1543,8 +1632,8 @@
         background: linear-gradient(
             180deg,
             rgba(255, 255, 255, 0) 0%,
-            rgba(255, 255, 255, 0.86) 85%, /* show more of the bottom area */
-            #fff 100%
+            rgba(255, 255, 255, 0.86) 85%,
+            /* show more of the bottom area */ #fff 100%
         );
         z-index: 20; /* under overlay */
         display: flex;
@@ -1558,8 +1647,8 @@
         background: linear-gradient(
             180deg,
             rgba(29, 29, 33, 0) 0%,
-            rgba(29, 29, 33, 0.86) 85%, /* show more of the bottom area */
-            #1d1d21 100%
+            rgba(29, 29, 33, 0.86) 85%,
+            /* show more of the bottom area */ #1d1d21 100%
         );
     }
 
