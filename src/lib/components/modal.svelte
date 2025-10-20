@@ -14,7 +14,7 @@
     };
     export let title = '';
     export let hideFooter = false;
-    export let modeless: boolean = false;
+    export let backdrop: boolean = true;
 
     let alert: HTMLElement;
 
@@ -30,7 +30,7 @@
 </script>
 
 <Form isModal {onSubmit}>
-    <Modal {modeless} {size} {title} bind:open={show} {hideFooter} {dismissible}>
+    <Modal {backdrop} {size} {title} bind:open={show} {hideFooter} {dismissible}>
         <slot slot="description" name="description" />
         {#if error}
             <div bind:this={alert}>

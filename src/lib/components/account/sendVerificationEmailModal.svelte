@@ -136,7 +136,7 @@
         {onSubmit}
         dismissible={false}
         autoClose={false}
-        modeless>
+        backdrop={false}>
         <Card.Base variant="secondary" padding="s">
             <Layout.Stack gap="xxs">
                 <Typography.Text gap="m">
