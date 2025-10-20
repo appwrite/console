@@ -5,12 +5,12 @@ import { app } from '$lib/stores/app';
 import { get } from 'svelte/store';
 import { goto } from '$app/navigation';
 import { resolve } from '$app/paths';
+import { ensureMonacoStyles } from './monaco-style-manager';
 
 const COMPONENT_SELECTOR = 'imagine-web-components-wrapper[data-appwrite-studio]';
 const STYLE_ATTRIBUTE = 'data-appwrite-studio-style';
 const BLOCK_START_BASE_OFFSET = 48;
 const INLINE_START_BASE_OFFSET = 8;
-
 let component: HTMLElement | null = null;
 let configInitialized = false;
 let routingInitialized = false;
@@ -79,6 +79,7 @@ function injectStyles(node: HTMLElement, attempt = 0) {
             }
 
             if (shadow.querySelector<HTMLLinkElement>(`link[${STYLE_ATTRIBUTE}]`)) {
+                ensureMonacoStyles(shadow);
                 return;
             }
 
@@ -87,6 +88,7 @@ function injectStyles(node: HTMLElement, attempt = 0) {
             link.href = ImagineCss;
             link.setAttribute(STYLE_ATTRIBUTE, 'true');
             shadow.prepend(link);
+            ensureMonacoStyles(shadow);
         })
         .catch(() => {
             /* no-op */
