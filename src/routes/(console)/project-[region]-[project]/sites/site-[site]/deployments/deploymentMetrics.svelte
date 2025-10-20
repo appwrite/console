@@ -9,6 +9,7 @@
     import { UsageCard } from '$lib/components';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { formatTimeDetailed } from '$lib/helpers/timeConversion';
+    import { clampMin } from '$lib/helpers/numbers';
 
     const now = new Date();
     const rangeOptions = [
@@ -84,7 +85,10 @@
 
                         metric.value = time !== '0s' ? time : '-';
                     } else {
-                        metric.value = usage[metric.id] ?? '-';
+                        metric.value =
+                            usage[metric.id] !== undefined
+                                ? clampMin(usage[metric.id]).toString()
+                                : '-';
                     }
                     return metric;
                 });
