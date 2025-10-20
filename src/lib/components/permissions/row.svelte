@@ -169,7 +169,7 @@
                         {:then data}
                             {formatName(
                                 data.name ?? data?.email ?? data?.phone ?? '-',
-                                $isSmallViewport ? 5 : 8
+                                $isSmallViewport ? 5 : 7
                             )}
                         {/await}
                     </Typography.Text>
