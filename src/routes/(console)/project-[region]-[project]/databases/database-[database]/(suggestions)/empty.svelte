@@ -1270,6 +1270,8 @@
         data-collapsed-tabs={!$expandTabs}>
     </div>
 
+    <div class="snow-fade-bottom" data-collapsed-tabs={!$expandTabs}></div>
+
     {#if $tableColumnSuggestions.thinking}
         <div class="floating-action-wrapper">
             <FloatingActionBar>
@@ -1618,7 +1620,7 @@
             // for height transition with fit-content and auto, etc.
             interpolate-size: allow-keywords;
 
-            & :global(div:first-child) {
+            & > :global(div:first-child) {
                 z-index: 22;
                 bottom: 24px;
                 height: 44px;
@@ -1635,7 +1637,7 @@
                 }
             }
 
-            &.expanded :global(div:first-child) {
+            &.expanded > :global(div:first-child) {
                 left: calc(60% - 480px / 2);
                 max-width: 480px !important;
 
@@ -1650,7 +1652,9 @@
             }
 
             &.selection {
-                padding: var(--space-5);
+                & > :global(div:first-child) {
+                    padding: var(--space-3) var(--space-5) !important;
+                }
 
                 & :global(div:first-child) {
                     z-index: 21;
@@ -1703,17 +1707,11 @@
         }
     }
 
+    .snow-fade-bottom,
     .spreadsheet-fade-bottom {
         bottom: 0;
         width: 100%;
         position: fixed;
-        height: var(--overlay-height);
-        background: linear-gradient(
-            180deg,
-            rgba(255, 255, 255, 0) 0%,
-            rgba(255, 255, 255, 0.86) 85%,
-            /* show more of the bottom area */ #fff 100%
-        );
         z-index: 20; /* under overlay */
         display: flex;
         justify-content: center;
@@ -1722,13 +1720,28 @@
         pointer-events: none;
     }
 
+    .spreadsheet-fade-bottom {
+        height: var(--overlay-height);
+        background: linear-gradient(
+            180deg,
+            rgba(255, 255, 255, 0) 0%,
+            rgba(255, 255, 255, 0.86) 85%,
+            /* show more of the bottom area */ var(--bgcolor-neutral-primary) 100%
+        );
+    }
+
+    .snow-fade-bottom {
+        height: calc(var(--overlay-height) / 2);
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, #fff 94.45%);
+    }
+
+    :global(.theme-dark) .snow-fade-bottom,
     :global(.theme-dark) .spreadsheet-fade-bottom {
         background: linear-gradient(
             180deg,
             rgba(29, 29, 33, 0) 0%,
             rgba(29, 29, 33, 0.86) 85%,
-            // token - bgcolor-neutral-primary
-            /* show more of the bottom area */ #1d1d21 100%
+            /* show more of the bottom area */ var(--bgcolor-neutral-primary) 100%
         );
     }
 

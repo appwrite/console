@@ -159,36 +159,48 @@
                         <svelte:fragment slot="tooltip">Filters</svelte:fragment>
                     </Tooltip>
                 </Layout.Stack>
-                <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
-                    <Button
-                        secondary
-                        event={Click.DatabaseImportCsv}
-                        disabled={!(hasColumns && hasValidColumns)}
-                        on:click={() => (showImportCSV = true)}>
-                        Import CSV
-                    </Button>
-                    {#if !$isSmallViewport}
+                <Layout.Stack
+                    direction="row"
+                    alignItems="center"
+                    justifyContent="flex-end"
+                    style="padding-right: 40px;">
+                    <Layout.Stack
+                        direction="row"
+                        alignItems="center"
+                        gap="s"
+                        justifyContent="flex-end">
                         <Button
                             secondary
-                            event="create_row"
+                            event={Click.DatabaseImportCsv}
                             disabled={!(hasColumns && hasValidColumns)}
-                            on:click={() => ($showRowCreateSheet.show = true)}>
-                            <Icon icon={IconPlus} slot="start" size="s" />
-                            Create row
+                            on:click={() => (showImportCSV = true)}>
+                            Import CSV
                         </Button>
+                        {#if !$isSmallViewport}
+                            <Button
+                                secondary
+                                event="create_row"
+                                disabled={!(hasColumns && hasValidColumns)}
+                                on:click={() => ($showRowCreateSheet.show = true)}>
+                                <Icon icon={IconPlus} slot="start" size="s" />
+                                Create row
+                            </Button>
 
-                        <Button
-                            icon
-                            size="s"
-                            secondary
-                            class="small-button-dimensions"
-                            on:click={() => {
-                                $expandTabs = !$expandTabs;
-                                preferences.setKey('tableHeaderExpanded', $expandTabs);
-                            }}>
-                            <Icon icon={!$expandTabs ? IconChevronDown : IconChevronUp} size="s" />
-                        </Button>
-                    {/if}
+                            <Button
+                                icon
+                                size="s"
+                                secondary
+                                class="small-button-dimensions"
+                                on:click={() => {
+                                    $expandTabs = !$expandTabs;
+                                    preferences.setKey('tableHeaderExpanded', $expandTabs);
+                                }}>
+                                <Icon
+                                    icon={!$expandTabs ? IconChevronDown : IconChevronUp}
+                                    size="s" />
+                            </Button>
+                        {/if}
+                    </Layout.Stack>
                 </Layout.Stack>
             </Layout.Stack>
             {#if $isSmallViewport}

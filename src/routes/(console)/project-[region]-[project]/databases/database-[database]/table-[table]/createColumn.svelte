@@ -15,6 +15,7 @@
     import IconAINotification from '../(suggestions)/icon/aiNotification.svelte';
     import { type Columns, type ColumnDirection, showCreateColumnSheet } from './store';
     import { isCloud } from '$lib/system';
+    import { slide } from 'svelte/transition';
 
     let {
         direction = null,
@@ -187,7 +188,7 @@
 
 <Layout.Stack gap="xl">
     {#if isCloud && showSuggestionsAlert}
-        <div class="custom-inline-alert">
+        <div class="custom-inline-alert" transition:slide>
             <Alert.Inline dismissible on:dismiss={() => (showSuggestionsAlert = false)}>
                 <svelte:fragment slot="icon">
                     <IconAINotification />
@@ -237,7 +238,7 @@
         & :global(article) {
             border-radius: var(--border-radius-medium);
             padding: var(--space-4, 8px);
-            // bgcolor: bgcolor neutral primary
+            background: var(--bgcolor-neutral-primary);
             border: var(--border-width-s) solid var(--border-neutral);
         }
 
