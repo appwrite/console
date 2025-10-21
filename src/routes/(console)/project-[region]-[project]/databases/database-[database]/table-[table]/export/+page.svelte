@@ -116,15 +116,15 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .migrations.createCsvExport({
+                .migrations.createCSVExport({
                     bucketId: selectedBucket,
                     resourceId: `${page.params.database}:${page.params.table}`,
-                    fileName: filename,
+                    filename: filename,
                     columns: selectedCols,
-                    queries: exportWithFilters ? ($queries?.filters?.map((f) => JSON.stringify(f)) ?? []) : [],
+                    queries: exportWithFilters ? Array.from($queries.values()) : [],
                     delimiter: delimiter,
                     header: includeHeader,
-                    email: emailOnComplete
+                    notify: emailOnComplete
                 });
 
             addNotification({

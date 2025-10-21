@@ -105,8 +105,8 @@
         const current = $exportItems.get(exportData.$id);
         let tableName = current?.table ?? null;
         // Extract bucket and file info from migration data
-        let bucketId = (exportData as any).bucketId ?? current?.bucketId ?? '';
-        let fileName = (exportData as any).fileName ?? current?.fileName ?? '';
+        let bucketId = ('bucketId' in exportData ? exportData.bucketId : current?.bucketId) ?? '';
+        let fileName = ('filename' in exportData ? exportData.filename : current?.fileName) ?? '';
         let bucketName = current?.bucketName ?? null;
 
         if (!tableName && tableId) {
@@ -261,7 +261,11 @@
                                     <div
                                         class="progress-bar-top-line u-flex u-gap-8 u-main-space-between">
                                         <Typography.Text>
-                                            {@html text(value.status, value.table, value.bucketName ?? 'bucket')}
+                                            {@html text(
+                                                value.status,
+                                                value.table,
+                                                value.bucketName ?? 'bucket'
+                                            )}
                                         </Typography.Text>
                                     </div>
                                     <div
