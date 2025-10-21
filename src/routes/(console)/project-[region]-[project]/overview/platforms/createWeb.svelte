@@ -164,7 +164,8 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
                 ? `APPWRITE_PROJECT_ID=${projectId}\nAPPWRITE_PROJECT_NAME=${$project.name}\nAPPWRITE_ENDPOINT=${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}`
                 : selectedFramework?.updateConfigCode || '',
         configLanguage: selectedFramework?.key === 'angular' ? 'ts' : 'dotenv',
-        runInstructions: `${selectedFramework?.key === 'angular' ? 'Replace the file with the configuration above' : 'Copy the file `.env.example` to `.env` and update the configuration settings'}. Install project dependencies using \`npm install\`, then run the app using \`${selectedFramework?.runCommand}\`. Demo app runs on http://localhost:${selectedFramework?.portNumber}. Click the \`Send a ping\` button to verify the setup.`
+        runInstructions: `${selectedFramework?.key === 'angular' ? 'Replace the file with the configuration above' : 'Copy the file `.env.example` to `.env` and update the configuration settings'}. Install project dependencies using \`npm install\`, then run the app using \`${selectedFramework?.runCommand}\`. Demo app runs on http://localhost:${selectedFramework?.portNumber}. Click the \`Send a ping\` button to verify the setup.`,
+        using: 'the terminal or VSCode'
     });
 
     async function createWebPlatform() {

@@ -24,6 +24,7 @@ export type LLMPromptConfig = {
     configCode: string;
     configLanguage: string;
     runInstructions: string;
+    using: string;
 };
 
 export function getCorrectTitle(isConnectPlatform: boolean, platform: string) {
@@ -31,7 +32,7 @@ export function getCorrectTitle(isConnectPlatform: boolean, platform: string) {
 }
 
 export function generatePromptFromConfig(config: LLMPromptConfig): string {
-    return `1. If you're starting a new project, you can clone our starter kit from GitHub using the terminal, VSCode or Android Studio.
+    return `1. If you're starting a new project, you can clone our starter kit from GitHub using ${config.using || 'the terminal'}.
 
 \`\`\`bash
 ${config.cloneCommand}
@@ -53,6 +54,7 @@ type PlatformConfig = {
     configFile: string;
     configLanguage: string;
     runInstructions: string;
+    using: string;
 };
 
 const platformConfigs: Record<string, PlatformConfig> = {
@@ -63,7 +65,8 @@ const platformConfigs: Record<string, PlatformConfig> = {
         configFile: 'constants/AppwriteConfig.kt',
         configLanguage: 'kotlin',
         runInstructions:
-            'Run the app on a connected device or emulator, then click the `Send a ping` button to verify the setup.'
+            'Run the app on a connected device or emulator, then click the `Send a ping` button to verify the setup.',
+        using: 'the terminal, VSCode or Android Studio'
     },
     apple: {
         name: 'Apple platforms',
@@ -72,7 +75,8 @@ const platformConfigs: Record<string, PlatformConfig> = {
         configFile: 'Sources/Config.plist',
         configLanguage: 'plaintext',
         runInstructions:
-            'Run the app on a connected device or simulator, then click the `Send a ping` button to verify the setup.'
+            'Run the app on a connected device or simulator, then click the `Send a ping` button to verify the setup.',
+        using: 'the terminal or XCode'
     },
     flutter: {
         name: 'Flutter',
@@ -81,7 +85,8 @@ const platformConfigs: Record<string, PlatformConfig> = {
         configFile: 'lib/config/environment.dart',
         configLanguage: 'dart',
         runInstructions:
-            'Run the app on a connected device or simulator using `flutter run -d [device_name]`, then click the `Send a ping` button to verify the setup.'
+            'Run the app on a connected device or simulator using `flutter run -d [device_name]`, then click the `Send a ping` button to verify the setup.',
+        using: 'the terminal'
     },
     reactnative: {
         name: 'React Native',
@@ -90,7 +95,8 @@ const platformConfigs: Record<string, PlatformConfig> = {
         configFile: '.env.example',
         configLanguage: 'dotenv',
         runInstructions:
-            'Add your Appwrite credentials to `.env.example` then rename it to `.env` if needed. Run the app on a connected device or simulator using `npm install` followed by `npm run ios` or `npm run android`, then click the `Send a ping` button to verify the setup.'
+            'Add your Appwrite credentials to `.env.example` then rename it to `.env` if needed. Run the app on a connected device or simulator using `npm install` followed by `npm run ios` or `npm run android`, then click the `Send a ping` button to verify the setup.',
+        using: 'the terminal or VSCode'
     }
 };
 
@@ -106,6 +112,7 @@ export function buildPlatformConfig(platformKey: string, configCode: string): LL
         configFile: config.configFile,
         configCode: configCode,
         configLanguage: config.configLanguage,
-        runInstructions: config.runInstructions
+        runInstructions: config.runInstructions,
+        using: config.using
     };
 }

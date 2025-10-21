@@ -11,8 +11,7 @@
         Typography,
         Fieldset,
         InlineCode,
-        Tooltip,
-        Alert
+        Tooltip
     } from '@appwrite.io/pink-svelte';
     import { Button, Form, InputText } from '$lib/elements/forms';
     import { IconFlutter, IconAppwrite, IconInfo } from '@appwrite.io/pink-icons-svelte';
