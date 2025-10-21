@@ -335,7 +335,7 @@
                     alignItems="center"
                     alignContent="center"
                     style="width: 653px; max-width: {$isSmallViewport ? '353px' : undefined}">
-                    <Layout.Stack gap="l" alignItems="center" alignContent="center">
+                    <Layout.Stack gap="xs" alignItems="center" alignContent="center">
                         <Typography.Title>{title ?? `You have no ${mode} yet`}</Typography.Title>
 
                         {@render subtitle?.()}
@@ -343,15 +343,17 @@
 
                     {#if showActions && actions}
                         {@const inline = mode === 'rows-filtered'}
-                        <Layout.Stack {inline}>
-                            {#if inline}
-                                {@render actions?.()}
-                            {:else}
-                                <Layout.Grid columns={2} columnsXS={1}>
+                        <div class="controlled-width">
+                            <Layout.Stack {inline}>
+                                {#if inline}
                                     {@render actions?.()}
-                                </Layout.Grid>
-                            {/if}
-                        </Layout.Stack>
+                                {:else}
+                                    <Layout.Grid columns={2} columnsXS={1}>
+                                        {@render actions?.()}
+                                    </Layout.Grid>
+                                {/if}
+                            </Layout.Stack>
+                        </div>
                     {/if}
                 </Layout.Stack>
             </div>
@@ -431,6 +433,13 @@
 
         &.custom-columns {
             pointer-events: none;
+        }
+    }
+
+    @media (min-width: 1024px) {
+        .controlled-width {
+            width: 538px;
+            max-width: 538px;
         }
     }
 

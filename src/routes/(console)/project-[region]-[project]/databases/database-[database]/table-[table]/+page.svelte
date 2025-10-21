@@ -245,7 +245,7 @@
 
                         <EmptySheetCards
                             icon={IconViewBoards}
-                            title="Generate random data"
+                            title="Generate sample data"
                             subtitle="Generate data for testing"
                             onClick={() => {
                                 $randomDataModalState.show = true;
@@ -272,14 +272,6 @@
                 {/snippet}
 
                 {#snippet actions()}
-                    <EmptySheetCards
-                        icon={IconPlus}
-                        title="Create column"
-                        subtitle="Create columns manually"
-                        onClick={() => {
-                            $showCreateColumnSheet.show = true;
-                        }} />
-
                     {#if isCloud}
                         <!-- shown on cloud -->
                         <EmptySheetCards
@@ -292,8 +284,16 @@
                     {/if}
 
                     <EmptySheetCards
+                        icon={IconPlus}
+                        title="Create column"
+                        subtitle="Create columns manually"
+                        onClick={() => {
+                            $showCreateColumnSheet.show = true;
+                        }} />
+
+                    <EmptySheetCards
                         icon={IconViewBoards}
-                        title="Generate random data"
+                        title="Generate sample data"
                         subtitle="Generate data for testing"
                         onClick={() => {
                             $randomDataModalState.show = true;

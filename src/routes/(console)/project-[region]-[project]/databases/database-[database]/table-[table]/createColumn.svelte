@@ -39,6 +39,8 @@
     const tableId = page.params.table;
     const databaseId = page.params.database;
 
+    let showSuggestionsAlert = $state(true);
+
     let key: string = $state(column?.key ?? null);
     let data: Partial<Columns> = $state({
         required: column?.required ?? false,
@@ -184,9 +186,9 @@
 </script>
 
 <Layout.Stack gap="xl">
-    {#if isCloud}
+    {#if isCloud && showSuggestionsAlert}
         <div class="custom-inline-alert">
-            <Alert.Inline>
+            <Alert.Inline dismissible on:dismiss={() => (showSuggestionsAlert = false)}>
                 <svelte:fragment slot="icon">
                     <IconAINotification />
                 </svelte:fragment>
@@ -233,7 +235,10 @@
 <style lang="scss">
     .custom-inline-alert {
         & :global(article) {
+            border-radius: var(--border-radius-medium);
             padding: var(--space-4, 8px);
+            // bgcolor: bgcolor neutral primary
+            border: var(--border-width-s) solid var(--border-neutral);
         }
 
         & :global(div:first-child > :nth-child(2)) {

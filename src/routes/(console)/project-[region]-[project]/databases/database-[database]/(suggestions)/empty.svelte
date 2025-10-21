@@ -1012,6 +1012,38 @@
     });
 </script>
 
+<!--{#snippet countdownProgress()}-->
+<!--    {@const COUNTDOWN_DURATION = 10000}-->
+
+<!--    <div class="countdown-wrapper" style="padding-bottom: 0;">-->
+<!--        <svg-->
+<!--            xmlns="http://www.w3.org/2000/svg"-->
+<!--            width={`var(&#45;&#45;icon-size-s)`}-->
+<!--            height={`var(&#45;&#45;icon-size-s)`}-->
+<!--            viewBox="0 0 24 24"-->
+<!--            fill="none"-->
+<!--            style="transform: rotate(-90deg)">-->
+<!--            &lt;!&ndash; Background circle &ndash;&gt;-->
+<!--            <path-->
+<!--                opacity="0.2"-->
+<!--                d="M24 12C24 18.6274 18.6274 24 12 24C5.37258 24 0 18.6274 0 12C0 5.37258 5.37258 0 12 0C18.6274 0 24 5.37258 24 12ZM2.4 12C2.4 17.3019 6.69807 21.6 12 21.6C17.3019 21.6 21.6 17.3019 21.6 12C21.6 6.69807 17.3019 2.4 12 2.4C6.69807 2.4 2.4 6.69807 2.4 12Z"-->
+<!--                fill="#56565C" />-->
+<!--            &lt;!&ndash; Progress circle &ndash;&gt;-->
+<!--            <circle-->
+<!--                cx="12"-->
+<!--                cy="12"-->
+<!--                r="10.8"-->
+<!--                fill="none"-->
+<!--                stroke="#56565C"-->
+<!--                stroke-width="2.4"-->
+<!--                stroke-dasharray="67.858"-->
+<!--                stroke-dashoffset="0"-->
+<!--                class="countdown-circle"-->
+<!--                style="animation-duration: {COUNTDOWN_DURATION}ms" />-->
+<!--        </svg>-->
+<!--    </div>-->
+<!--{/snippet}-->
+
 <svelte:window on:resize={recalcAll} on:scroll={recalcAll} on:click={handleGlobalClick} />
 
 <div
@@ -1272,22 +1304,28 @@
             <div class="floating-action-wrapper expanded" class:selection={hasSelection}>
                 <FloatingActionBar>
                     <svelte:fragment slot="start">
-                        <Typography.Caption
-                            variant="400"
-                            color="--fgcolor-neutral-primary"
-                            style="white-space: nowrap;">
+                        <Layout.Stack
+                            gap="xs"
+                            direction="row"
+                            alignItems="center"
+                            style="padding-bottom: 0;">
                             <Badge
                                 size="xs"
                                 variant="secondary"
                                 content={columnName}
                                 type={isUndoDeleteMode ? 'error' : undefined} />
 
-                            {#if isUndoDeleteMode}
-                                was deleted. You can undo this action.
-                            {:else}
-                                column selected
-                            {/if}
-                        </Typography.Caption>
+                            <Typography.Caption
+                                variant="400"
+                                color="--fgcolor-neutral-primary"
+                                style="white-space: nowrap;">
+                                {#if isUndoDeleteMode}
+                                    was deleted. You can undo this action.
+                                {:else}
+                                    column selected
+                                {/if}
+                            </Typography.Caption>
+                        </Layout.Stack>
                     </svelte:fragment>
 
                     <svelte:fragment slot="end">
@@ -1299,6 +1337,9 @@
                                     on:click={() => (selectedColumnId = null)}>
                                     Cancel
                                 </Button.Button>
+
+                                <!--{:else}-->
+                                <!--    {@render countdownProgress()}-->
                             {/if}
                             <Button.Button
                                 size="xs"
@@ -1433,7 +1474,9 @@
         position: fixed;
         overflow: visible;
         scrollbar-width: none;
+
         --columns-range-pink-border-color: rgba(253, 54, 110, 0.24);
+        --columns-range-pink-header-background-color: rgba(253, 54, 110, 0.12);
 
         &.custom-columns {
             width: unset;
@@ -1444,17 +1487,34 @@
         }
 
         &:has(.columns-range-overlay) {
-            &
-                :global(
+            :global(
+                [role='rowheader']
                     [role='cell']:has(.column-resizer-disabled):not([data-column-id^='$']):not(
-                            [data-column-id='actions']
-                        )
-                ) {
+                        [data-column-id='actions']
+                    )
+            ) {
+                background: var(--columns-range-pink-header-background-color);
+            }
+
+            :global(
+                [role='rowheader']
+                    span:has([data-column-id='$id'])
+                    + span
+                    [role='cell']:has(.column-resizer-disabled)
+            ) {
+                margin-left: -2px;
+            }
+
+            :global(
+                [role='cell']:has(.column-resizer-disabled):not([data-column-id^='$']):not(
+                        [data-column-id='actions']
+                    )
+            ) {
                 box-shadow: 0 -1px 0 0 var(--columns-range-pink-border-color) inset !important;
                 transition: box-shadow 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             }
 
-            & :global([role='cell']:not([data-column-id='actions']) .column-resizer-disabled) {
+            :global([role='cell']:not([data-column-id='actions']) .column-resizer-disabled) {
                 border-left: var(--border-width-s, 1px) solid var(--columns-range-pink-border-color) !important;
                 transition: border-color 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             }
@@ -1560,6 +1620,8 @@
 
             & :global(div:first-of-type) {
                 z-index: 22;
+                bottom: 24px;
+                height: 44px;
                 left: calc(65% - 480px / 2);
                 transition: all 600ms cubic-bezier(0.4, 0, 0.2, 1);
 
@@ -1587,13 +1649,9 @@
                 }
             }
 
-            &.expanded.has-selection :global(div:first-of-type) {
-                height: 44px;
-            }
-
             &.selection :global(div:first-of-type) {
                 z-index: 21;
-                bottom: 80px; /* oddly specific maybe, but diff as per design */
+                bottom: 56px; /* oddly specific maybe, but diff as per design */
                 height: fit-content;
                 padding-bottom: 10px;
                 border-bottom: unset;
@@ -1665,6 +1723,7 @@
             180deg,
             rgba(29, 29, 33, 0) 0%,
             rgba(29, 29, 33, 0.86) 85%,
+            // token - bgcolor-neutral-primary
             /* show more of the bottom area */ #1d1d21 100%
         );
     }
@@ -1687,6 +1746,7 @@
     }
 
     :global(.theme-dark) .spreadsheet-container-outer {
+        --columns-range-pink-header-background-color: unset;
         --columns-range-pink-border-color: rgba(253, 54, 110, 0.12) !important;
     }
 
@@ -1748,4 +1808,30 @@
         transform: translateY(0);
         transition-delay: var(--animation-delay, 0ms);
     }
+
+    /* Countdown progress styles */
+    //.countdown-wrapper {
+    //    display: flex;
+    //    width: var(--icon-size-s);
+    //    height: var(--icon-size-s);
+    //}
+    //
+    //:global(.countdown-circle) {
+    //    animation: countdown-progress linear forwards;
+    //}
+    //
+    //@media (prefers-reduced-motion: reduce) {
+    //    :global(.countdown-circle) {
+    //        animation: none;
+    //    }
+    //}
+    //
+    //@keyframes countdown-progress {
+    //    from {
+    //        stroke-dashoffset: 0;
+    //    }
+    //    to {
+    //        stroke-dashoffset: 67.858;
+    //    }
+    //}
 </style>

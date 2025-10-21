@@ -70,7 +70,7 @@
 
         <!-- just being safe with extra guard! -->
         {#if $tableColumnSuggestions.enabled && featureActive}
-            <div transition:slide={{ duration: 200 }}>
+            <div class="context-input" transition:slide={{ duration: 200 }}>
                 <InputTextarea
                     id="context"
                     rows={3}
@@ -85,5 +85,9 @@
 <style lang="scss">
     .suggestions-switch :global(button):not(:disabled) {
         cursor: pointer;
+    }
+
+    .context-input :global(.input) {
+        background: var(--bgcolor-neutral-primary);
     }
 </style>

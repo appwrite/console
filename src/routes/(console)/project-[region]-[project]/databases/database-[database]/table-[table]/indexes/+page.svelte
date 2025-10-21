@@ -353,14 +353,6 @@
             {/snippet}
 
             {#snippet actions()}
-                <EmptySheetCards
-                    icon={IconPlus}
-                    title="Create column"
-                    subtitle="Create columns manually"
-                    onClick={() => {
-                        $showCreateColumnSheet.show = true;
-                    }} />
-
                 {#if isCloud}
                     <EmptySheetCards
                         icon={IconAI}
@@ -369,7 +361,23 @@
                         onClick={() => {
                             $showColumnsSuggestionsModal = true;
                         }} />
+
+                    <EmptySheetCards
+                        icon={IconPlus}
+                        title="Create column"
+                        subtitle="Create columns manually"
+                        onClick={() => {
+                            $showCreateColumnSheet.show = true;
+                        }} />
                 {:else}
+                    <EmptySheetCards
+                        icon={IconPlus}
+                        title="Create column"
+                        subtitle="Create columns manually"
+                        onClick={() => {
+                            $showCreateColumnSheet.show = true;
+                        }} />
+
                     <EmptySheetCards
                         icon={IconBookOpen}
                         title="Documentation"
