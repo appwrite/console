@@ -28,7 +28,6 @@
     import { app } from '$lib/stores/app';
     import { project } from '../../store';
     import { getCorrectTitle, type PlatformProps } from './store';
-    import LlmBanner from './llmBanner.svelte';
 
     let { isConnectPlatform = false, platform = PlatformType.Appleios }: PlatformProps = $props();
 
@@ -198,8 +197,6 @@ APPWRITE_PUBLIC_ENDPOINT: "${sdk.forProject(page.params.region, page.params.proj
         {#if isPlatformCreated}
             <Fieldset legend="Clone starter" badge="Optional">
                 <Layout.Stack gap="l">
-                    <LlmBanner platform="apple" {configCode} />
-
                     <Typography.Text variant="m-500">
                         1. If you're starting a new project, you can clone our starter kit from
                         GitHub using the terminal or XCode.
