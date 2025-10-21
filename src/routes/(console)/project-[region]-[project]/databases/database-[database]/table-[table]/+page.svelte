@@ -2,11 +2,13 @@
     import { Filters, hasPageQueries, queries } from '$lib/components/filters';
     import ViewSelector from '$lib/components/viewSelector.svelte';
     import { Button } from '$lib/elements/forms';
+    import { goto } from '$app/navigation';
+    import { base } from '$app/paths';
     import type { Column, ColumnType } from '$lib/helpers/types';
     import { Container } from '$lib/layout';
     import { preferences } from '$lib/stores/preferences';
     import { canWriteTables, canWriteRows } from '$lib/stores/roles';
-    import { Icon, Layout, Divider, Tooltip } from '@appwrite.io/pink-svelte';
+    import { Icon, Layout, Divider, Tooltip, Popover, ActionMenu } from '@appwrite.io/pink-svelte';
     import type { PageData } from './$types';
     import {
         table,
@@ -24,9 +26,15 @@
     import { page } from '$app/state';
     import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
-    import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { isSmallViewport } from '$lib/stores/viewport';
-    import { IconChevronDown, IconChevronUp, IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import {
+        IconChevronDown,
+        IconChevronUp,
+        IconPlus,
+        IconUpload,
+        IconDownload
+    } from '@appwrite.io/pink-icons-svelte';
     import type { Models } from '@appwrite.io/console';
     import EmptySheet from './layout/emptySheet.svelte';
     import CreateRow from './rows/create.svelte';
@@ -148,13 +156,6 @@
                     </Tooltip>
                 </Layout.Stack>
                 <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
-                    <Button
-                        secondary
-                        event={Click.DatabaseImportCsv}
-                        disabled={!(hasColumns && hasValidColumns)}
-                        on:click={() => (showImportCSV = true)}>
-                        Import CSV
-                    </Button>
                     {#if !$isSmallViewport}
                         <Button
                             secondary
@@ -164,6 +165,32 @@
                             <Icon icon={IconPlus} slot="start" size="s" />
                             Create row
                         </Button>
+                    {/if}
+                    <Popover padding="none" placement="bottom-start" let:toggle>
+                        <Button
+                            secondary
+                            disabled={!(hasColumns && hasValidColumns)}
+                            on:click={toggle}>
+                            Manage rows
+                            <Icon icon={IconChevronDown} slot="end" size="s" />
+                        </Button>
+                        <ActionMenu.Root slot="tooltip">
+                            <ActionMenu.Item.Button
+                                leadingIcon={IconUpload}
+                                on:click={() => (showImportCSV = true)}>
+                                Import CSV
+                            </ActionMenu.Item.Button>
+                            <ActionMenu.Item.Button
+                                leadingIcon={IconDownload}
+                                on:click={() =>
+                                    goto(
+                                        `${base}/project-${page.params.region}-${page.params.project}/databases/database-${page.params.database}/table-${page.params.table}/export`
+                                    )}>
+                                Export CSV
+                            </ActionMenu.Item.Button>
+                        </ActionMenu.Root>
+                    </Popover>
+                    {#if !$isSmallViewport}
 
                         <Button
                             icon
