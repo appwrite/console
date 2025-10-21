@@ -46,7 +46,13 @@
     } from './components/index';
     import { extendedHostnameRegex } from '$lib/helpers/string';
     import { project } from '../../store';
-    import { type PlatformProps, type FrameworkType, getCorrectTitle } from './store';
+    import {
+        type PlatformProps,
+        type FrameworkType,
+        type LLMPromptConfig,
+        getCorrectTitle
+    } from './store';
+    import LlmBanner from './llmBanner.svelte';
 
     let { key, isConnectPlatform = false, platform = PlatformType.Web }: PlatformProps = $props();
 
@@ -145,6 +151,22 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
     const selectedFrameworkIcon = $derived(
         selectedFramework ? selectedFramework.icon : NoFrameworkIcon
     );
+
+    const llmConfig: LLMPromptConfig = $derived({
+        title: `Copy prompt: starter kit for Appwrite in ${selectedFramework?.label || 'Web'}`,
+        cloneCommand: `git clone https://github.com/appwrite/starter-for-${selectedFramework?.key}\ncd starter-for-${selectedFramework?.key}`,
+        configFile:
+            selectedFramework?.key === 'angular'
+                ? 'src/environments/environment.ts'
+                : '.env.example',
+        configCode:
+            selectedFramework?.key === 'angular'
+                ? `APPWRITE_PROJECT_ID=${projectId}\nAPPWRITE_PROJECT_NAME=${$project.name}\nAPPWRITE_ENDPOINT=${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}`
+                : selectedFramework?.updateConfigCode || '',
+        configLanguage: selectedFramework?.key === 'angular' ? 'ts' : 'dotenv',
+        runInstructions: `${selectedFramework?.key === 'angular' ? 'Replace the file with the configuration above' : 'Copy the file `.env.example` to `.env` and update the configuration settings'}. Install project dependencies using \`npm install\`, then run the app using \`${selectedFramework?.runCommand}\`. Demo app runs on http://localhost:${selectedFramework?.portNumber}. Click the \`Send a ping\` button to verify the setup.`,
+        using: 'the terminal or VSCode'
+    });
 
     async function createWebPlatform() {
         hostnameError = hostname !== '' ? !new RegExp(extendedHostnameRegex).test(hostname) : null;
@@ -285,6 +307,8 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
         {#if isPlatformCreated && !isChangingFramework}
             <Fieldset legend="Clone starter" badge="Optional">
                 <Layout.Stack gap="l">
+                    <LlmBanner config={llmConfig} />
+
                     <Typography.Text variant="m-500">
                         1. If you're starting a new project, you can clone our starter kit from
                         GitHub using the terminal or VSCode.
