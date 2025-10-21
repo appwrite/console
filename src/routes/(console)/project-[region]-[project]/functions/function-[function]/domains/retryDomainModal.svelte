@@ -36,15 +36,17 @@
         }
     });
 
-    let error = $state(null);
     let verified = $state(false);
+    let retryError = $state(null);
+    let error = $state(null);
 
     $effect(() => {
-        error = selectedProxyRule?.verificationLogs || null;
+        error = retryError || selectedProxyRule?.verificationLogs || null;
     });
 
     async function retryProxyRule() {
         try {
+            retryError = null;
             const domain = await sdk
                 .forProject(page.params.region, page.params.project)
                 .proxy.updateRuleVerification({ ruleId: selectedProxyRule.$id });
@@ -59,12 +61,12 @@
                     message: `${selectedProxyRule.domain} has been verified`
                 });
             } else {
-                error =
+                retryError =
                     'Domain verification failed. Please check your domain settings or try again later';
             }
             trackEvent(Submit.DomainUpdateVerification);
         } catch (e) {
-            error =
+            retryError =
                 e.message ??
                 'Domain verification failed. Please check your domain settings or try again later';
             trackError(e, Submit.DomainUpdateVerification);
@@ -73,7 +75,7 @@
 
     $effect(() => {
         if (!show) {
-            error = null;
+            retryError = null;
         }
     });
 </script>
