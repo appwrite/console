@@ -191,7 +191,6 @@
                         </ActionMenu.Root>
                     </Popover>
                     {#if !$isSmallViewport}
-
                         <Button
                             icon
                             size="s"
