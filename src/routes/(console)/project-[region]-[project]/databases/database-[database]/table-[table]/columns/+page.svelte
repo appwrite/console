@@ -40,7 +40,8 @@
         IconTrash,
         IconViewList,
         IconLockClosed,
-        IconFingerPrint
+        IconFingerPrint,
+        IconMail
     } from '@appwrite.io/pink-icons-svelte';
     import { type ComponentProps, onDestroy, onMount } from 'svelte';
     import { Click, trackEvent } from '$lib/actions/analytics';
@@ -125,7 +126,7 @@
     const columnFormatIcon = {
         ip: IconLocationMarker,
         url: IconLink,
-        email: IconLink,
+        email: IconMail,
         enum: IconViewList
     };
 
@@ -249,6 +250,12 @@
             resizable: true
         },
         {
+            id: 'type',
+            width: 150,
+            minimumWidth: 150,
+            resizable: false
+        },
+        {
             id: 'indexed',
             width: getColumnWidth('indexed', 150),
             minimumWidth: 150,
@@ -308,6 +315,7 @@
             on:columnsResize={(resize) => saveColumnsWidth(resize.detail)}>
             <svelte:fragment slot="header" let:root>
                 <Spreadsheet.Header.Cell column="key" {root}>Column name</Spreadsheet.Header.Cell>
+                <Spreadsheet.Header.Cell column="type" {root}>Type</Spreadsheet.Header.Cell>
                 <Spreadsheet.Header.Cell column="indexed" {root}>Indexed</Spreadsheet.Header.Cell>
                 <Spreadsheet.Header.Cell column="default" {root}
                     >Default value</Spreadsheet.Header.Cell>
@@ -412,6 +420,10 @@
                             {/if}
                         </Layout.Stack>
                     </Spreadsheet.Cell>
+                    <Spreadsheet.Cell column="type" {root} isEditable={false}>
+                        {@const columnType = column['format'] ? column['format'] : column.type}
+                        {columnType.toLowerCase()}
+                    </Spreadsheet.Cell>
                     <Spreadsheet.Cell column="indexed" {root} isEditable={false}>
                         {@const isActuallyIndexed = $indexes.some((index) =>
                             index.columns.includes(column.key)
@@ -434,15 +446,18 @@
                             }} />
                     </Spreadsheet.Cell>
                     <Spreadsheet.Cell column="default" {root} isEditable={false}>
-                        {@const _default =
-                            column?.default !== null && column?.default !== undefined
-                                ? column?.default
-                                : null}
+                        {@const _default = column.required
+                            ? '-'
+                            : column?.default !== null && column?.default !== undefined
+                              ? column?.default
+                              : null}
 
                         {#if _default === null}
                             <Badge variant="secondary" content="NULL" size="xs" />
+                        {:else if isSpatialType(column)}
+                            {JSON.stringify(_default)}
                         {:else}
-                            {isSpatialType(column) ? JSON.stringify(_default) : _default}
+                            {_default}
                         {/if}
                     </Spreadsheet.Cell>
                     <Spreadsheet.Cell column="actions" {root} isEditable={false}>
