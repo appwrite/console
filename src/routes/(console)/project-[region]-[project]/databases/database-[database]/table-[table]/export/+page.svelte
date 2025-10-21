@@ -114,18 +114,18 @@
         }
 
         try {
-            // await sdk
-            //     .forProject(page.params.region, page.params.project)
-            //     .migrations.createCsvExport({
-            //         bucketId: selectedBucket,
-            //         resourceId: `${page.params.database}:${page.params.table}`,
-            //         fileName: filename,
-            //         columns: selectedCols,
-            //         queries: queries ?? [],
-            //         delimiter: delimiter,
-            //         header: includeHeader,
-            //         email: emailOnComplete
-            //     });
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .migrations.createCsvExport({
+                    bucketId: selectedBucket,
+                    resourceId: `${page.params.database}:${page.params.table}`,
+                    fileName: filename,
+                    columns: selectedCols,
+                    queries: exportWithFilters ? ($queries?.filters?.map((f) => JSON.stringify(f)) ?? []) : [],
+                    delimiter: delimiter,
+                    header: includeHeader,
+                    email: emailOnComplete
+                });
 
             addNotification({
                 type: 'success',

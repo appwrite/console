@@ -8,12 +8,13 @@
     import { writable, type Writable } from 'svelte/store';
     import { addNotification } from '$lib/stores/notifications';
     import { Layout, Typography } from '@appwrite.io/pink-svelte';
-    import { type Models, type Payload } from '@appwrite.io/console';
+    import { type Models, type Payload, Query } from '@appwrite.io/console';
 
     type ExportItem = {
         status: string;
         table?: string;
         bucketId?: string;
+        bucketName?: string;
         fileName?: string;
     };
 
@@ -95,8 +96,7 @@
     }
 
     async function updateOrAddItem(exportData: Payload | Models.Migration) {
-        // TODO: Update this check when export source is defined
-        if (exportData.source.toLowerCase() !== 'csv-export') return;
+        if (exportData.source.toLowerCase() !== 'csv_export') return;
 
         const status = exportData.status;
         const resourceId = exportData.resourceId ?? '';
@@ -104,12 +104,10 @@
 
         const current = $exportItems.get(exportData.$id);
         let tableName = current?.table ?? null;
-        let bucketId = current?.bucketId ?? '';
-        let fileName = current?.fileName ?? '';
-
-        // TODO: Extract bucket and file info from migration data
-        // bucketId = exportData.bucketId
-        // fileName = exportData.fileName
+        // Extract bucket and file info from migration data
+        let bucketId = (exportData as any).bucketId ?? current?.bucketId ?? '';
+        let fileName = (exportData as any).fileName ?? current?.fileName ?? '';
+        let bucketName = current?.bucketName ?? null;
 
         if (!tableName && tableId) {
             try {
@@ -122,6 +120,17 @@
                 tableName = table.name;
             } catch {
                 tableName = null;
+            }
+        }
+
+        if (!bucketName && bucketId) {
+            try {
+                const bucket = await sdk
+                    .forProject(page.params.region, page.params.project)
+                    .storage.getBucket({ bucketId });
+                bucketName = bucket.name;
+            } catch {
+                bucketName = null;
             }
         }
 
@@ -151,6 +160,7 @@
                 status,
                 table: tableName ?? undefined,
                 bucketId,
+                bucketName: bucketName ?? undefined,
                 fileName
             });
             return next;
@@ -198,17 +208,16 @@
     }
 
     onMount(() => {
-        // TODO: Query for active CSV exports when SDK method is available
-        // sdk.forProject(page.params.region, page.params.project)
-        //     .migrations.list({
-        //         queries: [
-        //             Query.equal('source', 'CSV-EXPORT'),
-        //             Query.equal('status', ['pending', 'processing'])
-        //         ]
-        //     })
-        //     .then((migrations) => {
-        //         migrations.migrations.forEach(updateOrAddItem);
-        //     });
+        sdk.forProject(page.params.region, page.params.project)
+            .migrations.list({
+                queries: [
+                    Query.equal('destination', 'CSV'),
+                    Query.equal('status', ['pending', 'processing'])
+                ]
+            })
+            .then((migrations) => {
+                migrations.migrations.forEach(updateOrAddItem);
+            });
 
         return sdk.forConsoleIn(page.params.region).client.subscribe('console', (response) => {
             if (!response.channels.includes(`projects.${getProjectId()}`)) return;
@@ -252,7 +261,7 @@
                                     <div
                                         class="progress-bar-top-line u-flex u-gap-8 u-main-space-between">
                                         <Typography.Text>
-                                            {@html text(value.status, value.table, 'bucket')}
+                                            {@html text(value.status, value.table, value.bucketName ?? 'bucket')}
                                         </Typography.Text>
                                     </div>
                                     <div
