@@ -1618,7 +1618,9 @@
         & .floating-action-wrapper {
             // probably limited, but has good support
             // for height transition with fit-content and auto, etc.
-            interpolate-size: allow-keywords;
+            @supports (interpolate-size: allow-keywords) {
+                interpolate-size: allow-keywords;
+            }
 
             & > :global(div:first-child) {
                 z-index: 22;
