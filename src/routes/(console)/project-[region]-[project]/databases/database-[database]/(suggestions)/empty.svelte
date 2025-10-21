@@ -1618,7 +1618,7 @@
             // for height transition with fit-content and auto, etc.
             interpolate-size: allow-keywords;
 
-            & :global(div:first-of-type) {
+            & :global(div:first-child) {
                 z-index: 22;
                 bottom: 24px;
                 height: 44px;
@@ -1635,7 +1635,7 @@
                 }
             }
 
-            &.expanded :global(div:first-of-type) {
+            &.expanded :global(div:first-child) {
                 left: calc(60% - 480px / 2);
                 max-width: 480px !important;
 
@@ -1649,15 +1649,19 @@
                 }
             }
 
-            &.selection :global(div:first-of-type) {
-                z-index: 21;
-                bottom: 56px; /* oddly specific maybe, but diff as per design */
-                height: fit-content;
-                padding-bottom: 10px;
-                border-bottom: unset;
-                border-bottom-left-radius: 0;
-                border-bottom-right-radius: 0;
-                background: var(--bgcolor-neutral-default);
+            &.selection {
+                padding: var(--space-5);
+
+                & :global(div:first-child) {
+                    z-index: 21;
+                    bottom: 56px; /* oddly specific maybe, but diff as per design */
+                    height: fit-content;
+                    padding-bottom: 10px;
+                    border-bottom: unset;
+                    border-bottom-left-radius: 0;
+                    border-bottom-right-radius: 0;
+                    background: var(--bgcolor-neutral-default);
+                }
             }
 
             &.creating-columns :global(:first-child) {
