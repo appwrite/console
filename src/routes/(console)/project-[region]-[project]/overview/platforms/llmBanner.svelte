@@ -4,6 +4,7 @@
     import { Alert, Typography } from '@appwrite.io/pink-svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { buildPlatformConfig, generatePromptFromConfig, type LLMPromptConfig } from './store';
+    import { Click, trackEvent } from '$lib/actions/analytics';
 
     let {
         platform,
@@ -25,6 +26,10 @@
 
     async function copyPrompt() {
         await copy(prompt);
+
+        trackEvent(Click.CopyPromptStarterKitClick, {
+            platform: config.title
+        });
 
         addNotification({
             type: 'success',
