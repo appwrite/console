@@ -167,6 +167,7 @@
             bucketName: bucketName ?? undefined,
             fileName
         });
+        exportItems = new Map(exportItems);
 
         if (status === 'completed' || status === 'failed') {
             await showCompletionNotification(
@@ -214,6 +215,10 @@
 
     onMount(() => {
         // Fetch initial data
+        if (!page.params.region || !page.params.project) {
+            return;
+        }
+
         sdk.forProject(page.params.region, page.params.project)
             .migrations.list({
                 queries: [
