@@ -216,9 +216,11 @@
                     </div>
 
                     {#if hasMoreColumns}
-                        <button type="button" on:click={() => (showAllColumns = !showAllColumns)}>
-                            {showAllColumns ? 'Show less' : 'Show more'}
-                        </button>
+                        <div>
+                            <Button compact on:click={() => (showAllColumns = !showAllColumns)}>
+                                {showAllColumns ? 'Show less' : 'Show more'}
+                            </Button>
+                        </div>
                     {/if}
                 </Layout.Stack>
             </Fieldset>
