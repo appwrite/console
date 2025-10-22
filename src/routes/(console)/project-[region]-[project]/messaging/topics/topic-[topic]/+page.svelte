@@ -72,7 +72,7 @@
             await Promise.all(promises);
             addNotification({
                 type: 'success',
-                message: `${targetIds.length} subscriber${targetIds.length !== 1 ? 's' : ''} have been added`
+                message: `${targetIds.length} subscriber${targetIds.length !== 1 ? 's' : ''} created`
             });
             trackEvent(Submit.MessagingTopicSubscriberAdd);
             await invalidate(Dependencies.MESSAGING_TOPIC_SUBSCRIBERS);
@@ -99,7 +99,7 @@
                 }}
                 event="create_subscriber">
                 <Icon icon={IconPlus} slot="start" size="s" />
-                Add subscriber
+                Create subscriber
             </Button>
         </Layout.Stack>
     </Layout.Stack>
@@ -141,7 +141,7 @@
     on:update={addTargets}>
     <svelte:fragment slot="description">
         <Typography.Text>
-            Add subscribers to this topic by selecting the targets for directing messages.{' '}
+            Create subscribers for this topic by selecting the targets for directing messages.{' '}
             <Link
                 href="https://appwrite.io/docs/products/messaging/topics#subscribe-targets-to-topics"
                 external>
