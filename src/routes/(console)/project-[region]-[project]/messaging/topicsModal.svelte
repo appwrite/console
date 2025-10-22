@@ -16,29 +16,19 @@
     import { getProviderText } from './helper';
     import { page } from '$app/state';
 
-    let {
-        providerType,
-        show = $bindable(),
-        topicsById = $bindable(),
-        title = 'Select topics'
-    } = $props<{
-        providerType: MessagingProviderType;
-        show: boolean;
-        topicsById: Record<string, Models.Topic>;
-        title?: string;
-    }>();
+    export let providerType: MessagingProviderType;
+    export let show: boolean;
+    export let topicsById: Record<string, Models.Topic>;
+    export let title: string = 'Select topics';
 
     const dispatch = createEventDispatcher();
 
-    let search = $state('');
-    let offset = $state(0);
-    let totalResults = $state(0);
-    let topicResultsById = $state<Record<string, Models.Topic>>({});
-    let selected = $state<Record<string, Models.Topic>>({});
-    let emptyTopicsExists = $state(false);
-
-    let previousSearch = $state('');
-    let wasOpen = $state(false);
+    let search = '';
+    let offset = 0;
+    let totalResults = 0;
+    let topicResultsById: Record<string, Models.Topic> = {};
+    let selected: Record<string, Models.Topic> = {};
+    let emptyTopicsExists = false;
 
     function getTopicTotal(topic: Models.Topic): number {
         switch (providerType) {
@@ -96,44 +86,38 @@
     }
 
     function onTopicSelection(event: CustomEvent<boolean>, topic: Models.Topic) {
+        const updatedSelected = { ...selected };
+
         if (event.detail) {
-            selected = {
-                ...selected,
-                [topic.$id]: topic
-            };
+            updatedSelected[topic.$id] = topic;
         } else {
-            const { [topic.$id]: _, ...rest } = selected;
-            selected = rest;
+            delete updatedSelected[topic.$id];
         }
+
+        selected = updatedSelected;
     }
 
-    $effect(() => {
-        if (search !== previousSearch) {
-            previousSearch = search;
-            offset = 0;
-        }
-    });
-
-    $effect(() => {
-        if (!show) return;
-        offset ?? null;
-        search ?? null;
+    $: if (show) {
         request();
-    });
+    }
+    $: if (offset !== null) {
+        request();
+    }
+    $: if (search !== null) {
+        offset = 0;
+        request();
+    }
 
-    $effect(() => {
-        if (show && !wasOpen) {
-            selected = topicsById;
-        }
-        wasOpen = show;
-    });
+    $: selectedSize = Object.keys(selected).length;
+    $: hasSelection = selectedSize > 0;
 
-    let selectedSize = $derived(Object.keys(selected).length);
-    let hasSelection = $derived(selectedSize > 0);
-
-    let topicSelectionStates = $derived(
-        Object.fromEntries(Object.keys(topicResultsById).map((id) => [id, !!selected[id]]))
+    $: topicSelectionStates = Object.fromEntries(
+        Object.keys(topicResultsById).map((id) => [id, !!selected[id]])
     );
+
+    $: if (show) {
+        selected = topicsById;
+    }
 </script>
 
 <Modal {title} bind:show onSubmit={submit} on:close={reset}>
