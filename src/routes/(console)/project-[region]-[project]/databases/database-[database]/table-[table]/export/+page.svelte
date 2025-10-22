@@ -206,9 +206,8 @@
                         <Button compact on:click={deselectAllColumns}>Deselect all</Button>
                     </Layout.Stack>
 
-                    <div
-                        style="display: grid; grid-template-columns: repeat(3, 1fr); row-gap: 1.25rem; column-gap: 1rem; margin-left: -0.125rem;">
-                        {#each visibleColumns as column}
+                    <div class="column-grid">
+                        {#each visibleColumns as column (column.key)}
                             <InputCheckbox
                                 id={`column-${column.key}`}
                                 label={column.key}
@@ -303,3 +302,12 @@
         </Layout.Stack>
     </svelte:fragment>
 </Wizard>
+
+<style>
+    .column-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        row-gap: 1.25rem;
+        column-gap: 1rem;
+    }
+</style>
