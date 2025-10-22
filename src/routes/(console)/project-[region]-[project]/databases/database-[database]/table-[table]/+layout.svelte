@@ -35,7 +35,8 @@
         spreadsheetRenderKey,
         expandTabs,
         databaseRelatedRowSheetOptions,
-        rowPermissionSheet, type Columns
+        rowPermissionSheet,
+        type Columns
     } from './store';
     import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import CreateColumn from './createColumn.svelte';
