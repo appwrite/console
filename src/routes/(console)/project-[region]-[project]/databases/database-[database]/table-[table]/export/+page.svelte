@@ -22,14 +22,15 @@
     import { tags, queries } from '$lib/components/filters/store';
     import { TagList } from '$lib/components/filters';
     import { writable } from 'svelte/store';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
 
-    let showExitModal = false;
+    let showExitModal = $state(false);
     let formComponent: Form;
     let isSubmitting = writable(false);
 
-    let selectedBucket: string = null;
-    let buckets: Models.BucketList = null;
-    let loadingBuckets = false;
+    let selectedBucket = $state<string>(null);
+    let buckets = $state<Models.BucketList>(null);
+    let loadingBuckets = $state(false);
 
     // Generate default filename: tablename_timestamp.csv
     const timestamp = new Date()
@@ -38,26 +39,26 @@
         .split('T')
         .join('_')
         .slice(0, -5);
-    let filename = `${$table.name}_${timestamp}.csv`;
+    let filename = $state(`${$table.name}_${timestamp}.csv`);
 
-    let selectedColumns: Record<string, boolean> = {};
-    let showAllColumns = false;
+    let selectedColumns = $state<Record<string, boolean>>({});
+    let showAllColumns = $state(false);
 
     type DelimiterOption = 'Comma' | 'Semicolon' | 'Tab' | 'Pipe';
-    let delimiter: DelimiterOption = 'Comma';
-    let includeHeader = true;
-    let exportWithFilters = false;
-    let emailOnComplete = false;
     const delimiterMap: Record<DelimiterOption, string> = {
         Comma: ',',
         Semicolon: ';',
         Tab: '\t',
         Pipe: '|'
     };
+    let delimiter = $state<DelimiterOption>('Comma');
+    let includeHeader = $state(true);
+    let exportWithFilters = $state(false);
+    let emailOnComplete = $state(false);
 
-    $: visibleColumns = showAllColumns ? $table.columns : $table.columns.slice(0, 9);
-    $: hasMoreColumns = $table.columns.length > 9;
-    $: selectedColumnCount = Object.values(selectedColumns).filter(Boolean).length;
+    let visibleColumns = $derived(showAllColumns ? $table.columns : $table.columns.slice(0, 9));
+    let hasMoreColumns = $derived($table.columns.length > 9);
+    let selectedColumnCount = $derived(Object.values(selectedColumns).filter(Boolean).length);
 
     async function loadBuckets() {
         loadingBuckets = true;
@@ -81,22 +82,15 @@
 
     function initializeColumns() {
         // Initialize all columns as selected
-        selectedColumns = {};
-        $table.columns.forEach((col) => {
-            selectedColumns[col.key] = true;
-        });
+        selectedColumns = Object.fromEntries($table.columns.map((col) => [col.key, true]));
     }
 
     function selectAllColumns() {
-        $table.columns.forEach((col) => {
-            selectedColumns[col.key] = true;
-        });
+        selectedColumns = Object.fromEntries($table.columns.map((col) => [col.key, true]));
     }
 
     function deselectAllColumns() {
-        $table.columns.forEach((col) => {
-            selectedColumns[col.key] = false;
-        });
+        selectedColumns = Object.fromEntries($table.columns.map((col) => [col.key, false]));
     }
 
     async function handleExport() {
