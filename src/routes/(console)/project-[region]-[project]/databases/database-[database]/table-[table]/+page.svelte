@@ -97,7 +97,7 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .migrations.createCsvMigration({
+                .migrations.createCSVImport({
                     bucketId: file.bucketId,
                     fileId: file.$id,
                     resourceId: `${page.params.database}:${page.params.table}`,
