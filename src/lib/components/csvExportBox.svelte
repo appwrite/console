@@ -112,9 +112,9 @@
         let tableName = current?.table ?? null;
 
         // Get bucket and filename from migration options
-        const options = exportData.options || {};
-        let bucketId = options.bucketId || current?.bucketId || '';
-        let fileName = options.filename || current?.fileName || '';
+        const options = 'options' in exportData ? exportData.options : {};
+        let bucketId = options?.bucketId || current?.bucketId || '';
+        let fileName = options?.filename || current?.fileName || '';
         let bucketName = current?.bucketName ?? null;
 
         if (!tableName && tableId) {

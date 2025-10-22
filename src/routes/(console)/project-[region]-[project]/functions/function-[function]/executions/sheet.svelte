@@ -112,7 +112,7 @@
 
                                 <Tooltip
                                     disabled={!selectedLog?.scheduledAt ||
-                                        selectedLog.status !== 'scheduled'}
+                                        selectedLog.status as string !== 'scheduled'}
                                     maxWidth="400px">
                                     <div>
                                         <Status

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { onMount } from 'svelte';
+    import { onMount, getContext } from 'svelte';
     import { base } from '$app/paths';
     import { page } from '$app/state';
     import { goto } from '$app/navigation';
@@ -14,6 +14,7 @@
         Divider
     } from '@appwrite.io/pink-svelte';
     import { Button, InputText, InputSelect, InputCheckbox, Form } from '$lib/elements/forms';
+    import type { FormContext } from '$lib/elements/forms/form.svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
@@ -21,18 +22,16 @@
     import { table } from '../store';
     import { tags, queries } from '$lib/components/filters/store';
     import { TagList } from '$lib/components/filters';
-    import { writable } from 'svelte/store';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
 
     let showExitModal = $state(false);
     let formComponent: Form;
-    let isSubmitting = writable(false);
+    let isSubmitting = $derived(getContext<FormContext>('form')?.isSubmitting);
 
     let selectedBucket = $state<string>(null);
     let buckets = $state<Models.BucketList>(null);
     let loadingBuckets = $state(false);
 
-    // Generate default filename: tablename_timestamp.csv
     const timestamp = new Date()
         .toISOString()
         .replace(/[:.]/g, '-')
@@ -81,7 +80,6 @@
     }
 
     function initializeColumns() {
-        // Initialize all columns as selected
         selectedColumns = Object.fromEntries($table.columns.map((col) => [col.key, true]));
     }
 
@@ -161,7 +159,7 @@
     bind:showExitModal
     confirmExit
     column>
-    <Form bind:this={formComponent} onSubmit={handleExport} bind:isSubmitting>
+    <Form bind:this={formComponent} onSubmit={handleExport}>
         <Layout.Stack gap="xxl">
             <Fieldset legend="Destination">
                 <Layout.Stack gap="l">
@@ -266,13 +264,6 @@
                                     queries.apply();
                                 }} />
                         </ul>
-                    {:else}
-                        <Typography.Text
-                            variant="m-400"
-                            color="--fgcolor-neutral-tertiary"
-                            style="padding-left: 1.75rem;">
-                            No active filters
-                        </Typography.Text>
                     {/if}
 
                     <InputCheckbox
