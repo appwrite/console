@@ -35,7 +35,7 @@
         spreadsheetRenderKey,
         expandTabs,
         databaseRelatedRowSheetOptions,
-        rowPermissionSheet
+        rowPermissionSheet, type Columns
     } from './store';
     import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import CreateColumn from './createColumn.svelte';
@@ -264,7 +264,7 @@
         $spreadsheetLoading = true;
         $randomDataModalState.show = false;
 
-        let columns = $table.columns;
+        let columns = page.data.table.columns as Columns[];
         const hasAnyRelationships = columns.some((column) => isRelationship(column));
         const filteredColumns = columns.filter((col) => col.type !== 'relationship');
 
