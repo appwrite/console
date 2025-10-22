@@ -160,12 +160,14 @@
 
         if (shouldSkip) return;
 
+        const latest = exportItems.get(exportData.$id);
+
         exportItems.set(exportData.$id, {
             status,
-            table: tableName ?? undefined,
-            bucketId,
-            bucketName: bucketName ?? undefined,
-            fileName
+            table: tableName ?? latest?.table,
+            bucketId: bucketId || latest?.bucketId || '',
+            bucketName: bucketName ?? latest?.bucketName,
+            fileName: fileName || latest?.fileName || ''
         });
         exportItems = new Map(exportItems);
 
