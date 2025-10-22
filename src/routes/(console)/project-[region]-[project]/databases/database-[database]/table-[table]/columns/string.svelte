@@ -56,6 +56,7 @@
 
     export let editing = false;
     export let disabled = false;
+    export let autoIncreaseSize = false;
 
     let savedDefault = data.default;
 
@@ -83,6 +84,10 @@
 
     // Check plan on cloud, always allow on self-hosted
     $: supportsStringEncryption = isCloud ? $currentPlan?.databasesAllowEncrypt : true;
+
+    $: if (autoIncreaseSize && data.encrypt && data.size < 150) {
+        data.size = 150;
+    }
 </script>
 
 <InputNumber

@@ -796,7 +796,8 @@
                     databaseId: page.params.database,
                     tableId: page.params.table,
                     key: column.key,
-                    required: column.required || false
+                    required: column.required || false,
+                    encrypt: 'encrypt' in column ? column.encrypt : undefined
                 };
 
                 let columnResult: Columns;
@@ -1212,7 +1213,7 @@
                                         </Layout.Stack>
 
                                         {#if ColumnComponent}
-                                            <ColumnComponent data={columnObj} />
+                                            <ColumnComponent data={columnObj} autoIncreaseSize />
                                         {/if}
                                     </Layout.Stack>
                                 {/if}
