@@ -139,7 +139,7 @@
 </script>
 
 <Modal {title} bind:show onSubmit={submit} on:close={reset}>
-    <slot name="description" />
+    <slot name="description" slot="description" />
     <Layout.Stack>
         <InputSearch
             autofocus
