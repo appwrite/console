@@ -185,7 +185,7 @@
     }
 
     function clear() {
-        exportItems.clear();
+        exportItems = new Map();
     }
 
     function graphSize(status: string): number {
