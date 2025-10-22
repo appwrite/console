@@ -236,9 +236,6 @@
                             {@const isAnonymous =
                                 !data.email && !data.phone && !data.name && isUser}
                             {@const parsed = parsePermission(role)}
-                            {@const isUser = role.startsWith('user')}
-                            {@const isAnonymous =
-                                !data.email && !data.phone && !data.name && isUser}
                             {@const id = parsed.id}
 
                             <Layout.Stack gap="s" alignItems="flex-start">
