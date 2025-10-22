@@ -185,7 +185,7 @@
                 <Empty
                     type="secondary"
                     title={`You have no topics${
-                        emptyTopicsExists ? ` with ${providerType.toUpperCase()} targets` : ''
+                        emptyTopicsExists ? ` with ${providerType.toLowerCase()} targets` : ''
                     }`}
                     description={`Create a topic to see them here.`}>
                     <Button
