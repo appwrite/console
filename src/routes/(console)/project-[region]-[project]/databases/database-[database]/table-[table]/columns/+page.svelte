@@ -306,8 +306,8 @@
     <SpreadsheetContainer>
         <Spreadsheet.Root
             let:root
-            allowSelection
             height="100%"
+            allowSelection
             emptyCells={emptyCellsCount}
             bind:selectedRows={selectedColumns}
             columns={spreadsheetColumns}
@@ -323,6 +323,7 @@
             </svelte:fragment>
 
             {#each updatedColumnsForSheet as column, index (column.key)}
+                {@const isId = column.key === '$id'}
                 {@const option = columnOptions.find((option) => option.type === column.type)}
                 {@const isSelectable =
                     column['system'] || column.type === 'relationship' ? 'disabled' : true}
@@ -420,11 +421,12 @@
                         {columnType.toLowerCase()}
                     </Spreadsheet.Cell>
                     <Spreadsheet.Cell column="indexed" {root} isEditable={false}>
-                        {@const isActuallyIndexed = $indexes.some((index) =>
-                            index.columns.includes(column.key)
-                        )}
+                        <!-- $id is always indexed internally -->
+                        {@const isActuallyIndexed =
+                            isId || $indexes.some((index) => index.columns.includes(column.key))}
 
-                        {@const checked = isActuallyIndexed || !!columnIndexMap[column.key]}
+                        <!-- $id is always indexed internally -->
+                        {@const checked = isId || isActuallyIndexed || !!columnIndexMap[column.key]}
 
                         <Selector.Checkbox
                             size="s"
@@ -462,8 +464,7 @@
                                     <Icon icon={IconDotsHorizontal} size="s" />
                                 </Button>
                             </CsvDisabled>
-                        {:else if column.key !== '$sequence'}
-                            <!-- TODO: no portal, rather see if we can fix the cell -->
+                        {:else if !isId}
                             <Popover let:toggle padding="none" placement="bottom-end" portal>
                                 <Button text icon ariaLabel="more options" on:click={toggle}>
                                     <Icon icon={IconDotsHorizontal} size="s" />
