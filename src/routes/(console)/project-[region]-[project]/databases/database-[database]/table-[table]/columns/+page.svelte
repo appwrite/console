@@ -370,7 +370,7 @@
                                     </Typography.Text>
 
                                     {#if isString(column) && column.encrypt}
-                                        <Tooltip>
+                                        <Tooltip portal>
                                             <Icon
                                                 size="s"
                                                 icon={IconLockClosed}

@@ -24,6 +24,7 @@ export type SuggestedColumnSchema = {
     min?: number;
     max?: number;
     format?: string | null;
+    encrypt?: boolean | null;
 };
 
 export enum IndexOrder {
