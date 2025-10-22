@@ -345,7 +345,7 @@
                         Need a hand? Learn more in the
                         <Link.Anchor
                             target="_blank"
-                            href="https://appwrite.io/docs/products/databases/tables#indexes">
+                            href="https://appwrite.io/docs/products/databases/tables#columns">
                             docs.
                         </Link.Anchor>
                     </Typography.Text>

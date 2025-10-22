@@ -1324,7 +1324,7 @@
                                 {#if isUndoDeleteMode}
                                     was deleted. You can undo this action.
                                 {:else}
-                                    column selected
+                                    is selected
                                 {/if}
                             </Typography.Caption>
                         </Layout.Stack>

@@ -436,8 +436,10 @@
         }
     }
 
-    @media (min-width: 1024px) {
-        .controlled-width {
+    .controlled-width {
+        width: 100%;
+
+        @media (min-width: 1440px) {
             width: 538px;
             max-width: 538px;
         }
