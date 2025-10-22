@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { onMount } from 'svelte';
     import { base } from '$app/paths';
     import { page } from '$app/state';
     import { goto } from '$app/navigation';
@@ -147,8 +148,10 @@
         }
     }
 
-    loadBuckets();
-    initializeColumns();
+    onMount(() => {
+        loadBuckets();
+        initializeColumns();
+    });
 </script>
 
 <Wizard
