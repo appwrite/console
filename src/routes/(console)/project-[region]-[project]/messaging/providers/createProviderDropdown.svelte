@@ -9,7 +9,7 @@
     import { ActionMenu, Popover } from '@appwrite.io/pink-svelte';
 </script>
 
-<Popover let:toggle padding="none" placement="bottom-start">
+<Popover let:toggle padding="none" placement="bottom-end">
     <slot {toggle} />
     <ActionMenu.Root slot="tooltip">
         {#each Object.entries(providers) as [type, option]}
