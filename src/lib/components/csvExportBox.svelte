@@ -162,12 +162,14 @@
 
         const latest = exportItems.get(exportData.$id);
 
+        const finalBucketId = bucketId || latest?.bucketId || '';
+        const finalFileName = fileName || latest?.fileName || '';
         exportItems.set(exportData.$id, {
             status,
             table: tableName ?? latest?.table,
-            bucketId: bucketId || latest?.bucketId || '',
+            bucketId: finalBucketId,
             bucketName: bucketName ?? latest?.bucketName,
-            fileName: fileName || latest?.fileName || ''
+            fileName: finalFileName
         });
         exportItems = new Map(exportItems);
 
@@ -175,8 +177,8 @@
             await showCompletionNotification(
                 databaseId,
                 tableName ?? tableId,
-                bucketId,
-                fileName,
+                finalBucketId,
+                finalFileName,
                 exportData
             );
         }
