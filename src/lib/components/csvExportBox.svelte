@@ -44,6 +44,8 @@
 
         const type = isSuccess ? 'success' : 'error';
         const message = isError ? errorMessage : `"${table}" has been exported`;
+        const region = page.params.region;
+        const project = page.params.project;
 
         addNotification({
             type,
@@ -56,7 +58,7 @@
                           name: 'View bucket',
                           method: () =>
                               goto(
-                                  `${base}/project-${page.params.region}-${page.params.project}/storage/bucket-${bucketId}`
+                                  `${base}/project-${region}-${project}/storage/bucket-${bucketId}`
                               )
                       },
                       {
@@ -64,7 +66,7 @@
                           method: async () => {
                               try {
                                   const files = await sdk
-                                      .forProject(page.params.region, page.params.project)
+                                      .forProject(region, project)
                                       .storage.listFiles({ bucketId });
 
                                   const file = files.files.find((f) => f.name === fileName);
@@ -72,7 +74,7 @@
                                   if (file) {
                                       const downloadUrl =
                                           sdk
-                                              .forProject(page.params.region, page.params.project)
+                                              .forProject(region, project)
                                               .storage.getFileDownload({
                                                   bucketId,
                                                   fileId: file.$id
@@ -110,7 +112,7 @@
         let tableName = current?.table ?? null;
 
         // Get bucket and filename from migration options
-        const options = exportData.options ? JSON.parse(exportData.options) : {};
+        const options = exportData.options || {};
         let bucketId = options.bucketId || current?.bucketId || '';
         let fileName = options.filename || current?.fileName || '';
         let bucketName = current?.bucketName ?? null;
