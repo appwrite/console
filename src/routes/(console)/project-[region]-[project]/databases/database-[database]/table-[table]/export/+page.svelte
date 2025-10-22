@@ -21,11 +21,12 @@
     import { table } from '../store';
     import { tags, queries } from '$lib/components/filters/store';
     import { TagList } from '$lib/components/filters';
+    import { writable } from 'svelte/store';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
 
     let showExitModal = $state(false);
     let formComponent: Form;
-    let isSubmitting = $state(false);
+    let isSubmitting = writable(false);
 
     let selectedBucket = $state<string>(null);
     let buckets = $state<Models.BucketList>(null);
@@ -291,7 +292,7 @@
             <Button
                 fullWidthMobile
                 on:click={() => formComponent.triggerSubmit()}
-                disabled={isSubmitting || !selectedBucket || selectedColumnCount === 0}>
+                disabled={$isSubmitting || !selectedBucket || selectedColumnCount === 0}>
                 Export
             </Button>
         </Layout.Stack>
