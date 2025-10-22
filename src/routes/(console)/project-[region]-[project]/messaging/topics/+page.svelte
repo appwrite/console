@@ -4,18 +4,17 @@
     import { Empty, EmptySearch, PaginationWithLimit, EmptyFilter } from '$lib/components';
     import Create from './create.svelte';
     import { goto } from '$app/navigation';
-    import { Container } from '$lib/layout';
+    import { Container, ResponsiveContainerHeader } from '$lib/layout';
     import { base } from '$app/paths';
     import type { Models } from '@appwrite.io/console';
     import type { PageData } from './$types';
     import { showCreate } from './store';
-    import { hasPageQueries, Filters } from '$lib/components/filters';
-    import { SearchQuery, ViewSelector } from '$lib/components';
+    import { hasPageQueries } from '$lib/components/filters';
     import Table from './table.svelte';
     import type { Column } from '$lib/helpers/types';
     import { writable } from 'svelte/store';
     import { canWriteTopics } from '$lib/stores/roles';
-    import { Icon, Layout } from '@appwrite.io/pink-svelte';
+    import { Icon } from '@appwrite.io/pink-svelte';
     import { View } from '$lib/helpers/load';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { Click, trackEvent } from '$lib/actions/analytics';
@@ -66,24 +65,27 @@
 </script>
 
 <Container>
-    <Layout.Stack direction="row" justifyContent="space-between">
-        <SearchQuery placeholder="Search by name or ID"></SearchQuery>
-        <Layout.Stack direction="row" inline>
-            <Filters query={data.query} {columns} analyticsSource="messaging_topics_filter" />
-            <ViewSelector ui="new" view={View.Table} {columns} hideView />
-            {#if $canWriteTopics}
-                <Button
-                    on:click={() => {
-                        $showCreate = true;
-                        trackEvent(Click.MessagingTopicCreateClick);
-                    }}
-                    event="create_topic">
-                    <Icon icon={IconPlus} slot="start" size="s" />
-                    Create topic
-                </Button>
-            {/if}
-        </Layout.Stack>
-    </Layout.Stack>
+    <ResponsiveContainerHeader
+        {columns}
+        view={View.Table}
+        hideView
+        hasFilters
+        hasCustomFiltersOnly
+        hasSearch
+        analyticsSource="messaging_topics_filter"
+        searchPlaceholder="Search by name or ID">
+        {#if $canWriteTopics}
+            <Button
+                on:click={() => {
+                    $showCreate = true;
+                    trackEvent(Click.MessagingTopicCreateClick);
+                }}
+                event="create_topic">
+                <Icon icon={IconPlus} slot="start" size="s" />
+                Create topic
+            </Button>
+        {/if}
+    </ResponsiveContainerHeader>
 
     {#if data.topics.total}
         <Table columns={$columns} {data} />

@@ -2,15 +2,14 @@
     import { page } from '$app/state';
     import { Button } from '$lib/elements/forms';
     import { EmptySearch, PaginationWithLimit, EmptyFilter } from '$lib/components';
-    import { Container } from '$lib/layout';
+    import { Container, ResponsiveContainerHeader } from '$lib/layout';
     import { columns } from './store';
-    import { hasPageQueries, Filters } from '$lib/components/filters';
-    import { SearchQuery, ViewSelector } from '$lib/components';
+    import { hasPageQueries } from '$lib/components/filters';
     import CreateProviderDropdown from './createProviderDropdown.svelte';
     import Table from './table.svelte';
     import { base } from '$app/paths';
     import { canWriteProviders } from '$lib/stores/roles';
-    import { Card, Empty, Icon, Layout } from '@appwrite.io/pink-svelte';
+    import { Card, Empty, Icon } from '@appwrite.io/pink-svelte';
     import { View } from '$lib/helpers/load';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import type { PageData } from './$types';
@@ -19,21 +18,24 @@
 </script>
 
 <Container>
-    <Layout.Stack direction="row" justifyContent="space-between">
-        <SearchQuery placeholder="Search by name or ID"></SearchQuery>
-        <Layout.Stack direction="row" inline>
-            <Filters query={data.query} {columns} analyticsSource="messaging_providers" />
-            <ViewSelector ui="new" view={View.Table} {columns} hideView />
-            {#if $canWriteProviders}
-                <CreateProviderDropdown let:toggle>
-                    <Button on:click={toggle} event="create_provider">
-                        <Icon icon={IconPlus} slot="start" size="s" />
-                        Create provider
-                    </Button>
-                </CreateProviderDropdown>
-            {/if}
-        </Layout.Stack>
-    </Layout.Stack>
+    <ResponsiveContainerHeader
+        {columns}
+        view={View.Table}
+        hideView
+        hasFilters
+        hasCustomFiltersOnly
+        hasSearch
+        analyticsSource="messaging_providers"
+        searchPlaceholder="Search by name or ID">
+        {#if $canWriteProviders}
+            <CreateProviderDropdown let:toggle>
+                <Button on:click={toggle} event="create_provider">
+                    <Icon icon={IconPlus} slot="start" size="s" />
+                    Create provider
+                </Button>
+            </CreateProviderDropdown>
+        {/if}
+    </ResponsiveContainerHeader>
 
     {#if data.providers.total}
         <Table {data} />
