@@ -382,7 +382,7 @@
                         icon={IconBookOpen}
                         title="Documentation"
                         subtitle="Read the Appwrite docs"
-                        href="https://appwrite.io/docs/products/databases/tables#indexes" />
+                        href="https://appwrite.io/docs/products/databases/tables#columns" />
                 {/if}
             {/snippet}
         </EmptySheet>
