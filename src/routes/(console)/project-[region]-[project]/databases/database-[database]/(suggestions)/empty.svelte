@@ -308,13 +308,6 @@
         spreadsheetContainer.style.setProperty('--highlight-width', `${width + 2}px`);
     }
 
-    const handleGlobalClick = (event: MouseEvent) => {
-        const target = event.target as HTMLElement;
-        if (!target?.closest('[role="rowheader"]') && !target?.closest('[role="row"]')) {
-            resetSelectedColumn();
-        }
-    };
-
     const recalcAll = () => {
         updateOverlayHeight();
         updateOverlayBounds();
@@ -1044,7 +1037,7 @@
 <!--    </div>-->
 <!--{/snippet}-->
 
-<svelte:window on:resize={recalcAll} on:scroll={recalcAll} on:click={handleGlobalClick} />
+<svelte:window on:resize={recalcAll} on:scroll={recalcAll} />
 
 <div
     bind:this={spreadsheetContainer}
