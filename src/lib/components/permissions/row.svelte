@@ -235,7 +235,11 @@
                             {@const isUser = role.startsWith('user')}
                             {@const isAnonymous =
                                 !data.email && !data.phone && !data.name && isUser}
-                            {@const id = role.split(':')[1].split('/')[0]}
+                            {@const parsed = parsePermission(role)}
+                            {@const isUser = role.startsWith('user')}
+                            {@const isAnonymous =
+                                !data.email && !data.phone && !data.name && isUser}
+                            {@const id = parsed.id}
 
                             <Layout.Stack gap="s" alignItems="flex-start">
                                 <Layout.Stack
