@@ -88,7 +88,7 @@
 
 <Container>
     <Layout.Stack direction="row" justifyContent="space-between">
-        <SearchQuery placeholder="Search by type or IDs"></SearchQuery>
+        <SearchQuery placeholder="Search by type or ID"></SearchQuery>
         <Layout.Stack direction="row" inline>
             <Filters query={data.query} {columns} analyticsSource="messaging_topics" />
             <ViewSelector ui="new" view={View.Table} {columns} hideView />
