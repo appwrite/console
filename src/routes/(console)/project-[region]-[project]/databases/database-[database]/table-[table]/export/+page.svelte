@@ -139,8 +139,7 @@
                 message: 'CSV export has started'
             });
 
-            // TODO: Add analytics tracking
-            // trackEvent(Submit.DatabaseExportCsv);
+            trackEvent(Submit.DatabaseExportCsv);
 
             await goto(
                 `${base}/project-${page.params.region}-${page.params.project}/databases/database-${page.params.database}/table-${page.params.table}`
@@ -150,7 +149,8 @@
                 type: 'error',
                 message: error.message
             });
-            // trackError(error, Submit.DatabaseExportCsv);
+
+            trackError(error, Submit.DatabaseExportCsv);
         }
     }
 
