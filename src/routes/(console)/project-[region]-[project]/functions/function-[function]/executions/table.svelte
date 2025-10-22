@@ -109,7 +109,7 @@
                     {:else if column.id === 'status'}
                         {@const status = log.status}
                         <Tooltip
-                            disabled={!log?.scheduledAt || status as string !== 'scheduled'}
+                            disabled={!log?.scheduledAt || (status as string) !== 'scheduled'}
                             maxWidth="400px">
                             <div>
                                 <Status
