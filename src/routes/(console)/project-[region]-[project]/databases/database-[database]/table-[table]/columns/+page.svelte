@@ -367,6 +367,7 @@
                                             {column.key}{column.array ? '[]' : undefined}
                                         {/if}
                                     </Typography.Text>
+
                                     {#if isString(column) && column.encrypt}
                                         <Tooltip>
                                             <Icon
@@ -376,13 +377,7 @@
                                             <div slot="tooltip">Encrypted</div>
                                         </Tooltip>
                                     {/if}
-                                </Layout.Stack>
-                                <Layout.Stack
-                                    gap="s"
-                                    inline
-                                    direction="row"
-                                    alignItems="center"
-                                    style="flex:0 0 auto; white-space:nowrap;">
+
                                     {#if column.status !== 'available'}
                                         <Badge
                                             size="s"
