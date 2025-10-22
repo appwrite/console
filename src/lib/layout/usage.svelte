@@ -76,7 +76,8 @@
     import { Card } from '$lib/components';
     import { InputSelect } from '$lib/elements/forms';
     import { formatNumberWithCommas } from '$lib/helpers/numbers';
-    import { Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { Icon, Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { IconChartSquareBar } from '@appwrite.io/pink-icons-svelte';
 
     type MetricMetadata = {
         title: string;
@@ -117,11 +118,11 @@
         </div>
     {/if}
     <Card>
-        {#if count}
-            <Layout.Stack gap="xs">
-                <Typography.Title>{formatNumberWithCommas(total)}</Typography.Title>
-                <Typography.Text>{countMetadata.title}</Typography.Text>
-            </Layout.Stack>
+        <Layout.Stack gap="xs" direction="row" alignItems="baseline">
+            <Typography.Title>{formatNumberWithCommas(total)}</Typography.Title>
+            <Typography.Text>{countMetadata.title}</Typography.Text>
+        </Layout.Stack>
+        {#if count?.length > 0}
             <div class="chart-container">
                 <BarChart
                     formatted={page.params.period === '24h' ? 'hours' : 'days'}
@@ -134,6 +135,11 @@
                         }
                     ]} />
             </div>
+        {:else}
+            <Layout.Stack gap="xs" alignItems="center" justifyContent="center">
+                <Icon icon={IconChartSquareBar} size="l" />
+                <Typography.Text variant="m-600">No data to show</Typography.Text>
+            </Layout.Stack>
         {/if}
     </Card>
 </Layout.Stack>
