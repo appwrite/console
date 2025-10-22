@@ -48,6 +48,12 @@
     let includeHeader = true;
     let exportWithFilters = false;
     let emailOnComplete = false;
+    const delimiterMap: Record<DelimiterOption, string> = {
+        Comma: ',',
+        Semicolon: ';',
+        Tab: '\t',
+        Pipe: '|'
+    };
 
     $: visibleColumns = showAllColumns ? $table.columns : $table.columns.slice(0, 9);
     $: hasMoreColumns = $table.columns.length > 9;
@@ -123,7 +129,7 @@
                     filename: filename,
                     columns: selectedCols,
                     queries: exportWithFilters ? Array.from($queries.values()) : [],
-                    delimiter: delimiter,
+                    delimiter: delimiterMap[delimiter],
                     header: includeHeader,
                     notify: emailOnComplete
                 });
