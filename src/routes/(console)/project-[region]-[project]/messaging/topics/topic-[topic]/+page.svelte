@@ -115,14 +115,11 @@
     {:else if $hasPageQueries}
         <EmptyFilter resource="subscribers" />
     {:else if data.search}
-        <EmptySearch>
-            <div class="u-text-center">
-                <b>Sorry, we couldn't find '{data.search}'</b>
-                <p>There are no subscribers that match your search.</p>
-            </div>
+        <EmptySearch bind:search={data.search} target="subscribers">
             <Button
                 secondary
                 href={`${base}/project-${page.params.region}-${page.params.project}/messaging/topics/topic-${page.params.topic}/subscribers`}>
+                Clear Search
             </Button>
         </EmptySearch>
     {:else}
