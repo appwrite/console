@@ -4,12 +4,12 @@
     import { Link } from '@appwrite.io/pink-svelte';
 
     let {
-        storageKey = 'resend_cooldown_default',
+        storageKey,
         seconds = 60,
         disabled = $bindable(false),
         onResend
     }: {
-        storageKey?: string;
+        storageKey: string;
         seconds?: number;
         disabled?: boolean;
         onResend: () => Promise<void> | void;

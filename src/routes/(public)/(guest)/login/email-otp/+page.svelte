@@ -12,19 +12,17 @@
     import { Layout, Typography } from '@appwrite.io/pink-svelte';
     import { page } from '$app/state';
     import ResendCooldown from '$lib/components/resendCooldown.svelte';
+    import { ID } from '@appwrite.io/console';
 
-    let otpCode: string = '';
-    let disabled: boolean = false;
-    let email: string = '';
-    let userId: string = '';
+    let { data } = $props();
 
-    export let data;
+    let otpCode = $state('');
+    let disabled = $state(false);
+    let email = $derived(page.url.searchParams.get('email') || '');
+    let userId = $derived(page.url.searchParams.get('userId') || '');
 
-    // Get email and userId from URL params
-    $: email = page.url.searchParams.get('email') || '';
-    $: userId = page.url.searchParams.get('userId') || '';
-
-    async function verifyOTP() {
+    async function verifyOTP(event) {
+        event.preventDefault();
         try {
             disabled = true;
             // Use createSession with the userId from createEmailToken
@@ -71,7 +69,7 @@
         try {
             disabled = true;
             const sessionToken = await sdk.forConsole.account.createEmailToken({
-                userId: 'unique',
+                userId: ID.unique(),
                 email: email
             });
             userId = sessionToken.userId;
@@ -102,7 +100,7 @@
                 We sent a 6-digit code to {email}
             </Typography.Text>
 
-            <form on:submit|preventDefault={verifyOTP}>
+            <form onsubmit={verifyOTP}>
                 <Layout.Stack align="center">
                     <InputDigits bind:value={otpCode} required />
                     <Button submit {disabled} class="verify-button">Verify</Button>

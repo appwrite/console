@@ -9,7 +9,6 @@
     import Link from '$lib/elements/link.svelte';
     import { Card, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { Dependencies } from '$lib/constants';
-    import { onDestroy } from 'svelte';
     import { resolve } from '$app/paths';
     import ResendCooldown from '$lib/components/resendCooldown.svelte';
 
@@ -53,8 +52,6 @@
             creating = false;
         }
     }
-
-    onDestroy(() => {});
 </script>
 
 <div class="email-verification-scrim">
