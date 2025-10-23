@@ -20,6 +20,7 @@
         IconSvelte,
         IconReact,
         IconNuxt,
+        IconTanstack,
         IconInfo,
         IconExternalLink,
         IconAngular,
@@ -38,6 +39,7 @@
         ReactFrameworkIcon,
         SvelteFrameworkIcon,
         NuxtFrameworkIcon,
+        TanStackFrameworkIcon,
         NextjsFrameworkIcon,
         VueFrameworkIcon,
         NoFrameworkIcon,
@@ -128,6 +130,15 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
   appwriteProjectId: '${projectId}',
   appwriteProjectName: '${$project.name}'
 };`
+        },
+        {
+            key: 'tanstack-start',
+            label: 'TanStack Starter',
+            icon: TanStackFrameworkIcon,
+            smallIcon: IconTanstack,
+            portNumber: 3000, // TODO: Ensure
+            runCommand: 'npm run dev',
+            updateConfigCode: updateConfigCode('NUXT_PUBLIC_') // TODO: Update
         },
         {
             key: 'js',
