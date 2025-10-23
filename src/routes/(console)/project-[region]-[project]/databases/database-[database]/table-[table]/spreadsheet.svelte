@@ -175,8 +175,8 @@
             {
                 id: '$id',
                 title: '$id',
-                width: getColumnWidth('$id', 225),
-                minimumWidth: 225,
+                width: getColumnWidth('$id', 250),
+                minimumWidth: 250,
                 draggable: false,
                 type: 'string',
                 icon: IconFingerPrint,
