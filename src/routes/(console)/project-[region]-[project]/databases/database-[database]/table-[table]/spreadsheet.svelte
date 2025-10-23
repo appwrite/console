@@ -1055,7 +1055,7 @@
                                                     text={formatted} />
                                             </button>
                                         {:else if formatted.length > 20}
-                                            <Tooltip placement="bottom" portal disabled>
+                                            <Tooltip placement="bottom" portal>
                                                 <Typography.Text truncate>
                                                     {formatted}
                                                 </Typography.Text>
