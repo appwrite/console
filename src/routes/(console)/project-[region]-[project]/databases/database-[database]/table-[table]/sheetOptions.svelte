@@ -124,6 +124,11 @@
                 return false;
             }
 
+            // hide column-left and create-index for $id (first column, already indexed)
+            if (columnId === '$id' && ['column-left', 'create-index'].includes(item.action ?? '')) {
+                return false;
+            }
+
             // hide sort options for relationship columns
             if (isRelationship(column) && ['sort-asc', 'sort-desc'].includes(item.action ?? '')) {
                 return false;
