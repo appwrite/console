@@ -22,7 +22,6 @@
     let exportItems = $state<ExportItemsMap>(new Map());
 
     async function showCompletionNotification(
-        _database: string,
         table: string,
         bucketId: string,
         fileName: string,
@@ -34,11 +33,12 @@
         if (!isSuccess && !isError) return;
 
         let errorMessage = 'Export failed. Please try again.';
-        if (isError && Array.isArray(payload.errors)) {
+        if (isError && Array.isArray(payload.errors) && payload.errors.length > 0) {
             try {
-                errorMessage = JSON.parse(payload.errors[0]).message;
+                const parsed = JSON.parse(payload.errors[0]);
+                errorMessage = parsed?.message || errorMessage;
             } catch {
-                // fallback to default message
+                errorMessage = payload.errors[0] || errorMessage;
             }
         }
 
@@ -109,13 +109,13 @@
         const [databaseId, tableId] = resourceId.split(':') ?? [];
 
         const current = exportItems.get(exportData.$id);
-        let tableName = current?.table ?? null;
+        let tableName = current?.table;
 
         // Get bucket and filename from migration options
-        const options = 'options' in exportData ? exportData.options : {};
-        let bucketId = options?.bucketId || current?.bucketId || '';
-        let fileName = options?.filename || current?.fileName || '';
-        let bucketName = current?.bucketName ?? null;
+        const options = ('options' in exportData ? exportData.options : {}) || {};
+        const bucketId = options.bucketId || '';
+        const fileName = options.filename || '';
+        let bucketName = current?.bucketName;
 
         if (!tableName && tableId) {
             try {
@@ -160,27 +160,17 @@
 
         if (shouldSkip) return;
 
-        const latest = exportItems.get(exportData.$id);
-
-        const finalBucketId = bucketId || latest?.bucketId || '';
-        const finalFileName = fileName || latest?.fileName || '';
         exportItems.set(exportData.$id, {
             status,
-            table: tableName ?? latest?.table,
-            bucketId: finalBucketId,
-            bucketName: bucketName ?? latest?.bucketName,
-            fileName: finalFileName
+            table: tableName ?? current?.table,
+            bucketId: bucketId,
+            bucketName: bucketName,
+            fileName: fileName
         });
         exportItems = new Map(exportItems);
 
         if (status === 'completed' || status === 'failed') {
-            await showCompletionNotification(
-                databaseId,
-                tableName ?? tableId,
-                finalBucketId,
-                finalFileName,
-                exportData
-            );
+            await showCompletionNotification(tableName ?? tableId, bucketId, fileName, exportData);
         }
     }
 
