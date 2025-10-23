@@ -23,8 +23,7 @@
     import { formatName } from '$lib/helpers/string';
 
     type PermissionData = Partial<
-        Models.User<Record<string, unknown>> & Models.Team<Record<string, unknown>>
-    > & {
+        Models.User & Models.Team> & {
         notFound?: boolean;
         roleName?: string;
         customName?: string;
