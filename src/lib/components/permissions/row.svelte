@@ -22,8 +22,7 @@
     import { base } from '$app/paths';
     import { formatName } from '$lib/helpers/string';
 
-    type PermissionData = Partial<
-        Models.User & Models.Team> & {
+    type PermissionData = Partial<Models.User & Models.Team> & {
         notFound?: boolean;
         roleName?: string;
         customName?: string;
