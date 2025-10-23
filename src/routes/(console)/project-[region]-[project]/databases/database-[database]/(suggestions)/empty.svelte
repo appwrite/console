@@ -8,7 +8,8 @@
         Spreadsheet,
         Typography,
         FloatingActionBar,
-        Popover
+        Popover,
+        Badge
     } from '@appwrite.io/pink-svelte';
     import { IconFingerPrint, IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { isSmallViewport, isTabletViewport } from '$lib/stores/viewport';
@@ -38,8 +39,15 @@
     import Options from './options.svelte';
     import { InputSelect, InputText } from '$lib/elements/forms';
     import { isCloud, VARS } from '$lib/system';
+    import { fade } from 'svelte/transition';
 
     import IconAINotification from './icon/aiNotification.svelte';
+
+    let {
+        userColumns = []
+    }: {
+        userColumns?: Column[];
+    } = $props();
 
     let resizeObserver: ResizeObserver;
     let spreadsheetContainer: HTMLElement;
@@ -58,9 +66,19 @@
     let scrollAnimationFrame: number | null = null;
 
     let creatingColumns = $state(false);
+    let selectedColumnId = $state<string | null>(null);
+    let previousColumnId = $state<string | null>(null);
+    let selectedColumnName = $state<string | null>(null);
+
+    // for deleting a column + undo
+    let undoTimer: ReturnType<typeof setTimeout> | null = $state(null);
+    let columnBeingDeleted: (SuggestedColumnSchema & { deletedIndex?: number }) | null =
+        $state(null);
+
     const baseColProps = { draggable: false, resizable: false };
 
     const NOTIFICATION_AND_MOCK_DELAY = 1250;
+    const COLUMN_DELETION_UNDO_TIMER_LIMIT = 10000; // 10 seconds
 
     const getColumnWidth = (columnKey: string) => Math.max(180, columnKey.length * 8 + 60);
     const safeNumericValue = (value: number | undefined) =>
@@ -85,7 +103,7 @@
     const updateOverlayHeight = () => {
         if (!spreadsheetContainer) return;
         if (!headerElement || !headerElement.isConnected) {
-            headerElement = spreadsheetContainer.querySelector('[role="rowheader"]');
+            headerElement = spreadsheetContainer?.querySelector('[role="rowheader"]');
         }
 
         if (!headerElement) return;
@@ -106,7 +124,7 @@
     const updateOverlayBounds = () => {
         if (!spreadsheetContainer) return;
         if (!headerElement || !headerElement.isConnected) {
-            headerElement = spreadsheetContainer.querySelector('[role="rowheader"]');
+            headerElement = spreadsheetContainer?.querySelector('[role="rowheader"]');
         }
         if (!headerElement) return;
 
@@ -136,7 +154,8 @@
 
         const hasRealColumns = customColumns.some((col) => !col.isPlaceholder);
         if (!hasRealColumns) {
-            // For placeholders or no columns, position overlay to cover custom columns area
+            // for placeholders or no columns,
+            // position overlay to cover custom columns area
             const idCell = getById('$id');
             const actionsCell = headerElement!.querySelector<HTMLElement>(
                 '[role="cell"][data-column-id="actions"]'
@@ -258,14 +277,41 @@
 
             directAccessScroller.scrollTo({
                 left: Math.max(0, scrollLeft),
-                behavior: 'smooth'
+                behavior: 'instant'
             });
         }
     };
 
+    function updateColumnHighlight() {
+        if (!spreadsheetContainer || !selectedColumnId) return;
+
+        const headerCell = spreadsheetContainer.querySelector(
+            `[role="rowheader"] [role="cell"][data-column-id="${selectedColumnId}"]`
+        );
+
+        if (!headerCell) return;
+
+        // calculate position similar to columns-range-overlay logic
+        if (!headerElement || !headerElement.isConnected) {
+            headerElement = spreadsheetContainer.querySelector('[role="rowheader"]');
+        }
+
+        if (!headerElement) return;
+
+        const containerRect = spreadsheetContainer.getBoundingClientRect();
+        const cellRect = headerCell.getBoundingClientRect();
+
+        const left = Math.round(cellRect.left - containerRect.left);
+        const width = cellRect.width;
+
+        spreadsheetContainer.style.setProperty('--highlight-left', `${left - 2}px`);
+        spreadsheetContainer.style.setProperty('--highlight-width', `${width + 2}px`);
+    }
+
     const recalcAll = () => {
         updateOverlayHeight();
         updateOverlayBounds();
+        updateColumnHighlight();
     };
 
     /**
@@ -276,6 +322,12 @@
 
         scrollAnimationFrame = requestAnimationFrame(() => {
             recalcAll();
+
+            // check if selected column is still visible after scroll
+            if (selectedColumnId && !isColumnVisible(selectedColumnId)) {
+                resetSelectedColumn();
+            }
+
             scrollAnimationFrame = null;
         });
     };
@@ -341,6 +393,7 @@
                 ...baseColProps
             },
             ...finalCustomColumns,
+            /*...userColumns,*/
             {
                 id: 'actions',
                 title: '',
@@ -356,6 +409,8 @@
     const emptyCells = $derived(($isSmallViewport ? 14 : 17) + (!$expandTabs ? 2 : 0));
 
     onMount(async () => {
+        userColumns; /* silences lint check, variable not read */
+
         if (spreadsheetContainer) {
             resizeObserver = new ResizeObserver(recalcAll);
             resizeObserver.observe(spreadsheetContainer);
@@ -374,11 +429,15 @@
             // these are referenced in
             // `table-[table]/+page.svelte`
             $tableColumnSuggestions.table = null;
+            $tableColumnSuggestions.force = false;
             $tableColumnSuggestions.enabled = false;
         }
 
         $tableColumnSuggestions.context = null;
         $tableColumnSuggestions.thinking = false;
+
+        // reset selection!
+        resetSelectedColumn();
     }
 
     async function suggestColumns() {
@@ -473,8 +532,7 @@
         }
     }
 
-    function onPopoverShowStateChanged(value: boolean) {
-        showFloatingBar = !value;
+    async function updateOverlaysForMobile(value: boolean) {
         if ($isSmallViewport) {
             setTimeout(() => {
                 [rangeOverlayEl, fadeBottomOverlayEl].forEach((el) => {
@@ -484,6 +542,11 @@
                 });
             }, 0);
         }
+    }
+
+    function onPopoverShowStateChanged(value: boolean) {
+        showFloatingBar = !value;
+        updateOverlaysForMobile(value);
 
         const currentScrollLeft = hScroller?.scrollLeft || 0;
 
@@ -492,6 +555,9 @@
                 hScroller.scrollLeft = currentScrollLeft;
             }
         });
+
+        // reset selection!
+        resetSelectedColumn();
     }
 
     function updateColumn(columnId: string, updates: Partial<SuggestedColumnSchema>) {
@@ -513,6 +579,174 @@
 
     function isCustomColumn(id: string) {
         return !['$id', '$createdAt', '$updatedAt', 'actions'].includes(id);
+    }
+
+    function resetSelectedColumn() {
+        selectedColumnId = null;
+        previousColumnId = null;
+        /*selectedColumnName = null;*/
+    }
+
+    // small decor, hides previous cell's right border visibility!
+    function handlePreviousColumnsBorder(columnId: string, hide: boolean = true) {
+        const allHeaders = Array.from(
+            spreadsheetContainer.querySelectorAll(
+                '[role="rowheader"] [role="cell"][data-column-id]'
+            )
+        );
+
+        const selectedIndex = allHeaders.findIndex(
+            (cell) => cell.getAttribute('data-column-id') === columnId
+        );
+
+        if (selectedIndex > 0) {
+            const prevColumnId = allHeaders[selectedIndex - 1].getAttribute('data-column-id');
+            if (prevColumnId) {
+                const previousCells = spreadsheetContainer.querySelectorAll(
+                    `[role="rowheader"] [role="cell"][data-column-id="${prevColumnId}"]`
+                );
+
+                previousCells.forEach((cell) => {
+                    if (hide) {
+                        cell.classList.add('hide-border');
+                    } else {
+                        cell.classList.remove('hide-border');
+                    }
+                });
+            }
+        }
+    }
+
+    function isColumnVisible(columnId: string) {
+        if (!spreadsheetContainer || !hScroller) return true;
+
+        const columnCell = spreadsheetContainer.querySelector(
+            `[role="rowheader"] [role="cell"][data-column-id="${columnId}"]`
+        );
+
+        if (!columnCell) return false;
+
+        const cellRect = columnCell.getBoundingClientRect();
+        const scrollerRect = hScroller.getBoundingClientRect();
+
+        // stickies have 40px width
+        const STICKY_COLUMN_WIDTH = 40;
+
+        // calculate available viewport bounds (excluding both 40px sticky columns)
+        const leftBound = scrollerRect.left + STICKY_COLUMN_WIDTH; // Selection column (40px)
+        const rightBound = scrollerRect.right - STICKY_COLUMN_WIDTH; // Actions column (40px)
+
+        const safetyMargin = 2;
+        return (
+            cellRect.left >= leftBound - safetyMargin && cellRect.right <= rightBound + safetyMargin
+        );
+    }
+
+    function scrollColumnIntoView(columnId: string) {
+        if (!spreadsheetContainer || !hScroller) return false;
+
+        const columnCell = spreadsheetContainer.querySelector(
+            `[role="rowheader"] [role="cell"][data-column-id="${columnId}"]`
+        );
+
+        if (!columnCell) return false;
+
+        const cellRect = columnCell.getBoundingClientRect();
+        const scrollerRect = hScroller.getBoundingClientRect();
+
+        // calculate scroll needed to center the column in view
+        const scrollLeft =
+            hScroller.scrollLeft +
+            cellRect.left -
+            scrollerRect.left -
+            (scrollerRect.width - cellRect.width) / 2;
+
+        hScroller.scrollTo({
+            left: Math.max(0, scrollLeft),
+            behavior: 'smooth'
+        });
+
+        return true;
+    }
+
+    function deleteColumn(columnId: string) {
+        if (!columnId) return;
+
+        let columnIndex = -1;
+        let columnSchema: SuggestedColumnSchema = null;
+
+        for (let index = 0; index < customColumns.length; index++) {
+            if (customColumns[index].key === columnId) {
+                columnIndex = index;
+                columnSchema = customColumns[index];
+                break;
+            }
+        }
+
+        if (columnIndex === -1 || !columnSchema) {
+            return;
+        }
+
+        // remove the column
+        customColumns.splice(columnIndex, 1);
+
+        // store column with its index for undo
+        columnBeingDeleted = { ...columnSchema, deletedIndex: columnIndex };
+
+        // clear any existing timer
+        if (undoTimer) {
+            clearTimeout(undoTimer);
+        }
+
+        // start 10-second undo timer
+        undoTimer = setTimeout(() => {
+            undoTimer = null;
+            selectedColumnId = null;
+            columnBeingDeleted = null;
+            selectedColumnName = null;
+        }, COLUMN_DELETION_UNDO_TIMER_LIMIT);
+
+        // reset selection!
+        resetSelectedColumn();
+
+        // see overlay is visible after deletion on mobile!
+        setTimeout(() => updateOverlaysForMobile(false), 150);
+
+        // recalculate view after deletion
+        requestAnimationFrame(() => recalcAll());
+    }
+
+    function undoDelete() {
+        if (!columnBeingDeleted) return;
+
+        const { deletedIndex, ...columnData } = columnBeingDeleted;
+
+        // restore column at its original index
+        if (deletedIndex !== undefined && deletedIndex >= 0) {
+            customColumns.splice(deletedIndex, 0, columnData);
+        } else {
+            // fallback: add at the end if index is missing
+            customColumns.push(columnData);
+        }
+
+        // clear undo state
+        columnBeingDeleted = null;
+
+        // clear timer
+        if (undoTimer) {
+            clearTimeout(undoTimer);
+            undoTimer = null;
+        }
+
+        // recalculate view after restore
+        requestAnimationFrame(() => {
+            recalcAll();
+
+            tick().then(() => {
+                selectedColumnId = columnData.key;
+                selectedColumnName = columnData.key;
+            });
+        });
     }
 
     function showIndexSuggestionsNotification() {
@@ -544,6 +778,16 @@
         creatingColumns = true;
         const client = sdk.forProject(page.params.region, page.params.project);
 
+        const isAnyEmpty = customColumns.some((col) => !col.key);
+        if (isAnyEmpty) {
+            creatingColumns = false;
+            addNotification({
+                type: 'warning',
+                message: 'Some columns have invalid keys'
+            });
+            return;
+        }
+
         try {
             const results = [];
 
@@ -552,7 +796,8 @@
                     databaseId: page.params.database,
                     tableId: page.params.table,
                     key: column.key,
-                    required: column.required || false
+                    required: column.required || false,
+                    encrypt: 'encrypt' in column ? column.encrypt : undefined
                 };
 
                 let columnResult: Columns;
@@ -650,6 +895,8 @@
                 timeout: NOTIFICATION_AND_MOCK_DELAY
             });
 
+            resetSuggestionsStore(true);
+
             // show index notification!
             showIndexSuggestionsNotification();
 
@@ -681,6 +928,72 @@
         };
     }
 
+    // scroll to view if needed and select!
+    function selectColumnWithId(column: Column) {
+        const columnId = column.id;
+        selectedColumnName = column.title;
+        if (!isColumnVisible(columnId)) {
+            scrollColumnIntoView(columnId);
+            setTimeout(() => (selectedColumnId = columnId), 300);
+        } else {
+            selectedColumnId = columnId;
+        }
+
+        columnBeingDeleted = null;
+    }
+
+    $effect(() => {
+        if (!spreadsheetContainer) return;
+
+        // remove existing hide-border classes
+        const hiddenCells = spreadsheetContainer.querySelectorAll('[role="cell"].hide-border');
+        hiddenCells.forEach((cell) => cell.classList.remove('hide-border'));
+
+        if (!selectedColumnId) return;
+
+        setTimeout(() => {
+            // hide borders for selected column and previous column
+            const selectedCells = spreadsheetContainer.querySelectorAll(
+                `[role="cell"][data-column-id="${selectedColumnId}"]`
+            );
+
+            selectedCells.forEach((cell) => cell.classList.add('hide-border'));
+
+            // find and hide previous column's borders (which create the left edge of selected column)
+            const allHeaders = Array.from(
+                spreadsheetContainer.querySelectorAll(
+                    '[role="rowheader"] [role="cell"][data-column-id]'
+                )
+            );
+            const selectedIndex = allHeaders.findIndex(
+                (cell) => cell.getAttribute('data-column-id') === selectedColumnId
+            );
+
+            if (selectedIndex > 0) {
+                const prevColumnId = allHeaders[selectedIndex - 1].getAttribute('data-column-id');
+                if (prevColumnId) {
+                    const previousCells = spreadsheetContainer.querySelectorAll(
+                        `[role="cell"][data-column-id="${prevColumnId}"]`
+                    );
+                    previousCells.forEach((cell) => cell.classList.add('hide-border'));
+                }
+            }
+        }, 300);
+
+        // update position
+        updateColumnHighlight();
+
+        // track for next selection -
+        // but only if we had a `real` previous selection
+        if (previousColumnId !== null) {
+            previousColumnId = selectedColumnId;
+        } else {
+            // fresh after a deselect
+            // set it for future switches
+            setTimeout(() => (previousColumnId = selectedColumnId), 25);
+        }
+    });
+
     onDestroy(() => {
         resizeObserver?.disconnect();
         hScroller?.removeEventListener('scroll', recalcAllThrottled);
@@ -692,6 +1005,38 @@
         resetSuggestionsStore();
     });
 </script>
+
+<!--{#snippet countdownProgress()}-->
+<!--    {@const COUNTDOWN_DURATION = 10000}-->
+
+<!--    <div class="countdown-wrapper" style="padding-bottom: 0;">-->
+<!--        <svg-->
+<!--            xmlns="http://www.w3.org/2000/svg"-->
+<!--            width={`var(&#45;&#45;icon-size-s)`}-->
+<!--            height={`var(&#45;&#45;icon-size-s)`}-->
+<!--            viewBox="0 0 24 24"-->
+<!--            fill="none"-->
+<!--            style="transform: rotate(-90deg)">-->
+<!--            &lt;!&ndash; Background circle &ndash;&gt;-->
+<!--            <path-->
+<!--                opacity="0.2"-->
+<!--                d="M24 12C24 18.6274 18.6274 24 12 24C5.37258 24 0 18.6274 0 12C0 5.37258 5.37258 0 12 0C18.6274 0 24 5.37258 24 12ZM2.4 12C2.4 17.3019 6.69807 21.6 12 21.6C17.3019 21.6 21.6 17.3019 21.6 12C21.6 6.69807 17.3019 2.4 12 2.4C6.69807 2.4 2.4 6.69807 2.4 12Z"-->
+<!--                fill="#56565C" />-->
+<!--            &lt;!&ndash; Progress circle &ndash;&gt;-->
+<!--            <circle-->
+<!--                cx="12"-->
+<!--                cy="12"-->
+<!--                r="10.8"-->
+<!--                fill="none"-->
+<!--                stroke="#56565C"-->
+<!--                stroke-width="2.4"-->
+<!--                stroke-dasharray="67.858"-->
+<!--                stroke-dashoffset="0"-->
+<!--                class="countdown-circle"-->
+<!--                style="animation-duration: {COUNTDOWN_DURATION}ms" />-->
+<!--        </svg>-->
+<!--    </div>-->
+<!--{/snippet}-->
 
 <svelte:window on:resize={recalcAll} on:scroll={recalcAll} />
 
@@ -710,15 +1055,27 @@
             class:no-transition={hasTransitioned && customColumns.length > 0}
             class:thinking={$tableColumnSuggestions.thinking || creatingColumns}>
         </div>
+
+        <!-- selection border -->
+        {#if selectedColumnId}
+            <div
+                class="column-highlight-overlay"
+                class:slide={previousColumnId !== null}
+                style:height="100%"
+                style:left="var(--highlight-left, 0px)"
+                style:width="var(--highlight-width, 0px)"
+                out:fade={{ duration: 200 }}>
+            </div>
+        {/if}
     </div>
 
     <SpreadsheetContainer>
         <Spreadsheet.Root
-            {emptyCells}
             allowSelection
             height="100%"
             columns={spreadsheetColumns}
-            bottomActionClick={() => {}}>
+            bottomActionClick={() => {}}
+            let:root>
             <svelte:fragment slot="header" let:root>
                 {#each spreadsheetColumns as column, index (index)}
                     {#if column.isAction}
@@ -766,73 +1123,26 @@
                                             {column.title}
                                         </span>
 
-                                        <Popover
-                                            let:toggle
-                                            portal
-                                            padding="none"
-                                            placement="bottom-start">
-                                            <div
-                                                class="column-icon-wrapper"
-                                                class:animate-in={!columnObj?.isPlaceholder}
-                                                style:--animation-delay={`${isColumnInteractable ? (index - 1) * 100 : 0}ms`}>
-                                                <Button.Button
-                                                    size="xs"
-                                                    variant="extra-compact"
-                                                    disabled={!isColumnInteractable}
-                                                    on:click={(event) => {
-                                                        if (
-                                                            isColumnInteractable &&
-                                                            !$isTabletViewport
-                                                        ) {
-                                                            toggle(event);
-                                                        }
-                                                    }}>
-                                                    {#if !columnObj?.isPlaceholder}
-                                                        <Icon
-                                                            size="s"
-                                                            color={columnIconColor}
-                                                            icon={column.icon ?? undefined} />
-                                                    {/if}
-                                                </Button.Button>
-                                            </div>
-
-                                            <div
-                                                let:toggle
-                                                slot="tooltip"
-                                                class="actions-menu-wrapper">
-                                                <ActionMenu.Root width="228px">
-                                                    <Layout.Stack
-                                                        gap="none"
-                                                        direction="column"
-                                                        class="filter-modal-actions-menu variant">
-                                                        {#each basicColumnOptions as option}
-                                                            <ActionMenu.Item.Button
-                                                                on:click={() => {
-                                                                    toggle();
-                                                                    updateColumn(column.id, {
-                                                                        type: option.type,
-                                                                        format:
-                                                                            option.format || null
-                                                                    });
-                                                                }}>
-                                                                <Layout.Stack
-                                                                    gap="s"
-                                                                    direction="row"
-                                                                    alignContent="center">
-                                                                    <Icon icon={option.icon} />
-                                                                    {option.name}
-                                                                </Layout.Stack>
-                                                            </ActionMenu.Item.Button>
-                                                        {/each}
-                                                    </Layout.Stack>
-                                                </ActionMenu.Root>
-                                            </div>
-                                        </Popover>
+                                        {@render changeColumnTypePopover({
+                                            id: column.id,
+                                            columnObj,
+                                            iconColor: columnIconColor,
+                                            icon: column.icon,
+                                            isColumnInteractable,
+                                            index
+                                        })}
                                     </Layout.Stack>
 
                                     <svelte:fragment slot="cell-editor">
                                         {#if !$isTabletViewport}
-                                            <div class="cell-editor">
+                                            <div
+                                                class="cell-editor"
+                                                onfocusin={() => {
+                                                    resetSelectedColumn();
+                                                    handlePreviousColumnsBorder(column.id);
+                                                }}
+                                                onfocusout={() =>
+                                                    handlePreviousColumnsBorder(column.id, false)}>
                                                 <InputText
                                                     id="key"
                                                     autofocus
@@ -841,10 +1151,14 @@
                                                     pattern="^[A-Za-z0-9][A-Za-z0-9._\-]*$">
                                                     <svelte:fragment slot="end">
                                                         {#if columnIcon}
-                                                            <Icon
-                                                                size="s"
-                                                                icon={columnIcon}
-                                                                color={columnIconColor} />
+                                                            {@render changeColumnTypePopover({
+                                                                id: column.id,
+                                                                columnObj,
+                                                                iconColor: columnIconColor,
+                                                                icon: column.icon,
+                                                                isColumnInteractable,
+                                                                index
+                                                            })}
                                                         {/if}
                                                     </svelte:fragment>
                                                 </InputText>
@@ -899,15 +1213,48 @@
                                         </Layout.Stack>
 
                                         {#if ColumnComponent}
-                                            <ColumnComponent data={columnObj} />
+                                            <ColumnComponent data={columnObj} autoIncreaseSize />
                                         {/if}
                                     </Layout.Stack>
                                 {/if}
+                            {/snippet}
+
+                            {#snippet mobileFooterChildren(toggle)}
+                                <Button.Button
+                                    size="s"
+                                    variant="danger"
+                                    on:click={(event) => {
+                                        toggle(event);
+                                        deleteColumn(column.id);
+                                    }}
+                                    style="position: absolute; left: 1rem;"
+                                    >Delete
+                                </Button.Button>
                             {/snippet}
                         </Options>
                     {/if}
                 {/each}
             </svelte:fragment>
+
+            {#each Array.from({ length: emptyCells }) as _}
+                <Spreadsheet.Row.Base {root} select="disabled" hoverEffect={false}>
+                    {#each spreadsheetColumns as column}
+                        {@const columnObj = getColumn(column.id)}
+                        {@const isColumnInteractable =
+                            isCustomColumn(column.id) && !columnObj.isPlaceholder}
+                        <Spreadsheet.Cell {root} column={column.id} isEditable={false}>
+                            <button
+                                class="column-selector-button"
+                                aria-label="Select column"
+                                onclick={() => {
+                                    if (isColumnInteractable && !$isTabletViewport) {
+                                        selectColumnWithId(column);
+                                    }
+                                }}></button>
+                        </Spreadsheet.Cell>
+                    {/each}
+                </Spreadsheet.Row.Base>
+            {/each}
         </Spreadsheet.Root>
     </SpreadsheetContainer>
 
@@ -916,6 +1263,8 @@
         class="spreadsheet-fade-bottom"
         data-collapsed-tabs={!$expandTabs}>
     </div>
+
+    <div class="snow-fade-bottom" data-collapsed-tabs={!$expandTabs}></div>
 
     {#if $tableColumnSuggestions.thinking}
         <div class="floating-action-wrapper">
@@ -942,10 +1291,82 @@
             </FloatingActionBar>
         </div>
     {:else if customColumns.some((col) => !col.isPlaceholder) && showFloatingBar}
+        <!-- undo or delete and cancel sub action -->
+        {@const isUndoDeleteMode = columnBeingDeleted && columnBeingDeleted?.key !== null}
+        {@const columnName = isUndoDeleteMode ? columnBeingDeleted?.key : selectedColumnName}
+        {@const hasSelection = selectedColumnId !== null || isUndoDeleteMode}
+
+        {#if !creatingColumns}
+            <div class="floating-action-wrapper expanded" class:selection={hasSelection}>
+                <FloatingActionBar>
+                    <svelte:fragment slot="start">
+                        <Layout.Stack
+                            gap="xs"
+                            direction="row"
+                            alignItems="center"
+                            style="padding-bottom: 0;">
+                            <Badge
+                                size="xs"
+                                variant="secondary"
+                                content={columnName}
+                                type={isUndoDeleteMode ? 'error' : undefined} />
+
+                            <Typography.Caption
+                                variant="400"
+                                color="--fgcolor-neutral-primary"
+                                style="white-space: nowrap;">
+                                {#if isUndoDeleteMode}
+                                    was deleted. You can undo this action.
+                                {:else}
+                                    is selected
+                                {/if}
+                            </Typography.Caption>
+                        </Layout.Stack>
+                    </svelte:fragment>
+
+                    <svelte:fragment slot="end">
+                        <Layout.Stack direction="row" gap="xs" alignItems="center" inline>
+                            {#if !isUndoDeleteMode}
+                                <Button.Button
+                                    size="xs"
+                                    variant="text"
+                                    on:click={() => (selectedColumnId = null)}>
+                                    Cancel
+                                </Button.Button>
+
+                                <!--{:else}-->
+                                <!--    {@render countdownProgress()}-->
+                            {/if}
+                            <Button.Button
+                                size="xs"
+                                variant="secondary"
+                                disabled={!isUndoDeleteMode &&
+                                    customColumns.filter((col) => !col.isPlaceholder).length <= 1}
+                                on:click={() => {
+                                    if (isUndoDeleteMode) {
+                                        undoDelete();
+                                    } else {
+                                        deleteColumn(selectedColumnId);
+                                    }
+                                }}>
+                                {#if isUndoDeleteMode}
+                                    Undo
+                                {:else}
+                                    Delete
+                                {/if}
+                            </Button.Button>
+                        </Layout.Stack>
+                    </svelte:fragment>
+                </FloatingActionBar>
+            </div>
+        {/if}
+
+        <!-- review columns action -->
         <div
             class="floating-action-wrapper"
             class:expanded={!creatingColumns}
-            class:creating-columns={creatingColumns}>
+            class:creating-columns={creatingColumns}
+            class:has-selection={hasSelection}>
             <FloatingActionBar>
                 <svelte:fragment slot="start">
                     <Layout.Stack gap="xl" direction="row" alignItems="center">
@@ -994,13 +1415,64 @@
     {/if}
 </div>
 
+{#snippet changeColumnTypePopover({ id, columnObj, iconColor, icon, isColumnInteractable, index })}
+    <Popover let:toggle portal padding="none" placement="bottom-start">
+        <div
+            class="column-icon-wrapper"
+            class:animate-in={!columnObj?.isPlaceholder}
+            style:--animation-delay={`${isColumnInteractable ? (index - 1) * 100 : 0}ms`}>
+            <Button.Button
+                size="xs"
+                variant="extra-compact"
+                disabled={!isColumnInteractable}
+                on:click={(event) => {
+                    if (isColumnInteractable && !$isTabletViewport) {
+                        toggle(event);
+                        resetSelectedColumn();
+                    }
+                }}>
+                {#if !columnObj?.isPlaceholder}
+                    <Icon size="s" color={iconColor ?? undefined} icon={icon ?? undefined} />
+                {/if}
+            </Button.Button>
+        </div>
+
+        <div let:toggle slot="tooltip" class="actions-menu-wrapper">
+            <ActionMenu.Root width="228px">
+                <Layout.Stack
+                    gap="none"
+                    direction="column"
+                    class="filter-modal-actions-menu variant">
+                    {#each basicColumnOptions as option}
+                        <ActionMenu.Item.Button
+                            on:click={() => {
+                                toggle();
+                                updateColumn(id, {
+                                    type: option.type,
+                                    format: option.format || null
+                                });
+                            }}>
+                            <Layout.Stack gap="s" direction="row" alignContent="center">
+                                <Icon icon={option.icon} />
+                                {option.name}
+                            </Layout.Stack>
+                        </ActionMenu.Item.Button>
+                    {/each}
+                </Layout.Stack>
+            </ActionMenu.Root>
+        </div>
+    </Popover>
+{/snippet}
+
 <style lang="scss">
     .spreadsheet-container-outer {
         width: 100%;
         position: fixed;
         overflow: visible;
         scrollbar-width: none;
+
         --columns-range-pink-border-color: rgba(253, 54, 110, 0.24);
+        --columns-range-pink-header-background-color: rgba(253, 54, 110, 0.12);
 
         &.custom-columns {
             width: unset;
@@ -1011,20 +1483,77 @@
         }
 
         &:has(.columns-range-overlay) {
-            &
-                :global(
+            :global(
+                [role='rowheader']
                     [role='cell']:has(.column-resizer-disabled):not([data-column-id^='$']):not(
-                            [data-column-id='actions']
-                        )
-                ) {
+                        [data-column-id='actions']
+                    )
+            ) {
+                background: var(--columns-range-pink-header-background-color);
+            }
+
+            :global(
+                [role='rowheader']
+                    span:has([data-column-id='$id'])
+                    + span
+                    [role='cell']:has(.column-resizer-disabled)
+            ) {
+                margin-left: -2px;
+            }
+
+            :global(
+                [role='cell']:has(.column-resizer-disabled):not([data-column-id^='$']):not(
+                        [data-column-id='actions']
+                    )
+            ) {
                 box-shadow: 0 -1px 0 0 var(--columns-range-pink-border-color) inset !important;
                 transition: box-shadow 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             }
 
-            & :global([role='cell']:not([data-column-id='actions']) .column-resizer-disabled) {
+            :global([role='cell']:not([data-column-id='actions']) .column-resizer-disabled) {
                 border-left: var(--border-width-s, 1px) solid var(--columns-range-pink-border-color) !important;
                 transition: border-color 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             }
+        }
+
+        .column-highlight-overlay {
+            opacity: 0;
+            z-index: 10;
+            position: absolute;
+            pointer-events: none;
+            animation: fadeIn 0.2s ease-out forwards;
+            border-radius: var(--border-radius-s, 4px);
+            border: var(--border-width-l, 2px) solid rgba(253, 54, 110, 0.6);
+
+            &.slide {
+                transition:
+                    left 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                    width 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Hide selected column borders when overlay is active - targeted via JS */
+        & :global([role='cell'].hide-border .column-resizer-disabled) {
+            display: none !important;
+        }
+
+        & :global([role='cell']:has(.column-selector-button)) {
+            padding: unset;
+        }
+
+        & :global(.column-selector-button) {
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
         }
 
         .columns-range-overlay {
@@ -1081,13 +1610,21 @@
         }
 
         & .floating-action-wrapper {
-            & :global(:first-child) {
-                z-index: 21;
-                left: calc(65% - 525px / 2);
+            // probably limited, but has good support
+            // for height transition with fit-content and auto, etc.
+            @supports (interpolate-size: allow-keywords) {
+                interpolate-size: allow-keywords;
+            }
+
+            & > :global(div:first-child) {
+                z-index: 22;
+                bottom: 24px;
+                height: 44px;
+                left: calc(65% - 480px / 2);
                 transition: all 600ms cubic-bezier(0.4, 0, 0.2, 1);
 
                 @media (max-width: 1024px) {
-                    left: calc(50% - 525px / 2);
+                    left: calc(50% - 480px / 2);
                 }
 
                 @media (max-width: 768px) {
@@ -1096,22 +1633,39 @@
                 }
             }
 
-            &.expanded :global(:first-child) {
-                left: calc(60% - 525px / 2);
-                max-width: 525px !important;
+            &.expanded > :global(div:first-child) {
+                left: calc(60% - 480px / 2);
+                max-width: 480px !important;
 
                 @media (max-width: 1024px) {
-                    left: calc(50% - 525px / 2);
+                    left: calc(50% - 480px / 2);
                 }
 
                 @media (max-width: 768px) {
                     left: calc(50% - 400px / 2);
                     max-width: 400px !important;
+                }
+            }
+
+            &.selection {
+                & > :global(div:first-child) {
+                    padding: var(--space-3) var(--space-5) !important;
+                }
+
+                & :global(div:first-child) {
+                    z-index: 21;
+                    bottom: 56px; /* oddly specific maybe, but diff as per design */
+                    height: fit-content;
+                    padding-bottom: 10px;
+                    border-bottom: unset;
+                    border-bottom-left-radius: 0;
+                    border-bottom-right-radius: 0;
+                    background: var(--bgcolor-neutral-default);
                 }
             }
 
             &.creating-columns :global(:first-child) {
-                left: calc(67.5% - 525px / 2);
+                left: calc(67.5% - 480px / 2);
                 max-width: 300px !important;
 
                 @media (max-width: 1024px) {
@@ -1149,17 +1703,11 @@
         }
     }
 
+    .snow-fade-bottom,
     .spreadsheet-fade-bottom {
         bottom: 0;
         width: 100%;
         position: fixed;
-        height: var(--overlay-height);
-        background: linear-gradient(
-            180deg,
-            rgba(255, 255, 255, 0) 0%,
-            rgba(255, 255, 255, 0.86) 32.25%,
-            #fff 100%
-        );
         z-index: 20; /* under overlay */
         display: flex;
         justify-content: center;
@@ -1168,12 +1716,28 @@
         pointer-events: none;
     }
 
+    .spreadsheet-fade-bottom {
+        height: var(--overlay-height);
+        background: linear-gradient(
+            180deg,
+            rgba(255, 255, 255, 0) 0%,
+            rgba(255, 255, 255, 0.86) 85%,
+            /* show more of the bottom area */ var(--bgcolor-neutral-primary) 100%
+        );
+    }
+
+    .snow-fade-bottom {
+        height: calc(var(--overlay-height) / 2);
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, #fff 94.45%);
+    }
+
+    :global(.theme-dark) .snow-fade-bottom,
     :global(.theme-dark) .spreadsheet-fade-bottom {
         background: linear-gradient(
             180deg,
             rgba(29, 29, 33, 0) 0%,
-            rgba(29, 29, 33, 0.86) 21%,
-            #1d1d21 100%
+            rgba(29, 29, 33, 0.86) 85%,
+            /* show more of the bottom area */ var(--bgcolor-neutral-primary) 100%
         );
     }
 
@@ -1195,6 +1759,7 @@
     }
 
     :global(.theme-dark) .spreadsheet-container-outer {
+        --columns-range-pink-header-background-color: unset;
         --columns-range-pink-border-color: rgba(253, 54, 110, 0.12) !important;
     }
 
@@ -1227,8 +1792,8 @@
         border: var(--border-width-L, 2px) solid rgba(253, 54, 110, 0.24) !important;
 
         & :global(i) {
-            margin-inline-end: 6px !important;
-            margin-block-start: -4px !important;
+            margin-inline-end: 4px !important;
+            //margin-block-start: -4px !important;
         }
 
         & :global(::selection) {
@@ -1256,4 +1821,30 @@
         transform: translateY(0);
         transition-delay: var(--animation-delay, 0ms);
     }
+
+    /* Countdown progress styles */
+    //.countdown-wrapper {
+    //    display: flex;
+    //    width: var(--icon-size-s);
+    //    height: var(--icon-size-s);
+    //}
+    //
+    //:global(.countdown-circle) {
+    //    animation: countdown-progress linear forwards;
+    //}
+    //
+    //@media (prefers-reduced-motion: reduce) {
+    //    :global(.countdown-circle) {
+    //        animation: none;
+    //    }
+    //}
+    //
+    //@keyframes countdown-progress {
+    //    from {
+    //        stroke-dashoffset: 0;
+    //    }
+    //    to {
+    //        stroke-dashoffset: 67.858;
+    //    }
+    //}
 </style>

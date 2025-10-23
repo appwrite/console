@@ -42,11 +42,16 @@
     import { onMount } from 'svelte';
 
     interface Props {
-        data?: Partial<Models.ColumnLine>;
         editing?: boolean;
+        disabled?: boolean;
+        data?: Partial<Models.ColumnLine>;
     }
 
-    let { data = { required: false, default: null }, editing = false }: Props = $props();
+    let {
+        data = { required: false, default: null },
+        editing = false,
+        disabled = false
+    }: Props = $props();
 
     let savedDefault = $state(data.default);
     let defaultChecked = $state(!!data.default);
@@ -106,6 +111,7 @@
     size="s"
     id="required"
     label="Required"
+    {disabled}
     bind:checked={$required}
     on:change={(e) => {
         if (e.detail) defaultChecked = false;
@@ -116,6 +122,7 @@
     size="s"
     id="default"
     label="Default value"
+    {disabled}
     bind:checked={defaultChecked}
     on:change={(e) => {
         if (e.detail) {
@@ -134,11 +141,13 @@
             <Typography.Caption variant="400">Optional</Typography.Caption>
         </Layout.Stack>
     {/if}
+
     <InputLine
+        {disabled}
         values={defaultChecked ? data.default : null}
         onAddPoint={() => pushCoordinate()}
         onDeletePoint={deleteCoordinate}
-        onChangePoint={(pointIndex: number, coordIndex: number, newValue: number) => {
+        onChangePoint={(pointIndex, coordIndex, newValue) => {
             if (data.default) {
                 data.default[pointIndex][coordIndex] = newValue;
                 data.default = [...data.default];

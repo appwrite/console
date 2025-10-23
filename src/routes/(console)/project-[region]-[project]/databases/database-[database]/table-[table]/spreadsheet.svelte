@@ -863,6 +863,7 @@
                         id={row?.$id}
                         virtualItem={item}
                         select={rowSelection}
+                        hoverEffect
                         showSelectOnHover
                         valueWithoutHover={row.$sequence}>
                         {#each $tableColumns as { id: columnId, isEditable } (columnId)}
@@ -1042,7 +1043,8 @@
                             gap="xs"
                             direction="row"
                             alignItems="center"
-                            alignContent="center">
+                            alignContent="center"
+                            class="footer-input-select-wrapper">
                             <span style:white-space="nowrap"> Page </span>
 
                             <InputSelect
@@ -1183,6 +1185,11 @@
         z-index: 14;
         position: absolute;
         transform: translateX(-50%);
+    }
+
+    :global(.footer-input-select-wrapper button.input) {
+        height: 30px;
+        background-color: var(--bgcolor-neutral-primary);
     }
 
     // very weird because the library already has this!

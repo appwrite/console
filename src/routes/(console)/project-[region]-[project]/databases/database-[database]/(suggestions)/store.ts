@@ -3,6 +3,7 @@ import { IndexType } from '@appwrite.io/console';
 import { columnOptions } from '../table-[table]/columns/store';
 
 export type TableColumnSuggestions = {
+    force: boolean;
     enabled: boolean;
     thinking: boolean;
     context?: string | undefined;
@@ -23,6 +24,7 @@ export type SuggestedColumnSchema = {
     min?: number;
     max?: number;
     format?: string | null;
+    encrypt?: boolean | null;
 };
 
 export enum IndexOrder {
@@ -43,10 +45,13 @@ export const tableColumnSuggestions = writable<TableColumnSuggestions>({
     enabled: false,
     context: null,
     thinking: false,
-    table: null
+    table: null,
+    force: false
 });
 
 export const showIndexesSuggestions = writable<boolean>(false);
+
+export const showColumnsSuggestionsModal = writable<boolean>(false);
 
 export const mockSuggestions: { total: number; columns: ColumnInput[] } = {
     total: 7,

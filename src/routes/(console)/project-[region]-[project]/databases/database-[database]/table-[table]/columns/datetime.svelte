@@ -42,12 +42,12 @@
 
 <script lang="ts">
     import { InputDateTime } from '$lib/elements/forms';
+    import { Selector } from '@appwrite.io/pink-svelte';
+    import { createConservative } from '$lib/helpers/stores';
 
     export let editing = false;
+    export let disabled = false;
     export let data: Partial<Models.ColumnDatetime>;
-
-    import { createConservative } from '$lib/helpers/stores';
-    import { Selector } from '@appwrite.io/pink-svelte';
 
     let savedDefault = data.default;
 
@@ -78,19 +78,21 @@
     id="default"
     label="Default value"
     bind:value={data.default}
-    disabled={data.required || data.array}
+    disabled={data.required || data.array || disabled}
     nullable={!data.required && !data.array} />
+
 <Selector.Checkbox
     size="s"
     id="required"
     label="Required"
     bind:checked={data.required}
-    disabled={data.array}
+    disabled={data.array || disabled}
     description="Indicate whether this column is required" />
+
 <Selector.Checkbox
     size="s"
     id="array"
     label="Array"
     bind:checked={data.array}
-    disabled={data.required || editing}
+    disabled={data.required || editing || disabled}
     description="Indicate whether this column is an array. Defaults to an empty array." />

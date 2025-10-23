@@ -7,6 +7,12 @@
     import { Button, InputTextarea } from '$lib/elements/forms';
     import { Card, Layout, Selector, Typography } from '@appwrite.io/pink-svelte';
 
+    const {
+        isModal = false
+    }: {
+        isModal?: boolean;
+    } = $props();
+
     onMount(() => {
         if (featureActive) {
             $tableColumnSuggestions.enabled = true;
@@ -23,7 +29,9 @@
 
     const subtitle = $derived.by(() => {
         return featureActive
-            ? 'Enable AI to suggest useful columns based on your table name'
+            ? isModal
+                ? 'Use AI to suggest useful columns'
+                : 'Enable AI to suggest useful columns based on your table name'
             : 'Sign up for Cloud to generate columns based on your table name';
     });
 </script>
@@ -42,7 +50,7 @@
                 </Typography.Text>
             </Layout.Stack>
 
-            {#if featureActive}
+            {#if featureActive && !isModal}
                 <div class="suggestions-switch">
                     <Selector.Switch
                         id="suggestions"
@@ -62,7 +70,7 @@
 
         <!-- just being safe with extra guard! -->
         {#if $tableColumnSuggestions.enabled && featureActive}
-            <div transition:slide={{ duration: 200 }}>
+            <div class="context-input" transition:slide={{ duration: 200 }}>
                 <InputTextarea
                     id="context"
                     rows={3}
@@ -77,5 +85,9 @@
 <style lang="scss">
     .suggestions-switch :global(button):not(:disabled) {
         cursor: pointer;
+    }
+
+    .context-input :global(.input) {
+        background: var(--bgcolor-neutral-primary);
     }
 </style>

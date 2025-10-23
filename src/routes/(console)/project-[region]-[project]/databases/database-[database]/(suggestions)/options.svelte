@@ -7,15 +7,19 @@
     let {
         children,
         tooltipChildren,
+        mobileFooterChildren,
         toggleOnTapClick = true,
         onShowStateChanged = null,
-        enabled = true
+        enabled = true,
+        onChildrenClick
     }: {
         children: Snippet<[toggle: (event: Event) => void]>;
         tooltipChildren: Snippet<[toggle: (event: Event) => void]>;
+        mobileFooterChildren?: Snippet<[toggle: (event: Event) => void]>;
         toggleOnTapClick?: boolean;
         onShowStateChanged?: (showing: boolean) => void;
         enabled?: boolean;
+        onChildrenClick?: () => void;
     } = $props();
 
     let showSheet = $state(false);
@@ -36,7 +40,7 @@
             {@render children(() => (showSheet = false))}
         </button>
     {:else}
-        <button style:cursor={enabled ? 'pointer' : undefined}>
+        <button onclick={() => onChildrenClick?.()} style:cursor={enabled ? 'pointer' : undefined}>
             {@render children(toggle)}
         </button>
     {/if}
@@ -56,6 +60,10 @@
                 showSheet = false;
             }
         }}>
+        {#snippet footer()}
+            {@render mobileFooterChildren?.(() => (showSheet = false))}
+        {/snippet}
+
         {@render tooltipChildren(() => (showSheet = false))}
     </SideSheet>
 {/if}
