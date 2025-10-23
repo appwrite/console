@@ -39,16 +39,16 @@
 
     let show = $state(false);
 
-    let totalSize = $derived(humanFileSize(deployment?.totalSize ?? 0));
+    const totalSize = $derived(humanFileSize(deployment?.totalSize ?? 0));
 
-    let sortedDomains = $derived(
+    const sortedDomains = $derived(
         proxyRuleList?.rules?.slice()?.sort((a, b) => {
             if (a?.trigger === 'manual' && b?.trigger !== 'manual') return -1;
             if (a?.trigger !== 'manual' && b?.trigger === 'manual') return 1;
             return 0;
         })
     );
-    let primaryDomain = $derived(sortedDomains?.[0]?.domain);
+    const primaryDomain = $derived(sortedDomains?.[0]?.domain);
 
     function getScreenshot(theme: string, deployment: Models.Deployment) {
         if (theme === 'dark') {
@@ -77,11 +77,7 @@
     <Layout.Stack gap="l">
         <div class="card-grid">
             {#if primaryDomain}
-                <a
-                    href={`${$regionalProtocol}${primaryDomain}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label="Open site">
+                <Card href={`${$regionalProtocol}${primaryDomain}`} padding="none" radius="s">
                     <Image
                         border
                         radius="s"
@@ -89,7 +85,7 @@
                         style="width: 100%; align-self: start"
                         src={getScreenshot($app.themeInUse, deployment)}
                         alt="Screenshot" />
-                </a>
+                </Card>
             {:else}
                 <Image
                     border
