@@ -71,7 +71,9 @@
     let previousColumnId = $state<string | null>(null);
     let selectedColumnName = $state<string | null>(null);
 
+    let isInlineEditing = $state(false);
     let triggerColumnId = $state<string | null>(null);
+    let hoveredColumnId = $state<string | null>(null);
 
     // for deleting a column + undo
     let undoTimer: ReturnType<typeof setTimeout> | null = $state(null);
@@ -286,10 +288,11 @@
     };
 
     function updateColumnHighlight() {
-        if (!spreadsheetContainer || !selectedColumnId) return;
+        const activeColumnId = selectedColumnId || hoveredColumnId;
+        if (!spreadsheetContainer || !activeColumnId) return;
 
         const headerCell = spreadsheetContainer.querySelector(
-            `[role="rowheader"] [role="cell"][data-column-id="${selectedColumnId}"]`
+            `[role="rowheader"] [role="cell"][data-column-id="${activeColumnId}"]`
         );
 
         if (!headerCell) return;
@@ -307,8 +310,17 @@
         const left = Math.round(cellRect.left - containerRect.left);
         const width = cellRect.width;
 
-        spreadsheetContainer.style.setProperty('--highlight-left', `${left - 2}px`);
-        spreadsheetContainer.style.setProperty('--highlight-width', `${width + 2}px`);
+        const isHovered = !selectedColumnId && hoveredColumnId;
+        const isFirstColumn = activeColumnId === customColumns[0]?.key;
+
+        let leftAdjustment = -2;
+        let widthAdjustment = 2;
+        if (isHovered && isFirstColumn) {
+            leftAdjustment = 0;
+        }
+
+        spreadsheetContainer.style.setProperty('--highlight-left', `${left + leftAdjustment}px`);
+        spreadsheetContainer.style.setProperty('--highlight-width', `${width + widthAdjustment}px`);
     }
 
     const recalcAll = () => {
@@ -997,6 +1009,29 @@
         }
     });
 
+    $effect(() => {
+        if (!spreadsheetContainer) return;
+
+        const allCells = spreadsheetContainer.querySelectorAll('[role="cell"]');
+        allCells.forEach((cell) => {
+            const resizer = cell.querySelector('.column-resizer-disabled') as HTMLDivElement;
+            if (resizer) resizer.style.display = '';
+        });
+
+        if (!hoveredColumnId) return;
+
+        const hoveredCells = spreadsheetContainer.querySelectorAll(
+            `[role="cell"][data-column-id="${hoveredColumnId}"]`
+        );
+
+        hoveredCells.forEach((cell) => {
+            const resizer = cell.querySelector('.column-resizer-disabled') as HTMLDivElement;
+            if (resizer) resizer.style.display = 'none';
+        });
+
+        updateColumnHighlight();
+    });
+
     onDestroy(() => {
         resizeObserver?.disconnect();
         hScroller?.removeEventListener('scroll', recalcAllThrottled);
@@ -1060,10 +1095,13 @@
         </div>
 
         <!-- selection border -->
-        {#if selectedColumnId}
+        {#if selectedColumnId || hoveredColumnId}
+            {@const isHovered = !selectedColumnId && hoveredColumnId}
             <div
                 class="column-highlight-overlay"
-                class:slide={previousColumnId !== null}
+                class:hover={isHovered}
+                class:selected={!isHovered}
+                class:slide={previousColumnId !== null && !isHovered}
                 style:height="100%"
                 style:left="var(--highlight-left, 0px)"
                 style:width="var(--highlight-width, 0px)"
@@ -1149,11 +1187,14 @@
                                             <div
                                                 class="cell-editor"
                                                 onfocusin={() => {
+                                                    isInlineEditing = true;
                                                     resetSelectedColumn();
                                                     handlePreviousColumnsBorder(column.id);
                                                 }}
-                                                onfocusout={() =>
-                                                    handlePreviousColumnsBorder(column.id, false)}>
+                                                onfocusout={() => {
+                                                    isInlineEditing = false;
+                                                    handlePreviousColumnsBorder(column.id, false);
+                                                }}>
                                                 <InputText
                                                     id="key"
                                                     autofocus
@@ -1257,6 +1298,20 @@
                             <button
                                 class="column-selector-button"
                                 aria-label="Select column"
+                                onmouseenter={() => {
+                                    if (
+                                        isColumnInteractable &&
+                                        !selectedColumnId &&
+                                        !isInlineEditing &&
+                                        !$isTabletViewport &&
+                                        !$isSmallViewport &&
+                                        !$tableColumnSuggestions.thinking &&
+                                        !creatingColumns
+                                    ) {
+                                        hoveredColumnId = column.id;
+                                    }
+                                }}
+                                onmouseleave={() => (hoveredColumnId = null)}
                                 onclick={() => {
                                     if (isColumnInteractable) {
                                         if (!$isTabletViewport) {
@@ -1542,7 +1597,16 @@
             pointer-events: none;
             animation: fadeIn 0.2s ease-out forwards;
             border-radius: var(--border-radius-s, 4px);
-            border: var(--border-width-l, 2px) solid rgba(253, 54, 110, 0.6);
+
+            &.selected {
+                border: var(--border-width-l, 2px) solid rgba(253, 54, 110, 0.6);
+            }
+
+            &.hover {
+                background: rgba(253, 54, 110, 0.05);
+                border-radius: var(--border-radius-xxs);
+                border: var(--border-width-m) solid rgba(253, 54, 110, 0.24);
+            }
 
             &.slide {
                 transition:
