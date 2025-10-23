@@ -22,16 +22,15 @@
     import { base } from '$app/paths';
     import { formatName } from '$lib/helpers/string';
 
-    const permissionDataCache: Map<
-        string,
-        Promise<
-            Partial<Models.User<Record<string, unknown>> & Models.Team<Record<string, unknown>>> & {
-                notFound?: boolean;
-                roleName?: string;
-                customName?: string;
-            }
-        >
-    > = new Map();
+    type PermissionData = Partial<
+        Models.User<Record<string, unknown>> & Models.Team<Record<string, unknown>>
+    > & {
+        notFound?: boolean;
+        roleName?: string;
+        customName?: string;
+    };
+
+    const permissionDataCache: Map<string, Promise<PermissionData>> = new Map();
 
     interface Props {
         role: string;
@@ -75,47 +74,40 @@
         }
     }
 
-    async function getData(permission: string): Promise<
-        Partial<Models.User<Record<string, unknown>> & Models.Team<Record<string, unknown>>> & {
-            notFound?: boolean;
-            roleName?: string;
-            customName?: string;
+    async function fetchPermissionData(parsed: ParsedPermission): Promise<PermissionData> {
+        if (!parsed.isValid || parsed.type === 'other') {
+            return { notFound: true, roleName: parsed.roleName, customName: parsed.id };
         }
-    > {
+
+        if (parsed.type === 'user') {
+            try {
+                return await sdk
+                    .forProject(page.params.region, page.params.project)
+                    .users.get({ userId: parsed.id });
+            } catch (error) {
+                return { notFound: true, roleName: parsed.roleName, customName: parsed.id };
+            }
+        }
+
+        if (parsed.type === 'team') {
+            try {
+                return await sdk
+                    .forProject(page.params.region, page.params.project)
+                    .teams.get({ teamId: parsed.id });
+            } catch (error) {
+                return { notFound: true, roleName: parsed.roleName, customName: parsed.id };
+            }
+        }
+
+        return { notFound: true, roleName: parsed.roleName, customName: parsed.id };
+    }
+
+    async function getData(permission: string): Promise<PermissionData> {
         const cached = permissionDataCache.get(permission);
         if (cached) return cached;
 
-        const fetchPromise = (async () => {
-            const parsed = parsePermission(permission);
-
-            if (!parsed.isValid || parsed.type === 'other') {
-                return { notFound: true, roleName: parsed.roleName, customName: parsed.id };
-            }
-
-            if (parsed.type === 'user') {
-                try {
-                    const user = await sdk
-                        .forProject(page.params.region, page.params.project)
-                        .users.get({ userId: parsed.id });
-                    return user;
-                } catch (error) {
-                    return { notFound: true, roleName: parsed.roleName, customName: parsed.id };
-                }
-            }
-
-            if (parsed.type === 'team') {
-                try {
-                    const team = await sdk
-                        .forProject(page.params.region, page.params.project)
-                        .teams.get({ teamId: parsed.id });
-                    return team;
-                } catch (error) {
-                    return { notFound: true, roleName: parsed.roleName, customName: parsed.id };
-                }
-            }
-
-            return { notFound: true, roleName: parsed.roleName, customName: parsed.id };
-        })();
+        const parsed = parsePermission(permission);
+        const fetchPromise = fetchPermissionData(parsed);
 
         permissionDataCache.set(permission, fetchPromise);
         return fetchPromise;
