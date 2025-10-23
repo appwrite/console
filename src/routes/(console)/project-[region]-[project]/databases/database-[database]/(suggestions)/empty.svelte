@@ -56,6 +56,7 @@
     let headerElement: HTMLElement | null = null;
     let rangeOverlayEl: HTMLDivElement | null = null;
     let fadeBottomOverlayEl: HTMLDivElement | null = null;
+    let snowFadeBottomOverlayEl: HTMLDivElement | null = null;
 
     let customColumns = $state<
         (SuggestedColumnSchema & { elements?: []; isPlaceholder?: boolean })[]
@@ -69,6 +70,8 @@
     let selectedColumnId = $state<string | null>(null);
     let previousColumnId = $state<string | null>(null);
     let selectedColumnName = $state<string | null>(null);
+
+    let triggerColumnId = $state<string | null>(null);
 
     // for deleting a column + undo
     let undoTimer: ReturnType<typeof setTimeout> | null = $state(null);
@@ -535,7 +538,7 @@
     async function updateOverlaysForMobile(value: boolean) {
         if ($isSmallViewport) {
             setTimeout(() => {
-                [rangeOverlayEl, fadeBottomOverlayEl].forEach((el) => {
+                [rangeOverlayEl, fadeBottomOverlayEl, snowFadeBottomOverlayEl].forEach((el) => {
                     if (el) {
                         el.style.opacity = value ? '0' : '1';
                     }
@@ -1097,7 +1100,15 @@
 
                         <Options
                             enabled={isColumnInteractable}
-                            onShowStateChanged={onPopoverShowStateChanged}>
+                            onShowStateChanged={onPopoverShowStateChanged}
+                            triggerOpen={() => {
+                                if (triggerColumnId === column.id) {
+                                    triggerColumnId = null;
+                                    return true;
+                                }
+
+                                return false;
+                            }}>
                             {#snippet children(toggle)}
                                 <Spreadsheet.Header.Cell
                                     {root}
@@ -1247,8 +1258,12 @@
                                 class="column-selector-button"
                                 aria-label="Select column"
                                 onclick={() => {
-                                    if (isColumnInteractable && !$isTabletViewport) {
-                                        selectColumnWithId(column);
+                                    if (isColumnInteractable) {
+                                        if (!$isTabletViewport) {
+                                            selectColumnWithId(column);
+                                        } else if ($isSmallViewport) {
+                                            triggerColumnId = column.id;
+                                        }
                                     }
                                 }}></button>
                         </Spreadsheet.Cell>
@@ -1264,7 +1279,11 @@
         data-collapsed-tabs={!$expandTabs}>
     </div>
 
-    <div class="snow-fade-bottom" data-collapsed-tabs={!$expandTabs}></div>
+    <div
+        bind:this={snowFadeBottomOverlayEl}
+        class="snow-fade-bottom"
+        data-collapsed-tabs={!$expandTabs}>
+    </div>
 
     {#if $tableColumnSuggestions.thinking}
         <div class="floating-action-wrapper">
@@ -1381,8 +1400,8 @@
                             {creatingColumns
                                 ? 'Creating columns'
                                 : $isSmallViewport
-                                  ? 'Review and edit suggested columns'
-                                  : 'Review and edit suggested columns before applying'}
+                                  ? 'Click headers or cells to edit columns'
+                                  : 'Click headers or cells to edit columns before applying'}
                         </Typography.Caption>
                     </Layout.Stack>
                 </svelte:fragment>

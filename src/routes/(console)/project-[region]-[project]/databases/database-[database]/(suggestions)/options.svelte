@@ -11,7 +11,8 @@
         toggleOnTapClick = true,
         onShowStateChanged = null,
         enabled = true,
-        onChildrenClick
+        onChildrenClick,
+        triggerOpen
     }: {
         children: Snippet<[toggle: (event: Event) => void]>;
         tooltipChildren: Snippet<[toggle: (event: Event) => void]>;
@@ -20,6 +21,7 @@
         onShowStateChanged?: (showing: boolean) => void;
         enabled?: boolean;
         onChildrenClick?: () => void;
+        triggerOpen?: () => boolean;
     } = $props();
 
     let showSheet = $state(false);
@@ -27,6 +29,12 @@
     $effect(() => {
         if (!$isSmallViewport) {
             showSheet = false;
+        }
+    });
+
+    $effect(() => {
+        if ($isSmallViewport && triggerOpen && triggerOpen()) {
+            showSheet = true;
         }
     });
 </script>
