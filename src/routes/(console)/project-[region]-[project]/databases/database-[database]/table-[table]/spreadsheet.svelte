@@ -962,10 +962,7 @@
                                 </button>
                             {:else}
                                 <Spreadsheet.Cell {root} {isEditable} column={columnId}>
-                                    {#if columnId === '$id'}
-                                        <Id value={row.$id} tooltipPortal tooltipDelay={200}
-                                            >{row.$id}</Id>
-                                    {:else if columnId === '$createdAt' || columnId === '$updatedAt'}
+                                    {#if columnId === '$createdAt' || columnId === '$updatedAt'}
                                         <DualTimeView
                                             showDatetime
                                             time={row[columnId]}
