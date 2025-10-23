@@ -6,8 +6,9 @@
     import { goto } from '$app/navigation';
     import { getProjectId } from '$lib/helpers/project';
     import { addNotification } from '$lib/stores/notifications';
-    import { Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { Layout, Typography, Code } from '@appwrite.io/pink-svelte';
     import { type Models, type Payload, Query } from '@appwrite.io/console';
+    import { Modal } from '$lib/components';
 
     type ExportItem = {
         status: string;
@@ -15,6 +16,7 @@
         bucketId?: string;
         bucketName?: string;
         fileName?: string;
+        errors?: string[];
     };
 
     type ExportItemsMap = Map<string, ExportItem>;
@@ -165,7 +167,8 @@
             table: tableName ?? current?.table,
             bucketId: bucketId,
             bucketName: bucketName,
-            fileName: fileName
+            fileName: fileName,
+            errors: exportData.errors || []
         });
         exportItems = new Map(exportItems);
 
@@ -241,6 +244,8 @@
 
     let isOpen = $state(true);
     let showCsvExportBox = $derived(exportItems.size > 0);
+    let showErrorModal = $state(false);
+    let selectedErrors = $state<string[]>([]);
 </script>
 
 {#if showCsvExportBox}
@@ -279,6 +284,17 @@
                                                 value.bucketName ?? 'bucket'
                                             )}
                                         </Typography.Text>
+                                        {#if value.status === 'failed' && value.errors && value.errors.length > 0}
+                                            <button
+                                                class="link"
+                                                type="button"
+                                                onclick={() => {
+                                                    selectedErrors = value.errors;
+                                                    showErrorModal = true;
+                                                }}>
+                                                more details
+                                            </button>
+                                        {/if}
                                     </div>
                                     <div
                                         class="progress-bar-container"
@@ -294,6 +310,25 @@
         </section>
     </Layout.Stack>
 {/if}
+
+<Modal bind:show={showErrorModal} title="Export error details" hideFooter>
+    {#if selectedErrors.length > 0}
+        <Code
+            code={JSON.stringify(
+                selectedErrors.map((err) => {
+                    try {
+                        return JSON.parse(err);
+                    } catch {
+                        return err;
+                    }
+                }),
+                null,
+                2
+            )}
+            lang="json"
+            hideHeader />
+    {/if}
+</Modal>
 
 <style lang="scss">
     .upload-box {
