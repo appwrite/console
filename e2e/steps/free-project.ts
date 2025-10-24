@@ -19,8 +19,8 @@ export async function createFreeProject(page: Page): Promise<Metadata> {
         const dialog = page.locator('dialog[open]');
         await dialog.getByPlaceholder('Project name').fill('test project');
         await dialog.getByRole('button', { name: 'create' }).click();
-        await page.waitForURL(/\/project-fra-[^/]+/);
-        expect(page.url()).toContain('/console/project-fra-');
+        await page.waitForURL(/\/project-nyc-[^/]+/);
+        expect(page.url()).toContain('/console/project-nyc-');
 
         return getProjectIdFromUrl(page.url());
     });
