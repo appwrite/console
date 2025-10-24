@@ -71,6 +71,7 @@
     let previousColumnId = $state<string | null>(null);
     let selectedColumnName = $state<string | null>(null);
 
+    let showHeadTooltip = $state(true);
     let isInlineEditing = $state(false);
     let triggerColumnId = $state<string | null>(null);
     let hoveredColumnId = $state<string | null>(null);
@@ -561,6 +562,7 @@
 
     function onPopoverShowStateChanged(value: boolean) {
         showFloatingBar = !value;
+        showHeadTooltip = !value;
         updateOverlaysForMobile(value);
 
         const currentScrollLeft = hScroller?.scrollLeft || 0;
@@ -1020,6 +1022,11 @@
 
         if (!hoveredColumnId) return;
 
+        // auto-scroll if hovered column is out of bounds
+        /*if (!isColumnVisible(hoveredColumnId)) {
+            scrollColumnIntoView(hoveredColumnId);
+        }*/
+
         const hoveredCells = spreadsheetContainer.querySelectorAll(
             `[role="cell"][data-column-id="${hoveredColumnId}"]`
         );
@@ -1138,6 +1145,9 @@
 
                         <Options
                             enabled={isColumnInteractable}
+                            headerTooltipText={isColumnInteractable && showHeadTooltip
+                                ? 'Right click for advanced editing'
+                                : undefined}
                             onShowStateChanged={onPopoverShowStateChanged}
                             triggerOpen={() => {
                                 if (triggerColumnId === column.id) {
@@ -1188,10 +1198,12 @@
                                                 class="cell-editor"
                                                 onfocusin={() => {
                                                     isInlineEditing = true;
+                                                    showHeadTooltip = false;
                                                     resetSelectedColumn();
                                                     handlePreviousColumnsBorder(column.id);
                                                 }}
                                                 onfocusout={() => {
+                                                    showHeadTooltip = true;
                                                     isInlineEditing = false;
                                                     handlePreviousColumnsBorder(column.id, false);
                                                 }}>
@@ -1606,6 +1618,7 @@
                 background: rgba(253, 54, 110, 0.05);
                 border-radius: var(--border-radius-xxs);
                 border: var(--border-width-m) solid rgba(253, 54, 110, 0.24);
+                transition: background 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             }
 
             &.slide {
