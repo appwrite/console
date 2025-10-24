@@ -186,7 +186,7 @@
     }
 </script>
 
-<Wizard title="Create provider" columnSize="l" confirmExit={true}>
+<Wizard title="Create provider" columnSize="l" confirmExit>
     <Form bind:this={formRef} onSubmit={create} isModal={false}>
         <Layout.Stack gap="xxl">
             <Fieldset legend="Provider">
