@@ -30,7 +30,6 @@
                 email: mail
             });
 
-            await goto(
             const params = new URLSearchParams(window.location.search);
             params.set('email', mail);
             params.set('userId', sessionToken.userId);
