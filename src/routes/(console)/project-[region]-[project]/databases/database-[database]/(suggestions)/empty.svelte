@@ -1502,8 +1502,7 @@
         transition:fadeSlide
         class="custom-tooltip"
         style:top={`${tooltipTopPosition}%`}
-        class:show-tooltip={show && !$isTabletViewport}
-    >
+        class:show-tooltip={show && !$isTabletViewport}>
         <Typography.Text>
             {text}
         </Typography.Text>
@@ -1979,8 +1978,8 @@
         left: calc(var(--highlight-left, 0px) + 325px);
 
         transition:
-                top 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-                left 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            top 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+            left 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 
         &.show-tooltip {
             opacity: 1;
