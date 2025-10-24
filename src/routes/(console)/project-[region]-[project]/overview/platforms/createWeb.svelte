@@ -136,9 +136,9 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
             label: 'TanStack Starter',
             icon: TanStackFrameworkIcon,
             smallIcon: IconTanstack,
-            portNumber: 3000, // TODO: Ensure
+            portNumber: 3000,
             runCommand: 'npm run dev',
-            updateConfigCode: updateConfigCode('NUXT_PUBLIC_') // TODO: Update
+            updateConfigCode: updateConfigCode('VITE_')
         },
         {
             key: 'js',
