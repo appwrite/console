@@ -73,6 +73,7 @@
 
     let showHeadTooltip = $state(true);
     let isInlineEditing = $state(false);
+    let tooltipTopPosition = $state(50);
     let triggerColumnId = $state<string | null>(null);
     let hoveredColumnId = $state<string | null>(null);
 
@@ -1316,6 +1317,7 @@
                                         hoveredColumnId !== column.id
                                     ) {
                                         hoveredColumnId = column.id;
+                                        tooltipTopPosition = 35 + Math.random() * 20;
                                     }
                                 }}
                                 onclick={() => {
@@ -1499,6 +1501,7 @@
     <div
         transition:fadeSlide
         class="custom-tooltip"
+        style:top={`${tooltipTopPosition}%`}
         class:show-tooltip={show && !$isTabletViewport}
     >
         <Typography.Text>
@@ -1649,7 +1652,7 @@
             border-radius: var(--border-radius-s, 4px);
 
             &.selected {
-                border: var(--border-width-l, 2px) solid rgba(253, 54, 110, 0.6);
+                border: var(--border-width-l) solid rgba(253, 54, 110, 0.6);
             }
 
             &.hover {
@@ -1957,23 +1960,27 @@
     }
 
     .custom-tooltip {
-        top: 60%;
+        opacity: 0;
         z-index: 22;
-        pointer-events: none;
+        visibility: hidden;
+
+        position: fixed;
         touch-action: none;
-        left: calc(var(--highlight-left, 0px) + 300px);
-        margin-inline-start: 0.5rem;
+        pointer-events: none;
         align-items: center;
         display: inline-flex;
         justify-content: center;
         gap: var(--space-0, 0);
-        position: fixed;
-        padding: var(--space-2) var(--space-4);
-        border-radius: var(--border-radius-s);
-        background: var(--bgcolor-neutral-invert-weak);
+        margin-inline-start: 0.5rem;
         color: var(--fgcolor-on-invert);
-        visibility: hidden;
-        opacity: 0;
+        border-radius: var(--border-radius-s);
+        padding: var(--space-2) var(--space-4);
+        background: var(--bgcolor-neutral-invert-weak);
+        left: calc(var(--highlight-left, 0px) + 325px);
+
+        transition:
+                top 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                left 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 
         &.show-tooltip {
             opacity: 1;
