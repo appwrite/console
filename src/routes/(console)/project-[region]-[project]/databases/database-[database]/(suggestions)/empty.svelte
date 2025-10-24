@@ -959,6 +959,27 @@
         columnBeingDeleted = null;
     }
 
+    function fadeSlide(_: Node, { y = 8, duration = 200 } = {}) {
+        return {
+            duration,
+            css: (time: number) => `
+                opacity: ${time};
+                transform: translateY(${(1 - time) * y}px);
+             `
+        };
+    }
+
+    function columnHoverMouseTracker(event: MouseEvent) {
+        if (hoveredColumnId && event.target instanceof Element) {
+            const hoveredButton = event.target.closest('[data-column-hover]');
+            const currentColumnId = hoveredButton?.getAttribute('data-column-hover');
+
+            if (currentColumnId !== hoveredColumnId) {
+                hoveredColumnId = null;
+            }
+        }
+    }
+
     $effect(() => {
         if (!spreadsheetContainer) return;
 
@@ -1051,47 +1072,17 @@
     });
 </script>
 
-<!--{#snippet countdownProgress()}-->
-<!--    {@const COUNTDOWN_DURATION = 10000}-->
-
-<!--    <div class="countdown-wrapper" style="padding-bottom: 0;">-->
-<!--        <svg-->
-<!--            xmlns="http://www.w3.org/2000/svg"-->
-<!--            width={`var(&#45;&#45;icon-size-s)`}-->
-<!--            height={`var(&#45;&#45;icon-size-s)`}-->
-<!--            viewBox="0 0 24 24"-->
-<!--            fill="none"-->
-<!--            style="transform: rotate(-90deg)">-->
-<!--            &lt;!&ndash; Background circle &ndash;&gt;-->
-<!--            <path-->
-<!--                opacity="0.2"-->
-<!--                d="M24 12C24 18.6274 18.6274 24 12 24C5.37258 24 0 18.6274 0 12C0 5.37258 5.37258 0 12 0C18.6274 0 24 5.37258 24 12ZM2.4 12C2.4 17.3019 6.69807 21.6 12 21.6C17.3019 21.6 21.6 17.3019 21.6 12C21.6 6.69807 17.3019 2.4 12 2.4C6.69807 2.4 2.4 6.69807 2.4 12Z"-->
-<!--                fill="#56565C" />-->
-<!--            &lt;!&ndash; Progress circle &ndash;&gt;-->
-<!--            <circle-->
-<!--                cx="12"-->
-<!--                cy="12"-->
-<!--                r="10.8"-->
-<!--                fill="none"-->
-<!--                stroke="#56565C"-->
-<!--                stroke-width="2.4"-->
-<!--                stroke-dasharray="67.858"-->
-<!--                stroke-dashoffset="0"-->
-<!--                class="countdown-circle"-->
-<!--                style="animation-duration: {COUNTDOWN_DURATION}ms" />-->
-<!--        </svg>-->
-<!--    </div>-->
-<!--{/snippet}-->
-
 <svelte:window on:resize={recalcAll} on:scroll={recalcAll} />
 
 <div
+    role="none"
     bind:this={spreadsheetContainer}
     class:custom-columns={customColumns.length > 0}
     class:thinking={$tableColumnSuggestions.thinking}
     class="databases-spreadsheet spreadsheet-container-outer"
     style:--overlay-icon-color="#fd366e99"
-    style:--non-overlay-icon-color="--fgcolor-neutral-weak">
+    style:--non-overlay-icon-color="--fgcolor-neutral-weak"
+    onmousemove={columnHoverMouseTracker}>
     <div>
         <div
             aria-hidden="true"
@@ -1114,6 +1105,8 @@
                 style:width="var(--highlight-width, 0px)"
                 out:fade={{ duration: 200 }}>
             </div>
+
+            {@render customTooltip({ text: 'Click to select column', show: isHovered })}
         {/if}
     </div>
 
@@ -1310,6 +1303,7 @@
                             <button
                                 class="column-selector-button"
                                 aria-label="Select column"
+                                data-column-hover={column.id}
                                 onmouseenter={() => {
                                     if (
                                         isColumnInteractable &&
@@ -1318,12 +1312,12 @@
                                         !$isTabletViewport &&
                                         !$isSmallViewport &&
                                         !$tableColumnSuggestions.thinking &&
-                                        !creatingColumns
+                                        !creatingColumns &&
+                                        hoveredColumnId !== column.id
                                     ) {
                                         hoveredColumnId = column.id;
                                     }
                                 }}
-                                onmouseleave={() => (hoveredColumnId = null)}
                                 onclick={() => {
                                     if (isColumnInteractable) {
                                         if (!$isTabletViewport) {
@@ -1501,6 +1495,18 @@
     {/if}
 </div>
 
+{#snippet customTooltip({ text, show })}
+    <div
+        transition:fadeSlide
+        class="custom-tooltip"
+        class:show-tooltip={show && !$isTabletViewport}
+    >
+        <Typography.Text>
+            {text}
+        </Typography.Text>
+    </div>
+{/snippet}
+
 {#snippet changeColumnTypePopover({ id, columnObj, iconColor, icon, isColumnInteractable, index })}
     <Popover let:toggle portal padding="none" placement="bottom-start">
         <div
@@ -1549,6 +1555,38 @@
         </div>
     </Popover>
 {/snippet}
+
+<!--{#snippet countdownProgress()}-->
+<!--    {@const COUNTDOWN_DURATION = 10000}-->
+
+<!--    <div class="countdown-wrapper" style="padding-bottom: 0;">-->
+<!--        <svg-->
+<!--            xmlns="http://www.w3.org/2000/svg"-->
+<!--            width={`var(&#45;&#45;icon-size-s)`}-->
+<!--            height={`var(&#45;&#45;icon-size-s)`}-->
+<!--            viewBox="0 0 24 24"-->
+<!--            fill="none"-->
+<!--            style="transform: rotate(-90deg)">-->
+<!--            &lt;!&ndash; Background circle &ndash;&gt;-->
+<!--            <path-->
+<!--                opacity="0.2"-->
+<!--                d="M24 12C24 18.6274 18.6274 24 12 24C5.37258 24 0 18.6274 0 12C0 5.37258 5.37258 0 12 0C18.6274 0 24 5.37258 24 12ZM2.4 12C2.4 17.3019 6.69807 21.6 12 21.6C17.3019 21.6 21.6 17.3019 21.6 12C21.6 6.69807 17.3019 2.4 12 2.4C6.69807 2.4 2.4 6.69807 2.4 12Z"-->
+<!--                fill="#56565C" />-->
+<!--            &lt;!&ndash; Progress circle &ndash;&gt;-->
+<!--            <circle-->
+<!--                cx="12"-->
+<!--                cy="12"-->
+<!--                r="10.8"-->
+<!--                fill="none"-->
+<!--                stroke="#56565C"-->
+<!--                stroke-width="2.4"-->
+<!--                stroke-dasharray="67.858"-->
+<!--                stroke-dashoffset="0"-->
+<!--                class="countdown-circle"-->
+<!--                style="animation-duration: {COUNTDOWN_DURATION}ms" />-->
+<!--        </svg>-->
+<!--    </div>-->
+<!--{/snippet}-->
 
 <style lang="scss">
     .spreadsheet-container-outer {
@@ -1916,6 +1954,31 @@
         opacity: 1;
         transform: translateY(0);
         transition-delay: var(--animation-delay, 0ms);
+    }
+
+    .custom-tooltip {
+        top: 60%;
+        z-index: 22;
+        pointer-events: none;
+        touch-action: none;
+        left: calc(var(--highlight-left, 0px) + 300px);
+        margin-inline-start: 0.5rem;
+        align-items: center;
+        display: inline-flex;
+        justify-content: center;
+        gap: var(--space-0, 0);
+        position: fixed;
+        padding: var(--space-2) var(--space-4);
+        border-radius: var(--border-radius-s);
+        background: var(--bgcolor-neutral-invert-weak);
+        color: var(--fgcolor-on-invert);
+        visibility: hidden;
+        opacity: 0;
+
+        &.show-tooltip {
+            opacity: 1;
+            visibility: visible;
+        }
     }
 
     /* Countdown progress styles */

@@ -13,7 +13,7 @@
         enabled = true,
         onChildrenClick,
         triggerOpen,
-        headerTooltipText,
+        headerTooltipText
     }: {
         children: Snippet<[toggle: (event: Event) => void]>;
         tooltipChildren: Snippet<[toggle: (event: Event) => void]>;
