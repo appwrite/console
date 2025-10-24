@@ -31,8 +31,11 @@
             });
 
             await goto(
-                `${base}/login/email-otp?email=${encodeURIComponent(mail)}&userId=${sessionToken.userId}`
-            );
+            const params = new URLSearchParams(window.location.search);
+            params.set('email', mail);
+            params.set('userId', sessionToken.userId);
+
+            await goto(`${base}/login/email-otp?${params.toString()}`);
         } catch (error) {
             disabled = false;
             addNotification({
