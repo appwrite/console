@@ -86,4 +86,5 @@ export { default as RegionEndpoint } from './regionEndpoint.svelte';
 export { default as ExpirationInput } from './expirationInput.svelte';
 export { default as EstimatedCard } from './estimatedCard.svelte';
 export { default as SortButton, type SortDirection } from './sortButton.svelte';
+export * from './domains';
 export { default as SendVerificationEmailModal } from './account/sendVerificationEmailModal.svelte';
