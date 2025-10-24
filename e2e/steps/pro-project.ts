@@ -51,9 +51,12 @@ export async function createProProject(page: Page): Promise<Metadata> {
         await page.getByRole('button', { name: 'create project' }).first().click();
         const dialog = page.locator('dialog[open]');
         await dialog.getByPlaceholder('Project name').fill('test project');
+
         const regionSelector = dialog.getByPlaceholder('Select a region');
-        await regionSelector.click();
-        await dialog.getByRole('option', { name: 'New York' }).click();
+        if (await regionSelector.isVisible()) {
+            await regionSelector.click();
+            await dialog.getByRole('option', { name: 'New York' }).click();
+        }
 
         await dialog.getByRole('button', { name: 'create' }).click();
         await page.waitForURL(/\/project-[^/]+-[^/]+/);
