@@ -133,7 +133,7 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
         },
         {
             key: 'tanstack-start',
-            label: 'TanStack Starter',
+            label: 'TanStack Start',
             icon: TanStackFrameworkIcon,
             smallIcon: IconTanstack,
             portNumber: 3000,
