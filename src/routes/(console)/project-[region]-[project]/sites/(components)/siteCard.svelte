@@ -1,5 +1,4 @@
 <script lang="ts">
-    import type { Snippet } from 'svelte';
     import { Card } from '$lib/components/index.js';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { formatTimeDetailed } from '$lib/helpers/timeConversion';
