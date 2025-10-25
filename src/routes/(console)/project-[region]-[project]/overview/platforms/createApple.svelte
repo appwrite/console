@@ -90,7 +90,7 @@ APPWRITE_PUBLIC_ENDPOINT: "${sdk.forProject(page.params.region, page.params.proj
     }
 
     onMount(() => {
-        const unsubscribe = sdk.forConsole.client.subscribe('console', (response) => {
+        const unsubscribe = sdk.forConsole.realtime.subscribe('console', (response) => {
             if (response.events.includes(`projects.${projectId}.ping`)) {
                 connectionSuccessful = true;
                 invalidate(Dependencies.ORGANIZATION);

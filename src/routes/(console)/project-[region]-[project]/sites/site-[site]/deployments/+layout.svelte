@@ -13,7 +13,7 @@
 
     onMount(() => {
         let previousStatus: string = null;
-        return sdk.forConsole.client.subscribe<Models.Deployment>('console', (message) => {
+        return sdk.forConsole.realtime.subscribe<Models.Deployment>('console', (message) => {
             if (message.payload.status !== 'ready' && previousStatus === message.payload.status) {
                 return;
             }

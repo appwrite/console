@@ -20,7 +20,9 @@
     import { page } from '$app/state';
     import { regionalProtocol } from '$routes/(console)/project-[region]-[project]/store';
 
-    let { data } = $props();
+    import type { PageProps } from './$types';
+
+    let { data }: PageProps = $props();
 
     let deployment = $derived(data.deployment);
 
@@ -32,24 +34,21 @@
     onMount(() => {
         return sdk
             .forConsoleIn(page.params.region)
-            .client.subscribe(
-                'console',
-                async (response: RealtimeResponseEvent<Models.Deployment>) => {
-                    if (
-                        response.events.includes(
-                            `sites.${page.params.site}.deployments.${page.params.deployment}.update`
-                        )
-                    ) {
-                        await invalidate(Dependencies.DEPLOYMENT);
-                    }
+            .realtime.subscribe('console', async (response) => {
+                if (
+                    response.events.includes(
+                        `sites.${page.params.site}.deployments.${page.params.deployment}.update`
+                    )
+                ) {
+                    await invalidate(Dependencies.DEPLOYMENT);
                 }
-            );
+            });
     });
 </script>
 
 <Container>
     <SiteCard {deployment} proxyRuleList={data.proxyRuleList}>
-        <svelte:fragment slot="footer">
+        {#snippet footer()}
             {#if deployment?.status === 'ready' && data.proxyRuleList?.total}
                 <Button
                     external
@@ -78,7 +77,7 @@
                 bind:showDelete
                 bind:showCancel
                 activeDeployment={data.site.deploymentId} />
-        </svelte:fragment>
+        {/snippet}
     </SiteCard>
     <Card padding="s">
         <Accordion

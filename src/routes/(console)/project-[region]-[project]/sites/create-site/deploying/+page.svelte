@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Wizard } from '$lib/layout';
-    import { base } from '$app/paths';
+    import { base, resolve } from '$app/paths';
     import { page } from '$app/state';
     import { Fieldset, Card, Layout, Tag, Typography } from '@appwrite.io/pink-svelte';
     import Button from '$lib/elements/forms/button.svelte';
@@ -20,23 +20,25 @@
     onMount(() => {
         return sdk
             .forConsoleIn(page.params.region)
-            .client.subscribe(
-                'console',
-                async (response: RealtimeResponseEvent<Models.Deployment>) => {
-                    if (
-                        response.events.includes(
-                            `sites.${data.site.$id}.deployments.${data.deployment.$id}.update`
-                        )
-                    ) {
-                        deployment = response.payload;
-                        if (response.payload.status === 'ready') {
-                            goto(
-                                `${base}/project-${page.params.region}-${page.params.project}/sites/create-site/finish?site=${data.site.$id}`
-                            );
-                        }
+            .realtime.subscribe('console', async (response) => {
+                if (
+                    response.events.includes(
+                        `sites.${data.site.$id}.deployments.${data.deployment.$id}.update`
+                    )
+                ) {
+                    deployment = response.payload;
+                    if (response.payload.status === 'ready') {
+                        const resolvedUrl = resolve(
+                            '/(console)/project-[region]-[project]/sites/create-site/finish',
+                            {
+                                region: page.params.region,
+                                project: page.params.project
+                            }
+                        );
+                        await goto(`${resolvedUrl}?site=${data.site.$id}`);
                     }
                 }
-            );
+            });
     });
 </script>
 

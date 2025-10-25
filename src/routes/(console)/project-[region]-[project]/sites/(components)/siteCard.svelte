@@ -24,17 +24,20 @@
     import { sdk } from '$lib/stores/sdk';
     import { capitalize } from '$lib/helpers/string';
     import { regionalProtocol } from '$routes/(console)/project-[region]-[project]/store';
+    import type { Snippet } from 'svelte';
 
     let {
         deployment,
         proxyRuleList,
         hideQRCode = false,
-        variant = 'primary'
+        variant = 'primary',
+        footer
     }: {
         deployment: Models.Deployment;
         proxyRuleList: Models.ProxyRuleList;
         hideQRCode?: boolean;
         variant?: 'primary' | 'secondary';
+        footer?: Snippet;
     } = $props();
 
     let show = $state(false);
@@ -207,13 +210,13 @@
                 </Layout.Stack>
             </Layout.Stack>
         </div>
-        {#if $$slots.footer}
+        {#if footer}
             <span
                 style="margin-left: calc(-1* var(--space-7));margin-right: calc(-1* var(--space-7));width:auto;">
                 <Divider />
             </span>
             <Layout.Stack direction="row-reverse">
-                <slot name="footer" />
+                {@render footer?.()}
             </Layout.Stack>
         {/if}
     </Layout.Stack>
