@@ -87,3 +87,4 @@ export { default as ExpirationInput } from './expirationInput.svelte';
 export { default as EstimatedCard } from './estimatedCard.svelte';
 export { default as SortButton, type SortDirection } from './sortButton.svelte';
 export { default as SendVerificationEmailModal } from './account/sendVerificationEmailModal.svelte';
+export { default as MultiSelectionTable } from './multiSelectTable.svelte';
