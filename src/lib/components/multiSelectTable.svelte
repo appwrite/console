@@ -2,10 +2,11 @@
     import type { Snippet } from 'svelte';
     import {
         Table,
-        FloatingActionBar,
         Badge,
+        Typography,
+        FloatingActionBar,
         type TableColumn,
-        type TableRootProps
+        type TableRootProps,
     } from '@appwrite.io/pink-svelte';
     import { Button } from '$lib/elements/forms';
     import { Confirm } from '$lib/components/index';
@@ -30,6 +31,7 @@
         onCancel?: () => Promise<void> | void;
     } = $props();
 
+    let disableModal: boolean = $state(false);
     let selectedRows: string[] = $state([]);
     let showConfirmDeletion: boolean = $state(false);
 </script>
@@ -73,17 +75,20 @@
 
 <Confirm
     confirmDeletion
+    disabled={disableModal}
     title="Delete {resource}s"
     bind:open={showConfirmDeletion}
+    submissionLoader
     onSubmit={async () => {
+        disableModal = true;
         await onDelete?.(selectedRows);
+        disableModal = false;
         showConfirmDeletion = false;
-    }}
->
-    <p>
+    }}>
+    <Typography.Text>
         Are you sure you want to delete <strong>{selectedRows.length}</strong>
-        {selectedRows.length > 1 ? `${resource}s` : resource}
-    </p>
+        {selectedRows.length > 1 ? `${resource}s` : resource}.
+    </Typography.Text>
 
-    <p class="u-bold">This action is irreversible.</p>
+    <Typography.Text variant="m-500">This action is irreversible.</Typography.Text>
 </Confirm>
