@@ -169,7 +169,7 @@
                 migrations.migrations.forEach(updateOrAddItem);
             });
 
-        return sdk.forConsoleIn(page.params.region).client.subscribe('console', (response) => {
+        return sdk.forConsoleIn(page.params.region).realtime.subscribe('console', (response) => {
             if (!response.channels.includes(`projects.${getProjectId()}`)) return;
             if (response.events.includes('migrations.*')) {
                 updateOrAddItem(response.payload as Payload);

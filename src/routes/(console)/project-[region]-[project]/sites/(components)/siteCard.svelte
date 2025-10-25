@@ -25,6 +25,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { capitalize } from '$lib/helpers/string';
     import { regionalProtocol } from '$routes/(console)/project-[region]-[project]/store';
+    import type { Snippet } from 'svelte';
 
     let {
         deployment,
@@ -216,7 +217,7 @@
                 <Divider />
             </span>
             <Layout.Stack direction="row-reverse">
-                {@render footer()}
+                {@render footer?.()}
             </Layout.Stack>
         {/if}
     </Layout.Stack>

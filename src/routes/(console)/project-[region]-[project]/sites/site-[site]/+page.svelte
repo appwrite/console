@@ -19,7 +19,7 @@
     let showRollback = false;
 
     onMount(() => {
-        return sdk.forConsole.client.subscribe('console', (response) => {
+        return sdk.forConsole.realtime.subscribe('console', (response) => {
             if (response.events.includes(`sites.${page.params.site}.deployments.*`)) {
                 invalidate(Dependencies.SITE);
             }
@@ -31,7 +31,7 @@
     <Layout.Stack gap="xxxl">
         {#if data?.deployment && data.deployment.status === 'ready'}
             <SiteCard deployment={data.deployment} proxyRuleList={data.proxyRuleList}>
-                <svelte:fragment slot="footer">
+                {#snippet footer()}
                     {#if data.proxyRuleList.total}
                         <Button
                             external
@@ -53,7 +53,7 @@
                             active.
                         </span>
                     </Tooltip>
-                </svelte:fragment>
+                {/snippet}
             </SiteCard>
         {:else if data.deployment?.status === 'building'}
             <Card.Base padding="none">

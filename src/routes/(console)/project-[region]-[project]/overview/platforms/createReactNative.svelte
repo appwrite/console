@@ -18,7 +18,7 @@
     import { Card } from '$lib/components';
     import { page } from '$app/state';
     import { onMount } from 'svelte';
-    import { sdk } from '$lib/stores/sdk';
+    import { type AppwriteRealtimeSubscription, sdk } from '$lib/stores/sdk';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { addNotification } from '$lib/stores/notifications';
     import { fade } from 'svelte/transition';
@@ -117,17 +117,20 @@ EXPO_PUBLIC_APPWRITE_ENDPOINT=${sdk.forProject(page.params.region, page.params.p
     }
 
     onMount(() => {
-        const unsubscribe = sdk.forConsole.client.subscribe('console', (response) => {
-            if (response.events.includes(`projects.${projectId}.ping`)) {
-                connectionSuccessful = true;
-                invalidate(Dependencies.ORGANIZATION);
-                invalidate(Dependencies.PROJECT);
-                unsubscribe();
-            }
-        });
+        let subscription: AppwriteRealtimeSubscription;
+        sdk.forConsole.realtime
+            .subscribe('console', (response) => {
+                if (response.events.includes(`projects.${projectId}.ping`)) {
+                    connectionSuccessful = true;
+                    invalidate(Dependencies.ORGANIZATION);
+                    invalidate(Dependencies.PROJECT);
+                    subscription?.close();
+                }
+            })
+            .then((realtime) => (subscription = realtime));
 
         return () => {
-            unsubscribe();
+            subscription?.close();
             resetPlatformStore();
         };
     });

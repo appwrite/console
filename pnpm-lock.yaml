@@ -97,7 +97,7 @@ importers:
         specifier: ^0.86.5
         version: 0.86.5(svelte@5.25.3)
       '@playwright/test':
-        specifier: ^1.56.1
+        specifier: ^1.55.1
         version: 1.56.1
       '@sveltejs/adapter-static':
         specifier: ^3.0.8
