@@ -38,15 +38,15 @@
 <script lang="ts">
     import { InputSelect } from '$lib/elements/forms';
 
+    import { createConservative } from '$lib/helpers/stores';
+    import RequiredArrayCheckboxes from './requiredArrayCheckboxes.svelte';
+
     export let editing = false;
     export let data: Partial<Models.ColumnBoolean> = {
         required: false,
         array: false,
         default: null
     };
-
-    import { createConservative } from '$lib/helpers/stores';
-    import { Selector } from '@appwrite.io/pink-svelte';
 
     let savedDefault = data.default;
 
@@ -67,6 +67,7 @@
         array: false,
         ...data
     });
+
     $: listen(data);
 
     $: handleDefaultState($required || $array);
@@ -83,17 +84,5 @@
         { label: 'False', value: false }
     ]}
     bind:value={data.default} />
-<Selector.Checkbox
-    size="s"
-    id="required"
-    label="Required"
-    bind:checked={data.required}
-    disabled={data.array}
-    description="Indicate whether this column is required" />
-<Selector.Checkbox
-    size="s"
-    id="array"
-    label="Array"
-    bind:checked={data.array}
-    disabled={data.required || editing}
-    description="Indicate whether this column is an array. Defaults to an empty array." />
+
+<RequiredArrayCheckboxes {editing} bind:array={data.array} bind:required={data.required} />
