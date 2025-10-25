@@ -2,7 +2,6 @@
     import { Container } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import type { Models, RealtimeResponseEvent } from '@appwrite.io/console';
     import SiteCard from '../../../(components)/siteCard.svelte';
     import Logs, { badgeTypeDeployment } from '../../../(components)/logs.svelte';
     import Card from '$lib/components/card.svelte';

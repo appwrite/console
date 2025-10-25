@@ -187,6 +187,11 @@ export enum RuleTrigger {
     MANUAL = 'manual'
 }
 
+/**
+ * Some type imports are broken on the SDK, this works correctly for the time being!
+ */
+export type AppwriteRealtimeSubscription = Awaited<ReturnType<Realtime['subscribe']>>;
+
 export const createAdminClient = () => {
     return new Client().setEndpoint(getApiEndpoint()).setMode('admin').setProject(getProjectId());
 };

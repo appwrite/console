@@ -11,7 +11,6 @@
     import { goto } from '$app/navigation';
     import { onMount } from 'svelte';
     import { getFrameworkIcon } from '$lib/stores/sites';
-    import type { Models, RealtimeResponseEvent } from '@appwrite.io/console';
 
     let { data } = $props();
 
