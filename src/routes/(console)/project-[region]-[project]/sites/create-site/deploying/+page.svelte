@@ -7,7 +7,7 @@
     import Aside from '../aside.svelte';
     import Logs from '../../(components)/logs.svelte';
     import { Copy, SvgIcon } from '$lib/components';
-    import { sdk } from '$lib/stores/sdk';
+    import { type AppwriteRealtimeSubscription, sdk } from '$lib/stores/sdk';
     import { goto } from '$app/navigation';
     import { onMount } from 'svelte';
     import { getFrameworkIcon } from '$lib/stores/sites';
@@ -17,8 +17,8 @@
     let deployment = $state(data.deployment);
 
     onMount(() => {
-        return sdk
-            .forConsoleIn(page.params.region)
+        let subscription: AppwriteRealtimeSubscription;
+        sdk.forConsoleIn(page.params.region)
             .realtime.subscribe('console', async (response) => {
                 if (
                     response.events.includes(
@@ -37,7 +37,12 @@
                         await goto(`${resolvedUrl}?site=${data.site.$id}`);
                     }
                 }
-            });
+            })
+            .then((realtime) => (subscription = realtime));
+
+        return () => {
+            subscription?.close();
+        };
     });
 </script>
 
