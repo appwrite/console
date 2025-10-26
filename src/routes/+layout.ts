@@ -5,11 +5,11 @@ import { sdk } from '$lib/stores/sdk';
 import { redirect } from '@sveltejs/kit';
 import { Dependencies } from '$lib/constants';
 import type { LayoutLoad } from './$types';
-import { redirectTo } from './store';
+import { isEmailVerificationRequired, redirectTo } from './store';
 import { base, resolve } from '$app/paths';
 import type { Account } from '$lib/stores/user';
-import type { AppwriteException } from '@appwrite.io/console';
-import { isCloud, VARS } from '$lib/system';
+import type { AppwriteException, Models } from '@appwrite.io/console';
+import { isCloud } from '$lib/system';
 import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
 
 export const ssr = false;
@@ -23,13 +23,23 @@ export const load: LayoutLoad = async ({ depends, url, route }) => {
         .then((response) => [response, null])
         .catch((error) => [null, error])) as [Account, AppwriteException];
 
+    let consoleVariables: Models.ConsoleVariables | null = null;
+    if (isEmailVerificationRequired === null) {
+        try {
+            consoleVariables = await sdk.forConsole.console.variables();
+            isEmailVerificationRequired.set(consoleVariables._APP_REQUIRE_CONSOLE_VERIFICATION);
+        } catch (error) {
+            // ignore
+        }
+    }
+
     if (url.searchParams.has('forceRedirect')) {
         redirectTo.set(url.searchParams.get('forceRedirect') || null);
         url.searchParams.delete('forceRedirect');
     }
 
     if (account) {
-        if (isCloud && !account.emailVerification && VARS.EMAIL_VERIFICATION) {
+        if (isCloud && !account.emailVerification && isEmailVerificationRequired) {
             const isConsoleRoute = route.id?.startsWith('/(console)');
             const isVerifyEmailPage = url.pathname === resolve('/verify-email');
 
@@ -40,6 +50,7 @@ export const load: LayoutLoad = async ({ depends, url, route }) => {
 
         return {
             account: account,
+            consoleVariables,
             organizations: !isCloud
                 ? await sdk.forConsole.teams.list()
                 : await sdk.forConsole.billing.listOrganization()

@@ -60,7 +60,7 @@
         if (userId && secret) {
             history.replaceState(null, '', cleanUrl);
             try {
-                await sdk.forConsole.account.updateVerification({ userId, secret });
+                await sdk.forConsole.account.updateEmailVerification({ userId, secret });
                 // Don't show notification here - the modal will handle it
                 await Promise.all([
                     invalidate(Dependencies.ACCOUNT),

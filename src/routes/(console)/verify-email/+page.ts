@@ -4,14 +4,14 @@ import type { PageLoad } from './$types';
 import { Dependencies } from '$lib/constants';
 import { sdk } from '$lib/stores/sdk';
 import { addNotification } from '$lib/stores/notifications';
-import { VARS } from '$lib/system';
 
 export const load: PageLoad = async ({ parent, depends, url }) => {
-    if (!VARS.EMAIL_VERIFICATION) {
+    const { account, consoleVariables } = await parent();
+
+    if (!consoleVariables._APP_REQUIRE_CONSOLE_VERIFICATION) {
         redirect(303, resolve('/'));
     }
 
-    const { account } = await parent();
     depends(Dependencies.ACCOUNT);
 
     const user = url.searchParams.get('userId') ?? null;
@@ -21,7 +21,7 @@ export const load: PageLoad = async ({ parent, depends, url }) => {
         redirect(303, resolve('/'));
     } else if (user && secret) {
         try {
-            await sdk.forConsole.account.updateVerification({
+            await sdk.forConsole.account.updateEmailVerification({
                 userId: user,
                 secret
             });
