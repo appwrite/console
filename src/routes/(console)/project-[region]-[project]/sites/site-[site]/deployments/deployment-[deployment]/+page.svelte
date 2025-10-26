@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Container } from '$lib/layout';
-    import { sdk } from '$lib/stores/sdk';
+    import { type AppwriteRealtimeSubscription, sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import SiteCard from '../../../(components)/siteCard.svelte';
     import Logs, { badgeTypeDeployment } from '../../../(components)/logs.svelte';
@@ -31,8 +31,8 @@
     let showCancel = $state(false);
 
     onMount(() => {
-        return sdk
-            .forConsoleIn(page.params.region)
+        let subscription: AppwriteRealtimeSubscription;
+        sdk.forConsoleIn(page.params.region)
             .realtime.subscribe('console', async (response) => {
                 if (
                     response.events.includes(
@@ -41,7 +41,12 @@
                 ) {
                     await invalidate(Dependencies.DEPLOYMENT);
                 }
-            });
+            })
+            .then((realtime) => (subscription = realtime));
+
+        return () => {
+            subscription?.close();
+        };
     });
 </script>
 
