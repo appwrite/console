@@ -521,26 +521,6 @@ export async function paymentExpired(org: Organization) {
                 }
             ]
         });
-    } else if (
-        !expiredNotification &&
-        !payment.expired &&
-        payment.expiryYear <= year &&
-        payment.expiryMonth < month
-    ) {
-        addNotification({
-            type: 'error',
-            isHtml: true,
-            timeout: 0,
-            message: expiredMessage,
-            buttons: [
-                {
-                    name: 'Update payment details',
-                    method: () => {
-                        goto(`${base}/account/payments`);
-                    }
-                }
-            ]
-        });
     }
     sessionStorage.setItem('expiredPaymentNotification', 'true');
 }
