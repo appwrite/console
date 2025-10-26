@@ -14,13 +14,7 @@
     import { Dependencies } from '$lib/constants';
     import Cancel from './(modals)/cancelDeploymentModal.svelte';
     import { base } from '$app/paths';
-    import {
-        ActionMenu,
-        Icon,
-        Status,
-        Table,
-        Tooltip
-    } from '@appwrite.io/pink-svelte';
+    import { ActionMenu, Icon, Status, Table, Tooltip } from '@appwrite.io/pink-svelte';
     import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import {
         IconDotsHorizontal,
@@ -40,12 +34,12 @@
 
     let {
         data,
-        columns,
+        columns
     }: {
-        data: PageData,
-        columns: Column[]
-    } = $props()
-    
+        data: PageData;
+        columns: Column[];
+    } = $props();
+
     let showDelete = $state(false);
     let showCancel = $state(false);
     let showActivate = $state(false);
