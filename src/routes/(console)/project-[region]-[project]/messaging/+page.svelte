@@ -109,7 +109,7 @@
 
         try {
             await Promise.all(promises);
-            trackEvent(Submit.MessagingMessageDelete, { total: selected.length });
+            trackEvent(Submit.MessagingMessageDelete, { total: selectedRows.length });
         } catch (error) {
             trackError(error, Submit.MessagingMessageDelete);
             return error;
@@ -151,7 +151,7 @@
             allowSelection={$canWriteMessages}>
             {#snippet header(root)}
                 {#each $columns as { id, title }}
-                    <Table.Cell column={id} {root}>{title}</Table.Cell>
+                    <Table.Header.Cell column={id} {root}>{title}</Table.Header.Cell>
                 {/each}
             {/snippet}
 

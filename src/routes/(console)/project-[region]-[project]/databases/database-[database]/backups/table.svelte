@@ -295,6 +295,7 @@
     title="Delete backup"
     bind:open={showDelete}
     onSubmit={async () => {
+        if (!selectedBackup) return;
         await deleteBackups([selectedBackup.$id]);
     }}>
     <Typography.Text>

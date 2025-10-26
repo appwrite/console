@@ -12,8 +12,8 @@
         type TableColumn,
         type TableRootProps
     } from '@appwrite.io/pink-svelte';
+    import Confirm from './confirm.svelte';
     import { Button } from '$lib/elements/forms';
-    import { Confirm } from '$lib/components/index';
     import { addNotification } from '$lib/stores/notifications';
 
     let {
@@ -123,7 +123,7 @@
             confirmDeletion
             error={onDeleteError}
             disabled={disableModal}
-            title="Delete {resource}s"
+            title="Delete {getPluralResource()}"
             bind:open={showConfirmDeletion}
             onSubmit={async () => {
                 disableModal = true;
