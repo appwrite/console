@@ -3,7 +3,7 @@
     import { resolve } from '$app/paths';
     import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { Id, MultiSelectionTable } from '$lib/components';
+    import { Id, MultiSelectionTable, type DeleteOperationState } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
     import { addNotification } from '$lib/stores/notifications';
@@ -17,7 +17,7 @@
 
     let { data }: PageProps = $props();
 
-    async function onDelete(selectedTables: string[]) {
+    async function onDelete(selectedTables: string[]): Promise<DeleteOperationState> {
         const promises = selectedTables.map((tableId) =>
             sdk.forProject(page.params.region, page.params.project).tablesDB.deleteTable({
                 databaseId: page.params.database,
@@ -26,19 +26,19 @@
         );
         try {
             await Promise.all(promises);
+            await invalidate(Dependencies.TABLES);
+            subNavigation.update();
+
             trackEvent(Submit.TableDelete);
             addNotification({
                 type: 'success',
                 message: `${selectedTables.length} table${selectedTables.length > 1 ? 's' : ''} deleted`
             });
-            await invalidate(Dependencies.TABLES);
-            subNavigation.update();
+
+            return true;
         } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
             trackError(error, Submit.TableDelete);
+            return error.message;
         }
     }
 

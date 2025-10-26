@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Id, MultiSelectionTable } from '$lib/components';
+    import { type DeleteOperationState, Id, MultiSelectionTable } from '$lib/components';
     import type { Column } from '$lib/helpers/types';
     import type { Models } from '@appwrite.io/console';
     import { Badge, Table, Typography } from '@appwrite.io/pink-svelte';
@@ -27,29 +27,28 @@
     let selectedLogId = $state<string | null>(null);
     const filteredColumns = $derived(columns.filter((c) => !c.exclude));
 
-    async function deleteLogs(selectedRows: string[]) {
+    async function deleteLogs(selectedRows: string[]): Promise<DeleteOperationState> {
         const promises = selectedRows.map((logId) =>
             sdk.forProject(page.params.region, page.params.project).sites.deleteLog({
                 siteId: page.params.site,
                 logId
             })
         );
+
         try {
             await Promise.all(promises);
-            trackEvent(Submit.LogDelete);
+            await invalidate(Dependencies.EXECUTIONS);
+
             addNotification({
                 type: 'success',
                 message: `${selectedRows.length} log${selectedRows.length > 1 ? 's' : ''} deleted`
             });
+
+            trackEvent(Submit.LogDelete);
+            return true;
         } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
             trackError(error, Submit.LogDelete);
-        } finally {
-            selectedRows = [];
-            invalidate(Dependencies.EXECUTIONS);
+            return error.message;
         }
     }
 </script>

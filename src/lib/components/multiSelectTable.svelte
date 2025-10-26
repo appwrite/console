@@ -1,3 +1,7 @@
+<script lang="ts" module>
+    export type DeleteOperationState = true | string | void;
+</script>
+
 <script lang="ts">
     import type { Snippet } from 'svelte';
     import {
@@ -6,7 +10,7 @@
         Typography,
         FloatingActionBar,
         type TableColumn,
-        type TableRootProps,
+        type TableRootProps
     } from '@appwrite.io/pink-svelte';
     import { Button } from '$lib/elements/forms';
     import { Confirm } from '$lib/components/index';
@@ -27,12 +31,13 @@
         columns: Array<TableColumn> | number;
         header: Snippet<[root: TableRootProps]>;
         children: Snippet<[root: TableRootProps]>;
-        onDelete?: (selectedRows: string[]) => Promise<void> | void;
+        onDelete?: (selectedRows: string[]) => Promise<DeleteOperationState> | DeleteOperationState;
         onCancel?: () => Promise<void> | void;
     } = $props();
 
-    let disableModal: boolean = $state(false);
     let selectedRows: string[] = $state([]);
+    let disableModal: boolean = $state(false);
+    let onDeleteError: string | null = $state(null);
     let showConfirmDeletion: boolean = $state(false);
 </script>
 
@@ -66,29 +71,45 @@
                     if (confirmDeletion) {
                         showConfirmDeletion = true;
                     } else {
-                        await onDelete?.(selectedRows);
+                        const state = await onDelete?.(selectedRows);
+                        if (typeof state === 'string') {
+                            // user should handle error on their own!
+                        } else {
+                            selectedRows = [];
+                        }
                     }
                 }}>Delete</Button>
         </svelte:fragment>
     </FloatingActionBar>
 {/if}
 
-<Confirm
-    confirmDeletion
-    disabled={disableModal}
-    title="Delete {resource}s"
-    bind:open={showConfirmDeletion}
-    submissionLoader
-    onSubmit={async () => {
-        disableModal = true;
-        await onDelete?.(selectedRows);
-        disableModal = false;
-        showConfirmDeletion = false;
-    }}>
-    <Typography.Text>
-        Are you sure you want to delete <strong>{selectedRows.length}</strong>
-        {selectedRows.length > 1 ? `${resource}s` : resource}.
-    </Typography.Text>
+{#if allowSelection}
+    <Confirm
+        submissionLoader
+        confirmDeletion
+        error={onDeleteError}
+        disabled={disableModal}
+        title="Delete {resource}s"
+        bind:open={showConfirmDeletion}
+        onSubmit={async () => {
+            disableModal = true;
+            onDeleteError = null;
 
-    <Typography.Text variant="m-500">This action is irreversible.</Typography.Text>
-</Confirm>
+            const state = await onDelete?.(selectedRows);
+            if (typeof state === 'string') {
+                disableModal = false;
+                onDeleteError = state || `Failed to delete ${resource}s`;
+            } else {
+                selectedRows = [];
+                disableModal = false;
+                showConfirmDeletion = false;
+            }
+        }}>
+        <Typography.Text>
+            Are you sure you want to delete <strong>{selectedRows.length}</strong>
+            {selectedRows.length > 1 ? `${resource}s` : resource}.
+        </Typography.Text>
+
+        <Typography.Text variant="m-500">This action is irreversible.</Typography.Text>
+    </Confirm>
+{/if}
