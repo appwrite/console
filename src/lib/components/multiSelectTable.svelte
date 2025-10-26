@@ -23,6 +23,7 @@
         allowSelection = true,
         confirmDeletion = true,
         showSuccessNotification = true,
+        computeKey = 'multiSelectionTable',
         header,
         children,
         onDelete,
@@ -33,6 +34,7 @@
         resource: string;
         allowSelection?: boolean;
         confirmDeletion?: boolean;
+        computeKey?: string | number;
         showSuccessNotification?: boolean;
         columns: Array<TableColumn> | number;
         header: Snippet<[root: TableRootProps]>;
@@ -72,90 +74,92 @@
     }
 </script>
 
-<Table.Root let:root {columns} {allowSelection} bind:selectedRows>
-    <svelte:fragment slot="header" let:root>
-        {@render header?.(root)}
-    </svelte:fragment>
-
-    {@render children(root)}
-</Table.Root>
-
-{#if allowSelection && selectedRows.length > 0}
-    <FloatingActionBar>
-        <svelte:fragment slot="start">
-            <Badge content={selectedRows.length.toString()} />
-            <span>
-                {selectedRows.length > 1 ? getPluralResource() : resource}
-                selected
-            </span>
+{#key computeKey}
+    <Table.Root let:root {columns} {allowSelection} bind:selectedRows>
+        <svelte:fragment slot="header" let:root>
+            {@render header?.(root)}
         </svelte:fragment>
-        <svelte:fragment slot="end">
-            <Button
-                text
-                on:click={() => {
-                    onCancel?.();
-                    selectedRows = [];
-                }}>Cancel</Button>
-            <Button
-                secondary
-                on:click={async () => {
-                    if (confirmDeletion) {
-                        showConfirmDeletion = true;
-                    } else {
-                        const state = await onDelete?.(selectedRows);
-                        if (typeof state === 'string') {
-                            // user should handle error on their own!
+
+        {@render children(root)}
+    </Table.Root>
+
+    {#if allowSelection && selectedRows.length > 0}
+        <FloatingActionBar>
+            <svelte:fragment slot="start">
+                <Badge content={selectedRows.length.toString()} />
+                <span>
+                    {selectedRows.length > 1 ? getPluralResource() : resource}
+                    selected
+                </span>
+            </svelte:fragment>
+            <svelte:fragment slot="end">
+                <Button
+                    text
+                    on:click={() => {
+                        onCancel?.();
+                        selectedRows = [];
+                    }}>Cancel</Button>
+                <Button
+                    secondary
+                    on:click={async () => {
+                        if (confirmDeletion) {
+                            showConfirmDeletion = true;
                         } else {
-                            notifySuccess();
-                            selectedRows = [];
+                            const state = await onDelete?.(selectedRows);
+                            if (typeof state === 'string') {
+                                // user should handle error on their own!
+                            } else {
+                                notifySuccess();
+                                selectedRows = [];
+                            }
                         }
-                    }
-                }}>Delete</Button>
-        </svelte:fragment>
-    </FloatingActionBar>
-{/if}
+                    }}>Delete</Button>
+            </svelte:fragment>
+        </FloatingActionBar>
+    {/if}
 
-{#if allowSelection}
-    <Confirm
-        submissionLoader
-        confirmDeletion
-        error={onDeleteError}
-        disabled={disableModal}
-        title="Delete {resource}s"
-        bind:open={showConfirmDeletion}
-        onSubmit={async () => {
-            disableModal = true;
-            onDeleteError = null;
+    {#if allowSelection}
+        <Confirm
+            submissionLoader
+            confirmDeletion
+            error={onDeleteError}
+            disabled={disableModal}
+            title="Delete {resource}s"
+            bind:open={showConfirmDeletion}
+            onSubmit={async () => {
+                disableModal = true;
+                onDeleteError = null;
 
-            const state = await onDelete?.(selectedRows);
-            if (typeof state === 'string') {
-                disableModal = false;
-                onDeleteError = state || `Failed to delete ${resource}s`;
-            } else {
-                notifySuccess();
-                selectedRows = [];
-                disableModal = false;
-                showConfirmDeletion = false;
-            }
-        }}>
-        <Typography.Text>
-            {@const selectionCount = selectedRows.length}
-            {#if deleteContent}
-                <!-- some show extra info -->
-                {@render deleteContent(selectionCount)}
-            {:else}
-                Are you sure you want to delete <strong>{selectionCount}</strong>
-                {selectionCount > 1 ? getPluralResource() : resource}?
-            {/if}
-        </Typography.Text>
+                const state = await onDelete?.(selectedRows);
+                if (typeof state === 'string') {
+                    disableModal = false;
+                    onDeleteError = state || `Failed to delete ${resource}s`;
+                } else {
+                    notifySuccess();
+                    selectedRows = [];
+                    disableModal = false;
+                    showConfirmDeletion = false;
+                }
+            }}>
+            <Typography.Text>
+                {@const selectionCount = selectedRows.length}
+                {#if deleteContent}
+                    <!-- some show extra info -->
+                    {@render deleteContent(selectionCount)}
+                {:else}
+                    Are you sure you want to delete <strong>{selectionCount}</strong>
+                    {selectionCount > 1 ? getPluralResource() : resource}?
+                {/if}
+            </Typography.Text>
 
-        <Typography.Text variant="m-500">
-            {#if deleteContentNotice}
-                <!-- some show extra info -->
-                {@render deleteContentNotice()}
-            {:else}
-                This action is irreversible.
-            {/if}
-        </Typography.Text>
-    </Confirm>
-{/if}
+            <Typography.Text variant="m-500">
+                {#if deleteContentNotice}
+                    <!-- some show extra info -->
+                    {@render deleteContentNotice()}
+                {:else}
+                    This action is irreversible.
+                {/if}
+            </Typography.Text>
+        </Confirm>
+    {/if}
+{/key}

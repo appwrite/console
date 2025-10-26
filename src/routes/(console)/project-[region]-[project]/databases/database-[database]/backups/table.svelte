@@ -1,5 +1,11 @@
 <script lang="ts">
-    import { Card, Modal } from '$lib/components';
+    import {
+        Card,
+        Confirm,
+        type DeleteOperationState,
+        Modal,
+        MultiSelectionTable
+    } from '$lib/components';
     import { Button, InputCheckbox, InputText } from '$lib/elements/forms';
     import RestoreModal from './restoreModal.svelte';
     import type { PageData } from './$types';
@@ -11,17 +17,14 @@
     import { ID } from '@appwrite.io/console';
     import { columns } from './store';
     import { database } from '../store';
-    import type { BackupArchive } from '$lib/sdk/backups';
+    import type { BackupArchive, BackupPolicy } from '$lib/sdk/backups';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { copy } from '$lib/helpers/copy';
     import { LabelCard } from '$lib/components/index.js';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
-
     import { Dependencies } from '$lib/constants';
     import {
         ActionMenu,
-        Badge,
-        FloatingActionBar,
         Icon,
         Layout,
         Popover,
@@ -40,24 +43,26 @@
     } from '@appwrite.io/pink-icons-svelte';
     import { capitalize } from '$lib/helpers/string';
     import Ellipse from './components/Ellipse.svelte';
-    import Confirm from '$lib/components/confirm.svelte';
     import { page } from '$app/state';
 
-    export let data: PageData;
+    const {
+        data
+    }: {
+        data: PageData;
+    } = $props();
 
-    let showDelete = false;
-    let selectedBackup: BackupArchive = null;
+    let showDelete = $state(false);
+    let selectedBackup: BackupArchive | null = $state(null);
 
     let showDropdown = [];
-    let selectedBackups: string[] = [];
 
-    let showRestore = false;
-    let showCustomId = false;
-    let newDatabaseInfo: { name: string; id: string } = { name: null, id: null };
+    let showRestore = $state(false);
+    let showCustomId = $state(false);
+    let newDatabaseInfo: { name: string; id: string } = $state({ name: null, id: null });
 
-    let confirmSameDbRestore = false;
-    let selectedRestoreOption = 'new';
-    let restoreOptions = [
+    let confirmSameDbRestore = $state(false);
+    let selectedRestoreOption = $state('new');
+    const restoreOptions = [
         {
             id: 'new',
             title: 'Restore in new database',
@@ -70,89 +75,21 @@
         }
     ];
 
-    const deleteBackups = async () => {
-        if (!selectedBackups.length && selectedBackup) {
-            selectedBackups.push(selectedBackup.$id);
-        }
-
-        const message = `${selectedBackups.length} backup${selectedBackups.length > 1 ? 's have been' : ''} deleted`;
-
-        const promises = selectedBackups.map((archiveId) =>
-            sdk.forProject(page.params.region, page.params.project).backups.deleteArchive(archiveId)
+    const disableRestoreButton = $derived.by(() => {
+        return (
+            (selectedRestoreOption === 'new' &&
+                (!newDatabaseInfo.name || $database.$id === newDatabaseInfo.id)) ||
+            (selectedRestoreOption === 'same' && !confirmSameDbRestore)
         );
+    });
 
-        try {
-            await Promise.all(promises);
-            addNotification({
-                message,
-                type: 'success'
-            });
-            invalidate(Dependencies.BACKUPS);
-        } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
-        } finally {
-            showDelete = false;
-            selectedBackup = null;
-            selectedBackups = [];
-        }
-    };
-
-    const restoreBackup = async () => {
-        if (selectedRestoreOption === 'same') {
-            newDatabaseInfo.id = $database.$id;
-            newDatabaseInfo.name = $database.name;
-        }
-
-        try {
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .backups.createRestoration(
-                    selectedBackup.$id,
-                    ['databases'],
-                    newDatabaseInfo.id ?? ID.unique(),
-                    newDatabaseInfo.name
-                );
-            addNotification({
-                type: 'success',
-                message: 'Database restore initiated'
-            });
-
-            invalidate(Dependencies.BACKUPS);
-            trackEvent('backup_restore_submit', {
-                newDatabaseName: newDatabaseInfo.name
-            });
-        } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
-        } finally {
-            showRestore = false;
-        }
-    };
-
-    const policyDetails = (policyId: string | null) =>
-        data.policies.policies.find((policy) => policy.$id === policyId);
-
-    const cleanBackupName = (backup: BackupArchive) =>
-        toLocaleDateTime(backup.$createdAt).replaceAll(',', '');
-
-    $: if (!showRestore && !showDelete) {
-        showCustomId = false;
-        selectedBackup = null;
-
-        confirmSameDbRestore = false;
-        selectedRestoreOption = 'new';
-        newDatabaseInfo = { name: null, id: null };
+    function getPolicyDetails(policyId: string | null): BackupPolicy | null {
+        return data.policies.policies.find((policy) => policy.$id === policyId);
     }
 
-    $: disableButton =
-        (selectedRestoreOption === 'new' &&
-            (!newDatabaseInfo.name || $database.$id === newDatabaseInfo.id)) ||
-        (selectedRestoreOption === 'same' && !confirmSameDbRestore);
+    function getCleanBackupName(backup: BackupArchive): string {
+        return toLocaleDateTime(backup.$createdAt).replaceAll(',', '');
+    }
 
     function getBackupStatus(backup: BackupArchive) {
         switch (backup.status) {
@@ -169,142 +106,208 @@
                 return 'waiting';
         }
     }
+
+    async function deleteBackups(selectedRows: string[]): Promise<DeleteOperationState> {
+        const promises = selectedRows.map((archiveId) => {
+            return sdk
+                .forProject(page.params.region, page.params.project)
+                .backups.deleteArchive(archiveId);
+        });
+
+        try {
+            await Promise.all(promises);
+            await invalidate(Dependencies.BACKUPS);
+
+            if (selectedBackup) {
+                addNotification({
+                    type: 'success',
+                    message: '1 backup deleted'
+                });
+            }
+        } catch (error) {
+            if (selectedBackup) {
+                addNotification({
+                    type: 'error',
+                    message: error.message
+                });
+            } else {
+                return error.message;
+            }
+        } finally {
+            if (selectedBackup) {
+                showDelete = false;
+                selectedBackup = null;
+            }
+        }
+    }
+
+    async function restoreBackup() {
+        if (selectedRestoreOption === 'same') {
+            newDatabaseInfo.id = $database.$id;
+            newDatabaseInfo.name = $database.name;
+        }
+
+        try {
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .backups.createRestoration(
+                    selectedBackup.$id,
+                    ['databases'],
+                    newDatabaseInfo.id ?? ID.unique(),
+                    newDatabaseInfo.name
+                );
+            await invalidate(Dependencies.BACKUPS);
+
+            addNotification({
+                type: 'success',
+                message: 'Database restore initiated'
+            });
+            trackEvent('backup_restore_submit', { newDatabaseName: newDatabaseInfo.name });
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
+        } finally {
+            showRestore = false;
+        }
+    }
+
+    $effect(() => {
+        if (!showRestore && !showDelete) {
+            showCustomId = false;
+            selectedBackup = null;
+
+            confirmSameDbRestore = false;
+            selectedRestoreOption = 'new';
+            newDatabaseInfo = { name: null, id: null };
+        }
+    });
 </script>
 
-<Table.Root let:root allowSelection columns={$columns} bind:selectedRows={selectedBackups}>
-    <svelte:fragment slot="header" let:root>
+<MultiSelectionTable
+    resource="backup"
+    columns={$columns}
+    onDelete={deleteBackups}
+    computeKey={data.backups.archives.length}>
+    {#snippet header(root)}
         {#each $columns as column}
             <Table.Header.Cell column={column.id} {root}>{column.title}</Table.Header.Cell>
         {/each}
-    </svelte:fragment>
+    {/snippet}
 
-    {#each data.backups.archives as backup, index}
-        {@const policy = policyDetails(backup.policyId)}
-        {@const retainedUntil = new Date(
-            new Date(policy?.$createdAt).getTime() + policy?.retention * 24 * 60 * 60 * 1000
-        )}
-        {@const formattedRetainedUntil = `${retainedUntil.getDate()} ${retainedUntil.toLocaleString('en-US', { month: 'short' })}, ${retainedUntil.getFullYear()} ${retainedUntil.toLocaleTimeString('en-US', { hour12: false })}`}
-        <Table.Row.Base id={backup.$id} {root}>
-            <Table.Cell column="backups" {root}>
-                <DualTimeView time={backup.$createdAt}>
-                    {cleanBackupName(backup)}
-                </DualTimeView>
-            </Table.Cell>
-            <Table.Cell column="size" {root}>
-                {#if backup.status === 'completed'}
-                    {calculateSize(backup.size)}
-                {:else}
-                    -
-                {/if}
-            </Table.Cell>
-            <Table.Cell column="status" {root}>
-                {@const backupStatus = getBackupStatus(backup)}
-                <Status status={backupStatus} label={capitalize(backupStatus)} />
-                <!--{#if backup.status === 'Failed'}-->
-                <!--    <span class="u-underline">Get support</span>-->
-                <!--{/if}-->
-            </Table.Cell>
-            <Table.Cell column="policy" {root}>
-                <div class="u-flex u-cross-baseline">
-                    <Tooltip maxWidth="fit-content">
-                        <span>
-                            {policy?.name || 'Manual'}
-                        </span>
-                        <span slot="tooltip"
-                            >{policy
-                                ? `Retained until: ${formattedRetainedUntil}`
-                                : `Retained forever`}</span>
-                    </Tooltip>
-                </div>
-            </Table.Cell>
-            <Table.Cell column="actions" {root}>
-                <div class="action-cell u-flex u-main-end u-width-full-line">
-                    <Popover let:toggle padding="m" placement="bottom-end">
-                        <Button extraCompact on:click={toggle}>
-                            <Icon icon={IconDotsHorizontal} />
-                        </Button>
-                        <svelte:fragment slot="tooltip" let:toggle>
-                            <ActionMenu.Root width="180px" noPadding>
-                                {#if backup.status === 'completed'}
+    {#snippet children(root)}
+        {#each data.backups.archives as backup, index}
+            {@const policy = getPolicyDetails(backup.policyId)}
+            {@const retainedUntil = new Date(
+                new Date(policy?.$createdAt).getTime() + policy?.retention * 24 * 60 * 60 * 1000
+            )}
+            {@const formattedRetainedUntil = `${retainedUntil.getDate()} ${retainedUntil.toLocaleString('en-US', { month: 'short' })}, ${retainedUntil.getFullYear()} ${retainedUntil.toLocaleTimeString('en-US', { hour12: false })}`}
+            <Table.Row.Base id={backup.$id} {root}>
+                <Table.Cell column="backups" {root}>
+                    <DualTimeView time={backup.$createdAt}>
+                        {getCleanBackupName(backup)}
+                    </DualTimeView>
+                </Table.Cell>
+                <Table.Cell column="size" {root}>
+                    {#if backup.status === 'completed'}
+                        {calculateSize(backup.size)}
+                    {:else}
+                        -
+                    {/if}
+                </Table.Cell>
+                <Table.Cell column="status" {root}>
+                    {@const backupStatus = getBackupStatus(backup)}
+                    <Status status={backupStatus} label={capitalize(backupStatus)} />
+                    <!--{#if backup.status === 'Failed'}-->
+                    <!--    <span class="u-underline">Get support</span>-->
+                    <!--{/if}-->
+                </Table.Cell>
+                <Table.Cell column="policy" {root}>
+                    <div class="u-flex u-cross-baseline">
+                        <Tooltip maxWidth="fit-content">
+                            <span>
+                                {policy?.name || 'Manual'}
+                            </span>
+                            <span slot="tooltip"
+                                >{policy
+                                    ? `Retained until: ${formattedRetainedUntil}`
+                                    : `Retained forever`}</span>
+                        </Tooltip>
+                    </div>
+                </Table.Cell>
+                <Table.Cell column="actions" {root}>
+                    <div class="action-cell u-flex u-main-end u-width-full-line">
+                        <Popover let:toggle padding="m" placement="bottom-end">
+                            <Button extraCompact on:click={toggle}>
+                                <Icon icon={IconDotsHorizontal} />
+                            </Button>
+                            <svelte:fragment slot="tooltip" let:toggle>
+                                <ActionMenu.Root width="180px" noPadding>
+                                    {#if backup.status === 'completed'}
+                                        <ActionMenu.Item.Button
+                                            trailingIcon={IconRefresh}
+                                            on:click={(e) => {
+                                                toggle(e);
+                                                showRestore = true;
+                                                selectedBackup = backup;
+                                                showDropdown[index] = false;
+                                                trackEvent(Click.BackupRestoreClick);
+                                            }}>
+                                            Restore
+                                        </ActionMenu.Item.Button>
+                                    {/if}
                                     <ActionMenu.Item.Button
-                                        trailingIcon={IconRefresh}
+                                        trailingIcon={IconDuplicate}
                                         on:click={(e) => {
                                             toggle(e);
-                                            showRestore = true;
+                                            copy(backup.$id);
+                                            showDropdown[index] = false;
+                                            trackEvent(Click.BackupCopyIdClick);
+                                        }}>
+                                        Copy ID
+                                    </ActionMenu.Item.Button>
+                                    <ActionMenu.Item.Button
+                                        status="danger"
+                                        trailingIcon={IconTrash}
+                                        on:click={(e) => {
+                                            toggle(e);
+                                            showDelete = true;
                                             selectedBackup = backup;
                                             showDropdown[index] = false;
-                                            trackEvent(Click.BackupRestoreClick);
+                                            trackEvent(Click.BackupDeleteClick);
                                         }}>
-                                        Restore
+                                        Delete
                                     </ActionMenu.Item.Button>
-                                {/if}
-                                <ActionMenu.Item.Button
-                                    trailingIcon={IconDuplicate}
-                                    on:click={(e) => {
-                                        toggle(e);
-                                        copy(backup.$id);
-                                        showDropdown[index] = false;
-                                        trackEvent(Click.BackupCopyIdClick);
-                                    }}>
-                                    Copy ID
-                                </ActionMenu.Item.Button>
-                                <ActionMenu.Item.Button
-                                    status="danger"
-                                    trailingIcon={IconTrash}
-                                    on:click={(e) => {
-                                        toggle(e);
-                                        showDelete = true;
-                                        selectedBackup = backup;
-                                        showDropdown[index] = false;
-                                        trackEvent(Click.BackupDeleteClick);
-                                    }}>
-                                    Delete
-                                </ActionMenu.Item.Button>
-                            </ActionMenu.Root>
-                        </svelte:fragment>
-                    </Popover>
-                </div>
-            </Table.Cell>
-        </Table.Row.Base>
-    {/each}
-</Table.Root>
+                                </ActionMenu.Root>
+                            </svelte:fragment>
+                        </Popover>
+                    </div>
+                </Table.Cell>
+            </Table.Row.Base>
+        {/each}
+    {/snippet}
+</MultiSelectionTable>
 
-{#if selectedBackups.length > 0}
-    <FloatingActionBar>
-        <svelte:fragment slot="start">
-            <Badge content={selectedBackups.length.toString()} />
-            <span>
-                {selectedBackups.length > 1 ? 'backups' : 'backup'}
-                selected
-            </span>
-        </svelte:fragment>
-        <svelte:fragment slot="end">
-            <Button text on:click={() => (selectedBackups = [])}>Cancel</Button>
-            <Button secondary on:click={() => (showDelete = true)}>Delete</Button>
-        </svelte:fragment>
-    </FloatingActionBar>
-{/if}
-
+<!-- this is for single backup delete -->
 <Confirm
-    title="Delete {selectedBackups.length ? 'backups' : 'backup'}"
+    title="Delete backup"
     bind:open={showDelete}
-    onSubmit={deleteBackups}>
+    onSubmit={async () => {
+        await deleteBackups([selectedBackup.$id]);
+    }}>
     <Typography.Text>
-        Are you sure you want to delete
-        {#if selectedBackups.length}
-            <b>{selectedBackups.length}</b> {selectedBackups.length > 1 ? 'backups' : 'backup'}?
-        {:else}
-            the <b>{cleanBackupName(selectedBackup)}</b> backup?
-        {/if}
-        <br />This action is irreversible.
+        Are you sure you want to delete the <b>{getCleanBackupName(selectedBackup)}</b> backup?
     </Typography.Text>
+
+    <Typography.Text variant="m-500">This action is irreversible.</Typography.Text>
 </Confirm>
 
 <Modal title="Restore backup" bind:show={showRestore} onSubmit={restoreBackup}>
     <Card radius="m" padding="s">
         <Layout.Stack gap="xxs">
             <Typography.Text variant="m-500">
-                {cleanBackupName(selectedBackup)}
+                {getCleanBackupName(selectedBackup)}
             </Typography.Text>
 
             <Typography.Caption variant="500">
@@ -374,6 +377,6 @@
 
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showRestore = false)}>Cancel</Button>
-        <Button submit disabled={disableButton}>Restore</Button>
+        <Button submit disabled={disableRestoreButton}>Restore</Button>
     </svelte:fragment>
 </Modal>
