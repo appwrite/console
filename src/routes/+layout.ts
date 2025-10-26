@@ -11,6 +11,7 @@ import type { Account } from '$lib/stores/user';
 import type { AppwriteException, Models } from '@appwrite.io/console';
 import { isCloud } from '$lib/system';
 import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
+import { get } from 'svelte/store';
 
 export const ssr = false;
 
@@ -23,14 +24,21 @@ export const load: LayoutLoad = async ({ depends, url, route }) => {
         .then((response) => [response, null])
         .catch((error) => [null, error])) as [Account, AppwriteException];
 
+    let isVerificationNeeded = false;
     let consoleVariables: Models.ConsoleVariables | null = null;
-    if (isEmailVerificationRequired === null) {
+
+    // cached so we don't always load the variables!
+    const writableStoreValue = get(isEmailVerificationRequired);
+    if (writableStoreValue === null) {
         try {
             consoleVariables = await sdk.forConsole.console.variables();
-            isEmailVerificationRequired.set(consoleVariables._APP_REQUIRE_CONSOLE_VERIFICATION);
+            isVerificationNeeded = consoleVariables._APP_REQUIRE_CONSOLE_VERIFICATION;
+            isEmailVerificationRequired.set(isVerificationNeeded);
         } catch (error) {
             // ignore
         }
+    } else {
+        isVerificationNeeded = writableStoreValue;
     }
 
     if (url.searchParams.has('forceRedirect')) {
@@ -39,7 +47,7 @@ export const load: LayoutLoad = async ({ depends, url, route }) => {
     }
 
     if (account) {
-        if (isCloud && !account.emailVerification && isEmailVerificationRequired) {
+        if (isCloud && !account.emailVerification && isVerificationNeeded) {
             const isConsoleRoute = route.id?.startsWith('/(console)');
             const isVerifyEmailPage = url.pathname === resolve('/verify-email');
 
