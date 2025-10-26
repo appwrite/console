@@ -30,11 +30,13 @@
     import { Layout, Link, Table } from '@appwrite.io/pink-svelte';
     import { onDestroy, onMount } from 'svelte';
     import { stopPolling, pollMessagesStatus } from './helper';
+    import type { PageProps } from './$types';
 
-    export let data;
-    let showFailed = false;
-    let selected: string[] = [];
-    let errors: string[] = [];
+    const { data }: PageProps = $props();
+
+    let showFailed = $state(false);
+    let errors: string[] = $state([]);
+    let selected: string[] = $state([]);
 
     const columns = writable<Column[]>([
         { id: '$id', title: 'Message ID', type: 'string', width: 200 },
@@ -131,10 +133,10 @@
 <Container>
     <ResponsiveContainerHeader
         {columns}
-        bind:view={data.view}
         hideView
-        hasFilters
         hasSearch
+        hasFilters
+        bind:view={data.view}
         analyticsSource="messaging_messages"
         searchPlaceholder="Search by description, type, status, or ID">
         {#if $canWriteMessages}

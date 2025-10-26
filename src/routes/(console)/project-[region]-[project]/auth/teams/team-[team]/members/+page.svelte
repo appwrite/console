@@ -14,7 +14,7 @@
     import { invalidate } from '$app/navigation';
     import { base } from '$app/paths';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
-    import type { PageData } from './$types';
+    import type { PageProps } from './$types';
     import CreateMember from '../createMembership.svelte';
     import DeleteMembership from '../deleteMembership.svelte';
     import { Dependencies } from '$lib/constants';
@@ -23,22 +23,19 @@
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { sdk } from '$lib/stores/sdk';
 
-    export let data: PageData;
+    const { data }: PageProps = $props();
 
-    let showCreate = false;
-    let showDelete = false;
-    let selectedMembership: Models.Membership;
-
-    const region = page.params.region;
-    const project = page.params.project;
+    let showCreate = $state(false);
+    let showDelete = $state(false);
+    let selectedMembership: Models.Membership | null = $state(null);
 
     async function handleBulkDelete(selectedRows: string[]): Promise<DeleteOperationState> {
-        const promises = selectedRows.map((membershipId) =>
-            sdk.forProject(page.params.region, page.params.project).teams.deleteMembership({
+        const promises = selectedRows.map((membershipId) => {
+            return sdk.forProject(page.params.region, page.params.project).teams.deleteMembership({
                 teamId: page.params.team,
                 membershipId
-            })
-        );
+            });
+        });
 
         try {
             await Promise.all(promises);
@@ -83,7 +80,7 @@
                     {@const username = membership.userName ? membership.userName : '-'}
                     <Table.Row.Link
                         {root}
-                        href={`${base}/project-${region}-${project}/auth/user-${membership.userId}`}
+                        href={`${base}/project-${page.params.region}-${page.params.project}/auth/user-${membership.userId}`}
                         id={membership.$id}>
                         <Table.Cell column="name" {root}>
                             <Layout.Stack direction="row" alignItems="center">
@@ -101,9 +98,10 @@
                             <button
                                 class="button is-only-icon is-text"
                                 aria-label="Delete item"
-                                on:click|preventDefault={() => {
-                                    selectedMembership = membership;
+                                onclick={(event) => {
+                                    event.preventDefault();
                                     showDelete = true;
+                                    selectedMembership = membership;
                                     trackEvent(Click.MembershipDeleteClick);
                                 }}>
                                 <span class="icon-trash" aria-hidden="true"></span>
