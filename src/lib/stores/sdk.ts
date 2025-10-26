@@ -33,11 +33,13 @@ import {
     REGION_SYD,
     REGION_SFO,
     REGION_SGP,
+    REGION_TOR,
     SUBDOMAIN_FRA,
     SUBDOMAIN_NYC,
     SUBDOMAIN_SFO,
     SUBDOMAIN_SYD,
-    SUBDOMAIN_SGP
+    SUBDOMAIN_SGP,
+    SUBDOMAIN_TOR
 } from '$lib/constants';
 import { building } from '$app/environment';
 import { getProjectId } from '$lib/helpers/project';
@@ -68,6 +70,8 @@ const getSubdomain = (region?: string) => {
             return SUBDOMAIN_SFO;
         case REGION_SGP:
             return SUBDOMAIN_SGP;
+        case REGION_TOR:
+            return SUBDOMAIN_TOR;
         default:
             return '';
     }
