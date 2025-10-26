@@ -503,11 +503,35 @@ export async function paymentExpired(org: Organization) {
                 }
             ]
         });
-    } else if (!expiringNotification && payment.expiryYear <= year && payment.expiryMonth < month) {
+    } else if (
+        !expiringNotification &&
+        payment.expiryYear === year &&
+        payment.expiryMonth === month + 1
+    ) {
         addNotification({
             type: 'warning',
             isHtml: true,
             message: expiringMessage,
+            buttons: [
+                {
+                    name: 'Update payment details',
+                    method: () => {
+                        goto(`${base}/account/payments`);
+                    }
+                }
+            ]
+        });
+    } else if (
+        !expiredNotification &&
+        !payment.expired &&
+        payment.expiryYear <= year &&
+        payment.expiryMonth < month
+    ) {
+        addNotification({
+            type: 'error',
+            isHtml: true,
+            timeout: 0,
+            message: expiredMessage,
             buttons: [
                 {
                     name: 'Update payment details',
