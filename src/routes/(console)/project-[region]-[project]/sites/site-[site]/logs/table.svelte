@@ -39,11 +39,6 @@
             await Promise.all(promises);
             await invalidate(Dependencies.EXECUTIONS);
 
-            addNotification({
-                type: 'success',
-                message: `${selectedRows.length} log${selectedRows.length > 1 ? 's' : ''} deleted`
-            });
-
             trackEvent(Submit.LogDelete);
             return true;
         } catch (error) {

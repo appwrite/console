@@ -30,11 +30,6 @@
             subNavigation.update();
 
             trackEvent(Submit.TableDelete);
-            addNotification({
-                type: 'success',
-                message: `${selectedTables.length} table${selectedTables.length > 1 ? 's' : ''} deleted`
-            });
-
             return true;
         } catch (error) {
             trackError(error, Submit.TableDelete);

@@ -14,23 +14,28 @@
     } from '@appwrite.io/pink-svelte';
     import { Button } from '$lib/elements/forms';
     import { Confirm } from '$lib/components/index';
+    import { addNotification } from '$lib/stores/notifications';
 
     let {
         columns,
         resource,
         allowSelection = true,
         confirmDeletion = false,
+        showSuccessNotification = true,
         header,
         children,
         onDelete,
-        onCancel
+        onCancel,
+        deleteContent
     }: {
         resource: string;
         allowSelection?: boolean;
         confirmDeletion?: boolean;
+        showSuccessNotification?: boolean;
         columns: Array<TableColumn> | number;
         header: Snippet<[root: TableRootProps]>;
         children: Snippet<[root: TableRootProps]>;
+        deleteContent?: Snippet<[count: number]>;
         onDelete?: (selectedRows: string[]) => Promise<DeleteOperationState> | DeleteOperationState;
         onCancel?: () => Promise<void> | void;
     } = $props();
@@ -39,6 +44,20 @@
     let disableModal: boolean = $state(false);
     let onDeleteError: string | null = $state(null);
     let showConfirmDeletion: boolean = $state(false);
+
+    function notifySuccess() {
+        if (!showSuccessNotification) return;
+
+        const count = selectedRows.length;
+        if (count === 0) return;
+
+        const label = `${resource}${count > 1 ? 's' : ''}`;
+
+        addNotification({
+            type: 'success',
+            message: `${count} ${label} deleted`
+        });
+    }
 </script>
 
 <Table.Root let:root {columns} {allowSelection} bind:selectedRows>
@@ -75,6 +94,7 @@
                         if (typeof state === 'string') {
                             // user should handle error on their own!
                         } else {
+                            notifySuccess();
                             selectedRows = [];
                         }
                     }
@@ -100,14 +120,21 @@
                 disableModal = false;
                 onDeleteError = state || `Failed to delete ${resource}s`;
             } else {
+                notifySuccess();
                 selectedRows = [];
                 disableModal = false;
                 showConfirmDeletion = false;
             }
         }}>
         <Typography.Text>
-            Are you sure you want to delete <strong>{selectedRows.length}</strong>
-            {selectedRows.length > 1 ? `${resource}s` : resource}.
+            {@const selectionCount = selectedRows.length}
+            {#if deleteContent}
+                <!-- because some show extra info -->
+                {@render deleteContent(selectionCount)}
+            {:else}
+                Are you sure you want to delete <strong>{selectionCount}</strong>
+                {selectionCount > 1 ? `${resource}s` : resource}.
+            {/if}
         </Typography.Text>
 
         <Typography.Text variant="m-500">This action is irreversible.</Typography.Text>
