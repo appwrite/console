@@ -505,8 +505,12 @@ export async function paymentExpired(org: Organization) {
         });
     } else if (
         !expiringNotification &&
-        payment.expiryYear === year &&
-        payment.expiryMonth === month + 1
+        !payment.expired &&
+        (() => {
+            const cardExpiry = new Date(payment.expiryYear, payment.expiryMonth, 1);
+            const nextMonth = new Date(year, month + 1, 1);
+            return cardExpiry.getTime() === nextMonth.getTime();
+        })()
     ) {
         addNotification({
             type: 'warning',
