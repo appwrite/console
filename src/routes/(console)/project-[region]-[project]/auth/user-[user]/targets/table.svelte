@@ -28,13 +28,12 @@
 
         try {
             await Promise.all(promises);
-            await invalidate(Dependencies.USER_TARGETS);
-
             trackEvent(Submit.UserTargetDelete, { total: selectedRows.length });
-            return true;
         } catch (error) {
             trackError(error, Submit.UserTargetDelete);
-            return error.message;
+            return error;
+        } finally {
+            await invalidate(Dependencies.USER_TARGETS);
         }
     }
 </script>

@@ -39,13 +39,12 @@
 
         try {
             await Promise.all(promises);
-            await invalidate(Dependencies.EXECUTIONS);
-
             trackEvent(Submit.ExecutionDelete);
-            return true;
         } catch (error) {
             trackError(error, Submit.ExecutionDelete);
-            return error.message;
+            return error;
+        } finally {
+            await invalidate(Dependencies.EXECUTIONS);
         }
     }
 </script>

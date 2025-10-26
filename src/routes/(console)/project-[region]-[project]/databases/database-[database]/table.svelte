@@ -26,14 +26,13 @@
         );
         try {
             await Promise.all(promises);
-            await invalidate(Dependencies.TABLES);
-            subNavigation.update();
-
             trackEvent(Submit.TableDelete);
-            return true;
         } catch (error) {
             trackError(error, Submit.TableDelete);
-            return error.message;
+            return error;
+        } finally {
+            await invalidate(Dependencies.TABLES);
+            subNavigation.update();
         }
     }
 

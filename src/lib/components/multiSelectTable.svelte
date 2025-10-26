@@ -1,6 +1,5 @@
 <script lang="ts" module>
-    // TODO: @itznotabug - true | string | Error | void
-    export type DeleteOperationState = true | string | void;
+    export type DeleteOperationState = Error | void;
 </script>
 
 <script lang="ts">
@@ -106,7 +105,7 @@
                             showConfirmDeletion = true;
                         } else {
                             const state = await onDelete?.(selectedRows);
-                            if (typeof state === 'string') {
+                            if (state instanceof Error) {
                                 // user should handle error on their own!
                             } else {
                                 notifySuccess();
@@ -131,9 +130,9 @@
                 onDeleteError = null;
 
                 const state = await onDelete?.(selectedRows);
-                if (typeof state === 'string') {
+                if (state instanceof Error) {
                     disableModal = false;
-                    onDeleteError = state || `Failed to delete ${resource}s`;
+                    onDeleteError = state.message || `Failed to delete ${resource}s`;
                 } else {
                     notifySuccess();
                     selectedRows = [];

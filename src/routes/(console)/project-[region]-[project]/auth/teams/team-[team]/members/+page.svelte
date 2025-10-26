@@ -39,13 +39,12 @@
 
         try {
             await Promise.all(promises);
-            await invalidate(Dependencies.MEMBERSHIPS);
-
             trackEvent(Submit.MembershipUpdate, { total: selectedRows.length });
-            return true;
         } catch (error) {
             trackError(error, Submit.MembershipUpdate);
-            return error.message;
+            return error;
+        } finally {
+            await invalidate(Dependencies.MEMBERSHIPS);
         }
     }
 </script>

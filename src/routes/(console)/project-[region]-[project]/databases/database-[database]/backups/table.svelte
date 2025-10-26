@@ -116,7 +116,6 @@
 
         try {
             await Promise.all(promises);
-            await invalidate(Dependencies.BACKUPS);
 
             if (selectedBackup) {
                 addNotification({
@@ -131,13 +130,15 @@
                     message: error.message
                 });
             } else {
-                return error.message;
+                return error;
             }
         } finally {
             if (selectedBackup) {
                 showDelete = false;
                 selectedBackup = null;
             }
+
+            await invalidate(Dependencies.BACKUPS);
         }
     }
 

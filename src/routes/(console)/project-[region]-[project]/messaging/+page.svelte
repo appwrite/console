@@ -109,13 +109,12 @@
 
         try {
             await Promise.all(promises);
-            await invalidate(Dependencies.MESSAGING_MESSAGES);
-
             trackEvent(Submit.MessagingMessageDelete, { total: selected.length });
-            return true;
         } catch (error) {
             trackError(error, Submit.MessagingMessageDelete);
-            return error.message;
+            return error;
+        } finally {
+            await invalidate(Dependencies.MESSAGING_MESSAGES);
         }
     }
 

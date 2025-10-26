@@ -67,12 +67,10 @@
 
         try {
             await Promise.all(promises);
-
             trackEvent(Submit.UserDelete, { total: selectedRows.length });
-            return true;
         } catch (error) {
             trackError(error, Submit.UserDelete);
-            return error.message;
+            return error;
         } finally {
             await invalidate(Dependencies.USERS);
         }

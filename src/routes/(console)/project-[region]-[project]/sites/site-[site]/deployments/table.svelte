@@ -45,12 +45,10 @@
         );
         try {
             await Promise.all(promises);
-
             trackEvent(Submit.DeploymentDelete);
-            return true;
         } catch (error) {
             trackError(error, Submit.DeploymentDelete);
-            return error.message;
+            return error;
         } finally {
             await Promise.all([
                 invalidate(Dependencies.DEPLOYMENTS),

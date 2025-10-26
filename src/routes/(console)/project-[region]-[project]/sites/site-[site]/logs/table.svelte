@@ -37,13 +37,12 @@
 
         try {
             await Promise.all(promises);
-            await invalidate(Dependencies.EXECUTIONS);
-
             trackEvent(Submit.LogDelete);
-            return true;
         } catch (error) {
             trackError(error, Submit.LogDelete);
-            return error.message;
+            return error;
+        } finally {
+            await invalidate(Dependencies.EXECUTIONS);
         }
     }
 </script>

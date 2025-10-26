@@ -50,12 +50,10 @@
 
         try {
             await Promise.all(promises);
-
             trackEvent(Submit.MessagingTopicSubscriberDelete, { total: selectedRows.length });
-            return true;
         } catch (error) {
             trackError(error, Submit.MessagingTopicSubscriberDelete);
-            return error.message;
+            return error;
         } finally {
             await invalidate(Dependencies.MESSAGING_TOPIC_SUBSCRIBERS);
         }

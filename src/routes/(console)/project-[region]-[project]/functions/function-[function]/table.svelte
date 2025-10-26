@@ -59,13 +59,12 @@
         );
         try {
             await Promise.all(promises);
-            await invalidate(Dependencies.DEPLOYMENTS);
-
             trackEvent(Submit.DeploymentDelete);
-            return true;
         } catch (error) {
             trackError(error, Submit.DeploymentDelete);
-            return error.message;
+            return error;
+        } finally {
+            await invalidate(Dependencies.DEPLOYMENTS);
         }
     }
 </script>

@@ -51,12 +51,10 @@
 
         try {
             await Promise.all(promises);
-
             trackEvent(Submit.TeamDelete, { total: selectedRows.length });
-            return true;
         } catch (error) {
             trackError(error, Submit.TeamDelete);
-            return error.message;
+            return error;
         } finally {
             await invalidate(Dependencies.TEAMS);
         }

@@ -78,7 +78,7 @@
             trackEvent(Submit.FileDelete, { total: selectedRows.length });
         } catch (error) {
             trackError(error, Submit.FileDelete);
-            return error.message;
+            return error;
         } finally {
             await invalidate(Dependencies.FILES);
         }

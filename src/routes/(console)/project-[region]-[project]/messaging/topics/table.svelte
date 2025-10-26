@@ -29,12 +29,10 @@
 
         try {
             await Promise.all(promises);
-
             trackEvent(Submit.MessagingTopicDelete, { total: selectedRows.length });
-            return true;
         } catch (error) {
             trackError(error, Submit.MessagingTopicDelete);
-            return error.message;
+            return error;
         } finally {
             await invalidate(Dependencies.MESSAGING_TOPICS);
         }

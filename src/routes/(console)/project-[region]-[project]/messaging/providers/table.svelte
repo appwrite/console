@@ -29,13 +29,12 @@
 
         try {
             await Promise.all(promises);
-            await invalidate(Dependencies.MESSAGING_PROVIDERS);
-
             trackEvent(Submit.MessagingProviderDelete, { total: selectedRows.length });
-            return true;
         } catch (error) {
             trackError(error, Submit.MessagingProviderDelete);
-            return error.message;
+            return error;
+        } finally {
+            await invalidate(Dependencies.MESSAGING_PROVIDERS);
         }
     }
 </script>
