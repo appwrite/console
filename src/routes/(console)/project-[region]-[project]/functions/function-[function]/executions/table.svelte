@@ -3,6 +3,7 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import type { Column } from '$lib/helpers/types';
     import type { Models } from '@appwrite.io/console';
+    import { ExecutionStatus } from '@appwrite.io/console';
     import {
         Badge,
         FloatingActionBar,
@@ -109,7 +110,7 @@
                     {:else if column.id === 'status'}
                         {@const status = log.status}
                         <Tooltip
-                            disabled={!log?.scheduledAt || status !== 'scheduled'}
+                            disabled={!log?.scheduledAt || status !== ExecutionStatus.Scheduled}
                             maxWidth="400px">
                             <div>
                                 <Status

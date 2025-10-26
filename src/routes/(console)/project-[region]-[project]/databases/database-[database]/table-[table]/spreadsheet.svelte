@@ -97,7 +97,7 @@
     export let data: PageData;
     export let showRowCreateSheet: {
         show: boolean;
-        row: Models.Row | null;
+        row: Partial<Models.Row> | null;
     };
 
     $: rows = writable(data.rows);
@@ -297,7 +297,7 @@
         switch (type) {
             case 'string':
                 return IconText;
-            case 'float':
+            case 'double':
             case 'integer':
                 return IconHashtag;
             case 'boolean':
@@ -543,7 +543,13 @@
             }
 
             if (action === 'duplicate-row') {
-                showRowCreateSheet.row = row;
+                /**
+                 * remove dates because
+                 * console can override timestamps!
+                 */
+                const { $createdAt, $updatedAt, ...rowWithoutDates } = row;
+
+                showRowCreateSheet.row = rowWithoutDates;
                 showRowCreateSheet.show = true;
             }
 
@@ -793,10 +799,11 @@
                             </Tooltip>
                         </Spreadsheet.Header.Cell>
                     {:else}
+                        {@const structureColumn = $columns.find((col) => col.key === column.id)}
                         <SheetOptions
                             type="header"
                             columnId={column.id}
-                            column={$columns.find((col) => col.key === column.id)}
+                            column={structureColumn}
                             onSelect={(option, columnId) =>
                                 onSelectSheetOption(option, columnId, 'header')}>
                             {#snippet children(toggle)}
@@ -818,10 +825,12 @@
                                         <!-- array indicator -->
                                         {#if column.array}[]{/if}
 
-                                        <SortButton
-                                            onSort={sort}
-                                            column={column.id}
-                                            state={sortState} />
+                                        {#if !isRelationship(structureColumn)}
+                                            <SortButton
+                                                onSort={sort}
+                                                column={column.id}
+                                                state={sortState} />
+                                        {/if}
                                     </Layout.Stack>
                                 </Spreadsheet.Header.Cell>
                             {/snippet}
@@ -1147,7 +1156,7 @@
         </Table.Root>
 
         <Layout.Stack direction="column" gap="m">
-            <Alert.Inline>To change the selection edit the relationship settings.</Alert.Inline>
+            <Alert.Inline title="To change the selection edit the relationship settings." />
         </Layout.Stack>
     {:else}
         <p class="u-bold">This action is irreversible.</p>
@@ -1209,6 +1218,10 @@
 
         & :global(input[type='text']) {
             padding-inline: 8px !important;
+        }
+
+        & :global(.input:has([type^='date'])) {
+            padding: 12px !important;
         }
 
         & :global(.input:focus-within) {

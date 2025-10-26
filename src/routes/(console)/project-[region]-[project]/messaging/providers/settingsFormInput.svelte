@@ -19,6 +19,7 @@
         VonageProviderParams,
         MailgunProviderParams,
         SendgridProviderParams,
+        ResendProviderParams,
         SMTPProviderParams,
         FCMProviderParams,
         APNSProviderParams
@@ -39,6 +40,7 @@
         | VonageProviderParams
         | MailgunProviderParams
         | SendgridProviderParams
+        | ResendProviderParams
         | SMTPProviderParams
         | FCMProviderParams
         | APNSProviderParams

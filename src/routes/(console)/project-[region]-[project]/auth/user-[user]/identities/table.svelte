@@ -2,7 +2,7 @@
     import { Id } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import type { PageData } from './$types';
-    import { toLocaleDateTime } from '$lib/helpers/date';
+    import DualTimeView from '$lib/components/dualTimeView.svelte';
     import { sdk } from '$lib/stores/sdk';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Dependencies } from '$lib/constants';
@@ -87,7 +87,7 @@
                         {#if !identity[column.id]}
                             -
                         {:else}
-                            {toLocaleDateTime(identity[column.id])}
+                            <DualTimeView time={identity[column.id]} />
                         {/if}
                     {:else}
                         {identity[column.id]}

@@ -8,7 +8,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import type { PageData } from './$types';
     import ProviderType from '../../providerType.svelte';
-    import { toLocaleDateTime } from '$lib/helpers/date';
+    import DualTimeView from '$lib/components/dualTimeView.svelte';
     import { project } from '$routes/(console)/project-[region]-[project]/store';
     import { sdk } from '$lib/stores/sdk';
     import { page } from '$app/state';
@@ -109,7 +109,7 @@
                     {:else if column.id === 'type'}
                         <ProviderType type={subscriber.target.providerType} size="xs" />
                     {:else if column.id === '$createdAt'}
-                        {toLocaleDateTime(subscriber[column.id])}
+                        <DualTimeView time={subscriber[column.id]} />
                     {:else}
                         {subscriber[column.id]}
                     {/if}

@@ -34,8 +34,6 @@
                     })
                 )
             );
-            await invalidate(Dependencies.TABLE);
-            showDelete = false;
             addNotification({
                 type: 'success',
                 message:
@@ -43,7 +41,13 @@
                         ? 'Index has been deleted'
                         : `${selectedKeys.length} indexes have been deleted`
             });
+
             trackEvent(Submit.IndexDelete);
+
+            await invalidate(Dependencies.TABLE);
+
+            showDelete = false;
+            selectedIndex = Array.isArray(selectedIndex) ? [] : null;
         } catch (e) {
             error = e.message;
             trackError(e, Submit.IndexDelete);

@@ -10,7 +10,7 @@
     import { total } from '$lib/layout/usage.svelte';
     import { BillingPlan } from '$lib/constants.js';
     import { base } from '$app/paths';
-    import { formatCurrency, formatNumberWithCommas } from '$lib/helpers/numbers';
+    import { formatCurrency, formatNumberWithCommas, clampMin } from '$lib/helpers/numbers';
     import { getCountryName } from '$lib/helpers/diallingCodes.js';
     import { Accordion, Icon, Layout, Link, Table, Typography } from '@appwrite.io/pink-svelte';
     import { IconChartSquareBar } from '@appwrite.io/pink-icons-svelte';
@@ -36,11 +36,11 @@
     $: legendData = [
         {
             name: 'Reads',
-            value: data.usage.databasesReads.reduce((sum, item) => sum + item.value, 0)
+            value: clampMin(data.usage.databasesReads.reduce((sum, item) => sum + item.value, 0))
         },
         {
             name: 'Writes',
-            value: data.usage.databasesWrites.reduce((sum, item) => sum + item.value, 0)
+            value: clampMin(data.usage.databasesWrites.reduce((sum, item) => sum + item.value, 0))
         }
     ];
 

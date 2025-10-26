@@ -158,6 +158,18 @@
                             replyToEmail: formValues['replyToEmail'] || undefined
                         });
                     break;
+                case Providers.Resend:
+                    response = await sdk
+                        .forProject(page.params.region, page.params.project)
+                        .messaging.updateResendProvider({
+                            providerId,
+                            apiKey: formValues['apiKey'],
+                            fromName: formValues['fromName'] || undefined,
+                            fromEmail: formValues['fromEmail'],
+                            replyToName: formValues['replyToName'] || undefined,
+                            replyToEmail: formValues['replyToEmail'] || undefined
+                        });
+                    break;
                 case Providers.SMTP:
                     response = await sdk
                         .forProject(page.params.region, page.params.project)

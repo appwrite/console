@@ -6,7 +6,7 @@
     import type { Models } from '@appwrite.io/console';
     import { invalidate } from '$app/navigation';
     import { base } from '$app/paths';
-    import { toLocaleDateTime } from '$lib/helpers/date';
+    import DualTimeView from '$lib/components/dualTimeView.svelte';
     import type { PageData } from './$types';
     import CreateMember from '../createMembership.svelte';
     import DeleteMembership from '../deleteMembership.svelte';
@@ -117,7 +117,7 @@
                         {membership.roles}
                     </Table.Cell>
                     <Table.Cell column="joined" {root}>
-                        {toLocaleDateTime(membership.joined)}
+                        <DualTimeView time={membership.joined} />
                     </Table.Cell>
                     <Table.Cell column="actions" {root}>
                         <button
