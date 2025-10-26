@@ -20,7 +20,7 @@
         columns,
         resource,
         allowSelection = true,
-        confirmDeletion = false,
+        confirmDeletion = true,
         showSuccessNotification = true,
         header,
         children,

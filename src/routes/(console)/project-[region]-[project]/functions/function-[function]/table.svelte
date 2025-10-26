@@ -72,7 +72,6 @@
 
 <MultiSelectionTable
     allowSelection
-    confirmDeletion
     resource="deployment"
     onDelete={deleteDeployments}
     columns={[...columns, { id: 'actions', width: 40 }]}>

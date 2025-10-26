@@ -50,7 +50,7 @@
     }
 </script>
 
-<MultiSelectionTable {columns} confirmDeletion resource="execution" onDelete={deleteExecutions}>
+<MultiSelectionTable {columns} resource="execution" onDelete={deleteExecutions}>
     {#snippet header(root)}
         {#each columns as { id, title }}
             <Table.Header.Cell column={id} {root}>{title}</Table.Header.Cell>

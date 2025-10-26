@@ -52,7 +52,6 @@
 
 <MultiSelectionTable
     resource="table"
-    confirmDeletion
     columns={$tableViewColumns}
     allowSelection={$canWriteTables}
     {onDelete}>
