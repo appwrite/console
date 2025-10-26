@@ -66,7 +66,7 @@
 
     // this is kept very basic!
     function getPluralResource() {
-        if (resource.endsWith('y')) {
+        if (resource.endsWith('ty')) {
             return `${resource}ies`;
         }
 
@@ -118,7 +118,7 @@
         </FloatingActionBar>
     {/if}
 
-    {#if allowSelection}
+    {#if allowSelection && confirmDeletion}
         <Confirm
             submissionLoader
             confirmDeletion
