@@ -135,8 +135,7 @@
             nextPlan={data?.nextPlan}
             currentAggregation={data?.billingAggregation}
             limit={data?.limit}
-            offset={data?.offset}
-            aggregationKey={data?.aggregationKey} />
+            offset={data?.offset} />
     {:else}
         <PlanSummaryOld
             availableCredit={data?.availableCredit}
