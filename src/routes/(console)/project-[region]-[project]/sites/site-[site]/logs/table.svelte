@@ -8,7 +8,6 @@
     import { sdk } from '$lib/stores/sdk';
     import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { addNotification } from '$lib/stores/notifications';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { calculateTime } from '$lib/helpers/timeConversion';

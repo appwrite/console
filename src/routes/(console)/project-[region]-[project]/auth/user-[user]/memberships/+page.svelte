@@ -89,7 +89,8 @@
                             <button
                                 class="button is-only-icon is-text"
                                 aria-label="Delete item"
-                                on:click|preventDefault={() => {
+                                onclick={(event) => {
+                                    event.preventDefault();
                                     selectedMembership = membership;
                                     showDelete = true;
                                     trackEvent('click_delete_membership');

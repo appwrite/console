@@ -6,16 +6,19 @@
     import { Id, MultiSelectionTable, type DeleteOperationState } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
-    import { addNotification } from '$lib/stores/notifications';
     import { canWriteTables } from '$lib/stores/roles';
     import { sdk } from '$lib/stores/sdk';
     import { Table } from '@appwrite.io/pink-svelte';
-    import type { PageProps } from './$types';
+    import type { PageData } from './$types';
     import { tableViewColumns } from './store';
     import { subNavigation } from '$lib/stores/database';
     import type { Models } from '@appwrite.io/console';
 
-    let { data }: PageProps = $props();
+    const {
+        data
+    }: {
+        data: PageData;
+    } = $props();
 
     async function onDelete(selectedTables: string[]): Promise<DeleteOperationState> {
         const promises = selectedTables.map((tableId) =>

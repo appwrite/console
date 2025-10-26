@@ -17,7 +17,7 @@
         keyType = 'api',
         keys
     }: {
-        keyType: 'api' | 'dev';
+        keyType?: 'api' | 'dev';
         keys: Models.KeyList | Models.DevKeyList;
     } = $props();
 
