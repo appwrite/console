@@ -29,7 +29,7 @@
     let areMembersLimited: boolean = $state(false);
 
     $effect(() => {
-        const limit = getServiceLimit('members') || Infinity;
+        const limit = getServiceLimit('members', null, page.data.currentPlan) || Infinity;
         const isLimited = limit !== 0 && limit < Infinity;
         areMembersLimited =
             isCloud &&

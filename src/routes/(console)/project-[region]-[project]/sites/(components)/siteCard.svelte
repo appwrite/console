@@ -23,15 +23,35 @@
     import { isCloud } from '$lib/system';
     import { sdk } from '$lib/stores/sdk';
     import { capitalize } from '$lib/helpers/string';
+    import { regionalProtocol } from '$routes/(console)/project-[region]-[project]/store';
+    import type { Snippet } from 'svelte';
 
-    export let deployment: Models.Deployment;
-    export let proxyRuleList: Models.ProxyRuleList;
-    export let hideQRCode = false;
-    export let variant: 'primary' | 'secondary' = 'primary';
+    let {
+        deployment,
+        proxyRuleList,
+        hideQRCode = false,
+        variant = 'primary',
+        footer
+    }: {
+        deployment: Models.Deployment;
+        proxyRuleList: Models.ProxyRuleList;
+        hideQRCode?: boolean;
+        variant?: 'primary' | 'secondary';
+        footer?: Snippet;
+    } = $props();
 
-    let show = false;
+    let show = $state(false);
 
-    $: totalSize = humanFileSize(deployment?.totalSize ?? 0);
+    const totalSize = $derived(humanFileSize(deployment?.totalSize ?? 0));
+
+    const sortedDomains = $derived(
+        proxyRuleList?.rules?.slice()?.sort((a, b) => {
+            if (a?.trigger === 'manual' && b?.trigger !== 'manual') return -1;
+            if (a?.trigger !== 'manual' && b?.trigger === 'manual') return 1;
+            return 0;
+        })
+    );
+    const primaryDomain = $derived(sortedDomains?.[0]?.domain);
 
     function getScreenshot(theme: string, deployment: Models.Deployment) {
         if (theme === 'dark') {
@@ -51,7 +71,7 @@
             fileId,
             width: 1024,
             height: 576,
-            output: ImageFormat.Webp
+            output: ImageFormat.Avif
         });
     }
 </script>
@@ -59,13 +79,25 @@
 <Card padding="s" radius="m" {variant}>
     <Layout.Stack gap="l">
         <div class="card-grid">
-            <Image
-                border
-                radius="s"
-                ratio="16/9"
-                style="width: 100%; align-self: start"
-                src={getScreenshot($app.themeInUse, deployment)}
-                alt="Screenshot" />
+            {#if primaryDomain}
+                <Card href={`${$regionalProtocol}${primaryDomain}`} padding="none" radius="s">
+                    <Image
+                        border
+                        radius="s"
+                        ratio="16/9"
+                        style="width: 100%; align-self: start"
+                        src={getScreenshot($app.themeInUse, deployment)}
+                        alt="Screenshot" />
+                </Card>
+            {:else}
+                <Image
+                    border
+                    radius="s"
+                    ratio="16/9"
+                    style="width: 100%; align-self: start"
+                    src={getScreenshot($app.themeInUse, deployment)}
+                    alt="Screenshot" />
+            {/if}
 
             <Layout.Stack gap="xl">
                 <Layout.Stack direction="row" alignItems="flex-start">
@@ -178,13 +210,13 @@
                 </Layout.Stack>
             </Layout.Stack>
         </div>
-        {#if $$slots.footer}
+        {#if footer}
             <span
                 style="margin-left: calc(-1* var(--space-7));margin-right: calc(-1* var(--space-7));width:auto;">
                 <Divider />
             </span>
             <Layout.Stack direction="row-reverse">
-                <slot name="footer" />
+                {@render footer?.()}
             </Layout.Stack>
         {/if}
     </Layout.Stack>

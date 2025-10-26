@@ -54,6 +54,19 @@ export const adapterDataList = [
         }
     },
     {
+        framework: 'tanstack-start',
+        ssr: {
+            desc: 'Ensure $ includes $ plugin.',
+            code: ['vite.config.js', 'tanstackStart()'],
+            url: 'https://tanstack.com/start/latest/docs/framework/react/guide/hosting'
+        },
+        static: {
+            desc: 'Set $ to $ in $.',
+            code: ['prerender', 'enabled', 'vite.config.js'],
+            url: 'https://tanstack.com/start/latest/docs/framework/react/guide/static-prerendering'
+        }
+    },
+    {
         framework: 'nextjs',
         ssr: {
             desc: "Ensure you don't set $ in $ file.",

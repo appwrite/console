@@ -4,7 +4,7 @@
     import { Empty, EmptyFilter, EmptySearch, Id, PaginationWithLimit } from '$lib/components';
     import { hasPageQueries } from '$lib/components/filters';
     import { Button } from '$lib/elements/forms';
-    import { toLocaleDateTime } from '$lib/helpers/date';
+    import DualTimeView from '$lib/components/dualTimeView.svelte';
     import { Container, ResponsiveContainerHeader } from '$lib/layout';
     import { MessagingProviderType } from '@appwrite.io/console';
     import CreateMessageDropdown from './createMessageDropdown.svelte';
@@ -208,7 +208,7 @@
                                 {#if !message[column.id]}
                                     -
                                 {:else}
-                                    {toLocaleDateTime(message[column.id])}
+                                    <DualTimeView time={message[column.id]} />
                                 {/if}
                             {:else}
                                 {message[column.id]}
@@ -243,11 +243,7 @@
     {:else if $hasPageQueries}
         <EmptyFilter resource="messages" />
     {:else if data.search}
-        <EmptySearch>
-            <div class="u-text-center">
-                <b>Sorry, we couldn't find '{data.search}'</b>
-                <p>There are no messages that match your search.</p>
-            </div>
+        <EmptySearch target="messages" search={data.search}>
             <div class="u-flex u-gap-16">
                 <Button external href="https://appwrite.io/docs/products/messaging/messages" text>
                     Documentation

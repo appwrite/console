@@ -6,7 +6,7 @@
     import { Id } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
-    import { toLocaleDateTime } from '$lib/helpers/date';
+    import DualTimeView from '$lib/components/dualTimeView.svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { canWriteTables } from '$lib/stores/roles';
     import { sdk } from '$lib/stores/sdk';
@@ -14,6 +14,7 @@
     import type { PageData } from './$types';
     import { tableViewColumns } from './store';
     import Confirm from '$lib/components/confirm.svelte';
+    import { subNavigation } from '$lib/stores/database';
 
     export let data: PageData;
     const databaseId = page.params.database;
@@ -38,7 +39,8 @@
                 type: 'success',
                 message: `${selectedTables.length} table${selectedTables.length > 1 ? 's' : ''} deleted`
             });
-            invalidate(Dependencies.TABLES);
+            await invalidate(Dependencies.TABLES);
+            subNavigation.update();
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -76,7 +78,7 @@
                     {:else if column.id === 'name'}
                         {table.name}
                     {:else}
-                        {toLocaleDateTime(table[column.id])}
+                        <DualTimeView time={table[column.id]} />
                     {/if}
                 </Table.Cell>
             {/each}

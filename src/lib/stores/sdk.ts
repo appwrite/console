@@ -21,7 +21,8 @@ import {
     Sites,
     Tokens,
     TablesDB,
-    Domains
+    Domains,
+    Realtime
 } from '@appwrite.io/console';
 import { Billing } from '../sdk/billing';
 import { Backups } from '../sdk/backups';
@@ -90,7 +91,8 @@ function createConsoleSdk(client: Client) {
         sources: new Sources(client),
         sites: new Sites(client),
         domains: new Domains(client),
-        storage: new Storage(client)
+        storage: new Storage(client),
+        realtime: new Realtime(client)
     };
 }
 
@@ -103,8 +105,8 @@ const clientProject = new Client();
 const clientRealtime = new Client();
 
 if (!building) {
+    scopedConsoleClient.setProject('console');
     clientConsole.setEndpoint(endpoint).setProject('console');
-    scopedConsoleClient.setMode(endpoint).setProject('console');
 
     clientRealtime.setEndpoint(endpoint).setProject('console');
     clientProject.setEndpoint(endpoint).setMode('admin');
@@ -184,6 +186,11 @@ export enum RuleTrigger {
     DEPLOYMENT = 'deployment',
     MANUAL = 'manual'
 }
+
+/**
+ * Some type imports are broken on the SDK, this works correctly for the time being!
+ */
+export type AppwriteRealtimeSubscription = Awaited<ReturnType<Realtime['subscribe']>>;
 
 export const createAdminClient = () => {
     return new Client().setEndpoint(getApiEndpoint()).setMode('admin').setProject(getProjectId());

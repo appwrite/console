@@ -7,6 +7,7 @@
     import CreateWeb from './createWeb.svelte';
     import { createPlatform } from './wizard/store';
     import { Click, trackEvent } from '$lib/actions/analytics';
+    import type { PlatformType } from '@appwrite.io/console';
 
     export enum Platform {
         Web,
@@ -29,7 +30,7 @@
         platform: Platform,
         name: string,
         key: string,
-        type: string
+        type: PlatformType
     ) {
         createPlatform.set({
             name: name,
@@ -41,7 +42,7 @@
             state: 'continue'
         });
         wizard.start(platforms[platform], null, 1, {
-            isPlatformCreated: true,
+            isConnectPlatform: true,
             platform: type,
             key: key
         });

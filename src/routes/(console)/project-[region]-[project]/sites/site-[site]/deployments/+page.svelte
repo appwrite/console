@@ -36,7 +36,7 @@
             showConnectRepo = true;
         }
 
-        return sdk.forConsole.client.subscribe('console', (response) => {
+        return sdk.forConsole.realtime.subscribe('console', (response) => {
             if (response.events.includes('sites.*.deployments.*')) {
                 invalidate(Dependencies.DEPLOYMENTS);
             }
@@ -89,9 +89,12 @@
                     </svelte:fragment>
                 </Alert.Inline>
             {:else}
-                <Alert.Inline status="info" dismissible on:dismiss={() => (showAlert = false)}>
-                    Some configuration changes are not live yet. Your site is redeploying — changes
-                    will be applied once the build is complete.
+                <Alert.Inline
+                    status="info"
+                    title="Some configuration changes are not live yet. Your site is redeploying — changes
+            will be applied once the build is complete."
+                    dismissible
+                    on:dismiss={() => (showAlert = false)}>
                 </Alert.Inline>
             {/if}
         {/if}

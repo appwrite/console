@@ -138,7 +138,10 @@
 </script>
 
 <svelte:head>
-    <title>Database - Appwrite</title>
+    <!-- svelte bug, the table header just stays! -->
+    {#key page.url.pathname}
+        <title>Database - Appwrite</title>
+    {/key}
 </svelte:head>
 
 <slot />

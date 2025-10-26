@@ -20,6 +20,7 @@
     import {
         columns,
         type Columns,
+        type ColumnsWidth,
         indexes,
         isCsvImportInProgress,
         reorderItems,
@@ -39,7 +40,8 @@
         IconTrash,
         IconViewList,
         IconLockClosed,
-        IconFingerPrint
+        IconFingerPrint,
+        IconMail
     } from '@appwrite.io/pink-icons-svelte';
     import { type ComponentProps, onDestroy, onMount } from 'svelte';
     import { Click, trackEvent } from '$lib/actions/analytics';
@@ -51,6 +53,14 @@
     import { type Models } from '@appwrite.io/console';
     import { preferences } from '$lib/stores/preferences';
     import { page } from '$app/state';
+    import { debounce } from '$lib/helpers/debounce';
+    import type { PageData } from './$types';
+
+    const {
+        data
+    }: {
+        data: PageData;
+    } = $props();
 
     const updatedColumnsForSheet = $derived.by(() => {
         const baseAttrs = [
@@ -104,8 +114,11 @@
     let selectedColumn: Columns = $state(null);
     let columnIndexMap: Record<string, boolean> = $state({});
 
-    let columnsOrder = $state([]);
+    let columnsOrder = $state<string[]>([]);
+    let columnsWidth = $state<ColumnsWidth | null>(null);
+
     const tableId = page.params.table;
+    const organizationId = data.organization.$id ?? data.project.teamId;
 
     let showEdit = $state(false);
     let editColumn: EditColumn;
@@ -113,7 +126,7 @@
     const columnFormatIcon = {
         ip: IconLocationMarker,
         url: IconLink,
-        email: IconLink,
+        email: IconMail,
         enum: IconViewList
     };
 
@@ -126,6 +139,7 @@
 
     onMount(() => {
         columnsOrder = preferences.getColumnOrder(tableId);
+        columnsWidth = preferences.getColumnWidths(tableId + '#columns');
     });
 
     function getColumnStatusBadge(status: string): ComponentProps<Badge>['type'] {
@@ -182,7 +196,79 @@
         return `Type: ${formattedType}`;
     }
 
+    function isSystemColumnKey(column: Columns) {
+        return column.key.startsWith('$');
+    }
+
+    function getColumnWidth(columnId: string, defaultWidth: number): number {
+        const savedWidth = columnsWidth?.[columnId];
+        if (!savedWidth) return defaultWidth;
+
+        return savedWidth.resized;
+    }
+
+    function saveColumnsWidth({ columnId, newWidth }: { columnId: string; newWidth: number }) {
+        const existing = columnsWidth?.[columnId];
+        const fixed = existing
+            ? typeof existing?.fixed === 'number'
+                ? existing.fixed
+                : existing?.fixed?.min
+            : newWidth;
+
+        columnsWidth = {
+            ...(columnsWidth ?? {}),
+            [columnId]: {
+                fixed,
+                resized: Math.ceil(newWidth)
+            }
+        };
+
+        saveColumnWidthsToPreferences({ columnId, newWidth, fixedWidth: fixed });
+    }
+
+    const saveColumnWidthsToPreferences = debounce(
+        (column: { columnId: string; newWidth: number; fixedWidth: number }) => {
+            if (!organizationId) return;
+
+            preferences.saveColumnWidths(organizationId, tableId + '#columns', {
+                [column.columnId]: {
+                    fixed: column.fixedWidth,
+                    resized: Math.ceil(column.newWidth)
+                }
+            });
+        },
+        1000
+    );
+
     onDestroy(() => ($showCreateColumnSheet.show = false));
+
+    const spreadsheetColumns = $derived([
+        {
+            id: 'key',
+            width: getColumnWidth('key', 300),
+            minimumWidth: 300,
+            resizable: true
+        },
+        {
+            id: 'type',
+            width: 150,
+            minimumWidth: 150,
+            resizable: false
+        },
+        {
+            id: 'indexed',
+            width: getColumnWidth('indexed', 150),
+            minimumWidth: 150,
+            resizable: true
+        },
+        {
+            id: 'default',
+            width: getColumnWidth('default', 200),
+            minimumWidth: 200,
+            resizable: true
+        },
+        { id: 'actions', width: 40, isAction: true, resizable: false }
+    ]);
 
     $effect(() => {
         if (!$showCreateIndexSheet.show && $showCreateIndexSheet.column) {
@@ -220,34 +306,40 @@
     <SpreadsheetContainer>
         <Spreadsheet.Root
             let:root
-            allowSelection
             height="100%"
+            allowSelection
             emptyCells={emptyCellsCount}
             bind:selectedRows={selectedColumns}
-            columns={[
-                // more size until we decide if we want a new column!
-                { id: 'key', width: { min: $isSmallViewport ? 250 : 200 } },
-                { id: 'indexed', width: { min: 150 } },
-                { id: 'default', width: { min: 200 } },
-                { id: 'actions', width: 40, isAction: true }
-            ]}
-            bottomActionClick={() => ($showCreateColumnSheet.show = true)}>
+            columns={spreadsheetColumns}
+            bottomActionClick={() => ($showCreateColumnSheet.show = true)}
+            on:columnsResize={(resize) => saveColumnsWidth(resize.detail)}>
             <svelte:fragment slot="header" let:root>
                 <Spreadsheet.Header.Cell column="key" {root}>Column name</Spreadsheet.Header.Cell>
+                <Spreadsheet.Header.Cell column="type" {root}>Type</Spreadsheet.Header.Cell>
                 <Spreadsheet.Header.Cell column="indexed" {root}>Indexed</Spreadsheet.Header.Cell>
                 <Spreadsheet.Header.Cell column="default" {root}
                     >Default value</Spreadsheet.Header.Cell>
                 <Spreadsheet.Header.Cell column="actions" {root} />
             </svelte:fragment>
 
-            {#each updatedColumnsForSheet as column, index}
+            {#each updatedColumnsForSheet as column, index (column.key)}
+                {@const isId = column.key === '$id'}
                 {@const option = columnOptions.find((option) => option.type === column.type)}
                 {@const isSelectable =
                     column['system'] || column.type === 'relationship' ? 'disabled' : true}
                 <Spreadsheet.Row.Base {root} select={isSelectable} id={column.key}>
                     <Spreadsheet.Cell column="key" {root} isEditable={false}>
-                        <Layout.Stack direction="row" justifyContent="space-between">
-                            <Layout.Stack direction="row" alignItems="center" inline>
+                        <Layout.Stack
+                            direction="row"
+                            alignItems="center"
+                            justifyContent="space-between"
+                            style="min-width:0">
+                            <Layout.Stack
+                                gap="s"
+                                inline
+                                direction="row"
+                                alignItems="center"
+                                style="min-width:0; flex:1 1 auto;">
                                 {#if isRelationship(column)}
                                     <Icon
                                         size="s"
@@ -263,29 +355,35 @@
                                     <Icon icon={option.icon} size="s" />
                                 {/if}
 
-                                <Layout.Stack direction="row" alignItems="center" gap="s">
-                                    <Layout.Stack
-                                        inline
-                                        direction="row"
-                                        alignItems="center"
-                                        gap="xxs">
-                                        <span class="text u-trim-1" data-private>
-                                            {#if column.key === '$id' || column.key === '$sequence' || column.key === '$createdAt' || column.key === '$updatedAt'}
-                                                {column['name']}
-                                            {:else}
-                                                {column.key} {column.array ? '[]' : undefined}
-                                            {/if}
-                                        </span>
-                                        {#if isString(column) && column.encrypt}
-                                            <Tooltip>
-                                                <Icon
-                                                    size="s"
-                                                    icon={IconLockClosed}
-                                                    color="--fgcolor-neutral-tertiary" />
-                                                <div slot="tooltip">Encrypted</div>
-                                            </Tooltip>
+                                <Layout.Stack
+                                    gap="s"
+                                    inline
+                                    direction="row"
+                                    alignItems="center"
+                                    style="min-width:0; flex:1 1 auto; overflow:hidden;">
+                                    <Typography.Text truncate>
+                                        {#if isSystemColumnKey(column)}
+                                            {column.key}
+                                        {:else}
+                                            {column.key}{column.array ? '[]' : undefined}
                                         {/if}
-                                    </Layout.Stack>
+                                    </Typography.Text>
+                                    {#if isString(column) && column.encrypt}
+                                        <Tooltip>
+                                            <Icon
+                                                size="s"
+                                                icon={IconLockClosed}
+                                                color="--fgcolor-neutral-tertiary" />
+                                            <div slot="tooltip">Encrypted</div>
+                                        </Tooltip>
+                                    {/if}
+                                </Layout.Stack>
+                                <Layout.Stack
+                                    gap="s"
+                                    inline
+                                    direction="row"
+                                    alignItems="center"
+                                    style="flex:0 0 auto; white-space:nowrap;">
                                     {#if column.status !== 'available'}
                                         <Badge
                                             size="s"
@@ -323,12 +421,17 @@
                             {/if}
                         </Layout.Stack>
                     </Spreadsheet.Cell>
+                    <Spreadsheet.Cell column="type" {root} isEditable={false}>
+                        {@const columnType = column['format'] ? column['format'] : column.type}
+                        {columnType.toLowerCase()}
+                    </Spreadsheet.Cell>
                     <Spreadsheet.Cell column="indexed" {root} isEditable={false}>
-                        {@const isActuallyIndexed = $indexes.some((index) =>
-                            index.columns.includes(column.key)
-                        )}
+                        <!-- $id is always indexed internally -->
+                        {@const isActuallyIndexed =
+                            isId || $indexes.some((index) => index.columns.includes(column.key))}
 
-                        {@const checked = isActuallyIndexed || !!columnIndexMap[column.key]}
+                        <!-- $id is always indexed internally -->
+                        {@const checked = isId || isActuallyIndexed || !!columnIndexMap[column.key]}
 
                         <Selector.Checkbox
                             size="s"
@@ -345,15 +448,18 @@
                             }} />
                     </Spreadsheet.Cell>
                     <Spreadsheet.Cell column="default" {root} isEditable={false}>
-                        {@const _default =
-                            column?.default !== null && column?.default !== undefined
-                                ? column?.default
-                                : null}
+                        {@const _default = column.required
+                            ? '-'
+                            : column?.default !== null && column?.default !== undefined
+                              ? column?.default
+                              : null}
 
                         {#if _default === null}
                             <Badge variant="secondary" content="NULL" size="xs" />
+                        {:else if isSpatialType(column)}
+                            {JSON.stringify(_default)}
                         {:else}
-                            {isSpatialType(column) ? JSON.stringify(_default) : _default}
+                            {_default}
                         {/if}
                     </Spreadsheet.Cell>
                     <Spreadsheet.Cell column="actions" {root} isEditable={false}>
@@ -363,8 +469,7 @@
                                     <Icon icon={IconDotsHorizontal} size="s" />
                                 </Button>
                             </CsvDisabled>
-                        {:else if column.key !== '$sequence'}
-                            <!-- TODO: no portal, rather see if we can fix the cell -->
+                        {:else if !isId}
                             <Popover let:toggle padding="none" placement="bottom-end" portal>
                                 <Button text icon ariaLabel="more options" on:click={toggle}>
                                     <Icon icon={IconDotsHorizontal} size="s" />
@@ -458,7 +563,7 @@
 </div>
 
 {#if selectedColumn}
-    <DeleteColumn bind:showDelete {selectedColumn} />
+    <DeleteColumn bind:showDelete bind:selectedColumn />
 {:else if selectedColumns && selectedColumns.length}
     <DeleteColumn bind:showDelete bind:selectedColumn={selectedColumns} />
 {/if}
@@ -476,3 +581,13 @@
 {#if showFailed}
     <FailedModal bind:show={showFailed} title="Create attribute" header="Creation failed" {error} />
 {/if}
+
+<style>
+    .floating-action-bar {
+        left: 50%;
+        width: 100%;
+        z-index: 14;
+        position: absolute;
+        transform: translateX(-50%);
+    }
+</style>
