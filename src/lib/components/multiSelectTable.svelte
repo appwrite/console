@@ -1,4 +1,5 @@
 <script lang="ts" module>
+    // TODO: @itznotabug - true | string | Error | void
     export type DeleteOperationState = true | string | void;
 </script>
 
@@ -60,6 +61,15 @@
             message: `${count} ${label} deleted`
         });
     }
+
+    // this is kept very basic!
+    function getPluralResource() {
+        if (resource.endsWith('y')) {
+            return `${resource}ies`;
+        }
+
+        return `${resource}s`;
+    }
 </script>
 
 <Table.Root let:root {columns} {allowSelection} bind:selectedRows>
@@ -75,7 +85,7 @@
         <svelte:fragment slot="start">
             <Badge content={selectedRows.length.toString()} />
             <span>
-                {selectedRows.length > 1 ? `${resource}s` : resource}
+                {selectedRows.length > 1 ? getPluralResource() : resource}
                 selected
             </span>
         </svelte:fragment>
@@ -135,7 +145,7 @@
                 {@render deleteContent(selectionCount)}
             {:else}
                 Are you sure you want to delete <strong>{selectionCount}</strong>
-                {selectionCount > 1 ? `${resource}s` : resource}?
+                {selectionCount > 1 ? getPluralResource() : resource}?
             {/if}
         </Typography.Text>
 
