@@ -36,7 +36,6 @@
 
     let showFailed = $state(false);
     let errors: string[] = $state([]);
-    let selected: string[] = $state([]);
 
     const columns = writable<Column[]>([
         { id: '$id', title: 'Message ID', type: 'string', width: 200 },
