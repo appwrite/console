@@ -26,7 +26,8 @@
         children,
         onDelete,
         onCancel,
-        deleteContent
+        deleteContent,
+        deleteContentNotice
     }: {
         resource: string;
         allowSelection?: boolean;
@@ -36,6 +37,7 @@
         header: Snippet<[root: TableRootProps]>;
         children: Snippet<[root: TableRootProps]>;
         deleteContent?: Snippet<[count: number]>;
+        deleteContentNotice?: Snippet;
         onDelete?: (selectedRows: string[]) => Promise<DeleteOperationState> | DeleteOperationState;
         onCancel?: () => Promise<void> | void;
     } = $props();
@@ -129,14 +131,21 @@
         <Typography.Text>
             {@const selectionCount = selectedRows.length}
             {#if deleteContent}
-                <!-- because some show extra info -->
+                <!-- some show extra info -->
                 {@render deleteContent(selectionCount)}
             {:else}
                 Are you sure you want to delete <strong>{selectionCount}</strong>
-                {selectionCount > 1 ? `${resource}s` : resource}.
+                {selectionCount > 1 ? `${resource}s` : resource}?
             {/if}
         </Typography.Text>
 
-        <Typography.Text variant="m-500">This action is irreversible.</Typography.Text>
+        <Typography.Text variant="m-500">
+            {#if deleteContentNotice}
+                <!-- some show extra info -->
+                {@render deleteContentNotice()}
+            {:else}
+                This action is irreversible.
+            {/if}
+        </Typography.Text>
     </Confirm>
 {/if}

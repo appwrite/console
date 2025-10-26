@@ -27,11 +27,7 @@
     import type { Column } from '$lib/helpers/types';
     import { writable } from 'svelte/store';
     import { canWriteMessages } from '$lib/stores/roles';
-    import {
-        Layout,
-        Link,
-        Table,
-    } from '@appwrite.io/pink-svelte';
+    import { Layout, Link, Table } from '@appwrite.io/pink-svelte';
     import { onDestroy, onMount } from 'svelte';
     import { stopPolling, pollMessagesStatus } from './helper';
 
