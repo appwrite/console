@@ -51,14 +51,16 @@
     });
 
     // Update topic options when category changes
+    let previousCategory = $supportData.category;
     $: topicOptions = ($supportData.category ? topicsByCategory[$supportData.category] || [] : []).map((topic) => ({
         value: topic.toLowerCase(),
         label: topic
     }));
 
     // Reset topic when category changes
-    $: if ($supportData.category) {
+    $: if ($supportData.category !== previousCategory) {
         $supportData.topic = undefined;
+        previousCategory = $supportData.category;
     }
 
     onDestroy(() => {
@@ -169,9 +171,6 @@
                     label="Choose a topic"
                     placeholder="Select topic"
                     bind:value={$supportData.topic}
-                    on:select={(event) => {
-                        $supportData.topic = event.detail.value;
-                    }}
                     options={topicOptions} />
             {/if}
             <Input.ComboBox
@@ -179,9 +178,6 @@
                 label="Choose a project"
                 options={projectOptions ?? []}
                 bind:value={$supportData.project}
-                on:select={(event) => {
-                    $supportData.project = event.detail.value;
-                }}
                 required={false}
                 placeholder="Select project" />
             <InputSelect
