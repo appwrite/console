@@ -32,7 +32,7 @@
 
     // define columns for the expandable table
     // const columns = [
-    //     { id: 'item', align: 'left' as const, width: '10fr' },
+    //     { id: 'item', align: 'left' as const, width: '20fr' },
     //     { id: 'usage', align: 'left' as const, width: '20fr' },
     //     { id: 'price', align: 'right' as const, width: '0fr' }
     // ];
