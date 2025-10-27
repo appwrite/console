@@ -44,6 +44,7 @@
     import { currentPlan } from '$lib/stores/organization';
     import { createConservative } from '$lib/helpers/stores';
     import { ActionMenu, Selector } from '@appwrite.io/pink-svelte';
+    import RequiredArrayCheckboxes from './requiredArrayCheckboxes.svelte';
     import { InputNumber, InputText, InputTextarea } from '$lib/elements/forms';
     import { Popover, Layout, Tag, Typography, Link } from '@appwrite.io/pink-svelte';
 
@@ -112,21 +113,11 @@
     disabled={data.required || data.array || disabled}
     nullable={!data.required && !data.array} />
 
-<Selector.Checkbox
-    size="s"
-    id="required"
-    label="Required"
-    bind:checked={data.required}
-    disabled={data.array || disabled}
-    description="Indicate whether this column is required." />
-
-<Selector.Checkbox
-    size="s"
-    id="array"
-    label="Array"
-    bind:checked={data.array}
-    disabled={data.required || editing || disabled}
-    description="Indicate whether this column is an array. Defaults to an empty array." />
+<RequiredArrayCheckboxes
+    {editing}
+    {disabled}
+    bind:array={data.array}
+    bind:required={data.required} />
 
 <Layout.Stack gap="xs" direction="column">
     <div

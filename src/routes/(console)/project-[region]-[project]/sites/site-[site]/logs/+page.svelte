@@ -13,7 +13,7 @@
     export let data;
 
     onMount(() => {
-        return sdk.forConsole.client.subscribe('console', (response) => {
+        return sdk.forConsole.realtime.subscribe('console', (response) => {
             if (response.events.includes('sites.*.executions.*')) {
                 invalidate(Dependencies.EXECUTIONS);
             }

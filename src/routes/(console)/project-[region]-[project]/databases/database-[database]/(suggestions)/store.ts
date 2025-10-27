@@ -25,6 +25,8 @@ export type SuggestedColumnSchema = {
     max?: number;
     format?: string | null;
     encrypt?: boolean | null;
+    elements?: string[];
+    isPlaceholder?: boolean;
 };
 
 export enum IndexOrder {
@@ -57,7 +59,7 @@ export const mockSuggestions: { total: number; columns: ColumnInput[] } = {
     total: 7,
     columns: [
         {
-            name: 'title',
+            name: 'name',
             type: 'string',
             size: 255,
             format: null,
@@ -65,7 +67,7 @@ export const mockSuggestions: { total: number; columns: ColumnInput[] } = {
             formatOptions: null
         },
         {
-            name: 'authorName',
+            name: 'age',
             type: 'string',
             size: 128,
             format: null,
@@ -73,7 +75,7 @@ export const mockSuggestions: { total: number; columns: ColumnInput[] } = {
             formatOptions: null
         },
         {
-            name: 'publishedYear',
+            name: 'year',
             type: 'integer',
             size: null,
             format: null,
@@ -84,7 +86,7 @@ export const mockSuggestions: { total: number; columns: ColumnInput[] } = {
             }
         },
         {
-            name: 'genre',
+            name: 'category',
             type: 'string',
             size: 64,
             format: null,
@@ -93,7 +95,7 @@ export const mockSuggestions: { total: number; columns: ColumnInput[] } = {
             default: null
         },
         {
-            name: 'isbn',
+            name: 'code',
             type: 'string',
             size: 13,
             required: false,
@@ -101,7 +103,7 @@ export const mockSuggestions: { total: number; columns: ColumnInput[] } = {
             default: null
         },
         {
-            name: 'language',
+            name: 'spokenLanguage',
             type: 'string',
             size: 32,
             format: null,
@@ -110,7 +112,7 @@ export const mockSuggestions: { total: number; columns: ColumnInput[] } = {
             default: null
         },
         {
-            name: 'pageCount',
+            name: 'count',
             type: 'integer',
             required: false,
             min: 1,
@@ -128,6 +130,7 @@ export type ColumnInput = {
     min?: number;
     max?: number;
     format?: string;
+    elements?: string[];
     formatOptions?: {
         min?: number;
         max?: number;
@@ -149,7 +152,8 @@ export function mapSuggestedColumns<T extends ColumnInput>(columns: T[]): Sugges
             col.type === 'integer' || col.type === 'double'
                 ? (col.max ?? col.formatOptions?.max ?? undefined)
                 : undefined,
-        format: col.format ?? null
+        format: col.format ?? null,
+        elements: col.elements ?? undefined
     }));
 }
 

@@ -49,6 +49,16 @@
         userColumns?: Column[];
     } = $props();
 
+    const staticUserColumns = userColumns.map((column) => {
+        return {
+            ...column,
+            resizable: false,
+            draggable: false
+        };
+    });
+
+    console.log(JSON.stringify(staticUserColumns, null, 2));
+
     let resizeObserver: ResizeObserver;
     let spreadsheetContainer: HTMLElement;
 
@@ -58,9 +68,9 @@
     let fadeBottomOverlayEl: HTMLDivElement | null = null;
     let snowFadeBottomOverlayEl: HTMLDivElement | null = null;
 
-    let customColumns = $state<
-        (SuggestedColumnSchema & { elements?: []; isPlaceholder?: boolean })[]
-    >(Array.from({ length: 7 }, (_, index) => createPlaceholderColumn(index)));
+    let customColumns = $state<SuggestedColumnSchema[]>(
+        Array.from({ length: 7 }, (_, index) => createPlaceholderColumn(index))
+    );
 
     let showFloatingBar = $state(true);
     let hasTransitioned = $state(false);
@@ -163,15 +173,32 @@
         if (!hasRealColumns) {
             // for placeholders or no columns,
             // position overlay to cover custom columns area
-            const idCell = getById('$id');
+            let startCell = getById('$id');
+
+            if (staticUserColumns.length > 0) {
+                const lastUserColumn = userColumns[staticUserColumns.length - 1];
+                let lastUserCell = getById(lastUserColumn.id);
+
+                // If not found with data-header="true", try without it
+                if (!lastUserCell) {
+                    lastUserCell = headerElement!.querySelector<HTMLElement>(
+                        `[role="cell"][data-column-id="${lastUserColumn.id}"]`
+                    );
+                }
+
+                if (lastUserCell) {
+                    startCell = lastUserCell;
+                }
+            }
+
             const actionsCell = headerElement!.querySelector<HTMLElement>(
                 '[role="cell"][data-column-id="actions"]'
             );
 
-            if (idCell && actionsCell) {
-                const idRect = idCell.getBoundingClientRect();
+            if (startCell && actionsCell) {
+                const startRect = startCell.getBoundingClientRect();
                 const actionsRect = actionsCell.getBoundingClientRect();
-                const left = Math.round(idRect.right - containerRect.left);
+                const left = Math.round(startRect.right - containerRect.left);
                 const actionsLeft = actionsRect.left - containerRect.left;
 
                 const width = actionsLeft - left;
@@ -226,10 +253,28 @@
             .querySelector('[data-select="true"]')
             ?.getBoundingClientRect();
 
-        // Start overlay after selection column if it exists, otherwise after $id
+        // determine starting point for overlay
         let startLeft = idRect.right;
         if (selectionRect && selectionRect.right > idRect.right) {
             startLeft = selectionRect.right;
+        }
+
+        // If userColumns exist, start overlay after the last userColumn instead
+        if (staticUserColumns.length > 0) {
+            const lastUserColumn = userColumns[staticUserColumns.length - 1];
+            let lastUserCell = getById(lastUserColumn.id);
+
+            // If not found with data-header="true", try without it (cell might be rendered differently)
+            if (!lastUserCell) {
+                lastUserCell = headerElement!.querySelector<HTMLElement>(
+                    `[role="cell"][data-column-id="${lastUserColumn.id}"]`
+                );
+            }
+
+            if (lastUserCell) {
+                const lastUserRect = lastUserCell.getBoundingClientRect();
+                startLeft = lastUserRect.right;
+            }
         }
 
         const left = Math.round(startLeft - containerRect.left);
@@ -258,17 +303,13 @@
 
     // only for mobile, we can remove if not needed!
     const scrollToFirstCustomColumn = () => {
-        if (!$isSmallViewport) return;
+        if (!staticUserColumns.length && !$isSmallViewport) return;
 
         if (!headerElement || !headerElement.isConnected) {
-            headerElement = spreadsheetContainer.querySelector('[role="rowheader"]');
+            headerElement = spreadsheetContainer?.querySelector('[role="rowheader"]');
         }
 
         if (!headerElement) return;
-
-        const firstCustomColumnCell = headerElement.querySelector<HTMLElement>(
-            `[role="cell"][data-header="true"][data-column-id="${customColumns[0]?.key}"]`
-        );
 
         const directAccessScroller =
             hScroller ??
@@ -276,8 +317,23 @@
             // internal spreadsheet root main container!
             spreadsheetContainer.querySelector('.spreadsheet-container');
 
-        if (firstCustomColumnCell && directAccessScroller) {
-            const cellRect = firstCustomColumnCell.getBoundingClientRect();
+        if (!directAccessScroller) return;
+
+        let targetCell: HTMLElement | null = null;
+
+        if (staticUserColumns.length > 0) {
+            const lastUserColumn = userColumns[staticUserColumns.length - 1];
+            targetCell = headerElement.querySelector<HTMLElement>(
+                `[role="cell"][data-header="true"][data-column-id="${lastUserColumn.id}"]`
+            );
+        } else {
+            targetCell = headerElement.querySelector<HTMLElement>(
+                `[role="cell"][data-header="true"][data-column-id="${customColumns[0]?.key}"]`
+            );
+        }
+
+        if (targetCell) {
+            const cellRect = targetCell.getBoundingClientRect();
             const scrollerRect = directAccessScroller.getBoundingClientRect();
             const scrollLeft =
                 directAccessScroller.scrollLeft + cellRect.left - scrollerRect.left - 40;
@@ -409,8 +465,8 @@
                 icon: IconFingerPrint,
                 ...baseColProps
             },
+            ...staticUserColumns,
             ...finalCustomColumns,
-            /*...userColumns,*/
             {
                 id: 'actions',
                 title: '',
@@ -426,8 +482,6 @@
     const emptyCells = $derived(($isSmallViewport ? 14 : 17) + (!$expandTabs ? 2 : 0));
 
     onMount(async () => {
-        userColumns; /* silences lint check, variable not read */
-
         if (spreadsheetContainer) {
             resizeObserver = new ResizeObserver(recalcAll);
             resizeObserver.observe(spreadsheetContainer);
@@ -460,10 +514,8 @@
     async function suggestColumns() {
         $tableColumnSuggestions.thinking = true;
 
-        if ($isSmallViewport) {
-            await tick();
-            scrollToFirstCustomColumn();
-        }
+        await tick();
+        scrollToFirstCustomColumn();
 
         let suggestedColumns: {
             total: number;
@@ -929,9 +981,7 @@
         }
     }
 
-    function createPlaceholderColumn(
-        index: number
-    ): SuggestedColumnSchema & { elements?: []; isPlaceholder?: boolean } {
+    function createPlaceholderColumn(index: number): SuggestedColumnSchema {
         return {
             key: `column${index + 1}`,
             type: 'string',
@@ -1033,6 +1083,23 @@
         }
     });
 
+    // mark suggested column cells so CSS can target them specifically
+    $effect(() => {
+        if (!spreadsheetContainer) return;
+
+        // get all custom column IDs
+        const suggestedColumnIds = customColumns.map((col) => col.key);
+        const allCells = spreadsheetContainer.querySelectorAll('[role="cell"][data-column-id]');
+        allCells.forEach((cell) => {
+            const columnId = cell.getAttribute('data-column-id');
+            if (columnId && suggestedColumnIds.includes(columnId)) {
+                cell.setAttribute('data-suggested-column', 'true');
+            } else {
+                cell.removeAttribute('data-suggested-column');
+            }
+        });
+    });
+
     $effect(() => {
         if (!spreadsheetContainer) return;
 
@@ -1122,7 +1189,7 @@
                 {#each spreadsheetColumns as column, index (index)}
                     {#if column.isAction}
                         <Spreadsheet.Header.Cell column="actions" {root}>
-                            <Button.Button icon variant="extra-compact">
+                            <Button.Button disabled icon variant="extra-compact">
                                 <Icon icon={IconPlus} color="--fgcolor-neutral-primary" />
                             </Button.Button>
                         </Spreadsheet.Header.Cell>
@@ -1135,7 +1202,7 @@
                             ? '--non-overlay-icon-color'
                             : '--overlay-icon-color'}
                         {@const isColumnInteractable =
-                            isCustomColumn(column.id) && !columnObj.isPlaceholder}
+                            isCustomColumn(column.id) && columnObj && !columnObj.isPlaceholder}
 
                         <Options
                             enabled={isColumnInteractable}
@@ -1299,7 +1366,7 @@
                     {#each spreadsheetColumns as column}
                         {@const columnObj = getColumn(column.id)}
                         {@const isColumnInteractable =
-                            isCustomColumn(column.id) && !columnObj.isPlaceholder}
+                            isCustomColumn(column.id) && columnObj && !columnObj.isPlaceholder}
                         <Spreadsheet.Cell {root} column={column.id} isEditable={false}>
                             <button
                                 class="column-selector-button"
@@ -1609,12 +1676,7 @@
         }
 
         &:has(.columns-range-overlay) {
-            :global(
-                [role='rowheader']
-                    [role='cell']:has(.column-resizer-disabled):not([data-column-id^='$']):not(
-                        [data-column-id='actions']
-                    )
-            ) {
+            :global([role='rowheader'][data-suggested-column='true']) {
                 background: var(--columns-range-pink-header-background-color);
             }
 
@@ -1627,16 +1689,12 @@
                 margin-left: -2px;
             }
 
-            :global(
-                [role='cell']:has(.column-resizer-disabled):not([data-column-id^='$']):not(
-                        [data-column-id='actions']
-                    )
-            ) {
+            :global([role='cell']:has(.column-resizer-disabled)[data-suggested-column='true']) {
                 box-shadow: 0 -1px 0 0 var(--columns-range-pink-border-color) inset !important;
                 transition: box-shadow 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             }
 
-            :global([role='cell']:not([data-column-id='actions']) .column-resizer-disabled) {
+            :global([role='cell'][data-suggested-column='true'] .column-resizer-disabled) {
                 border-left: var(--border-width-s, 1px) solid var(--columns-range-pink-border-color) !important;
                 transition: border-color 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             }

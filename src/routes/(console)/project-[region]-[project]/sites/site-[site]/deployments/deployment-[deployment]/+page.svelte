@@ -1,8 +1,7 @@
 <script lang="ts">
     import { Container } from '$lib/layout';
-    import { sdk } from '$lib/stores/sdk';
+    import { type AppwriteRealtimeSubscription, sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import type { Models, RealtimeResponseEvent } from '@appwrite.io/console';
     import SiteCard from '../../../(components)/siteCard.svelte';
     import Logs, { badgeTypeDeployment } from '../../../(components)/logs.svelte';
     import Card from '$lib/components/card.svelte';
@@ -20,7 +19,9 @@
     import { page } from '$app/state';
     import { regionalProtocol } from '$routes/(console)/project-[region]-[project]/store';
 
-    let { data } = $props();
+    import type { PageProps } from './$types';
+
+    let { data }: PageProps = $props();
 
     let deployment = $derived(data.deployment);
 
@@ -30,26 +31,28 @@
     let showCancel = $state(false);
 
     onMount(() => {
-        return sdk
-            .forConsoleIn(page.params.region)
-            .client.subscribe(
-                'console',
-                async (response: RealtimeResponseEvent<Models.Deployment>) => {
-                    if (
-                        response.events.includes(
-                            `sites.${page.params.site}.deployments.${page.params.deployment}.update`
-                        )
-                    ) {
-                        await invalidate(Dependencies.DEPLOYMENT);
-                    }
+        let subscription: AppwriteRealtimeSubscription;
+        sdk.forConsoleIn(page.params.region)
+            .realtime.subscribe('console', async (response) => {
+                if (
+                    response.events.includes(
+                        `sites.${page.params.site}.deployments.${page.params.deployment}.update`
+                    )
+                ) {
+                    await invalidate(Dependencies.DEPLOYMENT);
                 }
-            );
+            })
+            .then((realtime) => (subscription = realtime));
+
+        return () => {
+            subscription?.close();
+        };
     });
 </script>
 
 <Container>
     <SiteCard {deployment} proxyRuleList={data.proxyRuleList}>
-        <svelte:fragment slot="footer">
+        {#snippet footer()}
             {#if deployment?.status === 'ready' && data.proxyRuleList?.total}
                 <Button
                     external
@@ -78,7 +81,7 @@
                 bind:showDelete
                 bind:showCancel
                 activeDeployment={data.site.deploymentId} />
-        </svelte:fragment>
+        {/snippet}
     </SiteCard>
     <Card padding="s">
         <Accordion
