@@ -53,6 +53,11 @@
     </Button>
     <svelte:fragment slot="menu" let:toggle>
         <ActionMenu.Root>
+            {@const effectiveStatus = getEffectiveBuildStatus(
+                deployment.status,
+                deployment.$createdAt,
+                getBuildTimeoutSeconds($regionalConsoleVariables)
+            )}
             {#if !inCard}
                 <Tooltip disabled={selectedDeployment?.sourceSize !== 0} placement={'bottom'}>
                     <div>
@@ -72,7 +77,7 @@
                     <div slot="tooltip">Source is empty</div>
                 </Tooltip>
             {/if}
-            {#if deployment?.status === 'ready' && deployment?.$id !== activeDeployment}
+            {#if effectiveStatus === 'ready' && deployment?.$id !== activeDeployment}
                 <ActionMenu.Item.Button
                     leadingIcon={IconLightningBolt}
                     on:click={(e) => {
@@ -84,7 +89,7 @@
                     Activate
                 </ActionMenu.Item.Button>
             {/if}
-            {#if deployment?.status === 'ready' || deployment?.status === 'failed' || deployment?.status === 'building'}
+            {#if effectiveStatus === 'ready' || effectiveStatus === 'failed' || effectiveStatus === 'building'}
                 <SubMenu>
                     <ActionMenu.Root noPadding>
                         <ActionMenu.Item.Button
@@ -103,7 +108,7 @@
                             </ActionMenu.Item.Anchor>
 
                             <ActionMenu.Item.Anchor
-                                disabled={deployment?.status !== 'ready'}
+                                disabled={effectiveStatus !== 'ready'}
                                 on:click={toggle}
                                 href={getOutputDownload(deployment.$id)}
                                 external>
@@ -114,11 +119,6 @@
                 </SubMenu>
             {/if}
 
-            {@const effectiveStatus = getEffectiveBuildStatus(
-                deployment.status,
-                deployment.$createdAt,
-                getBuildTimeoutSeconds($regionalConsoleVariables)
-            )}
             {#if effectiveStatus === 'processing' || effectiveStatus === 'building' || effectiveStatus === 'waiting'}
                 <ActionMenu.Item.Button
                     leadingIcon={IconXCircle}

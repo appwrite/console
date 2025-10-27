@@ -61,7 +61,7 @@
                         `functions.${page.params.function}.deployments.${page.params.deployment}.update`
                     )
                 ) {
-                    if (message.payload.status === 'ready') {
+                    if (['ready', 'failed'].includes(message.payload.status)) {
                         invalidate(Dependencies.DEPLOYMENT);
                     }
                 }
@@ -155,9 +155,9 @@
     <Card.Base padding="s">
         <Accordion
             title="Deployment logs"
-            badge={capitalize(data.deployment.status)}
+            badge={capitalize(effectiveStatus)}
             open
-            badgeType={badgeTypeDeployment(data.deployment.status)}
+            badgeType={badgeTypeDeployment(effectiveStatus)}
             hideDivider>
             <Layout.Stack gap="xl">
                 {#key data.deployment.buildLogs}
@@ -170,7 +170,7 @@
 
             <svelte:fragment slot="end">
                 <Layout.Stack direction="row" alignItems="center" inline>
-                    {#if ['processing', 'building'].includes(data.deployment.status)}
+                    {#if ['processing', 'building'].includes(effectiveStatus)}
                         <Typography.Code color="--fgcolor-neutral-secondary">
                             <Layout.Stack direction="row" alignItems="center" inline>
                                 <p use:timer={{ start: data.deployment.$createdAt }}></p>

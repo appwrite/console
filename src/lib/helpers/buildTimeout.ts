@@ -16,9 +16,8 @@ export function isBuildTimedOut(
         return false;
     }
 
-    const now = new Date();
     const created = new Date(createdAt);
-    const elapsedSeconds = Math.floor((now.getTime() - created.getTime()) / 1000);
+    const elapsedSeconds = Math.floor((Date.now() - created.getTime()) / 1000);
 
     return elapsedSeconds > timeoutSeconds;
 }

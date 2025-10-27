@@ -62,7 +62,7 @@
 <Container>
     <SiteCard {deployment} proxyRuleList={data.proxyRuleList}>
         {#snippet footer()}
-            {#if deployment?.status === 'ready' && data.proxyRuleList?.total}
+            {#if effectiveStatus === 'ready' && data.proxyRuleList?.total}
                 <Button
                     external
                     href={`${$regionalProtocol}${data.proxyRuleList.rules[0]?.domain}`}>
