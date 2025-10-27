@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Wizard } from '$lib/layout';
-    import { Icon, Layout, Tag, Typography, Button, Card } from '@appwrite.io/pink-svelte';
+    import { Icon, Input, Layout, Tag, Typography, Button, Card } from '@appwrite.io/pink-svelte';
     import { supportData, isSupportOnline } from './wizard/support/store';
     import { onMount } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
@@ -23,24 +23,61 @@
 
     let projectOptions: Array<{ value: string; label: string }>;
 
+    // Topic options based on category
+    const topicsByCategory = {
+        general: ['Security', 'Compliance', 'Performance'],
+        billing: ['Invoices', 'Plans'],
+        technical: ['Auth', 'Databases', 'Storage', 'Functions', 'Realtime', 'Messaging', 'Migrations', 'Webhooks', 'SDKs', 'Console']
+    };
+
+    // Severity options
+    const severityOptions = [
+        { value: 'critical', label: 'Critical' },
+        { value: 'high', label: 'High' },
+        { value: 'medium', label: 'Medium' },
+        { value: 'low', label: 'Low' },
+        { value: 'question', label: 'Question' }
+    ];
+
     onMount(async () => {
         const projectList = await sdk.forConsole.projects.list();
-        projectOptions = projectList.projects.map((project) => ({
-            value: project.$id,
-            label: project.name
-        }));
+        // Filter projects by organization ID
+        projectOptions = projectList.projects
+            .filter((project) => project.teamId === $organization?.$id)
+            .map((project) => ({
+                value: project.$id,
+                label: project.name
+            }));
     });
+
+    // Update topic options when category changes
+    $: topicOptions = ($supportData.category ? topicsByCategory[$supportData.category] || [] : []).map((topic) => ({
+        value: topic.toLowerCase(),
+        label: topic
+    }));
+
+    // Reset topic when category changes
+    $: if ($supportData.category) {
+        $supportData.topic = undefined;
+    }
 
     onDestroy(() => {
         $supportData = {
             message: null,
             subject: null,
             category: 'general',
+            topic: undefined,
+            severity: undefined,
             file: null
         };
     });
 
     async function handleSubmit() {
+        // Create category-topic tag
+        const categoryTopicTag = $supportData.topic 
+            ? `${$supportData.category}-${$supportData.topic}`.toLowerCase()
+            : $supportData.category.toLowerCase();
+
         const response = await fetch(`${VARS.GROWTH_ENDPOINT}/support`, {
             method: 'POST',
             headers: {
@@ -51,13 +88,13 @@
                 subject: $supportData.subject,
                 firstName: ($user?.name || 'Unknown').slice(0, 40),
                 message: $supportData.message,
-                tags: ['cloud'],
+                tags: ['cloud', categoryTopicTag],
                 customFields: [
                     { id: '41612', value: $supportData.category },
-                    { id: '48493', value: $user?.name ?? '' },
                     { id: '48492', value: $organization?.$id ?? '' },
                     { id: '48491', value: $supportData?.project ?? '' },
-                    { id: '48490', value: $user?.$id ?? '' }
+                    { id: '56023', value: $supportData?.severity ?? '' },
+                    { id: '56024', value: $organization?.billingPlan ?? '' }
                 ]
             })
         });
@@ -85,6 +122,8 @@
             message: null,
             subject: null,
             category: 'general',
+            topic: undefined,
+            severity: undefined,
             file: null,
             project: null
         };
@@ -113,7 +152,7 @@
             </Layout.Stack>
             <Layout.Stack gap="s">
                 <Typography.Text color="--fgcolor-neutral-secondary"
-                    >Choose a topic</Typography.Text>
+                    >Choose a category</Typography.Text>
                 <Layout.Stack gap="s" direction="row">
                     {#each ['general', 'billing', 'technical'] as category}
                         <Tag
@@ -124,13 +163,34 @@
                     {/each}
                 </Layout.Stack>
             </Layout.Stack>
-            <InputSelect
+            {#if topicOptions.length > 0}
+                <Input.ComboBox
+                    id="topic"
+                    label="Choose a topic"
+                    placeholder="Select topic"
+                    bind:value={$supportData.topic}
+                    on:select={(event) => {
+                        $supportData.topic = event.detail.value;
+                    }}
+                    options={topicOptions} />
+            {/if}
+            <Input.ComboBox
                 id="project"
                 label="Choose a project"
                 options={projectOptions ?? []}
                 bind:value={$supportData.project}
+                on:select={(event) => {
+                    $supportData.project = event.detail.value;
+                }}
                 required={false}
                 placeholder="Select project" />
+            <InputSelect
+                id="severity"
+                label="Severity"
+                options={severityOptions}
+                bind:value={$supportData.severity}
+                required={false}
+                placeholder="Select severity" />
             <InputText
                 id="subject"
                 label="Subject"

@@ -4,6 +4,8 @@ export type SupportData = {
     message: string;
     subject: string;
     category: string;
+    topic?: string;
+    severity?: string;
     file?: File | null;
     project?: string;
 };
