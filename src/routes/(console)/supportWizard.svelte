@@ -23,6 +23,19 @@
     import { IconCheckCircle, IconXCircle } from '@appwrite.io/pink-icons-svelte';
 
     let projectOptions: Array<{ value: string; label: string }>;
+    let projectSearch = '';
+
+    async function loadProjects(search: string = '') {
+        // Filter projects by organization ID using server-side queries
+        const projectList = await sdk.forConsole.projects.list({
+            queries: $organization?.$id ? [Query.equal('teamId', $organization.$id)] : [],
+            search: search || undefined
+        });
+        projectOptions = projectList.projects.map((project) => ({
+            value: project.$id,
+            label: project.name
+        }));
+    }
 
     // Topic options based on category
     const topicsByCategory = {
@@ -41,14 +54,7 @@
     ];
 
     onMount(async () => {
-        // Filter projects by organization ID using server-side queries
-        const projectList = await sdk.forConsole.projects.list({
-            queries: $organization?.$id ? [Query.equal('teamId', $organization.$id)] : []
-        });
-        projectOptions = projectList.projects.map((project) => ({
-            value: project.$id,
-            label: project.name
-        }));
+        await loadProjects();
     });
 
     // Update topic options when category changes
@@ -158,23 +164,29 @@
                                 }
                                 $supportData.category = category;
                             }}
-                            selected={$supportData.category === category}>{category}</Tag>
+                            selected={$supportData.category === category}>{category.charAt(0).toUpperCase() + category.slice(1)}</Tag>
                     {/each}
                 </Layout.Stack>
             </Layout.Stack>
             {#if topicOptions.length > 0}
-                <Input.ComboBox
-                    id="topic"
-                    label="Choose a topic"
-                    placeholder="Select topic"
-                    bind:value={$supportData.topic}
-                    options={topicOptions} />
+                {#key $supportData.category}
+                    <Input.ComboBox
+                        id="topic"
+                        label="Choose a topic"
+                        placeholder="Select topic"
+                        bind:value={$supportData.topic}
+                        options={topicOptions} />
+                {/key}
             {/if}
             <Input.ComboBox
                 id="project"
                 label="Choose a project"
                 options={projectOptions ?? []}
                 bind:value={$supportData.project}
+                bind:search={projectSearch}
+                on:search={async (event) => {
+                    await loadProjects(event.detail);
+                }}
                 required={false}
                 placeholder="Select project" />
             <InputSelect
