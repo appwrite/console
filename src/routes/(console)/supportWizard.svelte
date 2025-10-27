@@ -51,17 +51,10 @@
     });
 
     // Update topic options when category changes
-    let previousCategory = $supportData.category;
     $: topicOptions = ($supportData.category ? topicsByCategory[$supportData.category] || [] : []).map((topic) => ({
         value: topic.toLowerCase(),
         label: topic
     }));
-
-    // Reset topic when category changes
-    $: if ($supportData.category !== previousCategory) {
-        $supportData.topic = undefined;
-        previousCategory = $supportData.category;
-    }
 
     onDestroy(() => {
         $supportData = {
@@ -159,6 +152,9 @@
                     {#each ['general', 'billing', 'technical'] as category}
                         <Tag
                             on:click={() => {
+                                if ($supportData.category !== category) {
+                                    $supportData.topic = undefined;
+                                }
                                 $supportData.category = category;
                             }}
                             selected={$supportData.category === category}>{category}</Tag>
