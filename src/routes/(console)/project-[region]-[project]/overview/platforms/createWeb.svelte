@@ -20,6 +20,7 @@
         IconSvelte,
         IconReact,
         IconNuxt,
+        IconTanstack,
         IconInfo,
         IconExternalLink,
         IconAngular,
@@ -27,7 +28,7 @@
     } from '@appwrite.io/pink-icons-svelte';
     import { page } from '$app/state';
     import { onMount } from 'svelte';
-    import { sdk } from '$lib/stores/sdk';
+    import { type AppwriteRealtimeSubscription, sdk } from '$lib/stores/sdk';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { addNotification } from '$lib/stores/notifications';
     import { fade } from 'svelte/transition';
@@ -38,6 +39,7 @@
         ReactFrameworkIcon,
         SvelteFrameworkIcon,
         NuxtFrameworkIcon,
+        TanStackFrameworkIcon,
         NextjsFrameworkIcon,
         VueFrameworkIcon,
         NoFrameworkIcon,
@@ -130,6 +132,15 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
 };`
         },
         {
+            key: 'tanstack-start',
+            label: 'TanStack Start',
+            icon: TanStackFrameworkIcon,
+            smallIcon: IconTanstack,
+            portNumber: 3000,
+            runCommand: 'npm run dev',
+            updateConfigCode: updateConfigCode('VITE_')
+        },
+        {
             key: 'js',
             label: 'JavaScript',
             icon: JavascriptFrameworkIcon,
@@ -191,18 +202,21 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
     }
 
     onMount(() => {
-        const unsubscribe = sdk.forConsole.client.subscribe('console', (response) => {
-            if (response.events.includes(`projects.${projectId}.ping`)) {
-                connectionSuccessful = true;
-                invalidate(Dependencies.ORGANIZATION);
-                invalidate(Dependencies.PROJECT);
-                unsubscribe();
-            }
-        });
+        let subscription: AppwriteRealtimeSubscription;
+        sdk.forConsole.realtime
+            .subscribe('console', (response) => {
+                if (response.events.includes(`projects.${projectId}.ping`)) {
+                    connectionSuccessful = true;
+                    invalidate(Dependencies.ORGANIZATION);
+                    invalidate(Dependencies.PROJECT);
+                    subscription?.close();
+                }
+            })
+            .then((realtime) => (subscription = realtime));
 
         return () => {
-            unsubscribe();
             resetPlatformStore();
+            subscription?.close();
         };
     });
 </script>

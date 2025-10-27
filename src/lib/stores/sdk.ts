@@ -21,7 +21,8 @@ import {
     Sites,
     Tokens,
     TablesDB,
-    Domains
+    Domains,
+    Realtime
 } from '@appwrite.io/console';
 import { Billing } from '../sdk/billing';
 import { Backups } from '../sdk/backups';
@@ -32,11 +33,13 @@ import {
     REGION_SYD,
     REGION_SFO,
     REGION_SGP,
+    REGION_TOR,
     SUBDOMAIN_FRA,
     SUBDOMAIN_NYC,
     SUBDOMAIN_SFO,
     SUBDOMAIN_SYD,
-    SUBDOMAIN_SGP
+    SUBDOMAIN_SGP,
+    SUBDOMAIN_TOR
 } from '$lib/constants';
 import { building } from '$app/environment';
 import { getProjectId } from '$lib/helpers/project';
@@ -67,6 +70,8 @@ const getSubdomain = (region?: string) => {
             return SUBDOMAIN_SFO;
         case REGION_SGP:
             return SUBDOMAIN_SGP;
+        case REGION_TOR:
+            return SUBDOMAIN_TOR;
         default:
             return '';
     }
@@ -90,7 +95,8 @@ function createConsoleSdk(client: Client) {
         sources: new Sources(client),
         sites: new Sites(client),
         domains: new Domains(client),
-        storage: new Storage(client)
+        storage: new Storage(client),
+        realtime: new Realtime(client)
     };
 }
 
@@ -184,6 +190,11 @@ export enum RuleTrigger {
     DEPLOYMENT = 'deployment',
     MANUAL = 'manual'
 }
+
+/**
+ * Some type imports are broken on the SDK, this works correctly for the time being!
+ */
+export type AppwriteRealtimeSubscription = Awaited<ReturnType<Realtime['subscribe']>>;
 
 export const createAdminClient = () => {
     return new Client().setEndpoint(getApiEndpoint()).setMode('admin').setProject(getProjectId());

@@ -9,7 +9,7 @@
     import { Button } from '$lib/elements/forms';
     import { calculateSize } from '$lib/helpers/sizeConvertion';
     import { Container } from '$lib/layout';
-    import type { Models } from '@appwrite.io/console';
+    import { ImageFormat, type Models } from '@appwrite.io/console';
     import { addNotification } from '$lib/stores/notifications';
     import { uploader } from '$lib/stores/uploader';
     import { sdk } from '$lib/stores/sdk.js';
@@ -53,7 +53,8 @@
                     bucketId,
                     fileId,
                     height: 128,
-                    width: 128
+                    width: 128,
+                    output: ImageFormat.Avif
                 })
                 .toString() + '&mode=admin'
         );

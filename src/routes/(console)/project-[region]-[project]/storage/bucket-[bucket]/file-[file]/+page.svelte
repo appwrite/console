@@ -35,7 +35,7 @@
     } from '@appwrite.io/pink-icons-svelte';
     import FileTokensCopyUrl from './fileTokensCopyUrl.svelte';
     import ManageFileTokenModal, { cleanFormattedDate } from './manageFileToken.svelte';
-    import { type Models } from '@appwrite.io/console';
+    import { ImageFormat, type Models } from '@appwrite.io/console';
     import { isSmallViewport } from '$lib/stores/viewport';
     import { Menu } from '$lib/components/menu';
 
@@ -57,7 +57,8 @@
                 bucketId: $file.bucketId,
                 fileId,
                 width: 640,
-                height: 300
+                height: 300,
+                output: ImageFormat.Avif
             })
             .toString() + '&mode=admin';
     const getView = (fileId: string) =>

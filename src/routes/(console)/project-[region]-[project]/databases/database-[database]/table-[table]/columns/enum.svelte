@@ -39,14 +39,14 @@
 </script>
 
 <script lang="ts">
+    import { createConservative } from '$lib/helpers/stores';
+    import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { InputSelect, InputTags } from '$lib/elements/forms';
+    import { Icon, Tooltip, Typography } from '@appwrite.io/pink-svelte';
+    import RequiredArrayCheckboxes from './requiredArrayCheckboxes.svelte';
 
     export let editing = false;
     export let data: Partial<Models.ColumnEnum>;
-
-    import { createConservative } from '$lib/helpers/stores';
-    import { Icon, Selector, Tooltip, Typography } from '@appwrite.io/pink-svelte';
-    import { IconInfo } from '@appwrite.io/pink-icons-svelte';
 
     let savedDefault = data.default;
 
@@ -107,17 +107,5 @@
     placeholder="Select a value"
     {options}
     bind:value={data.default} />
-<Selector.Checkbox
-    size="s"
-    id="required"
-    label="Required"
-    bind:checked={data.required}
-    disabled={data.array}
-    description="Indicate whether this column is required" />
-<Selector.Checkbox
-    size="s"
-    id="array"
-    label="Array"
-    bind:checked={data.array}
-    disabled={data.required || editing}
-    description="Indicate whether this column is an array. Defaults to an empty array." />
+
+<RequiredArrayCheckboxes {editing} bind:array={data.array} bind:required={data.required} />
