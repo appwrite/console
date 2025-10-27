@@ -9,7 +9,7 @@
 <a
     href={$app.themeInUse === 'dark' ? darkSrc : lightSrc}
     class="file-preview is-with-image"
-    style="inline-size: 99%; block-size: 100%;"
+    style="inline-size: 100%; block-size: 100%;"
     target="_blank"
     rel="noopener noreferrer"
     on:click|stopPropagation
