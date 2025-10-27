@@ -53,7 +53,7 @@
         <div style:display="grid">
             <Tooltip maxWidth="225px" portal disabled={!headerTooltipText || showing} delay={100}>
                 <button
-                    onclick={() => onChildrenClick?.()}
+                    onclick={() => enabled && onChildrenClick?.()}
                     style:cursor={enabled ? 'pointer' : undefined}>
                     {@render children(toggle)}
                 </button>
