@@ -11,6 +11,8 @@
     import ActivateDeploymentModal from '../activateDeploymentModal.svelte';
     import CancelDeploymentModal from './deployments/cancelDeploymentModal.svelte';
     import { capitalize } from '$lib/helpers/string';
+    import { getEffectiveBuildStatus, getBuildTimeoutSeconds } from '$lib/helpers/buildTimeout';
+    import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
     import DeleteDeploymentModal from './deployments/deleteDeploymentModal.svelte';
     import DeploymentActionMenu from '../(components)/deploymentActionMenu.svelte';
     import { deploymentStatusConverter } from '$lib/stores/git';
@@ -72,12 +74,17 @@
                     </Table.Cell>
                     <Table.Cell {root}>
                         {@const status = deployment.status}
+                        {@const effectiveStatus = getEffectiveBuildStatus(
+                            status,
+                            deployment.$createdAt,
+                            getBuildTimeoutSeconds($regionalConsoleVariables)
+                        )}
                         {#if activeDeployment?.$id === deployment?.$id}
                             <Status status="complete" label="Active" />
                         {:else}
                             <Status
-                                status={deploymentStatusConverter(status)}
-                                label={capitalize(status)} />
+                                status={deploymentStatusConverter(effectiveStatus)}
+                                label={capitalize(effectiveStatus)} />
                         {/if}
                     </Table.Cell>
 

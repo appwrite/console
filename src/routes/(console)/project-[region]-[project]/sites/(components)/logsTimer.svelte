@@ -10,7 +10,11 @@
     let { status, deployment }: { status: string; deployment: Models.Deployment } = $props();
 
     let effectiveStatus = $derived(
-        getEffectiveBuildStatus(status, deployment.$createdAt, getBuildTimeoutSeconds($regionalConsoleVariables))
+        getEffectiveBuildStatus(
+            status,
+            deployment.$createdAt,
+            getBuildTimeoutSeconds($regionalConsoleVariables)
+        )
     );
 </script>
 

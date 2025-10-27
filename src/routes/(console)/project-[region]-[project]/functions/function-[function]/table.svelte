@@ -116,7 +116,11 @@
                         {/key}
                     {:else if column.id === 'status'}
                         {@const status = deployment.status}
-                        {@const effectiveStatus = getEffectiveBuildStatus(status, deployment.$createdAt, getBuildTimeoutSeconds($regionalConsoleVariables))}
+                        {@const effectiveStatus = getEffectiveBuildStatus(
+                            status,
+                            deployment.$createdAt,
+                            getBuildTimeoutSeconds($regionalConsoleVariables)
+                        )}
 
                         {#if data?.activeDeployment?.$id === deployment?.$id}
                             <Status status="complete" label="Active" />
@@ -130,7 +134,11 @@
                     {:else if column.id === '$updatedAt'}
                         <DeploymentCreatedBy {deployment} />
                     {:else if column.id === 'buildDuration'}
-                        {@const effectiveStatus = getEffectiveBuildStatus(deployment.status, deployment.$createdAt, getBuildTimeoutSeconds($regionalConsoleVariables))}
+                        {@const effectiveStatus = getEffectiveBuildStatus(
+                            deployment.status,
+                            deployment.$createdAt,
+                            getBuildTimeoutSeconds($regionalConsoleVariables)
+                        )}
                         {#if ['waiting'].includes(effectiveStatus)}
                             -
                         {:else if ['processing', 'building'].includes(effectiveStatus)}
@@ -186,7 +194,11 @@
 
                             <DownloadActionMenuItem {deployment} {toggle} />
 
-                            {@const effectiveStatus = getEffectiveBuildStatus(deployment.status, deployment.$createdAt, getBuildTimeoutSeconds($regionalConsoleVariables))}
+                            {@const effectiveStatus = getEffectiveBuildStatus(
+                                deployment.status,
+                                deployment.$createdAt,
+                                getBuildTimeoutSeconds($regionalConsoleVariables)
+                            )}
                             {#if effectiveStatus === 'processing' || effectiveStatus === 'building' || effectiveStatus === 'waiting'}
                                 <ActionMenu.Item.Button
                                     trailingIcon={IconXCircle}

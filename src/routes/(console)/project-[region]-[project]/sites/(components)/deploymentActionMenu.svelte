@@ -114,7 +114,11 @@
                 </SubMenu>
             {/if}
 
-            {@const effectiveStatus = getEffectiveBuildStatus(deployment.status, deployment.$createdAt, getBuildTimeoutSeconds($regionalConsoleVariables))}
+            {@const effectiveStatus = getEffectiveBuildStatus(
+                deployment.status,
+                deployment.$createdAt,
+                getBuildTimeoutSeconds($regionalConsoleVariables)
+            )}
             {#if effectiveStatus === 'processing' || effectiveStatus === 'building' || effectiveStatus === 'waiting'}
                 <ActionMenu.Item.Button
                     leadingIcon={IconXCircle}
