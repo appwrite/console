@@ -13,7 +13,7 @@ export type SupportData = {
 export const supportData = writable<SupportData>({
     message: '',
     subject: '',
-    category: 'general',
+    category: 'technical',
     file: null
 });
 

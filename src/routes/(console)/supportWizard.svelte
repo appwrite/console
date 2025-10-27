@@ -5,6 +5,7 @@
     import { onMount } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
     import { Form, InputSelect, InputText, InputTextarea } from '$lib/elements/forms/index.js';
+    import { Query } from '@appwrite.io/console';
 
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import {
@@ -40,14 +41,14 @@
     ];
 
     onMount(async () => {
-        const projectList = await sdk.forConsole.projects.list();
-        // Filter projects by organization ID
-        projectOptions = projectList.projects
-            .filter((project) => project.teamId === $organization?.$id)
-            .map((project) => ({
-                value: project.$id,
-                label: project.name
-            }));
+        // Filter projects by organization ID using server-side queries
+        const projectList = await sdk.forConsole.projects.list({
+            queries: $organization?.$id ? [Query.equal('teamId', $organization.$id)] : []
+        });
+        projectOptions = projectList.projects.map((project) => ({
+            value: project.$id,
+            label: project.name
+        }));
     });
 
     // Update topic options when category changes
@@ -60,7 +61,7 @@
         $supportData = {
             message: null,
             subject: null,
-            category: 'general',
+            category: 'technical',
             topic: undefined,
             severity: undefined,
             file: null
@@ -83,7 +84,7 @@
                 subject: $supportData.subject,
                 firstName: ($user?.name || 'Unknown').slice(0, 40),
                 message: $supportData.message,
-                tags: ['cloud', categoryTopicTag],
+                tags: [categoryTopicTag],
                 customFields: [
                     { id: '41612', value: $supportData.category },
                     { id: '48492', value: $organization?.$id ?? '' },
@@ -116,7 +117,7 @@
         $supportData = {
             message: null,
             subject: null,
-            category: 'general',
+            category: 'technical',
             topic: undefined,
             severity: undefined,
             file: null,
@@ -181,7 +182,7 @@
                 label="Severity"
                 options={severityOptions}
                 bind:value={$supportData.severity}
-                required={false}
+                required={true}
                 placeholder="Select severity" />
             <InputText
                 id="subject"
