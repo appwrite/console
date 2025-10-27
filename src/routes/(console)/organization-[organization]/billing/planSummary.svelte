@@ -11,17 +11,17 @@
     import { Click, trackEvent } from '$lib/actions/analytics';
     import {
         Typography,
-        Expandable as ExpandableTable,
-        Icon,
-        Layout,
+        // Icon,
+        // Layout,
         Divider
     } from '@appwrite.io/pink-svelte';
-    import { humanFileSize } from '$lib/helpers/sizeConvertion';
-    import { formatNum } from '$lib/helpers/string';
-    import { ProgressBar } from '$lib/components';
-    import { isSmallViewport, isTabletViewport } from '$lib/stores/viewport';
+    // import { humanFileSize } from '$lib/helpers/sizeConvertion';
+    // import { formatNum } from '$lib/helpers/string';
+    // import { ProgressBar } from '$lib/components';
+    import { isSmallViewport } from '$lib/stores/viewport';
+    // import { isSmallViewport, isTabletViewport } from '$lib/stores/viewport';
     import CancelDowngradeModel from './cancelDowngradeModal.svelte';
-    import { IconTag } from '@appwrite.io/pink-icons-svelte';
+    // import { IconTag } from '@appwrite.io/pink-icons-svelte';
 
     export let currentPlan: Plan;
     export let nextPlan: Plan | null = null;
@@ -31,290 +31,290 @@
     let showCancel: boolean = false;
 
     // define columns for the expandable table
-    const columns = [
-        { id: 'item', align: 'left' as const, width: '10fr' },
-        { id: 'usage', align: 'left' as const, width: '20fr' },
-        { id: 'price', align: 'right' as const, width: '0fr' }
-    ];
+    // const columns = [
+    //     { id: 'item', align: 'left' as const, width: '10fr' },
+    //     { id: 'usage', align: 'left' as const, width: '20fr' },
+    //     { id: 'price', align: 'right' as const, width: '0fr' }
+    // ];
 
-    function formatHumanSize(bytes: number): string {
-        const size = humanFileSize(bytes || 0);
-        return `${size.value} ${size.unit}`;
-    }
+    // function formatHumanSize(bytes: number): string {
+    //     const size = humanFileSize(bytes || 0);
+    //     return `${size.value} ${size.unit}`;
+    // }
 
-    function formatBandwidthUsage(currentBytes: number, maxGB?: number): string {
-        const currentSize = humanFileSize(currentBytes || 0);
-        if (!maxGB) {
-            return `${currentSize.value} ${currentSize.unit} / Unlimited`;
-        }
-        const maxSize = humanFileSize(maxGB * 1000 * 1000 * 1000);
-        return `${currentSize.value} ${currentSize.unit} / ${maxSize.value} ${maxSize.unit}`;
-    }
+    // function formatBandwidthUsage(currentBytes: number, maxGB?: number): string {
+    //     const currentSize = humanFileSize(currentBytes || 0);
+    //     if (!maxGB) {
+    //         return `${currentSize.value} ${currentSize.unit} / Unlimited`;
+    //     }
+    //     const maxSize = humanFileSize(maxGB * 1000 * 1000 * 1000);
+    //     return `${currentSize.value} ${currentSize.unit} / ${maxSize.value} ${maxSize.unit}`;
+    // }
 
-    function truncateForSmall(name: string): string {
-        if (!name) return name;
-        return name.length > 12 ? `${name.slice(0, 12)}…` : name;
-    }
+    // function truncateForSmall(name: string): string {
+    //     if (!name) return name;
+    //     return name.length > 12 ? `${name.slice(0, 12)}…` : name;
+    // }
 
-    function createProgressData(
-        currentValue: number,
-        maxValue: number | string
-    ): Array<{ size: number; color: string; tooltip?: { title: string; label: string } }> {
-        if (
-            maxValue === null ||
-            maxValue === undefined ||
-            (typeof maxValue === 'number' && maxValue <= 0)
-        ) {
-            return [];
-        }
+    // function createProgressData(
+    //     currentValue: number,
+    //     maxValue: number | string
+    // ): Array<{ size: number; color: string; tooltip?: { title: string; label: string } }> {
+    //     if (
+    //         maxValue === null ||
+    //         maxValue === undefined ||
+    //         (typeof maxValue === 'number' && maxValue <= 0)
+    //     ) {
+    //         return [];
+    //     }
 
-        const max = typeof maxValue === 'string' ? parseFloat(maxValue) : maxValue;
-        if (max <= 0) return [];
+    //     const max = typeof maxValue === 'string' ? parseFloat(maxValue) : maxValue;
+    //     if (max <= 0) return [];
 
-        const percentage = Math.min((currentValue / max) * 100, 100);
-        const progressColor = 'var(--bgcolor-neutral-invert)';
+    //     const percentage = Math.min((currentValue / max) * 100, 100);
+    //     const progressColor = 'var(--bgcolor-neutral-invert)';
 
-        return [
-            {
-                size: currentValue,
-                color: progressColor,
-                tooltip: {
-                    title: `${percentage.toFixed(1)}% used`,
-                    label: `${currentValue.toLocaleString()} of ${max.toLocaleString()}`
-                }
-            }
-        ];
-    }
+    //     return [
+    //         {
+    //             size: currentValue,
+    //             color: progressColor,
+    //             tooltip: {
+    //                 title: `${percentage.toFixed(1)}% used`,
+    //                 label: `${currentValue.toLocaleString()} of ${max.toLocaleString()}`
+    //             }
+    //         }
+    //     ];
+    // }
 
-    function createStorageProgressData(
-        currentBytes: number,
-        maxGB: number
-    ): Array<{ size: number; color: string; tooltip?: { title: string; label: string } }> {
-        if (maxGB <= 0) return [];
+    // function createStorageProgressData(
+    //     currentBytes: number,
+    //     maxGB: number
+    // ): Array<{ size: number; color: string; tooltip?: { title: string; label: string } }> {
+    //     if (maxGB <= 0) return [];
 
-        const maxBytes = maxGB * 1000 * 1000 * 1000;
-        const percentage = Math.min((currentBytes / maxBytes) * 100, 100);
-        const progressColor = 'var(--bgcolor-neutral-invert)';
+    //     const maxBytes = maxGB * 1000 * 1000 * 1000;
+    //     const percentage = Math.min((currentBytes / maxBytes) * 100, 100);
+    //     const progressColor = 'var(--bgcolor-neutral-invert)';
 
-        const currentSize = humanFileSize(currentBytes);
+    //     const currentSize = humanFileSize(currentBytes);
 
-        return [
-            {
-                size: currentBytes,
-                color: progressColor,
-                tooltip: {
-                    title: `${percentage.toFixed(0)}% used`,
-                    label: `${currentSize.value} ${currentSize.unit} of ${maxGB} GB`
-                }
-            }
-        ];
-    }
+    //     return [
+    //         {
+    //             size: currentBytes,
+    //             color: progressColor,
+    //             tooltip: {
+    //                 title: `${percentage.toFixed(0)}% used`,
+    //                 label: `${currentSize.value} ${currentSize.unit} of ${maxGB} GB`
+    //             }
+    //         }
+    //     ];
+    // }
 
-    function getProjectsList(currentAggregation) {
-        return (
-            currentAggregation?.breakdown?.map((projectData) => ({
-                projectId: projectData.$id,
-                name: projectData.name,
-                region: projectData.region,
-                amount: projectData.amount,
-                storage: projectData?.resources?.find((res) => res.resourceId === 'storage'),
-                executions: projectData?.resources?.find(
-                    (resource) => resource.resourceId === 'executions'
-                ),
-                gbHours: projectData?.resources?.find(
-                    (resource) => resource.resourceId === 'GBHours'
-                ),
-                imageTransformations: projectData?.resources?.find(
-                    (resource) => resource.resourceId === 'imageTransformations'
-                ),
-                bandwidth: projectData?.resources?.find(
-                    (resource) => resource.resourceId === 'bandwidth'
-                ),
-                databasesReads: projectData?.resources?.find(
-                    (resource) => resource.resourceId === 'databasesReads'
-                ),
-                databasesWrites: projectData?.resources?.find(
-                    (resource) => resource.resourceId === 'databasesWrites'
-                ),
-                users: projectData?.resources?.find((resource) => resource.resourceId === 'users'),
-                authPhone: projectData?.resources?.find(
-                    (resource) => resource.resourceId === 'authPhone'
-                )
-            })) || []
-        );
-    }
+    // function getProjectsList(currentAggregation) {
+    //     return (
+    //         currentAggregation?.breakdown?.map((projectData) => ({
+    //             projectId: projectData.$id,
+    //             name: projectData.name,
+    //             region: projectData.region,
+    //             amount: projectData.amount,
+    //             storage: projectData?.resources?.find((res) => res.resourceId === 'storage'),
+    //             executions: projectData?.resources?.find(
+    //                 (resource) => resource.resourceId === 'executions'
+    //             ),
+    //             gbHours: projectData?.resources?.find(
+    //                 (resource) => resource.resourceId === 'GBHours'
+    //             ),
+    //             imageTransformations: projectData?.resources?.find(
+    //                 (resource) => resource.resourceId === 'imageTransformations'
+    //             ),
+    //             bandwidth: projectData?.resources?.find(
+    //                 (resource) => resource.resourceId === 'bandwidth'
+    //             ),
+    //             databasesReads: projectData?.resources?.find(
+    //                 (resource) => resource.resourceId === 'databasesReads'
+    //             ),
+    //             databasesWrites: projectData?.resources?.find(
+    //                 (resource) => resource.resourceId === 'databasesWrites'
+    //             ),
+    //             users: projectData?.resources?.find((resource) => resource.resourceId === 'users'),
+    //             authPhone: projectData?.resources?.find(
+    //                 (resource) => resource.resourceId === 'authPhone'
+    //             )
+    //         })) || []
+    //     );
+    // }
 
-    function getBillingData(currentPlan, currentAggregation, isSmallViewport) {
-        const projectsList = getProjectsList(currentAggregation);
-        const basePlan = {
-            id: 'base-plan',
-            expandable: false,
-            cells: {
-                item: 'Base plan',
-                usage: '',
-                price: formatCurrency(nextPlan?.price ?? currentPlan?.price ?? 0)
-            },
-            children: []
-        };
-        const addons = (currentAggregation?.resources || [])
-            .filter(
-                (r) =>
-                    r.amount &&
-                    r.amount > 0 &&
-                    Object.keys(currentPlan?.addons || {}).includes(r.resourceId) &&
-                    currentPlan.addons[r.resourceId]?.price > 0
-            )
-            .map((excess) => ({
-                id: `addon-${excess.resourceId}`,
-                expandable: false,
-                cells: {
-                    item:
-                        excess.resourceId === 'seats'
-                            ? 'Additional members'
-                            : excess.resourceId === 'projects'
-                              ? `Additional Projects (${formatNum(excess.value)})`
-                              : `${excess.resourceId} overage (${formatNum(excess.value)})`,
-                    usage: '',
-                    price: formatCurrency(excess.amount)
-                },
-                children: []
-            }));
-        const projects = projectsList.map((project) => ({
-            id: `project-${project.projectId}`,
-            expandable: true,
-            cells: {
-                item: isSmallViewport
-                    ? truncateForSmall(project.name)
-                    : project.name || `Project ${project.projectId}`,
-                usage: '',
-                price: formatCurrency(project.amount || 0)
-            },
-            children: [
-                {
-                    id: `bandwidth`,
-                    cells: {
-                        item: 'Bandwidth',
-                        usage: `${formatBandwidthUsage(project.bandwidth.value, currentPlan?.bandwidth)}`,
-                        price: formatCurrency(project.bandwidth.amount || 0)
-                    },
-                    progressData: createStorageProgressData(
-                        project.bandwidth.value || 0,
-                        currentPlan?.bandwidth || 0
-                    ),
-                    maxValue: currentPlan?.bandwidth
-                        ? currentPlan.bandwidth * 1000 * 1000 * 1000
-                        : 0
-                },
-                {
-                    id: `users`,
-                    cells: {
-                        item: 'Users',
-                        usage: `${formatNum(project.users.value || 0)} / ${currentPlan?.users ? formatNum(currentPlan.users) : 'Unlimited'}`,
-                        price: formatCurrency(project.users.amount || 0)
-                    },
-                    progressData: createProgressData(project.users.value || 0, currentPlan?.users),
-                    maxValue: currentPlan?.users
-                },
-                {
-                    id: `reads`,
-                    cells: {
-                        item: 'Database reads',
-                        usage: `${formatNum(project.databasesReads.value || 0)} / ${currentPlan?.databasesReads ? formatNum(currentPlan.databasesReads) : 'Unlimited'}`,
-                        price: formatCurrency(project.databasesReads.amount || 0)
-                    },
-                    progressData: createProgressData(
-                        project.databasesReads.value || 0,
-                        currentPlan?.databasesReads
-                    ),
-                    maxValue: currentPlan?.databasesReads
-                },
-                {
-                    id: `writes`,
-                    cells: {
-                        item: 'Database writes',
-                        usage: `${formatNum(project.databasesWrites.value || 0)} / ${currentPlan?.databasesWrites ? formatNum(currentPlan.databasesWrites) : 'Unlimited'}`,
-                        price: formatCurrency(project.databasesWrites.amount || 0)
-                    },
-                    progressData: createProgressData(
-                        project.databasesWrites.value || 0,
-                        currentPlan?.databasesWrites
-                    ),
-                    maxValue: currentPlan?.databasesWrites
-                },
-                {
-                    id: `executions`,
-                    cells: {
-                        item: 'Executions',
-                        usage: `${formatNum(project.executions.value || 0)} / ${currentPlan?.executions ? formatNum(currentPlan.executions) : 'Unlimited'}`,
-                        price: formatCurrency(project.executions.amount || 0)
-                    },
-                    progressData: createProgressData(
-                        project.executions.value || 0,
-                        currentPlan?.executions
-                    ),
-                    maxValue: currentPlan?.executions
-                },
-                {
-                    id: `storage`,
-                    cells: {
-                        item: 'Storage',
-                        usage: `${formatHumanSize(project.storage.value || 0)} / ${currentPlan?.storage?.toString() || '0'} GB`,
-                        price: formatCurrency(project.storage.amount || 0)
-                    },
-                    progressData: createStorageProgressData(
-                        project.storage.value || 0,
-                        currentPlan?.storage || 0
-                    ),
-                    maxValue: currentPlan?.storage ? currentPlan.storage * 1000 * 1000 * 1000 : 0
-                },
-                {
-                    id: `image-transformations`,
-                    cells: {
-                        item: 'Image transformations',
-                        usage: `${formatNum(project.imageTransformations.value || 0)} / ${currentPlan?.imageTransformations ? formatNum(currentPlan.imageTransformations) : 'Unlimited'}`,
-                        price: formatCurrency(project.imageTransformations.amount || 0)
-                    },
-                    progressData: createProgressData(
-                        project.imageTransformations.value || 0,
-                        currentPlan?.imageTransformations
-                    ),
-                    maxValue: currentPlan?.imageTransformations
-                },
-                {
-                    id: `gb-hours`,
-                    cells: {
-                        item: 'GB-hours',
-                        usage: `${formatNum(project.gbHours.value || 0)} / ${currentPlan?.GBHours ? formatNum(currentPlan.GBHours) : 'Unlimited'}`,
-                        price: formatCurrency(project.gbHours.amount || 0)
-                    },
-                    progressData: currentPlan?.GBHours
-                        ? createProgressData(project.gbHours.value || 0, currentPlan.GBHours)
-                        : [],
-                    maxValue: currentPlan?.GBHours ? currentPlan.GBHours : null
-                },
-                {
-                    id: `sms`,
-                    cells: {
-                        item: 'Phone OTP',
-                        usage: `${formatNum(project.authPhone.value || 0)} SMS messages`,
-                        price: formatCurrency(project.authPhone.amount || 0)
-                    }
-                },
-                {
-                    id: `usage-details`,
-                    cells: {
-                        item: `<a href="${base}/project-${String(project.region || 'default')}-${project.projectId}/settings/usage" style="text-decoration: underline; color: var(--fgcolor-accent-neutral);">Usage details</a>`,
-                        usage: '',
-                        price: ''
-                    }
-                }
-            ]
-        }));
-        const noProjects = [];
-        return [basePlan, ...addons, ...projects, ...noProjects];
-    }
+    // function getBillingData(currentPlan, currentAggregation, isSmallViewport) {
+    //     const projectsList = getProjectsList(currentAggregation);
+    //     const basePlan = {
+    //         id: 'base-plan',
+    //         expandable: false,
+    //         cells: {
+    //             item: 'Base plan',
+    //             usage: '',
+    //             price: formatCurrency(nextPlan?.price ?? currentPlan?.price ?? 0)
+    //         },
+    //         children: []
+    //     };
+    //     const addons = (currentAggregation?.resources || [])
+    //         .filter(
+    //             (r) =>
+    //                 r.amount &&
+    //                 r.amount > 0 &&
+    //                 Object.keys(currentPlan?.addons || {}).includes(r.resourceId) &&
+    //                 currentPlan.addons[r.resourceId]?.price > 0
+    //         )
+    //         .map((excess) => ({
+    //             id: `addon-${excess.resourceId}`,
+    //             expandable: false,
+    //             cells: {
+    //                 item:
+    //                     excess.resourceId === 'seats'
+    //                         ? 'Additional members'
+    //                         : excess.resourceId === 'projects'
+    //                           ? `Additional Projects (${formatNum(excess.value)})`
+    //                           : `${excess.resourceId} overage (${formatNum(excess.value)})`,
+    //                 usage: '',
+    //                 price: formatCurrency(excess.amount)
+    //             },
+    //             children: []
+    //         }));
+    //     const projects = projectsList.map((project) => ({
+    //         id: `project-${project.projectId}`,
+    //         expandable: true,
+    //         cells: {
+    //             item: isSmallViewport
+    //                 ? truncateForSmall(project.name)
+    //                 : project.name || `Project ${project.projectId}`,
+    //             usage: '',
+    //             price: formatCurrency(project.amount || 0)
+    //         },
+    //         children: [
+    //             {
+    //                 id: `bandwidth`,
+    //                 cells: {
+    //                     item: 'Bandwidth',
+    //                     usage: `${formatBandwidthUsage(project.bandwidth.value, currentPlan?.bandwidth)}`,
+    //                     price: formatCurrency(project.bandwidth.amount || 0)
+    //                 },
+    //                 progressData: createStorageProgressData(
+    //                     project.bandwidth.value || 0,
+    //                     currentPlan?.bandwidth || 0
+    //                 ),
+    //                 maxValue: currentPlan?.bandwidth
+    //                     ? currentPlan.bandwidth * 1000 * 1000 * 1000
+    //                     : 0
+    //             },
+    //             {
+    //                 id: `users`,
+    //                 cells: {
+    //                     item: 'Users',
+    //                     usage: `${formatNum(project.users.value || 0)} / ${currentPlan?.users ? formatNum(currentPlan.users) : 'Unlimited'}`,
+    //                     price: formatCurrency(project.users.amount || 0)
+    //                 },
+    //                 progressData: createProgressData(project.users.value || 0, currentPlan?.users),
+    //                 maxValue: currentPlan?.users
+    //             },
+    //             {
+    //                 id: `reads`,
+    //                 cells: {
+    //                     item: 'Database reads',
+    //                     usage: `${formatNum(project.databasesReads.value || 0)} / ${currentPlan?.databasesReads ? formatNum(currentPlan.databasesReads) : 'Unlimited'}`,
+    //                     price: formatCurrency(project.databasesReads.amount || 0)
+    //                 },
+    //                 progressData: createProgressData(
+    //                     project.databasesReads.value || 0,
+    //                     currentPlan?.databasesReads
+    //                 ),
+    //                 maxValue: currentPlan?.databasesReads
+    //             },
+    //             {
+    //                 id: `writes`,
+    //                 cells: {
+    //                     item: 'Database writes',
+    //                     usage: `${formatNum(project.databasesWrites.value || 0)} / ${currentPlan?.databasesWrites ? formatNum(currentPlan.databasesWrites) : 'Unlimited'}`,
+    //                     price: formatCurrency(project.databasesWrites.amount || 0)
+    //                 },
+    //                 progressData: createProgressData(
+    //                     project.databasesWrites.value || 0,
+    //                     currentPlan?.databasesWrites
+    //                 ),
+    //                 maxValue: currentPlan?.databasesWrites
+    //             },
+    //             {
+    //                 id: `executions`,
+    //                 cells: {
+    //                     item: 'Executions',
+    //                     usage: `${formatNum(project.executions.value || 0)} / ${currentPlan?.executions ? formatNum(currentPlan.executions) : 'Unlimited'}`,
+    //                     price: formatCurrency(project.executions.amount || 0)
+    //                 },
+    //                 progressData: createProgressData(
+    //                     project.executions.value || 0,
+    //                     currentPlan?.executions
+    //                 ),
+    //                 maxValue: currentPlan?.executions
+    //             },
+    //             {
+    //                 id: `storage`,
+    //                 cells: {
+    //                     item: 'Storage',
+    //                     usage: `${formatHumanSize(project.storage.value || 0)} / ${currentPlan?.storage?.toString() || '0'} GB`,
+    //                     price: formatCurrency(project.storage.amount || 0)
+    //                 },
+    //                 progressData: createStorageProgressData(
+    //                     project.storage.value || 0,
+    //                     currentPlan?.storage || 0
+    //                 ),
+    //                 maxValue: currentPlan?.storage ? currentPlan.storage * 1000 * 1000 * 1000 : 0
+    //             },
+    //             {
+    //                 id: `image-transformations`,
+    //                 cells: {
+    //                     item: 'Image transformations',
+    //                     usage: `${formatNum(project.imageTransformations.value || 0)} / ${currentPlan?.imageTransformations ? formatNum(currentPlan.imageTransformations) : 'Unlimited'}`,
+    //                     price: formatCurrency(project.imageTransformations.amount || 0)
+    //                 },
+    //                 progressData: createProgressData(
+    //                     project.imageTransformations.value || 0,
+    //                     currentPlan?.imageTransformations
+    //                 ),
+    //                 maxValue: currentPlan?.imageTransformations
+    //             },
+    //             {
+    //                 id: `gb-hours`,
+    //                 cells: {
+    //                     item: 'GB-hours',
+    //                     usage: `${formatNum(project.gbHours.value || 0)} / ${currentPlan?.GBHours ? formatNum(currentPlan.GBHours) : 'Unlimited'}`,
+    //                     price: formatCurrency(project.gbHours.amount || 0)
+    //                 },
+    //                 progressData: currentPlan?.GBHours
+    //                     ? createProgressData(project.gbHours.value || 0, currentPlan.GBHours)
+    //                     : [],
+    //                 maxValue: currentPlan?.GBHours ? currentPlan.GBHours : null
+    //             },
+    //             {
+    //                 id: `sms`,
+    //                 cells: {
+    //                     item: 'Phone OTP',
+    //                     usage: `${formatNum(project.authPhone.value || 0)} SMS messages`,
+    //                     price: formatCurrency(project.authPhone.amount || 0)
+    //                 }
+    //             },
+    //             {
+    //                 id: `usage-details`,
+    //                 cells: {
+    //                     item: `<a href="${base}/project-${String(project.region || 'default')}-${project.projectId}/settings/usage" style="text-decoration: underline; color: var(--fgcolor-accent-neutral);">Usage details</a>`,
+    //                     usage: '',
+    //                     price: ''
+    //                 }
+    //             }
+    //         ]
+    //     }));
+    //     const noProjects = [];
+    //     return [basePlan, ...addons, ...projects, ...noProjects];
+    // }
 
-    $: billingData = getBillingData(currentPlan, currentAggregation, $isSmallViewport);
+    // $: billingData = getBillingData(currentPlan, currentAggregation, $isSmallViewport);
 
     $: totalAmount = Math.max(currentAggregation?.amount - creditsApplied, 0);
 
@@ -351,9 +351,9 @@
                 Estimate, subject to change based on usage.
             </Typography.Text>
         </div>
-        <!-- Billing breakdown table -->
+        <!-- Billing breakdown table removed it for testing purposes -->
         <div class="table-wrapper" class:is-mobile={$isSmallViewport}>
-            <ExpandableTable.Root {columns} showHeader={false} let:root>
+            <!-- <ExpandableTable.Root {columns} showHeader={false} let:root>
                 {#each billingData as row}
                     <ExpandableTable.Row {root} id={row.id} expandable={row.expandable ?? false}>
                         {#each columns as col}
@@ -492,7 +492,7 @@
                         </Typography.Text>
                     </ExpandableTable.Cell>
                 </ExpandableTable.Row>
-            </ExpandableTable.Root>
+            </ExpandableTable.Root> -->
         </div>
 
         <!-- Actions -->
