@@ -2,7 +2,7 @@
     import { onMount } from 'svelte';
     import { base } from '$app/paths';
     import { page } from '$app/state';
-    import { sdk } from '$lib/stores/sdk';
+    import { type AppwriteRealtimeSubscription, sdk } from '$lib/stores/sdk';
     import { Dependencies } from '$lib/constants';
     import { goto, invalidate } from '$app/navigation';
     import { getProjectId } from '$lib/helpers/project';
@@ -157,7 +157,7 @@
         }
     }
 
-    onMount(() => {
+    onMount(async () => {
         sdk.forProject(page.params.region, page.params.project)
             .migrations.list({
                 queries: [
@@ -169,12 +169,16 @@
                 migrations.migrations.forEach(updateOrAddItem);
             });
 
-        return sdk.forConsoleIn(page.params.region).realtime.subscribe('console', (response) => {
-            if (!response.channels.includes(`projects.${getProjectId()}`)) return;
-            if (response.events.includes('migrations.*')) {
-                updateOrAddItem(response.payload as Payload);
-            }
-        });
+        const subscription: AppwriteRealtimeSubscription = await sdk
+            .forConsoleIn(page.params.region)
+            .realtime.subscribe('console', (response) => {
+                if (!response.channels.includes(`projects.${getProjectId()}`)) return;
+                if (response.events.includes('migrations.*')) {
+                    updateOrAddItem(response.payload as Payload);
+                }
+            });
+
+        return subscription.close();
     });
 
     $: isOpen = true;

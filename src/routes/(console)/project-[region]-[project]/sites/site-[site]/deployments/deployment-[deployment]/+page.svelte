@@ -30,9 +30,9 @@
     let showDelete = $state(false);
     let showCancel = $state(false);
 
-    onMount(() => {
-        let subscription: AppwriteRealtimeSubscription;
-        sdk.forConsoleIn(page.params.region)
+    onMount(async () => {
+        const subscription: AppwriteRealtimeSubscription = await sdk
+            .forConsoleIn(page.params.region)
             .realtime.subscribe('console', async (response) => {
                 if (
                     response.events.includes(
@@ -41,12 +41,9 @@
                 ) {
                     await invalidate(Dependencies.DEPLOYMENT);
                 }
-            })
-            .then((realtime) => (subscription = realtime));
+            });
 
-        return () => {
-            subscription?.close();
-        };
+        return subscription?.close();
     });
 </script>
 

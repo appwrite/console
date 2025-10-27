@@ -4,7 +4,7 @@
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { Container, ResponsiveContainerHeader } from '$lib/layout';
-    import { sdk } from '$lib/stores/sdk';
+    import { type AppwriteRealtimeSubscription, sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import Table from './table.svelte';
     import { Card, Empty } from '@appwrite.io/pink-svelte';
@@ -12,12 +12,17 @@
 
     export let data;
 
-    onMount(() => {
-        return sdk.forConsole.realtime.subscribe('console', (response) => {
-            if (response.events.includes('sites.*.executions.*')) {
-                invalidate(Dependencies.EXECUTIONS);
+    onMount(async () => {
+        const subscription: AppwriteRealtimeSubscription = await sdk.forConsole.realtime.subscribe(
+            'console',
+            (response) => {
+                if (response.events.includes('sites.*.executions.*')) {
+                    invalidate(Dependencies.EXECUTIONS);
+                }
             }
-        });
+        );
+
+        return subscription.close();
     });
 </script>
 

@@ -16,9 +16,9 @@
 
     let deployment = $state(data.deployment);
 
-    onMount(() => {
-        let subscription: AppwriteRealtimeSubscription;
-        sdk.forConsoleIn(page.params.region)
+    onMount(async () => {
+        const subscription: AppwriteRealtimeSubscription = await sdk
+            .forConsoleIn(page.params.region)
             .realtime.subscribe('console', async (response) => {
                 if (
                     response.events.includes(
@@ -37,12 +37,9 @@
                         await goto(`${resolvedUrl}?site=${data.site.$id}`);
                     }
                 }
-            })
-            .then((realtime) => (subscription = realtime));
+            });
 
-        return () => {
-            subscription?.close();
-        };
+        return subscription.close();
     });
 </script>
 

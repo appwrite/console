@@ -17,7 +17,7 @@
     import { IconFlutter, IconAppwrite, IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { Card } from '$lib/components';
     import { page } from '$app/state';
-    import { onMount } from 'svelte';
+    import { onDestroy, onMount } from 'svelte';
     import { type AppwriteRealtimeSubscription, sdk } from '$lib/stores/sdk';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { addNotification } from '$lib/stores/notifications';
@@ -155,24 +155,23 @@
         createPlatform.reset();
     }
 
-    onMount(() => {
-        let subscription: AppwriteRealtimeSubscription;
-        sdk.forConsole.realtime
-            .subscribe('console', (response) => {
+    onMount(async () => {
+        const subscription: AppwriteRealtimeSubscription = await sdk.forConsole.realtime.subscribe(
+            'console',
+            (response) => {
                 if (response.events.includes(`projects.${projectId}.ping`)) {
                     connectionSuccessful = true;
                     invalidate(Dependencies.ORGANIZATION);
                     invalidate(Dependencies.PROJECT);
-                    subscription?.close();
+                    subscription.close();
                 }
-            })
-            .then((realtime) => (subscription = realtime));
+            }
+        );
 
-        return () => {
-            subscription?.close();
-            resetPlatformStore();
-        };
+        return subscription.close();
     });
+
+    onDestroy(resetPlatformStore);
 </script>
 
 <Wizard

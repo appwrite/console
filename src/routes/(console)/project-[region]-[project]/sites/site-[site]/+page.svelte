@@ -7,7 +7,7 @@
     import { Button } from '$lib/elements/forms';
     import InstantRollbackDomain from './instantRollbackModal.svelte';
     import { app } from '$lib/stores/app';
-    import { sdk } from '$lib/stores/sdk';
+    import { type AppwriteRealtimeSubscription, sdk } from '$lib/stores/sdk';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { onMount } from 'svelte';
@@ -18,12 +18,17 @@
     export let data;
     let showRollback = false;
 
-    onMount(() => {
-        return sdk.forConsole.realtime.subscribe('console', (response) => {
-            if (response.events.includes(`sites.${page.params.site}.deployments.*`)) {
-                invalidate(Dependencies.SITE);
+    onMount(async () => {
+        const subscription: AppwriteRealtimeSubscription = await sdk.forConsole.realtime.subscribe(
+            'console',
+            (response) => {
+                if (response.events.includes(`sites.${page.params.site}.deployments.*`)) {
+                    invalidate(Dependencies.SITE);
+                }
             }
-        });
+        );
+
+        return subscription.close();
     });
 </script>
 

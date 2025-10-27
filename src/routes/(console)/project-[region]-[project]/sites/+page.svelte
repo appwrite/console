@@ -25,7 +25,7 @@
     import { onMount } from 'svelte';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import { sdk } from '$lib/stores/sdk';
+    import { type AppwriteRealtimeSubscription, sdk } from '$lib/stores/sdk';
 
     export let data;
 
@@ -48,12 +48,17 @@
 
     $updateCommandGroupRanks({ sites: 1000 });
 
-    onMount(() => {
-        return sdk.forConsole.realtime.subscribe('console', (response) => {
-            if (response.events.includes('sites.*')) {
-                invalidate(Dependencies.SITES);
+    onMount(async () => {
+        const subscription: AppwriteRealtimeSubscription = await sdk.forConsole.realtime.subscribe(
+            'console',
+            (response) => {
+                if (response.events.includes('sites.*')) {
+                    invalidate(Dependencies.SITES);
+                }
             }
-        });
+        );
+
+        return subscription.close();
     });
 </script>
 
