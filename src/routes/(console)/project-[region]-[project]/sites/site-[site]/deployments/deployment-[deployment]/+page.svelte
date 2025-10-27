@@ -13,6 +13,8 @@
     import ActivateDeploymentModal from '../../../activateDeploymentModal.svelte';
     import { Accordion, Tooltip } from '@appwrite.io/pink-svelte';
     import { capitalize } from '$lib/helpers/string';
+    import { getEffectiveBuildStatus, getBuildTimeoutSeconds } from '$lib/helpers/buildTimeout';
+    import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
     import LogsTimer from '../../../(components)/logsTimer.svelte';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
@@ -24,6 +26,13 @@
     let { data }: PageProps = $props();
 
     let deployment = $derived(data.deployment);
+    let effectiveStatus = $derived(
+        getEffectiveBuildStatus(
+            deployment.status,
+            deployment.$createdAt,
+            getBuildTimeoutSeconds($regionalConsoleVariables)
+        )
+    );
 
     let showRedeploy = $state(false);
     let showActivate = $state(false);
@@ -86,13 +95,13 @@
     <Card padding="s">
         <Accordion
             title="Deployment logs"
-            badge={capitalize(deployment.status)}
+            badge={capitalize(effectiveStatus)}
             open
-            badgeType={badgeTypeDeployment(deployment.status)}
+            badgeType={badgeTypeDeployment(effectiveStatus)}
             hideDivider>
             <Logs {deployment} hideTitle hideScrollButtons fullHeight />
             <svelte:fragment slot="end">
-                <LogsTimer status={deployment.status} {deployment} />
+                <LogsTimer status={effectiveStatus} {deployment} />
             </svelte:fragment>
         </Accordion>
     </Card>

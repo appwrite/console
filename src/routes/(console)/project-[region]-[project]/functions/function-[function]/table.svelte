@@ -36,6 +36,8 @@
     import Delete from './(modals)/deleteModal.svelte';
     import { capitalize } from '$lib/helpers/string';
     import { deploymentStatusConverter } from '$lib/stores/git';
+    import { getEffectiveBuildStatus, getBuildTimeoutSeconds } from '$lib/helpers/buildTimeout';
+    import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
     import DownloadActionMenuItem from './(components)/downloadActionMenuItem.svelte';
     import { Menu } from '$lib/components/menu';
     import { sdk } from '$lib/stores/sdk';
@@ -114,22 +116,24 @@
                         {/key}
                     {:else if column.id === 'status'}
                         {@const status = deployment.status}
+                        {@const effectiveStatus = getEffectiveBuildStatus(status, deployment.$createdAt, getBuildTimeoutSeconds($regionalConsoleVariables))}
 
                         {#if data?.activeDeployment?.$id === deployment?.$id}
                             <Status status="complete" label="Active" />
                         {:else}
                             <Status
-                                status={deploymentStatusConverter(status)}
-                                label={capitalize(status)} />
+                                status={deploymentStatusConverter(effectiveStatus)}
+                                label={capitalize(effectiveStatus)} />
                         {/if}
                     {:else if column.id === 'type'}
                         <DeploymentSource {deployment} />
                     {:else if column.id === '$updatedAt'}
                         <DeploymentCreatedBy {deployment} />
                     {:else if column.id === 'buildDuration'}
-                        {#if ['waiting'].includes(deployment.status)}
+                        {@const effectiveStatus = getEffectiveBuildStatus(deployment.status, deployment.$createdAt, getBuildTimeoutSeconds($regionalConsoleVariables))}
+                        {#if ['waiting'].includes(effectiveStatus)}
                             -
-                        {:else if ['processing', 'building'].includes(deployment.status)}
+                        {:else if ['processing', 'building'].includes(effectiveStatus)}
                             <span use:timer={{ start: deployment.$createdAt }}></span>
                         {:else}
                             {formatTimeDetailed(deployment.buildDuration)}
@@ -182,7 +186,8 @@
 
                             <DownloadActionMenuItem {deployment} {toggle} />
 
-                            {#if deployment.status === 'processing' || deployment.status === 'building' || deployment.status === 'waiting'}
+                            {@const effectiveStatus = getEffectiveBuildStatus(deployment.status, deployment.$createdAt, getBuildTimeoutSeconds($regionalConsoleVariables))}
+                            {#if effectiveStatus === 'processing' || effectiveStatus === 'building' || effectiveStatus === 'waiting'}
                                 <ActionMenu.Item.Button
                                     trailingIcon={IconXCircle}
                                     on:click={() => {
@@ -195,7 +200,7 @@
                                     Cancel
                                 </ActionMenu.Item.Button>
                             {/if}
-                            {#if deployment.status !== 'building' && deployment.status !== 'processing' && deployment.status !== 'waiting'}
+                            {#if effectiveStatus !== 'building' && effectiveStatus !== 'processing' && effectiveStatus !== 'waiting'}
                                 <ActionMenu.Item.Button
                                     trailingIcon={IconTrash}
                                     status="danger"

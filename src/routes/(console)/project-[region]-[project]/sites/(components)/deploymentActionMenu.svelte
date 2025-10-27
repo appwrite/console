@@ -15,6 +15,8 @@
         IconXCircle
     } from '@appwrite.io/pink-icons-svelte';
     import { ActionMenu, Icon, Tooltip } from '@appwrite.io/pink-svelte';
+    import { getEffectiveBuildStatus, getBuildTimeoutSeconds } from '$lib/helpers/buildTimeout';
+    import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
 
     export let selectedDeployment: Models.Deployment;
     export let deployment: Models.Deployment;
@@ -112,7 +114,8 @@
                 </SubMenu>
             {/if}
 
-            {#if deployment?.status === 'processing' || deployment?.status === 'building' || deployment.status === 'waiting'}
+            {@const effectiveStatus = getEffectiveBuildStatus(deployment.status, deployment.$createdAt, getBuildTimeoutSeconds($regionalConsoleVariables))}
+            {#if effectiveStatus === 'processing' || effectiveStatus === 'building' || effectiveStatus === 'waiting'}
                 <ActionMenu.Item.Button
                     leadingIcon={IconXCircle}
                     status="danger"
@@ -124,7 +127,7 @@
                     Cancel
                 </ActionMenu.Item.Button>
             {/if}
-            {#if deployment.status !== 'building' && deployment.status !== 'processing' && deployment?.status !== 'waiting'}
+            {#if effectiveStatus !== 'building' && effectiveStatus !== 'processing' && effectiveStatus !== 'waiting'}
                 <ActionMenu.Item.Button
                     status="danger"
                     leadingIcon={IconTrash}

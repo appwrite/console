@@ -18,6 +18,8 @@
 <script lang="ts">
     import { capitalize } from '$lib/helpers/string';
     import { app } from '$lib/stores/app';
+    import { getEffectiveBuildStatus, getBuildTimeoutSeconds } from '$lib/helpers/buildTimeout';
+    import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
     import type { Models } from '@appwrite.io/console';
     import { Badge, Card, Layout, Logs, Spinner, Typography } from '@appwrite.io/pink-svelte';
     import LogsTimer from './logsTimer.svelte';
@@ -38,15 +40,23 @@
         emptyCopy?: string;
     } = $props();
 
+    let effectiveStatus = $derived(
+        getEffectiveBuildStatus(
+            deployment.status,
+            deployment.$createdAt,
+            getBuildTimeoutSeconds($regionalConsoleVariables)
+        )
+    );
+
     function setCopy() {
-        if (deployment.status === 'failed') {
+        if (effectiveStatus === 'failed') {
             return 'Your deployment has failed.';
-        } else if (deployment.status === 'building') {
+        } else if (effectiveStatus === 'building') {
             //Do not remove empty space before the string it's an invisible character
             return '[37mPreparing for build ... [0m\n';
-        } else if (deployment.status === 'waiting') {
+        } else if (effectiveStatus === 'waiting') {
             return '[37mPreparing for build ... [0m\n';
-        } else if (deployment.status === 'processing') {
+        } else if (effectiveStatus === 'processing') {
             return '[37mPreparing for build ... [0m\n';
         } else {
             return emptyCopy;
@@ -62,16 +72,16 @@
                     Deployment logs
                 </Typography.Text>
                 <Badge
-                    content={capitalize(deployment.status)}
+                    content={capitalize(effectiveStatus)}
                     size="xs"
                     variant="secondary"
-                    type={badgeTypeDeployment(deployment.status)} />
+                    type={badgeTypeDeployment(effectiveStatus)} />
             </Layout.Stack>
-            <LogsTimer status={deployment.status} {deployment} />
+            <LogsTimer status={effectiveStatus} {deployment} />
         </Layout.Stack>
     {/if}
 
-    {#if ['waiting', 'processing'].includes(deployment.status) || (deployment.status === 'building' && !deployment?.buildLogs?.length)}
+    {#if ['waiting', 'processing'].includes(effectiveStatus) || (effectiveStatus === 'building' && !deployment?.buildLogs?.length)}
         <Card.Base variant="secondary">
             <Layout.Stack direction="row" justifyContent="center" gap="s">
                 <Spinner /> Waiting for build to start...

@@ -24,6 +24,8 @@
     } from '@appwrite.io/pink-svelte';
     import { capitalize } from '$lib/helpers/string';
     import { formatTimeDetailed } from '$lib/helpers/timeConversion';
+    import { getEffectiveBuildStatus, getBuildTimeoutSeconds } from '$lib/helpers/buildTimeout';
+    import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
     import { timer } from '$lib/actions/timer';
     import { app } from '$lib/stores/app';
     import { IconDotsHorizontal, IconRefresh } from '@appwrite.io/pink-icons-svelte';
@@ -36,12 +38,19 @@
     import { readOnly } from '$lib/stores/billing';
     import RedeployModal from '../(modals)/redeployModal.svelte';
 
-    export let data;
+    let { data } = $props();
 
-    let showDelete = false;
-    let showCancel = false;
-    let showActivate = false;
-    let showRedeploy = false;
+    let effectiveStatus = $derived(
+        getEffectiveBuildStatus(
+            data.deployment.status,
+            data.deployment.$createdAt,
+            getBuildTimeoutSeconds($regionalConsoleVariables)
+        )
+    );
+    let showDelete = $state(false);
+    let showCancel = $state(false);
+    let showActivate = $state(false);
+    let showRedeploy = $state(false);
 
     onMount(() => {
         const unsubscribe = sdk.forConsole.client.subscribe<Models.Deployment>(
@@ -84,7 +93,7 @@
     <DeploymentCard proxyRuleList={data.proxyRuleList} deployment={data.deployment}>
         {#snippet footer()}
             <Layout.Stack direction="row" alignItems="center" inline>
-                {#if data.deployment.status === 'processing' || data.deployment.status === 'building' || data.deployment.status === 'waiting'}
+                {#if effectiveStatus === 'processing' || effectiveStatus === 'building' || effectiveStatus === 'waiting'}
                     <Button
                         text
                         on:click={() => {

@@ -17,6 +17,8 @@
     import { capitalize } from '$lib/helpers/string';
     import DeploymentActionMenu from '../../(components)/deploymentActionMenu.svelte';
     import { deploymentStatusConverter } from '$lib/stores/git';
+    import { getEffectiveBuildStatus, getBuildTimeoutSeconds } from '$lib/helpers/buildTimeout';
+    import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
     import { sdk } from '$lib/stores/sdk';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { addNotification } from '$lib/stores/notifications';
@@ -94,21 +96,23 @@
                         {/key}
                     {:else if column.id === 'status'}
                         {@const status = deployment.status}
+                        {@const effectiveStatus = getEffectiveBuildStatus(status, deployment.$createdAt, getBuildTimeoutSeconds($regionalConsoleVariables))}
                         {#if data?.activeDeployment?.$id === deployment?.$id}
                             <Status status="complete" label="Active" />
                         {:else}
                             <Status
-                                status={deploymentStatusConverter(status)}
-                                label={capitalize(status)} />
+                                status={deploymentStatusConverter(effectiveStatus)}
+                                label={capitalize(effectiveStatus)} />
                         {/if}
                     {:else if column.id === 'type'}
                         <DeploymentSource {deployment} />
                     {:else if column.id === '$updatedAt'}
                         <DeploymentCreatedBy {deployment} />
                     {:else if column.id === 'buildDuration'}
-                        {#if ['waiting'].includes(deployment.status)}
+                        {@const effectiveStatus = getEffectiveBuildStatus(deployment.status, deployment.$createdAt, getBuildTimeoutSeconds($regionalConsoleVariables))}
+                        {#if ['waiting'].includes(effectiveStatus)}
                             -
-                        {:else if ['processing', 'building'].includes(deployment.status)}
+                        {:else if ['processing', 'building'].includes(effectiveStatus)}
                             <span use:timer={{ start: deployment.$createdAt }}></span>
                         {:else}
                             {formatTimeDetailed(deployment.buildDuration)}

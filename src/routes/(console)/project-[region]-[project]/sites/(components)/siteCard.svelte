@@ -23,6 +23,8 @@
     import { isCloud } from '$lib/system';
     import { sdk } from '$lib/stores/sdk';
     import { capitalize } from '$lib/helpers/string';
+    import { getEffectiveBuildStatus, getBuildTimeoutSeconds } from '$lib/helpers/buildTimeout';
+    import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
     import { regionalProtocol } from '$routes/(console)/project-[region]-[project]/store';
     import type { Snippet } from 'svelte';
 
@@ -40,6 +42,13 @@
         footer?: Snippet;
     } = $props();
 
+    let effectiveStatus = $derived(
+        getEffectiveBuildStatus(
+            deployment.status,
+            deployment.$createdAt,
+            getBuildTimeoutSeconds($regionalConsoleVariables)
+        )
+    );
     let show = $state(false);
 
     const totalSize = $derived(humanFileSize(deployment?.totalSize ?? 0));
@@ -113,15 +122,15 @@
                 </Layout.Stack>
 
                 <Layout.Stack direction="row" gap="xl">
-                    {#if deployment.status === 'failed'}
+                    {#if effectiveStatus === 'failed'}
                         <Layout.Stack gap="xxs" inline>
                             <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
                                 Status
                             </Typography.Text>
                             <Typography.Text variant="m-400" color="--fgcolor-neutral-primary">
                                 <Status
-                                    status={deployment.status}
-                                    label={capitalize(deployment.status)} />
+                                    status={effectiveStatus}
+                                    label={capitalize(effectiveStatus)} />
                             </Typography.Text>
                         </Layout.Stack>
                     {:else}
