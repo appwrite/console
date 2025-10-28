@@ -223,7 +223,7 @@
                 </button>
                 <button
                     class="upload-box-button"
-                    aria-label="close backup restore box"
+                    aria-label="close CSV import box"
                     onclick={clear}>
                     <span class="icon-x" aria-hidden="true"></span>
                 </button>
