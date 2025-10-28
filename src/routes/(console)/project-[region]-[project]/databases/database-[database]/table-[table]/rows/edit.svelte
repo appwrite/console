@@ -19,12 +19,10 @@
 
     let {
         row = $bindable(),
-        rowId = $bindable(null),
-        autoFocus = true
+        rowId = $bindable(null)
     }: {
         row?: Models.Row | null;
         rowId?: string | null;
-        autoFocus?: boolean;
     } = $props();
 
     let loading = $state(false);
@@ -78,9 +76,7 @@
     $effect(() => {
         if (row) {
             work = initWork();
-            if (autoFocus) {
-                focusFirstInput();
-            }
+            requestAnimationFrame(() => focusFirstInput());
         } else {
             work = null;
         }

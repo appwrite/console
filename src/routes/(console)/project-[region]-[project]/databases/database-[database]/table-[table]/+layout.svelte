@@ -475,8 +475,7 @@
         <EditRow
             bind:this={editRow}
             bind:row={$databaseRowSheetOptions.row}
-            bind:rowId={$databaseRowSheetOptions.rowId}
-            autoFocus={$databaseRowSheetOptions.autoFocus} />
+            bind:rowId={$databaseRowSheetOptions.rowId} />
     {/key}
 </SideSheet>
 

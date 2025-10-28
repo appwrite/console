@@ -64,14 +64,12 @@ export const databaseRowSheetOptions = writable<
     DatabaseSheetOptions & {
         row: Models.Row;
         rowId?: string;
-        autoFocus?: boolean;
     }
 >({
     title: null,
     show: false,
     row: null,
-    rowId: null, // for loading from a given id
-    autoFocus: true
+    rowId: null // for loading from a given id
 });
 
 export const databaseRelatedRowSheetOptions = writable<

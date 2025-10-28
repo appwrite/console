@@ -543,13 +543,11 @@
         } else if (type === 'row') {
             if (action === 'update') {
                 databaseRowSheetOptions.update((opts) => {
-                    const wasOpen = opts.show;
                     return {
                         ...opts,
                         row,
                         show: true,
-                        title: 'Update row',
-                        autoFocus: !wasOpen,
+                        title: 'Update row'
                     };
                 });
             }
@@ -760,15 +758,11 @@
 
     $: rowSelection = !$spreadsheetLoading && !$paginatedRowsLoading ? true : ('disabled' as const);
 
-    $: if (!$databaseRowSheetOptions.show) {
-        $databaseRowSheetOptions.autoFocus = true;
-
-        if (previouslyFocusedElement) {
-            requestAnimationFrame(() => {
-                (previouslyFocusedElement as HTMLElement)?.focus();
-                previouslyFocusedElement = null;
-            });
-        }
+    $: if (!$databaseRowSheetOptions.show && previouslyFocusedElement) {
+        requestAnimationFrame(() => {
+            (previouslyFocusedElement as HTMLElement)?.focus();
+            previouslyFocusedElement = null;
+        });
     }
 </script>
 
