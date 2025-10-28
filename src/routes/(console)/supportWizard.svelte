@@ -2,7 +2,6 @@
     import { Wizard } from '$lib/layout';
     import { Icon, Input, Layout, Popover, Tag, Typography, Card } from '@appwrite.io/pink-svelte';
     import { supportData, isSupportOnline } from './wizard/support/store';
-    import { onMount } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
     import {
         Form,
@@ -24,10 +23,9 @@
     import { user } from '$lib/stores/user';
     import { wizard } from '$lib/stores/wizard';
     import { VARS } from '$lib/system';
-    import { onDestroy } from 'svelte';
     import { IconCheckCircle, IconXCircle, IconInfo } from '@appwrite.io/pink-icons-svelte';
 
-    let projectOptions: Array<{ value: string; label: string }>;
+    let projectOptions = $state<Array<{ value: string; label: string }>>([]);
 
     // Category options with display names
     const categories = [
@@ -63,35 +61,41 @@
         { value: 'question', label: 'Question' }
     ];
 
-    onMount(async () => {
+    $effect(() => {
         // Filter projects by organization ID using server-side queries
-        const projectList = await sdk.forConsole.projects.list({
-            queries: $organization?.$id ? [Query.equal('teamId', $organization.$id)] : []
-        });
-        projectOptions = projectList.projects.map((project) => ({
-            value: project.$id,
-            label: project.name
-        }));
+        sdk.forConsole.projects
+            .list({
+                queries: $organization?.$id ? [Query.equal('teamId', $organization.$id)] : []
+            })
+            .then((projectList) => {
+                projectOptions = projectList.projects.map((project) => ({
+                    value: project.$id,
+                    label: project.name
+                }));
+            });
+
+        // Cleanup on destroy
+        return () => {
+            $supportData = {
+                message: null,
+                subject: null,
+                category: 'technical',
+                topic: undefined,
+                severity: undefined,
+                file: null
+            };
+        };
     });
 
     // Update topic options when category changes
-    $: topicOptions = (
-        $supportData.category ? topicsByCategory[$supportData.category] || [] : []
-    ).map((topic) => ({
-        value: topic.toLowerCase(),
-        label: topic
-    }));
-
-    onDestroy(() => {
-        $supportData = {
-            message: null,
-            subject: null,
-            category: 'technical',
-            topic: undefined,
-            severity: undefined,
-            file: null
-        };
-    });
+    let topicOptions = $derived(
+        ($supportData.category ? topicsByCategory[$supportData.category] || [] : []).map(
+            (topic) => ({
+                value: topic.toLowerCase(),
+                label: topic
+            })
+        )
+    );
 
     async function handleSubmit() {
         // Create category-topic tag
@@ -159,9 +163,47 @@
         endDay: 'Friday' as WeekDay
     };
 
-    $: supportTimings = `${utcHourToLocaleHour(workTimings.start)} - ${utcHourToLocaleHour(workTimings.end)} ${localeTimezoneName()}`;
-    $: supportWeekDays = `${utcWeekDayToLocaleWeekDay(workTimings.startDay, workTimings.start)} - ${utcWeekDayToLocaleWeekDay(workTimings.endDay, workTimings.end)}`;
+    let supportTimings = $derived(
+        `${utcHourToLocaleHour(workTimings.start)} - ${utcHourToLocaleHour(workTimings.end)} ${localeTimezoneName()}`
+    );
+    let supportWeekDays = $derived(
+        `${utcWeekDayToLocaleWeekDay(workTimings.startDay, workTimings.start)} - ${utcWeekDayToLocaleWeekDay(workTimings.endDay, workTimings.end)}`
+    );
 </script>
+
+{#snippet severityPopover()}
+    <div slot="info">
+        <Popover let:toggle>
+            <Button extraCompact size="s" on:click={toggle}>
+                <Icon size="s" icon={IconInfo} />
+            </Button>
+            <div slot="tooltip" style="max-width: 400px;">
+                <Layout.Stack gap="s">
+                    <Typography.Text>
+                        <b>Critical:</b> System is down or a critical component is non-functional,
+                        causing a complete stoppage of work or significant business impact.
+                    </Typography.Text>
+                    <Typography.Text>
+                        <b>High:</b> Major functionality is impaired, but a workaround is
+                        available, or a critical component is significantly degraded.
+                    </Typography.Text>
+                    <Typography.Text>
+                        <b>Medium:</b> Minor functionality is impaired without significant business
+                        impact.
+                    </Typography.Text>
+                    <Typography.Text>
+                        <b>Low:</b> Issue has minor impact on business operations; workaround is
+                        not necessary.
+                    </Typography.Text>
+                    <Typography.Text>
+                        <b>Question:</b> Requests for information, general guidance, or feature
+                        requests.
+                    </Typography.Text>
+                </Layout.Stack>
+            </div>
+        </Popover>
+    </div>
+{/snippet}
 
 <Wizard title="Contact us" confirmExit={true}>
     <Form onSubmit={handleSubmit}>
@@ -210,39 +252,9 @@
                 label="Severity"
                 options={severityOptions}
                 bind:value={$supportData.severity}
-                required={true}
+                required
                 placeholder="Select severity">
-                <div slot="info">
-                    <Popover let:toggle>
-                        <Button extraCompact size="s" on:click={toggle}>
-                            <Icon size="s" icon={IconInfo} />
-                        </Button>
-                        <div slot="tooltip" style="max-width: 400px;">
-                            <Layout.Stack gap="s">
-                                <Typography.Text>
-                                    <b>Critical:</b> System is down or a critical component is non-functional,
-                                    causing a complete stoppage of work or significant business impact.
-                                </Typography.Text>
-                                <Typography.Text>
-                                    <b>High:</b> Major functionality is impaired, but a workaround is
-                                    available, or a critical component is significantly degraded.
-                                </Typography.Text>
-                                <Typography.Text>
-                                    <b>Medium:</b> Minor functionality is impaired without significant
-                                    business impact.
-                                </Typography.Text>
-                                <Typography.Text>
-                                    <b>Low:</b> Issue has minor impact on business operations; workaround
-                                    is not necessary.
-                                </Typography.Text>
-                                <Typography.Text>
-                                    <b>Question:</b> Requests for information, general guidance, or feature
-                                    requests.
-                                </Typography.Text>
-                            </Layout.Stack>
-                        </div>
-                    </Popover>
-                </div>
+                {@render severityPopover()}
             </InputSelect>
             <InputText
                 id="subject"
