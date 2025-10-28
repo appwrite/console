@@ -23,19 +23,13 @@
     import { IconCheckCircle, IconXCircle } from '@appwrite.io/pink-icons-svelte';
 
     let projectOptions: Array<{ value: string; label: string }>;
-    let projectSearch = '';
 
-    async function loadProjects(search: string = '') {
-        // Filter projects by organization ID using server-side queries
-        const projectList = await sdk.forConsole.projects.list({
-            queries: $organization?.$id ? [Query.equal('teamId', $organization.$id)] : [],
-            search: search || undefined
-        });
-        projectOptions = projectList.projects.map((project) => ({
-            value: project.$id,
-            label: project.name
-        }));
-    }
+    // Category options with display names
+    const categories = [
+        { value: 'general', label: 'General' },
+        { value: 'billing', label: 'Billing' },
+        { value: 'technical', label: 'Technical' }
+    ];
 
     // Topic options based on category
     const topicsByCategory = {
@@ -54,7 +48,14 @@
     ];
 
     onMount(async () => {
-        await loadProjects();
+        // Filter projects by organization ID using server-side queries
+        const projectList = await sdk.forConsole.projects.list({
+            queries: $organization?.$id ? [Query.equal('teamId', $organization.$id)] : []
+        });
+        projectOptions = projectList.projects.map((project) => ({
+            value: project.$id,
+            label: project.name
+        }));
     });
 
     // Update topic options when category changes
@@ -156,15 +157,15 @@
                 <Typography.Text color="--fgcolor-neutral-secondary"
                     >Choose a category</Typography.Text>
                 <Layout.Stack gap="s" direction="row">
-                    {#each ['general', 'billing', 'technical'] as category}
+                    {#each categories as category}
                         <Tag
                             on:click={() => {
-                                if ($supportData.category !== category) {
+                                if ($supportData.category !== category.value) {
                                     $supportData.topic = undefined;
                                 }
-                                $supportData.category = category;
+                                $supportData.category = category.value;
                             }}
-                            selected={$supportData.category === category}>{category.charAt(0).toUpperCase() + category.slice(1)}</Tag>
+                            selected={$supportData.category === category.value}>{category.label}</Tag>
                     {/each}
                 </Layout.Stack>
             </Layout.Stack>
@@ -183,10 +184,6 @@
                 label="Choose a project"
                 options={projectOptions ?? []}
                 bind:value={$supportData.project}
-                bind:search={projectSearch}
-                on:search={async (event) => {
-                    await loadProjects(event.detail);
-                }}
                 required={false}
                 placeholder="Select project" />
             <InputSelect
