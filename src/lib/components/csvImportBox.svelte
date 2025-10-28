@@ -18,7 +18,7 @@
     import { Link } from '$lib/elements';
 
     type CsvImportError = {
-        [key: string]: unknown;
+        [key: string]: number | string | null;
     };
 
     type ImportItem = {
