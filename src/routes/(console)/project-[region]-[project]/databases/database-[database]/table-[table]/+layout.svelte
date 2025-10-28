@@ -405,6 +405,8 @@
     $: if (!$showCreateColumnSheet.show) {
         createMoreColumns = false;
     }
+
+    $: currentRowId = $databaseRowSheetOptions.row?.$id ?? $databaseRowSheetOptions.rowId;
 </script>
 
 <svelte:head>
@@ -461,7 +463,6 @@
 </SideSheet>
 
 <SideSheet
-    closeOnBlur
     title={$databaseRowSheetOptions.title}
     bind:show={$databaseRowSheetOptions.show}
     submit={{
@@ -472,13 +473,15 @@
     topAction={{
         mode: 'copy-tag',
         text: 'Row URL',
-        show: !!($databaseRowSheetOptions.rowId ?? $databaseRowSheetOptions.row?.$id),
-        value: buildRowUrl($databaseRowSheetOptions.rowId ?? $databaseRowSheetOptions.row?.$id)
+        show: !!currentRowId,
+        value: buildRowUrl(currentRowId)
     }}>
-    <EditRow
-        bind:this={editRow}
-        bind:row={$databaseRowSheetOptions.row}
-        bind:rowId={$databaseRowSheetOptions.rowId} />
+    {#key currentRowId}
+        <EditRow
+            bind:this={editRow}
+            bind:row={$databaseRowSheetOptions.row}
+            bind:rowId={$databaseRowSheetOptions.rowId} />
+    {/key}
 </SideSheet>
 
 <SideSheet

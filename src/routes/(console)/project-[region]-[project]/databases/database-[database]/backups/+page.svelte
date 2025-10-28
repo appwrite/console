@@ -69,11 +69,11 @@
             await sdk
                 .forProject(page.params.region, page.params.project)
                 .backups.createArchive(['databases'], data.database.$id);
+            await invalidate(Dependencies.BACKUPS);
             addNotification({
                 type: 'success',
                 message: 'Database backup has started'
             });
-            invalidate(Dependencies.BACKUPS);
             trackEvent('click_manual_submit');
             showFeedbackNotification();
         } catch (error) {
@@ -86,7 +86,7 @@
         }
     };
 
-    const trackEvents = (policies) => {
+    const trackEvents = (policies: UserBackupPolicy[]) => {
         policies.forEach((policy) => {
             let actualDay = null;
             const monthlyBackupFrequency = policy.monthlyBackupFrequency;
@@ -139,7 +139,6 @@
                     ? `Backup policies have been created`
                     : `<b>${totalPolicies[0].label}</b> policy has been created`;
 
-            // TODO: html isn't yet supported on Toast.
             addNotification({
                 isHtml: true,
                 type: 'success',
@@ -148,7 +147,7 @@
 
             trackEvents(totalPolicies);
 
-            invalidate(Dependencies.BACKUPS);
+            await invalidate(Dependencies.BACKUPS);
             showFeedbackNotification();
         } catch (err) {
             addNotification({
