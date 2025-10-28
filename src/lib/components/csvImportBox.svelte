@@ -17,6 +17,10 @@
     import { spreadsheetRenderKey } from '$routes/(console)/project-[region]-[project]/databases/database-[database]/table-[table]/store';
     import { Link } from '$lib/elements';
 
+    type CsvImportError = {
+        [key: string]: unknown;
+    };
+
     type ImportItem = {
         status: string;
         table?: string;
@@ -125,9 +129,9 @@
         return Array.isArray(importData.errors) ? importData.errors : undefined;
     }
 
-    function parseError(error: string): unknown {
+    function parseError(error: string): string | CsvImportError {
         try {
-            return JSON.parse(error);
+            return JSON.parse(error) as CsvImportError;
         } catch {
             return error;
         }
@@ -196,7 +200,7 @@
 
     let showDetails = $state(false);
     let selectedErrors = $state<string[]>([]);
-    let parsedErrors = $state<unknown[]>([]);
+    let parsedErrors = $state<Array<string | CsvImportError>>([]);
 
     function openDetails(errors: string[] | undefined) {
         selectedErrors = errors ?? [];
