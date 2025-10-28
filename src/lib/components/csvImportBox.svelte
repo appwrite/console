@@ -221,10 +221,7 @@
                     onclick={() => (isOpen = !isOpen)}>
                     <span class="icon-cheveron-up" aria-hidden="true"></span>
                 </button>
-                <button
-                    class="upload-box-button"
-                    aria-label="close CSV import box"
-                    onclick={clear}>
+                <button class="upload-box-button" aria-label="close CSV import box" onclick={clear}>
                     <span class="icon-x" aria-hidden="true"></span>
                 </button>
             </header>
