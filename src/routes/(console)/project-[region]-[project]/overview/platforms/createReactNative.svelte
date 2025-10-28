@@ -27,6 +27,7 @@
     import { PlatformType } from '@appwrite.io/console';
     import { project } from '../../store';
     import { getCorrectTitle, type PlatformProps } from './store';
+    import LlmBanner from './llmBanner.svelte';
 
     let { isConnectPlatform = false, platform = PlatformType.Reactnativeandroid }: PlatformProps =
         $props();
@@ -226,6 +227,8 @@ EXPO_PUBLIC_APPWRITE_ENDPOINT=${sdk.forProject(page.params.region, page.params.p
         {#if isPlatformCreated}
             <Fieldset legend="Clone starter" badge="Optional">
                 <Layout.Stack gap="l">
+                    <LlmBanner platform="reactnative" configCode={updateConfigCode} />
+
                     <Typography.Text variant="m-500">
                         1. If you're starting a new project, you can clone our starter kit from
                         GitHub using the terminal or VSCode.
