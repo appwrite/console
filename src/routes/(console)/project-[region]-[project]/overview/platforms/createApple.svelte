@@ -39,7 +39,7 @@
 
     const projectId = page.params.project;
 
-const alreadyExistsInstructions = `
+    const alreadyExistsInstructions = `
     Install the Appwrite iOS SDK using the following package URL:
 
     \`\`\`
@@ -50,7 +50,7 @@ const alreadyExistsInstructions = `
 
     \`\`\`
     let client = Client()
-        .setEndpoint("https://fra.cloud.appwrite.io/v1")
+        .setEndpoint("${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}")
         .setProject("${projectId}")
 
     let account = Account(client)

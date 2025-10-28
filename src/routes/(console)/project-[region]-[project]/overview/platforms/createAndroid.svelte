@@ -48,8 +48,8 @@
 
         \`\`\`
         val client = Client()
-            .setEndpoint("https://fra.cloud.appwrite.io/v1")
-            .setProject("ai-test-atharva")
+            .setEndpoint("${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}")
+            .setProject("${projectId}")
 
         val account = Account(client)
         \`\`\`
