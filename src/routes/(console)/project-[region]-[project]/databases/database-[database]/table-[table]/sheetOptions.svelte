@@ -125,7 +125,7 @@
             }
 
             // hide column-left and create-index for $id (first column, already indexed)
-            if (columnId === '$id' && ['column-left', 'create-index'].includes(item.action ?? '')) {
+            if (columnId === '$id' && ['column-left', 'create-index'].includes(item?.action)) {
                 return false;
             }
 
