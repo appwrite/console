@@ -11,10 +11,12 @@
         Popover,
         Badge
     } from '@appwrite.io/pink-svelte';
-    import { IconFingerPrint, IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { IconFingerPrint, IconPlus, IconText } from '@appwrite.io/pink-icons-svelte';
     import { isSmallViewport, isTabletViewport } from '$lib/stores/viewport';
     import type { Column } from '$lib/helpers/types';
-    import { expandTabs } from '../table-[table]/store';
+    import { SortButton } from '$lib/components';
+    import { expandTabs, columnsOrder, columnsWidth, reorderItems } from '../table-[table]/store';
+    import { preferences } from '$lib/stores/preferences';
     import SpreadsheetContainer from '../table-[table]/layout/spreadsheet.svelte';
     import { onDestroy, onMount, tick } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
@@ -48,6 +50,47 @@
     }: {
         userColumns?: Column[];
     } = $props();
+
+    const tableId = page.params.table;
+    const minimumUserColumnWidth = 168;
+
+    function getUserColumnWidth(
+        columnId: string,
+        defaultWidth: number | { min: number }
+    ): number | { min: number; max?: number } {
+        const savedWidth = $columnsWidth?.[columnId];
+        if (!savedWidth) return defaultWidth;
+        return savedWidth.resized;
+    }
+
+    // apply order & width to user columns
+    const staticUserColumns = $derived.by(() => {
+        if (!userColumns.length) return [];
+
+        // apply widths to columns
+        const columnsWithWidths = userColumns.map((column) => {
+            const defaultWidth =
+                typeof column.width === 'object' && 'min' in column.width
+                    ? column.width
+                    : typeof column.width === 'number'
+                      ? column.width
+                      : minimumUserColumnWidth;
+
+            return {
+                ...column,
+                width: getUserColumnWidth(column.id, defaultWidth),
+                resizable: false,
+                draggable: false
+            };
+        });
+
+        // apply ordering if preferences exist
+        if ($columnsOrder && $columnsOrder.length > 0) {
+            return reorderItems(columnsWithWidths, $columnsOrder);
+        }
+
+        return columnsWithWidths;
+    });
 
     let resizeObserver: ResizeObserver;
     let spreadsheetContainer: HTMLElement;
@@ -163,16 +206,42 @@
         if (!hasRealColumns) {
             // for placeholders or no columns,
             // position overlay to cover custom columns area
-            const idCell = getById('$id');
+            let startCell = getById('$id');
+
+            if (staticUserColumns.length > 0) {
+                const lastUserColumn = staticUserColumns[staticUserColumns.length - 1];
+                let lastUserCell = getById(lastUserColumn.id);
+
+                // if not found with data-header="true", try without it
+                if (!lastUserCell) {
+                    lastUserCell = headerElement!.querySelector<HTMLElement>(
+                        `[role="cell"][data-column-id="${lastUserColumn.id}"]`
+                    );
+                }
+
+                if (lastUserCell) {
+                    startCell = lastUserCell;
+                }
+            }
+
             const actionsCell = headerElement!.querySelector<HTMLElement>(
                 '[role="cell"][data-column-id="actions"]'
             );
 
-            if (idCell && actionsCell) {
-                const idRect = idCell.getBoundingClientRect();
+            if (startCell && actionsCell) {
+                const startRect = startCell.getBoundingClientRect();
                 const actionsRect = actionsCell.getBoundingClientRect();
-                const left = Math.round(idRect.right - containerRect.left);
+                let left = Math.round(startRect.right - containerRect.left);
                 const actionsLeft = actionsRect.left - containerRect.left;
+
+                // ensure overlay doesn't go over select
+                const selectionRect = spreadsheetContainer
+                    .querySelector('[data-select="true"]')
+                    ?.getBoundingClientRect();
+                if (selectionRect) {
+                    const selectionRight = Math.round(selectionRect.right - containerRect.left);
+                    left = Math.max(left, selectionRight);
+                }
 
                 const width = actionsLeft - left;
 
@@ -226,15 +295,41 @@
             .querySelector('[data-select="true"]')
             ?.getBoundingClientRect();
 
-        // Start overlay after selection column if it exists, otherwise after $id
+        // determine starting point for overlay
         let startLeft = idRect.right;
         if (selectionRect && selectionRect.right > idRect.right) {
             startLeft = selectionRect.right;
         }
 
+        // if userColumns exist,
+        // start overlay **after** the last userColumn
+        if (staticUserColumns.length > 0) {
+            const lastUserColumn = staticUserColumns[staticUserColumns.length - 1];
+            let lastUserCell = getById(lastUserColumn.id);
+
+            if (!lastUserCell) {
+                lastUserCell = headerElement!.querySelector<HTMLElement>(
+                    `[role="cell"][data-column-id="${lastUserColumn.id}"]`
+                );
+            }
+
+            if (lastUserCell) {
+                const lastUserRect = lastUserCell.getBoundingClientRect();
+                startLeft = lastUserRect.right;
+            }
+        }
+
+        if (selectionRect) {
+            startLeft = Math.max(startLeft, selectionRect.right);
+        }
+
         const left = Math.round(startLeft - containerRect.left);
 
-        // get the actions column and use its left border as the boundary
+        // use the last visible custom column's right edge as the overlay boundary
+        const endRect = endCell.getBoundingClientRect();
+        const endRight = Math.round(endRect.right - containerRect.left);
+
+        // also get the actions column to ensure we don't exceed it
         const actionsCell = headerElement!.querySelector<HTMLElement>(
             '[role="cell"][data-column-id="actions"]'
         );
@@ -249,7 +344,9 @@
         const actionsRect = actionsCell.getBoundingClientRect();
         const actionsLeft = actionsRect.left - containerRect.left;
 
-        const width = actionsLeft - left;
+        // ensure overlay doesn't exceed bounds
+        const right = Math.min(endRight, actionsLeft);
+        const width = right - left;
 
         // Apply overlay positioning
         spreadsheetContainer.style.setProperty('--group-left', `${left - 2}px`);
@@ -258,17 +355,13 @@
 
     // only for mobile, we can remove if not needed!
     const scrollToFirstCustomColumn = () => {
-        if (!$isSmallViewport) return;
+        if (!staticUserColumns.length && !$isSmallViewport) return;
 
         if (!headerElement || !headerElement.isConnected) {
-            headerElement = spreadsheetContainer.querySelector('[role="rowheader"]');
+            headerElement = spreadsheetContainer?.querySelector('[role="rowheader"]');
         }
 
         if (!headerElement) return;
-
-        const firstCustomColumnCell = headerElement.querySelector<HTMLElement>(
-            `[role="cell"][data-header="true"][data-column-id="${customColumns[0]?.key}"]`
-        );
 
         const directAccessScroller =
             hScroller ??
@@ -276,8 +369,23 @@
             // internal spreadsheet root main container!
             spreadsheetContainer.querySelector('.spreadsheet-container');
 
-        if (firstCustomColumnCell && directAccessScroller) {
-            const cellRect = firstCustomColumnCell.getBoundingClientRect();
+        if (!directAccessScroller) return;
+
+        let targetCell: HTMLElement | null = null;
+
+        if (staticUserColumns.length > 0) {
+            const lastUserColumn = staticUserColumns[staticUserColumns.length - 1];
+            targetCell = headerElement.querySelector<HTMLElement>(
+                `[role="cell"][data-header="true"][data-column-id="${lastUserColumn.id}"]`
+            );
+        } else {
+            targetCell = headerElement.querySelector<HTMLElement>(
+                `[role="cell"][data-header="true"][data-column-id="${customColumns[0]?.key}"]`
+            );
+        }
+
+        if (targetCell) {
+            const cellRect = targetCell.getBoundingClientRect();
             const scrollerRect = directAccessScroller.getBoundingClientRect();
             const scrollLeft =
                 directAccessScroller.scrollLeft + cellRect.left - scrollerRect.left - 40;
@@ -314,15 +422,53 @@
 
         const isHovered = !selectedColumnId && hoveredColumnId;
         const isFirstColumn = activeColumnId === customColumns[0]?.key;
+        const isLastColumn = activeColumnId === customColumns[customColumns.length - 1]?.key;
 
         let leftAdjustment = -2;
         let widthAdjustment = 2;
-        if (isHovered && isFirstColumn) {
+        if (isHovered && (isFirstColumn || isLastColumn)) {
             leftAdjustment = 0;
         }
 
+        // get actions boundary to prevent hover overlay over it
+        const actionsCell = headerElement.querySelector<HTMLElement>(
+            '[role="cell"][data-column-id="actions"]'
+        );
+
+        let finalWidth = width + widthAdjustment;
+
+        if (isHovered && actionsCell) {
+            const actionsRect = actionsCell.getBoundingClientRect();
+            const actionsLeft = actionsRect.left - containerRect.left;
+            const overlayRight = left + leftAdjustment + finalWidth;
+
+            const borderWidth = 2;
+            if (overlayRight + borderWidth > actionsLeft) {
+                finalWidth = actionsLeft - (left + leftAdjustment) - borderWidth;
+            }
+        }
+
         spreadsheetContainer.style.setProperty('--highlight-left', `${left + leftAdjustment}px`);
-        spreadsheetContainer.style.setProperty('--highlight-width', `${width + widthAdjustment}px`);
+        spreadsheetContainer.style.setProperty('--highlight-width', `${finalWidth}px`);
+
+        if (isHovered) {
+            const tooltipElement =
+                spreadsheetContainer.querySelector<HTMLElement>('.custom-tooltip');
+            const tooltipWidth = tooltipElement ? tooltipElement.offsetWidth : 200;
+            const defaultOffset = 325;
+            const smallerOffset = 225;
+            const viewportWidth = window.innerWidth;
+
+            // check how much space is available to the right of the column
+            const columnRightEdge = left + leftAdjustment + finalWidth;
+            const availableSpace = viewportWidth - columnRightEdge;
+
+            // use smaller offset if there isn't enough space for default offset + tooltip
+            const shouldUseSmallerOffset = availableSpace < defaultOffset + tooltipWidth;
+            const tooltipOffset = shouldUseSmallerOffset ? smallerOffset : defaultOffset;
+
+            spreadsheetContainer.style.setProperty('--tooltip-offset', `${tooltipOffset}px`);
+        }
     }
 
     const recalcAll = () => {
@@ -343,6 +489,10 @@
             // check if selected column is still visible after scroll
             if (selectedColumnId && !isColumnVisible(selectedColumnId)) {
                 resetSelectedColumn();
+            }
+
+            if (hoveredColumnId && !isColumnVisible(hoveredColumnId)) {
+                hoveredColumnId = null;
             }
 
             scrollAnimationFrame = null;
@@ -375,29 +525,31 @@
         const minColumnWidth = 180;
         const fixedWidths = { id: minColumnWidth, actions: 40, selection: 40 };
 
-        // calculate base widths and total
-        const columnsWithBase = customSuggestedColumns.map((col) => ({
-            ...col,
-            baseWidth: Math.max(minColumnWidth, getColumnWidth(col.id))
-        }));
+        const equalWidthColumns = [...staticUserColumns, ...customSuggestedColumns];
 
-        const totalUsed =
+        const totalBaseWidth =
             fixedWidths.id +
             fixedWidths.actions +
             fixedWidths.selection +
-            columnsWithBase.reduce((sum, col) => sum + col.baseWidth, 0);
+            equalWidthColumns.length * minColumnWidth;
 
-        // distribute excess space equally across custom columns
         const viewportWidth =
             spreadsheetContainer?.clientWidth ||
-            (typeof window !== 'undefined' ? window.innerWidth : totalUsed);
+            (typeof window !== 'undefined' ? window.innerWidth : totalBaseWidth);
 
+        const excessSpace = Math.max(0, viewportWidth - totalBaseWidth);
         const extraPerColumn =
-            Math.max(0, viewportWidth - totalUsed) / (columnsWithBase.length || 1);
+            equalWidthColumns.length > 0 ? excessSpace / equalWidthColumns.length : 0;
+        const distributedWidth = minColumnWidth + extraPerColumn;
 
-        const finalCustomColumns = columnsWithBase.map((col) => ({
+        const userColumnsWithWidth = staticUserColumns.map((col) => ({
             ...col,
-            width: { min: col.baseWidth + extraPerColumn }
+            width: distributedWidth
+        }));
+
+        const finalCustomColumns = customSuggestedColumns.map((col) => ({
+            ...col,
+            width: { min: distributedWidth }
         }));
 
         return [
@@ -409,8 +561,8 @@
                 icon: IconFingerPrint,
                 ...baseColProps
             },
+            ...userColumnsWithWidth,
             ...finalCustomColumns,
-            /*...userColumns,*/
             {
                 id: 'actions',
                 title: '',
@@ -426,7 +578,8 @@
     const emptyCells = $derived(($isSmallViewport ? 14 : 17) + (!$expandTabs ? 2 : 0));
 
     onMount(async () => {
-        userColumns; /* silences lint check, variable not read */
+        columnsOrder.set(preferences.getColumnOrder(tableId));
+        columnsWidth.set(preferences.getColumnWidths(tableId));
 
         if (spreadsheetContainer) {
             resizeObserver = new ResizeObserver(recalcAll);
@@ -460,10 +613,8 @@
     async function suggestColumns() {
         $tableColumnSuggestions.thinking = true;
 
-        if ($isSmallViewport) {
-            await tick();
-            scrollToFirstCustomColumn();
-        }
+        await tick();
+        scrollToFirstCustomColumn();
 
         let suggestedColumns: {
             total: number;
@@ -1031,6 +1182,23 @@
         }
     });
 
+    // mark suggested column cells so CSS can target them specifically
+    $effect(() => {
+        if (!spreadsheetContainer) return;
+
+        // get all custom column IDs
+        const suggestedColumnIds = customColumns.map((col) => col.key);
+        const allCells = spreadsheetContainer.querySelectorAll('[role="cell"][data-column-id]');
+        allCells.forEach((cell) => {
+            const columnId = cell.getAttribute('data-column-id');
+            if (columnId && suggestedColumnIds.includes(columnId)) {
+                cell.setAttribute('data-suggested-column', 'true');
+            } else {
+                cell.removeAttribute('data-suggested-column');
+            }
+        });
+    });
+
     $effect(() => {
         if (!spreadsheetContainer) return;
 
@@ -1093,11 +1261,16 @@
 
         <!-- selection border -->
         {#if selectedColumnId || hoveredColumnId}
+            {@const activeColumnId = selectedColumnId || hoveredColumnId}
             {@const isHovered = !selectedColumnId && hoveredColumnId}
+            {@const isFirstColumn = activeColumnId === customColumns[0]?.key}
+            {@const isLastColumn = activeColumnId === customColumns[customColumns.length - 1]?.key}
             <div
                 class="column-highlight-overlay"
                 class:hover={isHovered}
                 class:selected={!isHovered}
+                class:last-column={isHovered && isLastColumn}
+                class:first-column={isHovered && isFirstColumn}
                 class:slide={previousColumnId !== null && !isHovered}
                 style:height="100%"
                 style:left="var(--highlight-left, 0px)"
@@ -1134,160 +1307,188 @@
                             : '--overlay-icon-color'}
                         {@const isColumnInteractable =
                             isCustomColumn(column.id) && columnObj && !columnObj.isPlaceholder}
+                        {@const isUserColumn =
+                            column.id === '$id' ||
+                            staticUserColumns.some((col) => col.id === column.id)}
 
-                        <Options
-                            enabled={isColumnInteractable}
-                            headerTooltipText={isColumnInteractable && showHeadTooltip
-                                ? 'Right click for advanced editing'
-                                : undefined}
-                            onShowStateChanged={onPopoverShowStateChanged}
-                            triggerOpen={() => {
-                                if (triggerColumnId === column.id) {
-                                    triggerColumnId = null;
-                                    return true;
-                                }
+                        {#if isUserColumn}
+                            <Spreadsheet.Header.Cell
+                                {root}
+                                column={column.id}
+                                icon={column.icon ?? IconText}>
+                                <Layout.Stack
+                                    gap="xs"
+                                    direction="row"
+                                    alignItems="center"
+                                    alignContent="center"
+                                    style="min-width: 0;">
+                                    <Typography.Text truncate>
+                                        {column.title}
+                                    </Typography.Text>
 
-                                return false;
-                            }}>
-                            {#snippet children(toggle)}
-                                <Spreadsheet.Header.Cell
-                                    {root}
-                                    isEditable={isColumnInteractable && !$isTabletViewport}
-                                    openEditOnTap={isColumnInteractable && !$isTabletViewport}
-                                    column={column.id}
-                                    on:contextmenu={(event) => {
-                                        // tablet viewport check because context-menu
-                                        // can be triggered on long hold clicks as well!
-                                        if (isColumnInteractable && !$isTabletViewport) {
-                                            toggle(event);
-                                        }
-                                    }}>
-                                    <Layout.Stack
-                                        direction="row"
-                                        alignItems="center"
-                                        alignContent="center"
-                                        justifyContent="space-between">
-                                        <span
-                                            class="column-title"
-                                            class:animate-in={!columnObj?.isPlaceholder}
-                                            style:--animation-delay={`${isColumnInteractable ? (index - 1) * 100 : 0}ms`}>
-                                            {column.title}
-                                        </span>
+                                    <SortButton disabled={true} column={column.id} />
+                                </Layout.Stack>
+                            </Spreadsheet.Header.Cell>
+                        {:else}
+                            <Options
+                                enabled={isColumnInteractable}
+                                headerTooltipText={isColumnInteractable && showHeadTooltip
+                                    ? 'Right click for advanced editing'
+                                    : undefined}
+                                onShowStateChanged={onPopoverShowStateChanged}
+                                triggerOpen={() => {
+                                    if (triggerColumnId === column.id) {
+                                        triggerColumnId = null;
+                                        return true;
+                                    }
 
-                                        {@render changeColumnTypePopover({
-                                            id: column.id,
-                                            columnObj,
-                                            iconColor: columnIconColor,
-                                            icon: column.icon,
-                                            isColumnInteractable,
-                                            index
-                                        })}
-                                    </Layout.Stack>
-
-                                    <svelte:fragment slot="cell-editor">
-                                        {#if !$isTabletViewport}
-                                            <div
-                                                class="cell-editor"
-                                                onfocusin={() => {
-                                                    isInlineEditing = true;
-                                                    showHeadTooltip = false;
-                                                    resetSelectedColumn();
-                                                    handlePreviousColumnsBorder(column.id);
-                                                }}
-                                                onfocusout={() => {
-                                                    showHeadTooltip = true;
-                                                    isInlineEditing = false;
-                                                    handlePreviousColumnsBorder(column.id, false);
-                                                }}>
-                                                <InputText
-                                                    id="key"
-                                                    autofocus
-                                                    required
-                                                    bind:value={columnObj.key}
-                                                    pattern="^[A-Za-z0-9][A-Za-z0-9._\-]*$">
-                                                    <svelte:fragment slot="end">
-                                                        {#if columnIcon}
-                                                            {@render changeColumnTypePopover({
-                                                                id: column.id,
-                                                                columnObj,
-                                                                iconColor: columnIconColor,
-                                                                icon: column.icon,
-                                                                isColumnInteractable,
-                                                                index
-                                                            })}
-                                                        {/if}
-                                                    </svelte:fragment>
-                                                </InputText>
-                                            </div>
-                                        {/if}
-                                    </svelte:fragment>
-                                </Spreadsheet.Header.Cell>
-                            {/snippet}
-
-                            {#snippet tooltipChildren()}
-                                {#if columnObj}
-                                    {@const selectedOption = getColumnOption(
-                                        columnObj.type,
-                                        columnObj.format
-                                    )}
-                                    {@const ColumnComponent = selectedOption?.component}
-                                    <Layout.Stack gap="xl">
+                                    return false;
+                                }}>
+                                {#snippet children(toggle)}
+                                    <Spreadsheet.Header.Cell
+                                        {root}
+                                        isEditable={isColumnInteractable && !$isTabletViewport}
+                                        openEditOnTap={isColumnInteractable && !$isTabletViewport}
+                                        column={column.id}
+                                        on:contextmenu={(event) => {
+                                            // tablet viewport check because context-menu
+                                            // can be triggered on long hold clicks as well!
+                                            if (isColumnInteractable && !$isTabletViewport) {
+                                                toggle(event);
+                                            }
+                                        }}>
                                         <Layout.Stack
-                                            direction={$isSmallViewport ? 'column' : 'row'}>
-                                            <InputText
-                                                id="key"
-                                                label="Key"
-                                                placeholder="Enter key"
-                                                bind:value={columnObj.key}
-                                                autofocus
-                                                required
-                                                pattern="^[A-Za-z0-9][A-Za-z0-9._\-]*$" />
+                                            direction="row"
+                                            alignItems="center"
+                                            alignContent="center"
+                                            justifyContent="space-between">
+                                            <span
+                                                class="column-title"
+                                                class:animate-in={!columnObj?.isPlaceholder}
+                                                style:--animation-delay={`${isColumnInteractable ? (index - 1) * 100 : 0}ms`}>
+                                                {column.title}
+                                            </span>
 
-                                            <InputSelect
-                                                id="type"
-                                                required
-                                                label="Type"
-                                                value={selectedOption?.name || 'String'}
-                                                on:change={(e) => {
-                                                    const newOption = columnOptions.find(
-                                                        (opt) => opt.name === e.detail
-                                                    );
-                                                    if (newOption) {
-                                                        updateColumn(column.id, {
-                                                            type: newOption.type,
-                                                            format: newOption.format || null
-                                                        });
-                                                    }
-                                                }}
-                                                options={basicColumnOptions.map((col) => {
-                                                    return {
-                                                        label: col.name,
-                                                        value: col.name,
-                                                        leadingIcon: col.icon
-                                                    };
-                                                })} />
+                                            {@render changeColumnTypePopover({
+                                                id: column.id,
+                                                columnObj,
+                                                iconColor: columnIconColor,
+                                                icon: column.icon,
+                                                isColumnInteractable,
+                                                index
+                                            })}
                                         </Layout.Stack>
 
-                                        {#if ColumnComponent}
-                                            <ColumnComponent data={columnObj} autoIncreaseSize />
-                                        {/if}
-                                    </Layout.Stack>
-                                {/if}
-                            {/snippet}
+                                        <svelte:fragment slot="cell-editor">
+                                            {#if !$isTabletViewport}
+                                                <div
+                                                    class="cell-editor"
+                                                    onfocusin={() => {
+                                                        isInlineEditing = true;
+                                                        showHeadTooltip = false;
+                                                        resetSelectedColumn();
+                                                        handlePreviousColumnsBorder(column.id);
+                                                    }}
+                                                    onfocusout={() => {
+                                                        showHeadTooltip = true;
+                                                        isInlineEditing = false;
+                                                        handlePreviousColumnsBorder(
+                                                            column.id,
+                                                            false
+                                                        );
+                                                    }}>
+                                                    <InputText
+                                                        id="key"
+                                                        autofocus
+                                                        required
+                                                        bind:value={columnObj.key}
+                                                        pattern="^[A-Za-z0-9][A-Za-z0-9._\-]*$">
+                                                        <svelte:fragment slot="end">
+                                                            {#if columnIcon}
+                                                                {@render changeColumnTypePopover({
+                                                                    id: column.id,
+                                                                    columnObj,
+                                                                    iconColor: columnIconColor,
+                                                                    icon: column.icon,
+                                                                    isColumnInteractable,
+                                                                    index
+                                                                })}
+                                                            {/if}
+                                                        </svelte:fragment>
+                                                    </InputText>
+                                                </div>
+                                            {/if}
+                                        </svelte:fragment>
+                                    </Spreadsheet.Header.Cell>
+                                {/snippet}
 
-                            {#snippet mobileFooterChildren(toggle)}
-                                <Button.Button
-                                    size="s"
-                                    variant="danger"
-                                    on:click={(event) => {
-                                        toggle(event);
-                                        deleteColumn(column.id);
-                                    }}
-                                    style="position: absolute; left: 1rem;"
-                                    >Delete
-                                </Button.Button>
-                            {/snippet}
-                        </Options>
+                                {#snippet tooltipChildren()}
+                                    {#if columnObj}
+                                        {@const selectedOption = getColumnOption(
+                                            columnObj.type,
+                                            columnObj.format
+                                        )}
+                                        {@const ColumnComponent = selectedOption?.component}
+                                        <Layout.Stack gap="xl">
+                                            <Layout.Stack
+                                                direction={$isSmallViewport ? 'column' : 'row'}>
+                                                <InputText
+                                                    id="key"
+                                                    label="Key"
+                                                    placeholder="Enter key"
+                                                    bind:value={columnObj.key}
+                                                    autofocus
+                                                    required
+                                                    pattern="^[A-Za-z0-9][A-Za-z0-9._\-]*$" />
+
+                                                <InputSelect
+                                                    id="type"
+                                                    required
+                                                    label="Type"
+                                                    value={selectedOption?.name || 'String'}
+                                                    on:change={(e) => {
+                                                        const newOption = columnOptions.find(
+                                                            (opt) => opt.name === e.detail
+                                                        );
+                                                        if (newOption) {
+                                                            updateColumn(column.id, {
+                                                                type: newOption.type,
+                                                                format: newOption.format || null
+                                                            });
+                                                        }
+                                                    }}
+                                                    options={basicColumnOptions.map((col) => {
+                                                        return {
+                                                            label: col.name,
+                                                            value: col.name,
+                                                            leadingIcon: col.icon
+                                                        };
+                                                    })} />
+                                            </Layout.Stack>
+
+                                            {#if ColumnComponent}
+                                                <ColumnComponent
+                                                    data={columnObj}
+                                                    autoIncreaseSize />
+                                            {/if}
+                                        </Layout.Stack>
+                                    {/if}
+                                {/snippet}
+
+                                {#snippet mobileFooterChildren(toggle)}
+                                    <Button.Button
+                                        size="s"
+                                        variant="danger"
+                                        on:click={(event) => {
+                                            toggle(event);
+                                            deleteColumn(column.id);
+                                        }}
+                                        style="position: absolute; left: 1rem;"
+                                        >Delete
+                                    </Button.Button>
+                                {/snippet}
+                            </Options>
+                        {/if}
                     {/if}
                 {/each}
             </svelte:fragment>
@@ -1607,36 +1808,28 @@
         }
 
         &:has(.columns-range-overlay) {
-            :global(
-                [role='rowheader']
-                    [role='cell']:has(.column-resizer-disabled):not([data-column-id^='$']):not(
-                        [data-column-id='actions']
-                    )
-            ) {
+            :global([role='rowheader'][data-suggested-column='true']) {
                 background: var(--columns-range-pink-header-background-color);
             }
 
-            :global(
-                [role='rowheader']
-                    span:has([data-column-id='$id'])
-                    + span
-                    [role='cell']:has(.column-resizer-disabled)
-            ) {
-                margin-left: -2px;
-            }
-
-            :global(
-                [role='cell']:has(.column-resizer-disabled):not([data-column-id^='$']):not(
-                        [data-column-id='actions']
-                    )
-            ) {
+            :global([role='cell']:has(.column-resizer-disabled)[data-suggested-column='true']) {
                 box-shadow: 0 -1px 0 0 var(--columns-range-pink-border-color) inset !important;
                 transition: box-shadow 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             }
 
-            :global([role='cell']:not([data-column-id='actions']) .column-resizer-disabled) {
+            :global(
+                [role='cell']:not([data-column-id='actions'])[data-suggested-column='true']
+                    .column-resizer-disabled
+            ) {
                 border-left: var(--border-width-s, 1px) solid var(--columns-range-pink-border-color) !important;
                 transition: border-color 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            }
+
+            :global(
+                [role='cell'][data-suggested-column='true']:has(+ [data-column-id='actions'])
+                    .column-resizer-disabled
+            ) {
+                display: none !important;
             }
         }
 
@@ -1653,10 +1846,20 @@
             }
 
             &.hover {
+                margin-left: 0;
                 background: rgba(253, 54, 110, 0.05);
                 border-radius: var(--border-radius-xxs);
                 border: var(--border-width-m) solid rgba(253, 54, 110, 0.24);
                 transition: background 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+                &.first-column,
+                &.last-column {
+                    margin-left: -2px;
+                }
+
+                &.last-column {
+                    width: calc(var(--highlight-width, 0px) + 4.5px) !important;
+                }
             }
 
             &.slide {
@@ -1973,7 +2176,7 @@
         border-radius: var(--border-radius-s);
         padding: var(--space-2) var(--space-4);
         background: var(--bgcolor-neutral-invert-weak);
-        left: calc(var(--highlight-left, 0px) + 325px);
+        left: calc(var(--highlight-left, 0px) + var(--tooltip-offset, 325px));
 
         transition:
             top 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94),
