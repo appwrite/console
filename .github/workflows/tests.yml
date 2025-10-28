@@ -26,6 +26,7 @@ jobs:
                       pkg.pr.new:443
                       pkg.vc:443
                       registry.npmjs.org:443
+                      releases.githubusercontent.com:443
             - uses: actions/checkout@v4
             - name: Use Node.js
               uses: actions/setup-node@v3
