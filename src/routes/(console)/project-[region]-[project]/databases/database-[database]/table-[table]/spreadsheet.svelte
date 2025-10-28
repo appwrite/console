@@ -542,9 +542,16 @@
             }
         } else if (type === 'row') {
             if (action === 'update') {
-                $databaseRowSheetOptions.show = true;
-                $databaseRowSheetOptions.row = row;
-                $databaseRowSheetOptions.title = 'Update row';
+                databaseRowSheetOptions.update((opts) => {
+                    const wasOpen = opts.show;
+                    return {
+                        ...opts,
+                        row,
+                        show: true,
+                        title: 'Update row',
+                        autoFocus: !wasOpen,
+                    };
+                });
             }
 
             if (action === 'duplicate-row') {
@@ -753,11 +760,15 @@
 
     $: rowSelection = !$spreadsheetLoading && !$paginatedRowsLoading ? true : ('disabled' as const);
 
-    $: if (!$databaseRowSheetOptions.show && previouslyFocusedElement) {
-        requestAnimationFrame(() => {
-            (previouslyFocusedElement as HTMLElement)?.focus();
-            previouslyFocusedElement = null;
-        });
+    $: if (!$databaseRowSheetOptions.show) {
+        $databaseRowSheetOptions.autoFocus = true;
+
+        if (previouslyFocusedElement) {
+            requestAnimationFrame(() => {
+                (previouslyFocusedElement as HTMLElement)?.focus();
+                previouslyFocusedElement = null;
+            });
+        }
     }
 </script>
 
