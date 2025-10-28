@@ -54,6 +54,9 @@
             label: 'Open in Cursor',
             description: 'Set up starter kit in Cursor',
             href: (p: string) => {
+                trackEvent(Click.OpenInCursorClick, {
+                    platform: config.title
+                });
                 const u = new URL('https://cursor.com/link/prompt');
                 u.searchParams.set('text', p);
                 return u.toString();
@@ -66,6 +69,9 @@
             label: 'Open in Lovable',
             description: 'Set up starter kit in Lovable',
             href: (p: string) => {
+                trackEvent(Click.OpenInLovableClick, {
+                    platform: config.title
+                });
                 const u = new URL('https://lovable.dev/');
                 u.searchParams.set('autosubmit', 'true');
                 u.searchParams.set('prompt', p);

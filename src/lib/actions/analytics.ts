@@ -196,7 +196,9 @@ export enum Click {
     VariablesUpdateClick = 'click_variable_update',
     VariablesImportClick = 'click_variable_import',
     WebsiteOpenClick = 'click_open_website',
-    CopyPromptStarterKitClick = 'click_copy_prompt_starter_kit'
+    CopyPromptStarterKitClick = 'click_copy_prompt_starter_kit',
+    OpenInCursorClick = 'click_open_in_cursor',
+    OpenInLovableClick = 'click_open_in_lovable'
 }
 
 export enum Submit {
