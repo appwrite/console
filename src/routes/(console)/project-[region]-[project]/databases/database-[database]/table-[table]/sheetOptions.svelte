@@ -117,10 +117,10 @@
 
         if (type === 'header') {
             if (isSequence) {
-                return ['sort-asc', 'sort-desc'].includes(item.action ?? '');
+                return ['sort-asc', 'sort-desc'].includes(item?.action);
             }
 
-            if (['delete', 'update', 'duplicate-header'].includes(item.action) && isSystemColumn) {
+            if (['delete', 'update', 'duplicate-header'].includes(item?.action) && isSystemColumn) {
                 return false;
             }
 
@@ -130,7 +130,7 @@
             }
 
             // hide sort options for relationship columns
-            if (isRelationship(column) && ['sort-asc', 'sort-desc'].includes(item.action ?? '')) {
+            if (isRelationship(column) && ['sort-asc', 'sort-desc'].includes(item?.action)) {
                 return false;
             }
         }
