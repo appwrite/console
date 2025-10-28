@@ -133,7 +133,6 @@
         right: 0;
         bottom: 0;
         position: fixed;
-        padding: 1.5rem;
     }
 
     @media (max-width: 768px) {
