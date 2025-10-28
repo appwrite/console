@@ -193,30 +193,32 @@
                 bind:value={$supportData.severity}
                 required={true}
                 placeholder="Select severity">
-                <Popover let:toggle slot="info">
-                    <Button extraCompact size="s" on:click={toggle}>
-                        <Icon size="s" icon={IconInfo} />
-                    </Button>
-                    <div slot="tooltip" style="max-width: 400px;">
-                        <Layout.Stack gap="s">
-                            <Typography.Text>
-                                <strong>Critical:</strong> System is down or a critical component is non-functional, causing a complete stoppage of work or significant business impact.
-                            </Typography.Text>
-                            <Typography.Text>
-                                <strong>High:</strong> Major functionality is impaired, but a workaround is available, or a critical component is significantly degraded.
-                            </Typography.Text>
-                            <Typography.Text>
-                                <strong>Medium:</strong> Minor functionality is impaired without significant business impact.
-                            </Typography.Text>
-                            <Typography.Text>
-                                <strong>Low:</strong> Issue has minor impact on business operations; workaround is not necessary.
-                            </Typography.Text>
-                            <Typography.Text>
-                                <strong>Question:</strong> Requests for information, general guidance, or feature requests.
-                            </Typography.Text>
-                        </Layout.Stack>
-                    </div>
-                </Popover>
+                <Layout.Stack direction="row" gap="none" alignItems="center" slot="info">
+                    <Popover let:toggle>
+                        <Button extraCompact size="s" on:click={toggle}>
+                            <Icon size="s" icon={IconInfo} />
+                        </Button>
+                        <div slot="tooltip" style="max-width: 400px;">
+                            <Layout.Stack gap="s">
+                                <Typography.Text>
+                                    <strong>Critical:</strong> System is down or a critical component is non-functional, causing a complete stoppage of work or significant business impact.
+                                </Typography.Text>
+                                <Typography.Text>
+                                    <strong>High:</strong> Major functionality is impaired, but a workaround is available, or a critical component is significantly degraded.
+                                </Typography.Text>
+                                <Typography.Text>
+                                    <strong>Medium:</strong> Minor functionality is impaired without significant business impact.
+                                </Typography.Text>
+                                <Typography.Text>
+                                    <strong>Low:</strong> Issue has minor impact on business operations; workaround is not necessary.
+                                </Typography.Text>
+                                <Typography.Text>
+                                    <strong>Question:</strong> Requests for information, general guidance, or feature requests.
+                                </Typography.Text>
+                            </Layout.Stack>
+                        </div>
+                    </Popover>
+                </Layout.Stack>
             </InputSelect>
             <InputText
                 id="subject"
