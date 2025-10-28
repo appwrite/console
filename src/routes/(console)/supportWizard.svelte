@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Wizard } from '$lib/layout';
-    import { Icon, Input, Layout, Tag, Typography, Button, Card } from '@appwrite.io/pink-svelte';
+    import { Icon, Input, Layout, Popover, Tag, Typography, Button, Card } from '@appwrite.io/pink-svelte';
     import { supportData, isSupportOnline } from './wizard/support/store';
     import { onMount } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
@@ -20,7 +20,7 @@
     import { wizard } from '$lib/stores/wizard';
     import { VARS } from '$lib/system';
     import { onDestroy } from 'svelte';
-    import { IconCheckCircle, IconXCircle } from '@appwrite.io/pink-icons-svelte';
+    import { IconCheckCircle, IconXCircle, IconInfo } from '@appwrite.io/pink-icons-svelte';
 
     let projectOptions: Array<{ value: string; label: string }>;
 
@@ -192,7 +192,34 @@
                 options={severityOptions}
                 bind:value={$supportData.severity}
                 required={true}
-                placeholder="Select severity" />
+                placeholder="Select severity">
+                <Layout.Stack direction="row" gap="none" alignItems="center" slot="info">
+                    <Popover let:toggle>
+                        <Button extraCompact size="s" on:click={toggle}>
+                            <Icon size="s" icon={IconInfo} />
+                        </Button>
+                        <div slot="tooltip" style="max-width: 400px;">
+                            <Layout.Stack gap="s">
+                                <Typography.Text>
+                                    <strong>Critical:</strong> System is down or a critical component is non-functional, causing a complete stoppage of work or significant business impact.
+                                </Typography.Text>
+                                <Typography.Text>
+                                    <strong>High:</strong> Major functionality is impaired, but a workaround is available, or a critical component is significantly degraded.
+                                </Typography.Text>
+                                <Typography.Text>
+                                    <strong>Medium:</strong> Minor functionality is impaired without significant business impact.
+                                </Typography.Text>
+                                <Typography.Text>
+                                    <strong>Low:</strong> Issue has minor impact on business operations; workaround is not necessary.
+                                </Typography.Text>
+                                <Typography.Text>
+                                    <strong>Question:</strong> Requests for information, general guidance, or feature requests.
+                                </Typography.Text>
+                            </Layout.Stack>
+                        </div>
+                    </Popover>
+                </Layout.Stack>
+            </InputSelect>
             <InputText
                 id="subject"
                 label="Subject"
