@@ -148,10 +148,9 @@
                 return 30;
             case 'uploading':
                 return 60;
-            case 'completed':
-                return 100;
-            case 'failed':
-                return 100;
+           case 'completed':
+           case 'failed':
+               return 100;
             default:
                 return 30;
         }
