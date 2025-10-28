@@ -75,7 +75,7 @@
                     specification: specification || undefined
                 });
 
-            // Add domain
+            // Add domainn
             await sdk.forProject(page.params.region, page.params.project).proxy.createFunctionRule({
                 domain: `${ID.unique()}.${$regionalConsoleVariables._APP_DOMAIN_FUNCTIONS}`,
                 functionId: func.$id
