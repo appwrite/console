@@ -113,26 +113,12 @@
         }, []);
     }
 
-    function sortRoles([a]: [string, Permission], [b]: [string, Permission]) {
-        if ((a === 'any') !== (b === 'any')) {
-            return a === 'any' ? -1 : 1;
-        }
-        if ((a === 'users') !== (b === 'users')) {
-            return a === 'users' ? -1 : 1;
-        }
-        if ((a === 'guests') !== (b === 'guests')) {
-            return a === 'guests' ? -1 : 1;
-        }
-
-        return a.localeCompare(b);
-    }
-
     const columns: PinkColumn[] = [
-        { id: 'role', width: { min: 80 } },
-        { id: 'create', width: { min: 80 }, hide: !withCreate },
-        { id: 'read', width: { min: 80 } },
-        { id: 'update', width: { min: 80 } },
-        { id: 'delete', width: { min: 80 } },
+        { id: 'role', width: { min: 220 } },
+        { id: 'create', width: { min: 64 }, hide: !withCreate },
+        { id: 'read', width: { min: 64 } },
+        { id: 'update', width: { min: 64 } },
+        { id: 'delete', width: { min: 64 } },
         { id: 'action', width: 40 }
     ];
 </script>
@@ -150,13 +136,14 @@
                 <Table.Header.Cell column="delete" {root}>Delete</Table.Header.Cell>
                 <Table.Header.Cell column="action" {root} />
             </svelte:fragment>
-            {#each [...$groups].sort(sortRoles) as [role, permission] (role)}
+            {#each [...$groups] as [role, permission] (role)}
                 <Table.Row.Base {root}>
                     <Table.Cell column="role" {root}>
                         <Row {role} />
                     </Table.Cell>
                     <Table.Cell column="create" {root}>
                         <Selector.Checkbox
+                            size="s"
                             checked={permission.create}
                             on:change={() => togglePermission(role, 'create')} />
                     </Table.Cell>
