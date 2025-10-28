@@ -1,10 +1,10 @@
 <script lang="ts">
     import { Wizard } from '$lib/layout';
-    import { Icon, Input, Layout, Popover, Tag, Typography, Button, Card } from '@appwrite.io/pink-svelte';
+    import { Icon, Input, Layout, Popover, Tag, Typography, Button as ButtonModule, Card } from '@appwrite.io/pink-svelte';
     import { supportData, isSupportOnline } from './wizard/support/store';
     import { onMount } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
-    import { Form, InputSelect, InputText, InputTextarea } from '$lib/elements/forms/index.js';
+    import { Form, InputSelect, InputText, InputTextarea, Button } from '$lib/elements/forms/index.js';
     import { Query } from '@appwrite.io/console';
 
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
@@ -193,32 +193,30 @@
                 bind:value={$supportData.severity}
                 required={true}
                 placeholder="Select severity">
-                <Layout.Stack direction="row" gap="none" alignItems="center" slot="info">
-                    <Popover let:toggle>
-                        <Button extraCompact size="s" on:click={toggle}>
-                            <Icon size="s" icon={IconInfo} />
-                        </Button>
-                        <div slot="tooltip" style="max-width: 400px;">
-                            <Layout.Stack gap="s">
-                                <Typography.Text>
-                                    <strong>Critical:</strong> System is down or a critical component is non-functional, causing a complete stoppage of work or significant business impact.
-                                </Typography.Text>
-                                <Typography.Text>
-                                    <strong>High:</strong> Major functionality is impaired, but a workaround is available, or a critical component is significantly degraded.
-                                </Typography.Text>
-                                <Typography.Text>
-                                    <strong>Medium:</strong> Minor functionality is impaired without significant business impact.
-                                </Typography.Text>
-                                <Typography.Text>
-                                    <strong>Low:</strong> Issue has minor impact on business operations; workaround is not necessary.
-                                </Typography.Text>
-                                <Typography.Text>
-                                    <strong>Question:</strong> Requests for information, general guidance, or feature requests.
-                                </Typography.Text>
-                            </Layout.Stack>
-                        </div>
-                    </Popover>
-                </Layout.Stack>
+                <Popover let:toggle slot="info">
+                    <Button extraCompact size="s" on:click={toggle}>
+                        <Icon size="s" icon={IconInfo} />
+                    </Button>
+                    <div slot="tooltip" style="max-width: 400px;">
+                        <Layout.Stack gap="s">
+                            <Typography.Text>
+                                <strong>Critical:</strong> System is down or a critical component is non-functional, causing a complete stoppage of work or significant business impact.
+                            </Typography.Text>
+                            <Typography.Text>
+                                <strong>High:</strong> Major functionality is impaired, but a workaround is available, or a critical component is significantly degraded.
+                            </Typography.Text>
+                            <Typography.Text>
+                                <strong>Medium:</strong> Minor functionality is impaired without significant business impact.
+                            </Typography.Text>
+                            <Typography.Text>
+                                <strong>Low:</strong> Issue has minor impact on business operations; workaround is not necessary.
+                            </Typography.Text>
+                            <Typography.Text>
+                                <strong>Question:</strong> Requests for information, general guidance, or feature requests.
+                            </Typography.Text>
+                        </Layout.Stack>
+                    </div>
+                </Popover>
             </InputSelect>
             <InputText
                 id="subject"
@@ -234,13 +232,13 @@
                 label="Tell us a bit more"
                 maxlength={4096} />
             <Layout.Stack direction="row" justifyContent="flex-end" gap="s">
-                <Button.Button
+                <ButtonModule.Button
                     size="s"
                     variant="secondary"
                     on:click={() => {
                         wizard.hide();
-                    }}>Cancel</Button.Button>
-                <Button.Button size="s">Submit</Button.Button>
+                    }}>Cancel</ButtonModule.Button>
+                <ButtonModule.Button size="s">Submit</ButtonModule.Button>
             </Layout.Stack>
         </Layout.Stack>
     </Form>
