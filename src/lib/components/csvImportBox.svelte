@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { onMount } from 'svelte';
     import { base } from '$app/paths';
     import { page } from '$app/state';
     import { sdk } from '$lib/stores/sdk';
@@ -148,9 +149,9 @@
                 return 30;
             case 'uploading':
                 return 60;
-           case 'completed':
-           case 'failed':
-               return 100;
+            case 'completed':
+            case 'failed':
+                return 100;
             default:
                 return 30;
         }
@@ -170,7 +171,7 @@
         }
     }
 
-    $effect(() => {
+    onMount(() => {
         sdk.forProject(page.params.region, page.params.project)
             .migrations.list({
                 queries: [
