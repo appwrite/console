@@ -126,7 +126,7 @@
 <style>
     .layout-level-progress-bars {
         gap: 1rem;
-        z-index: 2;
+        z-index: 100;
         display: flex;
         flex-direction: column;
 

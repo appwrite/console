@@ -6,15 +6,14 @@
     import { Button } from '$lib/elements/forms';
     import { InvalidFileType, removeFile } from '$lib/helpers/files';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdk } from '$lib/stores/sdk';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { Icon, Layout, Tooltip, Typography, Upload } from '@appwrite.io/pink-svelte';
     import { func } from '../store';
-    import { page } from '$app/state';
     import { consoleVariables } from '$routes/(console)/store';
     import { currentPlan } from '$lib/stores/organization';
     import { isCloud } from '$lib/system';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
+    import { uploader } from '$lib/stores/uploader';
 
     export let show = false;
 
@@ -30,16 +29,13 @@
 
     async function create() {
         try {
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .functions.createDeployment({
-                    functionId: $func.$id,
-                    code: files[0],
-                    activate: true
-                });
-            await invalidate(Dependencies.DEPLOYMENTS);
-            files = undefined;
+            uploader.uploadFunctionDeployment({
+                functionId: $func.$id,
+                code: files[0],
+            })
             show = false;
+            files = undefined;
+            await invalidate(Dependencies.DEPLOYMENTS);
             trackEvent(Submit.DeploymentCreate);
             addNotification({
                 type: 'success',

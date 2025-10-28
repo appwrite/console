@@ -23,6 +23,7 @@
     import { isCloud } from '$lib/system';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { currentPlan } from '$lib/stores/organization';
+    import { uploader } from '$lib/stores/uploader';
 
     export let data;
 
@@ -61,8 +62,10 @@
     let specification = specificationOptions[0].value;
 
     async function create() {
+        let func: Models.Function | null = null;
+
         try {
-            const func = await sdk
+            func = await sdk
                 .forProject(page.params.region, page.params.project)
                 .functions.create({
                     functionId: id || ID.unique(),
@@ -92,25 +95,37 @@
             );
             await Promise.all(promises);
 
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .functions.createDeployment({
-                    functionId: func.$id,
-                    code: files[0],
-                    activate: true
-                });
+            const promise = uploader.uploadFunctionDeployment({
+                functionId: func.$id,
+                code: files[0],
+            });
 
+
+            addNotification({
+                message: 'Deployment upload started',
+                type: 'success'
+            });
             trackEvent(Submit.FunctionCreate, {
                 source: 'repository',
                 runtime: runtime
             });
 
-            await goto(
-                `${base}/project-${page.params.region}-${page.params.project}/functions/function-${func.$id}`
-            );
+            await promise;
+            const upload = $uploader.files.find((f) => f.resourceId === func.$id);
+
+            if (upload?.status === 'success') {
+                const deploymentId = upload.$id;
+                await goto(
+                    `${base}/project-${page.params.region}-${page.params.project}/functions/function-${func.$id}/deployment-${deploymentId}`
+                );
+            }
 
             invalidate(Dependencies.FUNCTION);
         } catch (e) {
+            const upload = $uploader.files.find((f) => f.resourceId === func?.$id);
+            if (upload) {
+                uploader.removeFromQueue(upload.$id);
+            }
             addNotification({
                 type: 'error',
                 message: e.message

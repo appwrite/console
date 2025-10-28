@@ -13,6 +13,7 @@
     import { currentPlan } from '$lib/stores/organization';
     import { consoleVariables } from '$routes/(console)/store';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
 
     export let show = false;
     export let site: Models.Site;
@@ -29,15 +30,20 @@
 
     async function createDeployment() {
         try {
-            uploader.uploadSiteDeployment(site.$id, files[0]);
+            uploader.uploadSiteDeployment({
+                siteId: site.$id,
+                code: files[0],
+            });
             show = false;
             invalidate(Dependencies.DEPLOYMENTS);
+            trackEvent(Submit.DeploymentCreate);
             addNotification({
                 message: 'Deployment upload started',
                 type: 'success'
             });
         } catch (e) {
             error = e.message;
+            trackError(e, Submit.DeploymentCreate);
         }
     }
 
