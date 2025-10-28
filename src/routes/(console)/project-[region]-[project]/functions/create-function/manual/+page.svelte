@@ -65,18 +65,16 @@
         let func: Models.Function | null = null;
 
         try {
-            func = await sdk
-                .forProject(page.params.region, page.params.project)
-                .functions.create({
-                    functionId: id || ID.unique(),
-                    name,
-                    runtime,
-                    execute: roles?.length ? roles : undefined,
-                    enabled: true,
-                    entrypoint,
-                    commands: buildCommand,
-                    specification: specification || undefined
-                });
+            func = await sdk.forProject(page.params.region, page.params.project).functions.create({
+                functionId: id || ID.unique(),
+                name,
+                runtime,
+                execute: roles?.length ? roles : undefined,
+                enabled: true,
+                entrypoint,
+                commands: buildCommand,
+                specification: specification || undefined
+            });
 
             // Add domain
             await sdk.forProject(page.params.region, page.params.project).proxy.createFunctionRule({
@@ -97,9 +95,8 @@
 
             const promise = uploader.uploadFunctionDeployment({
                 functionId: func.$id,
-                code: files[0],
+                code: files[0]
             });
-
 
             addNotification({
                 message: 'Deployment upload started',

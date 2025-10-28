@@ -32,7 +32,7 @@
         try {
             uploader.uploadSiteDeployment({
                 siteId: site.$id,
-                code: files[0],
+                code: files[0]
             });
             show = false;
             invalidate(Dependencies.DEPLOYMENTS);

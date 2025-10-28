@@ -168,7 +168,7 @@ const createUploader = () => {
         },
         uploadFunctionDeployment: async ({
             functionId,
-            code,
+            code
         }: {
             functionId: string;
             code: File;

@@ -31,8 +31,8 @@
         try {
             uploader.uploadFunctionDeployment({
                 functionId: $func.$id,
-                code: files[0],
-            })
+                code: files[0]
+            });
             show = false;
             files = undefined;
             await invalidate(Dependencies.DEPLOYMENTS);
