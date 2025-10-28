@@ -19,6 +19,7 @@ export type SuggestedColumnSchema = {
     key: string;
     type: string;
     required: boolean;
+    array?: boolean;
     default?: string | number | boolean | number[] | number[][] | number[][][] | null;
     size?: number;
     min?: number;
@@ -142,6 +143,7 @@ export function mapSuggestedColumns<T extends ColumnInput>(columns: T[]): Sugges
         key: col.name,
         type: col.type,
         required: col.required ?? false,
+        array: false,
         default: col.default ?? null,
         size: col.type === 'string' ? (col.size ?? undefined) : undefined,
         min:

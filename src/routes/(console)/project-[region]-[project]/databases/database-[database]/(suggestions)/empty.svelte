@@ -373,7 +373,7 @@
 
         let targetCell: HTMLElement | null = null;
 
-        if (staticUserColumns.length > 0) {
+        if (staticUserColumns.length > 0 && !$isSmallViewport) {
             const lastUserColumn = staticUserColumns[staticUserColumns.length - 1];
             targetCell = headerElement.querySelector<HTMLElement>(
                 `[role="cell"][data-header="true"][data-column-id="${lastUserColumn.id}"]`
@@ -1085,6 +1085,7 @@
             key: `column${index + 1}`,
             type: 'string',
             required: false,
+            array: false,
             default: null,
             format: null,
             size: undefined,
