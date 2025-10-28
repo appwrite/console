@@ -2,6 +2,7 @@
     import { Wizard } from '$lib/layout';
     import { Icon, Input, Layout, Popover, Tag, Typography, Card } from '@appwrite.io/pink-svelte';
     import { supportData, isSupportOnline } from './wizard/support/store';
+    import { onMount } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
     import {
         Form,
@@ -61,20 +62,19 @@
         { value: 'question', label: 'Question' }
     ];
 
-    $effect(() => {
+    onMount(async () => {
         // Filter projects by organization ID using server-side queries
-        sdk.forConsole.projects
-            .list({
-                queries: $organization?.$id ? [Query.equal('teamId', $organization.$id)] : []
-            })
-            .then((projectList) => {
-                projectOptions = projectList.projects.map((project) => ({
-                    value: project.$id,
-                    label: project.name
-                }));
-            });
+        const projectList = await sdk.forConsole.projects.list({
+            queries: $organization?.$id ? [Query.equal('teamId', $organization.$id)] : []
+        });
+        projectOptions = projectList.projects.map((project) => ({
+            value: project.$id,
+            label: project.name
+        }));
+    });
 
-        // Cleanup on destroy
+    // Cleanup on component destroy
+    $effect(() => {
         return () => {
             $supportData = {
                 message: null,
