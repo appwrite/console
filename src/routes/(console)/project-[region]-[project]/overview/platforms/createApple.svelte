@@ -39,29 +39,29 @@
 
     const projectId = page.params.project;
 
-    const alreadyExistsInstructions = `
-        Install the Appwrite iOS SDK using the following package URL:
+const alreadyExistsInstructions = `
+    Install the Appwrite iOS SDK using the following package URL:
 
-        \`\`\`
-        https://github.com/appwrite/sdk-for-apple
-        \`\`\`
+    \`\`\`
+    https://github.com/appwrite/sdk-for-apple
+    \`\`\`
 
-        From a suitable lib directory, export the Appwrite client as a global variable:
+    From a suitable lib directory, export the Appwrite client as a global variable:
 
-        \`\`\`
-        let client = Client()
-            .setEndpoint("https://fra.cloud.appwrite.io/v1")
-            .setProject("ai-test-atharva")
+    \`\`\`
+    let client = Client()
+        .setEndpoint("https://fra.cloud.appwrite.io/v1")
+        .setProject("${projectId}")
 
-        let account = Account(client)
-        \`\`\`
+    let account = Account(client)
+    \`\`\`
 
-        On the homepage of the app, create a button that says "Send a ping" and when clicked, it should call the following function:
+    On the homepage of the app, create a button that says "Send a ping" and when clicked, it should call the following function:
 
-        \`\`\`
-        appwrite.ping()
-        \`\`\`
-    `;
+    \`\`\`
+    appwrite.ping()
+    \`\`\`
+`;
 
     const gitCloneCode =
         '\ngit clone https://github.com/appwrite/starter-for-ios\ncd starter-for-ios\n';
