@@ -164,18 +164,50 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
     );
 
     const llmConfig: LLMPromptConfig = $derived({
+        alreadyExistsInstructions: `
+            Install the Appwrite web SDK using the following command. Respect the user's package manager of choice. Do not use NPM if the user uses Bun for example.
+
+            \`\`\`bash
+            npm install appwrite
+            \`\`\`
+        
+            Create a new \`appwrite.js\` (or equivalent, respecting the framework and language, don't create a JS file if TS is being used in the project) file in a suitable lib directory and have the following code:
+
+            \`\`\`js
+            import { Client, Account, Databases } from "appwrite";
+
+            const client = new Client()
+                .setEndpoint("${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}")
+                .setProject("${projectId}");
+
+            const account = new Account(client);
+            const databases = new Databases(client);
+
+            export { client, account, databases };
+            \`\`\`
+
+            On the homepage of the app, create a button that says "Send a ping" and when clicked, it should call the following function:
+
+            \`\`\`js
+            client.ping();
+            \`\`\`
+        `,
         title: `Copy prompt: starter kit for Appwrite in ${selectedFramework?.label || 'Web'}`,
         cloneCommand: `git clone https://github.com/appwrite/starter-for-${selectedFramework?.key}\ncd starter-for-${selectedFramework?.key}`,
         configFile:
             selectedFramework?.key === 'angular'
                 ? 'src/environments/environment.ts'
-                : '.env.example',
+                : 'appwrite.js',
         configCode:
             selectedFramework?.key === 'angular'
                 ? `APPWRITE_PROJECT_ID=${projectId}\nAPPWRITE_PROJECT_NAME=${$project.name}\nAPPWRITE_ENDPOINT=${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}`
-                : selectedFramework?.updateConfigCode || '',
+                : `   
+                const client = new Client()
+                    .setEndpoint("${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}")
+                    .setProject("${projectId}");
+                `,
         configLanguage: selectedFramework?.key === 'angular' ? 'ts' : 'dotenv',
-        runInstructions: `${selectedFramework?.key === 'angular' ? 'Replace the file with the configuration above' : 'Copy the file `.env.example` to `.env` and update the configuration settings'}. Install project dependencies using \`npm install\`, then run the app using \`${selectedFramework?.runCommand}\`. Demo app runs on http://localhost:${selectedFramework?.portNumber}. Click the \`Send a ping\` button to verify the setup.`,
+        runInstructions: `${selectedFramework?.key === 'angular' && 'Replace the file with the configuration above'}. Install project dependencies using \`npm install\`, then run the app using \`${selectedFramework?.runCommand}\`. Demo app runs on http://localhost:${selectedFramework?.portNumber}. Click the \`Send a ping\` button to verify the setup.`,
         using: 'the terminal or VSCode'
     });
 
@@ -321,7 +353,7 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
         {#if isPlatformCreated && !isChangingFramework}
             <Fieldset legend="Clone starter" badge="Optional">
                 <Layout.Stack gap="l">
-                    <LlmBanner config={llmConfig} />
+                    <LlmBanner config={llmConfig} openers={['cursor', 'lovable']} />
 
                     <Typography.Text variant="m-500">
                         1. If you're starting a new project, you can clone our starter kit from

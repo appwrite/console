@@ -39,12 +39,40 @@
 
     const projectId = page.params.project;
 
+    const alreadyExistsInstructions = `
+        Install the Appwrite React Native SDK using the following command, respect user's package manager of choice and use the one being used in the codebase:
+
+        \`\`\`
+        npx expo install react-native-appwrite react-native-url-polyfill
+        \`\`\`
+
+        From a suitable lib directory, export the Appwrite client as a global variable, hardcode the project details too:
+
+        \`\`\`
+        const client = new Client()
+            .setProject("${projectId}")
+            .setEndpoint("${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}");
+        \`\`\`
+
+        On the homepage of the app, create a button that says "Send a ping" and when clicked, it should call the following function:
+
+        \`\`\`
+        client.ping();
+        \`\`\`
+    `;
+
     const gitCloneCode =
         '\ngit clone https://github.com/appwrite/starter-for-react-native\ncd starter-for-react-native\n';
 
     const updateConfigCode = `EXPO_PUBLIC_APPWRITE_PROJECT_ID=${projectId}
 EXPO_PUBLIC_APPWRITE_PROJECT_NAME="${$project.name}"
 EXPO_PUBLIC_APPWRITE_ENDPOINT=${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}`;
+
+    const promptConfigCode = `
+    const client = new Client()
+        .setProject("${projectId}")
+        .setEndpoint("${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}")
+    `;
 
     let platforms: { [key: string]: PlatformType } = {
         Android: PlatformType.Reactnativeandroid,
@@ -227,7 +255,11 @@ EXPO_PUBLIC_APPWRITE_ENDPOINT=${sdk.forProject(page.params.region, page.params.p
         {#if isPlatformCreated}
             <Fieldset legend="Clone starter" badge="Optional">
                 <Layout.Stack gap="l">
-                    <LlmBanner platform="reactnative" configCode={updateConfigCode} />
+                    <LlmBanner
+                        platform="reactnative"
+                        configCode={promptConfigCode}
+                        {alreadyExistsInstructions}
+                        openers={['cursor']} />
 
                     <Typography.Text variant="m-500">
                         1. If you're starting a new project, you can clone our starter kit from

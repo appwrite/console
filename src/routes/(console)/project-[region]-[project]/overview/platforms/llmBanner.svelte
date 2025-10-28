@@ -2,28 +2,81 @@
     import { copy } from '$lib/helpers/copy';
     import { Button } from '$lib/elements/forms';
     import { ActionMenu, Alert, Icon, Layout, Popover, Typography } from '@appwrite.io/pink-svelte';
-    import { IconChevronDown } from '@appwrite.io/pink-icons-svelte';
+    import { IconChevronDown, IconChevronUp, IconLovable } from '@appwrite.io/pink-icons-svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { buildPlatformConfig, generatePromptFromConfig, type LLMPromptConfig } from './store';
     import { Click, trackEvent } from '$lib/actions/analytics';
+    import IconAINotification from '../../databases/database-[database]/(suggestions)/icon/aiNotification.svelte';
+    import Avatar from '$lib/components/avatar.svelte';
+    import CursorIcon from '../components/CursorIconLarge.svelte';
+    import type { ComponentType } from 'svelte';
 
     let {
         platform,
         configCode,
-        config: customConfig
+        alreadyExistsInstructions,
+        config: customConfig,
+        openers = [] as Array<SupportedAgents>
     }: {
         platform?: string;
         configCode?: string;
+        alreadyExistsInstructions?: string;
         config?: LLMPromptConfig;
+        openers?: Array<SupportedAgents>;
     } = $props();
 
     const config = $derived.by(() => {
         if (customConfig) return customConfig;
-        if (platform && configCode) return buildPlatformConfig(platform, configCode);
+        if (platform && configCode)
+            return buildPlatformConfig(platform, configCode, alreadyExistsInstructions);
         throw new Error('LlmBanner: must provide either config OR (platform + configCode)');
     });
 
     const prompt = $derived(generatePromptFromConfig(config));
+
+    let showAlert = $state(true);
+
+    type OpenerConfig = {
+        id: SupportedAgents;
+        label: string;
+        description: string;
+        href: (prompt: string) => string;
+        icon?: ComponentType;
+        imgSrc?: string;
+        alt: string;
+    };
+
+    type SupportedAgents = 'cursor' | 'lovable';
+
+    const openersConfig: Record<SupportedAgents, OpenerConfig> = {
+        cursor: {
+            id: 'cursor',
+            label: 'Open in Cursor',
+            description: 'Set up starter kit in Cursor',
+            href: (p: string) => {
+                const u = new URL('https://cursor.com/link/prompt');
+                u.searchParams.set('text', p);
+                return u.toString();
+            },
+            icon: CursorIcon,
+            alt: 'Cursor'
+        },
+        lovable: {
+            id: 'lovable',
+            label: 'Open in Lovable',
+            description: 'Set up starter kit in Lovable',
+            href: (p: string) => {
+                const u = new URL('https://lovable.dev/');
+                u.searchParams.set('autosubmit', 'true');
+                u.searchParams.set('prompt', p);
+                return u.toString();
+            },
+            icon: IconLovable,
+            alt: 'Lovable'
+        }
+    };
+
+    const validOpeners = $derived(openers.filter((id) => openersConfig[id]));
 
     async function copyPrompt() {
         await copy(prompt);
@@ -39,64 +92,94 @@
     }
 </script>
 
-<Alert.Inline status="info" title="Set up your starter kit with AI">
-    <Layout.Stack direction="column" gap="s">
-        <Typography.Text variant="m-500">
-            Copy the prompt or open it directly in your preferred tools to get step-by-step
-            instructions, starter code, and SDK commands for your project.
-        </Typography.Text>
+{#if showAlert}
+    <div class="custom-inline-alert">
+        <Alert.Inline
+            status="info"
+            title="Set up your starter kit with AI"
+            dismissible
+            on:dismiss={() => (showAlert = false)}>
+            <svelte:fragment slot="icon">
+                <IconAINotification />
+            </svelte:fragment>
+            <Layout.Stack direction="column" class="alert-content" gap="l">
+                <Layout.Stack direction="column" alignItems="center" gap="s">
+                    <Typography.Text variant="m-400">
+                        Copy the prompt or open it directly in an AI tool like Cursor or Lovable to
+                        get step-by-step instructions, starter code, and SDK commands for your
+                        project.
+                    </Typography.Text>
+                </Layout.Stack>
 
-        <Layout.Stack direction="row" alignItems="stretch" gap="none">
-            <Button
-                secondary
-                size="s"
-                class="btn-no-right-radius"
-                on:click={copyPrompt}
-                disabled={!prompt || prompt.length === 0}>Copy prompt</Button>
-            <Popover let:toggle padding="none" placement="bottom-start">
-                <Button
-                    secondary
-                    size="s"
-                    class="btn-no-left-radius"
-                    icon
-                    on:click={toggle}
-                    ariaLabel="Open action menu"
-                    disabled={!prompt || prompt.length === 0}>
-                    <Icon icon={IconChevronDown} />
-                </Button>
+                <Layout.Stack direction="row" alignItems="stretch" gap="none">
+                    <Button
+                        secondary
+                        size="s"
+                        class={validOpeners.length ? 'btn-no-right-radius' : ''}
+                        on:click={copyPrompt}
+                        disabled={!prompt || prompt.length === 0}>Copy setup prompt</Button>
+                    {#if validOpeners.length}
+                        <Popover let:toggle let:showing padding="none" placement="bottom-start">
+                            <Button
+                                secondary
+                                size="s"
+                                class="btn-no-left-radius"
+                                icon
+                                on:click={toggle}
+                                ariaLabel="Open action menu"
+                                disabled={!prompt || prompt.length === 0}>
+                                <Icon icon={showing ? IconChevronUp : IconChevronDown} />
+                            </Button>
 
-                <ActionMenu.Root slot="tooltip">
-                    <ActionMenu.Item.Anchor href="https://cursor.sh/" target="_blank">
-                        <Layout.Stack direction="row" gap="s" alignItems="center">
-                            <span class="menu-avatar"
-                                ><img src="https://img.icons8.com/color/512/cursor-ai.png" /></span>
-                            <Layout.Stack gap="xxs">
-                                <Typography.Text variant="m-500">Open in Cursor</Typography.Text>
-                                <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
-                                    Set up starter kit in Cursor
-                                </Typography.Text>
-                            </Layout.Stack>
-                        </Layout.Stack>
-                    </ActionMenu.Item.Anchor>
-                    <ActionMenu.Item.Anchor href="" target="_blank">
-                        <Layout.Stack direction="row" gap="s" alignItems="center">
-                            <span class="menu-avatar"
-                                ><img
-                                    src="https://cdn.prod.website-files.com/5e6aa3e3f001fad873b8e1f5/68cda0bd7b0c257a09a029cd_lovable-logo-icon.png"
-                                    alt="" /></span>
-                            <Layout.Stack gap="xxs">
-                                <Typography.Text variant="m-500">Open in Lovable</Typography.Text>
-                                <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
-                                    Set up starter kit in Lovable
-                                </Typography.Text>
-                            </Layout.Stack>
-                        </Layout.Stack>
-                    </ActionMenu.Item.Anchor>
-                </ActionMenu.Root>
-            </Popover>
-        </Layout.Stack>
-    </Layout.Stack>
-</Alert.Inline>
+                            <svelte:fragment slot="tooltip" let:toggle>
+                                <ActionMenu.Root>
+                                    {#each validOpeners as openerId}
+                                        {@const o = openersConfig[openerId]}
+                                        {#if o}
+                                            <ActionMenu.Item.Button
+                                                on:click={(e) => {
+                                                    window.open(
+                                                        o.href(prompt),
+                                                        '_blank',
+                                                        'noopener,noreferrer'
+                                                    );
+                                                    toggle(e);
+                                                }}>
+                                                <Layout.Stack
+                                                    direction="row"
+                                                    gap="s"
+                                                    alignItems="center">
+                                                    <Avatar size="s" alt={o.alt}>
+                                                        {#if o.icon}
+                                                            <Icon icon={o.icon} size="l" />
+                                                        {:else if o.imgSrc}
+                                                            <img src={o.imgSrc} alt={o.alt} />
+                                                        {/if}
+                                                    </Avatar>
+                                                    <Layout.Stack gap="none">
+                                                        <Typography.Text
+                                                            color="--fgcolor-neutral-secondary"
+                                                            variant="m-500"
+                                                            >{o.label}</Typography.Text>
+                                                        <Typography.Text
+                                                            variant="m-400"
+                                                            color="--fgcolor-neutral-tertiary">
+                                                            {o.description}
+                                                        </Typography.Text>
+                                                    </Layout.Stack>
+                                                </Layout.Stack>
+                                            </ActionMenu.Item.Button>
+                                        {/if}
+                                    {/each}
+                                </ActionMenu.Root>
+                            </svelte:fragment>
+                        </Popover>
+                    {/if}
+                </Layout.Stack>
+            </Layout.Stack>
+        </Alert.Inline>
+    </div>
+{/if}
 
 <style lang="scss">
     :global(.btn-no-right-radius),
@@ -114,24 +197,43 @@
         border-bottom-left-radius: 0 !important;
     }
 
-    /* Rounded logo chip for menu items (32px, circular with subtle border) */
-    :global(.menu-avatar) {
-        width: 32px;
-        height: 32px;
-        border-radius: 9999px;
-        background: var(--bgcolor-neutral-secondary, #f4f4f7);
-        border: var(--border-width-s, 1px) solid var(--border-neutral, #ededf0);
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        overflow: hidden;
-        flex-shrink: 0;
-    }
-
     :global(.menu-avatar img) {
         width: 20px;
         height: 20px;
         object-fit: contain;
         display: block;
+    }
+
+    .custom-inline-alert {
+        & :global(article) {
+            border-radius: var(--border-radius-medium);
+            padding: var(--space-6, 12px);
+            padding-right: var(--space-4, 12px);
+            background: var(--bgcolor-neutral-primary);
+            border: var(--border-width-s) solid var(--border-neutral);
+        }
+        & :global(article > div) {
+            gap: var(--space-6);
+        }
+        & :global(.ai-icon-holder.notification) {
+            height: 36px !important;
+        }
+
+        & :global(h5) {
+            font-weight: 500 !important;
+            color: var(--fgcolor-neutral-primary) !important;
+        }
+
+        & :global(p) {
+            color: var(--fgcolor-neutral-secondary) !important;
+        }
+
+        & :global(.alert-content) {
+            margin-top: 2px !important;
+        }
+
+        & :global([role='tooltip'] > div) {
+            gap: var(--space-2, 4px) !important;
+        }
     }
 </style>

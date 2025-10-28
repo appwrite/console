@@ -19,6 +19,7 @@ export type FrameworkType = {
 
 export type LLMPromptConfig = {
     title: string;
+    alreadyExistsInstructions: string;
     cloneCommand: string;
     configFile: string;
     configCode: string;
@@ -32,15 +33,23 @@ export function getCorrectTitle(isConnectPlatform: boolean, platform: string) {
 }
 
 export function generatePromptFromConfig(config: LLMPromptConfig): string {
-    return `1. If you're starting a new project, you can clone our starter kit from GitHub using ${config.using || 'the terminal'}.
+    return `
+Follow the steps depending on if a project already exists on user's working directory or not:
+
+## If a project already exists:
+${config.alreadyExistsInstructions}
+
+## If a project does not exist:
+
+1. If you're starting a new project, you can clone our starter kit from GitHub using ${config.using || 'the terminal'}. Make sure to clone in the current working directory root so that the files are directly available in the working directory.
 
 \`\`\`bash
 ${config.cloneCommand}
 \`\`\`
 
-2. Open the file \`${config.configFile}\` and update the configuration settings.
+2. Open the file \`${config.configFile}\`, find the code block, replace and hardcode the project details as mentioned below.
 
-\`\`\`${config.configLanguage}
+\`\`\`
 ${config.configCode}
 \`\`\`
 
@@ -92,15 +101,19 @@ const platformConfigs: Record<string, PlatformConfig> = {
         name: 'React Native',
         title: 'Copy prompt: starter kit for Appwrite in React Native',
         repoName: 'starter-for-react-native',
-        configFile: '.env.example',
-        configLanguage: 'dotenv',
+        configFile: 'index.ts',
+        configLanguage: 'typescript',
         runInstructions:
-            'Add your Appwrite credentials to `.env.example` then rename it to `.env` if needed. Run the app on a connected device or simulator using `npm install` followed by `npm run ios` or `npm run android`, then click the `Send a ping` button to verify the setup.',
+            'After replacing and hardcoding project details, run the app on a connected device or simulator using `npm install` followed by `npm run ios` or `npm run android`, then click the `Send a ping` button to verify the setup.',
         using: 'the terminal or VSCode'
     }
 };
 
-export function buildPlatformConfig(platformKey: string, configCode: string): LLMPromptConfig {
+export function buildPlatformConfig(
+    platformKey: string,
+    configCode: string,
+    alreadyExistsInstructions: string
+): LLMPromptConfig {
     const config = platformConfigs[platformKey];
     if (!config) {
         throw new Error(`Unknown platform: ${platformKey}`);
@@ -108,6 +121,7 @@ export function buildPlatformConfig(platformKey: string, configCode: string): LL
 
     return {
         title: config.title,
+        alreadyExistsInstructions: alreadyExistsInstructions,
         cloneCommand: `git clone https://github.com/appwrite/${config.repoName}\ncd ${config.repoName}`,
         configFile: config.configFile,
         configCode: configCode,

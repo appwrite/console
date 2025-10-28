@@ -37,6 +37,30 @@
 
     const projectId = page.params.project;
 
+    const alreadyExistsInstructions = `
+        Install the Appwrite Android SDK by adding the following dependency to app-level build.gradle.kts file under dependencies block:
+
+        \`\`\`
+        implementation("io.appwrite:sdk-for-android:8.1.0")
+        \`\`\`
+
+        From a suitable lib directory, export the Appwrite client as a global variable:
+
+        \`\`\`
+        val client = Client()
+            .setEndpoint("https://fra.cloud.appwrite.io/v1")
+            .setProject("ai-test-atharva")
+
+        val account = Account(client)
+        \`\`\`
+
+        On the homepage of the app, create a button that says "Send a ping" and when clicked, it should call the following function:
+
+        \`\`\`
+        client.ping()
+        \`\`\`
+    `;
+
     const gitCloneCode =
         '\ngit clone https://github.com/appwrite/starter-for-android\ncd starter-for-android\n';
 
@@ -173,7 +197,11 @@ const val APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject(page.params.region, page.
         {#if isPlatformCreated}
             <Fieldset legend="Clone starter" badge="Optional">
                 <Layout.Stack gap="l">
-                    <LlmBanner platform="android" {configCode} />
+                    <LlmBanner
+                        platform="android"
+                        {configCode}
+                        {alreadyExistsInstructions}
+                        openers={['cursor']} />
 
                     <Typography.Text variant="m-500">
                         1. If you're starting a new project, you can clone our starter kit from

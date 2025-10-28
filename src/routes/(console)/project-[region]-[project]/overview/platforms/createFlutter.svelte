@@ -39,6 +39,28 @@
 
     const projectId = page.params.project;
 
+    const alreadyExistsInstructions = `
+    Install the Appwrite Flutter SDK using the following command:
+
+    \`\`\`
+    flutter pub add appwrite:17.0.0
+    \`\`\`
+
+    From a suitable lib directory, export the Appwrite client as a global variable, hardcode the project details too:
+
+    \`\`\`
+    final Client client = Client()
+      .setProject("${projectId}")
+      .setEndpoint("${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}");
+    \`\`\`
+
+    On the homepage of the app, create a button that says "Send a ping" and when clicked, it should call the following function:
+
+    \`\`\`
+    client.ping();
+    \`\`\`
+    `;
+
     const gitCloneCode =
         '\ngit clone https://github.com/appwrite/starter-for-flutter\ncd starter-for-flutter\n';
 
@@ -283,7 +305,11 @@
         {#if isPlatformCreated}
             <Fieldset legend="Clone starter" badge="Optional">
                 <Layout.Stack gap="l">
-                    <LlmBanner platform="flutter" {configCode} />
+                    <LlmBanner
+                        platform="flutter"
+                        {configCode}
+                        {alreadyExistsInstructions}
+                        openers={['cursor']} />
                     <Typography.Text variant="m-500">
                         1. If you're starting a new project, you can clone our starter kit from
                         GitHub using the terminal, VSCode or Android Studio.
