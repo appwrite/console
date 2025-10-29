@@ -5,9 +5,8 @@
 <script lang="ts">
     import './shim.css';
     import { onMount } from 'svelte';
-    import { ensureStudioComponent, initImagine } from './studio-widget';
+    import { ensureStudioComponent, initImagine, getWebComponents } from './studio-widget';
     import { app } from '$lib/stores/app';
-    import { changeTheme } from '@imagine.dev/web-components/web-components';
 
     const { region, projectId }: { region: string; projectId: string } = $props();
 
@@ -15,8 +14,15 @@
         ensureStudioComponent();
         initImagine(region, projectId);
 
-        return app.subscribe(($app) => {
-            changeTheme($app.themeInUse);
+        return app.subscribe(async ($app) => {
+            try {
+                const { changeTheme } = await getWebComponents();
+                if (changeTheme) {
+                    changeTheme($app.themeInUse);
+                }
+            } catch (error) {
+                console.error('Failed to change theme:', error);
+            }
         });
     });
 </script>

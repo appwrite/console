@@ -1,6 +1,4 @@
-import { initImagineConfig, initImagineRouting } from '@imagine.dev/web-components/web-components';
 import { PUBLIC_APPWRITE_ENDPOINT, PUBLIC_AI_SERVICE_BASE_URL } from '$env/static/public';
-import ImagineCss from '@imagine.dev/web-components/imagine-web-components.css?url';
 import { app } from '$lib/stores/app';
 import { get } from 'svelte/store';
 import { goto } from '$app/navigation';
@@ -10,8 +8,10 @@ const COMPONENT_SELECTOR = 'imagine-web-components-wrapper[data-appwrite-studio]
 const STYLE_ATTRIBUTE = 'data-appwrite-studio-style';
 const BLOCK_START_BASE_OFFSET = 48;
 const INLINE_START_BASE_OFFSET = 8;
+const CDN_URL = 'https://esm.sh/@imagine.dev/web-components@0/web-components?bundle=false&deps=react@19.1.0,react-dom@19.1.0';
 
 let component: HTMLElement | null = null;
+let webComponentsModule: Record<string, any> | null = null;
 let configInitialized = false;
 let routingInitialized = false;
 let lastRouteKey: string | null = null;
@@ -84,13 +84,35 @@ function injectStyles(node: HTMLElement, attempt = 0) {
 
             const link = document.createElement('link');
             link.rel = 'stylesheet';
-            link.href = ImagineCss;
+            link.href = 'https://esm.sh/@imagine.dev/web-components@0/imagine-web-components.css';
             link.setAttribute(STYLE_ATTRIBUTE, 'true');
             shadow.prepend(link);
         })
         .catch(() => {
             /* no-op */
         });
+}
+
+/**
+ * Get the web components module, loading it from CDN if necessary
+ */
+export async function getWebComponents() {
+    if (!webComponentsModule) {
+        webComponentsModule = await import(/* @vite-ignore */ CDN_URL);
+    }
+    return webComponentsModule;
+}
+
+/**
+ * Navigate to a route in the web components
+ */
+export async function navigateToRoute(...args: any[]) {
+    try {
+        const { navigateToRoute: navigate } = await getWebComponents();
+        return navigate(...args);
+    } catch (error) {
+        console.error('Failed to navigate:', error);
+    }
 }
 
 export function ensureStudioComponent(): HTMLElement | null {
@@ -233,8 +255,11 @@ export function hideStudio() {
     restoreBodyScroll();
 }
 
-export function initImagine(region: string, projectId: string) {
-    if (!configInitialized) {
+export async function initImagine(region: string, projectId: string) {
+    try {
+        const { initImagineConfig, initImagineRouting } = await getWebComponents();
+
+        if (!configInitialized) {
         initImagineConfig(
             {
                 AI_SERVICE_ENDPOINT: PUBLIC_AI_SERVICE_BASE_URL,
@@ -275,6 +300,9 @@ export function initImagine(region: string, projectId: string) {
         }
     });
 
-    routingInitialized = true;
-    lastRouteKey = routeKey;
+        routingInitialized = true;
+        lastRouteKey = routeKey;
+    } catch (error) {
+        console.error('Failed to load web components library:', error);
+    }
 }
