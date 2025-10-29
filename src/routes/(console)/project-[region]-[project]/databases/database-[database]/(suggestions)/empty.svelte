@@ -941,6 +941,8 @@
 
     async function createColumns() {
         creatingColumns = true;
+        selectedColumnId = null;
+
         const client = sdk.forProject(page.params.region, page.params.project);
 
         const isAnyEmpty = customColumns.some((col) => !col.key);
