@@ -20,3 +20,12 @@ jobs:
                       playwright.azureedge.net:443
                       registry.npmjs.org:443
                       releases.githubusercontent.com:443
+            - uses: actions/checkout@v4
+            - name: Use Node.js
+              uses: actions/setup-node@v3
+              with:
+                  node-version: 20
+            - name: Install pnpm
+              uses: pnpm/action-setup@v4
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile
