@@ -265,7 +265,11 @@
                                     <div
                                         class="progress-bar-top-line u-flex u-gap-8 u-main-space-between">
                                         <Typography.Text>
-                                            {text(value.status, value.table, value.bucketName ?? 'bucket')}
+                                            {text(
+                                                value.status,
+                                                value.table,
+                                                value.bucketName ?? 'bucket'
+                                            )}
                                         </Typography.Text>
                                         {#if value.status === 'failed' && value.errors && value.errors.length > 0}
                                             <button
