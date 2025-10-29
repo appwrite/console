@@ -1,7 +1,6 @@
 <script lang="ts">
     import { onDestroy, onMount, tick } from 'svelte';
-    import { attachStudioTo, ensureStudioComponent, hideStudio } from '$lib/studio/studio-widget';
-    import { navigateToRoute } from '@imagine.dev/web-components/web-components';
+    import { attachStudioTo, ensureStudioComponent, hideStudio, navigateToRoute } from '$lib/studio/studio-widget';
 
     let anchor: HTMLElement = $state();
 
