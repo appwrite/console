@@ -80,13 +80,7 @@
         { name: 'Functions', icon: IconLightningBolt, slug: 'functions', category: 'build' },
         { name: 'Messaging', icon: IconChatBubble, slug: 'messaging', category: 'build' },
         { name: 'Storage', icon: IconFolder, slug: 'storage', category: 'build' },
-        {
-            name: 'Sites',
-            icon: IconGlobeAlt,
-            slug: 'sites',
-            category: 'deploy',
-            badge: 'Early access'
-        }
+        { name: 'Sites', icon: IconGlobeAlt, slug: 'sites', category: 'deploy' }
     ];
 
     const isSelected = (service: string): boolean => {
