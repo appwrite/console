@@ -69,21 +69,26 @@
                               try {
                                   const files = await sdk
                                       .forProject(region, project)
-                                      .storage.listFiles({ bucketId });
+                                      .storage.listFiles({
+                                          bucketId,
+                                          queries: [Query.equal('name', fileName)]
+                                      });
 
-                                  const file = files.files.find((f) => f.name === fileName);
+                                  const file = files.files[0];
 
                                   if (file) {
-                                      const downloadUrl =
+                                      const downloadUrl = new URL(
                                           sdk
                                               .forProject(region, project)
                                               .storage.getFileDownload({
                                                   bucketId,
                                                   fileId: file.$id
                                               })
-                                              .toString() + '&mode=admin';
+                                              .toString()
+                                      );
+                                      downloadUrl.searchParams.set('mode', 'admin');
 
-                                      window.open(downloadUrl, '_blank');
+                                      window.open(downloadUrl.toString(), '_blank');
                                   } else {
                                       addNotification({
                                           type: 'error',
