@@ -1,0 +1,22 @@
+name: Copilot Setup Steps
+
+on: []
+
+jobs:
+    copilot-setup-steps:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Harden Runner
+              uses: step-security/harden-runner@91182cccc01eb5e619899d80e4e971d6181294a7 # v2.10.1
+              with:
+                  egress-policy: audit
+                  allowed-endpoints: >
+                      api.github.com:443
+                      github.com:443
+                      nodejs.org:443
+                      objects.githubusercontent.com:443
+                      pkg.pr.new:443
+                      pkg.vc:443
+                      playwright.azureedge.net:443
+                      registry.npmjs.org:443
+                      releases.githubusercontent.com:443
