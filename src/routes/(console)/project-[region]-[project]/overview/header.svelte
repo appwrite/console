@@ -2,7 +2,7 @@
     import { page } from '$app/state';
     import { Id, RegionEndpoint } from '$lib/components';
     import { Cover } from '$lib/layout';
-    import { project, projectRegion } from '../store';
+    import { projectRegion } from '../store';
     import { hasOnboardingDismissed, setHasOnboardingDismissed } from '$lib/helpers/onboarding';
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
@@ -12,9 +12,11 @@
     import { trackEvent } from '$lib/actions/analytics';
 
     function dismissOnboarding() {
-        setHasOnboardingDismissed($project.$id, $user);
+        setHasOnboardingDismissed(page.data.project.$id, $user);
         trackEvent('onboarding_hub_platform_dismiss');
-        goto(`${base}/project-${$project.region}-${$project.$id}/overview/platforms`);
+        goto(
+            `${base}/project-${page.data.project.region}-${page.data.project.$id}/overview/platforms`
+        );
     }
 </script>
 
@@ -24,11 +26,12 @@
             <Layout.Stack alignItems="baseline" direction={$isSmallViewport ? 'column' : 'row'}>
                 <Typography.Title color="--fgcolor-neutral-primary" size="xl" truncate>
                     <span class="project-title">
-                        {$project?.name}
+                        {page.data.project?.name}
                     </span>
                 </Typography.Title>
                 <Layout.Stack direction="row" inline>
-                    <Id value={$project.$id} copyText="Copy project ID">{$project.$id}</Id>
+                    <Id value={page.data.project.$id} copyText="Copy project ID"
+                        >{page.data.project.$id}</Id>
                     {#if $projectRegion}
                         <RegionEndpoint region={$projectRegion} />
                     {/if}
@@ -55,7 +58,7 @@
                         >Follow a few quick steps to get started with Appwrite</Typography.Text>
                 </Layout.Stack>
                 <div class="dashboard-header-button">
-                    {#if !hasOnboardingDismissed($project.$id, $user)}
+                    {#if !hasOnboardingDismissed(page.data.project.$id, $user)}
                         <Button.Button size="s" variant="secondary" on:click={dismissOnboarding}>
                             Dismiss this page
                         </Button.Button>
