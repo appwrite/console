@@ -1700,7 +1700,7 @@
     {/if}
 </div>
 
-{#snippet customTooltip({ text, show })}
+<!--{#snippet customTooltip({ text, show })}
     <div
         transition:fadeSlide
         class="custom-tooltip"
@@ -1710,7 +1710,7 @@
             {text}
         </Typography.Text>
     </div>
-{/snippet}
+{/snippet}-->
 
 {#snippet changeColumnTypePopover({ id, columnObj, iconColor, icon, isColumnInteractable, index })}
     <Popover let:toggle portal padding="none" placement="bottom-start">
