@@ -21,12 +21,7 @@
                 <Copy value={$key.secret} copyText="Copy API secret">
                     <Tag size="xs" variant="code">
                         <Icon icon={IconDuplicate} size="s" slot="start" />
-                        <span
-                            style:white-space="nowrap"
-                            style:overflow="hidden"
-                            style:word-break="break-all">
-                            API secret
-                        </span>
+                        <span class="api-secret-label"> API secret </span>
                     </Tag>
                 </Copy>
             {/if}
@@ -36,3 +31,11 @@
         </Layout.Stack>
     </svelte:fragment>
 </Cover>
+
+<style>
+    .api-secret-label {
+        white-space: nowrap;
+        overflow: hidden;
+        word-break: break-all;
+    }
+</style>
