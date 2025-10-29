@@ -28,8 +28,8 @@
     let formComponent: Form;
     let isSubmitting = $derived(getContext<FormContext>('form')?.isSubmitting);
 
-    let selectedBucket = $state<string>(null);
-    let buckets = $state<Models.BucketList>(null);
+    let selectedBucket = $state<string | null>(null);
+    let buckets = $state<Models.BucketList | null>(null);
     let loadingBuckets = $state(false);
 
     const timestamp = new Date()

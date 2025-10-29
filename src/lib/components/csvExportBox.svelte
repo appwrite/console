@@ -200,9 +200,8 @@
         const bucket = bucketName ? `<b>${bucketName}</b>` : 'bucket';
         switch (status) {
             case 'completed':
-                return `Export to ${bucket} completed`;
             case 'failed':
-                return `Export to ${bucket} failed`;
+                return `Export to ${bucket} ${status}`;
             case 'processing':
                 return `Exporting ${table} to ${bucket}`;
             default:
@@ -211,11 +210,6 @@
     }
 
     onMount(() => {
-        // Fetch initial data
-        if (!page.params.region || !page.params.project) {
-            return;
-        }
-
         sdk.forProject(page.params.region, page.params.project)
             .migrations.list({
                 queries: [
@@ -225,21 +219,14 @@
             })
             .then((migrations) => {
                 migrations.migrations.forEach(updateOrAddItem);
-            })
-            .catch((error) => {
-                console.error('Failed to fetch CSV export migrations:', error);
             });
 
-        const unsubscribe = sdk
-            .forConsoleIn(page.params.region)
-            .client.subscribe('console', (response) => {
-                if (!response.channels.includes(`projects.${getProjectId()}`)) return;
-                if (response.events.includes('migrations.*')) {
-                    updateOrAddItem(response.payload as Payload);
-                }
-            });
-
-        return unsubscribe;
+        return sdk.forConsoleIn(page.params.region).client.subscribe('console', (response) => {
+            if (!response.channels.includes(`projects.${getProjectId()}`)) return;
+            if (response.events.includes('migrations.*')) {
+                updateOrAddItem(response.payload as Payload);
+            }
+        });
     });
 
     let isOpen = $state(true);
@@ -278,11 +265,7 @@
                                     <div
                                         class="progress-bar-top-line u-flex u-gap-8 u-main-space-between">
                                         <Typography.Text>
-                                            {@html text(
-                                                value.status,
-                                                value.table,
-                                                value.bucketName ?? 'bucket'
-                                            )}
+                                            {text(value.status, value.table, value.bucketName ?? 'bucket')}
                                         </Typography.Text>
                                         {#if value.status === 'failed' && value.errors && value.errors.length > 0}
                                             <button
