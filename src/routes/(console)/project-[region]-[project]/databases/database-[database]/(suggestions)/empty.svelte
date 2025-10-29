@@ -1364,7 +1364,8 @@
                                             <span
                                                 class="column-title"
                                                 class:animate-in={!columnObj?.isPlaceholder}
-                                                style:--animation-delay={`${isColumnInteractable ? (index - 1) * 100 : 0}ms`}>
+                                                style:--animation-delay={`${isColumnInteractable ? (index - 1) * 100 : 0}ms`}
+                                                title={column.title}>
                                                 {column.title}
                                             </span>
 
@@ -2138,10 +2139,17 @@
         max-height: 184px;
     }
 
+    .column-title {
+        max-width: 125px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
     /* Sequential animation for column titles and icons */
     .column-title,
     .column-icon-wrapper {
         opacity: 0;
+        flex-shrink: 0;
         transform: translateY(4px);
         transition:
             opacity 0.4s ease-out,

@@ -68,7 +68,7 @@ export const mockSuggestions: { total: number; columns: ColumnInput[] } = {
             formatOptions: null
         },
         {
-            name: 'authorName',
+            name: 'productionCompany',
             type: 'string',
             size: 128,
             format: null,
