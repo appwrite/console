@@ -1094,6 +1094,8 @@
 
     // scroll to view if needed and select!
     function selectColumnWithId(column: Column) {
+        if (creatingColumns) return;
+
         const columnId = column.id;
         selectedColumnName = column.title;
         if (!isColumnVisible(columnId)) {
@@ -1647,7 +1649,7 @@
             class:has-selection={hasSelection}>
             <FloatingActionBar>
                 <svelte:fragment slot="start">
-                    <Layout.Stack gap="xl" direction="row" alignItems="center">
+                    <Layout.Stack gap="xs" direction="row" alignItems="center">
                         {#if creatingColumns}
                             <Spinner size="s" />
                         {/if}
@@ -1657,7 +1659,7 @@
                             color="--fgcolor-neutral-secondary"
                             style="white-space: nowrap">
                             {creatingColumns
-                                ? 'Creating columns'
+                                ? 'Creating columns...'
                                 : $isSmallViewport
                                   ? 'Click headers or cells to edit columns'
                                   : 'Click headers or cells to edit columns before applying'}
@@ -1666,27 +1668,29 @@
                 </svelte:fragment>
 
                 <svelte:fragment slot="end">
-                    <Layout.Stack direction="row" gap="xs" alignItems="center" inline>
-                        <Button.Button
-                            size="xs"
-                            variant="text"
-                            disabled={creatingColumns}
-                            on:click={() => {
-                                customColumns = [];
-                                resetSuggestionsStore();
-                            }}
-                            style="opacity: {creatingColumns ? '0' : '1'}"
-                            >Dismiss
-                        </Button.Button>
-                        <Button.Button
-                            size="xs"
-                            variant="primary"
-                            disabled={creatingColumns}
-                            on:click={createColumns}
-                            style="opacity: {creatingColumns ? '0' : '1'}"
-                            >Apply
-                        </Button.Button>
-                    </Layout.Stack>
+                    {#if !creatingColumns}
+                        <Layout.Stack direction="row" gap="xs" alignItems="center" inline>
+                            <Button.Button
+                                size="xs"
+                                variant="text"
+                                disabled={creatingColumns}
+                                on:click={() => {
+                                    customColumns = [];
+                                    resetSuggestionsStore();
+                                }}
+                                style="opacity: {creatingColumns ? '0' : '1'}"
+                                >Dismiss
+                            </Button.Button>
+                            <Button.Button
+                                size="xs"
+                                variant="primary"
+                                disabled={creatingColumns}
+                                on:click={createColumns}
+                                style="opacity: {creatingColumns ? '0' : '1'}"
+                                >Apply
+                            </Button.Button>
+                        </Layout.Stack>
+                    {/if}
                 </svelte:fragment>
             </FloatingActionBar>
         </div>
@@ -2000,15 +2004,10 @@
 
             &.creating-columns :global(:first-child) {
                 left: calc(67.5% - 480px / 2);
-                max-width: 300px !important;
+                max-width: 157px !important;
 
                 @media (max-width: 1024px) {
-                    left: calc(60% - 300px / 2);
-                }
-
-                @media (max-width: 768px) {
-                    left: calc(50% - 400px / 2);
-                    max-width: 400px !important;
+                    left: calc(50% - 157px / 2);
                 }
             }
         }
