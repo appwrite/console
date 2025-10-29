@@ -172,37 +172,32 @@
 </script>
 
 {#snippet severityPopover()}
-    <div slot="info">
-        <Popover let:toggle>
-            <Button extraCompact size="s" on:click={toggle}>
-                <Icon size="s" icon={IconInfo} />
-            </Button>
-            <div slot="tooltip" style="max-width: 400px;">
-                <Layout.Stack gap="s">
-                    <Typography.Text>
-                        <b>Critical:</b> System is down or a critical component is non-functional,
-                        causing a complete stoppage of work or significant business impact.
-                    </Typography.Text>
-                    <Typography.Text>
-                        <b>High:</b> Major functionality is impaired, but a workaround is
-                        available, or a critical component is significantly degraded.
-                    </Typography.Text>
-                    <Typography.Text>
-                        <b>Medium:</b> Minor functionality is impaired without significant business
-                        impact.
-                    </Typography.Text>
-                    <Typography.Text>
-                        <b>Low:</b> Issue has minor impact on business operations; workaround is
-                        not necessary.
-                    </Typography.Text>
-                    <Typography.Text>
-                        <b>Question:</b> Requests for information, general guidance, or feature
-                        requests.
-                    </Typography.Text>
-                </Layout.Stack>
-            </div>
-        </Popover>
-    </div>
+    <Popover let:toggle>
+        <Button extraCompact size="s" on:click={toggle}>
+            <Icon size="s" icon={IconInfo} />
+        </Button>
+        <div slot="tooltip" style="max-width: 400px;">
+            <Layout.Stack gap="s">
+                <Typography.Text>
+                    <b>Critical:</b> System is down or a critical component is non-functional, causing
+                    a complete stoppage of work or significant business impact.
+                </Typography.Text>
+                <Typography.Text>
+                    <b>High:</b> Major functionality is impaired, but a workaround is available, or a
+                    critical component is significantly degraded.
+                </Typography.Text>
+                <Typography.Text>
+                    <b>Medium:</b> Minor functionality is impaired without significant business impact.
+                </Typography.Text>
+                <Typography.Text>
+                    <b>Low:</b> Issue has minor impact on business operations; workaround is not necessary.
+                </Typography.Text>
+                <Typography.Text>
+                    <b>Question:</b> Requests for information, general guidance, or feature requests.
+                </Typography.Text>
+            </Layout.Stack>
+        </div>
+    </Popover>
 {/snippet}
 
 <Wizard title="Contact us" confirmExit={true}>
@@ -254,7 +249,9 @@
                 bind:value={$supportData.severity}
                 required
                 placeholder="Select severity">
-                {@render severityPopover()}
+                <div slot="info">
+                    {@render severityPopover()}
+                </div>
             </InputSelect>
             <InputText
                 id="subject"
