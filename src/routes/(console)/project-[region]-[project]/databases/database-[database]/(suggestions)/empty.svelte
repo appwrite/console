@@ -118,7 +118,7 @@
 
     let showHeadTooltip = $state(true);
     let isInlineEditing = $state(false);
-    let tooltipTopPosition = $state(50);
+    // let tooltipTopPosition = $state(50);
     let triggerColumnId = $state<string | null>(null);
     let hoveredColumnId = $state<string | null>(null);
 
@@ -1110,7 +1110,7 @@
         columnBeingDeleted = null;
     }
 
-    function fadeSlide(_: Node, { y = 8, duration = 200 } = {}) {
+    /*function fadeSlide(_: Node, { y = 8, duration = 200 } = {}) {
         return {
             duration,
             css: (time: number) => `
@@ -1118,7 +1118,7 @@
                 transform: translateY(${(1 - time) * y}px);
              `
         };
-    }
+    }*/
 
     function columnHoverMouseTracker(event: MouseEvent) {
         if (hoveredColumnId && event.target instanceof Element) {
@@ -1518,7 +1518,7 @@
                                         hoveredColumnId !== column.id
                                     ) {
                                         hoveredColumnId = column.id;
-                                        tooltipTopPosition = 35 + Math.random() * 20;
+                                        /*tooltipTopPosition = 35 + Math.random() * 20;*/
                                     }
                                 }}
                                 onclick={() => {
