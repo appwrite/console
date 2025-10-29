@@ -15,6 +15,7 @@
     import { writable } from 'svelte/store';
     import Scopes from '../api-keys/scopes.svelte';
     import { page } from '$app/state';
+    import { copy } from '$lib/helpers/copy';
 
     const projectId = page.params.project;
 
@@ -49,12 +50,15 @@
                 buttons: [
                     {
                         name: 'Copy API key',
-                        method: () => navigator.clipboard.writeText(secret)
+                        method: async () => {
+                            await copy(secret);
+                        }
                     },
                     {
                         name: 'Copy endpoint',
-                        method: () =>
-                            navigator.clipboard.writeText(sdk.forConsole.client.config.endpoint)
+                        method: async () => {
+                            await copy(sdk.forConsole.client.config.endpoint);
+                        }
                     }
                 ]
             });
