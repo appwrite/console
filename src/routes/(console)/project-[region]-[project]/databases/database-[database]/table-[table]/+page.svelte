@@ -26,7 +26,7 @@
     import { page } from '$app/state';
     import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
-    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { isSmallViewport } from '$lib/stores/viewport';
     import {
         IconChevronDown,
@@ -182,10 +182,12 @@
                             </ActionMenu.Item.Button>
                             <ActionMenu.Item.Button
                                 leadingIcon={IconDownload}
-                                on:click={() =>
+                                on:click={() => {
+                                    trackEvent(Click.DatabaseExportCsv);
                                     goto(
                                         `${base}/project-${page.params.region}-${page.params.project}/databases/database-${page.params.database}/table-${page.params.table}/export`
-                                    )}>
+                                    );
+                                }}>
                                 Export CSV
                             </ActionMenu.Item.Button>
                         </ActionMenu.Root>
