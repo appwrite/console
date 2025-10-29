@@ -265,7 +265,7 @@
                                     <div
                                         class="progress-bar-top-line u-flex u-gap-8 u-main-space-between">
                                         <Typography.Text>
-                                            {text(
+                                            {@html text(
                                                 value.status,
                                                 value.table,
                                                 value.bucketName ?? 'bucket'
