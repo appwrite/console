@@ -29,8 +29,8 @@
         }
     }
 
-    export function truncateText(node: HTMLElement) {
-        let originalText = node.textContent;
+    export function truncateText(node: HTMLElement, text?: string) {
+        let originalText = text ?? node.textContent;
 
         function checkOverflow() {
             node.textContent = originalText;
@@ -70,8 +70,8 @@
         window.addEventListener('resize', debouncedCheck);
 
         return {
-            update() {
-                originalText = node.textContent;
+            update(newText?: string) {
+                originalText = newText ?? node.textContent;
                 addToBatch(checkOverflow);
             },
             destroy() {
