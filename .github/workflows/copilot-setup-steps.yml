@@ -1,14 +1,25 @@
 name: Copilot Setup Steps
 
-on: []
+# Automatically run the setup steps when they are changed to allow for easy validation, and
+# allow manual testing through the repository's "Actions" tab
+on:
+    workflow_dispatch:
+    push:
+        paths:
+            - .github/workflows/copilot-setup-steps.yml
+    pull_request:
+        paths:
+            - .github/workflows/copilot-setup-steps.yml
 
 jobs:
     copilot-setup-steps:
         runs-on: ubuntu-latest
+        permissions:
+            contents: read
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v5
             - name: Use Node.js
-              uses: actions/setup-node@v3
+              uses: actions/setup-node@v6
               with:
                   node-version: 20
             - name: Install pnpm
