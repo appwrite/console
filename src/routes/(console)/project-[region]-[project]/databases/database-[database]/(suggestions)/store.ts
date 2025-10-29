@@ -60,7 +60,7 @@ export const mockSuggestions: { total: number; columns: ColumnInput[] } = {
     total: 7,
     columns: [
         {
-            name: 'name',
+            name: 'title',
             type: 'string',
             size: 255,
             format: null,
@@ -68,7 +68,7 @@ export const mockSuggestions: { total: number; columns: ColumnInput[] } = {
             formatOptions: null
         },
         {
-            name: 'age',
+            name: 'authorName',
             type: 'string',
             size: 128,
             format: null,

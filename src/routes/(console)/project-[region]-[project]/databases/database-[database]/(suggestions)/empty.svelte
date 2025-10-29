@@ -89,7 +89,9 @@
             return reorderItems(columnsWithWidths, $columnsOrder);
         }
 
-        return columnsWithWidths;
+        return columnsWithWidths.filter(
+            (column) => !['$id', '$createdAt', '$updatedAt', 'actions'].includes(column.id)
+        );
     });
 
     let resizeObserver: ResizeObserver;
@@ -305,13 +307,7 @@
         // start overlay **after** the last userColumn
         if (staticUserColumns.length > 0) {
             const lastUserColumn = staticUserColumns[staticUserColumns.length - 1];
-            let lastUserCell = getById(lastUserColumn.id);
-
-            if (!lastUserCell) {
-                lastUserCell = headerElement!.querySelector<HTMLElement>(
-                    `[role="cell"][data-column-id="${lastUserColumn.id}"]`
-                );
-            }
+            const lastUserCell = getById(lastUserColumn.id);
 
             if (lastUserCell) {
                 const lastUserRect = lastUserCell.getBoundingClientRect();
@@ -1279,7 +1275,7 @@
                 out:fade={{ duration: 200 }}>
             </div>
 
-            {@render customTooltip({ text: 'Click to select column', show: isHovered })}
+            <!--{@render customTooltip({ text: 'Click to select column', show: isHovered })}-->
         {/if}
     </div>
 
