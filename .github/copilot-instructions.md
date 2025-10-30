@@ -99,5 +99,6 @@ src/
 3. `pnpm install --frozen-lockfile`
 4. `pnpm dev` (hot reload on port 3000)
 5. Before commit: `pnpm run check && pnpm run format && pnpm run lint && pnpm run test && pnpm run build`
+6. **Take screenshots**: For any UI changes, capture screenshots and include them in the PR description or comments before finalizing
 
 **Trust these instructions** - only search if incomplete/incorrect. See CONTRIBUTING.md for PR conventions. Use `--frozen-lockfile` always. Docker builds: multi-stage, final image is nginx serving static files from `/console` path.
