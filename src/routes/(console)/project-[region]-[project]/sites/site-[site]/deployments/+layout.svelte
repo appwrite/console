@@ -39,7 +39,7 @@
                 }
             });
 
-        return subscription.close();
+        return await subscription.close();
     });
 
     $: $registerCommands([

@@ -102,7 +102,7 @@ APPWRITE_PUBLIC_ENDPOINT: "${sdk.forProject(page.params.region, page.params.proj
             }
         );
 
-        return subscription.close();
+        return await subscription.close();
     });
 
     onDestroy(resetPlatformStore);

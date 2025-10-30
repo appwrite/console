@@ -168,7 +168,7 @@
             }
         );
 
-        return subscription.close();
+        return await subscription.close();
     });
 
     onDestroy(resetPlatformStore);

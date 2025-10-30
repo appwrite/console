@@ -45,7 +45,7 @@
             }
         );
 
-        return subscription.close();
+        return await subscription.close();
     });
 
     async function connect(selectedInstallationId: string, selectedRepository: string) {

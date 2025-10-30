@@ -28,7 +28,7 @@
             }
         );
 
-        return subscription.close();
+        return await subscription.close();
     });
 </script>
 

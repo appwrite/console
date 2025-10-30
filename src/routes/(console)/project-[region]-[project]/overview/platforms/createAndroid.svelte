@@ -93,7 +93,7 @@ const val APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject(page.params.region, page.
             }
         );
 
-        return subscription.close();
+        return await subscription.close();
     });
 
     onDestroy(resetPlatformStore);

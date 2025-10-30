@@ -129,7 +129,7 @@ EXPO_PUBLIC_APPWRITE_ENDPOINT=${sdk.forProject(page.params.region, page.params.p
             }
         );
 
-        return subscription.close();
+        return await subscription.close();
     });
 
     onDestroy(resetPlatformStore);

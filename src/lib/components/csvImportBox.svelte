@@ -178,7 +178,7 @@
                 }
             });
 
-        return subscription.close();
+        return await subscription.close();
     });
 
     $: isOpen = true;
