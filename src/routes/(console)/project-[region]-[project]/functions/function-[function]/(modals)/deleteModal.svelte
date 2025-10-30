@@ -21,7 +21,7 @@
                     functionId: selectedDeployment.resourceId,
                     deploymentId: selectedDeployment.$id
                 });
-            if (page.url.href.includes(`deployment-${selectedDeployment.$id}`)) {
+            if (page.route.id?.includes('deployment-[deployment]')) {
                 goto(
                     `${base}/project-${page.params.region}-${page.params.project}/functions/function-${page.params.function}/deployments`
                 );
