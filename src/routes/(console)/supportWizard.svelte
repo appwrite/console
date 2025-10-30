@@ -273,7 +273,7 @@
                     on:click={() => {
                         wizard.hide();
                     }}>Cancel</Button>
-                <Button size="s">Submit</Button>
+                <Button submit size="s">Submit</Button>
             </Layout.Stack>
         </Layout.Stack>
     </Form>
