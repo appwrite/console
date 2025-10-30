@@ -22,15 +22,16 @@
                 siteId: selectedDeployment.resourceId,
                 deploymentId: selectedDeployment.$id
             });
+            if (page.url.href.includes(`deployment-${selectedDeployment.$id}`)) {
+                goto(
+                    `${base}/project-${page.params.region}-${page.params.project}/sites/site-${page.params.site}/deployments`
+                );
+                return;
+            }
             await Promise.all([
                 invalidate(Dependencies.DEPLOYMENTS),
                 invalidate(Dependencies.SITE)
             ]);
-            if (page.url.href.includes(`deployment-${selectedDeployment.$id}`)) {
-                await goto(
-                    `${base}/project-${page.params.region}-${page.params.project}/sites/site-${page.params.site}/deployments`
-                );
-            }
             showDelete = false;
             addNotification({
                 type: 'success',

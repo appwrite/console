@@ -26,7 +26,7 @@
     import { formatTimeDetailed } from '$lib/helpers/timeConversion';
     import { timer } from '$lib/actions/timer';
     import { app } from '$lib/stores/app';
-    import { IconDotsHorizontal, IconRefresh } from '@appwrite.io/pink-icons-svelte';
+    import { IconDotsHorizontal, IconRefresh, IconTrash } from '@appwrite.io/pink-icons-svelte';
     import { Menu } from '$lib/components/menu';
     import { canWriteFunctions } from '$lib/stores/roles';
     import { Click, trackEvent } from '$lib/actions/analytics';
@@ -104,7 +104,7 @@
                                     placement={'bottom'}>
                                     <div>
                                         <ActionMenu.Item.Button
-                                            trailingIcon={IconRefresh}
+                                            leadingIcon={IconRefresh}
                                             disabled={data.deployment.sourceSize === 0}
                                             on:click={() => {
                                                 showRedeploy = true;
@@ -120,6 +120,18 @@
                             {/if}
                             {#if !!data.deployment?.sourceSize || !!data.deployment?.sourceSize}
                                 <DownloadActionMenuItem deployment={data.deployment} {toggle} />
+                            {/if}
+                            {#if $canWriteFunctions && data.deployment.status !== 'building' && data.deployment.status !== 'processing' && data.deployment?.status !== 'waiting'}
+                                <ActionMenu.Item.Button
+                                    status="danger"
+                                    leadingIcon={IconTrash}
+                                    on:click={() => {
+                                        showDelete = true;
+                                        toggle();
+                                    }}
+                                    style="width: 100%">
+                                    Delete
+                                </ActionMenu.Item.Button>
                             {/if}
                         </ActionMenu.Root>
                     </svelte:fragment>

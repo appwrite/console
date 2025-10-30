@@ -1,5 +1,6 @@
 <script lang="ts">
-    import { invalidate } from '$app/navigation';
+    import { goto, invalidate } from '$app/navigation';
+    import { base } from '$app/paths';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import Confirm from '$lib/components/confirm.svelte';
     import { Dependencies } from '$lib/constants';
@@ -20,6 +21,12 @@
                     functionId: selectedDeployment.resourceId,
                     deploymentId: selectedDeployment.$id
                 });
+            if (page.url.href.includes(`deployment-${selectedDeployment.$id}`)) {
+                goto(
+                    `${base}/project-${page.params.region}-${page.params.project}/functions/function-${page.params.function}/deployments`
+                );
+                return;
+            }
             await invalidate(Dependencies.FUNCTION);
             showDelete = false;
             addNotification({
