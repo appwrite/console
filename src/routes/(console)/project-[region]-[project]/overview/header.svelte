@@ -12,12 +12,12 @@
     import { trackEvent } from '$lib/actions/analytics';
 
     function dismissOnboarding() {
-        setHasOnboardingDismissed(page.data.project.$id, $user);
+        setHasOnboardingDismissed(page.params.project, $user);
         trackEvent('onboarding_hub_platform_dismiss');
         goto(
             resolve('/(console)/project-[region]-[project]/overview/platforms', {
-                region: page.data.project.region,
-                project: page.data.project.$id
+                region: page.params.region,
+                project: page.params.project
             })
         );
     }
@@ -33,8 +33,8 @@
                     </span>
                 </Typography.Title>
                 <Layout.Stack direction="row" inline>
-                    <Id value={page.data.project.$id} copyText="Copy project ID"
-                        >{page.data.project.$id}</Id>
+                    <Id value={page.params.project} copyText="Copy project ID"
+                        >{page.params.project}</Id>
                     {#if $projectRegion}
                         <RegionEndpoint region={$projectRegion} />
                     {/if}
@@ -61,7 +61,7 @@
                         >Follow a few quick steps to get started with Appwrite</Typography.Text>
                 </Layout.Stack>
                 <div class="dashboard-header-button">
-                    {#if !hasOnboardingDismissed(page.data.project.$id, $user)}
+                    {#if !hasOnboardingDismissed(page.params.project, $user)}
                         <Button.Button size="s" variant="secondary" on:click={dismissOnboarding}>
                             Dismiss this page
                         </Button.Button>
