@@ -54,6 +54,7 @@
         sideBarIsOpen: boolean;
         showAccountMenu: boolean;
         subNavigation?: ComponentType;
+        organizationId?: string;
     };
 
     export let state: $$Props['state'] = 'icons';
@@ -63,6 +64,7 @@
     export let sideBarIsOpen: boolean;
     export let showAccountMenu: boolean;
     export let subNavigation = undefined;
+    export let organizationId: string | undefined = undefined;
 
     function toggleFeedback() {
         trackEvent(Click.FeedbackSubmitClick);
@@ -128,6 +130,21 @@
             </div>
         </div>
         <div slot="middle" class="middle-container" class:icons={state === 'icons'}>
+            {#if !project && organizationId}
+                <div class="upgrade-button-container">
+                    <Button.Anchor
+                        size="s"
+                        variant="primary"
+                        on:click={() => {
+                            trackEvent(Click.OrganizationClickUpgrade, {
+                                from: 'button',
+                                source: 'side_nav'
+                            });
+                        }}
+                        href={`${base}/organization-${organizationId}/change-plan`}
+                        >Upgrade</Button.Anchor>
+                </div>
+            {/if}
             {#if progressCard}
                 <Tooltip placement="right" disabled={state !== 'icons'}>
                     <a
@@ -237,7 +254,7 @@
                             <span slot="tooltip">{projectOption.name}</span>
                         </Tooltip>
                     {/each}
-                    {#if project && $isSmallViewport}
+                    {#if project}
                         <div class="mobile-tablet-settings">
                             <Tooltip placement="right" disabled={state !== 'icons'}>
                                 <a
@@ -259,7 +276,7 @@
                         </div>
                     {/if}
                 </Layout.Stack>
-            {:else if $isSmallViewport}
+            {:else if project && $isSmallViewport}
                 <div class="action-buttons">
                     <Layout.Stack direction="column" gap="s">
                         <DropList show={$feedback.show} scrollable>
@@ -268,13 +285,13 @@
                                 size="s"
                                 on:click={() => {
                                     toggleFeedback();
-                                    trackEvent(Click.FeedbackSubmitClick, { source: 'side_nav' });
+                                    trackEvent('click_menu_feedback', { source: 'side_nav' });
                                 }}
-                                >Feedback
+                                ><span>Feedback</span>
                             </Button.Button>
-                            <svelte:fragment slot="other">
+                            <!-- <svelte:fragment slot="other">
                                 <MobileFeedbackModal />
-                            </svelte:fragment>
+                            </svelte:fragment> -->
                         </DropList>
 
                         <DropList show={$showSupportModal} scrollable>
@@ -286,10 +303,10 @@
                                     trackEvent(Click.SupportOpenClick, { source: 'side_nav' });
                                 }}>
                                 <span>Support</span>
-                                <svelte:fragment slot="other">
+                                <!-- <svelte:fragment slot="other">
                                     <MobileSupportModal bind:show={$showSupportModal}
                                     ></MobileSupportModal>
-                                </svelte:fragment>
+                                </svelte:fragment> -->
                             </Button.Button>
                         </DropList>
                     </Layout.Stack>
@@ -317,7 +334,7 @@
                 </div>
             {/if}
 
-            {#if project && $isSmallViewport}
+            {#if (project || (!project && organizationId)) && $isTabletViewport}
                 <div class="action-buttons">
                     <Layout.Stack direction="column" gap="s">
                         <DropList show={$feedback.show} scrollable>
@@ -348,6 +365,11 @@
             {/if}
         </div>
     </Sidebar.Base>
+
+    {#if $isTabletViewport}
+        <MobileFeedbackModal />
+        <MobileSupportModal bind:show={$showSupportModal} />
+    {/if}
 </div>
 
 <div style:--banner-spacing={$bannerSpacing ? $bannerSpacing : undefined}>
@@ -372,6 +394,16 @@
         flex: 1;
         overflow-y: visible;
         max-height: none;
+    }
+
+    .upgrade-button-container {
+        margin-bottom: var(--space-6, 12px);
+
+        :global(a) {
+            width: 100%;
+            display: block;
+            text-align: center;
+        }
     }
 
     .mobile-tablet-settings {
