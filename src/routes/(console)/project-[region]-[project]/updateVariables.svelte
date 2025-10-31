@@ -265,7 +265,7 @@
         : false;
 </script>
 
-<CardGrid>
+<CardGrid zIndex={10}>
     <svelte:fragment slot="title"
         >{isGlobal ? 'Global variables' : 'Environment variables'}</svelte:fragment>
     {#if isGlobal}
