@@ -7,42 +7,36 @@
     import Aside from '../aside.svelte';
     import Logs from '../../(components)/logs.svelte';
     import { Copy, SvgIcon } from '$lib/components';
-    import { type AppwriteRealtimeSubscription, sdk } from '$lib/stores/sdk';
+    import { realtime } from '$lib/stores/sdk';
     import { goto } from '$app/navigation';
     import { onMount } from 'svelte';
     import { getFrameworkIcon } from '$lib/stores/sites';
+    import type { Models } from '@appwrite.io/console';
 
     let { data } = $props();
 
     let deployment = $state(data.deployment);
 
     onMount(() => {
-        let subscription: AppwriteRealtimeSubscription;
-        sdk.forConsoleIn(page.params.region)
-            .realtime.subscribe('console', async (response) => {
-                if (
-                    response.events.includes(
-                        `sites.${data.site.$id}.deployments.${data.deployment.$id}.update`
-                    )
-                ) {
-                    deployment = response.payload;
-                    if (response.payload.status === 'ready') {
-                        const resolvedUrl = resolve(
-                            '/(console)/project-[region]-[project]/sites/create-site/finish',
-                            {
-                                region: page.params.region,
-                                project: page.params.project
-                            }
-                        );
-                        await goto(`${resolvedUrl}?site=${data.site.$id}`);
-                    }
+        return realtime.forConsole(page.params.region, 'console', async (response) => {
+            if (
+                response.events.includes(
+                    `sites.${data.site.$id}.deployments.${data.deployment.$id}.update`
+                )
+            ) {
+                deployment = response.payload as Models.Deployment;
+                if (deployment.status === 'ready') {
+                    const resolvedUrl = resolve(
+                        '/(console)/project-[region]-[project]/sites/create-site/finish',
+                        {
+                            region: page.params.region,
+                            project: page.params.project
+                        }
+                    );
+                    await goto(`${resolvedUrl}?site=${data.site.$id}`);
                 }
-            })
-            .then((realtime) => (subscription = realtime));
-
-        return () => {
-            subscription?.close();
-        };
+            }
+        });
     });
 </script>
 

@@ -18,7 +18,7 @@
     import { Card } from '$lib/components';
     import { page } from '$app/state';
     import { onMount } from 'svelte';
-    import { type AppwriteRealtimeSubscription, sdk } from '$lib/stores/sdk';
+    import { realtime, sdk } from '$lib/stores/sdk';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { addNotification } from '$lib/stores/notifications';
     import { fade } from 'svelte/transition';
@@ -138,8 +138,10 @@
                 message: 'Platform created.'
             });
 
-            invalidate(Dependencies.PROJECT);
-            invalidate(Dependencies.PLATFORMS);
+            await Promise.all([
+                invalidate(Dependencies.PROJECT),
+                invalidate(Dependencies.PLATFORMS)
+            ]);
         } catch (error) {
             trackError(error, Submit.PlatformCreate);
             addNotification({
@@ -156,20 +158,17 @@
     }
 
     onMount(() => {
-        let subscription: AppwriteRealtimeSubscription;
-        sdk.forConsole.realtime
-            .subscribe('console', (response) => {
-                if (response.events.includes(`projects.${projectId}.ping`)) {
-                    connectionSuccessful = true;
-                    invalidate(Dependencies.ORGANIZATION);
-                    invalidate(Dependencies.PROJECT);
-                    subscription?.close();
-                }
-            })
-            .then((realtime) => (subscription = realtime));
+        const unsubscribe = realtime.forConsole(page.params.region, 'console', (response) => {
+            if (response.events.includes(`projects.${projectId}.ping`)) {
+                connectionSuccessful = true;
+                invalidate(Dependencies.ORGANIZATION);
+                invalidate(Dependencies.PROJECT);
+                unsubscribe();
+            }
+        });
 
         return () => {
-            subscription?.close();
+            unsubscribe();
             resetPlatformStore();
         };
     });
