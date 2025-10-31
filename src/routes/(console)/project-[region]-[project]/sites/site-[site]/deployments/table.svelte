@@ -70,67 +70,69 @@
             </Table.Header.Cell>
         {/each}
         <Table.Header.Cell column="actions" {root} />
-    </svelte:fragment>
-    {#each data.deploymentList.deployments as deployment (deployment.$id)}
-        {@const effectiveStatus = getEffectiveBuildStatus(
-            deployment.status,
-            deployment.$createdAt,
-            $regionalConsoleVariables
-        )}
-        <Table.Row.Link
-            {root}
-            id={deployment.$id}
-            href={`${base}/project-${page.params.region}-${page.params.project}/sites/site-${page.params.site}/deployments/deployment-${deployment.$id}`}>
-            {#each $columns as column}
-                <Table.Cell column={column.id} {root}>
-                    {#if column.id === '$id'}
-                        {#key column.id}
-                            <Id value={deployment.$id}>{deployment.$id}</Id>
-                        {/key}
-                    {:else if column.id === 'status'}
-                        {#if data?.activeDeployment?.$id === deployment?.$id}
-                            <Status status="complete" label="Active" />
-                        {:else}
-                            <Status
-                                status={deploymentStatusConverter(effectiveStatus)}
-                                label={capitalize(effectiveStatus)} />
+    {/snippet}
+    {#snippet children(root)}
+        {#each data.deploymentList.deployments as deployment (deployment.$id)}
+            {@const effectiveStatus = getEffectiveBuildStatus(
+                deployment.status,
+                deployment.$createdAt,
+                $regionalConsoleVariables
+            )}
+            <Table.Row.Link
+                {root}
+                id={deployment.$id}
+                href={`${base}/project-${page.params.region}-${page.params.project}/sites/site-${page.params.site}/deployments/deployment-${deployment.$id}`}>
+                {#each $columns as column}
+                    <Table.Cell column={column.id} {root}>
+                        {#if column.id === '$id'}
+                            {#key column.id}
+                                <Id value={deployment.$id}>{deployment.$id}</Id>
+                            {/key}
+                        {:else if column.id === 'status'}
+                            {#if data?.activeDeployment?.$id === deployment?.$id}
+                                <Status status="complete" label="Active" />
+                            {:else}
+                                <Status
+                                    status={deploymentStatusConverter(effectiveStatus)}
+                                    label={capitalize(effectiveStatus)} />
+                            {/if}
+                        {:else if column.id === 'type'}
+                            <DeploymentSource {deployment} />
+                        {:else if column.id === '$updatedAt'}
+                            <DeploymentCreatedBy {deployment} />
+                        {:else if column.id === 'buildDuration'}
+                            {#if ['waiting'].includes(effectiveStatus)}
+                                -
+                            {:else if ['processing', 'building'].includes(effectiveStatus)}
+                                <span use:timer={{ start: deployment.$createdAt }}></span>
+                            {:else}
+                                {formatTimeDetailed(deployment.buildDuration)}
+                            {/if}
+                        {:else if column.id === 'totalSize'}
+                            {calculateSize(deployment?.totalSize ?? 0)}
+                        {:else if column.id === 'sourceSize'}
+                            {calculateSize(deployment.sourceSize)}
+                        {:else if column.id === 'buildSize'}
+                            {calculateSize(deployment.buildSize)}
                         {/if}
-                    {:else if column.id === 'type'}
-                        <DeploymentSource {deployment} />
-                    {:else if column.id === '$updatedAt'}
-                        <DeploymentCreatedBy {deployment} />
-                    {:else if column.id === 'buildDuration'}
-                        {#if ['waiting'].includes(effectiveStatus)}
-                            -
-                        {:else if ['processing', 'building'].includes(effectiveStatus)}
-                            <span use:timer={{ start: deployment.$createdAt }}></span>
-                        {:else}
-                            {formatTimeDetailed(deployment.buildDuration)}
-                        {/if}
-                    {:else if column.id === 'totalSize'}
-                        {calculateSize(deployment?.totalSize ?? 0)}
-                    {:else if column.id === 'sourceSize'}
-                        {calculateSize(deployment.sourceSize)}
-                    {:else if column.id === 'buildSize'}
-                        {calculateSize(deployment.buildSize)}
-                    {/if}
+                    </Table.Cell>
+                {/each}
+                <Table.Cell column="actions" {root}>
+                    <Layout.Stack alignItems="flex-end">
+                        <DeploymentActionMenu
+                            {deployment}
+                            bind:selectedDeployment
+                            bind:showRedeploy
+                            bind:showActivate
+                            bind:showDelete
+                            bind:showCancel
+                            activeDeployment={data.site.deploymentId} />
+                    </Layout.Stack>
                 </Table.Cell>
-            {/each}
-            <Table.Cell column="actions" {root}>
-                <Layout.Stack alignItems="flex-end">
-                    <DeploymentActionMenu
-                        {deployment}
-                        bind:selectedDeployment
-                        bind:showRedeploy
-                        bind:showActivate
-                        bind:showDelete
-                        bind:showCancel
-                        activeDeployment={data.site.deploymentId} />
-                </Layout.Stack>
-            </Table.Cell>
-        </Table.Row.Link>
-    {/each}
-</Table.Root>
+            </Table.Row.Link>
+        {/each}
+    {/snippet}
+</MultiSelectionTable>
 
 {#if selectedDeployment}
     <Delete {selectedDeployment} activeDeployment={data.site.deploymentId} bind:showDelete />

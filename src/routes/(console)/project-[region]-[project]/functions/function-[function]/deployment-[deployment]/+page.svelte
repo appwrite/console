@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
-    import { realtime } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { type Models } from '@appwrite.io/console';
     import { page } from '$app/state';
@@ -66,7 +66,8 @@
                     }
                 }
             }
-        });
+        );
+        return unsubscribe;
     });
 
     export function badgeTypeDeployment(status: string) {
