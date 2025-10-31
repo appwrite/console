@@ -9,7 +9,7 @@
 
     let { status, deployment }: { status: string; deployment: Models.Deployment } = $props();
 
-    // mmoize timeout value to avoid recalculating on every render
+    // memoize timeout value to avoid recalculating on every render
     let timeoutSeconds = $derived(getBuildTimeoutSeconds($regionalConsoleVariables));
     let effectiveStatus = $derived(
         getEffectiveBuildStatus(status, deployment.$createdAt, timeoutSeconds)
