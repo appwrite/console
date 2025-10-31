@@ -5,7 +5,7 @@
     import { projectRegion } from '../store';
     import { hasOnboardingDismissed, setHasOnboardingDismissed } from '$lib/helpers/onboarding';
     import { goto } from '$app/navigation';
-    import { base } from '$app/paths';
+    import { resolve } from '$app/paths';
     import { Layout, Button, Typography } from '@appwrite.io/pink-svelte';
     import { user } from '$lib/stores/user';
     import { isSmallViewport } from '$lib/stores/viewport';
@@ -15,7 +15,10 @@
         setHasOnboardingDismissed(page.data.project.$id, $user);
         trackEvent('onboarding_hub_platform_dismiss');
         goto(
-            `${base}/project-${page.data.project.region}-${page.data.project.$id}/overview/platforms`
+            resolve('/(console)/project-[region]-[project]/overview/platforms', {
+                region: page.data.project.region,
+                project: page.data.project.$id
+            })
         );
     }
 </script>
