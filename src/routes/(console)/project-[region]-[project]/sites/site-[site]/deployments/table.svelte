@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Confirm, Id } from '$lib/components';
+    import { type DeleteOperationState, Id, MultiSelectionTable } from '$lib/components';
     import type { PageData } from './$types';
     import { type Models } from '@appwrite.io/console';
     import { formatTimeDetailed } from '$lib/helpers/timeConversion';
@@ -11,7 +11,7 @@
     import RedeployModal from '../../redeployModal.svelte';
     import Cancel from './cancelDeploymentModal.svelte';
     import { base } from '$app/paths';
-    import { Badge, FloatingActionBar, Layout, Status, Table } from '@appwrite.io/pink-svelte';
+    import { Layout, Status, Table } from '@appwrite.io/pink-svelte';
     import { columns } from './store';
     import ActivateDeploymentModal from '../../activateDeploymentModal.svelte';
     import { capitalize } from '$lib/helpers/string';
@@ -21,26 +21,23 @@
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
     import { sdk } from '$lib/stores/sdk';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { addNotification } from '$lib/stores/notifications';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import { Button } from '$lib/elements/forms';
-    import { site } from '$routes/(console)/project-[region]-[project]/sites/site-[site]/store';
 
-    export let data: PageData;
+    const {
+        data
+    }: {
+        data: PageData;
+    } = $props();
 
-    let showDelete = false;
-    let showActivate = false;
-    let showRedeploy = false;
-    let showCancel = false;
+    let showDelete = $state(false);
+    let showActivate = $state(false);
+    let showRedeploy = $state(false);
+    let showCancel = $state(false);
 
-    let selectedRows = [];
-    let showBatchDeletion = false;
-    let selectedDeployment: Models.Deployment = null;
+    let selectedDeployment: Models.Deployment | null = $state(null);
 
-    async function deleteDeployments() {
-        showBatchDeletion = false;
-
+    async function deleteDeployments(selectedRows: string[]): Promise<DeleteOperationState> {
         const promises = selectedRows.map((deploymentId) =>
             sdk.forProject(page.params.region, page.params.project).sites.deleteDeployment({
                 siteId: page.params.site,
@@ -50,18 +47,10 @@
         try {
             await Promise.all(promises);
             trackEvent(Submit.DeploymentDelete);
-            addNotification({
-                type: 'success',
-                message: `${selectedRows.length} deployment${selectedRows.length > 1 ? 's' : ''} deleted`
-            });
         } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
             trackError(error, Submit.DeploymentDelete);
+            return error;
         } finally {
-            selectedRows = [];
             await Promise.all([
                 invalidate(Dependencies.DEPLOYMENTS),
                 invalidate(Dependencies.SITE)
@@ -70,12 +59,11 @@
     }
 </script>
 
-<Table.Root
-    let:root
-    allowSelection
-    bind:selectedRows
+<MultiSelectionTable
+    resource="deployment"
+    onDelete={deleteDeployments}
     columns={[...$columns, { id: 'actions', width: 40 }]}>
-    <svelte:fragment slot="header" let:root>
+    {#snippet header(root)}
         {#each $columns as { id, title }}
             <Table.Header.Cell column={id} {root}>
                 {title}
@@ -160,33 +148,3 @@
         selectedDeploymentId={selectedDeployment.$id}
         bind:show={showActivate} />
 {/if}
-
-{#if selectedRows.length > 0}
-    <FloatingActionBar>
-        <svelte:fragment slot="start">
-            <Badge content={selectedRows.length.toString()} />
-            <span style="white-space: nowrap">
-                {selectedRows.length > 1 ? 'deployments' : 'deployment'}
-                selected
-            </span>
-        </svelte:fragment>
-        <svelte:fragment slot="end">
-            <Button text on:click={() => (selectedRows = [])}>Cancel</Button>
-            <Button secondary on:click={() => (showBatchDeletion = true)}>Delete</Button>
-        </svelte:fragment>
-    </FloatingActionBar>
-{/if}
-
-<Confirm
-    title="Delete deployments"
-    confirmDeletion
-    onSubmit={deleteDeployments}
-    bind:open={showBatchDeletion}>
-    <p>
-        Are you sure you want to delete <strong>{selectedRows.length}</strong>
-        {selectedRows.length > 1 ? 'deployments' : 'deployment'} from your site -
-        <strong>{$site.name}</strong>?
-    </p>
-
-    <p class="u-bold">This action is irreversible.</p>
-</Confirm>
