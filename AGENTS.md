@@ -11,10 +11,10 @@ Appwrite Console is the web-based GUI for the Appwrite backend-as-a-service plat
 1. **Install pnpm**: `npm install -g corepack && corepack enable && corepack prepare pnpm@10.15.1 --activate`
 2. **Create .env**: `cp .env.example .env` (configure `PUBLIC_APPWRITE_ENDPOINT` and `PUBLIC_CONSOLE_MODE`)
 3. **Configure network access** (if using GitHub Actions or restricted environments):
-   - Ensure firewall/proxy allows access to: `pkg.pr.new`, `pkg.vc`, `registry.npmjs.org`
-   - These domains are required for dependencies: `@appwrite.io/console`, `@appwrite.io/pink-icons-svelte`, `@appwrite.io/pink-svelte`
-   - In GitHub Actions: Use `pnpm/action-setup@v4` which handles registry configuration
-   - If network errors persist, check proxy settings: `npm config get proxy` and `npm config get https-proxy`
+    - Ensure firewall/proxy allows access to: `pkg.pr.new`, `pkg.vc`, `registry.npmjs.org`
+    - These domains are required for dependencies: `@appwrite.io/console`, `@appwrite.io/pink-icons-svelte`, `@appwrite.io/pink-svelte`
+    - In GitHub Actions: Use `pnpm/action-setup@v4` which handles registry configuration
+    - If network errors persist, check proxy settings: `npm config get proxy` and `npm config get https-proxy`
 4. **Install dependencies**: `pnpm install --frozen-lockfile` (if pkg.pr.new/pkg.vc fail due to network restrictions, installation may still succeed with cached versions)
 
 ### Development Commands
@@ -70,12 +70,12 @@ src/
 ## Common Pitfalls
 
 1. **Blank page in dev**: Disable ad blockers if seeing "Failed to fetch dynamically imported module" (known SvelteKit issue)
-2. **Network errors on install**: 
-   - pkg.pr.new/pkg.vc deps may fail due to firewall/proxy restrictions
-   - Check access: `curl -I https://pkg.pr.new` and `curl -I https://pkg.vc`
-   - Configure proxy if needed: `npm config set proxy http://proxy:port` and `npm config set https-proxy http://proxy:port`
-   - GitHub Actions: Ensure runner has internet access; use `pnpm/action-setup@v4` action
-   - Local dev: Often safe to continue with cached versions if network fails
+2. **Network errors on install**:
+    - pkg.pr.new/pkg.vc deps may fail due to firewall/proxy restrictions
+    - Check access: `curl -I https://pkg.pr.new` and `curl -I https://pkg.vc`
+    - Configure proxy if needed: `npm config set proxy http://proxy:port` and `npm config set https-proxy http://proxy:port`
+    - GitHub Actions: Ensure runner has internet access; use `pnpm/action-setup@v4` action
+    - Local dev: Often safe to continue with cached versions if network fails
 3. **OOM on build**: Set `NODE_OPTIONS=--max_old_space_size=8192` (like Dockerfile does)
 4. **Test failures**: Always use `pnpm run test` (sets TZ=EST), not `vitest` directly
 5. **TS errors not showing**: Run `pnpm run check` explicitly (dev server doesn't always surface them)
