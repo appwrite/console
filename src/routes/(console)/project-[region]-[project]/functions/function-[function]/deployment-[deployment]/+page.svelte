@@ -121,7 +121,7 @@
                             {#if !!data.deployment?.sourceSize || !!data.deployment?.sourceSize}
                                 <DownloadActionMenuItem deployment={data.deployment} {toggle} />
                             {/if}
-                            {#if $canWriteFunctions && data.deployment.status !== 'building' && data.deployment.status !== 'processing' && data.deployment?.status !== 'waiting'}
+                            {#if $canWriteFunctions && ['ready', 'failed'].includes(data.deployment.status)}
                                 <ActionMenu.Item.Button
                                     status="danger"
                                     leadingIcon={IconTrash}
