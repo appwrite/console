@@ -2,7 +2,7 @@
     import { page } from '$app/state';
     import { SubMenu } from '$lib/components/menu';
     import { type Models } from '@appwrite.io/console';
-    import { IconDownload } from '@appwrite.io/pink-icons-svelte';
+    import { IconDownload, IconChevronRight } from '@appwrite.io/pink-icons-svelte';
     import { ActionMenu } from '@appwrite.io/pink-svelte';
     import { getOutputDownload, getSourceDownload } from '../store';
 
@@ -13,7 +13,8 @@
 {#if deployment?.status === 'ready' || deployment?.status === 'failed' || deployment?.status === 'building'}
     <SubMenu>
         <ActionMenu.Root noPadding>
-            <ActionMenu.Item.Button trailingIcon={IconDownload}>Download</ActionMenu.Item.Button>
+            <ActionMenu.Item.Button leadingIcon={IconDownload} trailingIcon={IconChevronRight}
+                >Download</ActionMenu.Item.Button>
         </ActionMenu.Root>
         <svelte:fragment slot="menu">
             <ActionMenu.Root>
