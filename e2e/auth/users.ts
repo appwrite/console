@@ -137,9 +137,6 @@ export async function updateUserName(
         await nameSection.locator('id=name').fill(newName);
         await nameSection.getByRole('button', { name: 'Update' }).click();
         await expect(page.getByText(/has been updated/i)).toBeVisible();
-
-        await page.reload();
-        await page.waitForLoadState('domcontentloaded');
         await expect(page.locator('input[id="name"]')).toHaveValue(newName);
     });
 }
@@ -160,9 +157,6 @@ export async function updateUserEmail(
         await emailSection.locator('id=email').fill(newEmail);
         await emailSection.getByRole('button', { name: 'Update' }).click();
         await expect(page.getByText(/has been updated/i)).toBeVisible();
-
-        await page.reload();
-        await page.waitForLoadState('domcontentloaded');
         await expect(page.locator('input[id="email"]')).toHaveValue(newEmail);
     });
 }
@@ -183,9 +177,6 @@ export async function updateUserPhone(
         await phoneSection.locator('id=phone').fill(newPhone);
         await phoneSection.getByRole('button', { name: 'Update' }).click();
         await expect(page.getByText(/has been updated/i)).toBeVisible();
-
-        await page.reload();
-        await page.waitForLoadState('domcontentloaded');
         await expect(page.locator('input[id="phone"]')).toHaveValue(newPhone);
     });
 }
@@ -226,7 +217,7 @@ export async function updateUserStatus(
         await expect(page.getByText(/has been (blocked|unblocked)/i)).toBeVisible();
 
         await page.reload();
-        await page.waitForLoadState('domcontentloaded');
+        await page.waitForLoadState('networkidle');
         if (!enabled) {
             await expect(page.getByText('blocked')).toBeVisible();
         } else {
@@ -267,9 +258,6 @@ export async function updateUserLabels(
         await expect(updateButton).toBeEnabled({ timeout: 5000 });
         await updateButton.click();
         await expect(page.getByText(/have been updated/i)).toBeVisible();
-
-        await page.reload();
-        await page.waitForLoadState('domcontentloaded');
         const reloadedLabelsSection = page.locator('form').filter({
             has: page.getByRole('heading', { name: 'Labels' })
         });
@@ -363,9 +351,6 @@ export async function updateUserPrefs(
 
         await prefsSection.getByRole('button', { name: 'Update' }).click();
         await expect(page.getByText(/Preferences have been updated/i)).toBeVisible();
-
-        await page.reload();
-        await page.waitForLoadState('domcontentloaded');
     });
 }
 
@@ -391,9 +376,6 @@ export async function updateUserMfa(
             await mfaSection.getByRole('button', { name: 'Update' }).click();
             await expect(page.getByText(/Multi-factor authentication has been/i)).toBeVisible();
         }
-
-        await page.reload();
-        await page.waitForLoadState('domcontentloaded');
         const reloadedMfaSection = page.locator('form').filter({
             has: page.getByRole('heading', { name: 'Multi-factor authentication' })
         });

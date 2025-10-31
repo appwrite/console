@@ -16,7 +16,7 @@ export async function navigateToUsers(
     return test.step('navigate to users', async () => {
         await page.goto(buildAuthUrl(region, projectId));
         await page.waitForURL(buildAuthUrlPattern(region, projectId));
-        await page.waitForLoadState('domcontentloaded');
+        await page.getByRole('heading', { name: 'Auth' }).waitFor({ state: 'visible' });
     });
 }
 
@@ -29,7 +29,7 @@ export async function navigateToUser(
     return test.step(`navigate to user ${userId}`, async () => {
         await page.goto(buildAuthUrl(region, projectId, `/user-${userId}`));
         await page.waitForURL(buildAuthUrlPattern(region, projectId, `/user-${userId}`));
-        await page.waitForLoadState('domcontentloaded');
+        await page.getByText(userId).first().waitFor({ state: 'visible' });
     });
 }
 

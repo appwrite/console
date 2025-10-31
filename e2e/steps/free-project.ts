@@ -4,6 +4,7 @@ import { getOrganizationIdFromUrl, getProjectIdFromUrl } from '../helpers/url';
 type Metadata = {
     id: string;
     organizationId: string;
+    region: string;
 };
 
 export async function createFreeProject(page: Page): Promise<Metadata> {
@@ -13,7 +14,7 @@ export async function createFreeProject(page: Page): Promise<Metadata> {
         return getOrganizationIdFromUrl(page.url());
     });
 
-    const projectId = await test.step('create project', async () => {
+    const { projectId, region } = await test.step('create project', async () => {
         await page.waitForURL(/\/organization-[^/]+/);
         await page.getByRole('button', { name: 'create project' }).first().click();
         const dialog = page.locator('dialog[open]');
@@ -34,11 +35,15 @@ export async function createFreeProject(page: Page): Promise<Metadata> {
         await page.waitForURL(new RegExp(`/project-${region}-[^/]+`));
         expect(page.url()).toContain(`/console/project-${region}-`);
 
-        return getProjectIdFromUrl(page.url());
+        return {
+            projectId: getProjectIdFromUrl(page.url()),
+            region
+        };
     });
 
     return {
         id: projectId,
-        organizationId
+        organizationId,
+        region
     };
 }
