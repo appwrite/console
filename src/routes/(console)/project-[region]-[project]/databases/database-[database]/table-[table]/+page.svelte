@@ -166,13 +166,15 @@
                             Create row
                         </Button>
                     {/if}
-                    <Popover padding="none" placement="bottom-start" let:toggle>
+                    <Popover padding="none" placement="bottom-start" let:toggle let:showing>
                         <Button
                             secondary
                             disabled={!(hasColumns && hasValidColumns)}
                             on:click={toggle}>
                             Manage rows
-                            <Icon icon={IconChevronDown} slot="end" size="s" />
+                            <span slot="end" class="chevron-wrapper" class:rotate={showing}>
+                                <Icon icon={IconChevronDown} size="s" />
+                            </span>
                         </Button>
                         <ActionMenu.Root slot="tooltip">
                             <ActionMenu.Item.Button
@@ -309,5 +311,14 @@
     :global(.small-button-dimensions) {
         width: 32px !important;
         height: 32px !important;
+    }
+
+    .chevron-wrapper {
+        display: inline-flex;
+        transition: transform 0.1s ease-out;
+    }
+
+    .chevron-wrapper.rotate {
+        transform: rotate(180deg);
     }
 </style>
