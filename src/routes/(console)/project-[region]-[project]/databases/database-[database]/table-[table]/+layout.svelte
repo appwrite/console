@@ -82,7 +82,7 @@
      */
     let isWaterfallFromFaker = false;
 
-    let columnCreationHandler: (response: RealtimeResponse) => void | null = null;
+    let columnCreationHandler: ((response: RealtimeResponse) => void) | null = null;
 
     onMount(() => {
         expandTabs.set(preferences.getKey('tableHeaderExpanded', true));
