@@ -14,6 +14,11 @@ export async function navigateToUsers(
     projectId: string
 ): Promise<void> {
     return test.step('navigate to users', async () => {
+        const expectedPattern = new RegExp(`/project-${region}-${projectId}/auth(/\\?.*)?$`);
+        if (expectedPattern.test(page.url())) {
+            return;
+        }
+
         await page.goto(buildAuthUrl(region, projectId));
         await page.waitForURL(buildAuthUrlPattern(region, projectId));
         await page.getByRole('heading', { name: 'Auth' }).waitFor({ state: 'visible' });
@@ -27,6 +32,13 @@ export async function navigateToUser(
     userId: string
 ): Promise<void> {
     return test.step(`navigate to user ${userId}`, async () => {
+        const expectedPattern = new RegExp(
+            `/project-${region}-${projectId}/auth/user-${userId}(/\\?.*)?$`
+        );
+        if (expectedPattern.test(page.url())) {
+            return;
+        }
+
         await page.goto(buildAuthUrl(region, projectId, `/user-${userId}`));
         await page.waitForURL(buildAuthUrlPattern(region, projectId, `/user-${userId}`));
         await page.getByText(userId).first().waitFor({ state: 'visible' });

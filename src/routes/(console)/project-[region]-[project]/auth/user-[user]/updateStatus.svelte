@@ -122,7 +122,7 @@
                 <p>Joined: {toLocaleDateTime($user.registration)}</p>
                 <p>Last activity: {accessedAt ? toLocaleDate(accessedAt) : 'never'}</p>
             </div>
-            <div>
+            <div data-user-status>
                 {#if !$user.status}
                     <Badge content="blocked" variant="secondary" type="warning" />
                 {:else if $user.email && $user.phone}

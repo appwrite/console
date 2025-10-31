@@ -50,22 +50,46 @@ export async function deleteOrganization(page: Page, organizationId: string) {
     });
 }
 
-export async function deleteAccount(page: Page) {
+export async function deleteAccount(page: Page, maxRetries = 3) {
     return test.step('delete account', async () => {
-        await page.goto('./account');
+        for (let attempt = 0; attempt < maxRetries; attempt++) {
+            await page.goto('./account');
 
-        // Click the Delete button in the CardGrid actions section
-        await page.getByRole('button', { name: 'Delete', exact: true }).click();
+            // click the Delete button in the CardGrid actions section
+            await page.getByRole('button', { name: 'Delete', exact: true }).click();
 
-        // Wait for confirm modal to open
-        const dialog = page.locator('dialog[open]');
-        await expect(dialog).toBeVisible();
+            // wait for confirm modal to open
+            const dialog = page.locator('dialog[open]');
+            await expect(dialog).toBeVisible();
 
-        // Click the confirm button in the modal (no name typing required)
-        await dialog.getByRole('button', { name: 'Delete', exact: true }).click();
+            // click the confirm button in the modal (no name typing required)
+            await dialog.getByRole('button', { name: 'Delete', exact: true }).click();
 
-        // Wait for navigation to login page after account deletion
-        await page.waitForURL(/login/);
+            // check if we got an error about active memberships
+            const membershipError = page.getByText(/active memberships/i);
+            const errorVisible = await membershipError
+                .isVisible({ timeout: 2000 })
+                .catch(() => false);
+
+            if (errorVisible) {
+                console.log(
+                    `Attempt ${attempt + 1}: Account deletion failed due to active memberships. Retrying...`
+                );
+                // close the dialog if still open
+                await page.keyboard.press('Escape').catch(() => {});
+                // wait before retrying (org deletion might still be processing)
+                await page.waitForTimeout(2000);
+                continue;
+            }
+
+            // wait for navigation to login page after account deletion
+            await page.waitForURL(/login/, { timeout: 5000 });
+            return;
+        }
+
+        throw new Error(
+            'Failed to delete account after multiple retries due to active memberships'
+        );
     });
 }
 

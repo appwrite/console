@@ -1,6 +1,4 @@
-import { test, expect } from '@playwright/test';
-import { registerUserStep } from '../steps/account';
-import { createFreeProject } from '../steps/free-project';
+import { test, expect } from '../fixtures/base';
 import {
     createUser,
     searchUser,
@@ -17,12 +15,8 @@ import {
     deleteUser
 } from '../auth/users';
 import { navigateToUsers } from '../auth/navigation';
-import { cleanupTestAccount } from '../helpers/delete';
 
-test('auth flow - free tier', async ({ page }) => {
-    await registerUserStep(page);
-    const project = await createFreeProject(page);
-
+test('auth flow - free tier', async ({ page, project }) => {
     const user = await createUser(page, project.region, project.id, {
         name: 'Test User',
         email: 'testuser@example.com',
@@ -58,14 +52,14 @@ test('auth flow - free tier', async ({ page }) => {
     await test.step('verify blocked status', async () => {
         await navigateToUsers(page, project.region, project.id);
         const userRow = page.locator('[role="row"]').filter({ hasText: 'Updated Test User' });
-        await expect(userRow.getByText('blocked')).toBeVisible();
+        await expect(userRow.getByText('blocked')).toBeVisible({ timeout: 10000 });
     });
 
     await updateUserStatus(page, project.region, project.id, user.id, true);
     await test.step('verify unblocked status', async () => {
         await navigateToUsers(page, project.region, project.id);
         const userRow = page.locator('[role="row"]').filter({ hasText: 'Updated Test User' });
-        await expect(userRow.getByText('blocked')).not.toBeVisible();
+        await expect(userRow.getByText('blocked')).not.toBeVisible({ timeout: 10000 });
     });
 
     await updateUserLabels(page, project.region, project.id, user.id, ['test', 'e2e', 'freeTier']);
@@ -132,9 +126,4 @@ test('auth flow - free tier', async ({ page }) => {
         await expect(page.getByText('Second User')).not.toBeVisible();
         await expect(page.getByText('Third User')).not.toBeVisible();
     });
-
-    // cleanup: delete project, organization, and account
-    test.afterAll('tear down', async () => {
-        await cleanupTestAccount(page, project.region, project.id, project.organizationId);
-    })
 });

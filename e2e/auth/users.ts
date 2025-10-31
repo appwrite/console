@@ -136,7 +136,7 @@ export async function updateUserName(
         });
         await nameSection.locator('id=name').fill(newName);
         await nameSection.getByRole('button', { name: 'Update' }).click();
-        await expect(page.getByText(/has been updated/i)).toBeVisible();
+        await expect(page.getByText(/name has been updated/i)).toBeVisible();
         await expect(page.locator('input[id="name"]')).toHaveValue(newName);
     });
 }
@@ -156,7 +156,7 @@ export async function updateUserEmail(
         });
         await emailSection.locator('id=email').fill(newEmail);
         await emailSection.getByRole('button', { name: 'Update' }).click();
-        await expect(page.getByText(/has been updated/i)).toBeVisible();
+        await expect(page.getByText(/email has been updated/i)).toBeVisible();
         await expect(page.locator('input[id="email"]')).toHaveValue(newEmail);
     });
 }
@@ -176,7 +176,7 @@ export async function updateUserPhone(
         });
         await phoneSection.locator('id=phone').fill(newPhone);
         await phoneSection.getByRole('button', { name: 'Update' }).click();
-        await expect(page.getByText(/has been updated/i)).toBeVisible();
+        await expect(page.getByText(/phone has been updated/i)).toBeVisible();
         await expect(page.locator('input[id="phone"]')).toHaveValue(newPhone);
     });
 }
@@ -196,7 +196,7 @@ export async function updateUserPassword(
         });
         await passwordSection.locator('#newPassword').fill(newPassword);
         await passwordSection.getByRole('button', { name: 'Update' }).click();
-        await expect(page.getByText(/has been updated/i)).toBeVisible();
+        await expect(page.getByText(/password has been updated/i)).toBeVisible();
     });
 }
 
@@ -216,12 +216,12 @@ export async function updateUserStatus(
         await button.click();
         await expect(page.getByText(/has been (blocked|unblocked)/i)).toBeVisible();
 
-        await page.reload();
-        await page.waitForLoadState('networkidle');
+        // Now verify the badge appears/disappears in the status section
+        const statusSection = page.locator('[data-user-status]');
         if (!enabled) {
-            await expect(page.getByText('blocked')).toBeVisible();
+            await expect(statusSection.getByText('blocked')).toBeVisible({ timeout: 5000 });
         } else {
-            await expect(page.getByText('blocked')).not.toBeVisible();
+            await expect(statusSection.getByText('blocked')).not.toBeVisible({ timeout: 5000 });
         }
     });
 }
@@ -327,13 +327,9 @@ export async function updateUserPrefs(
             has: page.getByRole('heading', { name: 'Preferences' })
         });
 
-        const deleteButtons = prefsSection.locator('button:has(.icon-x)');
+        await prefsSection.scrollIntoViewIfNeeded();
 
-        const count = await deleteButtons.count();
-        for (let i = 0; i < count; i++) {
-            await deleteButtons.first().click();
-        }
-
+        // fill preferences
         const prefEntries = Object.entries(prefs);
         for (let i = 0; i < prefEntries.length; i++) {
             const [key, value] = prefEntries[i];

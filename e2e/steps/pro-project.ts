@@ -1,10 +1,6 @@
+import type { ProjectMetadata } from '../fixtures/base';
 import { test, expect, type Page } from '@playwright/test';
 import { getOrganizationIdFromUrl, getProjectIdFromUrl } from '../helpers/url';
-
-type Metadata = {
-    id: string;
-    organizationId: string;
-};
 
 export async function enterCreditCard(page: Page) {
     // click the `add` button inside correct view layer
@@ -31,7 +27,7 @@ export async function enterCreditCard(page: Page) {
     });
 }
 
-export async function createProProject(page: Page): Promise<Metadata> {
+export async function createProProject(page: Page): Promise<ProjectMetadata> {
     const organizationId = await test.step('create organization', async () => {
         await page.goto('./create-organization');
         await page.locator('id=name').fill('test org');
@@ -46,31 +42,48 @@ export async function createProProject(page: Page): Promise<Metadata> {
         return getOrganizationIdFromUrl(page.url());
     });
 
-    const projectId = await test.step('create project', async () => {
+    const { projectId, region } = await test.step('create project', async () => {
         await page.waitForURL(/\/organization-[^/]+/);
         await page.getByRole('button', { name: 'create project' }).first().click();
         const dialog = page.locator('dialog[open]');
 
         await dialog.getByPlaceholder('Project name').fill('test project');
 
-        let region = 'fra'; // for fallback
-        const regionPicker = dialog.locator('button[role="combobox"]');
-        if (await regionPicker.isVisible()) {
-            await regionPicker.click();
-            await page.getByRole('option', { name: /New York/i }).click();
+        let region = 'fra';
+        // @ts-expect-error - process.env is available in Node.js test environment
+        const isMultiRegion = process.env.PUBLIC_APPWRITE_MULTI_REGION === 'true';
 
-            region = 'nyc';
+        if (isMultiRegion) {
+            const regionPicker = dialog.locator('button[role="combobox"]');
+            if (await regionPicker.isVisible()) {
+                await regionPicker.click();
+
+                // get all available/enabled region options
+                const options = await page.getByRole('option').all();
+                if (options.length > 0) {
+                    // select a random region
+                    const randomIndex = Math.floor(Math.random() * options.length);
+                    await options[randomIndex].click();
+                }
+            }
         }
 
         await dialog.getByRole('button', { name: 'create' }).click();
-        await page.waitForURL(new RegExp(`/project-${region}-[^/]+`));
+
+        // wait for URL and extract actual region from it
+        await page.waitForURL(/\/project-[^/]+-[^/]+/);
+        const urlMatch = page.url().match(/\/project-([^-]+)-/);
+        if (urlMatch) {
+            region = urlMatch[1];
+        }
         expect(page.url()).toContain(`/console/project-${region}-`);
 
-        return getProjectIdFromUrl(page.url());
+        return { projectId: getProjectIdFromUrl(page.url()), region };
     });
 
     return {
         id: projectId,
-        organizationId
+        organizationId,
+        region
     };
 }
