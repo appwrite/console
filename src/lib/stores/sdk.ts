@@ -42,7 +42,6 @@ import {
     SUBDOMAIN_TOR
 } from '$lib/constants';
 import { building } from '$app/environment';
-import { getProjectId } from '$lib/helpers/project';
 
 export function getApiEndpoint(region?: string): string {
     if (building) return '';
@@ -141,39 +140,32 @@ const sdkForProject = {
 };
 
 export const realtime = {
-    forProject(region: string, _projectId: string) {
+    forProject(
+        region: string,
+        channels: string | string[],
+        callback: AppwriteRealtimeResponseEvent
+    ) {
         const endpoint = getApiEndpoint(region);
         if (endpoint !== clientRealtime.config.endpoint) {
             clientRealtime.setEndpoint(endpoint);
         }
-        return clientRealtime;
+
+        // because uses a different client!
+        const realtime = new Realtime(clientRealtime);
+
+        return createRealtimeSubscription(realtime, channels, callback);
     },
 
     forConsole(
         region: string,
         channels: string | string[],
-        // the generic `<T>` is too strict, any is too loose!
-        callback: Parameters<Realtime['subscribe']>[1]
+        callback: AppwriteRealtimeResponseEvent
     ): () => void {
-        let closed = false;
+        const realtimeInstance = region
+            ? sdk.forConsoleIn(region).realtime
+            : sdk.forConsole.realtime;
 
-        const channelsArray = Array.isArray(channels) ? channels : [channels];
-        const subscriptionPromise = sdk
-            .forConsoleIn(region)
-            .realtime.subscribe(channelsArray, callback);
-
-        return () => {
-            if (closed) return;
-            closed = true;
-
-            subscriptionPromise
-                .then((sub) => sub.close())
-                .catch((error) => {
-                    if (isDev) {
-                        console.log(error.message);
-                    }
-                });
-        };
+        return createRealtimeSubscription(realtimeInstance, channels, callback);
     }
 };
 
@@ -203,8 +195,8 @@ export const sdk = {
 };
 
 export enum RuleType {
-    DEPLOYMENT = 'deployment',
     API = 'api',
+    DEPLOYMENT = 'deployment',
     REDIRECT = 'redirect'
 }
 
@@ -218,6 +210,36 @@ export enum RuleTrigger {
     MANUAL = 'manual'
 }
 
-export const createAdminClient = () => {
-    return new Client().setEndpoint(getApiEndpoint()).setMode('admin').setProject(getProjectId());
+export type RealtimeResponse = {
+    events: string[];
+    channels: string[];
+    timestamp: string;
+    payload: unknown;
 };
+
+// the generic `<T>` is too strict, any is too loose!
+export type AppwriteRealtimeResponseEvent = (response: RealtimeResponse) => void;
+
+function createRealtimeSubscription(
+    realtimeInstance: Realtime,
+    channels: string | string[],
+    callback: AppwriteRealtimeResponseEvent
+): () => void {
+    let closed = false;
+
+    const channelsArray = Array.isArray(channels) ? channels : [channels];
+    const subscriptionPromise = realtimeInstance.subscribe(channelsArray, callback);
+
+    return () => {
+        if (closed) return;
+        closed = true;
+
+        subscriptionPromise
+            .then((sub) => sub.close())
+            .catch((error) => {
+                if (isDev) {
+                    console.log(error.message);
+                }
+            });
+    };
+}
