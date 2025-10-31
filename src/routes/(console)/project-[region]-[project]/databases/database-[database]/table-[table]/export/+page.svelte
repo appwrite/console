@@ -23,6 +23,7 @@
     import { tags, queries } from '$lib/components/filters/store';
     import { TagList } from '$lib/components/filters';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import { toLocalDateTimeISO } from '$lib/helpers/date';
 
     let showExitModal = $state(false);
     let formComponent: Form;
@@ -32,12 +33,11 @@
     let buckets = $state<Models.BucketList | null>(null);
     let loadingBuckets = $state(false);
 
-    const timestamp = new Date()
-        .toISOString()
+    const timestamp = toLocalDateTimeISO(Date.now())
         .replace(/[:.]/g, '-')
         .split('T')
         .join('_')
-        .slice(0, -5);
+        .slice(0, -4);
     let filename = $state(`${$table.name}_${timestamp}.csv`);
 
     let selectedColumns = $state<Record<string, boolean>>({});

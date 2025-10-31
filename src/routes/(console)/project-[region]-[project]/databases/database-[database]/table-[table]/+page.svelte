@@ -315,7 +315,7 @@
 
     .chevron-wrapper {
         display: inline-flex;
-        transition: transform 0.1s ease-out;
+        transition: transform 0.15s ease-out;
     }
 
     .chevron-wrapper.rotate {
