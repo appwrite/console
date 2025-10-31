@@ -72,7 +72,7 @@
                     enabled: true,
                     entrypoint,
                     commands: buildCommand,
-                    specification: specification || undefined
+                    specification: isCloud ? specification || undefined : undefined
                 });
 
             // Add domain
