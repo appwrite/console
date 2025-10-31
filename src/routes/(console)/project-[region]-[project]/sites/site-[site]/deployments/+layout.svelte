@@ -1,7 +1,7 @@
 <script lang="ts">
     import { onMount } from 'svelte';
     import { page } from '$app/state';
-    import { type AppwriteRealtimeSubscription, sdk } from '$lib/stores/sdk';
+    import { realtime } from '$lib/stores/sdk';
     import { Dependencies } from '$lib/constants';
     import { invalidate, goto } from '$app/navigation';
     import { registerCommands } from '$lib/commandCenter';
@@ -11,35 +11,32 @@
     import { canWriteSites } from '$lib/stores/roles';
     import { IconList, IconPlus, IconSearch } from '@appwrite.io/pink-icons-svelte';
 
-    onMount(async () => {
+    onMount(() => {
         let previousStatus: string = null;
-        const subscription: AppwriteRealtimeSubscription =
-            await sdk.forConsole.realtime.subscribe<Models.Deployment>('console', (message) => {
-                if (
-                    message.payload.status !== 'ready' &&
-                    previousStatus === message.payload.status
-                ) {
-                    return;
-                }
-                previousStatus = message.payload.status;
-                if (message.events.includes('sites.*.deployments.*.create')) {
-                    invalidate(Dependencies.DEPLOYMENTS);
+        return realtime.forConsole(page.params.region, 'console', (message) => {
+            const payload = message.payload as Models.Deployment;
+            if (payload.status !== 'ready' && previousStatus === payload.status) {
+                return;
+            }
 
-                    return;
-                }
-                if (message.events.includes('sites.*.deployments.*.update')) {
-                    invalidate(Dependencies.DEPLOYMENTS);
-                    invalidate(Dependencies.SITE);
-                    return;
-                }
-                if (message.events.includes('sites.*.deployments.*.delete')) {
-                    invalidate(Dependencies.DEPLOYMENTS);
+            previousStatus = payload.status;
 
-                    return;
-                }
-            });
+            if (message.events.includes('sites.*.deployments.*.create')) {
+                invalidate(Dependencies.DEPLOYMENTS);
 
-        return await subscription.close();
+                return;
+            }
+            if (message.events.includes('sites.*.deployments.*.update')) {
+                invalidate(Dependencies.DEPLOYMENTS);
+                invalidate(Dependencies.SITE);
+                return;
+            }
+            if (message.events.includes('sites.*.deployments.*.delete')) {
+                invalidate(Dependencies.DEPLOYMENTS);
+
+                return;
+            }
+        });
     });
 
     $: $registerCommands([

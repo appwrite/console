@@ -17,8 +17,8 @@
     import { IconReact, IconAppwrite, IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { Card } from '$lib/components';
     import { page } from '$app/state';
-    import { onDestroy, onMount } from 'svelte';
-    import { type AppwriteRealtimeSubscription, sdk } from '$lib/stores/sdk';
+    import { onMount } from 'svelte';
+    import { realtime, sdk } from '$lib/stores/sdk';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { addNotification } from '$lib/stores/notifications';
     import { fade } from 'svelte/transition';
@@ -116,23 +116,21 @@ EXPO_PUBLIC_APPWRITE_ENDPOINT=${sdk.forProject(page.params.region, page.params.p
         createPlatform.reset();
     }
 
-    onMount(async () => {
-        const subscription: AppwriteRealtimeSubscription = await sdk.forConsole.realtime.subscribe(
-            'console',
-            (response) => {
-                if (response.events.includes(`projects.${projectId}.ping`)) {
-                    connectionSuccessful = true;
-                    invalidate(Dependencies.ORGANIZATION);
-                    invalidate(Dependencies.PROJECT);
-                    subscription.close();
-                }
+    onMount(() => {
+        const subscription = realtime.forConsole(page.params.region, 'console', (response) => {
+            if (response.events.includes(`projects.${projectId}.ping`)) {
+                connectionSuccessful = true;
+                invalidate(Dependencies.ORGANIZATION);
+                invalidate(Dependencies.PROJECT);
+                subscription();
             }
-        );
+        });
 
-        return await subscription.close();
+        return () => {
+            subscription();
+            resetPlatformStore();
+        };
     });
-
-    onDestroy(resetPlatformStore);
 </script>
 
 <Wizard

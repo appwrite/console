@@ -1,4 +1,4 @@
-import { isMultiRegionSupported, VARS } from '$lib/system';
+import { isDev, isMultiRegionSupported, VARS } from '$lib/system';
 import {
     Account,
     Assistant,
@@ -147,6 +147,33 @@ export const realtime = {
             clientRealtime.setEndpoint(endpoint);
         }
         return clientRealtime;
+    },
+
+    forConsole(
+        region: string,
+        channels: string | string[],
+        // the generic `<T>` is too strict, any is too loose!
+        callback: Parameters<Realtime['subscribe']>[1]
+    ): () => void {
+        let closed = false;
+
+        const channelsArray = Array.isArray(channels) ? channels : [channels];
+        const subscriptionPromise = sdk
+            .forConsoleIn(region)
+            .realtime.subscribe(channelsArray, callback);
+
+        return () => {
+            if (closed) return;
+            closed = true;
+
+            subscriptionPromise
+                .then((sub) => sub.close())
+                .catch((error) => {
+                    if (isDev) {
+                        console.log(error.message);
+                    }
+                });
+        };
     }
 };
 
@@ -190,11 +217,6 @@ export enum RuleTrigger {
     DEPLOYMENT = 'deployment',
     MANUAL = 'manual'
 }
-
-/**
- * Some type imports are broken on the SDK, this works correctly for the time being!
- */
-export type AppwriteRealtimeSubscription = Awaited<ReturnType<Realtime['subscribe']>>;
 
 export const createAdminClient = () => {
     return new Client().setEndpoint(getApiEndpoint()).setMode('admin').setProject(getProjectId());

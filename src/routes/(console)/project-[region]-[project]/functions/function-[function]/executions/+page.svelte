@@ -4,7 +4,7 @@
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { Container, ResponsiveContainerHeader } from '$lib/layout';
-    import { type AppwriteRealtimeSubscription, sdk } from '$lib/stores/sdk';
+    import { realtime } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { project } from '$routes/(console)/project-[region]-[project]/store';
     import { base } from '$app/paths';
@@ -13,20 +13,16 @@
     import Table from './table.svelte';
     import { columns } from './store';
     import type { PageProps } from './$types';
+    import { page } from '$app/state';
 
     let { data }: PageProps = $props();
 
-    onMount(async () => {
-        const subscription: AppwriteRealtimeSubscription = await sdk.forConsole.realtime.subscribe(
-            'console',
-            (response) => {
-                if (response.events.includes('functions.*.executions.*')) {
-                    invalidate(Dependencies.EXECUTIONS);
-                }
+    onMount(() => {
+        return realtime.forConsole(page.params.region, 'console', (response) => {
+            if (response.events.includes('functions.*.executions.*')) {
+                invalidate(Dependencies.EXECUTIONS);
             }
-        );
-
-        return await subscription.close();
+        });
     });
 </script>
 

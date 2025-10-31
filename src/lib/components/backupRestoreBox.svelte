@@ -125,7 +125,7 @@
 
     onMount(() => {
         // fast path: don't subscribe if org is on a free plan or is self-hosted.
-        if (isSelfHosted || (isCloud && $organization.billingPlan === BillingPlan.FREE)) return;
+        if (isSelfHosted || (isCloud && $organization?.billingPlan === BillingPlan.FREE)) return;
 
         return realtime
             .forProject(page.params.region, page.params.project)

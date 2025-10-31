@@ -13,7 +13,7 @@
     import DeploymentMetrics from './deploymentMetrics.svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { onMount } from 'svelte';
-    import { type AppwriteRealtimeSubscription, sdk } from '$lib/stores/sdk';
+    import { realtime, sdk } from '$lib/stores/sdk';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import CreateCliModal from './createCliModal.svelte';
@@ -31,21 +31,12 @@
     let showConnectManual = false;
     let showAlert = true;
 
-    onMount(async () => {
-        if (page.url.searchParams.has('createDeployment')) {
-            showConnectRepo = true;
-        }
-
-        const subscription: AppwriteRealtimeSubscription = await sdk.forConsole.realtime.subscribe(
-            'console',
-            (response) => {
-                if (response.events.includes('sites.*.deployments.*')) {
-                    invalidate(Dependencies.DEPLOYMENTS);
-                }
+    onMount(() => {
+        return realtime.forConsole(page.params.region, 'console', (response) => {
+            if (response.events.includes('sites.*.deployments.*')) {
+                invalidate(Dependencies.DEPLOYMENTS);
             }
-        );
-
-        return await subscription.close();
+        });
     });
 
     async function connect(selectedInstallationId: string, selectedRepository: string) {
