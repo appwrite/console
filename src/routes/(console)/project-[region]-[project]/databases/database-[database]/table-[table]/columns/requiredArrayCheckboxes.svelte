@@ -4,22 +4,24 @@
     let {
         required = $bindable(false),
         array = $bindable(false),
-        editing = false
+        editing = false,
+        disabled = false
     }: {
         required: boolean;
         array: boolean;
-        editing: boolean;
+        editing?: boolean;
+        disabled?: boolean;
     } = $props();
 </script>
 
-<Tooltip disabled={!array} maxWidth="275px" placement="bottom-start">
+<Tooltip disabled={!array || disabled} maxWidth="275px" placement="bottom-start">
     <div style:width="fit-content">
         <Selector.Checkbox
             size="s"
             id="required"
             label="Required"
             bind:checked={required}
-            disabled={array}
+            disabled={array || disabled}
             description="Indicate whether this column is required." />
     </div>
 
@@ -28,14 +30,14 @@
     </svelte:fragment>
 </Tooltip>
 
-<Tooltip disabled={!(required || editing)} maxWidth="275px" placement="bottom-start">
+<Tooltip disabled={!(required || editing) || disabled} maxWidth="275px" placement="bottom-start">
     <div style:width="fit-content">
         <Selector.Checkbox
             size="s"
             id="array"
             label="Array"
             bind:checked={array}
-            disabled={required || editing}
+            disabled={required || editing || disabled}
             description="Indicate whether this column is an array. Defaults to an empty array." />
     </div>
 

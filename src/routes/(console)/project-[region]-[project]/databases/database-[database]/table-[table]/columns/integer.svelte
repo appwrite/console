@@ -47,7 +47,7 @@
     import RequiredArrayCheckboxes from './requiredArrayCheckboxes.svelte';
 
     export let editing = false;
-
+    export let disabled = false;
     export let data: Partial<Models.ColumnInteger> = {
         required: false,
         min: 0,
@@ -84,16 +84,20 @@
     <InputNumber
         id="min"
         label="Min"
+        {disabled}
         placeholder="Enter size"
         bind:value={data.min}
         required={editing} />
+
     <InputNumber
         id="max"
         label="Max"
+        {disabled}
         placeholder="Enter size"
         bind:value={data.max}
         required={editing} />
 </Layout.Stack>
+
 <InputNumber
     id="default"
     label="Default value"
@@ -101,7 +105,11 @@
     min={data.min}
     max={data.max}
     bind:value={data.default}
-    disabled={data.required || data.array}
-    nullable={!data.required && !data.array} />
+    disabled={data.required || data.array || disabled}
+    nullable={(!data.required && !data.array) || disabled} />
 
-<RequiredArrayCheckboxes {editing} bind:array={data.array} bind:required={data.required} />
+<RequiredArrayCheckboxes
+    {editing}
+    {disabled}
+    bind:array={data.array}
+    bind:required={data.required} />

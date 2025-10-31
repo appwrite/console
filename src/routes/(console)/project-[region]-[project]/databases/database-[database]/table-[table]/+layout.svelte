@@ -65,7 +65,12 @@
     import { Submit, trackEvent } from '$lib/actions/analytics';
 
     import IndexesSuggestions from '../(suggestions)/indexes.svelte';
-    import { showIndexesSuggestions, tableColumnSuggestions } from '../(suggestions)';
+    import ColumnsSuggestions from '../(suggestions)/columns.svelte';
+    import {
+        showColumnsSuggestionsModal,
+        showIndexesSuggestions,
+        tableColumnSuggestions
+    } from '../(suggestions)';
     import type { RealtimeResponseEvent } from '@appwrite.io/console';
 
     let editRow: EditRow;
@@ -543,5 +548,7 @@
         </Layout.Stack>
     </svelte:fragment>
 </Dialog>
+
+<ColumnsSuggestions bind:show={$showColumnsSuggestionsModal} />
 
 <IndexesSuggestions />

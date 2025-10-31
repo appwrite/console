@@ -46,6 +46,7 @@
     import RequiredArrayCheckboxes from './requiredArrayCheckboxes.svelte';
 
     export let editing = false;
+    export let disabled = false;
     export let data: Partial<Models.ColumnEnum>;
 
     let savedDefault = data.default;
@@ -67,6 +68,7 @@
         array: false,
         ...data
     });
+
     $: listen(data);
 
     $: handleDefaultState($required || $array);
@@ -103,9 +105,13 @@
 <InputSelect
     id="default"
     label="Default value"
-    disabled={data.array || data.required}
+    disabled={data.array || data.required || disabled}
     placeholder="Select a value"
     {options}
     bind:value={data.default} />
 
-<RequiredArrayCheckboxes {editing} bind:array={data.array} bind:required={data.required} />
+<RequiredArrayCheckboxes
+    {editing}
+    {disabled}
+    bind:array={data.array}
+    bind:required={data.required} />
