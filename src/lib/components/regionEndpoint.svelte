@@ -38,7 +38,7 @@
                     class="text u-line-height-1-5"
                     style:overflow="hidden"
                     style:word-break="break-all"
-                    use:truncateText
+                    use:truncateText={region?.name}
                     style:font-family="unset">
                     {region?.name}
                 </span>
