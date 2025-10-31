@@ -15,8 +15,34 @@
     import { Layout } from '@appwrite.io/pink-svelte';
 
     let mail: string, pass: string, disabled: boolean;
+    let showPasswordLogin: boolean = false;
 
     export let data;
+
+    $: showPasswordLogin = pass && pass.length > 0;
+
+    async function sendSignInCode() {
+        try {
+            disabled = true;
+            // use createEmailToken for sign in with code
+            const sessionToken = await sdk.forConsole.account.createEmailToken({
+                userId: 'unique',
+                email: mail
+            });
+
+            const params = new URLSearchParams(window.location.search);
+            params.set('email', mail);
+            params.set('userId', sessionToken.userId);
+
+            await goto(`${base}/login/email-otp?${params.toString()}`);
+        } catch (error) {
+            disabled = false;
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
+        }
+    }
 
     async function login() {
         try {
@@ -52,7 +78,6 @@
                 return;
             }
 
-            // no specific redirect, so redirect will happen through invalidating the account
             await invalidate(Dependencies.ACCOUNT);
         } catch (error) {
             disabled = false;
@@ -92,22 +117,27 @@
 <Unauthenticated coupon={data?.couponData} campaign={data?.campaign}>
     <svelte:fragment slot="title">Sign in</svelte:fragment>
     <svelte:fragment>
-        <Form onSubmit={login}>
+        <Form onSubmit={showPasswordLogin ? login : sendSignInCode}>
             <Layout.Stack>
                 <InputEmail
                     id="email"
                     label="Email"
                     placeholder="Email"
-                    autofocus={true}
                     required={true}
                     bind:value={mail} />
                 <InputPassword
                     id="password"
                     label="Password"
                     placeholder="Password"
-                    required={true}
+                    required={false}
                     bind:value={pass} />
-                <Button fullWidth submit {disabled}>Sign in</Button>
+
+                {#if showPasswordLogin}
+                    <Button fullWidth submit {disabled}>Sign in</Button>
+                {:else}
+                    <Button fullWidth submit {disabled}>Get sign in code</Button>
+                {/if}
+
                 {#if isCloud}
                     <span class="with-separators eyebrow-heading-3">or</span>
                     <Button secondary fullWidth on:click={onGithubLogin} {disabled}>
