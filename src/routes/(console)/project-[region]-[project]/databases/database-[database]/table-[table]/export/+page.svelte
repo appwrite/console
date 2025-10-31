@@ -154,7 +154,7 @@
 
 <Wizard
     title="Export CSV"
-    columnSize="m"
+    columnSize="s"
     href={`${base}/project-${page.params.region}-${page.params.project}/databases/database-${page.params.database}/table-${page.params.table}`}
     bind:showExitModal
     confirmExit
