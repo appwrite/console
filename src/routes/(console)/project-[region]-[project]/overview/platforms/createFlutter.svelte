@@ -158,14 +158,18 @@
     }
 
     onMount(() => {
-        const unsubscribe = realtime.forConsole(page.params.region, 'console', (response) => {
-            if (response.events.includes(`projects.${projectId}.ping`)) {
-                connectionSuccessful = true;
-                invalidate(Dependencies.ORGANIZATION);
-                invalidate(Dependencies.PROJECT);
-                unsubscribe();
+        const unsubscribe = realtime.forConsole(
+            page.params.region,
+            ['console', 'project'],
+            (response) => {
+                if (response.events.includes(`projects.${projectId}.ping`)) {
+                    connectionSuccessful = true;
+                    invalidate(Dependencies.ORGANIZATION);
+                    invalidate(Dependencies.PROJECT);
+                    unsubscribe();
+                }
             }
-        });
+        );
 
         return () => {
             unsubscribe();
