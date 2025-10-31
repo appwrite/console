@@ -24,7 +24,7 @@
     } from '@appwrite.io/pink-svelte';
     import { capitalize } from '$lib/helpers/string';
     import { formatTimeDetailed } from '$lib/helpers/timeConversion';
-    import { getEffectiveBuildStatus, getBuildTimeoutSeconds } from '$lib/helpers/buildTimeout';
+    import { getEffectiveBuildStatus } from '$lib/helpers/buildTimeout';
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
     import { timer } from '$lib/actions/timer';
     import { app } from '$lib/stores/app';
@@ -44,7 +44,7 @@
         getEffectiveBuildStatus(
             data.deployment.status,
             data.deployment.$createdAt,
-            getBuildTimeoutSeconds($regionalConsoleVariables)
+            $regionalConsoleVariables
         )
     );
     let showDelete = $state(false);

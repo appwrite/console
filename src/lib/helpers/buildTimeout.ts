@@ -28,8 +28,9 @@ export function isBuildTimedOut(
 export function getEffectiveBuildStatus(
     originalStatus: string,
     createdAt: string,
-    timeoutSeconds: number
+    consoleVariables: Models.ConsoleVariables | undefined
 ): string {
+    const timeoutSeconds = getBuildTimeoutSeconds(consoleVariables);
     if (isBuildTimedOut(createdAt, originalStatus, timeoutSeconds)) {
         return 'failed';
     }
@@ -39,9 +40,7 @@ export function getEffectiveBuildStatus(
 /**
  * Helper to get timeout value from console variables
  */
-export function getBuildTimeoutSeconds(
-    consoleVariables: Models.ConsoleVariables | undefined
-): number {
+function getBuildTimeoutSeconds(consoleVariables: Models.ConsoleVariables | undefined): number {
     if (!consoleVariables?._APP_COMPUTE_BUILD_TIMEOUT) {
         return 0;
     }

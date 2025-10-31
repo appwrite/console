@@ -23,7 +23,7 @@
     import { isCloud } from '$lib/system';
     import { sdk } from '$lib/stores/sdk';
     import { capitalize } from '$lib/helpers/string';
-    import { getEffectiveBuildStatus, getBuildTimeoutSeconds } from '$lib/helpers/buildTimeout';
+    import { getEffectiveBuildStatus } from '$lib/helpers/buildTimeout';
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
     import { regionalProtocol } from '$routes/(console)/project-[region]-[project]/store';
     import type { Snippet } from 'svelte';
@@ -43,11 +43,7 @@
     } = $props();
 
     let effectiveStatus = $derived(
-        getEffectiveBuildStatus(
-            deployment.status,
-            deployment.$createdAt,
-            getBuildTimeoutSeconds($regionalConsoleVariables)
-        )
+        getEffectiveBuildStatus(deployment.status, deployment.$createdAt, $regionalConsoleVariables)
     );
     let show = $state(false);
 

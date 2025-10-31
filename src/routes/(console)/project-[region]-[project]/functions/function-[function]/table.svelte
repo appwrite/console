@@ -36,7 +36,7 @@
     import Delete from './(modals)/deleteModal.svelte';
     import { capitalize } from '$lib/helpers/string';
     import { deploymentStatusConverter } from '$lib/stores/git';
-    import { getEffectiveBuildStatus, getBuildTimeoutSeconds } from '$lib/helpers/buildTimeout';
+    import { getEffectiveBuildStatus } from '$lib/helpers/buildTimeout';
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
     import DownloadActionMenuItem from './(components)/downloadActionMenuItem.svelte';
     import { Menu } from '$lib/components/menu';
@@ -107,7 +107,7 @@
         {@const effectiveStatus = getEffectiveBuildStatus(
             deployment.status,
             deployment.$createdAt,
-            getBuildTimeoutSeconds($regionalConsoleVariables)
+            $regionalConsoleVariables
         )}
         <Table.Row.Link
             {root}

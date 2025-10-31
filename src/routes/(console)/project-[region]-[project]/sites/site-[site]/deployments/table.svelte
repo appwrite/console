@@ -17,7 +17,7 @@
     import { capitalize } from '$lib/helpers/string';
     import DeploymentActionMenu from '../../(components)/deploymentActionMenu.svelte';
     import { deploymentStatusConverter } from '$lib/stores/git';
-    import { getEffectiveBuildStatus, getBuildTimeoutSeconds } from '$lib/helpers/buildTimeout';
+    import { getEffectiveBuildStatus } from '$lib/helpers/buildTimeout';
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
     import { sdk } from '$lib/stores/sdk';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
@@ -87,7 +87,7 @@
         {@const effectiveStatus = getEffectiveBuildStatus(
             deployment.status,
             deployment.$createdAt,
-            getBuildTimeoutSeconds($regionalConsoleVariables)
+            $regionalConsoleVariables
         )}
         <Table.Row.Link
             {root}

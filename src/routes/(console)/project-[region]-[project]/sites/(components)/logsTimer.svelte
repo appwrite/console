@@ -1,7 +1,7 @@
 <script lang="ts">
     import { timer } from '$lib/actions/timer';
     import { formatTimeDetailed } from '$lib/helpers/timeConversion';
-    import { getEffectiveBuildStatus, getBuildTimeoutSeconds } from '$lib/helpers/buildTimeout';
+    import { getEffectiveBuildStatus } from '$lib/helpers/buildTimeout';
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
     import type { Models } from '@appwrite.io/console';
 
@@ -9,10 +9,8 @@
 
     let { status, deployment }: { status: string; deployment: Models.Deployment } = $props();
 
-    // memoize timeout value to avoid recalculating on every render
-    let timeoutSeconds = $derived(getBuildTimeoutSeconds($regionalConsoleVariables));
     let effectiveStatus = $derived(
-        getEffectiveBuildStatus(status, deployment.$createdAt, timeoutSeconds)
+        getEffectiveBuildStatus(status, deployment.$createdAt, $regionalConsoleVariables)
     );
 </script>
 

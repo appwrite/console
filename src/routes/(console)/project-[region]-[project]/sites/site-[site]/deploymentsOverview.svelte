@@ -11,7 +11,7 @@
     import ActivateDeploymentModal from '../activateDeploymentModal.svelte';
     import CancelDeploymentModal from './deployments/cancelDeploymentModal.svelte';
     import { capitalize } from '$lib/helpers/string';
-    import { getEffectiveBuildStatus, getBuildTimeoutSeconds } from '$lib/helpers/buildTimeout';
+    import { getEffectiveBuildStatus } from '$lib/helpers/buildTimeout';
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
     import DeleteDeploymentModal from './deployments/deleteDeploymentModal.svelte';
     import DeploymentActionMenu from '../(components)/deploymentActionMenu.svelte';
@@ -77,7 +77,7 @@
                         {@const effectiveStatus = getEffectiveBuildStatus(
                             status,
                             deployment.$createdAt,
-                            getBuildTimeoutSeconds($regionalConsoleVariables)
+                            $regionalConsoleVariables
                         )}
                         {#if activeDeployment?.$id === deployment?.$id}
                             <Status status="complete" label="Active" />

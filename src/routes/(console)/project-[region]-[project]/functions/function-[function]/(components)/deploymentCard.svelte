@@ -15,7 +15,7 @@
     import { DeploymentSource, DeploymentCreatedBy, DeploymentDomains } from '$lib/components/git';
     import { func } from '../store';
     import { capitalize } from '$lib/helpers/string';
-    import { getEffectiveBuildStatus, getBuildTimeoutSeconds } from '$lib/helpers/buildTimeout';
+    import { getEffectiveBuildStatus } from '$lib/helpers/buildTimeout';
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
     import { isCloud } from '$lib/system';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
@@ -39,11 +39,7 @@
     } = $props();
 
     let effectiveStatus = $derived(
-        getEffectiveBuildStatus(
-            deployment.status,
-            deployment.$createdAt,
-            getBuildTimeoutSeconds($regionalConsoleVariables)
-        )
+        getEffectiveBuildStatus(deployment.status, deployment.$createdAt, $regionalConsoleVariables)
     );
     let totalSize = $derived(humanFileSize(deployment?.totalSize ?? 0));
 </script>

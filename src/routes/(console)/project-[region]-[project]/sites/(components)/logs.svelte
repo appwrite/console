@@ -18,7 +18,7 @@
 <script lang="ts">
     import { capitalize } from '$lib/helpers/string';
     import { app } from '$lib/stores/app';
-    import { getEffectiveBuildStatus, getBuildTimeoutSeconds } from '$lib/helpers/buildTimeout';
+    import { getEffectiveBuildStatus } from '$lib/helpers/buildTimeout';
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
     import type { Models } from '@appwrite.io/console';
     import { Badge, Card, Layout, Logs, Spinner, Typography } from '@appwrite.io/pink-svelte';
@@ -41,11 +41,7 @@
     } = $props();
 
     let effectiveStatus = $derived(
-        getEffectiveBuildStatus(
-            deployment.status,
-            deployment.$createdAt,
-            getBuildTimeoutSeconds($regionalConsoleVariables)
-        )
+        getEffectiveBuildStatus(deployment.status, deployment.$createdAt, $regionalConsoleVariables)
     );
 
     function setCopy() {

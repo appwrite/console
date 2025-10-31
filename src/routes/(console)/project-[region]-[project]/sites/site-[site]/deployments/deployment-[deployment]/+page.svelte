@@ -13,7 +13,7 @@
     import ActivateDeploymentModal from '../../../activateDeploymentModal.svelte';
     import { Accordion, Tooltip } from '@appwrite.io/pink-svelte';
     import { capitalize } from '$lib/helpers/string';
-    import { getEffectiveBuildStatus, getBuildTimeoutSeconds } from '$lib/helpers/buildTimeout';
+    import { getEffectiveBuildStatus } from '$lib/helpers/buildTimeout';
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
     import LogsTimer from '../../../(components)/logsTimer.svelte';
     import { invalidate } from '$app/navigation';
@@ -27,11 +27,7 @@
 
     let deployment = $derived(data.deployment);
     let effectiveStatus = $derived(
-        getEffectiveBuildStatus(
-            deployment.status,
-            deployment.$createdAt,
-            getBuildTimeoutSeconds($regionalConsoleVariables)
-        )
+        getEffectiveBuildStatus(deployment.status, deployment.$createdAt, $regionalConsoleVariables)
     );
 
     let showRedeploy = $state(false);

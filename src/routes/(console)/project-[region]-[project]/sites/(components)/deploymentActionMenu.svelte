@@ -15,7 +15,7 @@
         IconXCircle
     } from '@appwrite.io/pink-icons-svelte';
     import { ActionMenu, Icon, Tooltip } from '@appwrite.io/pink-svelte';
-    import { getEffectiveBuildStatus, getBuildTimeoutSeconds } from '$lib/helpers/buildTimeout';
+    import { getEffectiveBuildStatus } from '$lib/helpers/buildTimeout';
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
 
     export let selectedDeployment: Models.Deployment;
@@ -56,7 +56,7 @@
             {@const effectiveStatus = getEffectiveBuildStatus(
                 deployment.status,
                 deployment.$createdAt,
-                getBuildTimeoutSeconds($regionalConsoleVariables)
+                $regionalConsoleVariables
             )}
             {#if !inCard}
                 <Tooltip disabled={selectedDeployment?.sourceSize !== 0} placement={'bottom'}>
