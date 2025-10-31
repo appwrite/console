@@ -55,6 +55,12 @@
     let exportWithFilters = $state(false);
     let emailOnComplete = $state(false);
 
+    $effect(() => {
+        if ($tags.length === 0) {
+            exportWithFilters = false;
+        }
+    });
+
     let visibleColumns = $derived(showAllColumns ? $table.columns : $table.columns.slice(0, 9));
     let hasMoreColumns = $derived($table.columns.length > 9);
     let selectedColumnCount = $derived(Object.values(selectedColumns).filter(Boolean).length);
@@ -247,24 +253,27 @@
                         description="Column names will be added as the first row in the CSV"
                         bind:checked={includeHeader} />
 
-                    <InputCheckbox
-                        id="exportWithFilters"
-                        label="Export with filters"
-                        description="Export rows that match the current table filters"
-                        bind:checked={exportWithFilters} />
+                    <Layout.Stack gap="m">
+                        <InputCheckbox
+                            id="exportWithFilters"
+                            label="Export with filters"
+                            description="Export rows that match the current table filters"
+                            disabled={$tags.length === 0}
+                            bind:checked={exportWithFilters} />
 
-                    {#if $tags.length > 0}
-                        <ul
-                            class="u-flex u-flex-wrap u-cross-center u-gap-8 tags"
-                            style="padding-left: 1.75rem;">
-                            <TagList
-                                tags={$tags}
-                                on:remove={(e) => {
-                                    queries.removeFilter(e.detail);
-                                    queries.apply();
-                                }} />
-                        </ul>
-                    {/if}
+                        {#if $tags.length > 0}
+                            <ul
+                                class="u-flex u-flex-wrap u-cross-center u-gap-8 tags"
+                                style="padding-left: 1.75rem;">
+                                <TagList
+                                    tags={$tags}
+                                    on:remove={(e) => {
+                                        queries.removeFilter(e.detail);
+                                        queries.apply();
+                                    }} />
+                            </ul>
+                        {/if}
+                    </Layout.Stack>
 
                     <InputCheckbox
                         id="emailOnComplete"
