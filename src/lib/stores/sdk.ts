@@ -1,4 +1,4 @@
-import { isDev, isMultiRegionSupported, VARS } from '$lib/system';
+import { isMultiRegionSupported, VARS } from '$lib/system';
 import {
     Account,
     Assistant,
@@ -217,7 +217,6 @@ export type RealtimeResponse = {
     payload: unknown;
 };
 
-// the generic `<T>` is too strict, any is too loose!
 export type AppwriteRealtimeResponseEvent = (response: RealtimeResponse) => void;
 
 function createRealtimeSubscription(
@@ -225,21 +224,10 @@ function createRealtimeSubscription(
     channels: string | string[],
     callback: AppwriteRealtimeResponseEvent
 ): () => void {
-    let closed = false;
-
     const channelsArray = Array.isArray(channels) ? channels : [channels];
     const subscriptionPromise = realtimeInstance.subscribe(channelsArray, callback);
 
     return () => {
-        if (closed) return;
-        closed = true;
-
-        subscriptionPromise
-            .then((sub) => sub.close())
-            .catch((error) => {
-                if (isDev) {
-                    console.log(error.message);
-                }
-            });
+        subscriptionPromise.then((sub) => sub.close());
     };
 }
