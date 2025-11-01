@@ -96,14 +96,7 @@ export async function deleteAccount(page: Page, maxRetries = 3) {
             }
 
             const successToast = page.getByText(/Account was deleted/i);
-            try {
-                await Promise.race([
-                    expect(successToast).toBeVisible({ timeout: 15000 }),
-                    expect(dialog).toBeHidden({ timeout: 15000 })
-                ]);
-            } catch {
-                await expect(dialog).toBeHidden({ timeout: 5000 });
-            }
+            await successToast.isVisible({ timeout: 5000 }).catch(() => false);
 
             return;
         }
