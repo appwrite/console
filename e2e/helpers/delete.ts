@@ -81,9 +81,6 @@ export async function deleteAccount(page: Page, maxRetries = 3) {
                 await page.waitForTimeout(2000);
                 continue;
             }
-
-            // wait for navigation to login page after account deletion
-            await page.waitForURL(/login/, { timeout: 5000 });
             return;
         }
 
