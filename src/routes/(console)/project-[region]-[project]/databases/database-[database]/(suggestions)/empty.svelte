@@ -111,6 +111,8 @@
     let hasTransitioned = $state(false);
     let scrollAnimationFrame: number | null = null;
 
+    let animation: 'glow' | 'shimmer' | 'both' = 'glow';
+
     let creatingColumns = $state(false);
     let selectedColumnId = $state<string | null>(null);
     let previousColumnId = $state<string | null>(null);
@@ -1257,7 +1259,13 @@
             bind:this={rangeOverlayEl}
             class="columns-range-overlay"
             class:no-transition={hasTransitioned && customColumns.length > 0}
-            class:thinking={$tableColumnSuggestions.thinking || creatingColumns}>
+            class:thinking={$tableColumnSuggestions.thinking || creatingColumns}
+            data-anim={animation}>
+            <div class="ai-border-glow" aria-hidden="true">
+                <div class="inner">
+                    <div class="bottom-corners"></div>
+                </div>
+            </div>
         </div>
 
         <!-- selection border -->
@@ -1947,6 +1955,133 @@
                     );
                     animation: inner-shimmer 2s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
                 }
+
+                &[data-anim='glow'],
+                &[data-anim='both'] {
+                    box-shadow: none;
+                    height: 100% !important;
+                    margin-block-start: unset !important;
+                    // background: transparent;
+                    // main spot for handling the glow animations!
+                    background: linear-gradient(
+                        135deg,
+                        color-mix(in oklab, #fd366e 1%, transparent) 0%,
+                        color-mix(in oklab, #fe9567 1%, transparent) 100%
+                    );
+
+                    .ai-border-glow {
+                        inset: 0;
+
+                        position: absolute;
+                        border-radius: var(--border-radius-S, 8px);
+                        pointer-events: none;
+                        overflow: hidden;
+
+                        --border-pink: rgba(253, 54, 110, 0.35);
+                        --border-orange: rgba(254, 149, 103, 0.12);
+                        --glow-main: rgba(253, 54, 110, 0.25);
+                        --glow-secondary: rgba(253, 54, 110, 0.15);
+
+                        /* animated gradient ring */
+                        &::before {
+                            content: '';
+                            position: absolute;
+                            inset: 0;
+                            border-radius: inherit;
+                            padding: 2px; /* ring width */
+                            box-sizing: border-box;
+                            background: linear-gradient(
+                                120deg,
+                                var(--border-pink) 0%,
+                                var(--border-pink) 25%,
+                                var(--border-orange) 50%,
+                                var(--border-pink) 75%,
+                                var(--border-pink) 100%
+                            );
+                            background-size: 300% 300%;
+                            animation: borderGlow 12s ease-in-out infinite;
+
+                            -webkit-mask:
+                                linear-gradient(#fff 0 0) content-box,
+                                linear-gradient(#fff 0 0);
+                            -webkit-mask-composite: xor;
+                            mask:
+                                linear-gradient(#fff 0 0) content-box,
+                                linear-gradient(#fff 0 0);
+                            mask-composite: exclude;
+                        }
+
+                        .inner {
+                            position: absolute;
+                            inset: 2px;
+                            border-radius: calc(var(--border-radius-S, 8px) - 2px);
+                            background: transparent;
+                            overflow: hidden;
+                            pointer-events: none;
+
+                            /* top-left radial glow */
+                            &::before {
+                                content: '';
+                                position: absolute;
+                                inset: 0;
+                                background: radial-gradient(
+                                    circle at bottom left,
+                                    var(--glow-main),
+                                    rgba(253, 54, 110, 0) 50%
+                                );
+                                opacity: 0.2;
+                                animation: glowPulse 6s ease-in-out infinite;
+                                animation-delay: 0s;
+                                pointer-events: none;
+                                border-radius: inherit;
+                            }
+
+                            /* top-right radial glow */
+                            &::after {
+                                content: '';
+                                position: absolute;
+                                inset: 0;
+                                background: radial-gradient(
+                                    circle at top right,
+                                    var(--glow-secondary),
+                                    rgba(253, 54, 110, 0) 20%
+                                );
+                                opacity: 0.15;
+                                animation: glowPulse 6s ease-in-out infinite;
+                                animation-delay: 2s;
+                                pointer-events: none;
+                                border-radius: inherit;
+                            }
+
+                            /* bottom-left and bottom-right glows */
+                            .bottom-corners {
+                                position: absolute;
+                                inset: 0;
+                                pointer-events: none;
+                                border-radius: inherit;
+                                box-shadow:
+                                    inset 0 -50% 100px -40px var(--glow-main),
+                                    inset -50% 0 100px -40px var(--glow-secondary);
+                                animation: glowPulse 6s ease-in-out infinite;
+                                animation-delay: 3s;
+                            }
+                        }
+                    }
+                }
+
+                /* disable sweep shimmer in glow-only */
+                &[data-anim='glow'] {
+                    &::after {
+                        content: none;
+                    }
+                }
+
+                /* hide glow wrapper entirely in shimmer mode */
+                &[data-anim='shimmer'] {
+                    .ai-border-glow {
+                        display: none;
+                    }
+                }
             }
         }
 
@@ -2219,4 +2354,32 @@
     //        stroke-dashoffset: 67.858;
     //    }
     //}
+
+    @keyframes borderGlow {
+        0% {
+            background-position: 0% 0%;
+        }
+        25% {
+            background-position: 100% 0%;
+        }
+        50% {
+            background-position: 100% 100%;
+        }
+        75% {
+            background-position: 0% 100%;
+        }
+        100% {
+            background-position: 0% 0%;
+        }
+    }
+
+    @keyframes glowPulse {
+        0%,
+        100% {
+            opacity: 0.1;
+        }
+        50% {
+            opacity: 0.6;
+        }
+    }
 </style>
