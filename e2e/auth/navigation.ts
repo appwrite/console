@@ -35,13 +35,14 @@ export async function navigateToUser(
         const expectedPattern = new RegExp(
             `/project-${region}-${projectId}/auth/user-${userId}(/\\?.*)?$`
         );
+
         if (expectedPattern.test(page.url())) {
             return;
         }
 
         await page.goto(buildAuthUrl(region, projectId, `/user-${userId}`));
         await page.waitForURL(buildAuthUrlPattern(region, projectId, `/user-${userId}`));
-        await page.getByText(userId).first().waitFor({ state: 'visible' });
+        await page.locator('input[id="name"]').waitFor({ state: 'attached' });
     });
 }
 

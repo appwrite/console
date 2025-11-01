@@ -20,6 +20,12 @@ export type UserPrefs = {
     [key: string]: string;
 };
 
+async function dismissNotification(page: Page, messagePattern: RegExp): Promise<void> {
+    const notification = page.locator('.toast').filter({ hasText: messagePattern });
+    await notification.getByRole('button').last().click();
+    await expect(notification).not.toBeVisible();
+}
+
 export async function createUser(
     page: Page,
     region: string,
@@ -58,6 +64,7 @@ export async function createUser(
         await modal.getByRole('button', { name: 'Create', exact: true }).click();
         await modal.waitFor({ state: 'hidden' });
         await expect(page.getByText(/has been created/i)).toBeVisible();
+        await dismissNotification(page, /has been created/i);
         await page.waitForURL(/\/auth\/user-[^/]+$/);
 
         const currentUrl = page.url();
@@ -112,7 +119,7 @@ export async function deleteUser(
 
         await page.waitForURL(buildAuthUrlPattern(region, projectId, '$'));
         await expect(page.getByText(/has been deleted/i)).toBeVisible();
-
+        await dismissNotification(page, /has been deleted/i);
         await searchUser(page, userId);
         const userRow = page.locator('[role="row"]').filter({ hasText: userId });
         await expect(userRow).not.toBeVisible();
@@ -134,9 +141,11 @@ export async function updateUserName(
         const nameSection = page.locator('form').filter({
             has: page.getByRole('heading', { name: 'Name' })
         });
+
         await nameSection.locator('id=name').fill(newName);
         await nameSection.getByRole('button', { name: 'Update' }).click();
         await expect(page.getByText(/name has been updated/i)).toBeVisible();
+        await dismissNotification(page, /name has been updated/i);
         await expect(page.locator('input[id="name"]')).toHaveValue(newName);
     });
 }
@@ -154,9 +163,11 @@ export async function updateUserEmail(
         const emailSection = page.locator('form').filter({
             has: page.getByRole('heading', { name: 'Email' })
         });
+
         await emailSection.locator('id=email').fill(newEmail);
         await emailSection.getByRole('button', { name: 'Update' }).click();
         await expect(page.getByText(/email has been updated/i)).toBeVisible();
+        await dismissNotification(page, /email has been updated/i);
         await expect(page.locator('input[id="email"]')).toHaveValue(newEmail);
     });
 }
@@ -174,9 +185,11 @@ export async function updateUserPhone(
         const phoneSection = page.locator('form').filter({
             has: page.getByRole('heading', { name: 'Phone' })
         });
+
         await phoneSection.locator('id=phone').fill(newPhone);
         await phoneSection.getByRole('button', { name: 'Update' }).click();
         await expect(page.getByText(/phone has been updated/i)).toBeVisible();
+        await dismissNotification(page, /phone has been updated/i);
         await expect(page.locator('input[id="phone"]')).toHaveValue(newPhone);
     });
 }
@@ -194,9 +207,11 @@ export async function updateUserPassword(
         const passwordSection = page.locator('form').filter({
             has: page.getByRole('heading', { name: 'Password' })
         });
+
         await passwordSection.locator('#newPassword').fill(newPassword);
         await passwordSection.getByRole('button', { name: 'Update' }).click();
         await expect(page.getByText(/password has been updated/i)).toBeVisible();
+        await dismissNotification(page, /password has been updated/i);
     });
 }
 
@@ -215,6 +230,7 @@ export async function updateUserStatus(
         await button.waitFor({ state: 'visible', timeout: 10000 });
         await button.click();
         await expect(page.getByText(/has been (blocked|unblocked)/i)).toBeVisible();
+        await dismissNotification(page, /has been (blocked|unblocked)/i);
 
         // Now verify the badge appears/disappears in the status section
         const statusSection = page.locator('[data-user-status]');
@@ -244,6 +260,7 @@ export async function updateUserLabels(
         await tagsInput.scrollIntoViewIfNeeded();
 
         const existingTags = labelsSection.locator('[role="button"]').filter({ hasText: /×/i });
+
         const count = await existingTags.count();
         for (let i = 0; i < count; i++) {
             await existingTags.first().click();
@@ -258,9 +275,12 @@ export async function updateUserLabels(
         await expect(updateButton).toBeEnabled({ timeout: 5000 });
         await updateButton.click();
         await expect(page.getByText(/have been updated/i)).toBeVisible();
+        await dismissNotification(page, /have been updated/i);
+
         const reloadedLabelsSection = page.locator('form').filter({
             has: page.getByRole('heading', { name: 'Labels' })
         });
+
         for (const label of labels) {
             await expect(reloadedLabelsSection.getByText(label)).toBeVisible();
         }
@@ -286,6 +306,7 @@ export async function updateUserEmailVerification(
             .locator('ul.drop-list li.drop-list-item')
             .filter({ hasText: /(Verify|Unverify) email/ })
             .locator('button');
+
         await dropdownItem.click({ force: true });
     });
 }
@@ -309,6 +330,7 @@ export async function updateUserPhoneVerification(
             .locator('ul.drop-list li.drop-list-item')
             .filter({ hasText: /(Verify|Unverify) phone/ })
             .locator('button');
+
         await dropdownItem.click({ force: true });
     });
 }
@@ -347,6 +369,7 @@ export async function updateUserPrefs(
 
         await prefsSection.getByRole('button', { name: 'Update' }).click();
         await expect(page.getByText(/Preferences have been updated/i)).toBeVisible();
+        await dismissNotification(page, /Preferences have been updated/i);
     });
 }
 
@@ -371,11 +394,15 @@ export async function updateUserMfa(
             await mfaToggle.click();
             await mfaSection.getByRole('button', { name: 'Update' }).click();
             await expect(page.getByText(/Multi-factor authentication has been/i)).toBeVisible();
+            await dismissNotification(page, /Multi-factor authentication has been/i);
         }
+
         const reloadedMfaSection = page.locator('form').filter({
             has: page.getByRole('heading', { name: 'Multi-factor authentication' })
         });
+
         const verifyToggle = reloadedMfaSection.getByRole('switch');
+
         if (enable) {
             await expect(verifyToggle).toHaveAttribute('aria-checked', 'true');
         } else {
