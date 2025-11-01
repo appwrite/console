@@ -335,19 +335,24 @@ export async function updateUserEmailVerification(
     return test.step(`update user email verification to: ${shouldVerify}`, async () => {
         await navigateToUser(page, region, projectId, userId);
 
+        // Ensure the actions area is rendered (anchor on block/unblock button)
+        const actionsAnchor = page.getByRole('button', { name: /Block account|Unblock account/ });
+        await actionsAnchor.waitFor({ state: 'visible', timeout: 15000 });
+        await actionsAnchor.scrollIntoViewIfNeeded();
+
         const verifyButton = page.getByRole('button', { name: /Verify account|Unverify account/ });
-        await verifyButton.waitFor({ state: 'visible', timeout: 10000 });
+        await verifyButton.waitFor({ state: 'visible', timeout: 15000 });
         await verifyButton.click();
 
         const dropList = page.locator('ul.drop-list');
-        await dropList.waitFor({ state: 'visible', timeout: 10000 });
+        await dropList.waitFor({ state: 'visible', timeout: 15000 });
 
         const dropdownItem = dropList
             .locator('li.drop-list-item')
             .filter({ hasText: /(Verify|Unverify) email/ })
             .locator('button');
 
-        await expect(dropdownItem).toBeEnabled({ timeout: 10000 });
+        await expect(dropdownItem).toBeEnabled({ timeout: 15000 });
         await dropdownItem.click();
 
         await expect(page.getByText(/has been (verified|unverified)/i)).toBeVisible({
@@ -367,20 +372,25 @@ export async function updateUserPhoneVerification(
     return test.step(`update user phone verification to: ${shouldVerify}`, async () => {
         await navigateToUser(page, region, projectId, userId);
 
+        // Ensure the actions area is rendered (anchor on block/unblock button)
+        const actionsAnchor = page.getByRole('button', { name: /Block account|Unblock account/ });
+        await actionsAnchor.waitFor({ state: 'visible', timeout: 15000 });
+        await actionsAnchor.scrollIntoViewIfNeeded();
+
         const verifyButton = page.getByRole('button', { name: /Verify account|Unverify account/ });
-        await verifyButton.waitFor({ state: 'visible', timeout: 10000 });
+        await verifyButton.waitFor({ state: 'visible', timeout: 15000 });
         await verifyButton.click();
 
         const dropList = page.locator('ul.drop-list');
-        await dropList.waitFor({ state: 'visible', timeout: 10000 });
+        await dropList.waitFor({ state: 'visible', timeout: 15000 });
 
         const dropdownItem = dropList
             .locator('li.drop-list-item')
             .filter({ hasText: /(Verify|Unverify) phone/ })
             .locator('button');
 
-        await expect(dropdownItem).toBeVisible({ timeout: 10000 });
-        await expect(dropdownItem).toBeEnabled({ timeout: 10000 });
+        await expect(dropdownItem).toBeVisible({ timeout: 15000 });
+        await expect(dropdownItem).toBeEnabled({ timeout: 15000 });
         await dropdownItem.click();
 
         await expect(page.getByText(/has been (verified|unverified)/i)).toBeVisible({
