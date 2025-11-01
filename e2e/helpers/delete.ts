@@ -75,9 +75,8 @@ export async function deleteAccount(page: Page, maxRetries = 3) {
                 console.log(
                     `Attempt ${attempt + 1}: Account deletion failed due to active memberships. Retrying...`
                 );
-                // close the dialog if still open
+
                 await page.keyboard.press('Escape').catch(() => {});
-                // wait before retrying (org deletion might still be processing)
                 await page.waitForTimeout(2000);
                 continue;
             }

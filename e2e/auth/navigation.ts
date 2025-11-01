@@ -42,7 +42,7 @@ export async function navigateToUser(
 
         await page.goto(buildAuthUrl(region, projectId, `/user-${userId}`));
         await page.waitForURL(buildAuthUrlPattern(region, projectId, `/user-${userId}`));
-        await page.locator('input[id="name"]').waitFor({ state: 'attached' });
+        await page.locator('input[id="name"]').waitFor({ state: 'visible' });
     });
 }
 

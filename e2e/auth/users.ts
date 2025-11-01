@@ -22,8 +22,19 @@ export type UserPrefs = {
 
 async function dismissNotification(page: Page, messagePattern: RegExp): Promise<void> {
     const notification = page.locator('.toast').filter({ hasText: messagePattern });
-    await notification.getByRole('button').last().click();
-    await expect(notification).not.toBeVisible();
+    await expect(notification).toBeVisible({ timeout: 15000 });
+    try {
+        const closeButtonByName = notification.getByRole('button', { name: /dismiss|close/i });
+        if ((await closeButtonByName.count()) > 0) {
+            await closeButtonByName.first().click();
+        } else {
+            await notification.getByRole('button').first().click();
+        }
+    } catch {
+        await expect(notification).not.toBeVisible({ timeout: 10000 });
+        return;
+    }
+    await expect(notification).not.toBeVisible({ timeout: 10000 });
 }
 
 export async function createUser(
@@ -101,6 +112,17 @@ export async function searchUser(page: Page, query: string): Promise<void> {
     });
 }
 
+export async function clearUserSearch(page: Page): Promise<void> {
+    return test.step('clear user search', async () => {
+        const searchInput = page.getByPlaceholder(/Search by name, email, phone, or ID/i);
+        await searchInput.clear();
+
+        // wait for URL to drop the search param
+        await expect(page).not.toHaveURL(/search=/);
+        await expect(searchInput).toHaveValue('');
+    });
+}
+
 export async function deleteUser(
     page: Page,
     region: string,
@@ -142,8 +164,12 @@ export async function updateUserName(
             has: page.getByRole('heading', { name: 'Name' })
         });
 
-        await nameSection.locator('id=name').fill(newName);
-        await nameSection.getByRole('button', { name: 'Update' }).click();
+        const nameInput = nameSection.locator('id=name');
+        await nameInput.waitFor({ state: 'visible', timeout: 10000 });
+        await nameInput.fill(newName);
+        const updateButton = nameSection.getByRole('button', { name: 'Update' });
+        await expect(updateButton).toBeEnabled({ timeout: 10000 });
+        await updateButton.click();
         await expect(page.getByText(/name has been updated/i)).toBeVisible();
         await dismissNotification(page, /name has been updated/i);
         await expect(page.locator('input[id="name"]')).toHaveValue(newName);
@@ -164,8 +190,12 @@ export async function updateUserEmail(
             has: page.getByRole('heading', { name: 'Email' })
         });
 
-        await emailSection.locator('id=email').fill(newEmail);
-        await emailSection.getByRole('button', { name: 'Update' }).click();
+        const emailInput = emailSection.locator('id=email');
+        await emailInput.waitFor({ state: 'visible', timeout: 10000 });
+        await emailInput.fill(newEmail);
+        const updateButton = emailSection.getByRole('button', { name: 'Update' });
+        await expect(updateButton).toBeEnabled({ timeout: 10000 });
+        await updateButton.click();
         await expect(page.getByText(/email has been updated/i)).toBeVisible();
         await dismissNotification(page, /email has been updated/i);
         await expect(page.locator('input[id="email"]')).toHaveValue(newEmail);
@@ -186,8 +216,12 @@ export async function updateUserPhone(
             has: page.getByRole('heading', { name: 'Phone' })
         });
 
-        await phoneSection.locator('id=phone').fill(newPhone);
-        await phoneSection.getByRole('button', { name: 'Update' }).click();
+        const phoneInput = phoneSection.locator('id=phone');
+        await phoneInput.waitFor({ state: 'visible', timeout: 10000 });
+        await phoneInput.fill(newPhone);
+        const updateButton = phoneSection.getByRole('button', { name: 'Update' });
+        await expect(updateButton).toBeEnabled({ timeout: 10000 });
+        await updateButton.click();
         await expect(page.getByText(/phone has been updated/i)).toBeVisible();
         await dismissNotification(page, /phone has been updated/i);
         await expect(page.locator('input[id="phone"]')).toHaveValue(newPhone);
@@ -208,8 +242,12 @@ export async function updateUserPassword(
             has: page.getByRole('heading', { name: 'Password' })
         });
 
-        await passwordSection.locator('#newPassword').fill(newPassword);
-        await passwordSection.getByRole('button', { name: 'Update' }).click();
+        const passwordInput = passwordSection.locator('#newPassword');
+        await passwordInput.waitFor({ state: 'visible', timeout: 10000 });
+        await passwordInput.fill(newPassword);
+        const updateButton = passwordSection.getByRole('button', { name: 'Update' });
+        await expect(updateButton).toBeEnabled({ timeout: 10000 });
+        await updateButton.click();
         await expect(page.getByText(/password has been updated/i)).toBeVisible();
         await dismissNotification(page, /password has been updated/i);
     });
@@ -298,16 +336,22 @@ export async function updateUserEmailVerification(
         await navigateToUser(page, region, projectId, userId);
 
         const verifyButton = page.getByRole('button', { name: /Verify account|Unverify account/ });
+        await verifyButton.waitFor({ state: 'visible', timeout: 10000 });
         await verifyButton.click();
 
-        await page.locator('ul.drop-list').waitFor({ state: 'visible' });
+        const dropList = page.locator('ul.drop-list');
+        await dropList.waitFor({ state: 'visible', timeout: 10000 });
 
-        const dropdownItem = page
-            .locator('ul.drop-list li.drop-list-item')
+        const dropdownItem = dropList
+            .locator('li.drop-list-item')
             .filter({ hasText: /(Verify|Unverify) email/ })
             .locator('button');
 
-        await dropdownItem.click({ force: true });
+        await expect(dropdownItem).toBeEnabled({ timeout: 10000 });
+        await dropdownItem.click();
+
+        await expect(page.getByText(/has been (verified|unverified)/i)).toBeVisible({ timeout: 15000 });
+        await dismissNotification(page, /has been (verified|unverified)/i);
     });
 }
 
@@ -322,16 +366,23 @@ export async function updateUserPhoneVerification(
         await navigateToUser(page, region, projectId, userId);
 
         const verifyButton = page.getByRole('button', { name: /Verify account|Unverify account/ });
+        await verifyButton.waitFor({ state: 'visible', timeout: 10000 });
         await verifyButton.click();
 
-        await page.locator('ul.drop-list').waitFor({ state: 'visible' });
+        const dropList = page.locator('ul.drop-list');
+        await dropList.waitFor({ state: 'visible', timeout: 10000 });
 
-        const dropdownItem = page
-            .locator('ul.drop-list li.drop-list-item')
+        const dropdownItem = dropList
+            .locator('li.drop-list-item')
             .filter({ hasText: /(Verify|Unverify) phone/ })
             .locator('button');
 
-        await dropdownItem.click({ force: true });
+        await expect(dropdownItem).toBeVisible({ timeout: 10000 });
+        await expect(dropdownItem).toBeEnabled({ timeout: 10000 });
+        await dropdownItem.click();
+
+        await expect(page.getByText(/has been (verified|unverified)/i)).toBeVisible({ timeout: 15000 });
+        await dismissNotification(page, /has been (verified|unverified)/i);
     });
 }
 

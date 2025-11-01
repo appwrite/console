@@ -2,6 +2,7 @@ import { test, expect } from '../fixtures/base';
 import {
     createUser,
     searchUser,
+    clearUserSearch,
     updateUserName,
     updateUserEmail,
     updateUserPhone,
@@ -80,10 +81,16 @@ test('auth flow - free tier', async ({ page, project }) => {
     });
 
     await test.step('verify multiple users', async () => {
+        await clearUserSearch(page);
         await navigateToUsers(page, project.region, project.id);
-        await expect(page.getByText('Updated Test User')).toBeVisible();
-        await expect(page.getByText('Second User')).toBeVisible();
-        await expect(page.getByText('Third User')).toBeVisible();
+
+        const updatedRow = page.locator('[role="row"]').filter({ hasText: 'Updated Test User' });
+        const secondRow = page.locator('[role="row"]').filter({ hasText: 'Second User' });
+        const thirdRow = page.locator('[role="row"]').filter({ hasText: 'Third User' });
+
+        await expect(updatedRow).toBeVisible({ timeout: 5000 });
+        await expect(secondRow).toBeVisible({ timeout: 5000 });
+        await expect(thirdRow).toBeVisible({ timeout: 5000 });
     });
 
     await test.step('test email and phone verification', async () => {
