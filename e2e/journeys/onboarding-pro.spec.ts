@@ -1,8 +1,9 @@
-import { test } from '@playwright/test';
-import { registerUserStep } from '../steps/account';
-import { createProProject } from '../steps/pro-project';
+import { test, expect } from '../fixtures/base';
 
-test('onboarding - pro', async ({ page }) => {
-    await registerUserStep(page);
-    await createProProject(page);
+test.use({ tier: 'pro' });
+
+test('onboarding - pro', async ({ page, project }) => {
+    await expect(page).toHaveURL(
+        new RegExp(`/project-${project.region}-${project.id}/get-started`)
+    );
 });

@@ -1,10 +1,7 @@
+import type { ProjectMetadata } from '../fixtures/base';
 import { test, expect, type Page } from '@playwright/test';
 import { getOrganizationIdFromUrl, getProjectIdFromUrl } from '../helpers/url';
-
-type Metadata = {
-    id: string;
-    organizationId: string;
-};
+import { selectRandomRegion } from '../helpers/region';
 
 export async function enterCreditCard(page: Page) {
     // click the `add` button inside correct view layer
@@ -31,7 +28,7 @@ export async function enterCreditCard(page: Page) {
     });
 }
 
-export async function createProProject(page: Page): Promise<Metadata> {
+export async function createProProject(page: Page): Promise<ProjectMetadata> {
     const organizationId = await test.step('create organization', async () => {
         await page.goto('./create-organization');
         await page.locator('id=name').fill('test org');
@@ -46,31 +43,26 @@ export async function createProProject(page: Page): Promise<Metadata> {
         return getOrganizationIdFromUrl(page.url());
     });
 
-    const projectId = await test.step('create project', async () => {
+    const { projectId, region } = await test.step('create project', async () => {
         await page.waitForURL(/\/organization-[^/]+/);
         await page.getByRole('button', { name: 'create project' }).first().click();
         const dialog = page.locator('dialog[open]');
 
         await dialog.getByPlaceholder('Project name').fill('test project');
 
-        let region = 'fra'; // for fallback
-        const regionPicker = dialog.locator('button[role="combobox"]');
-        if (await regionPicker.isVisible()) {
-            await regionPicker.click();
-            await page.getByRole('option', { name: /New York/i }).click();
-
-            region = 'nyc';
-        }
+        const region = await selectRandomRegion(page, dialog);
 
         await dialog.getByRole('button', { name: 'create' }).click();
-        await page.waitForURL(new RegExp(`/project-${region}-[^/]+`));
+
+        await page.waitForURL(/\/project-[^/]+-[^/]+/);
         expect(page.url()).toContain(`/console/project-${region}-`);
 
-        return getProjectIdFromUrl(page.url());
+        return { projectId: getProjectIdFromUrl(page.url()), region };
     });
 
     return {
         id: projectId,
-        organizationId
+        organizationId,
+        region
     };
 }
