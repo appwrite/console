@@ -378,7 +378,7 @@
                         <InputTags
                             id="user-labels"
                             label="Labels"
-                            placeholder="Select or type user labels"
+                            placeholder="Select or type file extensions"
                             bind:tags={extensions} />
                     {/key}
                     <Layout.Stack direction="row">
