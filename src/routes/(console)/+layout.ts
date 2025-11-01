@@ -7,20 +7,20 @@ import type { Plan, PlanList } from '$lib/sdk/billing';
 import { Query } from '@appwrite.io/console';
 
 export const load: LayoutLoad = async ({ depends, parent }) => {
-    const { organizations } = await parent();
+    const { organizations, consoleVariables } = await parent();
 
     depends(Dependencies.RUNTIMES);
     depends(Dependencies.CONSOLE_VARIABLES);
     depends(Dependencies.ORGANIZATION);
 
     const { endpoint, project } = sdk.forConsole.client.config;
-    const [preferences, plansArray, versionData, consoleVariables] = await Promise.all([
+    const [preferences, plansArray, versionData, variables] = await Promise.all([
         sdk.forConsole.account.getPrefs(),
         isCloud ? sdk.forConsole.billing.getPlansInfo() : null,
         fetch(`${endpoint}/health/version`, {
             headers: { 'X-Appwrite-Project': project }
         }).then((response) => response.json() as { version?: string }),
-        sdk.forConsole.console.variables()
+        consoleVariables ? consoleVariables : sdk.forConsole.console.variables()
     ]);
 
     const plansInfo = toPlanMap(plansArray);
@@ -50,7 +50,7 @@ export const load: LayoutLoad = async ({ depends, parent }) => {
         preferences,
         currentOrgId,
         organizations,
-        consoleVariables,
+        consoleVariables: variables,
         version: versionData?.version ?? null,
         allProjectsCount: projectsCount
     };
