@@ -7,7 +7,7 @@ const config: PlaywrightTestConfig = {
     timeout: 120000,
     reportSlowTests: null,
     reporter: [['html', { open: 'never' }]],
-    // retries: 3,
+    retries: 3,
     testDir: 'e2e',
     use: {
         baseURL: 'http://localhost:3000/console/',
