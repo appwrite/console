@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { EstimatedCard } from '$lib/components';
+    import { EstimatedCard, Pagination as PaginationComponent } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
     import { upgradeURL } from '$lib/stores/billing';
@@ -11,10 +11,11 @@
     import { Click, trackEvent } from '$lib/actions/analytics';
     import {
         Typography,
-        Expandable as ExpandableTable,
+        AccordionTable,
         Icon,
         Layout,
-        Divider
+        Divider,
+        Badge
     } from '@appwrite.io/pink-svelte';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { formatNum } from '$lib/helpers/string';
@@ -22,19 +23,31 @@
     import { isSmallViewport, isTabletViewport } from '$lib/stores/viewport';
     import CancelDowngradeModel from './cancelDowngradeModal.svelte';
     import { IconTag } from '@appwrite.io/pink-icons-svelte';
+    import { page } from '$app/state';
 
-    export let currentPlan: Plan;
-    export let nextPlan: Plan | null = null;
-    export let availableCredit: number | undefined = undefined;
-    export let currentAggregation: AggregationTeam | undefined = undefined;
+    let {
+        currentPlan,
+        nextPlan = null,
+        availableCredit = undefined,
+        currentAggregation = undefined,
+        limit = undefined,
+        offset = undefined
+    }: {
+        currentPlan: Plan;
+        nextPlan?: Plan | null;
+        availableCredit?: number | undefined;
+        currentAggregation?: AggregationTeam | undefined;
+        limit?: number | undefined;
+        offset?: number | undefined;
+    } = $props();
 
-    let showCancel: boolean = false;
+    let showCancel = $state(false);
 
-    // define columns for the expandable table
+    // define columns for the accordion table
     const columns = [
-        { id: 'item', align: 'left' as const, width: '10fr' },
-        { id: 'usage', align: 'left' as const, width: '20fr' },
-        { id: 'price', align: 'right' as const, width: '0fr' }
+        { id: 'item', align: 'left' as const, width: { min: 200 } },
+        { id: 'usage', align: 'left' as const, width: { min: 500 } },
+        { id: 'price', align: 'right' as const, width: { min: 100 } }
     ];
 
     function formatHumanSize(bytes: number): string {
@@ -144,6 +157,21 @@
         );
     }
 
+    const projectsLimit = $derived(limit ?? (Number(page.url.searchParams.get('limit')) || 5));
+    const projectsOffset = $derived(
+        offset ?? ((Number(page.url.searchParams.get('page')) || 1) - 1) * projectsLimit
+    );
+    const totalProjects = $derived(
+        (currentAggregation?.resources?.find?.((r) => r.resourceId === 'projects')?.value ??
+            null) ||
+            currentAggregation?.breakdown?.length ||
+            0
+    );
+
+    const aggregationKey = $derived(
+        `agg:${Number(page.url.searchParams.get('page')) || 1}:${projectsLimit}`
+    );
+
     function getBillingData(currentPlan, currentAggregation, isSmallViewport) {
         const projectsList = getProjectsList(currentAggregation);
         const basePlan = {
@@ -172,11 +200,13 @@
                         excess.resourceId === 'seats'
                             ? 'Additional members'
                             : excess.resourceId === 'projects'
-                              ? `Additional Projects (${formatNum(excess.value)})`
+                              ? 'Additional projects'
                               : `${excess.resourceId} overage (${formatNum(excess.value)})`,
                     usage: '',
                     price: formatCurrency(excess.amount)
                 },
+                // provide a badge count for additional projects
+                badge: excess.resourceId === 'projects' ? formatNum(excess.value) : null,
                 children: []
             }));
         const projects = projectsList.map((project) => ({
@@ -314,235 +344,280 @@
         return [basePlan, ...addons, ...projects, ...noProjects];
     }
 
-    $: billingData = getBillingData(currentPlan, currentAggregation, $isSmallViewport);
+    const billingData = $derived(getBillingData(currentPlan, currentAggregation, $isSmallViewport));
 
-    $: totalAmount = Math.max(currentAggregation?.amount - creditsApplied, 0);
-
-    $: creditsApplied = Math.min(
-        currentAggregation?.amount ?? currentPlan?.price ?? 0,
-        availableCredit
+    const creditsApplied = $derived(
+        Math.min(currentAggregation?.amount ?? currentPlan?.price ?? 0, availableCredit)
     );
+
+    const totalAmount = $derived(Math.max(currentAggregation?.amount - creditsApplied, 0));
 </script>
 
 {#if $organization}
-    <EstimatedCard>
-        <Typography.Title size="s" gap="s">{currentPlan.name} plan</Typography.Title>
+    {#key aggregationKey}
+        <EstimatedCard>
+            <Typography.Title size="s" gap="s">{currentPlan.name} plan</Typography.Title>
 
-        {#if totalAmount > 0}
-            <Typography.Text color="--fgcolor-neutral-secondary">
-                Next payment of <span class="text --fgcolor-neutral-primary u-bold"
-                    >{formatCurrency(totalAmount)}</span>
-                will occur on
-                <span class="text --fgcolor-neutral-primary u-bold"
-                    >{toLocaleDate($organization?.billingNextInvoiceDate)}</span
-                >.
-            </Typography.Text>
-        {/if}
-        <Divider />
-        <div class="billing-cycle-header">
-            <Typography.Text color="--fgcolor-neutral-secondary" variant="m-500">
-                Current billing cycle ({new Date(
-                    $organization?.billingCurrentInvoiceDate
-                ).toLocaleDateString('en', { day: 'numeric', month: 'short' })}-{new Date(
-                    $organization?.billingNextInvoiceDate
-                ).toLocaleDateString('en', { day: 'numeric', month: 'short' })})
-            </Typography.Text>
-            <Typography.Text color="--fgcolor-neutral-tertiary" variant="m-400">
-                Estimate, subject to change based on usage.
-            </Typography.Text>
-        </div>
-        <!-- Billing breakdown table -->
-        <div class="table-wrapper" class:is-mobile={$isSmallViewport}>
-            <ExpandableTable.Root {columns} showHeader={false} let:root>
-                {#each billingData as row}
-                    <ExpandableTable.Row {root} id={row.id} expandable={row.expandable ?? false}>
-                        {#each columns as col}
-                            <ExpandableTable.Cell
-                                {root}
-                                column={col.id}
-                                expandable={row.expandable ?? false}>
-                                {#if col.id === 'item'}
-                                    <div class="cell-item-text">
+            {#if totalAmount > 0}
+                <Typography.Text color="--fgcolor-neutral-secondary">
+                    Next payment of <span class="text --fgcolor-neutral-primary u-bold"
+                        >{formatCurrency(totalAmount)}</span>
+                    will occur on
+                    <span class="text --fgcolor-neutral-primary u-bold"
+                        >{toLocaleDate($organization?.billingNextInvoiceDate)}</span
+                    >.
+                </Typography.Text>
+            {/if}
+            <Divider />
+            <div class="billing-cycle-header">
+                <Typography.Text color="--fgcolor-neutral-secondary" variant="m-500">
+                    Current billing cycle ({new Date(
+                        $organization?.billingCurrentInvoiceDate
+                    ).toLocaleDateString('en', { day: 'numeric', month: 'short' })}-{new Date(
+                        $organization?.billingNextInvoiceDate
+                    ).toLocaleDateString('en', { day: 'numeric', month: 'short' })})
+                </Typography.Text>
+                <Typography.Text color="--fgcolor-neutral-tertiary" variant="m-400">
+                    Estimate, subject to change based on usage.
+                </Typography.Text>
+            </div>
+            <!-- Billing breakdown table -->
+            <div class:is-mobile={$isSmallViewport}>
+                <AccordionTable.Root {columns} let:root>
+                    {#each billingData as row}
+                        <AccordionTable.Row {root} id={row.id} expandable={row.expandable ?? false}>
+                            {#each columns as col}
+                                <AccordionTable.Cell {root} column={col.id}>
+                                    {#if col.id === 'item'}
+                                        <div class="cell-item-text">
+                                            {#if row.badge}
+                                                <Layout.Stack
+                                                    direction="row"
+                                                    alignItems="center"
+                                                    gap="xs">
+                                                    <Typography.Text>
+                                                        {row.cells?.[col.id] ?? ''}
+                                                    </Typography.Text>
+                                                    <Badge
+                                                        variant="secondary"
+                                                        size="xs"
+                                                        content={row.badge} />
+                                                </Layout.Stack>
+                                            {:else}
+                                                <Typography.Text>
+                                                    {row.cells?.[col.id] ?? ''}
+                                                </Typography.Text>
+                                            {/if}
+                                        </div>
+                                    {:else}
                                         <Typography.Text>
                                             {row.cells?.[col.id] ?? ''}
                                         </Typography.Text>
-                                    </div>
-                                {:else}
-                                    <Typography.Text>
-                                        {row.cells?.[col.id] ?? ''}
-                                    </Typography.Text>
-                                {/if}
-                            </ExpandableTable.Cell>
-                        {/each}
+                                    {/if}
+                                </AccordionTable.Cell>
+                            {/each}
 
-                        <svelte:fragment slot="summary">
-                            {#if row.children}
-                                {#each row.children as child (child.id)}
-                                    <div
-                                        class="child-row"
-                                        class:is-tablet={$isTabletViewport && !$isSmallViewport}
-                                        style="grid-template-columns: {root.childGridTemplate}; --original-grid-template: {root.childGridTemplate};">
-                                        {#each columns as col}
-                                            <div
-                                                class="child-cell"
-                                                class:price={col.id === 'price'}
-                                                class:is-mobile={$isSmallViewport}
-                                                style="justify-content: {root.alignment(
-                                                    col.align
-                                                )};">
-                                                {#if child.cells?.[col.id]?.includes('<a href=')}
-                                                    {@html child.cells?.[col.id] ?? ''}
-                                                {:else if col.id === 'usage'}
-                                                    <div
-                                                        class="usage-cell-content"
-                                                        class:is-mobile={$isSmallViewport}
-                                                        class:is-tablet={$isTabletViewport &&
-                                                            !$isSmallViewport}>
-                                                        <div class="usage-progress-section">
-                                                            {#if child.progressData && child.progressData.length > 0 && child.maxValue}
-                                                                <ProgressBar
-                                                                    maxSize={child.maxValue}
-                                                                    data={child.progressData} />
-                                                            {/if}
-                                                        </div>
-                                                        <div class="usage-text-section">
-                                                            {#if child.cells?.[col.id]?.includes(' / ')}
-                                                                {@const usageParts = (
-                                                                    child.cells?.[col.id] ?? ''
-                                                                ).split(' / ')}
-                                                                <Typography.Text
-                                                                    variant="m-400"
-                                                                    color="--fgcolor-neutral-secondary">
-                                                                    {usageParts[0]}
-                                                                </Typography.Text>
-                                                                <Typography.Text
-                                                                    variant="m-400"
-                                                                    color="--fgcolor-neutral-tertiary">
-                                                                    {' / '}
-                                                                </Typography.Text>
-                                                                <Typography.Text
-                                                                    variant="m-400"
-                                                                    color="--fgcolor-neutral-tertiary">
-                                                                    {usageParts[1]}
-                                                                </Typography.Text>
-                                                            {:else}
-                                                                <Typography.Text
-                                                                    variant="m-400"
-                                                                    color="--fgcolor-neutral-secondary">
-                                                                    {child.cells?.[col.id] ?? ''}
-                                                                </Typography.Text>
-                                                            {/if}
-                                                        </div>
-                                                    </div>
+                            <svelte:fragment slot="summary" let:root>
+                                {#if row.children}
+                                    {#each row.children as child (child.id)}
+                                        <AccordionTable.Summary.Row {root}>
+                                            <AccordionTable.Summary.Cell
+                                                {root}
+                                                column="item"
+                                                alignment="middle-start">
+                                                {#if child.cells?.item?.includes('<a href=')}
+                                                    {@html child.cells?.item ?? ''}
                                                 {:else}
                                                     <Typography.Text
                                                         variant="m-400"
                                                         color="--fgcolor-neutral-secondary">
-                                                        {child.cells?.[col.id] ?? ''}
+                                                        {child.cells?.item ?? ''}
                                                     </Typography.Text>
                                                 {/if}
-                                            </div>
-                                        {/each}
-                                    </div>
-                                {/each}
-                            {/if}
-                        </svelte:fragment>
-                    </ExpandableTable.Row>
-                {/each}
-                {#if availableCredit > 0}
-                    <ExpandableTable.Row {root} id="total-row" expandable={false}>
-                        <ExpandableTable.Cell {root} column="item" expandable={false}>
-                            <Layout.Stack
-                                inline
-                                direction="row"
-                                gap="xxs"
-                                alignItems="center"
-                                alignContent="center">
-                                <Icon icon={IconTag} color="--fgcolor-success" size="s" />
-
-                                <Typography.Text color="--fgcolor-neutral-primary"
-                                    >Credits</Typography.Text>
-                            </Layout.Stack>
-                        </ExpandableTable.Cell>
-                        <ExpandableTable.Cell {root} column="usage" expandable={false}>
-                            <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
-                            </Typography.Text>
-                        </ExpandableTable.Cell>
-                        <ExpandableTable.Cell {root} column="price" expandable={false}>
-                            <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
-                                -{formatCurrency(creditsApplied)}
-                            </Typography.Text>
-                        </ExpandableTable.Cell>
-                    </ExpandableTable.Row>
-                {/if}
-
-                <ExpandableTable.Row {root} id="total-row" expandable={false}>
-                    <ExpandableTable.Cell {root} column="item" expandable={false}>
-                        <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
-                            Total
-                        </Typography.Text>
-                    </ExpandableTable.Cell>
-                    <ExpandableTable.Cell {root} column="usage" expandable={false}>
-                        <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
-                        </Typography.Text>
-                    </ExpandableTable.Cell>
-                    <ExpandableTable.Cell {root} column="price" expandable={false}>
-                        <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
-                            {formatCurrency(totalAmount)}
-                        </Typography.Text>
-                    </ExpandableTable.Cell>
-                </ExpandableTable.Row>
-            </ExpandableTable.Root>
-        </div>
-
-        <!-- Actions -->
-        <div class="actions-container">
-            {#if $organization?.billingPlan === BillingPlan.FREE || $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION}
-                <div
-                    class="u-flex u-cross-center u-gap-8 u-flex-wrap u-width-full-line u-main-end actions-mobile">
-                    {#if !currentPlan?.usagePerProject}
-                        <Button text href={`${base}/organization-${$organization?.$id}/usage`}>
-                            View estimated usage
-                        </Button>
+                                            </AccordionTable.Summary.Cell>
+                                            <AccordionTable.Summary.Cell
+                                                {root}
+                                                column="usage"
+                                                alignment="middle-start">
+                                                <div
+                                                    class="usage-cell-content"
+                                                    class:is-mobile={$isSmallViewport}
+                                                    class:is-tablet={$isTabletViewport &&
+                                                        !$isSmallViewport}>
+                                                    <div class="usage-progress-section">
+                                                        {#if child.progressData && child.progressData.length > 0 && child.maxValue}
+                                                            <ProgressBar
+                                                                maxSize={child.maxValue}
+                                                                data={child.progressData} />
+                                                        {/if}
+                                                    </div>
+                                                    <div class="usage-text-section">
+                                                        {#if child.cells?.usage?.includes(' / ')}
+                                                            {@const usageParts = (
+                                                                child.cells?.usage ?? ''
+                                                            ).split(' / ')}
+                                                            <Typography.Text
+                                                                variant="m-400"
+                                                                color="--fgcolor-neutral-secondary">
+                                                                {usageParts[0]}
+                                                            </Typography.Text>
+                                                            <Typography.Text
+                                                                variant="m-400"
+                                                                color="--fgcolor-neutral-tertiary">
+                                                                {' / '}
+                                                            </Typography.Text>
+                                                            <Typography.Text
+                                                                variant="m-400"
+                                                                color="--fgcolor-neutral-tertiary">
+                                                                {usageParts[1]}
+                                                            </Typography.Text>
+                                                        {:else}
+                                                            <Typography.Text
+                                                                variant="m-400"
+                                                                color="--fgcolor-neutral-secondary">
+                                                                {child.cells?.usage ?? ''}
+                                                            </Typography.Text>
+                                                        {/if}
+                                                    </div>
+                                                </div>
+                                            </AccordionTable.Summary.Cell>
+                                            <AccordionTable.Summary.Cell
+                                                {root}
+                                                column="price"
+                                                alignment="middle-end">
+                                                <Typography.Text
+                                                    variant="m-400"
+                                                    color="--fgcolor-neutral-secondary">
+                                                    {child.cells?.price ?? ''}
+                                                </Typography.Text>
+                                            </AccordionTable.Summary.Cell>
+                                        </AccordionTable.Summary.Row>
+                                    {/each}
+                                {/if}
+                            </svelte:fragment>
+                        </AccordionTable.Row>
+                    {/each}
+                    {#if totalProjects > projectsLimit}
+                        <AccordionTable.Row {root} id="pagination-row" expandable={false}>
+                            <AccordionTable.Cell {root} column="item">
+                                <div class="pagination-left">
+                                    <PaginationComponent
+                                        limit={projectsLimit}
+                                        offset={projectsOffset}
+                                        sum={totalProjects} />
+                                </div>
+                            </AccordionTable.Cell>
+                            <AccordionTable.Cell {root} column="usage"></AccordionTable.Cell>
+                            <AccordionTable.Cell {root} column="price"></AccordionTable.Cell>
+                        </AccordionTable.Row>
                     {/if}
-                    <Button
-                        disabled={$organization?.markedForDeletion}
-                        href={$upgradeURL}
-                        on:click={() =>
-                            trackEvent(Click.OrganizationClickUpgrade, {
-                                from: 'button',
-                                source: 'billing_tab'
-                            })}>
-                        Upgrade
-                    </Button>
-                </div>
-            {:else}
-                <div
-                    class="u-flex u-cross-center u-gap-8 u-flex-wrap u-width-full-line u-main-end actions-mobile">
-                    {#if $organization?.billingPlanDowngrade !== null}
-                        <Button text on:click={() => (showCancel = true)}>Cancel change</Button>
-                    {:else}
+                    {#if availableCredit > 0}
+                        <AccordionTable.Row {root} id="credits-row" expandable={false}>
+                            <AccordionTable.Cell {root} column="item">
+                                <Layout.Stack
+                                    inline
+                                    direction="row"
+                                    gap="xxs"
+                                    alignItems="center"
+                                    alignContent="center">
+                                    <Icon icon={IconTag} color="--fgcolor-success" size="s" />
+
+                                    <Typography.Text color="--fgcolor-neutral-primary"
+                                        >Credits</Typography.Text>
+                                </Layout.Stack>
+                            </AccordionTable.Cell>
+                            <AccordionTable.Cell {root} column="usage">
+                                <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
+                                </Typography.Text>
+                            </AccordionTable.Cell>
+                            <AccordionTable.Cell {root} column="price">
+                                <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
+                                    -{formatCurrency(creditsApplied)}
+                                </Typography.Text>
+                            </AccordionTable.Cell>
+                        </AccordionTable.Row>
+                    {/if}
+
+                    <AccordionTable.Row {root} id="total-row" expandable={false}>
+                        <AccordionTable.Cell {root} column="item">
+                            <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
+                                Total
+                            </Typography.Text>
+                        </AccordionTable.Cell>
+                        <AccordionTable.Cell {root} column="usage">
+                            <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
+                            </Typography.Text>
+                        </AccordionTable.Cell>
+                        <AccordionTable.Cell {root} column="price">
+                            <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
+                                {formatCurrency(totalAmount)}
+                            </Typography.Text>
+                        </AccordionTable.Cell>
+                    </AccordionTable.Row>
+                </AccordionTable.Root>
+            </div>
+
+            <!-- Actions -->
+            <div class="actions-container">
+                {#if $organization?.billingPlan === BillingPlan.FREE || $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION}
+                    <Layout.Stack
+                        direction="row"
+                        alignItems="center"
+                        justifyContent="flex-end"
+                        gap="s"
+                        wrap="wrap"
+                        class="u-width-full-line actions-mobile">
+                        {#if !currentPlan?.usagePerProject}
+                            <Button text href={`${base}/organization-${$organization?.$id}/usage`}>
+                                View estimated usage
+                            </Button>
+                        {/if}
                         <Button
-                            text
                             disabled={$organization?.markedForDeletion}
                             href={$upgradeURL}
                             on:click={() =>
-                                trackEvent('click_organization_plan_update', {
+                                trackEvent(Click.OrganizationClickUpgrade, {
                                     from: 'button',
                                     source: 'billing_tab'
                                 })}>
-                            Change plan
+                            Upgrade
                         </Button>
-                    {/if}
-                    {#if !currentPlan?.usagePerProject}
-                        <Button secondary href={`${base}/organization-${$organization?.$id}/usage`}>
-                            View estimated usage
-                        </Button>
-                    {/if}
-                </div>
-            {/if}
-        </div>
-    </EstimatedCard>
+                    </Layout.Stack>
+                {:else}
+                    <Layout.Stack
+                        direction="row"
+                        alignItems="center"
+                        justifyContent="flex-end"
+                        gap="s"
+                        wrap="wrap"
+                        class="u-width-full-line actions-mobile">
+                        {#if $organization?.billingPlanDowngrade !== null}
+                            <Button text on:click={() => (showCancel = true)}>Cancel change</Button>
+                        {:else}
+                            <Button
+                                text
+                                disabled={$organization?.markedForDeletion}
+                                href={$upgradeURL}
+                                on:click={() =>
+                                    trackEvent(Click.OrganizationClickUpgrade, {
+                                        from: 'button',
+                                        source: 'billing_tab'
+                                    })}>
+                                Change plan
+                            </Button>
+                        {/if}
+                        {#if !currentPlan?.usagePerProject}
+                            <Button
+                                secondary
+                                href={`${base}/organization-${$organization?.$id}/usage`}>
+                                View estimated usage
+                            </Button>
+                        {/if}
+                    </Layout.Stack>
+                {/if}
+            </div>
+        </EstimatedCard>
+    {/key}
 {/if}
 
 <CancelDowngradeModel bind:showCancel />
@@ -668,50 +743,7 @@
         flex-shrink: 0;
     }
 
-    /* mobile table wrapper for horizontal scroll */
-    .table-wrapper.is-mobile {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        margin: 0 -1rem;
-        padding: 0 1rem;
-    }
-
-    /* reset mobile overrides - use desktop layout in scrollable container */
-    .table-wrapper.is-mobile :global(.child-row) {
-        grid-template-columns: var(--original-grid-template) !important;
-        min-width: 600px; /* ensure minimum width for proper layout */
-    }
-
-    .table-wrapper.is-mobile :global(.usage-cell-content) {
-        flex-direction: row !important;
-        align-items: center !important;
-        gap: 0.75rem !important;
-        padding-left: 1rem !important;
-        min-height: 2rem !important;
-    }
-
-    .table-wrapper.is-mobile :global(.usage-progress-section) {
-        width: 200px !important;
-        flex-shrink: 0 !important;
-    }
-
-    .table-wrapper.is-mobile :global(.usage-progress-section .progressbar__container) {
-        width: 200px !important;
-        max-width: 200px !important;
-    }
-
     @media (max-width: 768px) {
-        .actions-mobile {
-            justify-content: flex-start !important;
-            gap: 8px !important;
-        }
-
-        .actions-mobile :global(a),
-        .actions-mobile :global(button) {
-            padding: 6px 12px !important;
-            font-size: 14px !important;
-            border-radius: 8px !important;
-        }
         .billing-cycle-header {
             flex-direction: column;
             gap: 8px;
@@ -732,5 +764,12 @@
             border: unset !important;
             background: unset !important;
         }
+    }
+
+    /* reducingh size of paginator */
+    .pagination-left {
+        display: inline-block;
+        transform: scale(0.95);
+        transform-origin: left center;
     }
 </style>
