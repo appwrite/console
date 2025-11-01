@@ -56,14 +56,27 @@ export async function deleteAccount(page: Page, maxRetries = 3) {
             await page.goto('./account');
 
             // click the Delete button in the CardGrid actions section
-            await page.getByRole('button', { name: 'Delete', exact: true }).click();
+            const trigger = page.getByRole('button', { name: 'Delete', exact: true });
+            await trigger.waitFor({ state: 'visible', timeout: 10000 });
+            await trigger.click();
 
             // wait for confirm modal to open
             const dialog = page.locator('dialog[open]');
-            await expect(dialog).toBeVisible();
+            await expect(dialog).toBeVisible({ timeout: 10000 });
 
-            // click the confirm button in the modal (no name typing required)
-            await dialog.getByRole('button', { name: 'Delete', exact: true }).click();
+            // click the confirm button in the modal
+            const confirm = dialog.getByRole('button', { name: 'Delete', exact: true });
+            await confirm.waitFor({ state: 'attached', timeout: 5000 });
+            await expect(confirm).toBeVisible({ timeout: 10000 });
+            await expect(confirm).toBeEnabled({ timeout: 10000 });
+            try {
+                await confirm.click({ timeout: 5000 });
+            } catch {
+                const retryConfirm = dialog.getByRole('button', { name: 'Delete', exact: true });
+                await retryConfirm.waitFor({ state: 'attached', timeout: 5000 });
+                await expect(retryConfirm).toBeEnabled({ timeout: 10000 });
+                await retryConfirm.click({ timeout: 5000 });
+            }
 
             // check if we got an error about active memberships
             const membershipError = page.getByText(/active memberships/i);
@@ -77,9 +90,21 @@ export async function deleteAccount(page: Page, maxRetries = 3) {
                 );
 
                 await page.keyboard.press('Escape').catch(() => {});
-                await page.waitForTimeout(2000);
+                await expect(dialog).toBeHidden({ timeout: 10000 });
+                await page.waitForTimeout(1000);
                 continue;
             }
+
+            const successToast = page.getByText(/Account was deleted/i);
+            try {
+                await Promise.race([
+                    expect(successToast).toBeVisible({ timeout: 15000 }),
+                    expect(dialog).toBeHidden({ timeout: 15000 })
+                ]);
+            } catch {
+                await expect(dialog).toBeHidden({ timeout: 5000 });
+            }
+
             return;
         }
 

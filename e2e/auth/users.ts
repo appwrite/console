@@ -139,7 +139,7 @@ export async function deleteUser(
         await dialog.waitFor({ state: 'visible' });
         await dialog.getByRole('button', { name: 'Delete', exact: true }).click();
 
-        await page.waitForURL(buildAuthUrlPattern(region, projectId, '$'));
+        await page.waitForURL(buildAuthUrlPattern(region, projectId, '(/\\?.*)?$'));
         await expect(page.getByText(/has been deleted/i)).toBeVisible();
         await dismissNotification(page, /has been deleted/i);
         await searchUser(page, userId);
@@ -350,7 +350,9 @@ export async function updateUserEmailVerification(
         await expect(dropdownItem).toBeEnabled({ timeout: 10000 });
         await dropdownItem.click();
 
-        await expect(page.getByText(/has been (verified|unverified)/i)).toBeVisible({ timeout: 15000 });
+        await expect(page.getByText(/has been (verified|unverified)/i)).toBeVisible({
+            timeout: 15000
+        });
         await dismissNotification(page, /has been (verified|unverified)/i);
     });
 }
@@ -381,7 +383,9 @@ export async function updateUserPhoneVerification(
         await expect(dropdownItem).toBeEnabled({ timeout: 10000 });
         await dropdownItem.click();
 
-        await expect(page.getByText(/has been (verified|unverified)/i)).toBeVisible({ timeout: 15000 });
+        await expect(page.getByText(/has been (verified|unverified)/i)).toBeVisible({
+            timeout: 15000
+        });
         await dismissNotification(page, /has been (verified|unverified)/i);
     });
 }
