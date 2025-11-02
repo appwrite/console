@@ -630,7 +630,7 @@
         try {
             if (VARS.MOCK_AI_SUGGESTIONS) {
                 /* animation */
-                await sleep(NOTIFICATION_AND_MOCK_DELAY * 100);
+                await sleep(NOTIFICATION_AND_MOCK_DELAY);
                 suggestedColumns = mockSuggestions;
             } else {
                 await sleep(5000); // for design review on stage
@@ -1532,8 +1532,15 @@
             {#each userDataRows as row}
                 <Spreadsheet.Row.Base {root} select="disabled" hoverEffect={false}>
                     {#each spreadsheetColumns as column}
+                        {@const columnObj = getColumn(column.id)}
+                        {@const interactable =
+                            isCustomColumn(column.id) && columnObj && !columnObj.isPlaceholder}
                         <Spreadsheet.Cell {root} column={column.id} isEditable={false}>
-                            <span class="u-trim">{row[column.id] ?? ''}</span>
+                            {@render rowCellInteractiveButton({
+                                interactable,
+                                column,
+                                row
+                            })}
                         </Spreadsheet.Cell>
                     {/each}
                 </Spreadsheet.Row.Base>
@@ -1543,37 +1550,10 @@
                 <Spreadsheet.Row.Base {root} select="disabled" hoverEffect={false}>
                     {#each spreadsheetColumns as column}
                         {@const columnObj = getColumn(column.id)}
-                        {@const isColumnInteractable =
+                        {@const interactable =
                             isCustomColumn(column.id) && columnObj && !columnObj.isPlaceholder}
                         <Spreadsheet.Cell {root} column={column.id} isEditable={false}>
-                            <button
-                                class="column-selector-button"
-                                aria-label="Select column"
-                                data-column-hover={column.id}
-                                onmouseenter={() => {
-                                    if (
-                                        isColumnInteractable &&
-                                        !selectedColumnId &&
-                                        !isInlineEditing &&
-                                        !$isTabletViewport &&
-                                        !$isSmallViewport &&
-                                        !$tableColumnSuggestions.thinking &&
-                                        !creatingColumns &&
-                                        hoveredColumnId !== column.id
-                                    ) {
-                                        hoveredColumnId = column.id;
-                                        /*tooltipTopPosition = 35 + Math.random() * 20;*/
-                                    }
-                                }}
-                                onclick={() => {
-                                    if (isColumnInteractable) {
-                                        if (!$isTabletViewport) {
-                                            selectColumnWithId(column);
-                                        } else if ($isSmallViewport) {
-                                            triggerColumnId = column.id;
-                                        }
-                                    }
-                                }}></button>
+                            {@render rowCellInteractiveButton({ interactable, column })}
                         </Spreadsheet.Cell>
                     {/each}
                 </Spreadsheet.Row.Base>
@@ -1755,6 +1735,41 @@
         </Typography.Text>
     </div>
 {/snippet}-->
+
+{#snippet rowCellInteractiveButton({ interactable, column, row = null })}
+    <button
+        class="column-selector-button"
+        aria-label="Select column"
+        data-column-hover={column.id}
+        onmouseenter={() => {
+            if (
+                interactable &&
+                !selectedColumnId &&
+                !isInlineEditing &&
+                !$isTabletViewport &&
+                !$isSmallViewport &&
+                !$tableColumnSuggestions.thinking &&
+                !creatingColumns &&
+                hoveredColumnId !== column.id
+            ) {
+                hoveredColumnId = column.id;
+                /*tooltipTopPosition = 35 + Math.random() * 20;*/
+            }
+        }}
+        onclick={() => {
+            if (interactable) {
+                if (!$isTabletViewport) {
+                    selectColumnWithId(column);
+                } else if ($isSmallViewport) {
+                    triggerColumnId = column.id;
+                }
+            }
+        }}>
+        {#if row}
+            <span class="u-trim">{row[column.id] ?? ''}</span>
+        {/if}
+    </button>
+{/snippet}
 
 {#snippet changeColumnTypePopover({ id, columnObj, iconColor, icon, isColumnInteractable, index })}
     <Popover let:toggle portal padding="none" placement="bottom-start">
