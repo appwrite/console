@@ -1349,7 +1349,7 @@
                             : '--overlay-icon-color'}
                         {@const isColumnInteractable =
                             isCustomColumn(column.id) && columnObj && !columnObj.isPlaceholder}
-                        {@const userColumn = column.id === '$id' || column.custom}
+                        {@const userColumn = column.id === '$id' || !column.custom}
 
                         {#if userColumn}
                             <Spreadsheet.Header.Cell
