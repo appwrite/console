@@ -628,6 +628,8 @@
                 await sleep(NOTIFICATION_AND_MOCK_DELAY);
                 suggestedColumns = mockSuggestions;
             } else {
+                await sleep(5000); // for design review on stage
+
                 suggestedColumns = (await sdk
                     .forProject(page.params.region, page.params.project)
                     .console.suggestColumns({
