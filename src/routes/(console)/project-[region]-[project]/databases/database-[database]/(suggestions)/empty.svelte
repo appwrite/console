@@ -82,6 +82,7 @@
             return {
                 ...column,
                 width: getUserColumnWidth(column.id, defaultWidth),
+                custom: false,
                 resizable: false,
                 draggable: false
             };
@@ -132,12 +133,17 @@
     let columnBeingDeleted: (SuggestedColumnSchema & { deletedIndex?: number }) | null =
         $state(null);
 
-    const baseColProps = { draggable: false, resizable: false };
+    const baseColProps = {
+        custom: false,
+        draggable: false,
+        resizable: false
+    };
 
     const NOTIFICATION_AND_MOCK_DELAY = 1250;
     const COLUMN_DELETION_UNDO_TIMER_LIMIT = 10000; // 10 seconds
 
     const getColumnWidth = (columnKey: string) => Math.max(180, columnKey.length * 8 + 60);
+
     const safeNumericValue = (value: number | undefined) =>
         value !== undefined && isWithinSafeRange(value) ? value : undefined;
 
@@ -517,13 +523,14 @@
                 width: { min: getColumnWidth(col.key) },
                 icon: columnOption?.icon,
                 draggable: false,
-                resizable: false
+                resizable: false,
+                custom: true
             };
         });
     });
 
-    const getRowColumns = (): Column[] => {
-        const minColumnWidth = 180;
+    const getRowColumns = (): (Column & { custom: boolean })[] => {
+        const minColumnWidth = 250;
         const fixedWidths = { id: minColumnWidth, actions: 40, selection: 40 };
 
         const equalWidthColumns = [...staticUserColumns, ...customSuggestedColumns];
@@ -1342,11 +1349,9 @@
                             : '--overlay-icon-color'}
                         {@const isColumnInteractable =
                             isCustomColumn(column.id) && columnObj && !columnObj.isPlaceholder}
-                        {@const isUserColumn =
-                            column.id === '$id' ||
-                            staticUserColumns.some((col) => col.id === column.id)}
+                        {@const userColumn = column.id === '$id' || column.custom}
 
-                        {#if isUserColumn}
+                        {#if userColumn}
                             <Spreadsheet.Header.Cell
                                 {root}
                                 column={column.id}
@@ -1553,7 +1558,10 @@
                         {@const interactable =
                             isCustomColumn(column.id) && columnObj && !columnObj.isPlaceholder}
                         <Spreadsheet.Cell {root} column={column.id} isEditable={false}>
-                            {@render rowCellInteractiveButton({ interactable, column })}
+                            {@render rowCellInteractiveButton({
+                                interactable,
+                                column
+                            })}
                         </Spreadsheet.Cell>
                     {/each}
                 </Spreadsheet.Row.Base>
@@ -1740,6 +1748,7 @@
     <button
         class="column-selector-button"
         aria-label="Select column"
+        style:cursor={column.custom ? 'pointer' : 'default'}
         data-column-hover={column.id}
         onmouseenter={() => {
             if (
@@ -1765,8 +1774,8 @@
                 }
             }
         }}>
-        {#if row}
-            <span class="u-trim">{row[column.id] ?? ''}</span>
+        {#if !column.custom && row}
+            <span class="u-trim fake-cell">{row[column.id] ?? ''}</span>
         {/if}
     </button>
 {/snippet}
@@ -1962,6 +1971,14 @@
             width: 100%;
             height: 100%;
             cursor: pointer;
+
+            & :global(.fake-cell) {
+                min-height: 40px;
+                position: relative;
+                align-items: center;
+                font-size: var(--font-size-s);
+                padding: var(--space-4) var(--space-6);
+            }
         }
 
         .columns-range-overlay {
