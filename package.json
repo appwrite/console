@@ -12,7 +12,7 @@
         "clean": "rm -rf node_modules && rm -rf .svelte_kit && pnpm i --force",
         "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
         "check:watch": "svelte-check --tsconfig ./tsconfig.json --watch",
-        "format": "prettier --write .",
+        "format": "prettier --write --cache .",
         "lint": "prettier --check . && eslint .",
         "test": "TZ=EST vitest run",
         "test:ui": "TZ=EST vitest --ui",
