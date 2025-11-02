@@ -135,6 +135,10 @@
     <div>Users</div>
 {:else if role === 'guests'}
     <div>Guests</div>
+{:else if role === 'users/verified'}
+    <div>Verified Users</div>
+{:else if role === 'users/unverified'}
+    <div>Unverified Users</div>
 {:else if role === 'any'}
     <div>Any</div>
 {:else}
