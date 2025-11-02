@@ -44,11 +44,14 @@
     import { fade } from 'svelte/transition';
 
     import IconAINotification from './icon/aiNotification.svelte';
+    import type { Models } from '@appwrite.io/console';
 
     let {
-        userColumns = []
+        userColumns = [],
+        userDataRows = []
     }: {
         userColumns?: Column[];
+        userDataRows?: Models.Row[];
     } = $props();
 
     const tableId = page.params.table;
@@ -573,7 +576,9 @@
     };
 
     const spreadsheetColumns = $derived(getRowColumns());
-    const emptyCells = $derived(($isSmallViewport ? 14 : 17) + (!$expandTabs ? 2 : 0));
+    const emptyCells = $derived(
+        ($isSmallViewport ? 14 : 17) + (!$expandTabs ? 2 : 0) - userDataRows.length
+    );
 
     onMount(async () => {
         columnsOrder.set(preferences.getColumnOrder(tableId));
@@ -625,7 +630,7 @@
         try {
             if (VARS.MOCK_AI_SUGGESTIONS) {
                 /* animation */
-                await sleep(NOTIFICATION_AND_MOCK_DELAY);
+                await sleep(NOTIFICATION_AND_MOCK_DELAY * 100);
                 suggestedColumns = mockSuggestions;
             } else {
                 await sleep(5000); // for design review on stage
@@ -1193,13 +1198,32 @@
 
         // get all custom column IDs
         const suggestedColumnIds = customColumns.map((col) => col.key);
+        const firstSuggestedColumnId = suggestedColumnIds[0];
+
+        const columnBeforeOverlay =
+            staticUserColumns.length > 0
+                ? staticUserColumns[staticUserColumns.length - 1].id
+                : '$id';
+
         const allCells = spreadsheetContainer.querySelectorAll('[role="cell"][data-column-id]');
         allCells.forEach((cell) => {
             const columnId = cell.getAttribute('data-column-id');
             if (columnId && suggestedColumnIds.includes(columnId)) {
                 cell.setAttribute('data-suggested-column', 'true');
+                if (columnId === firstSuggestedColumnId) {
+                    cell.setAttribute('data-first-suggested-column', 'true');
+                } else {
+                    cell.removeAttribute('data-first-suggested-column');
+                }
             } else {
                 cell.removeAttribute('data-suggested-column');
+                cell.removeAttribute('data-first-suggested-column');
+            }
+
+            if (columnId === columnBeforeOverlay) {
+                cell.setAttribute('data-column-before-overlay', 'true');
+            } else {
+                cell.removeAttribute('data-column-before-overlay');
             }
         });
     });
@@ -1504,6 +1528,16 @@
                     {/if}
                 {/each}
             </svelte:fragment>
+
+            {#each userDataRows as row}
+                <Spreadsheet.Row.Base {root} select="disabled" hoverEffect={false}>
+                    {#each spreadsheetColumns as column}
+                        <Spreadsheet.Cell {root} column={column.id} isEditable={false}>
+                            <span class="u-trim">{row[column.id] ?? ''}</span>
+                        </Spreadsheet.Cell>
+                    {/each}
+                </Spreadsheet.Row.Base>
+            {/each}
 
             {#each Array.from({ length: emptyCells }) as _}
                 <Spreadsheet.Row.Base {root} select="disabled" hoverEffect={false}>
@@ -1810,7 +1844,7 @@
         overflow: visible;
         scrollbar-width: none;
 
-        --columns-range-pink-border-color: rgba(253, 54, 110, 0.24);
+        --columns-range-pink-border-color: rgba(253, 54, 110, 0.18);
         --columns-range-pink-header-background-color: rgba(253, 54, 110, 0.12);
 
         &.custom-columns {
@@ -1837,6 +1871,14 @@
             ) {
                 border-left: var(--border-width-s, 1px) solid var(--columns-range-pink-border-color) !important;
                 transition: border-color 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            }
+
+            :global([role='cell'][data-column-before-overlay='true'] .column-resizer-disabled) {
+                opacity: 0 !important;
+            }
+
+            :global([role='cell'][data-column-id='actions']) {
+                border-left: none !important;
             }
 
             :global(
@@ -1965,11 +2007,7 @@
                     margin-block-start: unset !important;
                     // background: transparent;
                     // main spot for handling the glow animations!
-                    background: linear-gradient(
-                        135deg,
-                        color-mix(in oklab, #fd366e 1%, transparent) 0%,
-                        color-mix(in oklab, #fe9567 1%, transparent) 100%
-                    );
+                    background: rgba(253, 54, 110, 0.04);
 
                     .ai-border-glow {
                         inset: 0;
@@ -2165,7 +2203,7 @@
         }
 
         & :global([data-select='true']) {
-            opacity: 0.85;
+            // opacity: 0.85;
             pointer-events: none;
         }
 
