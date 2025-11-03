@@ -131,7 +131,7 @@
                     Cancel
                 </ActionMenu.Item.Button>
             {/if}
-            {#if effectiveStatus !== 'building' && effectiveStatus !== 'processing' && effectiveStatus !== 'waiting'}
+            {#if ['ready', 'failed'].includes(deployment.status)}
                 <ActionMenu.Item.Button
                     status="danger"
                     leadingIcon={IconTrash}
