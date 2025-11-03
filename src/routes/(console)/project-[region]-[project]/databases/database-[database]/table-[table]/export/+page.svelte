@@ -254,12 +254,14 @@
                         bind:checked={includeHeader} />
 
                     <Layout.Stack gap="m">
-                        <InputCheckbox
-                            id="exportWithFilters"
-                            label="Export with filters"
-                            description="Export rows that match the current table filters"
-                            disabled={$tags.length === 0}
-                            bind:checked={exportWithFilters} />
+                        <div class:disabled-checkbox={$tags.length === 0}>
+                            <InputCheckbox
+                                id="exportWithFilters"
+                                label="Export with filters"
+                                description="Export rows that match the current table filters"
+                                disabled={$tags.length === 0}
+                                bind:checked={exportWithFilters} />
+                        </div>
 
                         {#if $tags.length > 0}
                             <ul
@@ -305,5 +307,9 @@
         grid-template-columns: repeat(3, 1fr);
         row-gap: 1.25rem;
         column-gap: 1rem;
+    }
+
+    .disabled-checkbox :global(*) {
+        cursor: unset;
     }
 </style>
