@@ -10,9 +10,15 @@
     import { invalidate } from '$app/navigation';
     import { table, type Columns, PROHIBITED_ROW_KEYS } from '../store';
     import ColumnItem from './columns/columnItem.svelte';
-    import { buildWildcardColumnsQuery, isRelationship, isRelationshipToMany } from './store';
+    import {
+        buildWildcardColumnsQuery,
+        isRelationship,
+        isRelationshipToMany,
+        isSpatialType
+    } from './store';
     import { Layout, Skeleton } from '@appwrite.io/pink-svelte';
     import { deepClone } from '$lib/helpers/object';
+    import deepEqual from 'deep-equal';
 
     const tableId = page.params.table;
     const databaseId = page.params.database;
@@ -89,6 +95,10 @@
 
         const workColumn = $work?.[column.key];
         const currentColumn = $doc?.[column.key];
+
+        if (isSpatialType(column)) {
+            return deepEqual(workColumn, currentColumn);
+        }
 
         if (column.array) {
             return !symmetricDifference(Array.from(workColumn), Array.from(currentColumn)).length;
