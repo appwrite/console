@@ -8,8 +8,8 @@ on:
             - 'static/**/*'
 
 env:
-    PUBLIC_CONSOLE_PROFILE: ''
-    PUBLIC_AI_SERVICE_BASE_URL: ''
+    PUBLIC_CONSOLE_PROFILE: 'default'
+    PUBLIC_AI_SERVICE_BASE_URL: 'http://appwrite.test/v1'
     PUBLIC_APPWRITE_ENDPOINT: http://appwrite.test/v1
 
 jobs:
