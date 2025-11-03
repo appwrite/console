@@ -19,7 +19,7 @@
     import { isSmallViewport } from '$lib/stores/viewport';
     import { isCloud } from '$lib/system';
     import { goto, beforeNavigate } from '$app/navigation';
-    import { base } from '$app/paths';
+    import { base, resolve } from '$app/paths';
     import { currentPlan, newOrgModal, organization } from '$lib/stores/organization';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { ID, type Models, Query } from '@appwrite.io/console';
@@ -171,7 +171,9 @@
             if (loadedProjects.projects.length > 4) {
                 projectLinks.push({
                     name: 'All projects',
-                    href: `${base}/organization-${selectedOrg.$id}`
+                    href: resolve('/(console)/organization-[organization]', {
+                        organization: selectedOrg.$id
+                    })
                 });
             }
 
