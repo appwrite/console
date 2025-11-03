@@ -127,6 +127,9 @@
                 imageTransformations: projectData?.resources?.find(
                     (resource) => resource.resourceId === 'imageTransformations'
                 ),
+                screenshotsGenerated: projectData?.resources?.find(
+                    (resource) => resource.resourceId === 'screenshotsGenerated'
+                ),
                 bandwidth: projectData?.resources?.find(
                     (resource) => resource.resourceId === 'bandwidth'
                 ),
@@ -279,6 +282,19 @@
                         currentPlan?.imageTransformations
                     ),
                     maxValue: currentPlan?.imageTransformations
+                },
+                {
+                    id: `screenshots-generated`,
+                    cells: {
+                        item: 'Screenshots generated',
+                        usage: `${formatNum(project.screenshotsGenerated.value || 0)} / ${currentPlan?.screenshotsGenerated ? formatNum(currentPlan.screenshotsGenerated) : 'Unlimited'}`,
+                        price: formatCurrency(project.screenshotsGenerated.amount || 0)
+                    },
+                    progressData: createProgressData(
+                        project.screenshotsGenerated.value || 0,
+                        currentPlan?.screenshotsGenerated
+                    ),
+                    maxValue: currentPlan?.screenshotsGenerated
                 },
                 {
                     id: `gb-hours`,
