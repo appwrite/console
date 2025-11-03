@@ -186,9 +186,9 @@
                                 leadingIcon={IconDownload}
                                 on:click={() => {
                                     trackEvent(Click.DatabaseExportCsv);
-                                    goto(
-                                        `${base}/project-${page.params.region}-${page.params.project}/databases/database-${page.params.database}/table-${page.params.table}/export`
-                                    );
+                                    const queryParam = page.url.searchParams.get('query');
+                                    const exportUrl = `${base}/project-${page.params.region}-${page.params.project}/databases/database-${page.params.database}/table-${page.params.table}/export${queryParam ? `?query=${queryParam}` : ''}`;
+                                    goto(exportUrl);
                                 }}>
                                 Export CSV
                             </ActionMenu.Item.Button>

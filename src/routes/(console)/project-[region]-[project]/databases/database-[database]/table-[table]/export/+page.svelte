@@ -139,9 +139,9 @@
 
             trackEvent(Submit.DatabaseExportCsv);
 
-            await goto(
-                `${base}/project-${page.params.region}-${page.params.project}/databases/database-${page.params.database}/table-${page.params.table}`
-            );
+            const queryParam = page.url.searchParams.get('query');
+            const tableUrl = `${base}/project-${page.params.region}-${page.params.project}/databases/database-${page.params.database}/table-${page.params.table}${queryParam ? `?query=${queryParam}` : ''}`;
+            await goto(tableUrl);
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -161,7 +161,7 @@
 <Wizard
     title="Export CSV"
     columnSize="s"
-    href={`${base}/project-${page.params.region}-${page.params.project}/databases/database-${page.params.database}/table-${page.params.table}`}
+    href={`${base}/project-${page.params.region}-${page.params.project}/databases/database-${page.params.database}/table-${page.params.table}${page.url.searchParams.get('query') ? `?query=${page.url.searchParams.get('query')}` : ''}`}
     bind:showExitModal
     confirmExit
     column>
