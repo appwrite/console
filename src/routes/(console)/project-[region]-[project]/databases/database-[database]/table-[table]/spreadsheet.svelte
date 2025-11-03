@@ -803,8 +803,7 @@
             expandKbdShortcut="Cmd+Enter"
             on:expandKbdShortcut={({ detail }) => {
                 const focusedRowId = detail.rowId;
-                const focusedRow = $rows.rows.find((row) => row.$id === focusedRowId);
-
+                const focusedRow = $paginatedRows.items.find((row) => row.$id === focusedRowId);
                 previouslyFocusedElement = document.activeElement;
                 onSelectSheetOption('update', null, 'row', focusedRow);
             }}>
