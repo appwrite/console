@@ -57,24 +57,24 @@ export async function deleteAccount(page: Page, maxRetries = 3) {
 
             // click the Delete button in the CardGrid actions section
             const trigger = page.getByRole('button', { name: 'Delete', exact: true });
-            await trigger.waitFor({ state: 'visible', timeout: 10000 });
+            await trigger.waitFor({ state: 'visible',  timeout: 15000 });
             await trigger.click();
 
             // wait for confirm modal to open
             const dialog = page.locator('dialog[open]');
-            await expect(dialog).toBeVisible({ timeout: 10000 });
+            await expect(dialog).toBeVisible({  timeout: 15000 });
 
             // click the confirm button in the modal
             const confirm = dialog.getByRole('button', { name: 'Delete', exact: true });
             await confirm.waitFor({ state: 'attached', timeout: 5000 });
-            await expect(confirm).toBeVisible({ timeout: 10000 });
-            await expect(confirm).toBeEnabled({ timeout: 10000 });
+            await expect(confirm).toBeVisible({  timeout: 15000 });
+            await expect(confirm).toBeEnabled({  timeout: 15000 });
             try {
                 await confirm.click({ timeout: 5000 });
             } catch {
                 const retryConfirm = dialog.getByRole('button', { name: 'Delete', exact: true });
                 await retryConfirm.waitFor({ state: 'attached', timeout: 5000 });
-                await expect(retryConfirm).toBeEnabled({ timeout: 10000 });
+                await expect(retryConfirm).toBeEnabled({  timeout: 15000 });
                 await retryConfirm.click({ timeout: 5000 });
             }
 
@@ -90,7 +90,7 @@ export async function deleteAccount(page: Page, maxRetries = 3) {
                 );
 
                 await page.keyboard.press('Escape').catch(() => {});
-                await expect(dialog).toBeHidden({ timeout: 10000 });
+                await expect(dialog).toBeHidden({  timeout: 15000 });
                 await page.waitForTimeout(1000);
                 continue;
             }

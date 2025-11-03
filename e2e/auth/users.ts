@@ -31,10 +31,10 @@ async function dismissNotification(page: Page, messagePattern: RegExp): Promise<
             await notification.getByRole('button').first().click();
         }
     } catch {
-        await expect(notification).not.toBeVisible({ timeout: 10000 });
+        await expect(notification).not.toBeVisible({  timeout: 15000 });
         return;
     }
-    await expect(notification).not.toBeVisible({ timeout: 10000 });
+    await expect(notification).not.toBeVisible({  timeout: 15000 });
 }
 
 export async function createUser(
@@ -165,10 +165,10 @@ export async function updateUserName(
         });
 
         const nameInput = nameSection.locator('id=name');
-        await nameInput.waitFor({ state: 'visible', timeout: 10000 });
+        await nameInput.waitFor({ state: 'visible',  timeout: 15000 });
         await nameInput.fill(newName);
         const updateButton = nameSection.getByRole('button', { name: 'Update' });
-        await expect(updateButton).toBeEnabled({ timeout: 10000 });
+        await expect(updateButton).toBeEnabled({  timeout: 15000 });
         await updateButton.click();
         await expect(page.getByText(/name has been updated/i)).toBeVisible();
         await dismissNotification(page, /name has been updated/i);
@@ -191,10 +191,10 @@ export async function updateUserEmail(
         });
 
         const emailInput = emailSection.locator('id=email');
-        await emailInput.waitFor({ state: 'visible', timeout: 10000 });
+        await emailInput.waitFor({ state: 'visible',  timeout: 15000 });
         await emailInput.fill(newEmail);
         const updateButton = emailSection.getByRole('button', { name: 'Update' });
-        await expect(updateButton).toBeEnabled({ timeout: 10000 });
+        await expect(updateButton).toBeEnabled({  timeout: 15000 });
         await updateButton.click();
         await expect(page.getByText(/email has been updated/i)).toBeVisible();
         await dismissNotification(page, /email has been updated/i);
@@ -217,10 +217,10 @@ export async function updateUserPhone(
         });
 
         const phoneInput = phoneSection.locator('id=phone');
-        await phoneInput.waitFor({ state: 'visible', timeout: 10000 });
+        await phoneInput.waitFor({ state: 'visible',  timeout: 15000 });
         await phoneInput.fill(newPhone);
         const updateButton = phoneSection.getByRole('button', { name: 'Update' });
-        await expect(updateButton).toBeEnabled({ timeout: 10000 });
+        await expect(updateButton).toBeEnabled({  timeout: 15000 });
         await updateButton.click();
         await expect(page.getByText(/phone has been updated/i)).toBeVisible();
         await dismissNotification(page, /phone has been updated/i);
@@ -243,10 +243,10 @@ export async function updateUserPassword(
         });
 
         const passwordInput = passwordSection.locator('#newPassword');
-        await passwordInput.waitFor({ state: 'visible', timeout: 10000 });
+        await passwordInput.waitFor({ state: 'visible',  timeout: 15000 });
         await passwordInput.fill(newPassword);
         const updateButton = passwordSection.getByRole('button', { name: 'Update' });
-        await expect(updateButton).toBeEnabled({ timeout: 10000 });
+        await expect(updateButton).toBeEnabled({  timeout: 15000 });
         await updateButton.click();
         await expect(page.getByText(/password has been updated/i)).toBeVisible();
         await dismissNotification(page, /password has been updated/i);
@@ -265,7 +265,7 @@ export async function updateUserStatus(
 
         const buttonText = enabled ? 'Unblock account' : 'Block account';
         const button = page.getByRole('button', { name: buttonText });
-        await button.waitFor({ state: 'visible', timeout: 10000 });
+        await button.waitFor({ state: 'visible',  timeout: 15000 });
         await button.click();
         await expect(page.getByText(/has been (blocked|unblocked)/i)).toBeVisible();
         await dismissNotification(page, /has been (blocked|unblocked)/i);

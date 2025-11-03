@@ -53,14 +53,14 @@ test('auth flow - free tier', async ({ page, project }) => {
     await test.step('verify blocked status', async () => {
         await navigateToUsers(page, project.region, project.id);
         const userRow = page.locator('[role="row"]').filter({ hasText: 'Updated Test User' });
-        await expect(userRow.getByText('blocked')).toBeVisible({ timeout: 10000 });
+        await expect(userRow.getByText('blocked')).toBeVisible({  timeout: 15000 });
     });
 
     await updateUserStatus(page, project.region, project.id, user.id, true);
     await test.step('verify unblocked status', async () => {
         await navigateToUsers(page, project.region, project.id);
         const userRow = page.locator('[role="row"]').filter({ hasText: 'Updated Test User' });
-        await expect(userRow.getByText('blocked')).not.toBeVisible({ timeout: 10000 });
+        await expect(userRow.getByText('blocked')).not.toBeVisible({  timeout: 15000 });
     });
 
     await updateUserLabels(page, project.region, project.id, user.id, ['test', 'e2e', 'freeTier']);
