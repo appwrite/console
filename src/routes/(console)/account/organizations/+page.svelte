@@ -108,7 +108,8 @@
                                     <Badge
                                         size="xs"
                                         variant="secondary"
-                                        content={tierToPlan(organization?.billingPlan)?.name} />
+                                        content={tierToPlan(organization?.billingPlan, $plansInfo)
+                                            ?.name} />
 
                                     <span slot="tooltip">
                                         You are limited to 1 free organization per account
@@ -136,7 +137,8 @@
                                     size="xs"
                                     type="success"
                                     variant="secondary"
-                                    content={tierToPlan(payingOrg?.billingPlan)?.name} />
+                                    content={tierToPlan(payingOrg?.billingPlan, $plansInfo)
+                                        ?.name} />
                             {/if}
                         {/if}
                     </svelte:fragment>

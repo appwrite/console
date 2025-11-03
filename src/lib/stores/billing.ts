@@ -85,7 +85,7 @@ export function getRoleLabel(role: string) {
     return roles.find((r) => r.value === role)?.label ?? role;
 }
 
-export function tierToPlan(tier: Tier) {
+export function tierToPlan(tier: Tier, plansMap?: PlansMap): TierData {
     switch (tier) {
         case BillingPlan.FREE:
             return tierFree;
@@ -100,6 +100,29 @@ export function tierToPlan(tier: Tier) {
         case BillingPlan.ENTERPRISE:
             return tierEnterprise;
         default:
+            // If plansMap is provided, try to lookup the plan
+            if (plansMap) {
+                const plan = plansMap.get(tier);
+                if (plan) {
+                    return {
+                        name: plan.name,
+                        description: plan.desc
+                    };
+                }
+            }
+            // If no plansMap was provided, try to get it from the store
+            if (!plansMap) {
+                const info = get(plansInfo);
+                if (info) {
+                    const plan = info.get(tier);
+                    if (plan) {
+                        return {
+                            name: plan.name,
+                            description: plan.desc
+                        };
+                    }
+                }
+            }
             return tierFree;
     }
 }
