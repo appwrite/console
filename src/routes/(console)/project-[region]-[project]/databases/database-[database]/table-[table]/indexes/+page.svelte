@@ -37,6 +37,9 @@
     import { showCreateColumnSheet } from '../store';
     import { isSmallViewport } from '$lib/stores/viewport';
     import { page } from '$app/state';
+    import { realtime } from '$lib/stores/sdk';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
 
     let {
         data
@@ -96,6 +99,12 @@
 
     onMount(() => {
         columnsWidth = preferences.getColumnWidths(tableId + '#indexes');
+
+        return realtime.forProject(page.params.region, ['project', 'console'], (response) => {
+            if (response.events.includes('databases.*.tables.*.indexes.*')) {
+                invalidate(Dependencies.TABLE);
+            }
+        });
     });
 
     function getColumnStatusBadge(status: string): ComponentProps<Badge>['type'] {
