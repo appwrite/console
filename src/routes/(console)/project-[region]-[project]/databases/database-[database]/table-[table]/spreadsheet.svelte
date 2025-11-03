@@ -109,6 +109,9 @@
         paginatedRows.setPage(1, $rows.rows);
     }
 
+    // create index map for O(1) row lookups, reactive!
+    $: rowIndexMap = new Map($paginatedRows.items.map((row, index) => [row.$id, index]));
+
     const tableId = page.params.table;
     const databaseId = page.params.database;
     const organizationId = data.organization.$id ?? data.project.teamId;
@@ -543,11 +546,14 @@
         } else if (type === 'row') {
             if (action === 'update') {
                 databaseRowSheetOptions.update((opts) => {
+                    const rowIndex = rowIndexMap.get(row.$id) ?? -1;
                     return {
                         ...opts,
                         row,
+                        rowIndex,
                         show: true,
-                        title: 'Update row'
+                        title: 'Update row',
+                        rows: $paginatedRows.items
                     };
                 });
             }

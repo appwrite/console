@@ -46,14 +46,21 @@
     import { page } from '$app/state';
     import { base } from '$app/paths';
     import { canWriteTables } from '$lib/stores/roles';
-    import { IconEye, IconLockClosed, IconPlus, IconPuzzle } from '@appwrite.io/pink-icons-svelte';
+    import {
+        IconChevronDown,
+        IconChevronUp,
+        IconEye,
+        IconLockClosed,
+        IconPlus,
+        IconPuzzle
+    } from '@appwrite.io/pink-icons-svelte';
     import SideSheet from './layout/sidesheet.svelte';
     import EditRow from './rows/edit.svelte';
     import EditRelatedRow from './rows/editRelated.svelte';
     import EditColumn from './columns/edit.svelte';
     import RowActivity from './rows/activity.svelte';
     import EditRowPermissions from './rows/editPermissions.svelte';
-    import { Dialog, Layout, Typography, Selector } from '@appwrite.io/pink-svelte';
+    import { Dialog, Layout, Typography, Selector, Icon } from '@appwrite.io/pink-svelte';
     import { Button, Seekbar } from '$lib/elements/forms';
     import { generateFakeRecords, generateColumns } from '$lib/helpers/faker';
     import { addNotification } from '$lib/stores/notifications';
@@ -66,6 +73,7 @@
 
     import IndexesSuggestions from '../(suggestions)/indexes.svelte';
     import { showIndexesSuggestions, tableColumnSuggestions } from '../(suggestions)';
+    import { isTabletViewport } from '$lib/stores/viewport';
 
     let editRow: EditRow;
     let editRelatedRow: EditRelatedRow;
@@ -468,6 +476,49 @@
         show: !!currentRowId,
         value: buildRowUrl(currentRowId)
     }}>
+    {#snippet topEndActions()}
+        {@const rows = $databaseRowSheetOptions.rows ?? []}
+        {@const currentIndex = $databaseRowSheetOptions.rowIndex ?? -1}
+        {@const isFirstRow = currentIndex <= 0}
+        {@const isLastRow = currentIndex >= rows.length - 1}
+
+        {#if !$isTabletViewport}
+            <Button
+                icon
+                text
+                size="xs"
+                on:click={() => {
+                    if (currentIndex > 0) {
+                        databaseRowSheetOptions.update((opts) => ({
+                            ...opts,
+                            row: rows[currentIndex - 1],
+                            rowIndex: currentIndex - 1
+                        }));
+                    }
+                }}
+                disabled={isFirstRow}>
+                <Icon icon={IconChevronUp} />
+            </Button>
+
+            <Button
+                icon
+                text
+                size="xs"
+                on:click={() => {
+                    if (currentIndex < rows.length - 1) {
+                        databaseRowSheetOptions.update((opts) => ({
+                            ...opts,
+                            row: rows[currentIndex + 1],
+                            rowIndex: currentIndex + 1
+                        }));
+                    }
+                }}
+                disabled={isLastRow}>
+                <Icon icon={IconChevronDown} />
+            </Button>
+        {/if}
+    {/snippet}
+
     {#key currentRowId}
         <EditRow
             bind:this={editRow}

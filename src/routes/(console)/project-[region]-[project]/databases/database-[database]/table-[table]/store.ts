@@ -64,12 +64,16 @@ export const databaseRowSheetOptions = writable<
     DatabaseSheetOptions & {
         row: Models.Row;
         rowId?: string;
+        rows: Models.Row[];
+        rowIndex?: number;
     }
 >({
     title: null,
     show: false,
     row: null,
-    rowId: null // for loading from a given id
+    rowId: null, // for loading from a given id
+    rows: [],
+    rowIndex: -1
 });
 
 export const databaseRelatedRowSheetOptions = writable<
