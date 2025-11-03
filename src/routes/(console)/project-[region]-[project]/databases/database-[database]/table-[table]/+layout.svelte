@@ -20,7 +20,7 @@
 <script lang="ts">
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import { realtime, sdk } from '$lib/stores/sdk';
+    import { type RealtimeResponse, realtime, sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import {
         table,
@@ -35,7 +35,8 @@
         spreadsheetRenderKey,
         expandTabs,
         databaseRelatedRowSheetOptions,
-        rowPermissionSheet
+        rowPermissionSheet,
+        type Columns
     } from './store';
     import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import CreateColumn from './createColumn.svelte';
@@ -56,7 +57,6 @@
     import { Button, Seekbar } from '$lib/elements/forms';
     import { generateFakeRecords, generateColumns } from '$lib/helpers/faker';
     import { addNotification } from '$lib/stores/notifications';
-    import { sleep } from '$lib/helpers/promises';
     import CreateIndex from './indexes/createIndex.svelte';
     import { hash } from '$lib/helpers/string';
     import { preferences } from '$lib/stores/preferences';
@@ -82,29 +82,33 @@
      */
     let isWaterfallFromFaker = false;
 
+    let columnCreationHandler: ((response: RealtimeResponse) => void) | null = null;
+
     onMount(() => {
         expandTabs.set(preferences.getKey('tableHeaderExpanded', true));
 
-        return realtime
-            .forProject(page.params.region, page.params.project)
-            .subscribe(['project', 'console'], (response) => {
-                if (
-                    response.events.includes('databases.*.tables.*.columns.*') ||
-                    response.events.includes('databases.*.tables.*.indexes.*')
-                ) {
-                    // don't invalidate when -
-                    // 1. from faker
-                    // 2. ai columns creation
-                    // 3. ai indexes creation
-                    if (
-                        !isWaterfallFromFaker &&
-                        !$showIndexesSuggestions &&
-                        !$tableColumnSuggestions.table
-                    ) {
-                        invalidate(Dependencies.TABLE);
-                    }
+        return realtime.forProject(page.params.region, ['project', 'console'], (response) => {
+            if (
+                response.events.includes('databases.*.tables.*.columns.*') ||
+                response.events.includes('databases.*.tables.*.indexes.*')
+            ) {
+                if (isWaterfallFromFaker) {
+                    columnCreationHandler?.(response);
                 }
-            });
+
+                // don't invalidate when -
+                // 1. from faker
+                // 2. ai columns creation
+                // 3. ai indexes creation
+                if (
+                    !isWaterfallFromFaker &&
+                    !$showIndexesSuggestions &&
+                    !$tableColumnSuggestions.table
+                ) {
+                    invalidate(Dependencies.TABLE);
+                }
+            }
+        });
     });
 
     // TODO: use route ids instead of pathname
@@ -253,21 +257,76 @@
         indexes: 700
     });
 
+    function setupColumnObserver() {
+        let expectedCount = 0;
+        let resolvePromise: () => void;
+        let timeout: ReturnType<typeof setTimeout>;
+
+        const availableColumns = new Set<string>();
+        const waitPromise = new Promise<void>((resolve) => (resolvePromise = resolve));
+
+        columnCreationHandler = (response: RealtimeResponse) => {
+            const { events, payload } = response;
+
+            if (
+                events.includes('databases.*.tables.*.columns.*.create') ||
+                events.includes('databases.*.tables.*.columns.*.update')
+            ) {
+                const asColumn = payload as Columns;
+                const columnId = asColumn.key;
+                const status = asColumn.status;
+
+                if (status === 'available') {
+                    availableColumns.add(columnId);
+
+                    if (expectedCount > 0 && availableColumns.size >= expectedCount) {
+                        clearTimeout(timeout);
+                        columnCreationHandler = null;
+                        resolvePromise();
+                    }
+                }
+            }
+        };
+
+        // return function to start waiting!
+        const startWaiting = (count: number) => {
+            expectedCount = count;
+
+            timeout = setTimeout(() => {
+                columnCreationHandler = null;
+                resolvePromise();
+            }, 10000);
+
+            if (availableColumns.size >= expectedCount) {
+                clearTimeout(timeout);
+                columnCreationHandler = null;
+                resolvePromise();
+            }
+        };
+
+        return { startWaiting, waitPromise };
+    }
+
     async function createFakeData() {
         isWaterfallFromFaker = true;
 
         $spreadsheetLoading = true;
         $randomDataModalState.show = false;
 
-        let columns = $table.columns;
+        let columns = page.data.table.columns as Columns[];
         const hasAnyRelationships = columns.some((column) => isRelationship(column));
         const filteredColumns = columns.filter((col) => col.type !== 'relationship');
 
         if (!filteredColumns.length) {
             try {
+                const { startWaiting, waitPromise } = setupColumnObserver();
                 columns = await generateColumns($project, page.params.database, page.params.table);
+                startWaiting(columns.length);
+                await waitPromise;
 
                 await invalidate(Dependencies.TABLE);
+                columns = page.data.table.columns as Columns[];
+
                 trackEvent(Submit.ColumnCreate, { type: 'faker' });
             } catch (e) {
                 addNotification({
@@ -278,9 +337,6 @@
                 return;
             }
         }
-
-        /* let the columns be processed! */
-        await sleep(1250);
 
         let rowIds = [];
         try {
@@ -341,6 +397,8 @@
     $: if (!$showCreateColumnSheet.show) {
         createMoreColumns = false;
     }
+
+    $: currentRowId = $databaseRowSheetOptions.row?.$id ?? $databaseRowSheetOptions.rowId;
 </script>
 
 <svelte:head>
@@ -397,7 +455,6 @@
 </SideSheet>
 
 <SideSheet
-    closeOnBlur
     title={$databaseRowSheetOptions.title}
     bind:show={$databaseRowSheetOptions.show}
     submit={{
@@ -408,13 +465,15 @@
     topAction={{
         mode: 'copy-tag',
         text: 'Row URL',
-        show: !!($databaseRowSheetOptions.rowId ?? $databaseRowSheetOptions.row?.$id),
-        value: buildRowUrl($databaseRowSheetOptions.rowId ?? $databaseRowSheetOptions.row?.$id)
+        show: !!currentRowId,
+        value: buildRowUrl(currentRowId)
     }}>
-    <EditRow
-        bind:this={editRow}
-        bind:row={$databaseRowSheetOptions.row}
-        bind:rowId={$databaseRowSheetOptions.rowId} />
+    {#key currentRowId}
+        <EditRow
+            bind:this={editRow}
+            bind:row={$databaseRowSheetOptions.row}
+            bind:rowId={$databaseRowSheetOptions.rowId} />
+    {/key}
 </SideSheet>
 
 <SideSheet

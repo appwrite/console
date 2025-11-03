@@ -57,6 +57,7 @@
     disabled={tooltipDisabled}
     portal={tooltipPortal}
     delay={tooltipDelay}
+    maxWidth="500px"
     placement={tooltipPlacement}>
     <span
         data-private

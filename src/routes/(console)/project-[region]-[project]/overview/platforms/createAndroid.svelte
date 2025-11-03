@@ -17,7 +17,7 @@
     import { Card } from '$lib/components';
     import { page } from '$app/state';
     import { onMount } from 'svelte';
-    import { sdk } from '$lib/stores/sdk';
+    import { realtime, sdk } from '$lib/stores/sdk';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { addNotification } from '$lib/stores/notifications';
     import { fade } from 'svelte/transition';
@@ -63,8 +63,10 @@ const val APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject(page.params.region, page.
                 message: 'Platform created.'
             });
 
-            invalidate(Dependencies.PROJECT);
-            invalidate(Dependencies.PLATFORMS);
+            await Promise.all([
+                invalidate(Dependencies.PROJECT),
+                invalidate(Dependencies.PLATFORMS)
+            ]);
         } catch (error) {
             trackError(error, Submit.PlatformCreate);
             addNotification({
@@ -81,7 +83,7 @@ const val APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject(page.params.region, page.
     }
 
     onMount(() => {
-        const unsubscribe = sdk.forConsole.client.subscribe('console', (response) => {
+        const unsubscribe = realtime.forConsole(page.params.region, 'console', (response) => {
             if (response.events.includes(`projects.${projectId}.ping`)) {
                 connectionSuccessful = true;
                 invalidate(Dependencies.ORGANIZATION);
