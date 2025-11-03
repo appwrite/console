@@ -3,11 +3,7 @@ import type { Models } from '@appwrite.io/console';
 /**
  * Checks if a build has exceeded the maximum build timeout duration
  */
-export function isBuildTimedOut(
-    createdAt: string,
-    status: string,
-    timeoutSeconds: number
-): boolean {
+function isBuildTimedOut(createdAt: string, status: string, timeoutSeconds: number): boolean {
     if (!['waiting', 'processing', 'building'].includes(status)) {
         return false;
     }
