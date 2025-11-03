@@ -9,9 +9,9 @@
         Layout,
         Spinner,
         Typography,
-        Popover,
         Icon,
-        Divider
+        Divider,
+        Tooltip
     } from '@appwrite.io/pink-svelte';
     import { Button, InputText, InputSelect, InputCheckbox, Form } from '$lib/elements/forms';
     import type { FormContext } from '$lib/elements/forms/form.svelte';
@@ -236,14 +236,12 @@
                             { value: 'Pipe', label: 'Pipe' }
                         ]}>
                         <Layout.Stack direction="row" gap="none" alignItems="center" slot="info">
-                            <Popover let:toggle>
-                                <Button extraCompact size="s" on:click={toggle}>
-                                    <Icon size="s" icon={IconInfo} />
-                                </Button>
-                                <Typography.Text slot="tooltip">
+                            <Tooltip>
+                                <Icon size="s" icon={IconInfo} />
+                                <span slot="tooltip">
                                     Define how to separate values in the exported file.
-                                </Typography.Text>
-                            </Popover>
+                                </span>
+                            </Tooltip>
                         </Layout.Stack>
                     </InputSelect>
 
