@@ -30,6 +30,8 @@
         data.usage.buildsStorageTotal;
     $: imageTransformations = data.usage.imageTransformations;
     $: imageTransformationsTotal = data.usage.imageTransformationsTotal;
+    $: screenshotsGenerated = (data.usage as any).screenshotsGenerated ?? null;
+    $: screenshotsGeneratedTotal = (data.usage as any).screenshotsGeneratedTotal ?? 0;
     $: dbReads = data.usage.databasesReads;
     $: dbWrites = data.usage.databasesWrites;
 
@@ -229,6 +231,44 @@
                         {
                             name: 'Image transformations',
                             data: [...imageTransformations.map((e) => [e.date, e.value])]
+                        }
+                    ]} />
+            {:else}
+                <Card isDashed>
+                    <Layout.Stack gap="xs" alignItems="center" justifyContent="center">
+                        <Icon icon={IconChartSquareBar} size="l" />
+                        <Typography.Text variant="m-600">No data to show</Typography.Text>
+                    </Layout.Stack>
+                </Card>
+            {/if}
+        </svelte:fragment>
+    </CardGrid>
+    <CardGrid>
+        <svelte:fragment slot="title">Screenshots generated</svelte:fragment>
+        Total number of screenshots generated in your project.
+        <svelte:fragment slot="aside">
+            {#if screenshotsGenerated}
+                {@const current = formatNum(screenshotsGeneratedTotal)}
+                <div class="u-flex u-flex-vertical">
+                    <div class="u-flex u-main-space-between">
+                        <p>
+                            <span class="heading-level-4">{current}</span>
+                            <span class="body-text-1 u-bold">Screenshots</span>
+                        </p>
+                    </div>
+                </div>
+                <BarChart
+                    options={{
+                        yAxis: {
+                            axisLabel: {
+                                formatter: formatNum
+                            }
+                        }
+                    }}
+                    series={[
+                        {
+                            name: 'Screenshots generated',
+                            data: [...screenshotsGenerated.map((e) => [e.date, e.value])]
                         }
                     ]} />
             {:else}
