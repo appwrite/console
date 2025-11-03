@@ -139,7 +139,7 @@
                                     placement={'bottom'}>
                                     <div>
                                         <ActionMenu.Item.Button
-                                            trailingIcon={IconRefresh}
+                                            leadingIcon={IconRefresh}
                                             disabled={deployment.sourceSize === 0}
                                             on:click={() => {
                                                 selectedDeployment = deployment;
@@ -155,7 +155,7 @@
                                 </Tooltip>
                                 {#if deployment.status === 'ready' && deployment.$id !== $func.deploymentId}
                                     <ActionMenu.Item.Button
-                                        trailingIcon={IconLightningBolt}
+                                        leadingIcon={IconLightningBolt}
                                         on:click={() => {
                                             selectedDeployment = deployment;
                                             showActivate = true;
@@ -182,7 +182,7 @@
                                 {/if}
                                 {#if deployment.status !== 'building' && deployment.status !== 'processing' && deployment.status !== 'waiting'}
                                     <ActionMenu.Item.Button
-                                        trailingIcon={IconTrash}
+                                        leadingIcon={IconTrash}
                                         status="danger"
                                         on:click={() => {
                                             selectedDeployment = deployment;

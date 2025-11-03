@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
-    import { sdk } from '$lib/stores/sdk';
+    import { realtime } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { type Models } from '@appwrite.io/console';
     import { page } from '$app/state';
@@ -26,7 +26,7 @@
     import { formatTimeDetailed } from '$lib/helpers/timeConversion';
     import { timer } from '$lib/actions/timer';
     import { app } from '$lib/stores/app';
-    import { IconDotsHorizontal, IconRefresh } from '@appwrite.io/pink-icons-svelte';
+    import { IconDotsHorizontal, IconRefresh, IconTrash } from '@appwrite.io/pink-icons-svelte';
     import { Menu } from '$lib/components/menu';
     import { canWriteFunctions } from '$lib/stores/roles';
     import { Click, trackEvent } from '$lib/actions/analytics';
@@ -44,24 +44,18 @@
     let showRedeploy = false;
 
     onMount(() => {
-        const unsubscribe = sdk.forConsole.client.subscribe<Models.Deployment>(
-            'console',
-            (message) => {
-                if (
-                    message.events.includes(
-                        `functions.${page.params.function}.deployments.${page.params.deployment}.update`
-                    )
-                ) {
-                    if (message.payload.status === 'ready') {
-                        invalidate(Dependencies.DEPLOYMENT);
-                    }
+        return realtime.forProject(page.params.region, 'console', (response) => {
+            if (
+                response.events.includes(
+                    `functions.${page.params.function}.deployments.${page.params.deployment}.update`
+                )
+            ) {
+                const payload = response.payload as Models.Deployment;
+                if (payload.status === 'ready') {
+                    invalidate(Dependencies.DEPLOYMENT);
                 }
             }
-        );
-
-        return () => {
-            unsubscribe();
-        };
+        });
     });
 
     export function badgeTypeDeployment(status: string) {
@@ -104,7 +98,7 @@
                                     placement={'bottom'}>
                                     <div>
                                         <ActionMenu.Item.Button
-                                            trailingIcon={IconRefresh}
+                                            leadingIcon={IconRefresh}
                                             disabled={data.deployment.sourceSize === 0}
                                             on:click={() => {
                                                 showRedeploy = true;
@@ -120,6 +114,18 @@
                             {/if}
                             {#if !!data.deployment?.sourceSize || !!data.deployment?.sourceSize}
                                 <DownloadActionMenuItem deployment={data.deployment} {toggle} />
+                            {/if}
+                            {#if $canWriteFunctions && ['ready', 'failed'].includes(data.deployment.status)}
+                                <ActionMenu.Item.Button
+                                    status="danger"
+                                    leadingIcon={IconTrash}
+                                    on:click={() => {
+                                        showDelete = true;
+                                        toggle();
+                                    }}
+                                    style="width: 100%">
+                                    Delete
+                                </ActionMenu.Item.Button>
                             {/if}
                         </ActionMenu.Root>
                     </svelte:fragment>
