@@ -99,10 +99,11 @@ export function tierToPlan(tier: Tier, plansMap?: PlansMap): TierData {
             return tierCustom;
         case BillingPlan.ENTERPRISE:
             return tierEnterprise;
-        default:
-            // If plansMap is provided, try to lookup the plan
-            if (plansMap) {
-                const plan = plansMap.get(tier);
+        default: {
+            // Try to lookup the plan from provided map or store
+            const map = plansMap || get(plansInfo);
+            if (map) {
+                const plan = map.get(tier);
                 if (plan) {
                     return {
                         name: plan.name,
@@ -110,20 +111,8 @@ export function tierToPlan(tier: Tier, plansMap?: PlansMap): TierData {
                     };
                 }
             }
-            // If no plansMap was provided, try to get it from the store
-            if (!plansMap) {
-                const info = get(plansInfo);
-                if (info) {
-                    const plan = info.get(tier);
-                    if (plan) {
-                        return {
-                            name: plan.name,
-                            description: plan.desc
-                        };
-                    }
-                }
-            }
             return tierFree;
+        }
     }
 }
 
