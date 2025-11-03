@@ -214,7 +214,7 @@
                     </div>
 
                     {#if hasMoreColumns}
-                        <div>
+                        <div class="show-more-wrapper">
                             <Button compact on:click={() => (showAllColumns = !showAllColumns)}>
                                 {showAllColumns ? 'Show less' : 'Show more'}
                             </Button>
@@ -305,6 +305,10 @@
         grid-template-columns: repeat(3, 1fr);
         row-gap: 1.25rem;
         column-gap: 1rem;
+    }
+
+    .show-more-wrapper {
+        margin-bottom: -0.2rem;
     }
 
     .disabled-checkbox :global(*) {
