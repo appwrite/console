@@ -30,8 +30,8 @@
         data.usage.buildsStorageTotal;
     $: imageTransformations = data.usage.imageTransformations;
     $: imageTransformationsTotal = data.usage.imageTransformationsTotal;
-    $: screenshotsGenerated = (data.usage as any).screenshotsGenerated ?? null;
-    $: screenshotsGeneratedTotal = (data.usage as any).screenshotsGeneratedTotal ?? 0;
+    $: screenshotsGenerated = data.usage.screenshotsGenerated;
+    $: screenshotsGeneratedTotal = data.usage.screenshotsGeneratedTotal;
     $: dbReads = data.usage.databasesReads;
     $: dbWrites = data.usage.databasesWrites;
 
