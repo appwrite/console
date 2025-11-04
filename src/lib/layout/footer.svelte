@@ -1,5 +1,5 @@
 <script>
-    import { isCloud, isStudio, PLATFORM } from '$lib/system';
+    import { isCloud, isSelfHosted } from '$lib/system';
     import { version } from '$routes/(console)/store';
     import { IconCloud, IconDiscord, IconGithub } from '@appwrite.io/pink-icons-svelte';
     import {
@@ -13,6 +13,7 @@
     } from '@appwrite.io/pink-svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
     import { page } from '$app/state';
+    import { PLATFORM, resolvedProfile } from '$lib/profiles/index.svelte.ts';
 
     const currentYear = new Date().getFullYear();
 
@@ -67,7 +68,7 @@
             alignItems="center"
             wrap={$isSmallViewport ? 'wrap' : 'normal'}>
             {#if !$isSmallViewport}
-                {#if isCloud && !isStudio}
+                {#if isCloud && resolvedProfile.showGeneralAvailability}
                     <Badge
                         size="xs"
                         type="success"
@@ -77,7 +78,7 @@
                     <Icon size="s" icon={IconCloud} />
                 {/if}
 
-                {#if $version && !isCloud}
+                {#if $version && isSelfHosted}
                     <Link.Anchor
                         size="s"
                         variant="quiet"
@@ -155,7 +156,7 @@
                     </Link.Anchor>
                 {/if}
 
-                {#if isCloud && !isStudio}
+                {#if isCloud && resolvedProfile.showGeneralAvailability}
                     <Icon size="s" icon={IconCloud} />
 
                     <Badge

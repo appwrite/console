@@ -6,7 +6,7 @@
     import { wizard } from '$lib/stores/wizard';
     import { onMount } from 'svelte';
     import { addCreditWizardStore } from '../store';
-    import { PLATFORM } from '$lib/system';
+    import { PLATFORM } from '$lib/profiles/index.svelte';
 
     let coupon: string;
     export let couponData: Partial<Coupon> = {

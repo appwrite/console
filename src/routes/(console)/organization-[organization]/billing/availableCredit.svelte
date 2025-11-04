@@ -14,9 +14,9 @@
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { upgradeURL } from '$lib/stores/billing';
 
-    import { Alert, Badge, Icon, Link, Table, Tooltip, Typography } from '@appwrite.io/pink-svelte';
+    import { PLATFORM } from '$lib/profiles/index.svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
-    import { PLATFORM } from '$lib/system';
+    import { Alert, Badge, Icon, Link, Table, Tooltip, Typography } from '@appwrite.io/pink-svelte';
 
     export let areCreditsSupported: boolean;
 

@@ -1,10 +1,12 @@
-import { browser } from '$app/environment';
-import { PLATFORM, VARS } from '$lib/system';
-import { get, writable } from 'svelte/store';
+import { VARS } from '$lib/system';
+import { PLATFORM } from '$lib/profiles/index.svelte';
+
 import type { Component } from 'svelte';
-import FeedbackGeneral from '$lib/components/feedback/feedbackGeneral.svelte';
-import FeedbackNps from '$lib/components/feedback/feedbackNPS.svelte';
+import { browser } from '$app/environment';
+import { get, writable } from 'svelte/store';
 import { Submit, trackEvent } from '$lib/actions/analytics';
+import FeedbackNps from '$lib/components/feedback/feedbackNPS.svelte';
+import FeedbackGeneral from '$lib/components/feedback/feedbackGeneral.svelte';
 
 export type Feedback = {
     elapsed: number;

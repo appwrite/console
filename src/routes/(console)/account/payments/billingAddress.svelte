@@ -27,7 +27,7 @@
         Typography
     } from '@appwrite.io/pink-svelte';
     import type { PageData } from './$types';
-    import { PLATFORM } from '$lib/system';
+    import { PLATFORM } from '$lib/profiles/index.svelte';
 
     export let data: PageData;
 

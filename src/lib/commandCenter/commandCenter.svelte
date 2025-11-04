@@ -2,8 +2,8 @@
     import { RootPanel } from './panels';
     import { getContext, setContext } from 'svelte';
     import { get, writable, type Readable } from 'svelte/store';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
     import { addSubPanel, clearSubPanels, subPanels } from './subPanels';
-    import { isStudio } from '$lib/system';
 
     type Context = Readable<{
         isInitialPanel: boolean;
@@ -20,7 +20,7 @@
     };
 
     export const toggleCommandCenter = () => {
-        if (isStudio) return;
+        if (!resolvedProfile.useCommandCenter) return;
 
         if (get(subPanels).length > 0) {
             clearSubPanels();

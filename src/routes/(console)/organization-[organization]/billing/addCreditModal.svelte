@@ -8,7 +8,7 @@
     import { organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
-    import { PLATFORM } from '$lib/system';
+    import { PLATFORM } from '$lib/profiles/index.svelte';
 
     const dispatch = createEventDispatcher();
     export let show = false;

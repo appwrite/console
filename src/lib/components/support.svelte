@@ -9,9 +9,10 @@
     import { Card } from '$lib/components/index';
     import { app } from '$lib/stores/app';
     import { currentPlan, type Organization, organizationList } from '$lib/stores/organization';
-    import { isCloud, isStudio, PLATFORM } from '$lib/system';
+    import { isCloud } from '$lib/system';
     import { Typography } from '@appwrite.io/pink-svelte';
     import { base } from '$app/paths';
+    import { PLATFORM, resolvedProfile } from '$lib/profiles/index.svelte';
 
     export let show = false;
 
@@ -57,7 +58,7 @@
             link: 'https://appwrite.io/discord',
             description: 'Get support from our community through Discord'
         },
-        ...(isStudio
+        ...(resolvedProfile.showGithubIssueSupport
             ? []
             : [
                   {

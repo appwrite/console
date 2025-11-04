@@ -23,7 +23,7 @@
         IconTrash
     } from '@appwrite.io/pink-icons-svelte';
     import type { Models } from '@appwrite.io/console';
-    import { PLATFORM } from '$lib/system';
+    import { PLATFORM } from '$lib/profiles/index.svelte';
 
     export let organization: Organization;
     export let locale: Models.Locale;

@@ -50,13 +50,14 @@
     import { logout } from '$lib/helpers/logout';
     import { app } from '$lib/stores/app';
     import { isTabletViewport, isSmallViewport } from '$lib/stores/viewport';
-    import { isCloud, isStudio } from '$lib/system.js';
+    import { isCloud } from '$lib/system.js';
     import { user } from '$lib/stores/user';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { beforeNavigate } from '$app/navigation';
     import { page } from '$app/state';
     import type { Models } from '@appwrite.io/console';
     import { organization } from '$lib/stores/organization';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     let showSupport = false;
 
@@ -139,7 +140,7 @@
 
         <Breadcrumbs {organizations} {currentProject} />
 
-        {#if !isStudio && page.route?.id?.includes('/project-[region]-[project]') && currentProject && currentProject.pingCount === 0}
+        {#if resolvedProfile.showConnectProjectOnToolbar && page.route?.id?.includes('/project-[region]-[project]') && currentProject && currentProject.pingCount === 0}
             <div class="only-desktop" style:margin-inline-start="-16px">
                 <Button.Anchor
                     size="xs"
@@ -204,7 +205,7 @@
                     </svelte:fragment>
                 </DropList>
             </Layout.Stack>
-            {#if !isStudio}
+            {#if resolvedProfile.useCommandCenter}
                 <Layout.Stack direction="row">
                     <Tooltip>
                         <Button.Button
@@ -250,7 +251,7 @@
                                 on:click={() => toggle()}>
                                 Account</ActionMenu.Item.Anchor>
 
-                            {#if isStudio && $organization && $organization.$id}
+                            {#if resolvedProfile.showExtendedAccountsMenu && $organization && $organization.$id}
                                 <Divider />
 
                                 {@const baseOrgUrl = `${base}/organization-${$organization.$id}`}
