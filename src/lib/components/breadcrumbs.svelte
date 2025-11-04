@@ -160,6 +160,7 @@
 
         const allProjectsItem = {
             name: 'All projects',
+            trailingIcon: IconList,
             href: resolve('/(console)/organization-[organization]', {
                 organization: selectedOrg.$id
             })
@@ -177,14 +178,11 @@
             });
 
             return {
-                top: {
-                    title: 'Switch project',
-                    items: projectLinks
-                },
+                top: { title: 'Switch project', items: projectLinks },
                 bottom: {
                     items: [
-                        createProjectItem,
-                        ...(loadedProjects.projects.length <= 4 ? [allProjectsItem] : [])
+                        ...(loadedProjects.total > 4 ? [allProjectsItem] : []),
+                        createProjectItem
                     ]
                 }
             };
