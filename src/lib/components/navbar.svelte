@@ -139,7 +139,7 @@
 
         <Breadcrumbs {organizations} {currentProject} />
 
-        {#if page.route?.id?.includes('/project-[region]-[project]') && currentProject && currentProject.pingCount === 0}
+        {#if !isStudio && page.route?.id?.includes('/project-[region]-[project]') && currentProject && currentProject.pingCount === 0}
             <div class="only-desktop" style:margin-inline-start="-16px">
                 <Button.Anchor
                     size="xs"
