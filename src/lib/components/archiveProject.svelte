@@ -27,7 +27,6 @@
     import { getPlatformInfo } from '$lib/helpers/platform';
     import { Status, type Models } from '@appwrite.io/console';
     import type { ComponentType } from 'svelte';
-    import { BillingPlan } from '$lib/constants';
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { sdk } from '$lib/stores/sdk';
@@ -97,7 +96,7 @@
     function isUnarchiveDisabled(): boolean {
         if (!organization || !currentPlan) return true;
 
-        if (organization.billingPlan === BillingPlan.FREE) {
+        if (isPlanBelowPro) {
             const currentProjectCount = organization.projects?.length || 0;
             const projectLimit = currentPlan.projects || 0;
 
