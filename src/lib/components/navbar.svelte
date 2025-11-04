@@ -249,14 +249,14 @@
                                     size="l"
                                     href={`${baseOrgUrl}/billing`}
                                     trailingIcon={IconCreditCard}
-                                    on:click={toggle}>
+                                    on:click={() => toggle()}>
                                     Billing</ActionMenu.Item.Anchor>
 
                                 <ActionMenu.Item.Anchor
                                     size="l"
                                     trailingIcon={IconGlobeAlt}
                                     href={`${baseOrgUrl}/domains`}
-                                    on:click={toggle}>
+                                    on:click={() => toggle()}>
                                     Domains</ActionMenu.Item.Anchor>
 
                                 <Divider />
@@ -266,13 +266,15 @@
                                 size="l"
                                 trailingIcon={IconUser}
                                 href={`${base}/account`}
-                                on:click={toggle}>
+                                on:click={() => toggle()}>
                                 Account</ActionMenu.Item.Anchor>
 
                             <ActionMenu.Item.Button
-                                trailingIcon={IconLogoutRight}
                                 size="l"
-                                on:click={() => logout()}>Sign out</ActionMenu.Item.Button>
+                                on:click={() => logout()}
+                                trailingIcon={IconLogoutRight}>
+                                Sign out
+                            </ActionMenu.Item.Button>
 
                             <div style:padding-inline-start="10px" style:padding-inline-end="8px">
                                 <Layout.Stack
