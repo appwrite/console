@@ -1,5 +1,5 @@
 import { VARS } from '$lib/system';
-import { PLATFORM } from '$lib/profiles/index.svelte';
+import { resolvedProfile } from '$lib/profiles/index.svelte';
 
 import type { Component } from 'svelte';
 import { browser } from '$app/environment';
@@ -31,12 +31,12 @@ export type FeedbackOption = {
 export const feedbackOptions: FeedbackOption[] = [
     {
         type: 'general',
-        desc: `${PLATFORM} evolves with your input. Share your thoughts and help us improve ${PLATFORM}.`,
+        desc: `${resolvedProfile.platform} evolves with your input. Share your thoughts and help us improve ${resolvedProfile.platform}.`,
         component: FeedbackGeneral
     },
     {
         type: 'nps',
-        desc: `How likely are you to recommend ${PLATFORM} to a friend or colleague?`,
+        desc: `How likely are you to recommend ${resolvedProfile.platform} to a friend or colleague?`,
         component: FeedbackNps
     }
 ];

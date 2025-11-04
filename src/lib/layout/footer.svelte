@@ -13,7 +13,7 @@
     } from '@appwrite.io/pink-svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
     import { page } from '$app/state';
-    import { PLATFORM, resolvedProfile } from '$lib/profiles/index.svelte.ts';
+    import { resolvedProfile } from '$lib/profiles/index.svelte.ts';
 
     const currentYear = new Date().getFullYear();
 
@@ -33,7 +33,7 @@
             justifyContent="flex-start">
             <Typography.Caption variant="400">
                 ⓒ {currentYear}
-                {PLATFORM} . All rights reserved.
+                {resolvedProfile.platform} . All rights reserved.
             </Typography.Caption>
             <span class="divider-wrapper">
                 <Divider vertical />

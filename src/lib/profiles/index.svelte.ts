@@ -1,4 +1,3 @@
-import { VARS } from '$lib/system';
 import { resolve } from '$app/paths';
 import type { ResolvedPathname } from '$app/types';
 import { PUBLIC_CONSOLE_PROFILE } from '$env/static/public';
@@ -10,6 +9,7 @@ export const enum ProfileMode {
 
 export type Profile = {
     id: ProfileMode;
+    platform: string;
     logo: {
         src: {
             dark: string;
@@ -28,6 +28,7 @@ export type Profile = {
 
 export const base: Profile = {
     id: ProfileMode.CONSOLE,
+    platform: 'Appwrite',
     logo: {
         src: {
             dark: 'https://appwrite.io/images/logos/logo.svg',
@@ -51,6 +52,7 @@ export const base: Profile = {
 
 export const studio: Profile = {
     id: ProfileMode.STUDIO,
+    platform: 'Imagine',
     logo: {
         src: {
             dark: 'https://imagine-console.up.railway.app/images/imagine-logo-dark.svg',
@@ -82,7 +84,3 @@ const resolver = $derived(() => {
 });
 
 export const resolvedProfile = resolver();
-
-export const isStudio = VARS.CONSOLE_PROFILE === ProfileMode.STUDIO;
-
-export const PLATFORM = isStudio ? 'Imagine' : 'Appwrite';

@@ -12,7 +12,7 @@
     import { isCloud } from '$lib/system';
     import { Typography } from '@appwrite.io/pink-svelte';
     import { base } from '$app/paths';
-    import { PLATFORM, resolvedProfile } from '$lib/profiles/index.svelte';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     export let show = false;
 
@@ -47,7 +47,7 @@
             showSupport: true,
             icon: 'support',
             label: 'Premium support',
-            description: `Get priority email support from the ${PLATFORM} team`
+            description: `Get priority email support from the ${resolvedProfile.platform} team`
         },
 
         {
