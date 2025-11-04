@@ -22,9 +22,12 @@
 </script>
 
 <Menu>
-    <Button secondary badge={$parsedTags?.length ? `${$parsedTags.length}` : undefined}>
-        <Icon icon={IconFilterLine} slot="start" size="s" />
-        Filters
+    <Button
+        ariaLabel="Filters"
+        secondary
+        icon
+        badge={$parsedTags?.length ? `${$parsedTags.length}` : undefined}>
+        <Icon icon={IconFilterLine} size="s" />
     </Button>
     <svelte:fragment slot="menu">
         {#each filterCols.filter((f) => f?.options) as filter (filter.title + filter.id)}

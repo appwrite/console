@@ -101,16 +101,33 @@
                 {/if}
             </Layout.Stack>
         {:else}
-            <Layout.Stack direction="row" justifyContent="space-between">
-                <Layout.Stack direction="row" alignItems="center">
+            <Layout.Stack direction="row" justifyContent="space-between" alignItems="flex-start">
+                <Layout.Stack
+                    direction="row"
+                    alignItems="center"
+                    gap="m"
+                    style={`min-width: 0; flex: 1 1 auto;`}>
                     {#if hasSearch}
                         <SearchQuery placeholder={searchPlaceholder} />
                     {/if}
+                    <!-- Tags with Filters button immediately to the right -->
+                    <Layout.Stack
+                        direction="row"
+                        alignItems="center"
+                        gap="s"
+                        wrap="wrap"
+                        style={`min-width: 0;`}>
+                        <ParsedTagList {columns} />
+                        {#if hasFilters && $columns?.length}
+                            <QuickFilters {columns} {analyticsSource} {filterCols} />
+                        {/if}
+                    </Layout.Stack>
                 </Layout.Stack>
-                <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
-                    {#if hasFilters && $columns?.length}
-                        <QuickFilters {columns} {analyticsSource} {filterCols} />
-                    {/if}
+                <Layout.Stack
+                    direction="row"
+                    alignItems="center"
+                    justifyContent="flex-end"
+                    style={`align-self: flex-start; white-space: nowrap;`}>
                     {#if hasDisplaySettings}
                         <ViewSelector ui="new" {view} {columns} {hideView} {hideColumns} />
                     {/if}
@@ -120,7 +137,6 @@
                 </Layout.Stack>
             </Layout.Stack>
         {/if}
-        <ParsedTagList />
     </Layout.Stack>
 </header>
 
