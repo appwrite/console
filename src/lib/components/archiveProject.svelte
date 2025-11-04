@@ -1,12 +1,11 @@
 <script lang="ts">
     import { Button, InputText } from '$lib/elements/forms';
-    import { DropList, GridItem1, CardContainer, Modal } from '$lib/components';
+    import { GridItem1, CardContainer, Modal } from '$lib/components';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import {
         Badge,
         Icon,
         Typography,
-        Tag,
         Accordion,
         ActionMenu,
         Popover,
@@ -20,7 +19,6 @@
         IconFlutter,
         IconReact,
         IconUnity,
-        IconInfo,
         IconDotsHorizontal,
         IconInboxIn,
         IconSwitchHorizontal,
@@ -36,6 +34,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
+    import { billingURL } from '$lib/stores/billing';
 
     import { isSmallViewport } from '$lib/stores/viewport';
     import { isCloud } from '$lib/system';
@@ -52,8 +51,9 @@
 
     let { projectsToArchive, organization, currentPlan }: Props = $props();
 
-    // Track Read-only info droplist per archived project
-    let readOnlyInfoOpen = $state<Record<string, boolean>>({});
+    // Check if current plan order is less than Pro (order < 1 means FREE plan)
+    let isPlanBelowPro = $derived(currentPlan?.order < 1);
+
     let showUnarchiveModal = $state(false);
     let projectToUnarchive = $state<Models.Project | null>(null);
     let showDeleteModal = $state(false);
@@ -198,8 +198,12 @@
     <div class="archive-projects-margin-top">
         <Accordion title="Archived projects" badge={`${projectsToArchive.length}`}>
             <Typography.Text tag="p" size="s">
-                These projects have been archived and are read-only. You can view and migrate their
-                data.
+                {#if isPlanBelowPro}
+                    These projects are archived and require a plan upgrade to restore access.
+                {:else}
+                    These projects will be archived and are read-only. You can view and migrate
+                    their data.
+                {/if}
             </Typography.Text>
 
             <div class="archive-projects-margin">
@@ -209,43 +213,16 @@
                             project.platforms.map((platform) => getPlatformInfo(platform.type))
                         )}
                         {@const formatted = formatName(project.name)}
-                        <GridItem1>
+                        <GridItem1
+                            href={!isPlanBelowPro
+                                ? `${base}/project-${project.region}-${project.$id}/overview/platforms`
+                                : undefined}>
                             <svelte:fragment slot="eyebrow">
                                 {project?.platforms?.length ? project?.platforms?.length : 'No'} apps
                             </svelte:fragment>
                             <svelte:fragment slot="title">{formatted}</svelte:fragment>
                             <svelte:fragment slot="status">
                                 <div class="status-container">
-                                    <DropList
-                                        bind:show={readOnlyInfoOpen[project.$id]}
-                                        placement="bottom-start"
-                                        noArrow>
-                                        <Tag
-                                            size="s"
-                                            style="white-space: nowrap;"
-                                            on:click={(e) => {
-                                                e.preventDefault();
-                                                e.stopPropagation();
-                                                readOnlyInfoOpen = {
-                                                    ...readOnlyInfoOpen,
-                                                    [project.$id]: !readOnlyInfoOpen[project.$id]
-                                                };
-                                            }}>
-                                            <Icon icon={IconInfo} size="s" />
-                                            <span>Read only</span>
-                                        </Tag>
-                                        <svelte:fragment slot="list">
-                                            <li
-                                                class="drop-list-item u-width-250"
-                                                style="padding: var(--space-5, 12px) var(--space-6, 16px)">
-                                                <span class="u-block u-mb-8">
-                                                    Archived projects are read-only. You can view
-                                                    and migrate their data, but they no longer
-                                                    accept edits or requests.
-                                                </span>
-                                            </li>
-                                        </svelte:fragment>
-                                    </DropList>
                                     <Popover let:toggle padding="none" placement="bottom-end">
                                         <Button
                                             text
@@ -260,23 +237,35 @@
                                             <Icon icon={IconDotsHorizontal} size="s" />
                                         </Button>
                                         <ActionMenu.Root slot="tooltip">
-                                            <ActionMenu.Item.Button
-                                                leadingIcon={IconInboxIn}
-                                                disabled={isUnarchiveDisabled()}
-                                                on:click={() => handleUnarchiveProject(project)}
-                                                >Unarchive project</ActionMenu.Item.Button>
-                                            <ActionMenu.Item.Button
-                                                leadingIcon={IconSwitchHorizontal}
-                                                on:click={() => handleMigrateProject(project)}
-                                                >Migrate project</ActionMenu.Item.Button>
+                                            {#if isPlanBelowPro}
+                                                <ActionMenu.Item.Anchor
+                                                    leadingIcon={IconInboxIn}
+                                                    href={$billingURL}>
+                                                    Restore access
+                                                </ActionMenu.Item.Anchor>
+                                            {:else}
+                                                <ActionMenu.Item.Button
+                                                    leadingIcon={IconInboxIn}
+                                                    disabled={isUnarchiveDisabled()}
+                                                    on:click={() =>
+                                                        handleUnarchiveProject(project)}>
+                                                    Unarchive project
+                                                </ActionMenu.Item.Button>
+                                                <ActionMenu.Item.Button
+                                                    leadingIcon={IconSwitchHorizontal}
+                                                    on:click={() => handleMigrateProject(project)}>
+                                                    Migrate project
+                                                </ActionMenu.Item.Button>
+                                            {/if}
                                             <div class="action-menu-divider">
                                                 <Divider />
                                             </div>
                                             <ActionMenu.Item.Button
                                                 status="danger"
                                                 leadingIcon={IconTrash}
-                                                on:click={() => handleDeleteProject(project)}
-                                                >Delete project</ActionMenu.Item.Button>
+                                                on:click={() => handleDeleteProject(project)}>
+                                                Delete project
+                                            </ActionMenu.Item.Button>
                                         </ActionMenu.Root>
                                     </Popover>
                                 </div>
