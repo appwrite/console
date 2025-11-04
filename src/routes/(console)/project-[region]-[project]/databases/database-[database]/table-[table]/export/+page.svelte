@@ -20,7 +20,7 @@
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import type { Models } from '@appwrite.io/console';
     import { table } from '../store';
-    import { tags, queries } from '$lib/components/filters/store';
+    import { tags, queries, type TagValue } from '$lib/components/filters/store';
     import { TagList } from '$lib/components/filters';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { toLocalDateTimeISO } from '$lib/helpers/date';
@@ -32,6 +32,9 @@
     let selectedBucket = $state<string | null>(null);
     let buckets = $state<Models.BucketList | null>(null);
     let loadingBuckets = $state(false);
+
+    let localQueries = $state<Map<TagValue, string>>(new Map());
+    let localTags = $derived(Array.from(localQueries.keys()));
 
     const timestamp = toLocalDateTimeISO(Date.now())
         .replace(/[:.]/g, '-')
@@ -56,10 +59,15 @@
     let emailOnComplete = $state(false);
 
     $effect(() => {
-        if ($tags.length === 0) {
+        if (localTags.length === 0) {
             exportWithFilters = false;
         }
     });
+
+    function removeLocalFilter(tag: TagValue) {
+        localQueries.delete(tag);
+        localQueries = new Map(localQueries); // Trigger reactivity
+    }
 
     let visibleColumns = $derived(showAllColumns ? $table.columns : $table.columns.slice(0, 9));
     let hasMoreColumns = $derived($table.columns.length > 9);
@@ -126,7 +134,7 @@
                     resourceId: `${page.params.database}:${page.params.table}`,
                     filename: filename,
                     columns: selectedCols,
-                    queries: exportWithFilters ? Array.from($queries.values()) : [],
+                    queries: exportWithFilters ? Array.from(localQueries.values()) : [],
                     delimiter: delimiterMap[delimiter],
                     header: includeHeader,
                     notify: emailOnComplete
@@ -155,6 +163,7 @@
     onMount(() => {
         loadBuckets();
         initializeColumns();
+        localQueries = new Map($queries);
     });
 </script>
 
@@ -254,24 +263,23 @@
                         bind:checked={includeHeader} />
 
                     <Layout.Stack gap="m">
-                        <div class:disabled-checkbox={$tags.length === 0}>
+                        <div class:disabled-checkbox={localTags.length === 0}>
                             <InputCheckbox
                                 id="exportWithFilters"
                                 label="Export with filters"
                                 description="Export rows that match the current table filters"
-                                disabled={$tags.length === 0}
+                                disabled={localTags.length === 0}
                                 bind:checked={exportWithFilters} />
                         </div>
 
-                        {#if $tags.length > 0}
+                        {#if localTags.length > 0}
                             <ul
                                 class="u-flex u-flex-wrap u-cross-center u-gap-8 tags"
                                 style="padding-left: 1.75rem;">
                                 <TagList
-                                    tags={$tags}
+                                    tags={localTags}
                                     on:remove={(e) => {
-                                        queries.removeFilter(e.detail);
-                                        queries.apply();
+                                        removeLocalFilter(e.detail);
                                     }} />
                             </ul>
                         {/if}
