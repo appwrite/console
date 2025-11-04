@@ -9,6 +9,7 @@ export type Account = Models.User<
         organization?: string;
         console: Models.Preferences;
         notificationPrefs: Record<string, NotificationPrefItem>;
+        deploymentFailedEmailAlert: boolean;
     } & Record<string, string>
 >;
 
