@@ -21,10 +21,12 @@
 
     let {
         columns,
-        executions
+        executions,
+        limit
     }: {
         columns: Column[];
         executions: Models.ExecutionList;
+        limit: number;
     } = $props();
 
     let open = $state(false);
@@ -121,4 +123,4 @@
     {/snippet}
 </MultiSelectionTable>
 
-<Sheet bind:open bind:selectedLogId logs={executions.executions} logging={$func.logging} />
+<Sheet bind:open bind:selectedLogId logs={executions.executions} logging={$func.logging} {limit} />

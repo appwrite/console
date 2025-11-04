@@ -28,6 +28,7 @@
     export let logs: Models.Execution[];
     export let logging: boolean;
     export let open = false;
+    export let limit: number;
 
     function nextLog() {
         const currentIndex = logs.findIndex((log) => log.$id === selectedLogId);
@@ -60,7 +61,7 @@
 
 <svelte:window onclick={handleClickOutside} />
 
-<div style="position: absolute; top: 0; " bind:this={sheet}>
+<div style="position: absolute; top: 0;" bind:this={sheet}>
     <Sheet bind:open closeOnBlur={false}>
         <div slot="header" style:width="100%">
             <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
@@ -81,103 +82,125 @@
             </Layout.Stack>
         </div>
         {#if selectedLog}
-            <Layout.Stack gap="xl">
-                <Accordion title="Details" open>
-                    <Layout.Stack gap="xxxl">
-                        <Layout.Stack gap="xxxl" direction="row" wrap="wrap">
-                            <Layout.Stack gap="xs" inline>
-                                <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
-                                    Method
-                                </Typography.Text>
-                                <Typography.Text variant="m-400">
-                                    {selectedLog.requestMethod}
-                                </Typography.Text>
-                            </Layout.Stack>
-                            <Layout.Stack gap="xs" inline>
-                                <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
-                                    Status code
-                                </Typography.Text>
-                                <span>
-                                    <Badge
-                                        content={selectedLog.responseStatusCode.toString()}
-                                        variant="secondary"
-                                        type={getBadgeTypeFromStatusCode(
-                                            selectedLog.responseStatusCode
-                                        )} />
-                                </span>
-                            </Layout.Stack>
-                            <Layout.Stack gap="xs" inline>
-                                <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
-                                    Status
-                                </Typography.Text>
-
-                                <Tooltip
-                                    disabled={!selectedLog?.scheduledAt ||
-                                        selectedLog.status !== ExecutionStatus.Scheduled}
-                                    maxWidth="400px">
-                                    <div>
-                                        <Status
-                                            status={logStatusConverter(selectedLog.status)}
-                                            label={capitalize(selectedLog.status)}>
-                                        </Status>
-                                    </div>
-                                    <span slot="tooltip">
-                                        {`Scheduled to execute on ${toLocaleDateTime(selectedLog.scheduledAt)}`}
+            <div class={limit === 6 ? 'log-content-scroll' : ''}>
+                <Layout.Stack gap="xl">
+                    <Accordion title="Details" open>
+                        <Layout.Stack gap="xxxl">
+                            <Layout.Stack gap="xxxl" direction="row" wrap="wrap">
+                                <Layout.Stack gap="xs" inline>
+                                    <Typography.Text
+                                        variant="m-400"
+                                        color="--fgcolor-neutral-tertiary">
+                                        Method
+                                    </Typography.Text>
+                                    <Typography.Text variant="m-400">
+                                        {selectedLog.requestMethod}
+                                    </Typography.Text>
+                                </Layout.Stack>
+                                <Layout.Stack gap="xs" inline>
+                                    <Typography.Text
+                                        variant="m-400"
+                                        color="--fgcolor-neutral-tertiary">
+                                        Status code
+                                    </Typography.Text>
+                                    <span>
+                                        <Badge
+                                            content={selectedLog.responseStatusCode.toString()}
+                                            variant="secondary"
+                                            type={getBadgeTypeFromStatusCode(
+                                                selectedLog.responseStatusCode
+                                            )} />
                                     </span>
-                                </Tooltip>
-                            </Layout.Stack>
+                                </Layout.Stack>
+                                <Layout.Stack gap="xs" inline>
+                                    <Typography.Text
+                                        variant="m-400"
+                                        color="--fgcolor-neutral-tertiary">
+                                        Status
+                                    </Typography.Text>
 
-                            <Layout.Stack gap="xs" inline>
-                                <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
-                                    Triggered by
-                                </Typography.Text>
-                                <Typography.Text variant="m-400">
-                                    {capitalize(selectedLog.trigger)}
-                                </Typography.Text>
-                            </Layout.Stack>
+                                    <Tooltip
+                                        disabled={!selectedLog?.scheduledAt ||
+                                            selectedLog.status !== ExecutionStatus.Scheduled}
+                                        maxWidth="400px">
+                                        <div>
+                                            <Status
+                                                status={logStatusConverter(selectedLog.status)}
+                                                label={capitalize(selectedLog.status)}>
+                                            </Status>
+                                        </div>
+                                        <span slot="tooltip">
+                                            {`Scheduled to execute on ${toLocaleDateTime(selectedLog.scheduledAt)}`}
+                                        </span>
+                                    </Tooltip>
+                                </Layout.Stack>
 
-                            <Layout.Stack gap="xs" inline>
-                                <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
-                                    Duration
-                                </Typography.Text>
-                                <Typography.Text variant="m-400">
-                                    {#if ['processing', 'waiting'].includes(selectedLog.status)}
-                                        <span use:timer={{ start: selectedLog.$createdAt }}></span>
-                                    {:else}
-                                        {calculateTime(selectedLog.duration)}
-                                    {/if}
-                                </Typography.Text>
-                            </Layout.Stack>
+                                <Layout.Stack gap="xs" inline>
+                                    <Typography.Text
+                                        variant="m-400"
+                                        color="--fgcolor-neutral-tertiary">
+                                        Triggered by
+                                    </Typography.Text>
+                                    <Typography.Text variant="m-400">
+                                        {capitalize(selectedLog.trigger)}
+                                    </Typography.Text>
+                                </Layout.Stack>
 
-                            <Layout.Stack gap="xs" inline>
+                                <Layout.Stack gap="xs" inline>
+                                    <Typography.Text
+                                        variant="m-400"
+                                        color="--fgcolor-neutral-tertiary">
+                                        Duration
+                                    </Typography.Text>
+                                    <Typography.Text variant="m-400">
+                                        {#if ['processing', 'waiting'].includes(selectedLog.status)}
+                                            <span use:timer={{ start: selectedLog.$createdAt }}
+                                            ></span>
+                                        {:else}
+                                            {calculateTime(selectedLog.duration)}
+                                        {/if}
+                                    </Typography.Text>
+                                </Layout.Stack>
+
+                                <Layout.Stack gap="xs" inline>
+                                    <Typography.Text
+                                        variant="m-400"
+                                        color="--fgcolor-neutral-tertiary">
+                                        Created
+                                    </Typography.Text>
+                                    <Typography.Text variant="m-400">
+                                        {capitalize(timeFromNow(selectedLog.$createdAt))}
+                                    </Typography.Text>
+                                </Layout.Stack>
+                            </Layout.Stack>
+                            <Layout.Stack gap="xs" inline alignItems="flex-start">
                                 <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
-                                    Created
+                                    Path
                                 </Typography.Text>
-                                <Typography.Text variant="m-400">
-                                    {capitalize(timeFromNow(selectedLog.$createdAt))}
-                                </Typography.Text>
+                                <div>
+                                    <InteractiveText
+                                        text={selectedLog.requestPath}
+                                        variant="copy-code"
+                                        isVisible />
+                                </div>
                             </Layout.Stack>
                         </Layout.Stack>
-                        <Layout.Stack gap="xs" inline alignItems="flex-start">
-                            <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
-                                Path
-                            </Typography.Text>
-                            <div>
-                                <InteractiveText
-                                    text={selectedLog.requestPath}
-                                    variant="copy-code"
-                                    isVisible />
-                            </div>
-                        </Layout.Stack>
-                    </Layout.Stack>
-                </Accordion>
-                <Accordion title="Request" open>
-                    <LogsRequest {selectedLog} product="function" />
-                </Accordion>
-                <Accordion title="Response" open hideDivider>
-                    <LogsResponse {selectedLog} product="function" {logging} />
-                </Accordion>
-            </Layout.Stack>
+                    </Accordion>
+                    <Accordion title="Request" open>
+                        <LogsRequest {selectedLog} product="function" />
+                    </Accordion>
+                    <Accordion title="Response" open hideDivider>
+                        <LogsResponse {selectedLog} product="function" {logging} />
+                    </Accordion>
+                </Layout.Stack>
+            </div>
         {/if}
     </Sheet>
 </div>
+
+<style lang="scss">
+    .log-content-scroll {
+        max-height: calc(100vh - 280px);
+        overflow-y: auto;
+    }
+</style>
