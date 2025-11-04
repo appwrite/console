@@ -475,7 +475,7 @@
                 message: 'Column deleted'
             });
 
-            invalidate(Dependencies.TABLE);
+            await invalidate(Dependencies.TABLE);
 
             $databaseColumnSheetOptions.column = null;
         } catch (error) {

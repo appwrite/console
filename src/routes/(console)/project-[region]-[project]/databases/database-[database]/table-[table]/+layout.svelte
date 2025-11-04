@@ -36,6 +36,7 @@
         expandTabs,
         databaseRelatedRowSheetOptions,
         rowPermissionSheet,
+        isWaterfallFromFaker,
         type Columns
     } from './store';
     import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
@@ -65,7 +66,6 @@
     import { Submit, trackEvent } from '$lib/actions/analytics';
 
     import IndexesSuggestions from '../(suggestions)/indexes.svelte';
-    import { showIndexesSuggestions, tableColumnSuggestions } from '../(suggestions)';
 
     let editRow: EditRow;
     let editRelatedRow: EditRelatedRow;
@@ -75,12 +75,6 @@
     let createColumn: CreateColumn;
     let selectedOption: Option['name'] = 'String';
     let createMoreColumns = false;
-
-    /**
-     * adding a lot of fake data will trigger the realtime below
-     * and will keep invalidating the `Dependencies.TABLE` making a lot of API noise!
-     */
-    let isWaterfallFromFaker = false;
 
     let columnCreationHandler: ((response: RealtimeResponse) => void) | null = null;
 
@@ -92,20 +86,8 @@
                 response.events.includes('databases.*.tables.*.columns.*') ||
                 response.events.includes('databases.*.tables.*.indexes.*')
             ) {
-                if (isWaterfallFromFaker) {
+                if ($isWaterfallFromFaker) {
                     columnCreationHandler?.(response);
-                }
-
-                // don't invalidate when -
-                // 1. from faker
-                // 2. ai columns creation
-                // 3. ai indexes creation
-                if (
-                    !isWaterfallFromFaker &&
-                    !$showIndexesSuggestions &&
-                    !$tableColumnSuggestions.table
-                ) {
-                    invalidate(Dependencies.TABLE);
                 }
             }
         });
@@ -308,7 +290,7 @@
     }
 
     async function createFakeData() {
-        isWaterfallFromFaker = true;
+        isWaterfallFromFaker.set(true);
 
         $spreadsheetLoading = true;
         $randomDataModalState.show = false;
@@ -386,10 +368,8 @@
             $randomDataModalState.value = 25;
         }
 
-        /* api is too fast! */
-        // await sleep(1250);
         $spreadsheetLoading = false;
-        isWaterfallFromFaker = false;
+        isWaterfallFromFaker.set(false);
 
         spreadsheetRenderKey.set(hash(rowIds));
     }
