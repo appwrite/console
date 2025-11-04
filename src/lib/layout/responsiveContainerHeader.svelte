@@ -1,7 +1,6 @@
 <script lang="ts">
     import { SearchQuery, ViewSelector } from '$lib/components';
     import { FiltersBottomSheet, ParsedTagList, queryParamToMap } from '$lib/components/filters';
-    import QuickFilters from '$lib/components/filters/quickFilters.svelte';
     import Button from '$lib/elements/forms/button.svelte';
     import { View } from '$lib/helpers/load';
     import type { Column } from '$lib/helpers/types';
@@ -110,17 +109,14 @@
                     {#if hasSearch}
                         <SearchQuery placeholder={searchPlaceholder} />
                     {/if}
-                    <!-- Tags with Filters button immediately to the right -->
+                    <!-- Tags with Filters button (rendered inside ParsedTagList) -->
                     <Layout.Stack
                         direction="row"
                         alignItems="center"
                         gap="s"
                         wrap="wrap"
                         style={`min-width: 0;`}>
-                        <ParsedTagList {columns} />
-                        {#if hasFilters && $columns?.length}
-                            <QuickFilters {columns} {analyticsSource} {filterCols} />
-                        {/if}
+                        <ParsedTagList {columns} {analyticsSource} />
                     </Layout.Stack>
                 </Layout.Stack>
                 <Layout.Stack

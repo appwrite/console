@@ -18,8 +18,12 @@
     import type { Writable } from 'svelte/store';
     import Menu from '$lib/components/menu/menu.svelte';
     import { addFilterAndApply, buildFilterCol, type FilterData } from './quickFilters';
+    import QuickFilters from '$lib/components/filters/quickFilters.svelte';
 
-    let { columns }: { columns: Writable<Column[]> | undefined } = $props();
+    let {
+        columns,
+        analyticsSource = ''
+    }: { columns: Writable<Column[]> | undefined; analyticsSource?: string } = $props();
 
     function parseTagParts(tagString: string): { text: string; operator: boolean }[] {
         const parts: { text: string; operator: boolean }[] = [];
@@ -95,6 +99,9 @@
                   .filter((f) => f && f.options) as FilterData[])
             : []
     );
+
+    // QuickFilters uses the same filter list
+    let filterCols = $derived(availableFilters);
 
     // Always-show placeholders are derived from available filters (no hardcoding)
     // Use reactive array so runes can track changes
@@ -267,6 +274,10 @@
             {/each}
         {/if}
     {/key}
+
+    {#if filterCols?.length}
+        <QuickFilters {columns} {analyticsSource} {filterCols} />
+    {/if}
 
     {#if $parsedTags?.length}
         <Button
