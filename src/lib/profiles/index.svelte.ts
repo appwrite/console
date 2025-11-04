@@ -1,9 +1,15 @@
 import { resolve } from '$app/paths';
-import { PUBLIC_CONSOLE_PROFILE } from '$env/static/public';
 import type { ResolvedPathname } from '$app/types';
+import { PUBLIC_CONSOLE_PROFILE } from '$env/static/public';
 
-type Profile = {
-    id: 'console' | 'studio';
+export const enum ProfileMode {
+    STUDIO = 'studio',
+    CONSOLE = 'console'
+}
+
+export type Profile = {
+    id: ProfileMode;
+    platform: string;
     logo: {
         src: {
             dark: string;
@@ -12,11 +18,17 @@ type Profile = {
         alt: string;
     };
     showOnboarding: boolean;
+    useCommandCenter: boolean;
+    showGithubIssueSupport: boolean;
+    showExtendedAccountsMenu: boolean;
+    showGeneralAvailability: boolean;
+    showConnectProjectOnToolbar: boolean;
     getProjectRoute: (params: { region: string; project: string }) => ResolvedPathname;
 };
 
 export const base: Profile = {
-    id: 'console',
+    id: ProfileMode.CONSOLE,
+    platform: 'Appwrite',
     logo: {
         src: {
             dark: 'https://appwrite.io/images/logos/logo.svg',
@@ -25,6 +37,11 @@ export const base: Profile = {
         alt: 'Logo Appwrite'
     },
     showOnboarding: true,
+    useCommandCenter: true,
+    showGithubIssueSupport: true,
+    showExtendedAccountsMenu: false,
+    showGeneralAvailability: true,
+    showConnectProjectOnToolbar: true,
     getProjectRoute({ region, project }) {
         return resolve(`/(console)/project-[region]-[project]/overview`, {
             region,
@@ -34,7 +51,8 @@ export const base: Profile = {
 };
 
 export const studio: Profile = {
-    id: 'studio',
+    id: ProfileMode.STUDIO,
+    platform: 'Imagine',
     logo: {
         src: {
             dark: 'https://imagine-console.up.railway.app/images/imagine-logo-dark.svg',
@@ -43,6 +61,11 @@ export const studio: Profile = {
         alt: 'Imagine Appwrite'
     },
     showOnboarding: false,
+    useCommandCenter: false,
+    showGithubIssueSupport: false,
+    showExtendedAccountsMenu: true,
+    showGeneralAvailability: false,
+    showConnectProjectOnToolbar: false,
     getProjectRoute({ region, project }) {
         return resolve(`/(console)/project-[region]-[project]/(studio)/studio`, {
             region,

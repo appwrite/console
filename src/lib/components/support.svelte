@@ -12,6 +12,7 @@
     import { isCloud } from '$lib/system';
     import { Typography } from '@appwrite.io/pink-svelte';
     import { base } from '$app/paths';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     export let show = false;
 
@@ -46,7 +47,7 @@
             showSupport: true,
             icon: 'support',
             label: 'Premium support',
-            description: 'Get priority email support from the Appwrite team'
+            description: `Get priority email support from the ${resolvedProfile.platform} team`
         },
 
         {
@@ -57,14 +58,18 @@
             link: 'https://appwrite.io/discord',
             description: 'Get support from our community through Discord'
         },
-        {
-            icon: 'github',
-            cta: 'Open issue',
-            showSupport: false,
-            label: 'Open GitHub issue',
-            link: 'https://github.com/appwrite/appwrite/issues/new/choose',
-            description: 'Report a bug or pitch a new feature'
-        }
+        ...(resolvedProfile.showGithubIssueSupport
+            ? []
+            : [
+                  {
+                      icon: 'github',
+                      cta: 'Open issue',
+                      showSupport: false,
+                      label: 'Open GitHub issue',
+                      link: 'https://github.com/appwrite/appwrite/issues/new/choose',
+                      description: 'Report a bug or pitch a new feature'
+                  }
+              ])
     ];
 
     const showCloudSupport = (index: number) => {

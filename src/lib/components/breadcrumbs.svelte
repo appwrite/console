@@ -12,6 +12,7 @@
     import {
         IconChevronDown,
         IconChevronRight,
+        IconList,
         IconPlus,
         IconPlusSm
     } from '@appwrite.io/pink-icons-svelte';
@@ -157,6 +158,14 @@
             href: `${base}/organization-${organization?.$id}?create-project`
         };
 
+        const allProjectsItem = {
+            name: 'All projects',
+            trailingIcon: IconList,
+            href: resolve('/(console)/organization-[organization]', {
+                organization: selectedOrg.$id
+            })
+        };
+
         if (loadedProjects.total > 1 && selectedOrg) {
             const projectLinks = loadedProjects.projects.slice(0, 4).map((project) => {
                 return {
@@ -168,18 +177,14 @@
                 };
             });
 
-            if (loadedProjects.projects.length > 4) {
-                projectLinks.push({
-                    name: 'All projects',
-                    href: resolve('/(console)/organization-[organization]', {
-                        organization: selectedOrg.$id
-                    })
-                });
-            }
-
             return {
                 top: { title: 'Switch project', items: projectLinks },
-                bottom: { items: [createProjectItem] }
+                bottom: {
+                    items: [
+                        ...(loadedProjects.total > 4 ? [allProjectsItem] : []),
+                        createProjectItem
+                    ]
+                }
             };
         }
 
@@ -401,6 +406,7 @@
 
             <div class="menu" use:melt={$menuProjects}>
                 <Card.Base padding="xxxs" shadow={true}>
+                    {@const aboveFourProjects = loadedProjects.total >= 4}
                     {#if isLoadingProjects}
                         <div style:margin-inline="0.25rem" style:margin-block="0.25rem">
                             <Layout.Stack gap="s">
@@ -424,9 +430,12 @@
                                     </ActionMenu.Root>
                                 </div>
                             {:else if index === 4}
+                                <div class="separator" use:melt={$separatorProjects}></div>
+
                                 <div use:melt={$itemProjects}>
                                     <ActionMenu.Root>
                                         <ActionMenu.Item.Anchor
+                                            leadingIcon={IconList}
                                             href={`${base}/organization-${selectedOrg.$id}`}>
                                             All projects
                                         </ActionMenu.Item.Anchor>
@@ -434,8 +443,11 @@
                                 </div>
                             {/if}
                         {/each}
-                        <div class="separator" use:melt={$separatorProjects}></div>
+                        {#if !aboveFourProjects}
+                            <div class="separator" use:melt={$separatorProjects}></div>
+                        {/if}
                     {/if}
+
                     <div use:melt={$itemProjects}>
                         <ActionMenu.Root>
                             <ActionMenu.Item.Anchor
@@ -499,7 +511,7 @@
         }
 
         @media (min-width: 1024px) {
-            max-width: 150px;
+            max-width: 200px;
         }
 
         &.dropdown {

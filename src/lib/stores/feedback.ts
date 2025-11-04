@@ -1,10 +1,12 @@
-import { browser } from '$app/environment';
 import { VARS } from '$lib/system';
-import { get, writable } from 'svelte/store';
+import { resolvedProfile } from '$lib/profiles/index.svelte';
+
 import type { Component } from 'svelte';
-import FeedbackGeneral from '$lib/components/feedback/feedbackGeneral.svelte';
-import FeedbackNps from '$lib/components/feedback/feedbackNPS.svelte';
+import { browser } from '$app/environment';
+import { get, writable } from 'svelte/store';
 import { Submit, trackEvent } from '$lib/actions/analytics';
+import FeedbackNps from '$lib/components/feedback/feedbackNPS.svelte';
+import FeedbackGeneral from '$lib/components/feedback/feedbackGeneral.svelte';
 
 export type Feedback = {
     elapsed: number;
@@ -29,12 +31,12 @@ export type FeedbackOption = {
 export const feedbackOptions: FeedbackOption[] = [
     {
         type: 'general',
-        desc: 'Appwrite evolves with your input. Share your thoughts and help us improve Appwrite.',
+        desc: `${resolvedProfile.platform} evolves with your input. Share your thoughts and help us improve ${resolvedProfile.platform}.`,
         component: FeedbackGeneral
     },
     {
         type: 'nps',
-        desc: 'How likely are you to recommend Appwrite to a friend or colleague?',
+        desc: `How likely are you to recommend ${resolvedProfile.platform} to a friend or colleague?`,
         component: FeedbackNps
     }
 ];

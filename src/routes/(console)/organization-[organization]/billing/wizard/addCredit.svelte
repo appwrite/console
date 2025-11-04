@@ -6,6 +6,7 @@
     import { wizard } from '$lib/stores/wizard';
     import { onMount } from 'svelte';
     import { addCreditWizardStore } from '../store';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     let coupon: string;
     export let couponData: Partial<Coupon> = {
@@ -40,8 +41,8 @@
 <WizardStep beforeSubmit={validateCoupon}>
     <svelte:fragment slot="title">Credits</svelte:fragment>
     <svelte:fragment slot="subtitle">
-        Add Appwrite credits to your organization. A payment method is required before credits can
-        be applied.
+        Add {resolvedProfile.platform} credits to your organization. A payment method is required before
+        credits can be applied.
     </svelte:fragment>
     <CouponInput
         bind:coupon

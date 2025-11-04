@@ -25,11 +25,15 @@
         Button,
         Avatar,
         Typography,
-        Popover
+        Popover,
+        Divider
     } from '@appwrite.io/pink-svelte';
     import { toggleCommandCenter } from '$lib/commandCenter/commandCenter.svelte';
     import {
         IconChevronRight,
+        IconCreditCard,
+        IconGlobe,
+        IconGlobeAlt,
         IconLogoutRight,
         IconMenuAlt4,
         IconMode,
@@ -52,6 +56,8 @@
     import { beforeNavigate } from '$app/navigation';
     import { page } from '$app/state';
     import type { Models } from '@appwrite.io/console';
+    import { organization } from '$lib/stores/organization';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     let showSupport = false;
 
@@ -134,7 +140,7 @@
 
         <Breadcrumbs {organizations} {currentProject} />
 
-        {#if page.route?.id?.includes('/project-[region]-[project]') && currentProject && currentProject.pingCount === 0}
+        {#if resolvedProfile.showConnectProjectOnToolbar && page.route?.id?.includes('/project-[region]-[project]') && currentProject && currentProject.pingCount === 0}
             <div class="only-desktop" style:margin-inline-start="-16px">
                 <Button.Anchor
                     size="xs"
@@ -199,17 +205,19 @@
                     </svelte:fragment>
                 </DropList>
             </Layout.Stack>
-            <Layout.Stack direction="row">
-                <Tooltip>
-                    <Button.Button
-                        variant="text"
-                        aria-label="Toggle Command Center"
-                        on:click={toggleCommandCenter}
-                        icon>
-                        <Icon icon={IconSearch} />
-                    </Button.Button>
-                    <span slot="tooltip">{isMac() ? '⌘ + K' : 'Ctrl + K'}</span></Tooltip>
-            </Layout.Stack>
+            {#if resolvedProfile.useCommandCenter}
+                <Layout.Stack direction="row">
+                    <Tooltip>
+                        <Button.Button
+                            variant="text"
+                            aria-label="Toggle Command Center"
+                            on:click={toggleCommandCenter}
+                            icon>
+                            <Icon icon={IconSearch} />
+                        </Button.Button>
+                        <span slot="tooltip">{isMac() ? '⌘ + K' : 'Ctrl + K'}</span></Tooltip>
+                </Layout.Stack>
+            {/if}
             <Popover let:toggle let:showing>
                 <button
                     type="button"
@@ -235,6 +243,7 @@
                                     {$user?.email}
                                 </Typography.Text>
                             </div>
+
                             <ActionMenu.Item.Anchor
                                 size="l"
                                 trailingIcon={IconUser}
@@ -242,10 +251,34 @@
                                 on:click={() => toggle()}>
                                 Account</ActionMenu.Item.Anchor>
 
+                            {#if resolvedProfile.showExtendedAccountsMenu && $organization && $organization.$id}
+                                <Divider />
+
+                                {@const baseOrgUrl = `${base}/organization-${$organization.$id}`}
+                                <ActionMenu.Item.Anchor
+                                    size="l"
+                                    href={`${baseOrgUrl}/billing`}
+                                    trailingIcon={IconCreditCard}
+                                    on:click={() => toggle()}>
+                                    Billing</ActionMenu.Item.Anchor>
+
+                                <ActionMenu.Item.Anchor
+                                    size="l"
+                                    trailingIcon={IconGlobeAlt}
+                                    href={`${baseOrgUrl}/domains`}
+                                    on:click={() => toggle()}>
+                                    Domains</ActionMenu.Item.Anchor>
+
+                                <Divider />
+                            {/if}
+
                             <ActionMenu.Item.Button
-                                trailingIcon={IconLogoutRight}
                                 size="l"
-                                on:click={() => logout()}>Sign out</ActionMenu.Item.Button>
+                                on:click={() => logout()}
+                                trailingIcon={IconLogoutRight}>
+                                Sign out
+                            </ActionMenu.Item.Button>
+
                             <div style:padding-inline-start="10px" style:padding-inline-end="8px">
                                 <Layout.Stack
                                     justifyContent="space-between"
