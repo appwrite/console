@@ -20,7 +20,7 @@
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import type { Models } from '@appwrite.io/console';
     import { table } from '../store';
-    import { tags, queries, type TagValue } from '$lib/components/filters/store';
+    import { queries, type TagValue } from '$lib/components/filters/store';
     import { TagList } from '$lib/components/filters';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { toLocalDateTimeISO } from '$lib/helpers/date';
