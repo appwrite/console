@@ -248,13 +248,15 @@
                                 <ActionMenu.Item.Anchor
                                     size="l"
                                     href={`${baseOrgUrl}/billing`}
-                                    trailingIcon={IconCreditCard}>
+                                    trailingIcon={IconCreditCard}
+                                    on:click={toggle}>
                                     Billing</ActionMenu.Item.Anchor>
 
                                 <ActionMenu.Item.Anchor
                                     size="l"
                                     trailingIcon={IconGlobeAlt}
-                                    href={`${baseOrgUrl}/domains`}>
+                                    href={`${baseOrgUrl}/domains`}
+                                    on:click={toggle}>
                                     Domains</ActionMenu.Item.Anchor>
 
                                 <Divider />
@@ -264,7 +266,7 @@
                                 size="l"
                                 trailingIcon={IconUser}
                                 href={`${base}/account`}
-                                on:click={() => toggle()}>
+                                on:click={toggle}>
                                 Account</ActionMenu.Item.Anchor>
 
                             <ActionMenu.Item.Button
