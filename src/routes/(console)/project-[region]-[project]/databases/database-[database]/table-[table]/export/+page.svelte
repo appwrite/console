@@ -7,11 +7,11 @@
     import {
         Fieldset,
         Layout,
-        Spinner,
         Typography,
         Icon,
         Divider,
-        Tooltip
+        Tooltip,
+        Skeleton
     } from '@appwrite.io/pink-svelte';
     import { Button, InputText, InputSelect, InputCheckbox, Form } from '$lib/elements/forms';
     import type { FormContext } from '$lib/elements/forms/form.svelte';
@@ -170,9 +170,11 @@
             <Fieldset legend="Destination">
                 <Layout.Stack gap="l">
                     {#if loadingBuckets}
-                        <div class="u-flex u-main-center">
-                            <Spinner />
-                        </div>
+                        <Layout.Stack gap="xs">
+                            <Typography.Text as="label" for="bucket" variant="m-500"
+                                >Bucket</Typography.Text>
+                            <Skeleton variant="line" width="100%" height={35} />
+                        </Layout.Stack>
                     {:else if buckets && buckets.buckets.length > 0}
                         <InputSelect
                             id="bucket"
