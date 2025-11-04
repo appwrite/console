@@ -1,8 +1,10 @@
 import { PUBLIC_APPWRITE_ENDPOINT, PUBLIC_AI_SERVICE_BASE_URL } from '$env/static/public';
+import { env } from '$env/dynamic/public';
 import { app } from '$lib/stores/app';
 import { get } from 'svelte/store';
 import { goto } from '$app/navigation';
 import { resolve } from '$app/paths';
+import DEV_CSS_URL from '@imagine.dev/web-components/imagine-web-components.css?url';
 
 const COMPONENT_SELECTOR = 'imagine-web-components-wrapper[data-appwrite-studio]';
 const STYLE_ATTRIBUTE = 'data-appwrite-studio-style';
@@ -10,6 +12,7 @@ const BLOCK_START_BASE_OFFSET = 48;
 const INLINE_START_BASE_OFFSET = 8;
 const CDN_URL =
     'https://esm.sh/@imagine.dev/web-components@0/web-components?bundle=false&deps=react@19.1.0,react-dom@19.1.0';
+const DEV_OVERRIDE_WEB_COMPONENTS = env?.PUBLIC_AI_OVERRIDE_WEB_COMPONENTS === 'true';
 
 let component: HTMLElement | null = null;
 let webComponentsModule: Record<string, any> | null = null;
@@ -70,7 +73,7 @@ function injectStyles(node: HTMLElement, attempt = 0) {
 
     customElements
         .whenDefined('imagine-web-components-wrapper')
-        .then(() => {
+        .then(async () => {
             const shadow = node.shadowRoot;
             if (!shadow) {
                 if (attempt < 5 && typeof requestAnimationFrame !== 'undefined') {
@@ -85,7 +88,9 @@ function injectStyles(node: HTMLElement, attempt = 0) {
 
             const link = document.createElement('link');
             link.rel = 'stylesheet';
-            link.href = 'https://esm.sh/@imagine.dev/web-components@0/imagine-web-components.css';
+            link.href = DEV_OVERRIDE_WEB_COMPONENTS
+                ? DEV_CSS_URL
+                : 'https://esm.sh/@imagine.dev/web-components@0/imagine-web-components.css';
             link.setAttribute(STYLE_ATTRIBUTE, 'true');
             shadow.prepend(link);
         })
@@ -99,7 +104,11 @@ function injectStyles(node: HTMLElement, attempt = 0) {
  */
 export async function getWebComponents() {
     if (!webComponentsModule) {
-        webComponentsModule = await import(/* @vite-ignore */ CDN_URL);
+        if (DEV_OVERRIDE_WEB_COMPONENTS) {
+            webComponentsModule = await import('@imagine.dev/web-components/web-components');
+        } else {
+            webComponentsModule = await import(/* @vite-ignore */ CDN_URL);
+        }
     }
     return webComponentsModule;
 }
