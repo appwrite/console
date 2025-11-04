@@ -243,7 +243,16 @@
                                 </Typography.Text>
                             </div>
 
+                            <ActionMenu.Item.Anchor
+                                size="l"
+                                trailingIcon={IconUser}
+                                href={`${base}/account`}
+                                on:click={() => toggle()}>
+                                Account</ActionMenu.Item.Anchor>
+
                             {#if isStudio && $organization && $organization.$id}
+                                <Divider />
+
                                 {@const baseOrgUrl = `${base}/organization-${$organization.$id}`}
                                 <ActionMenu.Item.Anchor
                                     size="l"
@@ -261,13 +270,6 @@
 
                                 <Divider />
                             {/if}
-
-                            <ActionMenu.Item.Anchor
-                                size="l"
-                                trailingIcon={IconUser}
-                                href={`${base}/account`}
-                                on:click={() => toggle()}>
-                                Account</ActionMenu.Item.Anchor>
 
                             <ActionMenu.Item.Button
                                 size="l"
