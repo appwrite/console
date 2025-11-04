@@ -308,7 +308,7 @@
     }
 
     .show-more-wrapper {
-        margin-bottom: -0.2rem;
+        margin-bottom: -0.5rem;
     }
 
     .disabled-checkbox :global(*) {
