@@ -8,6 +8,7 @@
     import { organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
+    import { PLATFORM } from '$lib/system';
 
     const dispatch = createEventDispatcher();
     export let show = false;
@@ -38,7 +39,7 @@
 
 <Modal bind:show title="Add credits" onSubmit={redeem} bind:error size="s">
     <svelte:fragment slot="description">
-        Apply Appwrite credits to your organization.
+        Apply {PLATFORM} credits to your organization.
     </svelte:fragment>
 
     <InputText

@@ -1,5 +1,5 @@
 <script>
-    import { isCloud } from '$lib/system';
+    import { isCloud, isStudio, PLATFORM } from '$lib/system';
     import { version } from '$routes/(console)/store';
     import { IconCloud, IconDiscord, IconGithub } from '@appwrite.io/pink-icons-svelte';
     import {
@@ -31,7 +31,8 @@
             gap={$isSmallViewport ? 'm' : 'l'}
             justifyContent="flex-start">
             <Typography.Caption variant="400">
-                ⓒ {currentYear} Appwrite. All rights reserved.
+                ⓒ {currentYear}
+                {PLATFORM} . All rights reserved.
             </Typography.Caption>
             <span class="divider-wrapper">
                 <Divider vertical />
@@ -66,7 +67,7 @@
             alignItems="center"
             wrap={$isSmallViewport ? 'wrap' : 'normal'}>
             {#if !$isSmallViewport}
-                {#if isCloud}
+                {#if isCloud && !isStudio}
                     <Badge
                         size="xs"
                         type="success"
@@ -76,7 +77,7 @@
                     <Icon size="s" icon={IconCloud} />
                 {/if}
 
-                {#if $version}
+                {#if $version && !isCloud}
                     <Link.Anchor
                         size="s"
                         variant="quiet"
@@ -137,10 +138,11 @@
                 </Link.Anchor>
             {/if}
             {#if $isSmallViewport}
-                {#if $version}
+                {#if $version && !isCloud}
                     <span class="divider-wrapper">
                         <Divider vertical />
                     </span>
+
                     <Link.Anchor
                         size="s"
                         variant="quiet"
@@ -151,15 +153,17 @@
                         style="white-space: nowrap;">
                         Version {$version}
                     </Link.Anchor>
-                    {#if isCloud}
-                        <Icon size="s" icon={IconCloud} />
-                        <Badge
-                            size="xs"
-                            type="success"
-                            variant="secondary"
-                            content="Generally Available"
-                            style="white-space: nowrap;" />
-                    {/if}
+                {/if}
+
+                {#if isCloud && !isStudio}
+                    <Icon size="s" icon={IconCloud} />
+
+                    <Badge
+                        size="xs"
+                        type="success"
+                        variant="secondary"
+                        content="Generally Available"
+                        style="white-space: nowrap;" />
                 {/if}
             {/if}
         </Layout.Stack>

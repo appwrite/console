@@ -9,7 +9,7 @@
     import { Card } from '$lib/components/index';
     import { app } from '$lib/stores/app';
     import { currentPlan, type Organization, organizationList } from '$lib/stores/organization';
-    import { isCloud } from '$lib/system';
+    import { isCloud, isStudio, PLATFORM } from '$lib/system';
     import { Typography } from '@appwrite.io/pink-svelte';
     import { base } from '$app/paths';
 
@@ -46,7 +46,7 @@
             showSupport: true,
             icon: 'support',
             label: 'Premium support',
-            description: 'Get priority email support from the Appwrite team'
+            description: `Get priority email support from the ${PLATFORM} team`
         },
 
         {
@@ -57,14 +57,18 @@
             link: 'https://appwrite.io/discord',
             description: 'Get support from our community through Discord'
         },
-        {
-            icon: 'github',
-            cta: 'Open issue',
-            showSupport: false,
-            label: 'Open GitHub issue',
-            link: 'https://github.com/appwrite/appwrite/issues/new/choose',
-            description: 'Report a bug or pitch a new feature'
-        }
+        ...(isStudio
+            ? []
+            : [
+                  {
+                      icon: 'github',
+                      cta: 'Open issue',
+                      showSupport: false,
+                      label: 'Open GitHub issue',
+                      link: 'https://github.com/appwrite/appwrite/issues/new/choose',
+                      description: 'Report a bug or pitch a new feature'
+                  }
+              ])
     ];
 
     const showCloudSupport = (index: number) => {

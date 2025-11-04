@@ -27,6 +27,7 @@
         Typography
     } from '@appwrite.io/pink-svelte';
     import type { PageData } from './$types';
+    import { PLATFORM } from '$lib/system';
 
     export let data: PageData;
 
@@ -44,7 +45,7 @@
 
 <CardGrid>
     <svelte:fragment slot="title">Billing address</svelte:fragment>
-    View or update your billing address. This address will be included in your invoices from Appwrite.
+    View or update your billing address. This address will be included in your invoices from {PLATFORM}.
     <svelte:fragment slot="aside">
         {#if $addressList.total && countryList?.total}
             <Table.Root

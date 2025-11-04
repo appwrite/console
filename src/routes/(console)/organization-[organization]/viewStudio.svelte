@@ -1,6 +1,11 @@
 <script lang="ts">
     import { onDestroy, onMount, tick } from 'svelte';
-    import { attachStudioTo, ensureStudioComponent, hideStudio, navigateToRoute } from '$lib/studio/studio-widget';
+    import {
+        attachStudioTo,
+        ensureStudioComponent,
+        hideStudio,
+        navigateToRoute
+    } from '$lib/studio/studio-widget';
 
     let anchor: HTMLElement = $state();
 

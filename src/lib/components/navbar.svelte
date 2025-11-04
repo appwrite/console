@@ -25,11 +25,15 @@
         Button,
         Avatar,
         Typography,
-        Popover
+        Popover,
+        Divider
     } from '@appwrite.io/pink-svelte';
     import { toggleCommandCenter } from '$lib/commandCenter/commandCenter.svelte';
     import {
         IconChevronRight,
+        IconCreditCard,
+        IconGlobe,
+        IconGlobeAlt,
         IconLogoutRight,
         IconMenuAlt4,
         IconMode,
@@ -46,12 +50,13 @@
     import { logout } from '$lib/helpers/logout';
     import { app } from '$lib/stores/app';
     import { isTabletViewport, isSmallViewport } from '$lib/stores/viewport';
-    import { isCloud } from '$lib/system.js';
+    import { isCloud, isStudio } from '$lib/system.js';
     import { user } from '$lib/stores/user';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { beforeNavigate } from '$app/navigation';
     import { page } from '$app/state';
     import type { Models } from '@appwrite.io/console';
+    import { organization } from '$lib/stores/organization';
 
     let showSupport = false;
 
@@ -199,17 +204,19 @@
                     </svelte:fragment>
                 </DropList>
             </Layout.Stack>
-            <Layout.Stack direction="row">
-                <Tooltip>
-                    <Button.Button
-                        variant="text"
-                        aria-label="Toggle Command Center"
-                        on:click={toggleCommandCenter}
-                        icon>
-                        <Icon icon={IconSearch} />
-                    </Button.Button>
-                    <span slot="tooltip">{isMac() ? '⌘ + K' : 'Ctrl + K'}</span></Tooltip>
-            </Layout.Stack>
+            {#if !isStudio}
+                <Layout.Stack direction="row">
+                    <Tooltip>
+                        <Button.Button
+                            variant="text"
+                            aria-label="Toggle Command Center"
+                            on:click={toggleCommandCenter}
+                            icon>
+                            <Icon icon={IconSearch} />
+                        </Button.Button>
+                        <span slot="tooltip">{isMac() ? '⌘ + K' : 'Ctrl + K'}</span></Tooltip>
+                </Layout.Stack>
+            {/if}
             <Popover let:toggle let:showing>
                 <button
                     type="button"
@@ -235,6 +242,24 @@
                                     {$user?.email}
                                 </Typography.Text>
                             </div>
+
+                            {#if isStudio && $organization && $organization.$id}
+                                {@const baseOrgUrl = `${base}/organization-${$organization.$id}`}
+                                <ActionMenu.Item.Anchor
+                                    size="l"
+                                    href={`${baseOrgUrl}/billing`}
+                                    trailingIcon={IconCreditCard}>
+                                    Billing</ActionMenu.Item.Anchor>
+
+                                <ActionMenu.Item.Anchor
+                                    size="l"
+                                    trailingIcon={IconGlobeAlt}
+                                    href={`${baseOrgUrl}/domains`}>
+                                    Domains</ActionMenu.Item.Anchor>
+
+                                <Divider />
+                            {/if}
+
                             <ActionMenu.Item.Anchor
                                 size="l"
                                 trailingIcon={IconUser}
@@ -246,6 +271,7 @@
                                 trailingIcon={IconLogoutRight}
                                 size="l"
                                 on:click={() => logout()}>Sign out</ActionMenu.Item.Button>
+
                             <div style:padding-inline-start="10px" style:padding-inline-end="8px">
                                 <Layout.Stack
                                     justifyContent="space-between"

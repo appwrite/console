@@ -6,8 +6,14 @@ export const enum Mode {
     SELF_HOSTED = 'self-hosted'
 }
 
+export const enum Profile {
+    STUDIO = 'studio',
+    APPWRITE = 'appwrite'
+}
+
 export const VARS = {
     CONSOLE_MODE: (env.PUBLIC_CONSOLE_MODE as Mode) ?? undefined,
+    CONSOLE_PROFILE: (env.PUBLIC_CONSOLE_PROFILE as Profile) ?? 'appwrite',
     APPWRITE_ENDPOINT: env.PUBLIC_APPWRITE_ENDPOINT ?? undefined,
     GROWTH_ENDPOINT: env.PUBLIC_GROWTH_ENDPOINT ?? undefined,
     PUBLIC_STRIPE_KEY: env.PUBLIC_STRIPE_KEY ?? undefined,
@@ -29,6 +35,9 @@ export const isDev = ENV.DEV;
 export const isProd = ENV.PROD;
 export const hasStripePublicKey = !!VARS.PUBLIC_STRIPE_KEY;
 export const GRACE_PERIOD_OVERRIDE = false;
+
+export const isStudio = VARS.CONSOLE_PROFILE === Profile.STUDIO;
+export const PLATFORM = isStudio ? 'Imagine' : 'Appwrite';
 
 export const APPWRITE_OFFICIALS_ORG = 'appwriteOfficials';
 

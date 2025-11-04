@@ -1,4 +1,10 @@
 <script lang="ts" context="module">
+    import { RootPanel } from './panels';
+    import { getContext, setContext } from 'svelte';
+    import { get, writable, type Readable } from 'svelte/store';
+    import { addSubPanel, clearSubPanels, subPanels } from './subPanels';
+    import { isStudio } from '$lib/system';
+
     type Context = Readable<{
         isInitialPanel: boolean;
         open: boolean;
@@ -14,6 +20,8 @@
     };
 
     export const toggleCommandCenter = () => {
+        if (isStudio) return;
+
         if (get(subPanels).length > 0) {
             clearSubPanels();
         } else {
@@ -24,16 +32,12 @@
 
 <script lang="ts">
     import { dev } from '$app/environment';
-    import { portal } from '$lib/actions/portal';
-    import { last } from '$lib/helpers/array';
-    import { debounce } from '$lib/helpers/debounce';
-    import { getContext, setContext } from 'svelte';
-    import { get, writable, type Readable } from 'svelte/store';
     import { fade } from 'svelte/transition';
-    import { commandCenterKeyDownHandler, disableCommands, registerCommands } from './commands';
-    import { RootPanel } from './panels';
-    import { addSubPanel, clearSubPanels, subPanels } from './subPanels';
+    import { last } from '$lib/helpers/array';
+    import { portal } from '$lib/actions/portal';
+    import { debounce } from '$lib/helpers/debounce';
     import { addNotification } from '$lib/stores/notifications';
+    import { commandCenterKeyDownHandler, disableCommands, registerCommands } from './commands';
 
     let debugOverlayEnabled = false;
 

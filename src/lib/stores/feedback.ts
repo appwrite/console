@@ -1,5 +1,5 @@
 import { browser } from '$app/environment';
-import { VARS } from '$lib/system';
+import { PLATFORM, VARS } from '$lib/system';
 import { get, writable } from 'svelte/store';
 import type { Component } from 'svelte';
 import FeedbackGeneral from '$lib/components/feedback/feedbackGeneral.svelte';
@@ -29,12 +29,12 @@ export type FeedbackOption = {
 export const feedbackOptions: FeedbackOption[] = [
     {
         type: 'general',
-        desc: 'Appwrite evolves with your input. Share your thoughts and help us improve Appwrite.',
+        desc: `${PLATFORM} evolves with your input. Share your thoughts and help us improve ${PLATFORM}.`,
         component: FeedbackGeneral
     },
     {
         type: 'nps',
-        desc: 'How likely are you to recommend Appwrite to a friend or colleague?',
+        desc: `How likely are you to recommend ${PLATFORM} to a friend or colleague?`,
         component: FeedbackNps
     }
 ];

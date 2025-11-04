@@ -313,6 +313,7 @@
         limit={data.limit}
         offset={data.offset}
         total={data.projects.total} />
+
     <ArchiveProject
         {projectsToArchive}
         organization={data.organization}

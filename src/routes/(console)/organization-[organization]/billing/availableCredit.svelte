@@ -16,6 +16,7 @@
 
     import { Alert, Badge, Icon, Link, Table, Tooltip, Typography } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { PLATFORM } from '$lib/system';
 
     export let areCreditsSupported: boolean;
 
@@ -85,7 +86,7 @@
     <svelte:fragment slot="title">
         {!areCreditsSupported ? 'Credits' : 'Available credit'}
     </svelte:fragment>
-    Appwrite credit will automatically be applied to your next invoice.
+    {PLATFORM} credit will automatically be applied to your next invoice.
     <svelte:fragment slot="aside">
         {#if !areCreditsSupported}
             <Alert.Inline status="info" title="Upgrade to Pro to add credits">

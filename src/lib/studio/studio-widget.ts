@@ -8,7 +8,8 @@ const COMPONENT_SELECTOR = 'imagine-web-components-wrapper[data-appwrite-studio]
 const STYLE_ATTRIBUTE = 'data-appwrite-studio-style';
 const BLOCK_START_BASE_OFFSET = 48;
 const INLINE_START_BASE_OFFSET = 8;
-const CDN_URL = 'https://esm.sh/@imagine.dev/web-components@0/web-components?bundle=false&deps=react@19.1.0,react-dom@19.1.0';
+const CDN_URL =
+    'https://esm.sh/@imagine.dev/web-components@0/web-components?bundle=false&deps=react@19.1.0,react-dom@19.1.0';
 
 let component: HTMLElement | null = null;
 let webComponentsModule: Record<string, any> | null = null;
@@ -260,45 +261,45 @@ export async function initImagine(region: string, projectId: string) {
         const { initImagineConfig, initImagineRouting } = await getWebComponents();
 
         if (!configInitialized) {
-        initImagineConfig(
-            {
-                AI_SERVICE_ENDPOINT: PUBLIC_AI_SERVICE_BASE_URL,
-                APPWRITE_ENDPOINT: PUBLIC_APPWRITE_ENDPOINT
-            },
-            {
-                initialTheme: get(app).themeInUse
-            }
-        );
-        configInitialized = true;
-    }
-
-    const routeKey = region && projectId ? `project:${region}:${projectId}` : 'home';
-    if (routingInitialized && routeKey === lastRouteKey) {
-        return;
-    }
-
-    initImagineRouting({
-        initialRoute:
-            region && projectId
-                ? {
-                      id: 'project',
-                      props: { region, projectId }
-                  }
-                : {
-                      id: 'home',
-                      props: {}
-                  },
-        onNavigate(route) {
-            if (route.id === 'project') {
-                goto(
-                    resolve('/(console)/project-[region]-[project]/(studio)/studio', {
-                        region: route.props.region,
-                        project: route.props.projectId
-                    })
-                );
-            }
+            initImagineConfig(
+                {
+                    AI_SERVICE_ENDPOINT: PUBLIC_AI_SERVICE_BASE_URL,
+                    APPWRITE_ENDPOINT: PUBLIC_APPWRITE_ENDPOINT
+                },
+                {
+                    initialTheme: get(app).themeInUse
+                }
+            );
+            configInitialized = true;
         }
-    });
+
+        const routeKey = region && projectId ? `project:${region}:${projectId}` : 'home';
+        if (routingInitialized && routeKey === lastRouteKey) {
+            return;
+        }
+
+        initImagineRouting({
+            initialRoute:
+                region && projectId
+                    ? {
+                          id: 'project',
+                          props: { region, projectId }
+                      }
+                    : {
+                          id: 'home',
+                          props: {}
+                      },
+            onNavigate(route) {
+                if (route.id === 'project') {
+                    goto(
+                        resolve('/(console)/project-[region]-[project]/(studio)/studio', {
+                            region: route.props.region,
+                            project: route.props.projectId
+                        })
+                    );
+                }
+            }
+        });
 
         routingInitialized = true;
         lastRouteKey = routeKey;
