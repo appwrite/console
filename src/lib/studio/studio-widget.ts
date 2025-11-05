@@ -11,7 +11,7 @@ const STYLE_ATTRIBUTE = 'data-appwrite-studio-style';
 const BLOCK_START_BASE_OFFSET = 48;
 const INLINE_START_BASE_OFFSET = 8;
 const CDN_URL =
-    'https://esm.sh/@imagine.dev/web-components@0/web-components?bundle=false&deps=react@19.1.0,react-dom@19.1.0';
+    'https://esm.sh/@imagine.dev/web-components@0/web-components?bundle=false&deps=react@19.1.0,react-dom@19.1.0&cache=' + new Date().getTime();
 const DEV_OVERRIDE_WEB_COMPONENTS = env?.PUBLIC_AI_OVERRIDE_WEB_COMPONENTS === 'true';
 
 let component: HTMLElement | null = null;
