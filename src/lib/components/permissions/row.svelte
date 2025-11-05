@@ -177,7 +177,7 @@
                         {:then data}
                             {formatName(
                                 data.name ?? data?.email ?? data?.phone ?? '-',
-                                $isSmallViewport ? 16 : 18
+                                $isSmallViewport ? 16 : 20
                             )}
                         {/await}
                     </Typography.Text>
@@ -300,7 +300,7 @@
                                                 size="xs"
                                                 variant="m-400"
                                                 color="--fgcolor-neutral-secondary">
-                                                Email: {data.email}
+                                                    Email: {formatName(data.email, $isSmallViewport ? 24 : 32)}
                                             </Typography.Text>
                                         {/if}
                                         {#if data.phone}
