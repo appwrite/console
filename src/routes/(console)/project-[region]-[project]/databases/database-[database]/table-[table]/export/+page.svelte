@@ -27,14 +27,14 @@
 
     let showExitModal = $state(false);
     let formComponent: Form;
-    let isSubmitting = $derived(getContext<FormContext>('form')?.isSubmitting);
+    const isSubmitting = $derived(getContext<FormContext>('form')?.isSubmitting);
 
     let selectedBucket = $state<string | null>(null);
     let buckets = $state<Models.BucketList | null>(null);
     let loadingBuckets = $state(false);
 
     let localQueries = $state<Map<TagValue, string>>(new Map());
-    let localTags = $derived(Array.from(localQueries.keys()));
+    const localTags = $derived(Array.from(localQueries.keys()));
 
     const timestamp = toLocalDateTimeISO(Date.now())
         .replace(/[:.]/g, '-')
@@ -63,9 +63,9 @@
         localQueries = new Map(localQueries); // Trigger reactivity
     }
 
-    let visibleColumns = $derived(showAllColumns ? $table.columns : $table.columns.slice(0, 9));
-    let hasMoreColumns = $derived($table.columns.length > 9);
-    let selectedColumnCount = $derived(Object.values(selectedColumns).filter(Boolean).length);
+    const visibleColumns = $derived(showAllColumns ? $table.columns : $table.columns.slice(0, 9));
+    const hasMoreColumns = $derived($table.columns.length > 9);
+    const selectedColumnCount = $derived(Object.values(selectedColumns).filter(Boolean).length);
 
     async function loadBuckets() {
         loadingBuckets = true;
