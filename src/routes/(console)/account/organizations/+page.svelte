@@ -16,7 +16,7 @@
     import { Badge } from '@appwrite.io/pink-svelte';
     import type { Models } from '@appwrite.io/console';
     import type { Organization } from '$lib/stores/organization';
-    import { daysLeftInTrial, plansInfo, tierToPlan } from '$lib/stores/billing';
+    import { daysLeftInTrial, plansInfo, tierToPlan, type Tier } from '$lib/stores/billing';
     import { toLocaleDate } from '$lib/helpers/date';
     import { BillingPlan } from '$lib/constants';
     import { goto } from '$app/navigation';
@@ -34,6 +34,27 @@
     async function getMemberships(teamId: string): Promise<string[]> {
         const memberships = await sdk.forConsole.teams.listMemberships({ teamId });
         return memberships.memberships.map((team) => team.userName || team.userEmail);
+    }
+
+    async function getPlanName(billingPlan: string | undefined): Promise<string> {
+        if (!billingPlan) return 'Unknown';
+
+        // For known plans, use tierToPlan
+        const tierData = tierToPlan(billingPlan as Tier);
+
+        // If it's not a custom plan or we got a non-custom result, return the name
+        if (tierData.name !== 'Custom') {
+            return tierData.name;
+        }
+
+        // For custom plans, fetch from API
+        try {
+            const plan = await sdk.forConsole.billing.getPlan(billingPlan);
+            return plan.name;
+        } catch (error) {
+            // Fallback to 'Custom' if fetch fails
+            return 'Custom';
+        }
     }
 
     function isOrganizationOnTrial(organization: Organization): boolean {
@@ -92,6 +113,9 @@
             {#each data.organizations.teams as organization}
                 {@const avatarList = getMemberships(organization.$id)}
                 {@const payingOrg = isPayingOrganization(organization)}
+                {@const planName = isCloudOrg(organization)
+                    ? getPlanName(organization.billingPlan)
+                    : null}
 
                 <GridItem1 href={`${base}/organization-${organization.$id}`}>
                     <svelte:fragment slot="eyebrow">
@@ -104,17 +128,17 @@
                     <svelte:fragment slot="status">
                         {#if isCloudOrg(organization)}
                             {#if isNonPayingOrganization(organization)}
-                                <Tooltip>
-                                    <Badge
-                                        size="xs"
-                                        variant="secondary"
-                                        content={tierToPlan(organization?.billingPlan, $plansInfo)
-                                            ?.name} />
+                                {#if planName}
+                                    {#await planName then name}
+                                        <Tooltip>
+                                            <Badge size="xs" variant="secondary" content={name} />
 
-                                    <span slot="tooltip">
-                                        You are limited to 1 free organization per account
-                                    </span>
-                                </Tooltip>
+                                            <span slot="tooltip">
+                                                You are limited to 1 free organization per account
+                                            </span>
+                                        </Tooltip>
+                                    {/await}
+                                {/if}
                             {/if}
 
                             {#if isOrganizationOnTrial(organization)}
@@ -133,12 +157,13 @@
                             {/if}
 
                             {#if payingOrg}
-                                <Badge
-                                    size="xs"
-                                    type="success"
-                                    variant="secondary"
-                                    content={tierToPlan(payingOrg?.billingPlan, $plansInfo)
-                                        ?.name} />
+                                {#await getPlanName(payingOrg.billingPlan) then name}
+                                    <Badge
+                                        size="xs"
+                                        type="success"
+                                        variant="secondary"
+                                        content={name} />
+                                {/await}
                             {/if}
                         {/if}
                     </svelte:fragment>
