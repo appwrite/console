@@ -461,7 +461,9 @@
         {/if}
     </div>
 
-    <BottomSheet.Menu bind:isOpen={organisationBottomSheetOpen} menu={organizationsBottomSheet} />
+    {#if resolvedProfile.showOrgInBreadcrumbs}
+        <BottomSheet.Menu bind:isOpen={organisationBottomSheetOpen} menu={organizationsBottomSheet} />
+    {/if}
 
     {#await projectsBottomSheet then menu}
         {#if menu}
