@@ -3,7 +3,7 @@
     import ViewSelector from '$lib/components/viewSelector.svelte';
     import { Button } from '$lib/elements/forms';
     import { goto } from '$app/navigation';
-    import { base } from '$app/paths';
+    import { resolve } from '$app/paths';
     import type { Column, ColumnType } from '$lib/helpers/types';
     import { Container } from '$lib/layout';
     import { preferences } from '$lib/stores/preferences';
@@ -121,6 +121,17 @@
         }
     }
 
+    function getTableExportUrl() {
+        const queryParam = page.url.searchParams.get('query');
+        const url = resolve('/(console)/project-[region]-[project]/databases/database-[database]/table-[table]/export', {
+            region: page.params.region,
+            project: page.params.project,
+            database: page.params.database,
+            table: page.params.table
+        });
+        return queryParam ? `${url}?query=${queryParam}` : url;
+    }
+
     onDestroy(() => ($showCreateColumnSheet.show = false));
 </script>
 
@@ -186,9 +197,7 @@
                                 leadingIcon={IconDownload}
                                 on:click={() => {
                                     trackEvent(Click.DatabaseExportCsv);
-                                    const queryParam = page.url.searchParams.get('query');
-                                    const exportUrl = `${base}/project-${page.params.region}-${page.params.project}/databases/database-${page.params.database}/table-${page.params.table}/export${queryParam ? `?query=${queryParam}` : ''}`;
-                                    goto(exportUrl);
+                                    goto(getTableExportUrl());
                                 }}>
                                 Export CSV
                             </ActionMenu.Item.Button>

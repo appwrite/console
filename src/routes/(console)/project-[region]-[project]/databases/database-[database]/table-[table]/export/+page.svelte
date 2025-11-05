@@ -65,8 +65,12 @@
 
     const tableUrl = $derived.by(() => {
         const queryParam = page.url.searchParams.get('query');
-        const path = `/project-${page.params.region}-${page.params.project}/databases/database-${page.params.database}/table-${page.params.table}`;
-        const url = resolve(path);
+        const url = resolve('/(console)/project-[region]-[project]/databases/database-[database]/table-[table]', {
+            region: page.params.region,
+            project: page.params.project,
+            database: page.params.database,
+            table: page.params.table
+        });
         return queryParam ? `${url}?query=${queryParam}` : url;
     });
 
