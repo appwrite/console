@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { type ComponentProps, type Snippet, createEventDispatcher, onMount } from 'svelte';
+    import { type ComponentProps, type Snippet, onMount } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
     import { AvatarInitials } from '../';
@@ -34,11 +34,10 @@
         role: string;
         placement?: ComponentProps<Popover>['placement'];
         children?: Snippet;
+        onNotFound?: (role: string) => void;
     }
 
-    let { role, placement = 'bottom-start', children }: Props = $props();
-
-    const dispatch = createEventDispatcher<{ notFound: string }>();
+    let { role, placement = 'bottom-start', children, onNotFound }: Props = $props();
 
     type ParsedPermission = {
         type: 'user' | 'team' | 'other';
@@ -117,7 +116,7 @@
         try {
             const data = await getData(role);
             if (data?.notFound) {
-                dispatch('notFound', role);
+                onNotFound?.(role);
             }
         } catch {}
     }
