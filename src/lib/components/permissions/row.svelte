@@ -296,23 +296,21 @@
                                     <Divider />
                                     <Layout.Stack gap="xxs" alignItems="flex-start">
                                         {#if data.email}
-                                            <Typography.Text
-                                                size="xs"
-                                                variant="m-400"
+                                            <Typography.Caption
+                                                variant="400"
                                                 color="--fgcolor-neutral-secondary">
                                                 Email: {formatName(
                                                     data.email,
                                                     $isSmallViewport ? 24 : 32
                                                 )}
-                                            </Typography.Text>
+                                            </Typography.Caption>
                                         {/if}
                                         {#if data.phone}
-                                            <Typography.Text
-                                                size="xs"
-                                                variant="m-400"
+                                            <Typography.Caption
+                                                variant="400"
                                                 color="--fgcolor-neutral-secondary">
                                                 Phone: {data.phone}
-                                            </Typography.Text>
+                                            </Typography.Caption>
                                         {/if}
                                     </Layout.Stack>
                                 {/if}
