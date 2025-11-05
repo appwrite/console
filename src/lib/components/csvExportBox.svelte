@@ -23,6 +23,44 @@
 
     let exportItems = $state<ExportItemsMap>(new Map());
 
+    async function downloadExportedFile(region: string, project: string, bucketId: string, fileName: string) {
+        try {
+            const files = await sdk
+                .forProject(region, project)
+                .storage.listFiles({
+                    bucketId,
+                    queries: [Query.equal('name', fileName)]
+                });
+
+            const file = files.files[0];
+
+            if (file) {
+                const downloadUrl = new URL(
+                    sdk
+                        .forProject(region, project)
+                        .storage.getFileDownload({
+                            bucketId,
+                            fileId: file.$id
+                        })
+                        .toString()
+                );
+                downloadUrl.searchParams.set('mode', 'admin');
+
+                window.open(downloadUrl.toString(), '_blank');
+            } else {
+                addNotification({
+                    type: 'error',
+                    message: `File "${fileName}" not found in bucket`
+                });
+            }
+        } catch (e) {
+            addNotification({
+                type: 'error',
+                message: `Failed to download file: ${e instanceof Error ? e.message : String(e)}`
+            });
+        }
+    }
+
     async function showCompletionNotification(
         table: string,
         bucketId: string,
@@ -65,43 +103,7 @@
                       },
                       {
                           name: 'Download',
-                          method: async () => {
-                              try {
-                                  const files = await sdk
-                                      .forProject(region, project)
-                                      .storage.listFiles({
-                                          bucketId,
-                                          queries: [Query.equal('name', fileName)]
-                                      });
-
-                                  const file = files.files[0];
-
-                                  if (file) {
-                                      const downloadUrl = new URL(
-                                          sdk
-                                              .forProject(region, project)
-                                              .storage.getFileDownload({
-                                                  bucketId,
-                                                  fileId: file.$id
-                                              })
-                                              .toString()
-                                      );
-                                      downloadUrl.searchParams.set('mode', 'admin');
-
-                                      window.open(downloadUrl.toString(), '_blank');
-                                  } else {
-                                      addNotification({
-                                          type: 'error',
-                                          message: `File "${fileName}" not found in bucket`
-                                      });
-                                  }
-                              } catch (e) {
-                                  addNotification({
-                                      type: 'error',
-                                      message: `Failed to download file: ${e.message}`
-                                  });
-                              }
-                          }
+                          method: () => downloadExportedFile(region, project, bucketId, fileName)
                       }
                   ]
                 : undefined
