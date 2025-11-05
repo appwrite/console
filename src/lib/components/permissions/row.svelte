@@ -118,7 +118,9 @@
             if (data?.notFound) {
                 onNotFound?.(role);
             }
-        } catch {}
+        } catch {
+            // Intentionally ignore fetch/parse errors; UI handles missing data state
+        }
     }
 
     onMount(() => {
