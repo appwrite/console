@@ -83,7 +83,7 @@
             open
             badgeType={badgeTypeDeployment(deployment.status)}
             hideDivider>
-            <Logs {deployment} hideTitle hideScrollButtons fullHeight />
+            <Logs {deployment} hideTitle fullHeight />
             <svelte:fragment slot="end">
                 <LogsTimer status={deployment.status} {deployment} />
             </svelte:fragment>
