@@ -20,7 +20,7 @@
     import { IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
     import type { PinkColumn } from '$lib/helpers/types';
     import { Card } from '$lib/components';
-    import TableScroll from '$lib/elements/table/tableScroll.svelte';
+    import { TableScroll } from '$lib/elements/table';
 
     export let withCreate = false;
     export let permissions: string[] = [];
