@@ -65,12 +65,15 @@
 
     const tableUrl = $derived.by(() => {
         const queryParam = page.url.searchParams.get('query');
-        const url = resolve('/(console)/project-[region]-[project]/databases/database-[database]/table-[table]', {
-            region: page.params.region,
-            project: page.params.project,
-            database: page.params.database,
-            table: page.params.table
-        });
+        const url = resolve(
+            '/(console)/project-[region]-[project]/databases/database-[database]/table-[table]',
+            {
+                region: page.params.region,
+                project: page.params.project,
+                database: page.params.database,
+                table: page.params.table
+            }
+        );
         return queryParam ? `${url}?query=${queryParam}` : url;
     });
 
@@ -171,13 +174,7 @@
     });
 </script>
 
-<Wizard
-    title="Export CSV"
-    columnSize="s"
-    href={tableUrl}
-    bind:showExitModal
-    confirmExit
-    column>
+<Wizard title="Export CSV" columnSize="s" href={tableUrl} bind:showExitModal confirmExit column>
     <Form bind:this={formComponent} onSubmit={handleExport}>
         <Layout.Stack gap="xxl">
             <Fieldset legend="Destination">
@@ -282,7 +279,7 @@
                                 gap="xs"
                                 alignItems="center"
                                 style="padding-left: 1.75rem;"
-                                wrap>
+                                wrap="wrap">
                                 <TagList
                                     tags={localTags}
                                     on:remove={(e) => {
@@ -317,13 +314,6 @@
 </Wizard>
 
 <style>
-    .column-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        row-gap: 1.25rem;
-        column-gap: 1rem;
-    }
-
     .disabled-checkbox :global(*) {
         cursor: unset;
     }

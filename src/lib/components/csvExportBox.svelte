@@ -2,7 +2,7 @@
     import { onMount } from 'svelte';
     import { base } from '$app/paths';
     import { page } from '$app/state';
-    import { sdk } from '$lib/stores/sdk';
+    import { realtime, sdk } from '$lib/stores/sdk';
     import { goto } from '$app/navigation';
     import { getProjectId } from '$lib/helpers/project';
     import { addNotification } from '$lib/stores/notifications';
@@ -23,14 +23,17 @@
 
     let exportItems = $state<ExportItemsMap>(new Map());
 
-    async function downloadExportedFile(region: string, project: string, bucketId: string, fileName: string) {
+    async function downloadExportedFile(
+        region: string,
+        project: string,
+        bucketId: string,
+        fileName: string
+    ) {
         try {
-            const files = await sdk
-                .forProject(region, project)
-                .storage.listFiles({
-                    bucketId,
-                    queries: [Query.equal('name', fileName)]
-                });
+            const files = await sdk.forProject(region, project).storage.listFiles({
+                bucketId,
+                queries: [Query.equal('name', fileName)]
+            });
 
             const file = files.files[0];
 
@@ -226,13 +229,12 @@
                 migrations.migrations.forEach(updateOrAddItem);
             });
 
-        return sdk
-            .forConsoleIn(page.params.region)
-            .realtime.forConsole(`projects.${getProjectId()}`, (response) => {
-                if (response.events.includes('migrations.*')) {
-                    updateOrAddItem(response.payload as Payload);
-                }
-            });
+        return realtime.forConsole(page.params.region, 'console', (response) => {
+            if (!response.channels.includes(`projects.${getProjectId()}`)) return;
+            if (response.events.includes('migrations.*')) {
+                updateOrAddItem(response.payload as Payload);
+            }
+        });
     });
 
     let isOpen = $state(true);

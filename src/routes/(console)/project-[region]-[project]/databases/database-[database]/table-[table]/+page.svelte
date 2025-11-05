@@ -123,12 +123,15 @@
 
     function getTableExportUrl() {
         const queryParam = page.url.searchParams.get('query');
-        const url = resolve('/(console)/project-[region]-[project]/databases/database-[database]/table-[table]/export', {
-            region: page.params.region,
-            project: page.params.project,
-            database: page.params.database,
-            table: page.params.table
-        });
+        const url = resolve(
+            '/(console)/project-[region]-[project]/databases/database-[database]/table-[table]/export',
+            {
+                region: page.params.region,
+                project: page.params.project,
+                database: page.params.database,
+                table: page.params.table
+            }
+        );
         return queryParam ? `${url}?query=${queryParam}` : url;
     }
 
