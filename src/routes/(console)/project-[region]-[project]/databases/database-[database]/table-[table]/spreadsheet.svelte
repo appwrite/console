@@ -744,9 +744,7 @@
     ) as Models.ColumnRelationship[];
 
     $: emptyCellsCount =
-        $paginatedRows.virtualLength >= emptyCellsLimit
-            ? 0
-            : emptyCellsLimit - $paginatedRows.virtualLength + (!$expandTabs ? 2 : 0);
+        $rows.total >= emptyCellsLimit ? 0 : emptyCellsLimit - $rows.total + (!$expandTabs ? 2 : 0);
 
     $: canShowDatetimePopover = true;
 
@@ -778,7 +776,7 @@
             bind:columns={$tableColumns}
             loading={$spreadsheetLoading}
             emptyCells={emptyCellsCount}
-            rowCount={$paginatedRows.virtualLength}
+            rowCount={$rows.total}
             bottomActionClick={() => (showRowCreateSheet.show = true)}
             on:columnsSwap={(order) => saveColumnsOrder(order.detail)}
             on:columnsResize={(resize) => saveColumnsWidth(resize.detail)}
