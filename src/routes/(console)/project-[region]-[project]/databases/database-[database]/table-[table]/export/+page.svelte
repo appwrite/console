@@ -58,12 +58,6 @@
     let exportWithFilters = $state(false);
     let emailOnComplete = $state(false);
 
-    $effect(() => {
-        if (localTags.length === 0) {
-            exportWithFilters = false;
-        }
-    });
-
     function removeLocalFilter(tag: TagValue) {
         localQueries.delete(tag);
         localQueries = new Map(localQueries); // Trigger reactivity
