@@ -24,6 +24,7 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { toLocalDateTimeISO } from '$lib/helpers/date';
     import { writable } from 'svelte/store';
+    import { isSmallViewport } from '$lib/stores/viewport';
 
     let showExitModal = $state(false);
     let formComponent: Form;
@@ -59,8 +60,9 @@
     let exportWithFilters = $state(false);
     let emailOnComplete = $state(false);
 
-    const visibleColumns = $derived(showAllColumns ? $table.columns : $table.columns.slice(0, 9));
-    const hasMoreColumns = $derived($table.columns.length > 9);
+    const columnLimit = $derived($isSmallViewport ? 6 : 9);
+    const visibleColumns = $derived(showAllColumns ? $table.columns : $table.columns.slice(0, columnLimit));
+    const hasMoreColumns = $derived($table.columns.length > columnLimit);
     const selectedColumnCount = $derived(Object.values(selectedColumns).filter(Boolean).length);
 
     const tableUrl = $derived.by(() => {
@@ -216,13 +218,15 @@
                         <Button compact on:click={deselectAllColumns}>Deselect all</Button>
                     </Layout.Stack>
 
-                    <Layout.Grid columns={3} columnsS={2} gap="l">
+                    <Layout.Grid columns={3} columnsS={1} gap="l">
                         {#each visibleColumns as column (column.key)}
-                            <InputCheckbox
-                                id={`column-${column.key}`}
-                                label={column.key}
-                                bind:checked={selectedColumns[column.key]}
-                                truncate />
+                            <div style="min-width: 0;">
+                                <InputCheckbox
+                                    id={`column-${column.key}`}
+                                    label={column.key}
+                                    bind:checked={selectedColumns[column.key]}
+                                    truncate />
+                            </div>
                         {/each}
                     </Layout.Grid>
 
