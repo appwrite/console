@@ -61,7 +61,9 @@
     let emailOnComplete = $state(false);
 
     const columnLimit = $derived($isSmallViewport ? 6 : 9);
-    const visibleColumns = $derived(showAllColumns ? $table.columns : $table.columns.slice(0, columnLimit));
+    const visibleColumns = $derived(
+        showAllColumns ? $table.columns : $table.columns.slice(0, columnLimit)
+    );
     const hasMoreColumns = $derived($table.columns.length > columnLimit);
     const selectedColumnCount = $derived(Object.values(selectedColumns).filter(Boolean).length);
 
