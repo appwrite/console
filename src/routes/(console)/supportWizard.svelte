@@ -81,7 +81,7 @@
                 subject: null,
                 category: 'technical',
                 topic: undefined,
-                severity: undefined,
+                severity: 'question',
                 file: null
             };
         };
@@ -265,6 +265,7 @@
                 bind:value={$supportData.message}
                 placeholder="Type here..."
                 label="Tell us a bit more"
+                required
                 maxlength={4096} />
             <Layout.Stack direction="row" justifyContent="flex-end" gap="s">
                 <Button
