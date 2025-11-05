@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { onMount, getContext } from 'svelte';
+    import { onMount } from 'svelte';
     import { resolve } from '$app/paths';
     import { page } from '$app/state';
     import { goto } from '$app/navigation';
@@ -14,7 +14,6 @@
         Skeleton
     } from '@appwrite.io/pink-svelte';
     import { Button, InputText, InputSelect, InputCheckbox, Form } from '$lib/elements/forms';
-    import type { FormContext } from '$lib/elements/forms/form.svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
@@ -24,10 +23,11 @@
     import { TagList } from '$lib/components/filters';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { toLocalDateTimeISO } from '$lib/helpers/date';
+    import { writable } from 'svelte/store';
 
     let showExitModal = $state(false);
     let formComponent: Form;
-    const isSubmitting = $derived(getContext<FormContext>('form')?.isSubmitting);
+    let isSubmitting = writable(false);
 
     let selectedBucket = $state<string | null>(null);
     let buckets = $state<Models.BucketList | null>(null);
@@ -175,7 +175,7 @@
 </script>
 
 <Wizard title="Export CSV" columnSize="s" href={tableUrl} bind:showExitModal confirmExit column>
-    <Form bind:this={formComponent} onSubmit={handleExport}>
+    <Form bind:this={formComponent} bind:isSubmitting onSubmit={handleExport}>
         <Layout.Stack gap="xxl">
             <Fieldset legend="Destination">
                 <Layout.Stack gap="l">
