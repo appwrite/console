@@ -32,7 +32,7 @@
         let lastIndex = 0;
         const matches: Array<{ text: string; index: number; endIndex: number }> = [];
 
-        // Find all bold matches
+        // find all bold matches
         while ((match = regex.exec(tagString)) !== null) {
             matches.push({
                 text: match[1],
