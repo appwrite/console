@@ -87,7 +87,7 @@
                 databaseId,
                 tableId: column.relatedTable,
                 // limit `5` as `25` would look too much on sheet!
-                queries: [Query.select(displayNames), Query.limit(5)]
+                queries: [Query.select(displayNames), Query.limit(10)]
             });
 
         cachedRowsCopyList = rows;
