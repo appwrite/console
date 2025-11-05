@@ -215,14 +215,14 @@
                         <Button compact on:click={deselectAllColumns}>Deselect all</Button>
                     </Layout.Stack>
 
-                    <div class="column-grid">
+                    <Layout.Grid columns={3} gap="l">
                         {#each visibleColumns as column (column.key)}
                             <InputCheckbox
                                 id={`column-${column.key}`}
                                 label={column.key}
                                 bind:checked={selectedColumns[column.key]} />
                         {/each}
-                    </div>
+                    </Layout.Grid>
 
                     {#if hasMoreColumns}
                         <div class="show-more-wrapper">
@@ -273,15 +273,18 @@
                         </div>
 
                         {#if localTags.length > 0}
-                            <ul
-                                class="u-flex u-flex-wrap u-cross-center u-gap-8 tags"
-                                style="padding-left: 1.75rem;">
+                            <Layout.Stack
+                                direction="row"
+                                gap="xs"
+                                alignItems="center"
+                                style="padding-left: 1.75rem;"
+                                wrap>
                                 <TagList
                                     tags={localTags}
                                     on:remove={(e) => {
                                         removeLocalFilter(e.detail);
                                     }} />
-                            </ul>
+                            </Layout.Stack>
                         {/if}
                     </Layout.Stack>
 
