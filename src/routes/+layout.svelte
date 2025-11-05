@@ -123,23 +123,27 @@
     $: {
         if (browser) {
             const isCloudClass = isCloud ? 'is-cloud' : '';
+            const isStudioClass = PUBLIC_CONSOLE_PROFILE === 'studio' ? 'is-studio' : '';
 
             if ($app.theme === 'auto') {
                 const darkThemeMq = window.matchMedia('(prefers-color-scheme: dark)');
                 if (darkThemeMq.matches) {
-                    document.body.setAttribute('class', `theme-dark ${isCloudClass} no-transition`);
+                    document.body.setAttribute(
+                        'class',
+                        `theme-dark ${isCloudClass} ${isStudioClass} no-transition`
+                    );
                     $app.themeInUse = 'dark';
                 } else {
                     document.body.setAttribute(
                         'class',
-                        `theme-light ${isCloudClass} no-transition`
+                        `theme-light ${isCloudClass} ${isStudioClass} no-transition`
                     );
                     $app.themeInUse = 'light';
                 }
             } else {
                 document.body.setAttribute(
                     'class',
-                    `theme-${$app.theme} ${isCloudClass} no-transition`
+                    `theme-${$app.theme} ${isCloudClass} ${isStudioClass} no-transition`
                 );
                 $app.themeInUse = $app.theme;
             }
@@ -312,6 +316,13 @@
     input[type='checkbox'][class='switch'] {
         .theme-dark &:not(:checked):not(:disabled) {
             background-color: var(--color-mid-neutral-70, #56565c);
+        }
+    }
+
+    /* Studio profile: Override danger button text color to white */
+    .is-studio {
+        button.danger {
+            --button-color: var(--neutral-0);
         }
     }
 </style>
