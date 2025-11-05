@@ -139,7 +139,7 @@
             {#each [...$groups] as [role, permission] (role)}
                 <Table.Row.Base {root}>
                     <Table.Cell column="role" {root}>
-                        <Row {role} />
+                        <Row {role} on:notFound={() => deleteRole(role)} />
                     </Table.Cell>
                     <Table.Cell column="create" {root}>
                         <Selector.Checkbox

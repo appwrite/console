@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { type ComponentProps, type Snippet } from 'svelte';
+    import { type ComponentProps, type Snippet, createEventDispatcher, onMount } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
     import { AvatarInitials } from '../';
@@ -37,6 +37,8 @@
     }
 
     let { role, placement = 'bottom-start', children }: Props = $props();
+
+    const dispatch = createEventDispatcher<{ notFound: string }>();
 
     type ParsedPermission = {
         type: 'user' | 'team' | 'other';
@@ -110,6 +112,19 @@
         permissionDataCache.set(permission, fetchPromise);
         return fetchPromise;
     }
+
+    async function verifyExistence() {
+        try {
+            const data = await getData(role);
+            if (data?.notFound) {
+                dispatch('notFound', role);
+            }
+        } catch {}
+    }
+
+    onMount(() => {
+        verifyExistence();
+    });
 
     let isMouseOverTooltip = $state(false);
     function hidePopover(hideTooltip: () => void, timeout = true) {
