@@ -300,7 +300,10 @@
                                                 size="xs"
                                                 variant="m-400"
                                                 color="--fgcolor-neutral-secondary">
-                                                    Email: {formatName(data.email, $isSmallViewport ? 24 : 32)}
+                                                Email: {formatName(
+                                                    data.email,
+                                                    $isSmallViewport ? 24 : 32
+                                                )}
                                             </Typography.Text>
                                         {/if}
                                         {#if data.phone}

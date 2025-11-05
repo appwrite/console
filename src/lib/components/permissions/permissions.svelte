@@ -20,6 +20,7 @@
     import { IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
     import type { PinkColumn } from '$lib/helpers/types';
     import { Card } from '$lib/components';
+    import TableScroll from '$lib/elements/table/tableScroll.svelte';
 
     export let withCreate = false;
     export let permissions: string[] = [];
@@ -124,7 +125,7 @@
 </script>
 
 {#if [...$groups]?.length}
-    <div class="table-wrapper">
+    <TableScroll>
         <Table.Root {columns} let:root>
             <svelte:fragment slot="header" let:root>
                 <Table.Header.Cell column="role" {root}>Role</Table.Header.Cell>
@@ -174,7 +175,7 @@
                 </Table.Row.Base>
             {/each}
         </Table.Root>
-    </div>
+    </TableScroll>
 
     <div>
         <Actions
@@ -210,14 +211,3 @@
         </Layout.Stack>
     </Card>
 {/if}
-
-<style lang="scss">
-    .table-wrapper {
-        scrollbar-width: none;
-        -ms-overflow-style: none;
-
-        &::-webkit-scrollbar {
-            display: none;
-        }
-    }
-</style>
