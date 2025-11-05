@@ -15,6 +15,8 @@
     import { DeploymentSource, DeploymentCreatedBy, DeploymentDomains } from '$lib/components/git';
     import { func } from '../store';
     import { capitalize } from '$lib/helpers/string';
+    import { getEffectiveBuildStatus } from '$lib/helpers/buildTimeout';
+    import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
     import { isCloud } from '$lib/system';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import Link from '$lib/elements/link.svelte';
@@ -36,6 +38,9 @@
         footer?: Snippet;
     } = $props();
 
+    let effectiveStatus = $derived(
+        getEffectiveBuildStatus(deployment.status, deployment.$createdAt, $regionalConsoleVariables)
+    );
     let totalSize = $derived(humanFileSize(deployment?.totalSize ?? 0));
 </script>
 
@@ -122,11 +127,11 @@
                 </Layout.Stack>
 
                 <Layout.Stack direction="row" gap="xl">
-                    {#if deployment.status === 'failed'}
+                    {#if effectiveStatus === 'failed'}
                         <Layout.Stack gap="xxs" inline>
                             {@render titleSnippet('Status')}
                             <Typography.Text variant="m-400" color="--fgcolor-neutral-primary">
-                                <Status status={deployment.status} label={deployment.status} />
+                                <Status status={effectiveStatus} label={effectiveStatus} />
                             </Typography.Text>
                         </Layout.Stack>
                     {:else}
