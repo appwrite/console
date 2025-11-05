@@ -216,12 +216,13 @@
                         <Button compact on:click={deselectAllColumns}>Deselect all</Button>
                     </Layout.Stack>
 
-                    <Layout.Grid columns={3} gap="l">
+                    <Layout.Grid columns={3} columnsS={2} gap="l">
                         {#each visibleColumns as column (column.key)}
                             <InputCheckbox
                                 id={`column-${column.key}`}
                                 label={column.key}
-                                bind:checked={selectedColumns[column.key]} />
+                                bind:checked={selectedColumns[column.key]}
+                                truncate />
                         {/each}
                     </Layout.Grid>
 
