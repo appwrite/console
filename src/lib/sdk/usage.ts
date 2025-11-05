@@ -332,4 +332,14 @@ export type UsageProject = {
      * Aggregated statistics of total number of image transformations.
      */
     imageTransformationsTotal: number;
+
+    /**
+     * Array of screenshots generated per period.
+     */
+    screenshotsGenerated: Metric[];
+
+    /**
+     * Aggregated statistics of total number of screenshots generated.
+     */
+    screenshotsGeneratedTotal: number;
 };

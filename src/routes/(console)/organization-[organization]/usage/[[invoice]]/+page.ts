@@ -34,7 +34,9 @@ export const load: PageLoad = async ({ params, parent }) => {
                 databasesReadsTotal: null,
                 databasesWritesTotal: null,
                 imageTransformations: null,
-                imageTransformationsTotal: null
+                imageTransformationsTotal: null,
+                screenshotsGenerated: null,
+                screenshotsGeneratedTotal: null
             }
         };
     }

@@ -150,7 +150,8 @@ export type PlanServices =
     | 'webhooks'
     | 'sites'
     | 'authPhone'
-    | 'imageTransformations';
+    | 'imageTransformations'
+    | 'screenshotsGenerated';
 
 export function getServiceLimit(serviceId: PlanServices, tier: Tier = null, plan?: Plan): number {
     if (!isCloud) return 0;
