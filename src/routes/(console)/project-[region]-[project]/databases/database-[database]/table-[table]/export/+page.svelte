@@ -1,6 +1,6 @@
 <script lang="ts">
     import { onMount, getContext } from 'svelte';
-    import { base } from '$app/paths';
+    import { resolve } from '$app/paths';
     import { page } from '$app/state';
     import { goto } from '$app/navigation';
     import { Wizard } from '$lib/layout';
@@ -53,19 +53,27 @@
         Tab: '\t',
         Pipe: '|'
     };
+
     let delimiter = $state<DelimiterOption>('Comma');
     let includeHeader = $state(true);
     let exportWithFilters = $state(false);
     let emailOnComplete = $state(false);
 
-    function removeLocalFilter(tag: TagValue) {
-        localQueries.delete(tag);
-        localQueries = new Map(localQueries); // Trigger reactivity
-    }
-
     const visibleColumns = $derived(showAllColumns ? $table.columns : $table.columns.slice(0, 9));
     const hasMoreColumns = $derived($table.columns.length > 9);
     const selectedColumnCount = $derived(Object.values(selectedColumns).filter(Boolean).length);
+
+    const tableUrl = $derived.by(() => {
+        const queryParam = page.url.searchParams.get('query');
+        const path = `/project-${page.params.region}-${page.params.project}/databases/database-${page.params.database}/table-${page.params.table}`;
+        const url = resolve(path);
+        return queryParam ? `${url}?query=${queryParam}` : url;
+    });
+
+    function removeLocalFilter(tag: TagValue) {
+        localQueries.delete(tag);
+        localQueries = new Map(localQueries);
+    }
 
     async function loadBuckets() {
         loadingBuckets = true;
@@ -141,8 +149,6 @@
 
             trackEvent(Submit.DatabaseExportCsv);
 
-            const queryParam = page.url.searchParams.get('query');
-            const tableUrl = `${base}/project-${page.params.region}-${page.params.project}/databases/database-${page.params.database}/table-${page.params.table}${queryParam ? `?query=${queryParam}` : ''}`;
             await goto(tableUrl);
         } catch (error) {
             addNotification({
@@ -164,7 +170,7 @@
 <Wizard
     title="Export CSV"
     columnSize="s"
-    href={`${base}/project-${page.params.region}-${page.params.project}/databases/database-${page.params.database}/table-${page.params.table}${page.url.searchParams.get('query') ? `?query=${page.url.searchParams.get('query')}` : ''}`}
+    href={tableUrl}
     bind:showExitModal
     confirmExit
     column>
