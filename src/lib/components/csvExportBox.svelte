@@ -135,8 +135,7 @@
                         tableId
                     });
                 tableName = table.name;
-            } catch (error) {
-                console.error('Failed to fetch table name:', error);
+            } catch {
                 tableName = null;
             }
         }
@@ -147,8 +146,7 @@
                     .forProject(page.params.region, page.params.project)
                     .storage.getBucket({ bucketId });
                 bucketName = bucket.name;
-            } catch (error) {
-                console.error('Failed to fetch bucket name:', error);
+            } catch {
                 bucketName = null;
             }
         }
