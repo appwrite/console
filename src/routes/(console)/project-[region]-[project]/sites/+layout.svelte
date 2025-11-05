@@ -1,5 +1,5 @@
 <svelte:head>
-    <title>Sites - Appwrite</title>
+    <title>Sites - {resolvedProfile.platform}</title>
 </svelte:head>
 
 <slot />

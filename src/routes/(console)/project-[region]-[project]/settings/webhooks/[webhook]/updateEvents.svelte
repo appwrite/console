@@ -13,6 +13,7 @@
     import { webhook } from './store';
     import { Icon, Layout, Link, Table, Typography } from '@appwrite.io/pink-svelte';
     import { IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     const projectId = page.params.project;
     const eventSet: Writable<Set<string>> = writable(new Set());
@@ -114,7 +115,7 @@
 
 <EventModal bind:show={showCreateEvent} on:created={handleEvent}>
     <Typography.Text>
-        Select events in your Appwrite project that will trigger your webhook. <Link.Anchor
+        Select events in your {resolvedProfile.platform} project that will trigger your webhook. <Link.Anchor
             href="https://appwrite.io/docs/advanced/platform/events"
             target="_blank"
             rel="noopener noreferrer"

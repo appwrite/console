@@ -10,6 +10,7 @@
     import InputSelect from '$lib/elements/forms/inputSelect.svelte';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     export let value: string;
     export let taxId = '';
@@ -50,10 +51,10 @@
         {#if selectedPaymentMethod?.country?.toLowerCase() === 'in'}
             <Alert.Inline status="warning">
                 <svelte:fragment slot="title">Indian credit or debit card-holders</svelte:fragment>
-                To comply with RBI regulations in India, Appwrite will ask for verification to charge
-                up to $150 USD on your payment method. We will never charge more than the cost of your
-                plan and the resources you use, or your budget cap limit. For higher usage limits, please
-                contact us.
+                To comply with RBI regulations in India, {resolvedProfile.platform} will ask for verification
+                to charge up to $150 USD on your payment method. We will never charge more than the cost
+                of your plan and the resources you use, or your budget cap limit. For higher usage limits,
+                please contact us.
             </Alert.Inline>
         {/if}
         <InputSelect

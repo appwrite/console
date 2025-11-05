@@ -7,10 +7,13 @@ import { resolve } from '$app/paths';
 
 export const load: LayoutLoad = async ({ params }) => {
     if (resolvedProfile.id !== 'console') {
-        redirect(303, resolve('/(console)/project-[region]-[project]/(studio)', {
-            region: params.region,
-            project: params.project
-        }))
+        redirect(
+            303,
+            resolve('/(console)/project-[region]-[project]/(studio)', {
+                region: params.region,
+                project: params.project
+            })
+        );
     }
 
     return {

@@ -10,6 +10,7 @@
     import { addNotification } from '$lib/stores/notifications.js';
     import { Icon, Layout } from '@appwrite.io/pink-svelte';
     import { IconChevronLeft } from '@appwrite.io/pink-icons-svelte';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     export let data;
 
@@ -50,7 +51,7 @@
 </script>
 
 <svelte:head>
-    <title>Verify - Appwrite</title>
+    <title>Verify - {resolvedProfile.platform}</title>
 </svelte:head>
 
 <Unauthenticated align="center">

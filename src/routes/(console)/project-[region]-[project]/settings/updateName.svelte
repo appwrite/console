@@ -12,6 +12,7 @@
     import { project } from '../store';
     import { canWriteProjects } from '$lib/stores/roles';
     import { getProjectEndpoint } from '$lib/helpers/project';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     let name: string = null;
 
@@ -44,7 +45,7 @@
 
 <CardGrid>
     <svelte:fragment slot="title">API credentials</svelte:fragment>
-    Access Appwrite services using this project's API Endpoint and Project ID.
+    Access {resolvedProfile.platform} services using this project's API Endpoint and Project ID.
     <svelte:fragment slot="aside">
         <CopyInput label="Project ID" value={$project.$id} />
         <CopyInput label="API Endpoint" value={getProjectEndpoint()} />

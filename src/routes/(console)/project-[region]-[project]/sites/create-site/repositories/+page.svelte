@@ -10,6 +10,7 @@
     import { installation, repository } from '$lib/stores/vcs.js';
     import type { Models } from '@appwrite.io/console';
     import { Fieldset, Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     let { data } = $props();
 
@@ -60,9 +61,9 @@
                             Missing a repository?
                         </Typography.Text>
                         <Typography.Text variation="m-400">
-                            Make sure Appwrite has access to your GitHub repositories. If you chose
-                            specific repos, you may need to update your permissions to include the
-                            missing one.
+                            Make sure {resolvedProfile.platform} has access to your GitHub repositories.
+                            If you chose specific repos, you may need to update your permissions to include
+                            the missing one.
                         </Typography.Text>
                     </Layout.Stack>
                     <Layout.Stack gap="s" direction="row">

@@ -13,13 +13,14 @@
     import { loadAvailableRegions } from '$routes/(console)/regions';
     import { regions as regionsStore } from '$lib/stores/organization';
     import { user } from '$lib/stores/user';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     let isLoading = false;
     let startAnimation = false;
 
     let projectId = ID.unique();
     let projectRegion = Region.Fra;
-    let projectName = 'Appwrite Project';
+    let projectName = `${resolvedProfile.platform} Project`;
 
     const projectIdForLog = projectId;
 
@@ -76,7 +77,7 @@
 </script>
 
 <svelte:head>
-    <title>Create project - Appwrite</title>
+    <title>Create project - {resolvedProfile.platform}</title>
 </svelte:head>
 <div
     class="page-container u-flex-vertical u-cross-child-center u-cross-center"
@@ -89,13 +90,13 @@
             width="120"
             height="22"
             class="u-only-light"
-            alt="Appwrite Logo" />
+            alt="{resolvedProfile.platform} Logo" />
         <img
             src="{base}/images/appwrite-logo-dark.svg"
             width="120"
             height="22"
             class="u-only-dark"
-            alt="Appwrite Logo" />
+            alt="{resolvedProfile.platform} Logo" />
         <Card.Base variant="primary" padding="l">
             <CreateProject
                 showTitle

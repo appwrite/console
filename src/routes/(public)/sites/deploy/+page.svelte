@@ -28,6 +28,7 @@
     import { filterRegions } from '$lib/helpers/regions';
     import { loadAvailableRegions } from '$routes/(console)/regions';
     import { regions as regionsStore } from '$lib/stores/organization';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     let { data } = $props();
 
@@ -154,7 +155,7 @@
 </script>
 
 <svelte:head>
-    <title>Deploy {data.deploymentData.name} - Appwrite</title>
+    <title>Deploy {data.deploymentData.name} - {resolvedProfile.platform}</title>
 </svelte:head>
 
 <div class="auth-bg">
@@ -449,13 +450,13 @@
                 src="{base}/images/appwrite-logo-dark.svg"
                 width="120"
                 height="22"
-                alt="Appwrite Logo" />
+                alt="{resolvedProfile.platform} Logo" />
         {:else}
             <img
                 src="{base}/images/appwrite-logo-light.svg"
                 width="120"
                 height="22"
-                alt="Appwrite Logo" />
+                alt="{resolvedProfile.platform} Logo" />
         {/if}
     </footer>
 </div>

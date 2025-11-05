@@ -6,6 +6,7 @@
     import { Button } from '$lib/elements/forms';
     import type { Models } from '@appwrite.io/console';
     import { Alert, Code, Layout, Tabs } from '@appwrite.io/pink-svelte';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     export let show = false;
     export let site: Models.Site;
@@ -77,8 +78,8 @@ appwrite sites createDeployment ,
 
 <Modal title="Create CLI deployment" bind:show hideFooter>
     <span slot="description">
-        Deploy your site using the Appwrite CLI by running the following command inside your sites's
-        folder.
+        Deploy your site using the {resolvedProfile.platform} CLI by running the following command inside
+        your sites's folder.
     </span>
 
     <Layout.Stack gap="l">

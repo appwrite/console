@@ -9,6 +9,7 @@
     import GradientBanner from '../gradientBanner.svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
     import { Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     let show = true;
 
@@ -30,7 +31,8 @@
             alignItems="center"
             alignContent="center"
             direction={$isSmallViewport ? 'column' : 'row'}>
-            <Typography.Text>Get $50 Cloud credits for Appwrite Pro.</Typography.Text>
+            <Typography.Text
+                >Get $50 Cloud credits for {resolvedProfile.platform} Pro.</Typography.Text>
 
             <Button
                 secondary

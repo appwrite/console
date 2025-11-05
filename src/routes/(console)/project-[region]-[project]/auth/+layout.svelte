@@ -11,6 +11,7 @@
     import { showCreateUser } from './+page.svelte';
     import { showCreateTeam } from './teams/+page.svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     $: $registerCommands([
         {
@@ -105,7 +106,7 @@
 </script>
 
 <svelte:head>
-    <title>Auth - Appwrite</title>
+    <title>Auth - {resolvedProfile.platform}</title>
 </svelte:head>
 
 <slot />
