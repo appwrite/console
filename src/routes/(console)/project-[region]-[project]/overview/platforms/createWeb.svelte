@@ -11,7 +11,8 @@
         Fieldset,
         InlineCode,
         Card,
-        Tooltip
+        Tooltip,
+        Tag
     } from '@appwrite.io/pink-svelte';
     import { Button, Form, InputText } from '$lib/elements/forms';
     import {
@@ -24,7 +25,8 @@
         IconInfo,
         IconExternalLink,
         IconAngular,
-        IconJs
+        IconJs,
+        IconPlus
     } from '@appwrite.io/pink-icons-svelte';
     import { page } from '$app/state';
     import { onMount } from 'svelte';
@@ -67,6 +69,8 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
 
     let hostname = $state(null);
     let hostnameError = $state(false);
+
+    const suggestedHostnames = ['localhost', '127.0.0.1', '0.0.0.0'];
 
     let frameworks: Array<FrameworkType> = [
         {
@@ -260,6 +264,7 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
                                 label="Hostname"
                                 placeholder="localhost"
                                 autofocus
+                                required
                                 error={hostnameError && 'Please enter a valid hostname'}
                                 bind:value={hostname}>
                                 <Tooltip slot="info">
@@ -270,7 +275,19 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
                                         protocol or port number required.
                                     </span>
                                 </Tooltip>
-                            </InputText></Fieldset>
+                            </InputText>
+                            <Layout.Stack direction="row" gap="s" class="u-margin-block-start-8">
+                                {#each suggestedHostnames as h}
+                                    <Tag
+                                        size="s"
+                                        selected={hostname === h}
+                                        on:click={() => (hostname = h)}>
+                                        <Icon icon={IconPlus} slot="start" size="s" />
+                                        {h}
+                                    </Tag>
+                                {/each}
+                            </Layout.Stack>
+                        </Fieldset>
                         <Layout.Stack direction="row" justifyContent="flex-end">
                             <Button submit disabled={!selectedFramework}>Create platform</Button>
                         </Layout.Stack>
