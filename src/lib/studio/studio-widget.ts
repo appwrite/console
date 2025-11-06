@@ -17,6 +17,7 @@ const CDN_URL =
 const DEV_OVERRIDE_WEB_COMPONENTS = env?.PUBLIC_AI_OVERRIDE_WEB_COMPONENTS === 'true';
 
 let component: HTMLElement | null = null;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let webComponentsModule: Record<string, any> | null = null;
 let configInitialized = false;
 let routingInitialized = false;
@@ -119,6 +120,7 @@ export async function getWebComponents() {
 /**
  * Navigate to a route in the web components
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function navigateToRoute(...args: any[]) {
     try {
         const { navigateToRoute: navigate } = await getWebComponents();
