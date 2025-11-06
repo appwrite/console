@@ -23,6 +23,17 @@ export type Profile = {
     showExtendedAccountsMenu: boolean;
     showGeneralAvailability: boolean;
     showConnectProjectOnToolbar: boolean;
+    services: {
+        'get-started': boolean;
+        overview: boolean;
+        auth: boolean;
+        databases: boolean;
+        functions: boolean;
+        messaging: boolean;
+        storage: boolean;
+        sites: boolean;
+        settings: boolean;
+    };
     showOrgInBreadcrumbs: boolean;
     minimalOrgHeader: boolean;
     getProjectRoute: (params: { region: string; project: string }) => ResolvedPathname;
@@ -44,6 +55,17 @@ export const base: Profile = {
     showExtendedAccountsMenu: false,
     showGeneralAvailability: true,
     showConnectProjectOnToolbar: true,
+    services: {
+        'get-started': true,
+        overview: true,
+        auth: true,
+        databases: true,
+        functions: true,
+        messaging: true,
+        storage: true,
+        sites: true,
+        settings: true
+    },
     showOrgInBreadcrumbs: true,
     minimalOrgHeader: false,
     getProjectRoute({ region, project }) {
@@ -70,6 +92,17 @@ export const studio: Profile = {
     showExtendedAccountsMenu: true,
     showGeneralAvailability: false,
     showConnectProjectOnToolbar: false,
+    services: {
+        'get-started': false,
+        overview: false,
+        auth: true,
+        databases: true,
+        functions: false,
+        messaging: false,
+        storage: true,
+        sites: true,
+        settings: false
+    },
     showOrgInBreadcrumbs: false,
     minimalOrgHeader: true,
     getProjectRoute({ region, project }) {

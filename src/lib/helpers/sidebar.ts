@@ -1,6 +1,7 @@
 import { get } from 'svelte/store';
 import { user } from '$lib/stores/user';
 import { sdk } from '$lib/stores/sdk';
+import { ProfileMode, resolvedProfile } from '$lib/profiles/index.svelte';
 
 const userPreferences = () => get(user)?.prefs;
 
@@ -23,6 +24,8 @@ export function updateSidebarState(state: 'closed' | 'open' | 'icons') {
 }
 
 export function getSidebarState(): 'open' | 'icons' {
+    if (resolvedProfile.id === ProfileMode.STUDIO) return 'icons';
+
     const currentPrefs = userPreferences();
     if (currentPrefs && currentPrefs.sidebarState) {
         if (currentPrefs.sidebarState === 'open' || currentPrefs.sidebarState === 'icons') {
