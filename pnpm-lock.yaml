@@ -160,7 +160,7 @@ importers:
         specifier: ^10.1.8
         version: 10.1.8(eslint@9.37.0(jiti@2.6.1))
       eslint-plugin-svelte:
-        specifier: ^3.12.4
+        specifier: ^3.3.3
         version: 3.12.4(eslint@9.37.0(jiti@2.6.1))(svelte@5.39.11)
       globals:
         specifier: ^16.4.0
@@ -184,7 +184,7 @@ importers:
         specifier: ^5.39.10
         version: 5.39.11
       svelte-check:
-        specifier: ^4.3.2
+        specifier: ^4.1.5
         version: 4.3.3(picomatch@4.0.3)(svelte@5.39.11)(typescript@5.9.3)
       svelte-preprocess:
         specifier: ^6.0.3
@@ -199,7 +199,7 @@ importers:
         specifier: ^2.8.1
         version: 2.8.1
       typescript:
-        specifier: ^5.9.3
+        specifier: ^5.8.2
         version: 5.9.3
       typescript-eslint:
         specifier: ^8.46.0
@@ -4664,7 +4664,7 @@ snapshots:
     dependencies:
       '@sentry/browser': 8.55.0
       '@sentry/core': 8.55.0
-      magic-string: 0.30.7
+      magic-string: 0.30.19
       svelte: 5.39.11
 
   '@sentry/sveltekit@8.55.0(@opentelemetry/api@1.9.0)(@opentelemetry/context-async-hooks@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/core@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/instrumentation@0.57.2(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/semantic-conventions@1.37.0)(@sveltejs/kit@2.46.4(@opentelemetry/api@1.9.0)(@sveltejs/vite-plugin-svelte@5.1.1(svelte@5.39.11)(vite@7.1.9(@types/node@24.7.2)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.93.2)))(svelte@5.39.11)(vite@7.1.9(@types/node@24.7.2)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.93.2)))(svelte@5.39.11)(vite@7.1.9(@types/node@24.7.2)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.93.2))':
