@@ -21,6 +21,7 @@
     import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
     import { Layout, Link, Typography } from '@appwrite.io/pink-svelte';
     import { getRandomTestimonial } from '$lib/data/testimonials';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     export let data;
 
@@ -32,7 +33,7 @@
         $id: 'testimonial-signup',
         template: 'review',
         title: randomTestimonial.headline,
-        description: 'Join thousands of developers building amazing apps with Appwrite',
+        description: `Join thousands of developers building amazing apps with ${resolvedProfile.platform}`,
         reviews: [
             {
                 name: randomTestimonial.name,
@@ -116,7 +117,7 @@
 </script>
 
 <svelte:head>
-    <title>Sign up - Appwrite</title>
+    <title>Sign up - {resolvedProfile.platform}</title>
 </svelte:head>
 
 <Unauthenticated coupon={data?.couponData} campaign={data?.campaign || testimonialCampaign}>

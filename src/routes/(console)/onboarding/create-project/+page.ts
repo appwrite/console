@@ -6,11 +6,27 @@ import { isOrganization, tierToPlan } from '$lib/stores/billing';
 import { ID, Query, type Models } from '@appwrite.io/console';
 import { BillingPlan } from '$lib/constants';
 import { redirect } from '@sveltejs/kit';
-import { base } from '$app/paths';
+import { base, resolve } from '$app/paths';
+import { resolvedProfile } from '$lib/profiles/index.svelte';
 
 // TODO: this needs to be cleaned up!
 export const load: PageLoad = async ({ parent }) => {
     const { account, organizations } = await parent();
+
+    const firstOrganization = organizations?.teams[0]?.$id;
+
+    if (!resolvedProfile.showOnboarding) {
+        if (!organizations?.total) {
+            redirect(303, resolve('/(console)/create-organization'));
+        } else {
+            redirect(
+                303,
+                resolve('/(console)/organization-[organization]', {
+                    organization: firstOrganization
+                })
+            );
+        }
+    }
 
     const accountPrefs = account.prefs;
     const hasCompletedOnboarding = accountPrefs['newOnboardingCompleted'] ?? false;
@@ -19,7 +35,7 @@ export const load: PageLoad = async ({ parent }) => {
     if (hasCompletedOnboarding && !organizations?.total) {
         redirect(303, `${base}/onboarding/create-organization`);
     } else if (hasCompletedOnboarding && organizations?.total) {
-        redirect(303, `${base}/organization-${organizations.teams[0].$id}`);
+        redirect(303, `${base}/organization-${firstOrganization}`);
     }
 
     if (!organizations?.total) {

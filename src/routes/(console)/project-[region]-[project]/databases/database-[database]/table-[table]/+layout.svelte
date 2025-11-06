@@ -66,6 +66,7 @@
 
     import IndexesSuggestions from '../(suggestions)/indexes.svelte';
     import { showIndexesSuggestions, tableColumnSuggestions } from '../(suggestions)';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     let editRow: EditRow;
     let editRelatedRow: EditRelatedRow;
@@ -344,7 +345,7 @@
 </script>
 
 <svelte:head>
-    <title>{$table?.name ?? 'Table'} - Appwrite</title>
+    <title>{$table?.name ?? 'Table'} - {resolvedProfile.platform}</title>
 </svelte:head>
 
 <slot />

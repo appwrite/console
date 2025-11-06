@@ -1,6 +1,7 @@
 <script lang="ts">
     import { base } from '$app/paths';
     import { app } from '$lib/stores/app';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     let { children } = $props();
 </script>
@@ -15,13 +16,13 @@
                 src="{base}/images/appwrite-logo-dark.svg"
                 width="120"
                 height="22"
-                alt="Appwrite Logo" />
+                alt="{resolvedProfile.platform} Logo" />
         {:else}
             <img
                 src="{base}/images/appwrite-logo-light.svg"
                 width="120"
                 height="22"
-                alt="Appwrite Logo" />
+                alt="{resolvedProfile.platform} Logo" />
         {/if}
     </footer>
 </div>

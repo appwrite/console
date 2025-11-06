@@ -21,6 +21,7 @@
     import { isCloud } from '$lib/system';
     import { currentPlan } from '$lib/stores/organization';
     import Domain from '../domain.svelte';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     export let data;
     let showExitModal = false;
@@ -152,7 +153,7 @@
 </script>
 
 <svelte:head>
-    <title>Create site - Appwrite</title>
+    <title>Create site - {resolvedProfile.platform}</title>
 </svelte:head>
 
 <Wizard

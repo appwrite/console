@@ -12,10 +12,12 @@ const BLOCK_START_BASE_OFFSET = 48;
 const INLINE_START_BASE_OFFSET = 8;
 const CACHE_BUSTER = new Date().getTime();
 const CDN_URL =
-    'https://esm.sh/@imagine.dev/web-components@0/web-components?bundle=false&deps=react@19.1.0,react-dom@19.1.0&cache=' + CACHE_BUSTER;
+    'https://esm.sh/@imagine.dev/web-components@0/web-components?bundle=false&deps=react@19.1.0,react-dom@19.1.0&cache=' +
+    CACHE_BUSTER;
 const DEV_OVERRIDE_WEB_COMPONENTS = env?.PUBLIC_AI_OVERRIDE_WEB_COMPONENTS === 'true';
 
 let component: HTMLElement | null = null;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let webComponentsModule: Record<string, any> | null = null;
 let configInitialized = false;
 let routingInitialized = false;
@@ -91,7 +93,8 @@ function injectStyles(node: HTMLElement, attempt = 0) {
             link.rel = 'stylesheet';
             link.href = DEV_OVERRIDE_WEB_COMPONENTS
                 ? DEV_CSS_URL
-                : 'https://esm.sh/@imagine.dev/web-components@0/imagine-web-components.css?cache=' + CACHE_BUSTER;
+                : 'https://esm.sh/@imagine.dev/web-components@0/imagine-web-components.css?cache=' +
+                  CACHE_BUSTER;
             link.setAttribute(STYLE_ATTRIBUTE, 'true');
             shadow.prepend(link);
         })
@@ -117,6 +120,7 @@ export async function getWebComponents() {
 /**
  * Navigate to a route in the web components
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function navigateToRoute(...args: any[]) {
     try {
         const { navigateToRoute: navigate } = await getWebComponents();

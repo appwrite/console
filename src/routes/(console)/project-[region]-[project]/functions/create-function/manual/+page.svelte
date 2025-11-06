@@ -23,6 +23,7 @@
     import { isCloud } from '$lib/system';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { currentPlan } from '$lib/stores/organization';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     export let data;
 
@@ -160,7 +161,7 @@
 </script>
 
 <svelte:head>
-    <title>Create function - Appwrite</title>
+    <title>Create function - {resolvedProfile.platform}</title>
 </svelte:head>
 
 <Wizard

@@ -5,13 +5,15 @@
     import Regenerate from './regenerate.svelte';
     import { webhook } from './store';
     import { Click, trackEvent } from '$lib/actions/analytics';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     let showRegenerate = false;
 </script>
 
 <CardGrid>
     <svelte:fragment slot="title">Signature key</svelte:fragment>
-    Add the Signature Key to the X-Appwrite-Webhook-Signature header to validate your webhooks.
+    Add the Signature Key to the X-{resolvedProfile.platform}-Webhook-Signature header to validate
+    your webhooks.
     <Link.Anchor
         href="https://appwrite.io/docs/advanced/platform/webhooks#verification"
         target="_blank"

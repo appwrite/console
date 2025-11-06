@@ -35,6 +35,7 @@
     } from '@appwrite.io/pink-icons-svelte';
     import { Dependencies } from '$lib/constants';
     import { filterRegions } from '$lib/helpers/regions';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     const onExit = () => {
         formData.reset();
@@ -80,7 +81,9 @@
     }
 
     function getProjectName(): string {
-        return isExisting ? currentSelectedProject.name : newProjName || 'Appwrite project';
+        return isExisting
+            ? currentSelectedProject.name
+            : newProjName || `${resolvedProfile.platform} project`;
     }
 
     async function createNewProject() {
@@ -361,10 +364,11 @@
                         </Typography.Text>
 
                         {#if isFirebase}
-                            Appwrite does not impose charges for importing data, but please note
-                            that Firebase may have its own pricing for this service
+                            {resolvedProfile.platform} does not impose charges for importing data, but
+                            please note that Firebase may have its own pricing for this service
                         {:else}
-                            You won't be charged for Appwrite bandwidth usage for importing data
+                            You won't be charged for {resolvedProfile.platform} bandwidth usage for importing
+                            data
                         {/if}
                     </Layout.Stack>
                 </Layout.Stack>

@@ -38,6 +38,7 @@
     import { getFrameworkIcon } from '$lib/stores/sites';
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
     import { getTemplateSourceUrl } from '$lib/helpers/templateSource';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     export let data;
 
@@ -193,7 +194,7 @@
 </script>
 
 <svelte:head>
-    <title>Create site - Appwrite</title>
+    <title>Create site - {resolvedProfile.platform}</title>
 </svelte:head>
 
 <Wizard

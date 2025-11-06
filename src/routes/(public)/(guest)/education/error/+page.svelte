@@ -2,6 +2,7 @@
     import { page } from '$app/state';
     import { Button } from '$lib/elements/forms';
     import { base } from '$app/paths';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     $: message = page.url.searchParams.get('message');
     $: code = parseInt(page.url.searchParams.get('code'));
@@ -15,7 +16,7 @@
 
     const getErrorExplanation = () => {
         if (code === 403) {
-            return 'You can still sign in and explore Appwrite.';
+            return `You can still sign in and explore ${resolvedProfile.platform}.`;
         } else if (code === 409) {
             return "You've already registered for the education program.";
         }
