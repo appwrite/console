@@ -39,6 +39,7 @@
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { goto } from '$app/navigation';
     import { page } from '$app/state';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     function createKey() {
         trackEvent(Click.KeyCreateClick, {
@@ -472,6 +473,7 @@
                                             </Layout.Stack>
                                         </div></Card.Base>
                                 </Layout.Stack>
+
                                 <Layout.Stack
                                     gap="l"
                                     direction={$isSmallViewport ? 'column' : 'row'}>
@@ -531,6 +533,7 @@
                                             </div></Card.Base>
                                     </div>
                                 </Layout.Stack>
+
                                 <Layout.Stack
                                     gap="l"
                                     direction={$isSmallViewport ? 'column' : 'row'}>
@@ -545,8 +548,8 @@
                                                         size="s">MCP server</Typography.Title>
                                                     <Typography.Text
                                                         color="--fgcolor-neutral-secondary">
-                                                        Deploy the Appwrite MCP server with a single
-                                                        click, or view the <Link.Anchor
+                                                        Deploy the {resolvedProfile.platform} MCP server
+                                                        with a single click, or view the <Link.Anchor
                                                             href="https://appwrite.io/docs"
                                                             target="_blank">docs</Link.Anchor> for instructions.
                                                     </Typography.Text>

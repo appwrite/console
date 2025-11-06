@@ -11,6 +11,7 @@
     import { Form } from '$lib/elements/forms/index.js';
     import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     let isLoading = false;
     let organizationName = 'Personal Projects';
@@ -61,7 +62,7 @@
 </script>
 
 <svelte:head>
-    <title>Create organization - Appwrite</title>
+    <title>Create organization - {resolvedProfile.platform}</title>
 </svelte:head>
 
 <Form onSubmit={createOrganization}>

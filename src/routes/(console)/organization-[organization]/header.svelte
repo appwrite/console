@@ -25,6 +25,7 @@
     import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
     import { IconGithub, IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { Badge, Icon, Layout, Tooltip, Typography } from '@appwrite.io/pink-svelte';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     let areMembersLimited: boolean = $state(false);
 
@@ -88,33 +89,44 @@
     );
 
     const avatars = $derived($members.memberships?.map((m) => m.userName || m.userEmail) ?? []);
+
+    const titleName = $derived(resolvedProfile.minimalOrgHeader ? 'Billing' : organization?.name);
+
+    const blockSize = $derived(resolvedProfile.minimalOrgHeader ? 'unset' : '152px');
+
+    const shouldShowCover = $derived(resolvedProfile.minimalOrgHeader ? true : organization.$id);
 </script>
 
-{#if organization?.$id}
-    <Cover>
+{#if shouldShowCover}
+    <Cover blocksize={blockSize}>
         <svelte:fragment slot="header">
             <span class="u-flex u-cross-center u-gap-8 u-min-width-0">
                 <Typography.Title color="--fgcolor-neutral-primary" size="xl" truncate>
-                    {organization.name}
+                    {titleName}
                 </Typography.Title>
-                {#if isCloud && organization?.billingPlan === BillingPlan.GITHUB_EDUCATION}
-                    <Badge variant="secondary" content="Education">
-                        <Icon icon={IconGithub} size="s" slot="start" />
-                    </Badge>
-                {:else if isCloud && organization?.billingPlan === BillingPlan.FREE}
-                    <Badge variant="secondary" content="Free"></Badge>
-                {/if}
-                {#if isCloud && organization?.billingTrialStartDate && $daysLeftInTrial > 0 && organization.billingPlan !== BillingPlan.FREE && $plansInfo.get(organization.billingPlan)?.trialDays}
-                    <Tooltip>
-                        <Badge variant="secondary" content="Trial" />
-                        <svelte:fragment slot="tooltip">
-                            {`Your trial ends on ${toLocaleDate(
-                                organization.billingStartDate
-                            )}. ${$daysLeftInTrial} days remaining.`}
-                        </svelte:fragment>
-                    </Tooltip>
+
+                {#if !resolvedProfile.minimalOrgHeader}
+                    {#if isCloud && organization?.billingPlan === BillingPlan.GITHUB_EDUCATION}
+                        <Badge variant="secondary" content="Education">
+                            <Icon icon={IconGithub} size="s" slot="start" />
+                        </Badge>
+                    {:else if isCloud && organization?.billingPlan === BillingPlan.FREE}
+                        <Badge variant="secondary" content="Free"></Badge>
+                    {/if}
+
+                    {#if isCloud && organization?.billingTrialStartDate && $daysLeftInTrial > 0 && organization.billingPlan !== BillingPlan.FREE && $plansInfo.get(organization.billingPlan)?.trialDays}
+                        <Tooltip>
+                            <Badge variant="secondary" content="Trial" />
+                            <svelte:fragment slot="tooltip">
+                                {`Your trial ends on ${toLocaleDate(
+                                    organization.billingStartDate
+                                )}. ${$daysLeftInTrial} days remaining.`}
+                            </svelte:fragment>
+                        </Tooltip>
+                    {/if}
                 {/if}
             </span>
+
             <div class="u-margin-inline-start-auto">
                 <Layout.Stack direction="row" alignItems="center" gap="xl">
                     {#if $members.total > 1}
@@ -123,7 +135,7 @@
                         </a>
                     {/if}
 
-                    {#if $isOwner}
+                    {#if $isOwner && !resolvedProfile.minimalOrgHeader}
                         <Tooltip disabled={!areMembersLimited} placement="bottom-end">
                             <div>
                                 <Button
@@ -147,15 +159,18 @@
                 </Layout.Stack>
             </div>
         </svelte:fragment>
-        <Tabs>
-            {#each tabs as tab}
-                <Tab
-                    href={tab.href}
-                    selected={isTabSelected(tab, page.url.pathname, path, tabs)}
-                    event={tab.event}>
-                    {tab.title}
-                </Tab>
-            {/each}
-        </Tabs>
+
+        {#if !resolvedProfile.minimalOrgHeader}
+            <Tabs>
+                {#each tabs as tab}
+                    <Tab
+                        href={tab.href}
+                        selected={isTabSelected(tab, page.url.pathname, path, tabs)}
+                        event={tab.event}>
+                        {tab.title}
+                    </Tab>
+                {/each}
+            </Tabs>
+        {/if}
     </Cover>
 {/if}

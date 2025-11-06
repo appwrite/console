@@ -5,6 +5,7 @@
     import { page } from '$app/state';
     import { Alert, Code, Layout, Tabs } from '@appwrite.io/pink-svelte';
     import { Link } from '$lib/elements';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     export let show = false;
 
@@ -84,8 +85,8 @@ appwrite functions createDeployment ,
 
 <Modal title="Create CLI deployment" bind:show hideFooter>
     <span slot="description">
-        Deploy your function using the Appwrite CLI by running the following command inside your
-        function's folder.
+        Deploy your function using the {resolvedProfile.platform} CLI by running the following command
+        inside your function's folder.
     </span>
 
     <Layout.Stack gap="l">

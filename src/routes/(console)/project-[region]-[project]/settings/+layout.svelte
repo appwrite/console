@@ -5,6 +5,7 @@
     import { registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import { canWriteProjects } from '$lib/stores/roles';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     $: $registerCommands([
         {
@@ -28,7 +29,7 @@
 </script>
 
 <svelte:head>
-    <title>Settings - Appwrite</title>
+    <title>Settings - {resolvedProfile.platform}</title>
 </svelte:head>
 
 <slot />

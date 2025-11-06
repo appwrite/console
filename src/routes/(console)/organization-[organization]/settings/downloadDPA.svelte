@@ -4,6 +4,7 @@
     import { base } from '$app/paths';
     import { sdk } from '$lib/stores/sdk';
     import { Submit, trackEvent } from '$lib/actions/analytics';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     async function downloadPdf() {
         trackEvent(Submit.DownloadDPA);
@@ -26,7 +27,8 @@
             </h6>
             <p class="text u-margin-block-start-8">
                 The DPA is a legal document that describes the roles and responsibilities of
-                Appwrite and the organization when personal data is processed. <a
+                {resolvedProfile.platform} and the organization when personal data is processed.
+                <a
                     class="link"
                     target="_blank"
                     rel="noopener noreferrer"

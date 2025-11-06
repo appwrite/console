@@ -20,6 +20,7 @@
     import { writable } from 'svelte/store';
     import EstimatedTotalBox from '$lib/components/billing/estimatedTotalBox.svelte';
     import { onMount } from 'svelte';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     export let data;
 
@@ -175,7 +176,7 @@
 </script>
 
 <svelte:head>
-    <title>Create organization - Appwrite</title>
+    <title>Create organization - {resolvedProfile.platform}</title>
 </svelte:head>
 
 <Wizard title="Create organization" href={previousPage} bind:showExitModal confirmExit>

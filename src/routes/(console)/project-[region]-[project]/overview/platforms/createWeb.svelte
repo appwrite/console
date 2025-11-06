@@ -46,6 +46,7 @@
     } from './components/index';
     import { extendedHostnameRegex } from '$lib/helpers/string';
     import { project } from '../../store';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     export let key;
 
@@ -256,8 +257,8 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
                                     <Icon icon={IconInfo} size="s" />
                                     <span slot="tooltip">
                                         The hostname that your website will use to interact with the
-                                        Appwrite APIs in production or development environments. No
-                                        protocol or port number required.
+                                        {resolvedProfile.platform} APIs in production or development
+                                        environments. No protocol or port number required.
                                     </span>
                                 </Tooltip>
                             </InputText></Fieldset>

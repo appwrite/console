@@ -26,6 +26,7 @@
     import OnboardingPlatformCard from './components/OnboardingPlatformCard.svelte';
     import { PlatformType } from '@appwrite.io/console';
     import { project } from '../../store';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     let showExitModal = false;
     let isPlatformCreated = false;
@@ -94,8 +95,7 @@
         [PlatformType.Flutterweb]: {
             name: 'My Web app',
             hostname: 'localhost',
-            tooltip:
-                'The hostname that your website will use to interact with the Appwrite APIs in production or development environments. No protocol or port number required.'
+            tooltip: `The hostname that your website will use to interact with the ${resolvedProfile.platform} APIs in production or development environments. No protocol or port number required.`
         }
     };
 

@@ -58,7 +58,7 @@
             link: 'https://appwrite.io/discord',
             description: 'Get support from our community through Discord'
         },
-        ...(resolvedProfile.showGithubIssueSupport
+        ...(!resolvedProfile.showGithubIssueSupport
             ? []
             : [
                   {
@@ -153,7 +153,7 @@
             {#key $app.themeInUse}
                 <iframe
                     style="color-scheme: none"
-                    title="Appwrite Status"
+                    title="{resolvedProfile.platform} Status"
                     src={`https://status.appwrite.online/badge?theme=${
                         $app.themeInUse === 'dark' ? 'dark' : 'light'
                     }`}

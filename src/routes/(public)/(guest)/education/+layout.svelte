@@ -5,10 +5,11 @@
         ArtworkLightMobile,
         ArtworkLight
     } from '$lib/images/github-education-program';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 </script>
 
 <svelte:head>
-    <title>Sign up - Appwrite Education Program</title>
+    <title>Sign up - {resolvedProfile.platform} Education Program</title>
 </svelte:head>
 <section class="github-education-container">
     <div class="artwork">

@@ -4,6 +4,7 @@
     import { page } from '$app/state';
     import { registerCommands } from '$lib/commandCenter';
     import { project } from '$routes/(console)/project-[region]-[project]/store';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     const topicId = page.params.topic;
 
@@ -48,7 +49,7 @@
 </script>
 
 <svelte:head>
-    <title>Topic - Appwrite</title>
+    <title>Topic - {resolvedProfile.platform}</title>
 </svelte:head>
 
 <slot />

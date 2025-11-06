@@ -24,6 +24,7 @@
     import { Fieldset, Icon, Layout, Tooltip } from '@appwrite.io/pink-svelte';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import EstimatedTotalBox from '$lib/components/billing/estimatedTotalBox.svelte';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     export let data;
 
@@ -265,7 +266,7 @@
 </script>
 
 <svelte:head>
-    <title>Apply credits - Appwrite</title>
+    <title>Apply credits - {resolvedProfile.platform}</title>
 </svelte:head>
 
 <Wizard bind:showExitModal href={previousPage} confirmExit title="Apply credits">

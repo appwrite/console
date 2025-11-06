@@ -13,6 +13,7 @@
     import { resolve } from '$app/paths';
     import { browser } from '$app/environment';
     import { slide } from 'svelte/transition';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     let {
         show = $bindable(false),
@@ -139,8 +140,8 @@
         <Card.Base variant="secondary" padding="s">
             <Layout.Stack gap="xxs">
                 <Typography.Text gap="m">
-                    To continue using Appwrite Cloud, please verify your email address. An email
-                    will be sent to <Typography.Text
+                    To continue using {resolvedProfile.platform} Cloud, please verify your email address.
+                    An email will be sent to <Typography.Text
                         variant="m-600"
                         color="neutral-secondary"
                         style="display: inline;">{email || get(user)?.email}</Typography.Text>
