@@ -183,6 +183,8 @@
         <link rel="preload" as="style" type="text/css" href="{base}/fonts/cloud.css" />
         <link rel="stylesheet" href={`${base}/fonts/cloud.css`} />
     {/if}
+
+    <link rel="stylesheet" href={`${base}/css/profiles/${PUBLIC_CONSOLE_PROFILE}.css`} />
 </svelte:head>
 
 <Root theme={resolveTheme($app.themeInUse)}>
