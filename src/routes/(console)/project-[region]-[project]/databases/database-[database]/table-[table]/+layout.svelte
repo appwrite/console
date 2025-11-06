@@ -20,7 +20,7 @@
 <script lang="ts">
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import { realtime, sdk } from '$lib/stores/sdk';
+    import { type RealtimeResponse, realtime, sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import {
         table,
@@ -36,6 +36,7 @@
         expandTabs,
         databaseRelatedRowSheetOptions,
         rowPermissionSheet,
+        isWaterfallFromFaker,
         type Columns
     } from './store';
     import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
@@ -65,8 +66,6 @@
     import { Submit, trackEvent } from '$lib/actions/analytics';
 
     import IndexesSuggestions from '../(suggestions)/indexes.svelte';
-    import { showIndexesSuggestions, tableColumnSuggestions } from '../(suggestions)';
-    import type { RealtimeResponseEvent } from '@appwrite.io/console';
 
     let editRow: EditRow;
     let editRelatedRow: EditRelatedRow;
@@ -77,41 +76,21 @@
     let selectedOption: Option['name'] = 'String';
     let createMoreColumns = false;
 
-    /**
-     * adding a lot of fake data will trigger the realtime below
-     * and will keep invalidating the `Dependencies.TABLE` making a lot of API noise!
-     */
-    let isWaterfallFromFaker = false;
-
-    let columnCreationHandler: ((response: RealtimeResponseEvent<unknown>) => void) | null = null;
+    let columnCreationHandler: ((response: RealtimeResponse) => void) | null = null;
 
     onMount(() => {
         expandTabs.set(preferences.getKey('tableHeaderExpanded', true));
 
-        return realtime
-            .forProject(page.params.region, page.params.project)
-            .subscribe(['project', 'console'], (response) => {
-                if (
-                    response.events.includes('databases.*.tables.*.columns.*') ||
-                    response.events.includes('databases.*.tables.*.indexes.*')
-                ) {
-                    if (isWaterfallFromFaker) {
-                        columnCreationHandler?.(response);
-                    }
-
-                    // don't invalidate when -
-                    // 1. from faker
-                    // 2. ai columns creation
-                    // 3. ai indexes creation
-                    if (
-                        !isWaterfallFromFaker &&
-                        !$showIndexesSuggestions &&
-                        !$tableColumnSuggestions.table
-                    ) {
-                        invalidate(Dependencies.TABLE);
-                    }
+        return realtime.forProject(page.params.region, ['project', 'console'], (response) => {
+            if (
+                response.events.includes('databases.*.tables.*.columns.*') ||
+                response.events.includes('databases.*.tables.*.indexes.*')
+            ) {
+                if ($isWaterfallFromFaker) {
+                    columnCreationHandler?.(response);
                 }
-            });
+            }
+        });
     });
 
     // TODO: use route ids instead of pathname
@@ -268,7 +247,7 @@
         const availableColumns = new Set<string>();
         const waitPromise = new Promise<void>((resolve) => (resolvePromise = resolve));
 
-        columnCreationHandler = (response) => {
+        columnCreationHandler = (response: RealtimeResponse) => {
             const { events, payload } = response;
 
             if (
@@ -311,7 +290,7 @@
     }
 
     async function createFakeData() {
-        isWaterfallFromFaker = true;
+        isWaterfallFromFaker.set(true);
 
         $spreadsheetLoading = true;
         $randomDataModalState.show = false;
@@ -389,10 +368,8 @@
             $randomDataModalState.value = 25;
         }
 
-        /* api is too fast! */
-        // await sleep(1250);
         $spreadsheetLoading = false;
-        isWaterfallFromFaker = false;
+        isWaterfallFromFaker.set(false);
 
         spreadsheetRenderKey.set(hash(rowIds));
     }
@@ -400,6 +377,8 @@
     $: if (!$showCreateColumnSheet.show) {
         createMoreColumns = false;
     }
+
+    $: currentRowId = $databaseRowSheetOptions.row?.$id ?? $databaseRowSheetOptions.rowId;
 </script>
 
 <svelte:head>
@@ -456,7 +435,6 @@
 </SideSheet>
 
 <SideSheet
-    closeOnBlur
     title={$databaseRowSheetOptions.title}
     bind:show={$databaseRowSheetOptions.show}
     submit={{
@@ -467,13 +445,15 @@
     topAction={{
         mode: 'copy-tag',
         text: 'Row URL',
-        show: !!($databaseRowSheetOptions.rowId ?? $databaseRowSheetOptions.row?.$id),
-        value: buildRowUrl($databaseRowSheetOptions.rowId ?? $databaseRowSheetOptions.row?.$id)
+        show: !!currentRowId,
+        value: buildRowUrl(currentRowId)
     }}>
-    <EditRow
-        bind:this={editRow}
-        bind:row={$databaseRowSheetOptions.row}
-        bind:rowId={$databaseRowSheetOptions.rowId} />
+    {#key currentRowId}
+        <EditRow
+            bind:this={editRow}
+            bind:row={$databaseRowSheetOptions.row}
+            bind:rowId={$databaseRowSheetOptions.rowId} />
+    {/key}
 </SideSheet>
 
 <SideSheet

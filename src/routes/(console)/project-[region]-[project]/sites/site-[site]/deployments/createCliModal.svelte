@@ -37,7 +37,7 @@
 
         return {
             Unix: {
-                code: `appwrite client --projectId="${projectId}" && \\
+                code: `appwrite client --project-id="${projectId}" && \\
 appwrite sites create-deployment \\
     --site-id="${siteId}" \\
     --code="${codePath}" \\
@@ -49,9 +49,9 @@ appwrite sites create-deployment \\
             },
 
             CMD: {
-                code: `appwrite client --projectId="${projectId}" && ^
-appwrite sites createDeployment ^
-    --siteId=${siteId} ^
+                code: `appwrite client --project-id="${projectId}" && ^
+appwrite sites create-deployment ^
+    --site-id=${siteId} ^
     --code="${codePath}" ^
     --activate ^
     --build-command="${buildCommand}" ^
@@ -61,9 +61,9 @@ appwrite sites createDeployment ^
             },
 
             PowerShell: {
-                code: `appwrite client --projectId="${projectId}" ;
-appwrite sites createDeployment ,
-    --siteId=${siteId} ,
+                code: `appwrite client --project-id="${projectId}" ;
+appwrite sites create-deployment ,
+    --site-id=${siteId} ,
     --code="${codePath}" ,
     --activate ,
     --build-command="${buildCommand}" ,

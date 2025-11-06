@@ -240,7 +240,6 @@
                 label="Choose a project"
                 options={projectOptions ?? []}
                 bind:value={$supportData.project}
-                required={false}
                 placeholder="Select project" />
             <InputSelect
                 id="severity"

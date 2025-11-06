@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { type ComponentProps, type Snippet } from 'svelte';
+    import { type ComponentProps, type Snippet, onMount } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
     import { AvatarInitials } from '../';
@@ -34,9 +34,10 @@
         role: string;
         placement?: ComponentProps<Popover>['placement'];
         children?: Snippet;
+        onNotFound?: (role: string) => void;
     }
 
-    let { role, placement = 'bottom-start', children }: Props = $props();
+    let { role, placement = 'bottom-start', children, onNotFound }: Props = $props();
 
     type ParsedPermission = {
         type: 'user' | 'team' | 'other';
@@ -111,6 +112,21 @@
         return fetchPromise;
     }
 
+    async function verifyExistence() {
+        try {
+            const data = await getData(role);
+            if (data?.notFound) {
+                onNotFound?.(role);
+            }
+        } catch {
+            // Intentionally ignore fetch/parse errors; UI handles missing data state
+        }
+    }
+
+    onMount(() => {
+        verifyExistence();
+    });
+
     let isMouseOverTooltip = $state(false);
     function hidePopover(hideTooltip: () => void, timeout = true) {
         if (!timeout) {
@@ -140,6 +156,9 @@
 {:else}
     <Popover let:show let:hide {placement} portal>
         <button
+            type="button"
+            onclick={(e) => e.stopPropagation()}
+            onkeydown={(e) => e.stopPropagation()}
             onmouseenter={() => {
                 if (!$menuOpen) {
                     setTimeout(show, 150);
@@ -159,7 +178,7 @@
                         {:then data}
                             {formatName(
                                 data.name ?? data?.email ?? data?.phone ?? '-',
-                                $isSmallViewport ? 5 : 7
+                                $isSmallViewport ? 16 : 20
                             )}
                         {/await}
                     </Typography.Text>
@@ -200,7 +219,7 @@
                                     <Layout.Stack alignItems="flex-start" gap="xxs">
                                         <Layout.Stack style="padding-left: 0.25rem;">
                                             <Typography.Text
-                                                size="s"
+                                                size="m"
                                                 color="--fgcolor-neutral-primary">
                                                 {data.customName}
                                             </Typography.Text>
@@ -254,14 +273,14 @@
                                                     ? `${base}/project-${page.params.region}-${page.params.project}/auth/user-${id}`
                                                     : `${base}/project-${page.params.region}-${page.params.project}/auth/teams/team-${id}`}>
                                                 <Typography.Text
-                                                    size="s"
+                                                    size="m"
                                                     color="--fgcolor-neutral-primary">
                                                     {formatName(
                                                         data.name ??
                                                             data?.email ??
                                                             data?.phone ??
                                                             '-',
-                                                        $isSmallViewport ? 12 : 20
+                                                        $isSmallViewport ? 18 : 24
                                                     )}
                                                 </Typography.Text>
                                             </Link.Anchor>
@@ -276,20 +295,23 @@
 
                                 {#if isUser && (data.email || data.phone)}
                                     <Divider />
-                                    <Layout.Stack gap="xs" alignItems="flex-start">
+                                    <Layout.Stack gap="xxs" alignItems="flex-start">
                                         {#if data.email}
-                                            <Typography.Text
-                                                size="xs"
+                                            <Typography.Caption
+                                                variant="400"
                                                 color="--fgcolor-neutral-secondary">
-                                                Email: {data.email}
-                                            </Typography.Text>
+                                                Email: {formatName(
+                                                    data.email,
+                                                    $isSmallViewport ? 24 : 32
+                                                )}
+                                            </Typography.Caption>
                                         {/if}
                                         {#if data.phone}
-                                            <Typography.Text
-                                                size="xs"
+                                            <Typography.Caption
+                                                variant="400"
                                                 color="--fgcolor-neutral-secondary">
                                                 Phone: {data.phone}
-                                            </Typography.Text>
+                                            </Typography.Caption>
                                         {/if}
                                     </Layout.Stack>
                                 {/if}
