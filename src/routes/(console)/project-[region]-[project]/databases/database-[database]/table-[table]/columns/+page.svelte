@@ -23,6 +23,7 @@
         type ColumnsWidth,
         indexes,
         isCsvImportInProgress,
+        isWaterfallFromFaker,
         reorderItems,
         showCreateIndexSheet
     } from '../store';
@@ -55,6 +56,9 @@
     import { page } from '$app/state';
     import { debounce } from '$lib/helpers/debounce';
     import type { PageData } from './$types';
+    import { realtime } from '$lib/stores/sdk';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
 
     const {
         data
@@ -140,6 +144,16 @@
     onMount(() => {
         columnsOrder = preferences.getColumnOrder(tableId);
         columnsWidth = preferences.getColumnWidths(tableId + '#columns');
+
+        return realtime.forProject(page.params.region, ['project', 'console'], async (response) => {
+            if (
+                response.events.includes('databases.*.tables.*.columns.*.delete') ||
+                (response.events.includes('databases.*.tables.*.columns.*.update') &&
+                    !$isWaterfallFromFaker)
+            ) {
+                await invalidate(Dependencies.TABLE);
+            }
+        });
     });
 
     function getColumnStatusBadge(status: string): ComponentProps<Badge>['type'] {
