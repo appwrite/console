@@ -36,7 +36,7 @@
     import MobileSupportModal from '$routes/(console)/wizard/support/mobileSupportModal.svelte';
     import MobileFeedbackModal from '$routes/(console)/wizard/feedback/mobileFeedbackModal.svelte';
     import { getSidebarState, isInDatabasesRoute, updateSidebarState } from '$lib/helpers/sidebar';
-    import { isTabletViewport, isSmallViewport } from '$lib/stores/viewport';
+    import { isSmallViewport, isTabletViewport } from '$lib/stores/viewport';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { bannerSpacing } from '$lib/layout/headerAlert.svelte';
 
@@ -91,12 +91,7 @@
         { name: 'Functions', icon: IconLightningBolt, slug: 'functions', category: 'build' },
         { name: 'Messaging', icon: IconChatBubble, slug: 'messaging', category: 'build' },
         { name: 'Storage', icon: IconFolder, slug: 'storage', category: 'build' },
-        {
-            name: 'Sites',
-            icon: IconGlobeAlt,
-            slug: 'sites',
-            category: 'deploy'
-        }
+        { name: 'Sites', icon: IconGlobeAlt, slug: 'sites', category: 'deploy' }
     ];
 
     const projectOptions = allProjectOptions.filter(
@@ -107,16 +102,17 @@
         return page.route.id?.includes(service);
     };
 
+    const studio = $derived(resolvedProfile.id === ProfileMode.STUDIO);
+
     $effect(() => {
-        state =
-            resolvedProfile.id === ProfileMode.STUDIO
+        state = studio
+            ? 'icons'
+            : $isTabletViewport
+              ? 'closed'
+              : // example: manual resize
+                isInDatabasesRoute(page.route)
                 ? 'icons'
-                : $isTabletViewport
-                  ? 'closed'
-                  : // example: manual resize
-                    isInDatabasesRoute(page.route)
-                    ? 'icons'
-                    : getSidebarState();
+                : getSidebarState();
     });
 </script>
 
@@ -224,10 +220,12 @@
                     <div class="only-mobile divider">
                         <Divider />
                     </div>
-                    <div class="products-label-container">
+                    <div class="products-label-container" class:studio>
                         <span class="products-label" class:hidden={state === 'icons'}>Build</span>
-                        <span class="products-label-indicator" class:hidden={state !== 'icons'}
-                        ></span>
+                        <span
+                            class:studio
+                            class="products-label-indicator"
+                            class:hidden={state !== 'icons'}></span>
                     </div>
                     {@const buildProjectOptions = projectOptions.filter(
                         (projectOption) => projectOption.category === 'build'
@@ -255,10 +253,12 @@
                     <div class="only-mobile divider">
                         <Divider />
                     </div>
-                    <div class="products-label-container">
+                    <div class="products-label-container" class:studio>
                         <span class="products-label" class:hidden={state === 'icons'}>Deploy</span>
-                        <span class="products-label-indicator" class:hidden={state !== 'icons'}
-                        ></span>
+                        <span
+                            class:studio
+                            class="products-label-indicator"
+                            class:hidden={state !== 'icons'}></span>
                     </div>
                     {@const deployProjectOptions = projectOptions.filter(
                         (projectOption) => projectOption.category === 'deploy'
@@ -566,9 +566,14 @@
     .products-label-container {
         height: 20px;
         display: flex;
+
         @media (min-width: 1024px) {
             margin-block-end: var(--space-2, 4px);
             margin-block-start: var(--space-9, 24px);
+
+            &.studio {
+                margin-block: var(--space-2, 4px) !important;
+            }
         }
     }
 
@@ -588,9 +593,14 @@
         width: 18px;
         align-self: center;
         margin-inline: 8px;
+
         @media (min-width: 1024px) {
             margin-block-end: var(--space-2, 4px);
             margin-block-start: var(--space-9, 24px);
+
+            &.studio {
+                margin-block: var(--space-2, 4px) !important;
+            }
         }
     }
 
