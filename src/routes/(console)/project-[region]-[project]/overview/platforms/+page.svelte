@@ -7,7 +7,7 @@
     import CreateWeb from './createWeb.svelte';
     import { createPlatform } from './wizard/store';
     import { Click, trackEvent } from '$lib/actions/analytics';
-    import type { PlatformType } from '@appwrite.io/console';
+    import { PlatformType } from '@appwrite.io/console';
 
     export enum Platform {
         Web,
