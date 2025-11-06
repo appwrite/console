@@ -37,6 +37,7 @@
     import type { OrganizationUsage } from '$lib/sdk/billing';
     import type { Models } from '@appwrite.io/console';
     import { toLocaleDate } from '$lib/helpers/date';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     export let data;
 
@@ -318,7 +319,7 @@
 </script>
 
 <svelte:head>
-    <title>Change plan - Appwrite</title>
+    <title>Change plan - {resolvedProfile.platform}</title>
 </svelte:head>
 
 <Wizard title="Change plan" href={previousPage} bind:showExitModal confirmExit>

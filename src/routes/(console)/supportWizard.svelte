@@ -20,6 +20,7 @@
     import { VARS } from '$lib/system';
     import { onDestroy } from 'svelte';
     import { IconCheckCircle, IconXCircle } from '@appwrite.io/pink-icons-svelte';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     let projectOptions: Array<{ value: string; label: string }>;
 
@@ -71,8 +72,7 @@
             });
         } else {
             addNotification({
-                message:
-                    'Your support ticket was submitted successfully. The Appwrite team will get back to you shortly.',
+                message: `Your support ticket was submitted successfully. The ${resolvedProfile.platform} team will get back to you shortly.`,
                 type: 'success'
             });
         }
@@ -159,10 +159,11 @@
     <svelte:fragment slot="aside">
         <Card.Base padding="m">
             <Layout.Stack gap="xl">
-                <Typography.Title size="s">Contact the Appwrite Team</Typography.Title>
+                <Typography.Title size="s"
+                    >Contact the {resolvedProfile.platform} Team</Typography.Title>
                 <Typography.Text
-                    >If you found a bug or have questions, please reach out to the Appwrite team. We
-                    try to respond to all messages within our office hours.</Typography.Text>
+                    >If you found a bug or have questions, please reach out to the {resolvedProfile.platform}
+                    team. We try to respond to all messages within our office hours.</Typography.Text>
                 <Layout.Stack direction="row" gap="s">
                     <Typography.Text>Available:</Typography.Text>
                     <Typography.Text variant="m-500"

@@ -8,6 +8,7 @@
     import GithubLogoDark from '$lib/images/github-logo-dark.svg';
     import GithubLogoLight from '$lib/images/github-logo-light.svg';
     import { base } from '$app/paths';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     function onGithubLogin() {
         localStorage.setItem('githubEducationProgram', 'true');
@@ -21,23 +22,23 @@
 </script>
 
 <svelte:head>
-    <title>Sign up - Appwrite Education Program</title>
+    <title>Sign up - {resolvedProfile.platform} Education Program</title>
 </svelte:head>
 
 <div class="content">
     <div class="logos">
         <img
             src={$app.themeInUse === 'light' ? AppwriteLogoLight : AppwriteLogoDark}
-            alt="Appwrite logo" />
+            alt="{resolvedProfile.platform} logo" />
         <div class="logo-divider"></div>
         <img
             src={$app.themeInUse === 'light' ? GithubLogoLight : GithubLogoDark}
             alt="Github logo" />
     </div>
-    <h1>Join the Appwrite Education Program</h1>
+    <h1>Join the {resolvedProfile.platform} Education Program</h1>
     <p>
-        Enjoy Appwrite Cloud for free throughout your student journey as part of the GitHub Student
-        Developer Pack.
+        Enjoy {resolvedProfile.platform} Cloud for free throughout your student journey as part of the
+        GitHub Student Developer Pack.
     </p>
     <Button fullWidth on:click={onGithubLogin}>
         <span class="icon-github" aria-hidden="true"></span>

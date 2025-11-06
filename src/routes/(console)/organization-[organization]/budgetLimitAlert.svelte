@@ -6,6 +6,7 @@
     import { HeaderAlert } from '$lib/layout';
     import { hideBillingHeaderRoutes, readOnly, showBudgetAlert } from '$lib/stores/billing';
     import { base } from '$app/paths';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     $: redirectUrl = `${base}/organization-${$organization.$id}/billing#update-budget`;
 </script>
@@ -14,7 +15,7 @@
     <HeaderAlert type="error" title="Budget limit reached">
         <svelte:fragment>
             This organization has reached its budget limit and is now blocked. To continue using
-            Appwrite services, update the budget limit.
+            {resolvedProfile.platform} services, update the budget limit.
         </svelte:fragment>
         <svelte:fragment slot="buttons">
             {#if !page.data.currentPlan?.usagePerProject}

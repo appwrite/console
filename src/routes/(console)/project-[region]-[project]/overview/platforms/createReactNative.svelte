@@ -26,6 +26,7 @@
     import OnboardingPlatformCard from './components/OnboardingPlatformCard.svelte';
     import { PlatformType } from '@appwrite.io/console';
     import { project } from '../../store';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     let showExitModal = false;
     let isPlatformCreated = false;
@@ -228,7 +229,7 @@ EXPO_PUBLIC_APPWRITE_ENDPOINT=${sdk.forProject(page.params.region, page.params.p
                     </div>
 
                     <Typography.Text variant="m-500"
-                        >2. Add your Appwrite credentials to <InlineCode
+                        >2. Add your {resolvedProfile.platform} credentials to <InlineCode
                             size="s"
                             code=".env.example" /> then rename it to <InlineCode
                             size="s"

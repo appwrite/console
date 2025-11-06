@@ -26,6 +26,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
     import RetryDomainModal from '$routes/(console)/organization-[organization]/domains/retryDomainModal.svelte';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     export let data;
 
@@ -113,7 +114,7 @@
                         src={$app.themeInUse === 'dark'
                             ? `${base}/images/domains/empty-records-dark.svg`
                             : `${base}/images/domains/empty-records-light.svg`}
-                        title="Get started with Appwrite DNS">
+                        title="Get started with {resolvedProfile.platform} DNS">
                         <span slot="description">
                             Navigate to your domain provider and update the nameservers to <InlineCode
                                 code="ns1.appwrite-dns.com"

@@ -11,6 +11,7 @@
     import { isCloud } from '$lib/system';
     import { base } from '$app/paths';
     import { Alert } from '@appwrite.io/pink-svelte';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     export let show = false;
 
@@ -44,7 +45,7 @@
 
 <Modal title="Create new organization" {error} onSubmit={create} bind:show>
     {#if isCloud}
-        <Alert.Inline status="info" title="Get ready for Appwrite Pro">
+        <Alert.Inline status="info" title="Get ready for {resolvedProfile.platform} Pro">
             We will soon introduce the much-anticipated Pro plan. Your account will continue to have
             access to <b>one free organization</b>. If you manage more than one organization, you
             will need to either upgrade to the Pro plan, transfer your projects to a Pro

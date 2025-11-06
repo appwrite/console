@@ -31,6 +31,7 @@
     } from '@appwrite.io/pink-icons-svelte';
     import { capitalize } from '$lib/helpers/string';
     import { page } from '$app/state';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     const onExit = () => {
         resetImportStores();
@@ -113,7 +114,7 @@
     onDestroy(onExit);
 
     const providers: Record<Provider, string> = {
-        appwrite: 'Appwrite self-hosted',
+        appwrite: `${resolvedProfile.platform} self-hosted`,
         firebase: 'Firebase',
         supabase: 'Supabase',
         nhost: 'NHost'
@@ -240,10 +241,11 @@
                         </Typography.Text>
 
                         {#if isFirebase}
-                            Appwrite does not impose charges for importing data, but please note
-                            that Firebase may have its own pricing for this service
+                            {resolvedProfile.platform} does not impose charges for importing data, but
+                            please note that Firebase may have its own pricing for this service
                         {:else}
-                            You won't be charged for Appwrite bandwidth usage for importing data
+                            You won't be charged for {resolvedProfile.platform} bandwidth usage for importing
+                            data
                         {/if}
                     </Layout.Stack>
                 </Layout.Stack>

@@ -28,6 +28,7 @@
     import { writable, type Writable } from 'svelte/store';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     let period: UsagePeriods = '30d';
     $: path = `${base}/project-${page.params.region}-${page.params.project}/overview`;
@@ -94,7 +95,7 @@
 </script>
 
 <svelte:head>
-    <title>Console - Appwrite</title>
+    <title>Console - {resolvedProfile.platform}</title>
 </svelte:head>
 
 <Container overlapCover>

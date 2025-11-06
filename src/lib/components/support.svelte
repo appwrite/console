@@ -153,7 +153,7 @@
             {#key $app.themeInUse}
                 <iframe
                     style="color-scheme: none"
-                    title="Appwrite Status"
+                    title="{resolvedProfile.platform} Status"
                     src={`https://status.appwrite.online/badge?theme=${
                         $app.themeInUse === 'dark' ? 'dark' : 'light'
                     }`}

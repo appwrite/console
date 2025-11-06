@@ -13,7 +13,7 @@
     const project = {
         region: 'fra',
         $id: 'appwrite',
-        name: 'Appwrite Project'
+        name: `${resolvedProfile.platform} Project`
     } as Models.Project;
 
     const progressCard = { title: 'Get started', percentage: 33 };
@@ -25,7 +25,7 @@
 </script>
 
 <svelte:head>
-    <title>Verify Email - Appwrite</title>
+    <title>Verify Email - {resolvedProfile.platform}</title>
 </svelte:head>
 
 <div class="verify-email-page">

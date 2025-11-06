@@ -39,6 +39,7 @@
                 <Divider vertical />
             </span>
             <Layout.Stack direction="row" gap="xxs" inline>
+                <!-- TODO: hide on studio mode. -->
                 <Button.Anchor
                     icon
                     size="xs"
@@ -46,7 +47,7 @@
                     href="https://github.com/appwrite/appwrite"
                     target="_blank"
                     rel="noreferrer"
-                    aria-label="Appwrite on Github">
+                    aria-label="{resolvedProfile.platform} on Github">
                     <Icon size="s" icon={IconGithub} />
                 </Button.Anchor>
                 <Button.Anchor
@@ -56,7 +57,7 @@
                     href="https://appwrite.io/discord"
                     target="_blank"
                     rel="noreferrer"
-                    aria-label="Appwrite on Discord">
+                    aria-label="{resolvedProfile.platform} on Discord">
                     <Icon size="s" icon={IconDiscord} />
                 </Button.Anchor>
             </Layout.Stack>
@@ -83,7 +84,7 @@
                         size="s"
                         variant="quiet"
                         href="https://github.com/appwrite/appwrite/releases"
-                        aria-label="Appwrite releases on Github"
+                        aria-label="{resolvedProfile.platform} releases on Github"
                         target="_blank"
                         rel="noreferrer"
                         style="white-space: nowrap;">
@@ -148,7 +149,7 @@
                         size="s"
                         variant="quiet"
                         href="https://github.com/appwrite/appwrite/releases"
-                        aria-label="Appwrite releases on Github"
+                        aria-label="{resolvedProfile.platform} releases on Github"
                         target="_blank"
                         rel="noreferrer"
                         style="white-space: nowrap;">

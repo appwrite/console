@@ -13,6 +13,7 @@
     import { Icon, Layout } from '@appwrite.io/pink-svelte';
     import { IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
     import { organization } from '$lib/stores/organization';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     const tableId = page.params.table;
 
@@ -76,8 +77,8 @@
 <Form onSubmit={updateDisplayName}>
     <CardGrid>
         <svelte:fragment slot="title">Display name</svelte:fragment>
-        Select up to 5 string columns to display as row names in the Appwrite console. These help identify
-        rows in places like relationships.
+        Select up to 5 string columns to display as row names in the {resolvedProfile.platform} console.
+        These help identify rows in places like relationships.
 
         <svelte:fragment slot="aside">
             <Layout.Stack gap="s">

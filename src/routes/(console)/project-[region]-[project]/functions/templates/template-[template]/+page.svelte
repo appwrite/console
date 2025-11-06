@@ -24,6 +24,7 @@
     import { page } from '$app/state';
     import { capitalize } from '$lib/helpers/string';
     import { IconExternalLink } from '@appwrite.io/pink-icons-svelte';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     $: buttonDisabled =
         isCloud && isServiceLimited('functions', $organization?.billingPlan, $functionsList?.total);
@@ -41,7 +42,7 @@
                         src={$app.themeInUse === 'dark' ? AppwriteLogoDark : AppwriteLogoLight}
                         width={120}
                         height={22}
-                        alt="Appwrite" />
+                        alt={resolvedProfile.platform} />
                 </Layout.Stack>
             </PinkCard.Base>
         </div>

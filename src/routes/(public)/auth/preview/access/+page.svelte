@@ -24,6 +24,7 @@
     import BGDark from './bg_dark.jpg';
     import BGLight from './bg_light.jpg';
     import { app } from '$lib/stores/app.js';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     export let data;
 
@@ -122,7 +123,7 @@
 {/if}
 
 <svelte:head>
-    <title>Preview access - Appwrite</title>
+    <title>Preview access - {resolvedProfile.platform}</title>
 </svelte:head>
 
 <Modal

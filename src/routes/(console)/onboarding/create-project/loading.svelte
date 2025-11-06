@@ -3,6 +3,7 @@
     import { base } from '$app/paths';
     import { onMount } from 'svelte';
     import { fade } from 'svelte/transition';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     export let startAnimation = false;
 
@@ -13,7 +14,7 @@
         'All 37 OAuth providers are ready',
         'Global CDN is ready',
         'Advanced DDoS protection is ready',
-        'Appwrite network is ready'
+        `${resolvedProfile.platform} network is ready`
     ];
     let currentSentenceIndex = 0;
     let visible = true;
@@ -73,7 +74,7 @@
         </Layout.Stack>
     </div>
     <div class="title-container">
-        <Typography.Title size="l">Welcome to Appwrite</Typography.Title>
+        <Typography.Title size="l">Welcome to {resolvedProfile.platform}</Typography.Title>
     </div>
     <div class="grid" class:remove-shadow={removeShadow}>
         <div class="border-right" style="grid-row: 1 / 6; grid-column-start: 1; "></div>

@@ -19,9 +19,10 @@
 </script>
 
 <script lang="ts">
-    import { createEventDispatcher, onMount } from 'svelte';
     import { Modal } from '.';
     import { Button } from '$lib/elements/forms';
+    import { createEventDispatcher, onMount } from 'svelte';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     const key = new Date('2023-11-07');
     const dispatch = createEventDispatcher();
@@ -92,7 +93,7 @@
 <Modal bind:show={$settings} title="Cookie Preferences">
     <p>
         We use cookies to improve your site experience. The "strictly necessary" cookies are
-        required for Appwrite to function.
+        required for {resolvedProfile.platform} to function.
     </p>
     <div class="u-flex-vertical u-gap-24 u-width-full-line" style:margin-block-end="24px">
         <div class="u-flex u-gap-8">
@@ -100,7 +101,7 @@
             <div>
                 <span class="text u-bold">Strictly necessary cookies</span>
                 <p class="text u-margin-block-start-8">
-                    These are the cookies required for Appwrite to function.
+                    These are the cookies required for {resolvedProfile.platform} to function.
                 </p>
             </div>
         </div>
