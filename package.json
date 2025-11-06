@@ -53,7 +53,7 @@
     "devDependencies": {
         "@eslint/compat": "^1.4.0",
         "@eslint/js": "^9.37.0",
-        "@imagine.dev/web-components": "^0.0.32",
+        "@imagine.dev/web-components": "^0.0.34",
         "@melt-ui/pp": "^0.3.2",
         "@melt-ui/svelte": "^0.86.6",
         "@playwright/test": "^1.56.0",

@@ -7,16 +7,27 @@
     import { onMount } from 'svelte';
     import { ensureStudioComponent, initImagine, getWebComponents } from './studio-widget';
     import { app } from '$lib/stores/app';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
 
     const { region, projectId }: { region: string; projectId: string } = $props();
 
-    onMount(() => {
+    onMount(async () => {
         ensureStudioComponent();
-        initImagine(region, projectId);
+
+        await initImagine(region, projectId);
+
+        const { changeTheme, initImagineCallbacks } = await getWebComponents();
+        if (initImagineCallbacks) {
+            initImagineCallbacks({
+                onProjectNameChange: (name) => {
+                    invalidate(Dependencies.PROJECT);
+                }
+            });
+        }
 
         return app.subscribe(async ($app) => {
             try {
-                const { changeTheme } = await getWebComponents();
                 if (changeTheme) {
                     changeTheme($app.themeInUse);
                 }
