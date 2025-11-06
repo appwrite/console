@@ -19,7 +19,7 @@
     import type { Models } from '@appwrite.io/console';
     import { getSidebarState, isInDatabasesRoute, updateSidebarState } from '$lib/helpers/sidebar';
     import { isTabletViewport } from '$lib/stores/viewport';
-    import { resolvedProfile } from '$lib/profiles/index.svelte';
+    import { ProfileMode, resolvedProfile } from '$lib/profiles/index.svelte';
 
     export let showHeader = true;
     export let showFooter = true;
@@ -106,6 +106,11 @@
      * The sidebar is **always closed** on mobile and tablet devices!
      */
     afterNavigate((navigation) => {
+        if (resolvedProfile.id === ProfileMode.STUDIO) {
+            state = 'icons';
+            return;
+        }
+
         if ($isTabletViewport) {
             state = 'closed';
             return;

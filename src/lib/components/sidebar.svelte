@@ -44,7 +44,7 @@
     import type { Models } from '@appwrite.io/console';
     import { noWidthTransition } from '$lib/stores/sidebar';
     import { base } from '$app/paths';
-    import { resolvedProfile } from '$lib/profiles/index.svelte';
+    import { ProfileMode, resolvedProfile } from '$lib/profiles/index.svelte';
 
     type Props = HTMLAttributes<HTMLElement> & {
         state?: 'closed' | 'open' | 'icons';
@@ -79,7 +79,7 @@
         }
     }
 
-    const projectOptions: Array<{
+    const allProjectOptions: Array<{
         name: string;
         icon: ComponentType;
         slug: string;
@@ -95,22 +95,28 @@
             name: 'Sites',
             icon: IconGlobeAlt,
             slug: 'sites',
-            category: 'deploy',
-            badge: 'Early access'
+            category: 'deploy'
         }
     ];
+
+    const projectOptions = allProjectOptions.filter(
+        (option) => resolvedProfile.services[option.slug as keyof typeof resolvedProfile.services]
+    );
 
     const isSelected = (service: string): boolean => {
         return page.route.id?.includes(service);
     };
 
     $effect(() => {
-        state = $isTabletViewport
-            ? 'closed'
-            : // example: manual resize
-              isInDatabasesRoute(page.route)
-              ? 'icons'
-              : getSidebarState();
+        state =
+            resolvedProfile.id === ProfileMode.STUDIO
+                ? 'icons'
+                : $isTabletViewport
+                  ? 'closed'
+                  : // example: manual resize
+                    isInDatabasesRoute(page.route)
+                    ? 'icons'
+                    : getSidebarState();
     });
 </script>
 
@@ -125,7 +131,7 @@
         {...rest}
         bind:state
         on:resize={(event) => updateSidebarState(event.detail)}
-        resizable>
+        resizable={resolvedProfile.id !== ProfileMode.STUDIO}>
         <div slot="top">
             <div class="only-mobile-tablet top">
                 <div class="icons search-icon">
@@ -174,7 +180,7 @@
             {/if}
             {#if project}
                 <Layout.Stack direction="column" gap="s">
-                    {#if resolvedProfile.id === 'studio'}
+                    {#if resolvedProfile.id === ProfileMode.STUDIO}
                         <Tooltip placement="right" disabled={state !== 'icons'}>
                             <a
                                 data-sveltekit-preload-data="off"
@@ -195,24 +201,26 @@
                             <span slot="tooltip">Studio</span>
                         </Tooltip>
                     {/if}
-                    <Tooltip placement="right" disabled={state !== 'icons'}>
-                        <a
-                            href={`${base}/project-${project.region}-${project.$id}/overview/platforms`}
-                            class="link"
-                            class:active={isSelected('overview')}
-                            onclick={() => {
-                                trackEvent(Click.MenuOverviewClick);
-                                sideBarIsOpen = false;
-                            }}
-                            ><span class="link-icon"
-                                ><Icon icon={IconChartBar} size="s" />
-                            </span><span
-                                class:no-text={state === 'icons'}
-                                class:has-text={state === 'open'}
-                                class="link-text">Overview</span
-                            ></a>
-                        <span slot="tooltip">Overview</span>
-                    </Tooltip>
+                    {#if resolvedProfile.services.overview}
+                        <Tooltip placement="right" disabled={state !== 'icons'}>
+                            <a
+                                href={`${base}/project-${project.region}-${project.$id}/overview/platforms`}
+                                class="link"
+                                class:active={isSelected('overview')}
+                                onclick={() => {
+                                    trackEvent(Click.MenuOverviewClick);
+                                    sideBarIsOpen = false;
+                                }}
+                                ><span class="link-icon"
+                                    ><Icon icon={IconChartBar} size="s" />
+                                </span><span
+                                    class:no-text={state === 'icons'}
+                                    class:has-text={state === 'open'}
+                                    class="link-text">Overview</span
+                                ></a>
+                            <span slot="tooltip">Overview</span>
+                        </Tooltip>
+                    {/if}
                     <div class="only-mobile divider">
                         <Divider />
                     </div>
@@ -284,7 +292,7 @@
                             <span slot="tooltip">{projectOption.name}</span>
                         </Tooltip>
                     {/each}
-                    {#if project && $isSmallViewport}
+                    {#if project && $isSmallViewport && resolvedProfile.services.settings}
                         <div class="mobile-tablet-settings">
                             <Tooltip placement="right" disabled={state !== 'icons'}>
                                 <a
@@ -344,7 +352,7 @@
             {/if}
         </div>
         <div slot="bottom" class="bottom" class:icons={state === 'icons'}>
-            {#if project}
+            {#if project && resolvedProfile.services.settings}
                 <div class="only-desktop">
                     <Tooltip placement="right" disabled={state !== 'icons'}>
                         <a

@@ -24,6 +24,7 @@ export type Profile = {
     showGeneralAvailability: boolean;
     showConnectProjectOnToolbar: boolean;
     services: {
+        'get-started': boolean;
         overview: boolean;
         auth: boolean;
         databases: boolean;
@@ -53,6 +54,7 @@ export const base: Profile = {
     showGeneralAvailability: true,
     showConnectProjectOnToolbar: true,
     services: {
+        'get-started': true,
         overview: true,
         auth: true,
         databases: true,
@@ -87,13 +89,14 @@ export const studio: Profile = {
     showGeneralAvailability: false,
     showConnectProjectOnToolbar: false,
     services: {
+        'get-started': false,
         overview: false,
         auth: true,
         databases: true,
         functions: false,
         messaging: false,
         storage: true,
-        sites: false,
+        sites: true,
         settings: false
     },
     getProjectRoute({ region, project }) {
