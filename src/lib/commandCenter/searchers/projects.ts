@@ -1,6 +1,6 @@
 import { goto } from '$app/navigation';
 import { organization } from '$lib/stores/organization';
-import { sdk, getApiEndpoint } from '$lib/stores/sdk';
+import { sdk } from '$lib/stores/sdk';
 import { Query } from '@appwrite.io/console';
 import { get } from 'svelte/store';
 import type { Searcher } from '../commands';
@@ -9,18 +9,17 @@ import { base } from '$app/paths';
 
 export const projectsSearcher = (async (query: string) => {
     const q = query.toLowerCase().trim();
-    const wantsCredentials =
-        q.includes('endpoint') ||
-        q.includes('api key') ||
-        q.includes('api-key') ||
-        q.includes('apikey') ||
-        q.includes('project id') ||
-        q.includes('project-id') ||
-        q === 'id' ||
-        q.endsWith(' id') ||
-        q.startsWith('end') ||
-        q.includes('api end') ||
-        (q.includes('api') && q.includes('end'));
+    const keywords = [
+        'endpoint',
+        'api key',
+        'api-key',
+        'apikey',
+        'project id',
+        'project-id',
+        'api end'
+    ];
+
+    const wantsCredentials = keywords.some((k) => q.includes(k));
 
     if (wantsCredentials) {
         const curr = get(project);
@@ -44,8 +43,7 @@ export const projectsSearcher = (async (query: string) => {
 
     return projects
         .filter((project) => {
-            const endpoint = getApiEndpoint(project.region);
-            const searchable = [project.name, project.$id, project.region, endpoint]
+            const searchable = [project.name, project.$id, project.region]
                 .filter(Boolean)
                 .join(' ')
                 .toLowerCase();
@@ -53,19 +51,17 @@ export const projectsSearcher = (async (query: string) => {
             const words = q.split(/\s+/).filter(Boolean);
             return words.every((w) => searchable.includes(w));
         })
-        .flatMap((project) => {
+        .map((project) => {
             const href = `${base}/project-${project.region}-${project.$id}`;
 
             const label = project.name;
 
-            return [
-                {
-                    label,
-                    callback: () => {
-                        goto(href);
-                    },
-                    group: 'projects'
-                }
-            ];
+            return {
+                label,
+                callback: () => {
+                    goto(href);
+                },
+                group: 'projects'
+            };
         });
 }) satisfies Searcher;
