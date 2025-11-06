@@ -104,9 +104,12 @@
     };
 
     $: rows = writable(data.rows);
-    $: if (rows) {
+    $: if ($rows) {
         paginatedRows.clear();
         paginatedRows.setPage(1, $rows.rows);
+
+        /* reset ui when the underlying data changes */
+        spreadsheetRenderKey.set(hash(Date.now().toString()));
     }
 
     const tableId = page.params.table;
