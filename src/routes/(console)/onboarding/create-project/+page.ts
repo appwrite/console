@@ -15,7 +15,6 @@ export const load: PageLoad = async ({ parent }) => {
 
     const firstOrganization = organizations?.teams[0]?.$id;
 
-    // short-circuit
     if (!resolvedProfile.showOnboarding) {
         if (!organizations?.total) {
             redirect(303, resolve('/(console)/create-organization'));
