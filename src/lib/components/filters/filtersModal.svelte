@@ -57,7 +57,11 @@
     }
 
     function addCondition() {
-        const newTag = generateTag(selectedColumn, operatorKey, value || arrayValues);
+        const preparedValue =
+            column?.type === 'datetime' && typeof value === 'string' && value
+                ? new Date(value).toISOString()
+                : value;
+        const newTag = generateTag(selectedColumn, operatorKey, preparedValue || arrayValues);
         if (localTags.some((t) => t.tag === newTag.tag && t.value === newTag.value)) {
             return;
         } else {
@@ -66,7 +70,7 @@
                 {
                     id: selectedColumn,
                     operator: operatorKey,
-                    value: value,
+                    value: preparedValue,
                     arrayValues: arrayValues
                 }
             ];
