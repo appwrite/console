@@ -2,7 +2,6 @@ import { base } from '$app/paths';
 import { redirect } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 import { hasOnboardingDismissed } from '$lib/helpers/onboarding';
-import { PUBLIC_CONSOLE_PROFILE } from '$env/static/public';
 import { resolvedProfile } from '$lib/profiles/index.svelte';
 
 export const load: PageLoad = async ({ params, parent }) => {
