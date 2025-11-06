@@ -58,7 +58,7 @@
         "@melt-ui/svelte": "^0.86.6",
         "@playwright/test": "^1.56.0",
         "@sveltejs/adapter-static": "^3.0.10",
-        "@sveltejs/kit": "^2.42.1",
+        "@sveltejs/kit": "^2.46.2",
         "@sveltejs/vite-plugin-svelte": "^5.1.1",
         "@testing-library/dom": "^10.4.1",
         "@testing-library/jest-dom": "^6.9.1",
