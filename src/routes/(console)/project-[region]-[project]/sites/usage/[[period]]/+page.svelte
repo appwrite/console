@@ -12,24 +12,30 @@
     let { data } = $props();
     let total = $derived(data.executionsTotal);
     let count = $derived(data.executions);
-    let gbHoursTotal = $derived((data.buildsMbSecondsTotal + data.executionsMbSecondsTotal) / 1000 / 3600);
-    let gbHoursCount = $derived([...data.buildsMbSeconds, ...data.executionsMbSeconds]
-        ?.map((metric) => ({
-            ...metric,
-            value: metric.value / 1000 / 3600
-        }))
-        .filter(({ value }) => value));
+    let gbHoursTotal = $derived(
+        (data.buildsMbSecondsTotal + data.executionsMbSecondsTotal) / 1000 / 3600
+    );
+    let gbHoursCount = $derived(
+        [...data.buildsMbSeconds, ...data.executionsMbSeconds]
+            ?.map((metric) => ({
+                ...metric,
+                value: metric.value / 1000 / 3600
+            }))
+            .filter(({ value }) => value)
+    );
     let bandwidth = $derived([...data.inbound, ...data.outbound]);
 
-    const path = $derived(resolve('/(console)/project-[region]-[project]/sites/usage', {
-        region: page.params.region,
-        project: page.params.project
-    }));
+    const path = $derived(
+        resolve('/(console)/project-[region]-[project]/sites/usage', {
+            region: page.params.region,
+            project: page.params.project
+        })
+    );
 </script>
 
 <Container>
     <Usage
-        path={path}
+        {path}
         countMetadata={{
             legend: 'Executions',
             title: 'executions'
@@ -39,7 +45,7 @@
 
     <Usage
         hidePeriodSelect
-        path={path}
+        {path}
         countMetadata={{
             legend: 'GB hours',
             title: 'GB hours'
@@ -64,9 +70,7 @@
                         axisLabel: {
                             formatter: (value) =>
                                 value
-                                    ? `${humanFileSize(+value).value} ${
-                                        humanFileSize(+value).unit
-                                    }`
+                                    ? `${humanFileSize(+value).value} ${humanFileSize(+value).unit}`
                                     : '0'
                         }
                     }
