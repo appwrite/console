@@ -9,17 +9,17 @@
     import Card from '$lib/components/card.svelte';
     import { Icon, Layout, Typography } from '@appwrite.io/pink-svelte';
 
-    export let data;
-    $: total = data.executionsTotal;
-    $: count = data.executions;
-    $: gbHoursTotal = (data.buildsMbSecondsTotal + data.executionsMbSecondsTotal) / 1000 / 3600;
-    $: gbHoursCount = [...data.buildsMbSeconds, ...data.executionsMbSeconds]
+    let { data } = $props();
+    let total = $derived(data.executionsTotal);
+    let count = $derived(data.executions);
+    let gbHoursTotal = $derived((data.buildsMbSecondsTotal + data.executionsMbSecondsTotal) / 1000 / 3600);
+    let gbHoursCount = $derived([...data.buildsMbSeconds, ...data.executionsMbSeconds]
         ?.map((metric) => ({
             ...metric,
             value: metric.value / 1000 / 3600
         }))
-        .filter(({ value }) => value);
-    $: bandwidth = [...data.inbound, ...data.outbound];
+        .filter(({ value }) => value));
+    let bandwidth = $derived([...data.inbound, ...data.outbound]);
 </script>
 
 <Container>
