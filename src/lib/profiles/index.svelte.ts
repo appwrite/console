@@ -23,6 +23,16 @@ export type Profile = {
     showExtendedAccountsMenu: boolean;
     showGeneralAvailability: boolean;
     showConnectProjectOnToolbar: boolean;
+    services: {
+        overview: boolean;
+        auth: boolean;
+        databases: boolean;
+        functions: boolean;
+        messaging: boolean;
+        storage: boolean;
+        sites: boolean;
+        settings: boolean;
+    };
     getProjectRoute: (params: { region: string; project: string }) => ResolvedPathname;
 };
 
@@ -42,6 +52,16 @@ export const base: Profile = {
     showExtendedAccountsMenu: false,
     showGeneralAvailability: true,
     showConnectProjectOnToolbar: true,
+    services: {
+        overview: true,
+        auth: true,
+        databases: true,
+        functions: true,
+        messaging: true,
+        storage: true,
+        sites: true,
+        settings: true
+    },
     getProjectRoute({ region, project }) {
         return resolve(`/(console)/project-[region]-[project]/overview`, {
             region,
@@ -66,6 +86,16 @@ export const studio: Profile = {
     showExtendedAccountsMenu: true,
     showGeneralAvailability: false,
     showConnectProjectOnToolbar: false,
+    services: {
+        overview: false,
+        auth: true,
+        databases: true,
+        functions: false,
+        messaging: false,
+        storage: true,
+        sites: false,
+        settings: false
+    },
     getProjectRoute({ region, project }) {
         return resolve(`/(console)/project-[region]-[project]/(studio)/studio`, {
             region,
