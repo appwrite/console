@@ -112,7 +112,7 @@
 
         if ($spreadsheetRenderKey !== hashedKey) {
             /* reset ui when the underlying data changes */
-            spreadsheetRenderKey.set(hash(data.rows.total.toString()));
+            spreadsheetRenderKey.set(hashedKey);
         }
     }
 
