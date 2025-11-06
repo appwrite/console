@@ -1,5 +1,6 @@
 <script lang="ts">
     import { Card, Layout, Button } from '@appwrite.io/pink-svelte';
+    import { Form } from '$lib/elements/forms';
     import { isCloud } from '$lib/system';
     import { sdk } from '$lib/stores/sdk';
     import { ID, Region } from '@appwrite.io/console';
@@ -97,7 +98,7 @@
             class="u-only-dark"
             alt="Appwrite Logo" />
         <Card.Base variant="primary" padding="l">
-            <form on:submit|preventDefault={createProject}>
+            <Form noStyle onSubmit={createProject}>
                 <CreateProject
                     showTitle
                     bind:projectName
@@ -112,7 +113,7 @@
                         </Layout.Stack>
                     {/snippet}
                 </CreateProject>
-            </form>
+            </Form>
         </Card.Base>
     {/if}
 </div>
