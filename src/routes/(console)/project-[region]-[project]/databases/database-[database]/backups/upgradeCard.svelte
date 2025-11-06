@@ -14,7 +14,7 @@
     import { upgradeURL } from '$lib/stores/billing';
     import { isCloud } from '$lib/system';
     import { Card, Layout, Typography } from '@appwrite.io/pink-svelte';
-    import { resolvedProfile } from '$lib/profiles/index.svelte.ts';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     const title = isCloud
         ? 'Backups are available on paid plans'

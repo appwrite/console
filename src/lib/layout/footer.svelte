@@ -13,7 +13,7 @@
     } from '@appwrite.io/pink-svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
     import { page } from '$app/state';
-    import { resolvedProfile } from '$lib/profiles/index.svelte.ts';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     const currentYear = new Date().getFullYear();
 

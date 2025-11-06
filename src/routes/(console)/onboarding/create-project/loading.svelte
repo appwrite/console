@@ -3,7 +3,7 @@
     import { base } from '$app/paths';
     import { onMount } from 'svelte';
     import { fade } from 'svelte/transition';
-    import { resolvedProfile } from '$lib/profiles/index.svelte.ts';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     export let startAnimation = false;
 

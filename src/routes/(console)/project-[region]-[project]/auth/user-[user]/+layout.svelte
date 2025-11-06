@@ -1,5 +1,5 @@
 <script>
-    import { resolvedProfile } from '$lib/profiles/index.svelte.ts';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 </script>
 
 <svelte:head>
