@@ -65,11 +65,11 @@ export async function gzipUpload(files: FileList) {
                     data: f.buffer
                 }))
             );
-            const blob = new Blob([tar], { type: 'application/gzip' });
-            const file = new File([blob], 'deployment.tar.gz', {
+            const blob = new Blob([new Uint8Array(tar)], { type: 'application/gzip' });
+
+            uploadFile = new File([blob], 'deployment.tar.gz', {
                 type: 'application/gzip'
             });
-            uploadFile = file;
         } catch (e) {
             addNotification({
                 type: 'error',
