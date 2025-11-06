@@ -35,7 +35,8 @@ export default ts.config(
             'svelte/no-reactive-literals': 'off',
             // TODO: @itznotabug, this requires a big refactor!
             'svelte/no-navigation-without-resolve': 'off',
-            'svelte/prefer-svelte-reactivity': 'off'
+            'svelte/prefer-svelte-reactivity': 'off',
+            'svelte/prefer-writable-derived': 'off'
         }
     },
     {
