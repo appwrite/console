@@ -32,7 +32,6 @@
     import {
         IconChevronRight,
         IconCreditCard,
-        IconGlobe,
         IconGlobeAlt,
         IconLogoutRight,
         IconMenuAlt4,

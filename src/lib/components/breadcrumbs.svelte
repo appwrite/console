@@ -271,7 +271,7 @@
 
 {#key derivedKey}
     <div use:melt={$menubar}>
-        {#if !$isSmallViewport}
+        {#if !$isSmallViewport && resolvedProfile.showOrgInBreadcrumbs}
             <span class="breadcrumb-separator">/</span>
             <button
                 type="button"
@@ -288,7 +288,7 @@
                     {/if}</span>
                 <Icon icon={IconChevronDown} size="s" color="--fgcolor-neutral-secondary" />
             </button>
-        {:else}
+        {:else if resolvedProfile.showOrgInBreadcrumbs}
             <button
                 type="button"
                 class="trigger"
@@ -461,7 +461,11 @@
         {/if}
     </div>
 
-    <BottomSheet.Menu bind:isOpen={organisationBottomSheetOpen} menu={organizationsBottomSheet} />
+    {#if resolvedProfile.showOrgInBreadcrumbs}
+        <BottomSheet.Menu
+            bind:isOpen={organisationBottomSheetOpen}
+            menu={organizationsBottomSheet} />
+    {/if}
 
     {#await projectsBottomSheet then menu}
         {#if menu}

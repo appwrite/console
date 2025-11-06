@@ -319,8 +319,11 @@
         organization={data.organization}
         currentPlan={$currentPlan} />
 </Container>
+
 <CreateOrganization bind:show={addOrganization} />
+
 <CreateProject bind:show={showCreate} teamId={page.params.organization} />
+
 <CreateProjectCloud
     projects={data.projects.total}
     bind:showCreateProjectCloud

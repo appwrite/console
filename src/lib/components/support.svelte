@@ -58,7 +58,7 @@
             link: 'https://appwrite.io/discord',
             description: 'Get support from our community through Discord'
         },
-        ...(resolvedProfile.showGithubIssueSupport
+        ...(!resolvedProfile.showGithubIssueSupport
             ? []
             : [
                   {
