@@ -12,24 +12,25 @@
 
     const { region, projectId }: { region: string; projectId: string } = $props();
 
-    onMount(async () => {
+    onMount(() => {
         ensureStudioComponent();
 
-        await initImagine(region, projectId);
-
-        const { changeTheme, initImagineCallbacks } = await getWebComponents();
-        if (initImagineCallbacks) {
-            initImagineCallbacks({
-                onProjectNameChange: (name) => {
-                    invalidate(Dependencies.PROJECT);
-                }
-            });
-        }
+        initImagine(region, projectId);
 
         return app.subscribe(async ($app) => {
+            const { changeTheme, initImagineCallbacks } = await getWebComponents();
+
             try {
                 if (changeTheme) {
                     changeTheme($app.themeInUse);
+                }
+
+                if (initImagineCallbacks) {
+                    initImagineCallbacks({
+                        onProjectNameChange: () => {
+                            invalidate(Dependencies.PROJECT);
+                        }
+                    });
                 }
             } catch (error) {
                 console.error('Failed to change theme:', error);
