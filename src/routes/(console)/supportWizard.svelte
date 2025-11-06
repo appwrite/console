@@ -2,7 +2,7 @@
     import { Wizard } from '$lib/layout';
     import { Icon, Input, Layout, Popover, Tag, Typography, Card } from '@appwrite.io/pink-svelte';
     import { supportData, isSupportOnline } from './wizard/support/store';
-    import { onMount } from 'svelte';
+    import { onMount, onDestroy } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
     import {
         Form,
@@ -74,21 +74,19 @@
     });
 
     // Cleanup on component destroy
-    $effect(() => {
-        return () => {
-            $supportData = {
-                message: null,
-                subject: null,
-                category: 'technical',
-                topic: undefined,
-                severity: 'question',
-                file: null
-            };
+    onDestroy(() => {
+        $supportData = {
+            message: null,
+            subject: null,
+            category: 'technical',
+            topic: undefined,
+            severity: 'question',
+            file: null
         };
     });
 
     // Update topic options when category changes
-    let topicOptions = $derived(
+    const topicOptions = $derived(
         ($supportData.category ? topicsByCategory[$supportData.category] || [] : []).map(
             (topic) => ({
                 value: topic.toLowerCase(),
@@ -163,10 +161,10 @@
         endDay: 'Friday' as WeekDay
     };
 
-    let supportTimings = $derived(
+    const supportTimings = $derived(
         `${utcHourToLocaleHour(workTimings.start)} - ${utcHourToLocaleHour(workTimings.end)} ${localeTimezoneName()}`
     );
-    let supportWeekDays = $derived(
+    const supportWeekDays = $derived(
         `${utcWeekDayToLocaleWeekDay(workTimings.startDay, workTimings.start)} - ${utcWeekDayToLocaleWeekDay(workTimings.endDay, workTimings.end)}`
     );
 </script>
