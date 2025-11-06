@@ -108,12 +108,8 @@
         paginatedRows.clear();
         paginatedRows.setPage(1, $rows.rows);
 
-        const hashedKey = hash($rows.total.toString());
-
-        if ($spreadsheetRenderKey !== hashedKey) {
-            /* reset ui when the underlying data changes */
-            spreadsheetRenderKey.set(hashedKey);
-        }
+        /* reset ui when the underlying data changes */
+        spreadsheetRenderKey.set(hash(Date.now().toString()));
     }
 
     const tableId = page.params.table;
