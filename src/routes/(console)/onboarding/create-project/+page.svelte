@@ -97,24 +97,22 @@
             class="u-only-dark"
             alt="Appwrite Logo" />
         <Card.Base variant="primary" padding="l">
-            <CreateProject
-                showTitle
-                bind:projectName
-                bind:id={projectId}
-                bind:region={projectRegion}
-                regions={$regionsStore?.regions}>
-                {#snippet submit()}
-                    <Layout.Stack direction="row" justifyContent="flex-end">
-                        <Button.Button
-                            on:click={createProject}
-                            type="submit"
-                            variant="primary"
-                            size="s">
-                            Create
-                        </Button.Button>
-                    </Layout.Stack>
-                {/snippet}
-            </CreateProject>
+            <form on:submit|preventDefault={createProject}>
+                <CreateProject
+                    showTitle
+                    bind:projectName
+                    bind:id={projectId}
+                    bind:region={projectRegion}
+                    regions={$regionsStore?.regions}>
+                    {#snippet submit()}
+                        <Layout.Stack direction="row" justifyContent="flex-end">
+                            <Button.Button type="submit" variant="primary" size="s">
+                                Create
+                            </Button.Button>
+                        </Layout.Stack>
+                    {/snippet}
+                </CreateProject>
+            </form>
         </Card.Base>
     {/if}
 </div>
