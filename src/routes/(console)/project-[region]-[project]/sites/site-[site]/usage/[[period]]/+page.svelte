@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { base } from '$app/paths';
+    import { resolve } from '$app/paths';
     import { page } from '$app/state';
     import { BarChart } from '$lib/charts/index.js';
     import { humanFileSize } from '$lib/helpers/sizeConvertion.js';
@@ -20,11 +20,17 @@
         }))
         .filter(({ value }) => value));
     let bandwidth = $derived([...data.inbound, ...data.outbound]);
+
+    const path = $derived(resolve('/(console)/project-[region]-[project]/sites/site-[site]/usage', {
+        region: page.params.region,
+        project: page.params.project,
+        site: page.params.site
+    }));
 </script>
 
 <Container>
     <Usage
-        path={`${base}/project-${page.params.region}-${page.params.project}/sites/site-${page.params.site}/usage`}
+        path={path}
         countMetadata={{
             legend: 'Executions',
             title: 'executions'
@@ -34,7 +40,7 @@
 
     <Usage
         hidePeriodSelect
-        path={`${base}/project-${page.params.region}-${page.params.project}/sites/site-${page.params.site}/usage`}
+        path={path}
         countMetadata={{
             legend: 'GB hours',
             title: 'GB hours'

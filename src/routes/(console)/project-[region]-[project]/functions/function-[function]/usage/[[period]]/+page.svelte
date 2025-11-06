@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Container, Usage } from '$lib/layout';
     import { page } from '$app/state';
-    import { base } from '$app/paths';
+    import { resolve } from '$app/paths';
     import { Layout } from '@appwrite.io/pink-svelte';
 
     let { data } = $props();
@@ -14,12 +14,18 @@
             value: metric.value / 1000 / 3600
         }))
         .filter(({ value }) => value));
+
+    const path = $derived(resolve('/(console)/project-[region]-[project]/functions/function-[function]/usage', {
+        region: page.params.region,
+        project: page.params.project,
+        function: page.params.function
+    }));
 </script>
 
 <Container>
     <Layout.Stack gap="l">
         <Usage
-            path={`${base}/project-${page.params.region}-${page.params.project}/functions/function-${page.params.function}/usage`}
+            path={path}
             countMetadata={{
                 legend: 'Executions',
                 title: 'executions'
@@ -29,7 +35,7 @@
 
         <Usage
             hidePeriodSelect
-            path={`${base}/project-${page.params.region}-${page.params.project}/functions/function-${page.params.function}/usage`}
+            path={path}
             countMetadata={{
                 legend: 'GB hours',
                 title: 'GB hours'

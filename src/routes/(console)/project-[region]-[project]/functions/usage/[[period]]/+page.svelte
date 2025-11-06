@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { base } from '$app/paths';
+    import { resolve } from '$app/paths';
     import { page } from '$app/state';
     import { Container, Usage } from '$lib/layout';
 
@@ -13,11 +13,16 @@
             value: metric.value / 1000 / 3600
         }))
         .filter(({ value }) => value));
+
+    const path = $derived(resolve('/(console)/project-[region]-[project]/functions/usage', {
+        region: page.params.region,
+        project: page.params.project
+    }));
 </script>
 
 <Container>
     <Usage
-        path={`${base}/project-${page.params.region}-${page.params.project}/functions/usage`}
+        path={path}
         countMetadata={{
             legend: 'Executions',
             title: 'executions'
@@ -27,7 +32,7 @@
     
     <Usage
         hidePeriodSelect
-        path={`${base}/project-${page.params.region}-${page.params.project}/functions/usage`}
+        path={path}
         countMetadata={{
             legend: 'GB hours',
             title: 'GB hours'
