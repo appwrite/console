@@ -187,6 +187,8 @@
         <link rel="preload" as="style" type="text/css" href="{base}/fonts/cloud.css" />
         <link rel="stylesheet" href={`${base}/fonts/cloud.css`} />
     {/if}
+
+    <link rel="stylesheet" href={`${base}/css/profiles/${PUBLIC_CONSOLE_PROFILE}.css`} />
 </svelte:head>
 
 <Root theme={resolveTheme($app.themeInUse)}>
@@ -316,13 +318,6 @@
     input[type='checkbox'][class='switch'] {
         .theme-dark &:not(:checked):not(:disabled) {
             background-color: var(--color-mid-neutral-70, #56565c);
-        }
-    }
-
-    /* Studio profile: Override danger button text color to white */
-    .is-studio {
-        button.danger {
-            --button-color: var(--neutral-0);
         }
     }
 </style>

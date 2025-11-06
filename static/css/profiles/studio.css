@@ -1,0 +1,4 @@
+/* Studio Profile CSS Overrides */
+button.danger {
+    --button-color: var(--neutral-0);
+}
