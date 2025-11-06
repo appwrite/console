@@ -34,7 +34,8 @@ export default ts.config(
             'svelte/no-reactive-reassign': 'off',
             'svelte/no-reactive-literals': 'off',
             // TODO: @itznotabug, this requires a big refactor!
-            'svelte/no-navigation-without-resolve': 'off'
+            'svelte/no-navigation-without-resolve': 'off',
+            'svelte/prefer-svelte-reactivity': 'off'
         }
     },
     {

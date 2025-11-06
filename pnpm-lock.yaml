@@ -160,7 +160,7 @@ importers:
         specifier: ^10.1.8
         version: 10.1.8(eslint@9.39.1)
       eslint-plugin-svelte:
-        specifier: ^3.3.3
+        specifier: ^3.12.4
         version: 3.13.0(eslint@9.39.1)(svelte@5.43.3)
       globals:
         specifier: ^16.4.0
