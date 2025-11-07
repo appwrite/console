@@ -7,12 +7,19 @@
     import { onMount } from 'svelte';
     import { ensureStudioComponent, initImagine, getWebComponents } from './studio-widget';
     import { app } from '$lib/stores/app';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
 
     const { region, projectId }: { region: string; projectId: string } = $props();
 
     onMount(() => {
         ensureStudioComponent();
-        initImagine(region, projectId);
+
+        initImagine(region, projectId, {
+            onProjectNameChange: () => {
+                invalidate(Dependencies.PROJECT);
+            }
+        });
 
         return app.subscribe(async ($app) => {
             try {

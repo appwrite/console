@@ -26,13 +26,18 @@
                 projectId: $project.$id,
                 name
             });
-            await invalidate(Dependencies.PROJECT);
-            await invalidate(Dependencies.ORGANIZATION);
+
             addNotification({
                 type: 'success',
                 message: 'Project name has been updated'
             });
+
             trackEvent(Submit.ProjectUpdateName);
+
+            await Promise.all([
+                await invalidate(Dependencies.PROJECT),
+                await invalidate(Dependencies.ORGANIZATION)
+            ]);
         } catch (error) {
             addNotification({
                 type: 'error',

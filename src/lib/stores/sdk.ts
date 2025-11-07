@@ -106,7 +106,6 @@ if (!building) {
     scopedConsoleClient.setProject('console');
     clientConsole.setEndpoint(endpoint).setProject('console');
 
-    clientRealtime.setEndpoint(endpoint).setProject('console');
     clientProject.setEndpoint(endpoint).setMode('admin');
     clientRealtime.setEndpoint(endpoint).setProject('console');
 }
