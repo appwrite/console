@@ -115,7 +115,7 @@
     let hasTransitioned = $state(false);
     let scrollAnimationFrame: number | null = null;
 
-    let animation: 'glow' | 'shimmer' | 'both' = 'glow';
+    let animation: 'legacy' | 'new' = 'new';
 
     let creatingColumns = $state(false);
     let selectedColumnId = $state<string | null>(null);
@@ -1294,10 +1294,12 @@
             class:no-transition={hasTransitioned && customColumns.length > 0}
             class:thinking={$tableColumnSuggestions.thinking || creatingColumns}
             data-anim={animation}>
-            <div class="ai-border-glow" aria-hidden="true">
-                <div class="inner">
-                    <div class="bottom-corners"></div>
-                </div>
+            <div class="inner-glow-wrapper">
+                {@render edgeGradients('left')}
+                {@render edgeGradients('right')}
+
+                <div class="edge-glow top"></div>
+                <div class="edge-glow bottom"></div>
             </div>
         </div>
 
@@ -1829,6 +1831,27 @@
     </Popover>
 {/snippet}
 
+{#snippet edgeGradients(side: 'left' | 'right')}
+    <!-- Gradient config: pos (y-position) | color | spread | delay (stagger) -->
+    {@const gradientConfigs = [
+        { pos: '20%', color: 'var(--border-pink)', spread: '25%', delay: '0s' },
+        { pos: '50%', color: 'var(--border-orange)', spread: '15%', delay: '1s' },
+        { pos: '80%', color: 'var(--border-pink)', spread: '25%', delay: '2s' },
+        { pos: '35%', color: 'var(--border-pink)', spread: '40%', delay: '0.5s' },
+        { pos: '65%', color: 'var(--border-orange)', spread: '40%', delay: '1.5s' }
+    ]}
+    {@const xPosition = side === 'left' ? '0%' : '100%'}
+
+    <div class="edge-glow {side}">
+        {#each gradientConfigs as grad}
+            <div
+                class="grad"
+                style="background: radial-gradient(circle at {xPosition} {grad.pos}, {grad.color} 0%, transparent {grad.spread}); animation-delay: {grad.delay};">
+            </div>
+        {/each}
+    </div>
+{/snippet}
+
 <!--{#snippet countdownProgress()}-->
 <!--    {@const COUNTDOWN_DURATION = 10000}-->
 
@@ -2007,151 +2030,170 @@
             }
 
             &.thinking {
-                margin-block-start: 2px;
-                height: calc(100% - 4px);
+                overflow: hidden;
                 border-radius: var(--border-radius-S, 8px);
-                box-shadow:
-                    0 0 0 var(--border-width-l, 2px) #fd366e,
-                    inset 0 0 0 1px color-mix(in oklab, #fe9567 20%, transparent);
 
-                transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+                /* Legacy shimmer animation */
+                &[data-anim='legacy'] {
+                    margin-block-start: 2px;
+                    height: calc(100% - 4px);
+                    box-shadow:
+                        0 0 0 var(--border-width-l, 2px) #fd366e,
+                        inset 0 0 0 1px color-mix(in oklab, #fe9567 20%, transparent);
 
-                &::after {
-                    content: '';
-                    position: absolute;
-                    top: 0;
-                    left: -100%;
-                    width: 100%;
-                    height: 100%;
-                    background: linear-gradient(
-                        90deg,
-                        transparent,
-                        rgba(255, 255, 255, 0.8),
-                        transparent
-                    );
-                    animation: inner-shimmer 2s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
-                }
-
-                &[data-anim='glow'],
-                &[data-anim='both'] {
-                    box-shadow: none;
-                    height: 100% !important;
-                    margin-block-start: unset !important;
-                    // background: transparent;
-                    // main spot for handling the glow animations!
-                    background: rgba(253, 54, 110, 0.04);
-
-                    .ai-border-glow {
-                        inset: 0;
-
-                        position: absolute;
-                        border-radius: var(--border-radius-S, 8px);
-                        pointer-events: none;
-                        overflow: hidden;
-
-                        --border-pink: rgba(253, 54, 110, 0.35);
-                        --border-orange: rgba(254, 149, 103, 0.12);
-                        --glow-main: rgba(253, 54, 110, 0.25);
-                        --glow-secondary: rgba(253, 54, 110, 0.15);
-
-                        /* animated gradient ring */
-                        &::before {
-                            content: '';
-                            position: absolute;
-                            inset: 0;
-                            border-radius: inherit;
-                            padding: 2px; /* ring width */
-                            box-sizing: border-box;
-                            background: linear-gradient(
-                                120deg,
-                                var(--border-pink) 0%,
-                                var(--border-pink) 25%,
-                                var(--border-orange) 50%,
-                                var(--border-pink) 75%,
-                                var(--border-pink) 100%
-                            );
-                            background-size: 300% 300%;
-                            animation: borderGlow 12s ease-in-out infinite;
-
-                            -webkit-mask:
-                                linear-gradient(#fff 0 0) content-box,
-                                linear-gradient(#fff 0 0);
-                            -webkit-mask-composite: xor;
-                            mask:
-                                linear-gradient(#fff 0 0) content-box,
-                                linear-gradient(#fff 0 0);
-                            mask-composite: exclude;
-                        }
-
-                        .inner {
-                            position: absolute;
-                            inset: 2px;
-                            border-radius: calc(var(--border-radius-S, 8px) - 2px);
-                            background: transparent;
-                            overflow: hidden;
-                            pointer-events: none;
-
-                            /* top-left radial glow */
-                            &::before {
-                                content: '';
-                                position: absolute;
-                                inset: 0;
-                                background: radial-gradient(
-                                    circle at bottom left,
-                                    var(--glow-main),
-                                    rgba(253, 54, 110, 0) 50%
-                                );
-                                opacity: 0.2;
-                                animation: glowPulse 6s ease-in-out infinite;
-                                animation-delay: 0s;
-                                pointer-events: none;
-                                border-radius: inherit;
-                            }
-
-                            /* top-right radial glow */
-                            &::after {
-                                content: '';
-                                position: absolute;
-                                inset: 0;
-                                background: radial-gradient(
-                                    circle at top right,
-                                    var(--glow-secondary),
-                                    rgba(253, 54, 110, 0) 20%
-                                );
-                                opacity: 0.15;
-                                animation: glowPulse 6s ease-in-out infinite;
-                                animation-delay: 2s;
-                                pointer-events: none;
-                                border-radius: inherit;
-                            }
-
-                            /* bottom-left and bottom-right glows */
-                            .bottom-corners {
-                                position: absolute;
-                                inset: 0;
-                                pointer-events: none;
-                                border-radius: inherit;
-                                box-shadow:
-                                    inset 0 -50% 100px -40px var(--glow-main),
-                                    inset -50% 0 100px -40px var(--glow-secondary);
-                                animation: glowPulse 6s ease-in-out infinite;
-                                animation-delay: 3s;
-                            }
-                        }
-                    }
-                }
-
-                /* disable sweep shimmer in glow-only */
-                &[data-anim='glow'] {
                     &::after {
-                        content: none;
+                        content: '';
+                        position: absolute;
+                        top: 0;
+                        left: -100%;
+                        width: 100%;
+                        height: 100%;
+                        background: linear-gradient(
+                            90deg,
+                            transparent,
+                            rgba(255, 255, 255, 0.8),
+                            transparent
+                        );
+                        animation: legacy-shimmer 2s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
+                    }
+
+                    .inner-glow-wrapper {
+                        display: none;
                     }
                 }
 
-                /* hide glow wrapper entirely in shimmer mode */
-                &[data-anim='shimmer'] {
-                    .ai-border-glow {
-                        display: none;
+                /* New animation with border glow and edge pulses */
+                &[data-anim='new'] {
+                    /* bg wash: 3% subtle | 7% default */
+                    background: rgba(253, 54, 110, 0.03);
+                    @supports (background: color-mix(in oklab, #fd366e 1%, transparent)) {
+                        background: linear-gradient(
+                            135deg,
+                            color-mix(in oklab, #fd366e 3%, transparent) 0%,
+                            color-mix(in oklab, #fe9567 3%, transparent) 100%
+                        );
+                    }
+
+                    /* border colors: pink 0.4 | orange 0.25 */
+                    --border-pink: rgba(253, 54, 110, 0.4);
+                    --border-orange: rgba(254, 149, 103, 0.25);
+
+                    /* border ring: thickness 2px | speed 12s | size 300% */
+                    &::before {
+                        content: '';
+                        position: absolute;
+                        inset: 0;
+                        border-radius: inherit;
+                        padding: 2px;
+                        background: linear-gradient(
+                            120deg,
+                            var(--border-pink) 0%,
+                            var(--border-orange) 50%,
+                            var(--border-pink) 100%
+                        );
+                        background-size: 300% 300%;
+                        pointer-events: none;
+                        box-sizing: border-box;
+                        animation: borderGlow 12s ease-in-out infinite;
+                        -webkit-mask:
+                            linear-gradient(#fff 0 0) content-box,
+                            linear-gradient(#fff 0 0);
+                        -webkit-mask-composite: xor;
+                        mask:
+                            linear-gradient(#fff 0 0) content-box,
+                            linear-gradient(#fff 0 0);
+                        mask-composite: exclude;
+                    }
+
+                    /* shine sweep: opacity 0.02 | blur 80px | speed 2s | angle -25deg */
+                    &::after {
+                        content: '';
+                        position: absolute;
+                        top: -50%;
+                        left: -50%;
+                        width: 200%;
+                        height: 200%;
+                        background: linear-gradient(
+                            145deg,
+                            rgba(255, 255, 255, 0) 45%,
+                            rgba(255, 255, 255, 0.02) 50%,
+                            rgba(255, 255, 255, 0) 55%
+                        );
+                        transform: rotate(-25deg);
+                        filter: blur(80px);
+                        pointer-events: none;
+                        animation: shine 2s linear infinite;
+                    }
+
+                    .inner-glow-wrapper {
+                        position: absolute;
+                        inset: 2px;
+                        border-radius: calc(var(--border-radius-S, 8px) - 2px);
+                        overflow: hidden;
+                    }
+
+                    /* edge glows container */
+                    .edge-glow {
+                        position: absolute;
+                        inset: 0;
+                        pointer-events: none;
+                        border-radius: inherit;
+                    }
+
+                    /* edge pulses: speed 6s | opacity 0.15-0.35 (see keyframes) | config in snippet */
+                    .edge-glow.left .grad,
+                    .edge-glow.right .grad {
+                        position: absolute;
+                        inset: 0;
+                        border-radius: inherit;
+                        pointer-events: none;
+                    }
+
+                    .edge-glow.left .grad {
+                        animation: leftPulse 6s ease-in-out infinite;
+                    }
+
+                    .edge-glow.right .grad {
+                        animation: rightPulse 6s ease-in-out infinite;
+                    }
+
+                    /* top/bottom ambient: opacity 0.05 | spread 25% | static (no animation) */
+                    .edge-glow.top {
+                        background:
+                            radial-gradient(
+                                circle at 20% 0%,
+                                rgba(254, 149, 103, 0.05) 0%,
+                                transparent 25%
+                            ),
+                            radial-gradient(
+                                circle at 50% 0%,
+                                rgba(253, 54, 110, 0.05) 0%,
+                                transparent 25%
+                            ),
+                            radial-gradient(
+                                circle at 80% 0%,
+                                rgba(253, 54, 110, 0.05) 0%,
+                                transparent 25%
+                            );
+                    }
+
+                    .edge-glow.bottom {
+                        background:
+                            radial-gradient(
+                                circle at 20% 100%,
+                                rgba(254, 149, 103, 0.05) 0%,
+                                transparent 25%
+                            ),
+                            radial-gradient(
+                                circle at 50% 100%,
+                                rgba(253, 54, 110, 0.05) 0%,
+                                transparent 25%
+                            ),
+                            radial-gradient(
+                                circle at 80% 100%,
+                                rgba(254, 149, 103, 0.05) 0%,
+                                transparent 25%
+                            );
                     }
                 }
             }
@@ -2284,7 +2326,7 @@
         );
     }
 
-    @keyframes inner-shimmer {
+    @keyframes legacy-shimmer {
         0% {
             left: -100%;
             opacity: 0;
@@ -2301,24 +2343,66 @@
         }
     }
 
+    @keyframes leftPulse {
+        0%,
+        100% {
+            opacity: 0.15;
+        }
+        33% {
+            opacity: 0.35;
+        }
+        66% {
+            opacity: 0.25;
+        }
+    }
+
+    @keyframes rightPulse {
+        0%,
+        100% {
+            opacity: 0.15;
+        }
+        33% {
+            opacity: 0.35;
+        }
+        66% {
+            opacity: 0.25;
+        }
+    }
+
+    @keyframes shine {
+        0% {
+            transform: translateX(-100%) rotate(-25deg);
+        }
+        100% {
+            transform: translateX(100%) rotate(-25deg);
+        }
+    }
+
+    @keyframes borderGlow {
+        0% {
+            background-position: 0 0;
+        }
+        25% {
+            background-position: 100% 0;
+        }
+        50% {
+            background-position: 100% 100%;
+        }
+        75% {
+            background-position: 0 100%;
+        }
+        100% {
+            background-position: 0 0;
+        }
+    }
+
     :global(.theme-dark) .spreadsheet-container-outer {
         --columns-range-pink-header-background-color: unset;
         --columns-range-pink-border-color: rgba(253, 54, 110, 0.12) !important;
     }
 
     :global(.theme-dark) .columns-range-overlay.thinking {
-        &::before {
-            background: linear-gradient(
-                90deg,
-                rgba(253, 54, 110, 0.01),
-                rgba(254, 149, 103, 0.03),
-                rgba(253, 54, 110, 0.01),
-                rgba(254, 149, 103, 0.03),
-                rgba(253, 54, 110, 0.01)
-            );
-        }
-
-        &::after {
+        &[data-anim='legacy']::after {
             background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.04), transparent);
         }
     }
@@ -2426,32 +2510,4 @@
     //        stroke-dashoffset: 67.858;
     //    }
     //}
-
-    @keyframes borderGlow {
-        0% {
-            background-position: 0% 0%;
-        }
-        25% {
-            background-position: 100% 0%;
-        }
-        50% {
-            background-position: 100% 100%;
-        }
-        75% {
-            background-position: 0% 100%;
-        }
-        100% {
-            background-position: 0% 0%;
-        }
-    }
-
-    @keyframes glowPulse {
-        0%,
-        100% {
-            opacity: 0.1;
-        }
-        50% {
-            opacity: 0.6;
-        }
-    }
 </style>
