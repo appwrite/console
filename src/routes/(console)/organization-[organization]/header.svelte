@@ -90,15 +90,21 @@
 
     const avatars = $derived($members.memberships?.map((m) => m.userName || m.userEmail) ?? []);
 
-    const titleName = $derived(resolvedProfile.minimalOrgHeader ? 'Billing' : organization?.name);
+    const titleName = $derived.by(() => {
+        if (!resolvedProfile.minimalOrgHeader) {
+            return organization?.name;
+        }
 
-    const blockSize = $derived(resolvedProfile.minimalOrgHeader ? 'unset' : '152px');
+        const currentPath = page.url.pathname;
+        const matchedTab = tabs.find((tab) => isTabSelected(tab, currentPath, path, tabs));
+        return matchedTab?.title ?? organization?.name ?? 'Organization';
+    });
 
     const shouldShowCover = $derived(resolvedProfile.minimalOrgHeader ? true : organization.$id);
 </script>
 
 {#if shouldShowCover}
-    <Cover blocksize={blockSize}>
+    <Cover blocksize="152px">
         <svelte:fragment slot="header">
             <span class="u-flex u-cross-center u-gap-8 u-min-width-0">
                 <Typography.Title color="--fgcolor-neutral-primary" size="xl" truncate>
@@ -160,7 +166,11 @@
             </div>
         </svelte:fragment>
 
-        {#if !resolvedProfile.minimalOrgHeader}
+        {#if resolvedProfile.minimalOrgHeader}
+            <Tabs>
+                <Tab selected event={titleName.toLowerCase()}>Overview</Tab>
+            </Tabs>
+        {:else}
             <Tabs>
                 {#each tabs as tab}
                     <Tab
