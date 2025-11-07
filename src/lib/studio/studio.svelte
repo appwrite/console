@@ -15,22 +15,17 @@
     onMount(() => {
         ensureStudioComponent();
 
-        initImagine(region, projectId);
+        initImagine(region, projectId, {
+            onProjectNameChange: () => {
+                invalidate(Dependencies.PROJECT);
+            }
+        });
 
         return app.subscribe(async ($app) => {
-            const { changeTheme, initImagineCallbacks } = await getWebComponents();
-
             try {
+                const { changeTheme } = await getWebComponents();
                 if (changeTheme) {
                     changeTheme($app.themeInUse);
-                }
-
-                if (initImagineCallbacks) {
-                    initImagineCallbacks({
-                        onProjectNameChange: () => {
-                            invalidate(Dependencies.PROJECT);
-                        }
-                    });
                 }
             } catch (error) {
                 console.error('Failed to change theme:', error);

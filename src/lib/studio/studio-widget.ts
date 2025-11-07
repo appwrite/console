@@ -270,7 +270,11 @@ export function hideStudio() {
     restoreBodyScroll();
 }
 
-export async function initImagine(region: string, projectId: string) {
+export async function initImagine(
+    region: string,
+    projectId: string,
+    callbacks?: { onProjectNameChange?: (name: string) => void }
+) {
     try {
         const { initImagineConfig, initImagineRouting } = await getWebComponents();
 
@@ -281,7 +285,8 @@ export async function initImagine(region: string, projectId: string) {
                     APPWRITE_ENDPOINT: PUBLIC_APPWRITE_ENDPOINT
                 },
                 {
-                    initialTheme: get(app).themeInUse
+                    initialTheme: get(app).themeInUse,
+                    callbacks
                 }
             );
             configInitialized = true;
