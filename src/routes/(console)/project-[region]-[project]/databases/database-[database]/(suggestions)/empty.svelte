@@ -2065,14 +2065,16 @@
                 /* New animation with border glow and edge pulses */
                 &[data-anim='new'] {
                     /* bg wash: 3% subtle | 7% default */
-                    background: rgba(253, 54, 110, 0.03);
+                    /*background: rgba(253, 54, 110, 0.03);
                     @supports (background: color-mix(in oklab, #fd366e 1%, transparent)) {
                         background: linear-gradient(
                             135deg,
                             color-mix(in oklab, #fd366e 3%, transparent) 0%,
                             color-mix(in oklab, #fe9567 3%, transparent) 100%
                         );
-                    }
+                    }*/
+
+                    background: transparent;
 
                     /* border colors: pink 0.4 | orange 0.25 */
                     --border-pink: rgba(253, 54, 110, 0.4);
@@ -2150,11 +2152,11 @@
                     }
 
                     .edge-glow.left .grad {
-                        animation: leftPulse 6s ease-in-out infinite;
+                        animation: leftPulse 6s ease-in-out infinite backwards;
                     }
 
                     .edge-glow.right .grad {
-                        animation: rightPulse 6s ease-in-out infinite;
+                        animation: rightPulse 6s ease-in-out infinite backwards;
                     }
 
                     /* top/bottom ambient: opacity 0.05 | spread 25% | static (no animation) */
@@ -2346,7 +2348,7 @@
     @keyframes leftPulse {
         0%,
         100% {
-            opacity: 0.15;
+            opacity: 0;
         }
         33% {
             opacity: 0.35;
@@ -2359,7 +2361,7 @@
     @keyframes rightPulse {
         0%,
         100% {
-            opacity: 0.15;
+            opacity: 0;
         }
         33% {
             opacity: 0.35;
