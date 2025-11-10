@@ -1,8 +1,7 @@
 import type { Models } from '@appwrite.io/console';
 
 /**
- * Build VCS repo URL from the template response model.
- * Example (GitHub): https://github.com/appwrite/templates-for-sites
+ * Example (GitHub): https://github.com/appwrite/templates-for-sites/tree/main/sveltekit/starter
  */
 export function getTemplateSourceUrl(
     t: Models.TemplateSite | Models.TemplateFunction
@@ -20,7 +19,40 @@ export function getTemplateSourceUrl(
         bitbucket: 'bitbucket.org'
     };
 
-    const host = hostMap[provider.toLowerCase()] ?? provider; // fallback
+    const host = hostMap[provider.toLowerCase()];
+    if (!host) return null;
 
-    return `https://${host}/${owner}/${repo}`;
+    let folderPath: string | undefined;
+    if (
+        'providerRootDirectory' in t &&
+        t.providerRootDirectory &&
+        typeof t.providerRootDirectory === 'string'
+    ) {
+        folderPath = t.providerRootDirectory;
+    } else if (
+        'frameworks' in t &&
+        t.frameworks?.length > 0 &&
+        t.frameworks[0]?.providerRootDirectory &&
+        typeof t.frameworks[0].providerRootDirectory === 'string'
+    ) {
+        folderPath = t.frameworks[0].providerRootDirectory;
+    }
+
+    let url = `https://${host}/${owner}/${repo}`;
+
+    if (folderPath) {
+        const normalizedPath = folderPath.replace(/^\/+|\/+$/g, '');
+        if (normalizedPath) {
+            const providerLower = provider.toLowerCase();
+            if (providerLower === 'github') {
+                url = `${url}/tree/main/${normalizedPath}`;
+            } else if (providerLower === 'gitlab') {
+                url = `${url}/-/tree/main/${normalizedPath}`;
+            } else if (providerLower === 'bitbucket') {
+                url = `${url}/src/main/${normalizedPath}`;
+            }
+        }
+    }
+
+    return url;
 }
