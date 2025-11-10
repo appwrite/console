@@ -50,27 +50,34 @@
 
     $effect(() => {
         if (selectedFramework?.key !== site.framework) {
-            //Update adapter
-            const singleAdapter = selectedFramework?.adapters?.length <= 1;
-            if (singleAdapter) {
-                const hasSSR = selectedFramework?.adapters?.some((a) => a?.key === Adapter.Ssr);
-                const hasStatic = selectedFramework?.adapters?.some(
-                    (a) => a?.key === Adapter.Static
-                );
-                if (!hasSSR) {
-                    adapter = Adapter.Static;
-                } else if (!hasStatic) {
-                    adapter = Adapter.Ssr;
+            const currentAdapterValid = selectedFramework?.adapters?.some((a) => a.key === adapter);
+            if (!currentAdapterValid) {
+                const singleAdapter = selectedFramework?.adapters?.length <= 1;
+                if (singleAdapter) {
+                    const hasSSR = selectedFramework?.adapters?.some((a) => a?.key === Adapter.Ssr);
+                    const hasStatic = selectedFramework?.adapters?.some(
+                        (a) => a?.key === Adapter.Static
+                    );
+                    if (!hasSSR) {
+                        adapter = Adapter.Static;
+                    } else if (!hasStatic) {
+                        adapter = Adapter.Ssr;
+                    } else {
+                        adapter = selectedFramework.adapters[0].key as Adapter;
+                    }
+                } else {
+                    adapter = selectedFramework.adapters[0].key as Adapter;
                 }
             }
 
             //Update values
             const data = selectedFramework.adapters.find((a) => a.key === adapter);
-            installCommand = data.installCommand;
-            buildCommand = data.buildCommand;
-            outputDirectory = data.outputDirectory;
-            adapter = selectedFramework.adapters[0].key as Adapter;
-            fallback = data.fallbackFile;
+            if (data) {
+                installCommand = data.installCommand;
+                buildCommand = data.buildCommand;
+                outputDirectory = data.outputDirectory;
+                fallback = data.fallbackFile;
+            }
         } else {
             adapter = site.adapter as Adapter;
             installCommand = site?.installCommand ?? frameworkAdapterData.installCommand;
@@ -200,7 +207,7 @@
                             radius="s"
                             padding="s"
                             name="adapter"
-                            value={`${Adapter.Ssr}`}
+                            value={Adapter.Ssr}
                             bind:group={adapter}>
                             {#if adapterData?.ssr?.desc?.includes('$')}
                                 {@const parts = adapterData.ssr.desc.split('$')}
