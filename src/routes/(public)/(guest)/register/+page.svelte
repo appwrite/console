@@ -126,6 +126,7 @@
             <Layout.Stack>
                 {#if isCloud}
                     <Button
+                        class="auth-provider-button"
                         secondary
                         fullWidth
                         on:click={onGithubLogin}
@@ -181,3 +182,9 @@
         </Typography.Text>
     </svelte:fragment>
 </Unauthenticated>
+
+<style>
+    :global(.auth-provider-button) {
+        margin-bottom: var(--gap-s, 8px);
+    }
+</style>

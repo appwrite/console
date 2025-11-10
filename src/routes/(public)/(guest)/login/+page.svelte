@@ -95,7 +95,12 @@
         <Form onSubmit={login}>
             <Layout.Stack>
                 {#if isCloud}
-                    <Button secondary fullWidth on:click={onGithubLogin} {disabled}>
+                    <Button
+                        class="auth-provider-button"
+                        secondary
+                        fullWidth
+                        on:click={onGithubLogin}
+                        {disabled}>
                         <span class="icon-github" aria-hidden="true"></span>
                         <span class="text">Sign in with GitHub</span>
                     </Button>
@@ -129,3 +134,9 @@
         </li>
     </svelte:fragment>
 </Unauthenticated>
+
+<style>
+    :global(.auth-provider-button) {
+        margin-bottom: var(--gap-s, 8px);
+    }
+</style>
