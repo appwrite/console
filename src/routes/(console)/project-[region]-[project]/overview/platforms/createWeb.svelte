@@ -11,8 +11,7 @@
         Fieldset,
         InlineCode,
         Card,
-        Tooltip,
-        Tag
+        Tooltip
     } from '@appwrite.io/pink-svelte';
     import { Button, Form, InputText } from '$lib/elements/forms';
     import {
@@ -25,8 +24,7 @@
         IconInfo,
         IconExternalLink,
         IconAngular,
-        IconJs,
-        IconPlus
+        IconJs
     } from '@appwrite.io/pink-icons-svelte';
     import { page } from '$app/state';
     import { onMount } from 'svelte';
@@ -69,8 +67,6 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
 
     let hostname = $state(null);
     let hostnameError = $state(false);
-
-    const suggestedHostnames = ['localhost', '127.0.0.1', '0.0.0.0'];
 
     let frameworks: Array<FrameworkType> = [
         {
@@ -162,7 +158,9 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
     );
 
     async function createWebPlatform() {
-        hostnameError = hostname !== '' ? !new RegExp(extendedHostnameRegex).test(hostname) : null;
+        const trimmedHostname = hostname?.trim() || '';
+        const finalHostname = trimmedHostname !== '' ? trimmedHostname : 'localhost';
+        hostnameError = !new RegExp(extendedHostnameRegex).test(finalHostname);
 
         if (hostnameError) {
             return;
@@ -175,7 +173,7 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
                 type: PlatformType.Web,
                 name: `${selectedFramework.label} app`,
                 key: key,
-                hostname: hostname === '' ? undefined : hostname
+                hostname: finalHostname
             });
 
             isPlatformCreated = true;
@@ -264,7 +262,6 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
                                 label="Hostname"
                                 placeholder="localhost"
                                 autofocus
-                                required
                                 error={hostnameError && 'Please enter a valid hostname'}
                                 bind:value={hostname}>
                                 <Tooltip slot="info">
@@ -276,17 +273,6 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
                                     </span>
                                 </Tooltip>
                             </InputText>
-                            <Layout.Stack direction="row" gap="s" class="u-margin-block-start-8">
-                                {#each suggestedHostnames as h}
-                                    <Tag
-                                        size="s"
-                                        selected={hostname === h}
-                                        on:click={() => (hostname = h)}>
-                                        <Icon icon={IconPlus} slot="start" size="s" />
-                                        {h}
-                                    </Tag>
-                                {/each}
-                            </Layout.Stack>
                         </Fieldset>
                         <Layout.Stack direction="row" justifyContent="flex-end">
                             <Button submit disabled={!selectedFramework}>Create platform</Button>
