@@ -68,6 +68,8 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
     let hostname = $state(null);
     let hostnameError = $state(false);
 
+    const hostnameRegex = new RegExp(extendedHostnameRegex);
+
     let frameworks: Array<FrameworkType> = [
         {
             key: 'svelte',
@@ -158,9 +160,8 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
     );
 
     async function createWebPlatform() {
-        const trimmedHostname = hostname?.trim() || '';
-        const finalHostname = trimmedHostname !== '' ? trimmedHostname : 'localhost';
-        hostnameError = !new RegExp(extendedHostnameRegex).test(finalHostname);
+        const finalHostname = hostname?.trim() || 'localhost';
+        hostnameError = !hostnameRegex.test(finalHostname);
 
         if (hostnameError) {
             return;
