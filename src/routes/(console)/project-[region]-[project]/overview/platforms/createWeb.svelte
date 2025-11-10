@@ -158,7 +158,9 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
     );
 
     async function createWebPlatform() {
-        hostnameError = hostname !== '' ? !new RegExp(extendedHostnameRegex).test(hostname) : null;
+        const hostnameRegex = new RegExp(extendedHostnameRegex);
+        const finalHostname = hostname?.trim() || 'localhost';
+        hostnameError = !hostnameRegex.test(finalHostname);
 
         if (hostnameError) {
             return;
@@ -171,7 +173,7 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
                 type: PlatformType.Web,
                 name: `${selectedFramework.label} app`,
                 key: key,
-                hostname: hostname === '' ? undefined : hostname
+                hostname: finalHostname
             });
 
             isPlatformCreated = true;
@@ -270,7 +272,8 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
                                         protocol or port number required.
                                     </span>
                                 </Tooltip>
-                            </InputText></Fieldset>
+                            </InputText>
+                        </Fieldset>
                         <Layout.Stack direction="row" justifyContent="flex-end">
                             <Button submit disabled={!selectedFramework}>Create platform</Button>
                         </Layout.Stack>
