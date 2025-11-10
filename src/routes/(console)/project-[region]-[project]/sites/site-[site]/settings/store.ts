@@ -69,12 +69,12 @@ export const adapterDataList = [
     {
         framework: 'nextjs',
         ssr: {
-            desc: "Ensure you don't set $ in $ file.",
-            code: ['output', 'next.config.js'],
+            desc: 'Set $ in $ file.',
+            code: ["output: 'standalone'", 'next.config.js'],
             url: 'https://nextjs.org/docs/pages/building-your-application/deploying'
         },
         static: {
-            desc: 'Set $ in $ file',
+            desc: 'Set $ in $ file.',
             code: ["output: 'export'", 'next.config.js'],
             url: 'https://nextjs.org/docs/pages/building-your-application/deploying/static-exports'
         }
@@ -82,12 +82,12 @@ export const adapterDataList = [
     {
         framework: 'analog',
         ssr: {
-            desc: 'Set $ in $ plugin in $',
+            desc: 'Set $ in $ plugin in $.',
             code: ['ssr: true', 'analog', 'vite.config.ts'],
             url: 'https://analogjs.org/docs/features/server/server-side-rendering'
         },
         static: {
-            desc: 'Set $ in $ plugin in $',
+            desc: 'Set $ in $ plugin in $.',
             code: ['static: true', 'analog', 'vite.config.ts'],
             url: 'https://analogjs.org/docs/features/server/static-site-generation'
         }

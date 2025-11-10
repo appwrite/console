@@ -104,9 +104,12 @@
     };
 
     $: rows = writable(data.rows);
-    $: if (rows) {
+    $: if ($rows) {
         paginatedRows.clear();
         paginatedRows.setPage(1, $rows.rows);
+
+        /* reset ui when the underlying data changes */
+        spreadsheetRenderKey.set(hash(Date.now().toString()));
     }
 
     // create index map for O(1) row lookups, reactive!
@@ -478,7 +481,7 @@
                 message: 'Column deleted'
             });
 
-            invalidate(Dependencies.TABLE);
+            await invalidate(Dependencies.TABLE);
 
             $databaseColumnSheetOptions.column = null;
         } catch (error) {

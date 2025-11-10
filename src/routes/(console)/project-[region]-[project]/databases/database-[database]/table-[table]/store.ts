@@ -28,6 +28,12 @@ export const table = derived(page, ($page) => $page.data.table as Table);
 export const columns = derived(page, ($page) => $page.data.table.columns as Columns[]);
 export const indexes = derived(page, ($page) => $page.data.table.indexes as Models.ColumnIndex[]);
 
+/**
+ * adding a lot of fake data will trigger the realtime below
+ * and will keep invalidating the `Dependencies.TABLE` making a lot of API noise!
+ */
+export const isWaterfallFromFaker = writable(false);
+
 export const tableColumns = writable<Column[]>([]);
 
 export const isCsvImportInProgress = writable(false);
