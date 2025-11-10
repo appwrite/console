@@ -36,17 +36,30 @@
         frameworks.find((framework) => framework.key === site.framework)
     );
     let showFallback = $derived(adapter === Adapter.Static);
-    let hasChanges = $derived(
+
+    let isUntouched = $derived(
         installCommand === site?.installCommand &&
             buildCommand === site?.buildCommand &&
             outputDirectory === site?.outputDirectory &&
             selectedFramework?.key === site?.framework &&
-            fallback === (site?.fallbackFile || undefined) &&
-            adapter === site?.adapter
+            (fallback ?? '') === (site?.fallbackFile ?? '') &&
+            (adapter ?? '') === (site?.adapter ?? '')
     );
     let frameworkAdapterData = $derived(
         selectedFramework.adapters.find((a) => a.key === adapter) ?? selectedFramework.adapters[0]
     );
+
+    $effect(() => {
+        if (adapter) {
+            const data = selectedFramework.adapters.find((a) => a.key === adapter);
+            if (data) {
+                installCommand = data.installCommand;
+                buildCommand = data.buildCommand;
+                outputDirectory = data.outputDirectory;
+                fallback = data.fallbackFile;
+            }
+        }
+    });
 
     $effect(() => {
         if (selectedFramework?.key !== site.framework) {
@@ -164,11 +177,11 @@
         const data = selectedFramework.adapters.find((a) => a.key === adapter);
 
         if (type === 'installCommand') {
-            installCommand = site?.installCommand ?? data.installCommand;
+            installCommand = data.installCommand;
         } else if (type === 'buildCommand') {
-            buildCommand = site?.buildCommand ?? data.buildCommand;
+            buildCommand = data.buildCommand;
         } else if (type === 'outputDirectory') {
-            outputDirectory = site?.outputDirectory ?? data.outputDirectory;
+            outputDirectory = data.outputDirectory;
         }
     }
 </script>
@@ -223,7 +236,8 @@
                                 {adapterData.ssr.desc}
                             {/if}
                             {#if adapterData?.ssr?.url}
-                                <Link external href={adapterData.ssr.url}>Learn more</Link>
+                                <Link variant="muted" size="m" external href={adapterData.ssr.url}
+                                    >Learn more</Link>
                             {/if}
                         </Card.Selector>
                         <Card.Selector
@@ -250,7 +264,11 @@
                                 {adapterData.static.desc}
                             {/if}
                             {#if adapterData?.static?.url}
-                                <Link external href={adapterData.static.url}>Learn more</Link>
+                                <Link
+                                    variant="muted"
+                                    size="m"
+                                    external
+                                    href={adapterData.static.url}>Learn more</Link>
                             {/if}
                         </Card.Selector>
                     </Layout.Grid>
@@ -265,7 +283,11 @@
                                 placeholder={frameworkAdapterData?.installCommand ||
                                     'Enter install command'} />
 
-                            <Button secondary size="s" on:click={() => reset('installCommand')}>
+                            <Button
+                                secondary
+                                size="s"
+                                on:click={() => reset('installCommand')}
+                                disabled={installCommand === frameworkAdapterData?.installCommand}>
                                 Reset
                             </Button>
                         </Layout.Stack>
@@ -276,7 +298,11 @@
                                 bind:value={buildCommand}
                                 placeholder={frameworkAdapterData?.buildCommand ||
                                     'Enter build command'} />
-                            <Button secondary size="s" on:click={() => reset('buildCommand')}>
+                            <Button
+                                secondary
+                                size="s"
+                                disabled={buildCommand === frameworkAdapterData?.buildCommand}
+                                on:click={() => reset('buildCommand')}>
                                 Reset
                             </Button>
                         </Layout.Stack>
@@ -287,7 +313,12 @@
                                 bind:value={outputDirectory}
                                 placeholder={frameworkAdapterData?.outputDirectory ||
                                     'Enter output directory'} />
-                            <Button secondary size="s" on:click={() => reset('outputDirectory')}>
+                            <Button
+                                secondary
+                                size="s"
+                                disabled={(outputDirectory ?? '') ===
+                                    (frameworkAdapterData?.outputDirectory ?? '')}
+                                on:click={() => reset('outputDirectory')}>
                                 Reset
                             </Button>
                         </Layout.Stack>
@@ -312,7 +343,7 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={hasChanges} submit>Update</Button>
+            <Button disabled={isUntouched} submit>Update</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>
