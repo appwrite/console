@@ -207,8 +207,8 @@
                                         isRefreshing = false;
                                     }}>
                                     <div
-                                        class={isRefreshing ? 'rotating' : ''}
-                                        style:line-height="0px">
+                                        style:line-height="0px"
+                                        class:rotating={isRefreshing}>
                                         <Icon icon={IconRefresh} size="s" />
                                     </div>
                                 </Button>
