@@ -206,9 +206,7 @@
                                         await invalidate(Dependencies.TABLE);
                                         isRefreshing = false;
                                     }}>
-                                    <div
-                                        style:line-height="0px"
-                                        class:rotating={isRefreshing}>
+                                    <div style:line-height="0px" class:rotating={isRefreshing}>
                                         <Icon icon={IconRefresh} size="s" />
                                     </div>
                                 </Button>
