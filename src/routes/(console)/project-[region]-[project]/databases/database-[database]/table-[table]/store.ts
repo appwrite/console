@@ -72,6 +72,7 @@ export const databaseRowSheetOptions = writable<
         rowId?: string;
         rows: Models.Row[];
         rowIndex?: number;
+        autoFocus?: boolean;
     }
 >({
     title: null,
@@ -79,7 +80,8 @@ export const databaseRowSheetOptions = writable<
     row: null,
     rowId: null, // for loading from a given id
     rows: [],
-    rowIndex: -1
+    rowIndex: -1,
+    autoFocus: true
 });
 
 export const databaseRelatedRowSheetOptions = writable<

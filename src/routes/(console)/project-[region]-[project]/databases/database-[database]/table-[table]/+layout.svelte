@@ -72,9 +72,8 @@
     import { chunks } from '$lib/helpers/array';
     import { Submit, trackEvent } from '$lib/actions/analytics';
 
-    import IndexesSuggestions from '../(suggestions)/indexes.svelte';
-    import { showIndexesSuggestions, tableColumnSuggestions } from '../(suggestions)';
     import { isTabletViewport } from '$lib/stores/viewport';
+    import IndexesSuggestions from '../(suggestions)/indexes.svelte';
 
     let editRow: EditRow;
     let editRelatedRow: EditRelatedRow;
@@ -86,6 +85,33 @@
     let createMoreColumns = false;
 
     let columnCreationHandler: ((response: RealtimeResponse) => void) | null = null;
+
+    // manual management of focus is needed!
+    const autoFocusAction = (node: HTMLElement, shouldFocus: boolean) => {
+        const button = node.querySelector('button');
+        if (!button) return;
+
+        const handleBlur = () => button.classList.remove('focus-visible');
+        const applyFocus = (focus: boolean) => {
+            if (focus) {
+                button.classList.add('focus-visible');
+                button.focus();
+            } else {
+                button.classList.remove('focus-visible');
+            }
+        };
+
+        button.addEventListener('blur', handleBlur);
+        applyFocus(shouldFocus);
+
+        return {
+            update: applyFocus,
+            destroy() {
+                button.removeEventListener('blur', handleBlur);
+                button.classList.remove('focus-visible');
+            }
+        };
+    };
 
     onMount(() => {
         expandTabs.set(preferences.getKey('tableHeaderExpanded', true));
@@ -464,39 +490,47 @@
         {@const isLastRow = currentIndex >= rows.length - 1}
 
         {#if !$isTabletViewport}
-            <Button
-                icon
-                text
-                size="xs"
-                on:click={() => {
-                    if (currentIndex > 0) {
-                        databaseRowSheetOptions.update((opts) => ({
-                            ...opts,
-                            row: rows[currentIndex - 1],
-                            rowIndex: currentIndex - 1
-                        }));
-                    }
-                }}
-                disabled={isFirstRow}>
-                <Icon icon={IconChevronUp} />
-            </Button>
+            {@const shouldFocusPrev = !$databaseRowSheetOptions.autoFocus && !isFirstRow}
+            {@const shouldFocusNext =
+                !$databaseRowSheetOptions.autoFocus && isFirstRow && !isLastRow}
 
-            <Button
-                icon
-                text
-                size="xs"
-                on:click={() => {
-                    if (currentIndex < rows.length - 1) {
-                        databaseRowSheetOptions.update((opts) => ({
-                            ...opts,
-                            row: rows[currentIndex + 1],
-                            rowIndex: currentIndex + 1
-                        }));
-                    }
-                }}
-                disabled={isLastRow}>
-                <Icon icon={IconChevronDown} />
-            </Button>
+            <div use:autoFocusAction={shouldFocusPrev} class:nav-button-wrapper={shouldFocusPrev}>
+                <Button
+                    icon
+                    text
+                    size="xs"
+                    on:click={() => {
+                        if (currentIndex > 0) {
+                            databaseRowSheetOptions.update((opts) => ({
+                                ...opts,
+                                row: rows[currentIndex - 1],
+                                rowIndex: currentIndex - 1
+                            }));
+                        }
+                    }}
+                    disabled={isFirstRow}>
+                    <Icon icon={IconChevronUp} />
+                </Button>
+            </div>
+
+            <div use:autoFocusAction={shouldFocusNext} class:nav-button-wrapper={shouldFocusNext}>
+                <Button
+                    icon
+                    text
+                    size="xs"
+                    on:click={() => {
+                        if (currentIndex < rows.length - 1) {
+                            databaseRowSheetOptions.update((opts) => ({
+                                ...opts,
+                                row: rows[currentIndex + 1],
+                                rowIndex: currentIndex + 1
+                            }));
+                        }
+                    }}
+                    disabled={isLastRow}>
+                    <Icon icon={IconChevronDown} />
+                </Button>
+            </div>
         {/if}
     {/snippet}
 
@@ -504,7 +538,8 @@
         <EditRow
             bind:this={editRow}
             bind:row={$databaseRowSheetOptions.row}
-            bind:rowId={$databaseRowSheetOptions.rowId} />
+            bind:rowId={$databaseRowSheetOptions.rowId}
+            autoFocus={$databaseRowSheetOptions.autoFocus} />
     {/key}
 </SideSheet>
 
@@ -574,3 +609,10 @@
 </Dialog>
 
 <IndexesSuggestions />
+
+<style lang="scss">
+    // not the best solution but needed!
+    .nav-button-wrapper :global(button.focus-visible) {
+        outline: var(--border-width-l) solid var(--border-focus);
+    }
+</style>

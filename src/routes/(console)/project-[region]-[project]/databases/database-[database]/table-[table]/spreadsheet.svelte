@@ -809,6 +809,7 @@
                 const focusedRow = $paginatedRows.items.find((row) => row.$id === focusedRowId);
 
                 previouslyFocusedElement = document.activeElement;
+                $databaseRowSheetOptions.autoFocus = false;
                 onSelectSheetOption('update', null, 'row', focusedRow);
             }}>
             <svelte:fragment slot="header" let:root>
@@ -935,6 +936,7 @@
                                                             hide();
                                                             previouslyFocusedElement =
                                                                 document.activeElement;
+                                                            $databaseRowSheetOptions.autoFocus = false;
                                                             onSelectSheetOption(
                                                                 'update',
                                                                 null,
@@ -985,8 +987,10 @@
                                         <SheetOptions
                                             type="row"
                                             column={rowColumn}
-                                            onSelect={(option) =>
-                                                onSelectSheetOption(option, null, 'row', row)}
+                                            onSelect={(option) => {
+                                                $databaseRowSheetOptions.autoFocus = true;
+                                                onSelectSheetOption(option, null, 'row', row);
+                                            }}
                                             onVisibilityChanged={(visible) => {
                                                 canShowDatetimePopover = !visible;
                                             }}>
@@ -1113,6 +1117,7 @@
                                                         rowColumn
                                                     );
                                                 } else {
+                                                    $databaseRowSheetOptions.autoFocus = true;
                                                     onSelectSheetOption('update', null, 'row', row);
                                                 }
                                             }} />

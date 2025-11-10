@@ -92,7 +92,7 @@
                 </Layout.Stack>
 
                 {#if topEndActions}
-                    <Layout.Stack direction="row" gap="m" alignItems="center" inline>
+                    <Layout.Stack direction="row" gap="xs" alignItems="center" inline>
                         {@render topEndActions()}
                     </Layout.Stack>
                 {/if}
