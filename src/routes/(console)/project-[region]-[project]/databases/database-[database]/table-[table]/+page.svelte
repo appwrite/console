@@ -197,7 +197,9 @@
                                     icon
                                     size="s"
                                     secondary
-                                    disabled={isRefreshing || !data.rows.total}
+                                    disabled={isRefreshing ||
+                                        !data.rows.total ||
+                                        !(hasColumns && hasValidColumns)}
                                     class="small-button-dimensions"
                                     on:click={async () => {
                                         isRefreshing = true;
