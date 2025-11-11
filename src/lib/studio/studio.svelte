@@ -28,18 +28,6 @@
     let showManageDomainsSheet = $state(false);
     let primaryDomainForSite = $state(`imagine-${projectId}.stage.appwrite.network`);
 
-    const addDomainUrl = $derived.by(() => {
-        const baseUrl = resolve(
-            '/(console)/project-[region]-[project]/sites/site-[site]/domains/add-domain',
-            {
-                region,
-                project: projectId,
-                site: siteId
-            }
-        );
-        return `${baseUrl}?types=false`;
-    });
-
     onMount(() => {
         ensureStudioComponent();
 
@@ -48,7 +36,15 @@
                 invalidate(Dependencies.PROJECT);
             },
             onAddDomain: async () => {
-                await goto(addDomainUrl);
+                const baseUrl = resolve(
+                    '/(console)/project-[region]-[project]/sites/site-[site]/domains/add-domain',
+                    {
+                        region,
+                        project: projectId,
+                        site: siteId
+                    }
+                );
+                await goto(`${baseUrl}?types=false`);
             },
             onManageDomains: (primaryDomain) => {
                 if (primaryDomain) {

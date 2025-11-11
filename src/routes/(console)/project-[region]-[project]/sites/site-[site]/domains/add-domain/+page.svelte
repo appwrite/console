@@ -31,7 +31,7 @@
     import { getApexDomain } from '$lib/helpers/tlds';
     import type { PageProps } from './$types';
 
-    let { data }: PageProps = $props();
+    let { data, params }: PageProps = $props();
 
     let formComponent: Form;
     let isSubmitting = $state(writable(false));
@@ -42,7 +42,7 @@
     let branch: string = $state(null);
     let statusCode = $state(StatusCode.TemporaryRedirect307);
 
-    let routeBase = `${base}/project-${page.params.region}-${page.params.project}/sites/site-${page.params.site}/domains`;
+    let routeBase = `${base}/project-${params.region}-${params.project}/sites/site-${params.site}/domains`;
     let previousPage = $state(routeBase);
 
     afterNavigate(({ from }) => {
@@ -93,30 +93,26 @@
         try {
             let rule: Models.ProxyRule;
             if (behaviour === 'BRANCH') {
-                rule = await sdk
-                    .forProject(page.params.region, page.params.project)
-                    .proxy.createSiteRule({
-                        domain: domainName,
-                        siteId: page.params.site,
-                        branch
-                    });
+                rule = await sdk.forProject(params.region, params.project).proxy.createSiteRule({
+                    domain: domainName,
+                    siteId: params.site,
+                    branch
+                });
             } else if (behaviour === 'REDIRECT') {
                 rule = await sdk
-                    .forProject(page.params.region, page.params.project)
+                    .forProject(params.region, params.project)
                     .proxy.createRedirectRule({
                         domain: domainName,
                         url: redirect,
                         statusCode,
-                        resourceId: page.params.site,
+                        resourceId: params.site,
                         resourceType: ProxyResourceType.Site
                     });
             } else if (behaviour === 'ACTIVE') {
-                rule = await sdk
-                    .forProject(page.params.region, page.params.project)
-                    .proxy.createSiteRule({
-                        domain: domainName,
-                        siteId: page.params.site
-                    });
+                rule = await sdk.forProject(params.region, params.project).proxy.createSiteRule({
+                    domain: domainName,
+                    siteId: params.site
+                });
             }
             if (rule?.status === 'verified') {
                 hideTypes.set(false);
@@ -137,7 +133,7 @@
 
     async function connect(selectedInstallationId: string, selectedRepository: string) {
         try {
-            await sdk.forProject(page.params.region, page.params.project).sites.update({
+            await sdk.forProject(params.region, params.project).sites.update({
                 siteId: data.site.$id,
                 name: data.site.name,
                 framework: data.site.framework as Framework,
