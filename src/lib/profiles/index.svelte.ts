@@ -1,4 +1,4 @@
-import { resolve } from '$app/paths';
+import { asset, resolve } from '$app/paths';
 import type { ResolvedPathname } from '$app/types';
 import { PUBLIC_CONSOLE_PROFILE } from '$env/static/public';
 
@@ -44,8 +44,8 @@ export const base: Profile = {
     platform: 'Appwrite',
     logo: {
         src: {
-            dark: 'https://appwrite.io/images/logos/logo.svg',
-            light: 'https://appwrite.io/images/logos/logo.svg'
+            dark: asset('/images/appwrite-logo-dark.svg'),
+            light: asset('/images/appwrite-logo-light.svg')
         },
         alt: 'Logo Appwrite'
     },
@@ -81,8 +81,8 @@ export const studio: Profile = {
     platform: 'Imagine',
     logo: {
         src: {
-            dark: 'https://imagine-console.up.railway.app/images/imagine-logo-dark.svg',
-            light: 'https://imagine-console.up.railway.app/images/imagine-logo-light.svg'
+            dark: asset('/images/imagine-logo-dark.svg'),
+            light: asset('/images/imagine-logo-light.svg')
         },
         alt: 'Imagine Appwrite'
     },
