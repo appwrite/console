@@ -115,8 +115,6 @@
     let hasTransitioned = $state(false);
     let scrollAnimationFrame: number | null = null;
 
-    let animation: 'legacy' | 'new' = 'new';
-
     let creatingColumns = $state(false);
     let selectedColumnId = $state<string | null>(null);
     let previousColumnId = $state<string | null>(null);
@@ -640,8 +638,6 @@
                 await sleep(NOTIFICATION_AND_MOCK_DELAY);
                 suggestedColumns = mockSuggestions;
             } else {
-                await sleep(5000); // for design review on stage
-
                 suggestedColumns = (await sdk
                     .forProject(page.params.region, page.params.project)
                     .console.suggestColumns({
@@ -1292,8 +1288,7 @@
             bind:this={rangeOverlayEl}
             class="columns-range-overlay"
             class:no-transition={hasTransitioned && customColumns.length > 0}
-            class:thinking={$tableColumnSuggestions.thinking || creatingColumns}
-            data-anim={animation}>
+            class:thinking={$tableColumnSuggestions.thinking || creatingColumns}>
             <div class="inner-glow-wrapper">
                 {@render edgeGradients('left')}
                 {@render edgeGradients('right')}
@@ -2033,170 +2028,122 @@
                 overflow: hidden;
                 border-radius: var(--border-radius-S, 8px);
 
-                /* Legacy shimmer animation */
-                &[data-anim='legacy'] {
-                    margin-block-start: 2px;
-                    height: calc(100% - 4px);
-                    box-shadow:
-                        0 0 0 var(--border-width-l, 2px) #fd366e,
-                        inset 0 0 0 1px color-mix(in oklab, #fe9567 20%, transparent);
+                background: transparent;
 
-                    &::after {
-                        content: '';
-                        position: absolute;
-                        top: 0;
-                        left: -100%;
-                        width: 100%;
-                        height: 100%;
-                        background: linear-gradient(
-                            90deg,
-                            transparent,
-                            rgba(255, 255, 255, 0.8),
-                            transparent
-                        );
-                        animation: legacy-shimmer 2s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
-                    }
+                --border-pink: rgba(253, 54, 110, 0.4);
+                --border-orange: rgba(254, 149, 103, 0.25);
 
-                    .inner-glow-wrapper {
-                        display: none;
-                    }
+                &::before {
+                    content: '';
+                    position: absolute;
+                    inset: 0;
+                    border-radius: inherit;
+                    padding: 2px;
+                    background: linear-gradient(
+                        120deg,
+                        var(--border-pink) 0%,
+                        var(--border-orange) 50%,
+                        var(--border-pink) 100%
+                    );
+                    background-size: 300% 300%;
+                    pointer-events: none;
+                    box-sizing: border-box;
+                    animation: borderGlow 12s ease-in-out infinite;
+                    -webkit-mask:
+                        linear-gradient(#fff 0 0) content-box,
+                        linear-gradient(#fff 0 0);
+                    -webkit-mask-composite: xor;
+                    mask:
+                        linear-gradient(#fff 0 0) content-box,
+                        linear-gradient(#fff 0 0);
+                    mask-composite: exclude;
                 }
 
-                /* New animation with border glow and edge pulses */
-                &[data-anim='new'] {
-                    /* bg wash: 3% subtle | 7% default */
-                    /*background: rgba(253, 54, 110, 0.03);
-                    @supports (background: color-mix(in oklab, #fd366e 1%, transparent)) {
-                        background: linear-gradient(
-                            135deg,
-                            color-mix(in oklab, #fd366e 3%, transparent) 0%,
-                            color-mix(in oklab, #fe9567 3%, transparent) 100%
+                &::after {
+                    content: '';
+                    position: absolute;
+                    top: -50%;
+                    left: -50%;
+                    width: 200%;
+                    height: 200%;
+                    background: linear-gradient(
+                        145deg,
+                        rgba(255, 255, 255, 0) 45%,
+                        rgba(255, 255, 255, 0.5) 50%,
+                        rgba(255, 255, 255, 0) 55%
+                    );
+                    transform: rotate(-25deg);
+                    filter: blur(80px);
+                    pointer-events: none;
+                    animation: shine 2s linear infinite;
+                }
+
+                .inner-glow-wrapper {
+                    position: absolute;
+                    inset: 2px;
+                    border-radius: calc(var(--border-radius-S, 8px) - 2px);
+                    overflow: hidden;
+                }
+
+                .edge-glow {
+                    position: absolute;
+                    inset: 0;
+                    pointer-events: none;
+                    border-radius: inherit;
+                }
+
+                .edge-glow.left .grad,
+                .edge-glow.right .grad {
+                    position: absolute;
+                    inset: 0;
+                    border-radius: inherit;
+                    pointer-events: none;
+                }
+
+                .edge-glow.left .grad {
+                    animation: leftPulse 6s ease-in-out infinite backwards;
+                }
+
+                .edge-glow.right .grad {
+                    animation: rightPulse 6s ease-in-out infinite backwards;
+                }
+
+                .edge-glow.top {
+                    background:
+                        radial-gradient(
+                            circle at 20% 0%,
+                            rgba(254, 149, 103, 0.05) 0%,
+                            transparent 25%
+                        ),
+                        radial-gradient(
+                            circle at 50% 0%,
+                            rgba(253, 54, 110, 0.05) 0%,
+                            transparent 25%
+                        ),
+                        radial-gradient(
+                            circle at 80% 0%,
+                            rgba(253, 54, 110, 0.05) 0%,
+                            transparent 25%
                         );
-                    }*/
+                }
 
-                    background: transparent;
-
-                    /* border colors: pink 0.4 | orange 0.25 */
-                    --border-pink: rgba(253, 54, 110, 0.4);
-                    --border-orange: rgba(254, 149, 103, 0.25);
-
-                    /* border ring: thickness 2px | speed 12s | size 300% */
-                    &::before {
-                        content: '';
-                        position: absolute;
-                        inset: 0;
-                        border-radius: inherit;
-                        padding: 2px;
-                        background: linear-gradient(
-                            120deg,
-                            var(--border-pink) 0%,
-                            var(--border-orange) 50%,
-                            var(--border-pink) 100%
+                .edge-glow.bottom {
+                    background:
+                        radial-gradient(
+                            circle at 20% 100%,
+                            rgba(254, 149, 103, 0.05) 0%,
+                            transparent 25%
+                        ),
+                        radial-gradient(
+                            circle at 50% 100%,
+                            rgba(253, 54, 110, 0.05) 0%,
+                            transparent 25%
+                        ),
+                        radial-gradient(
+                            circle at 80% 100%,
+                            rgba(254, 149, 103, 0.05) 0%,
+                            transparent 25%
                         );
-                        background-size: 300% 300%;
-                        pointer-events: none;
-                        box-sizing: border-box;
-                        animation: borderGlow 12s ease-in-out infinite;
-                        -webkit-mask:
-                            linear-gradient(#fff 0 0) content-box,
-                            linear-gradient(#fff 0 0);
-                        -webkit-mask-composite: xor;
-                        mask:
-                            linear-gradient(#fff 0 0) content-box,
-                            linear-gradient(#fff 0 0);
-                        mask-composite: exclude;
-                    }
-
-                    /* shine sweep: opacity 0.5 light / 0.02 dark | blur 80px | speed 2s | angle -25deg */
-                    &::after {
-                        content: '';
-                        position: absolute;
-                        top: -50%;
-                        left: -50%;
-                        width: 200%;
-                        height: 200%;
-                        background: linear-gradient(
-                            145deg,
-                            rgba(255, 255, 255, 0) 45%,
-                            rgba(255, 255, 255, 0.5) 50%,
-                            rgba(255, 255, 255, 0) 55%
-                        );
-                        transform: rotate(-25deg);
-                        filter: blur(80px);
-                        pointer-events: none;
-                        animation: shine 2s linear infinite;
-                    }
-
-                    .inner-glow-wrapper {
-                        position: absolute;
-                        inset: 2px;
-                        border-radius: calc(var(--border-radius-S, 8px) - 2px);
-                        overflow: hidden;
-                    }
-
-                    /* edge glows container */
-                    .edge-glow {
-                        position: absolute;
-                        inset: 0;
-                        pointer-events: none;
-                        border-radius: inherit;
-                    }
-
-                    /* edge pulses: speed 6s | opacity 0.15-0.35 (see keyframes) | config in snippet */
-                    .edge-glow.left .grad,
-                    .edge-glow.right .grad {
-                        position: absolute;
-                        inset: 0;
-                        border-radius: inherit;
-                        pointer-events: none;
-                    }
-
-                    .edge-glow.left .grad {
-                        animation: leftPulse 6s ease-in-out infinite backwards;
-                    }
-
-                    .edge-glow.right .grad {
-                        animation: rightPulse 6s ease-in-out infinite backwards;
-                    }
-
-                    /* top/bottom ambient: opacity 0.05 | spread 25% | static (no animation) */
-                    .edge-glow.top {
-                        background:
-                            radial-gradient(
-                                circle at 20% 0%,
-                                rgba(254, 149, 103, 0.05) 0%,
-                                transparent 25%
-                            ),
-                            radial-gradient(
-                                circle at 50% 0%,
-                                rgba(253, 54, 110, 0.05) 0%,
-                                transparent 25%
-                            ),
-                            radial-gradient(
-                                circle at 80% 0%,
-                                rgba(253, 54, 110, 0.05) 0%,
-                                transparent 25%
-                            );
-                    }
-
-                    .edge-glow.bottom {
-                        background:
-                            radial-gradient(
-                                circle at 20% 100%,
-                                rgba(254, 149, 103, 0.05) 0%,
-                                transparent 25%
-                            ),
-                            radial-gradient(
-                                circle at 50% 100%,
-                                rgba(253, 54, 110, 0.05) 0%,
-                                transparent 25%
-                            ),
-                            radial-gradient(
-                                circle at 80% 100%,
-                                rgba(254, 149, 103, 0.05) 0%,
-                                transparent 25%
-                            );
-                    }
                 }
             }
         }
@@ -2403,19 +2350,13 @@
         --columns-range-pink-border-color: rgba(253, 54, 110, 0.12) !important;
     }
 
-    :global(.theme-dark) .columns-range-overlay.thinking {
-        &[data-anim='legacy']::after {
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.04), transparent);
-        }
-
-        &[data-anim='new']::after {
-            background: linear-gradient(
-                145deg,
-                rgba(255, 255, 255, 0) 45%,
-                rgba(255, 255, 255, 0.02) 50%,
-                rgba(255, 255, 255, 0) 55%
-            );
-        }
+    :global(.theme-dark) .columns-range-overlay.thinking::after {
+        background: linear-gradient(
+            145deg,
+            rgba(255, 255, 255, 0) 45%,
+            rgba(255, 255, 255, 0.02) 50%,
+            rgba(255, 255, 255, 0) 55%
+        );
     }
 
     :global(.cell-editor) {
