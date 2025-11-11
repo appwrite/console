@@ -100,8 +100,8 @@ importers:
         specifier: ^9.37.0
         version: 9.37.0
       '@imagine.dev/web-components':
-        specifier: ^0.0.34
-        version: 0.0.34(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+        specifier: file:/Users/itznotabug/Appwrite/imagineCloud/packages/web-components
+        version: file:../imagineCloud/packages/web-components(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@melt-ui/pp':
         specifier: ^0.3.2
         version: 0.3.2(@melt-ui/svelte@0.86.6(svelte@5.39.11))(svelte@5.39.11)
@@ -636,8 +636,8 @@ packages:
     resolution: {integrity: sha512-bV0Tgo9K4hfPCek+aMAn81RppFKv2ySDQeMoSZuvTASywNTnVJCArCZE2FWqpvIatKu7VMRLWlR1EazvVhDyhQ==}
     engines: {node: '>=18.18'}
 
-  '@imagine.dev/web-components@0.0.34':
-    resolution: {integrity: sha512-BHQwrvfKcjxFZVZ+Ozv6nJSLJe0kEjH55zUTjdTtLQhNPxum+InEv3Siwbzb25hJcf/U+/koxWGLIkMA74U5NA==}
+  '@imagine.dev/web-components@file:../imagineCloud/packages/web-components':
+    resolution: {directory: ../imagineCloud/packages/web-components, type: directory}
     peerDependencies:
       react: 19.1.0
       react-dom: 19.1.0
@@ -4029,7 +4029,7 @@ snapshots:
 
   '@humanwhocodes/retry@0.4.3': {}
 
-  '@imagine.dev/web-components@0.0.34(react-dom@19.2.0(react@19.2.0))(react@19.2.0)':
+  '@imagine.dev/web-components@file:../imagineCloud/packages/web-components(react-dom@19.2.0(react@19.2.0))(react@19.2.0)':
     dependencies:
       react: 19.2.0
       react-dom: 19.2.0(react@19.2.0)

@@ -273,7 +273,11 @@ export function hideStudio() {
 export async function initImagine(
     region: string,
     projectId: string,
-    callbacks?: { onProjectNameChange?: (name: string) => void }
+    callbacks?: {
+        onProjectNameChange: () => void;
+        onAddDomain: () => void | Promise<void>;
+        onManageDomains: () => void | Promise<void>;
+    }
 ) {
     try {
         const { initImagineConfig, initImagineRouting } = await getWebComponents();
@@ -282,7 +286,8 @@ export async function initImagine(
             initImagineConfig(
                 {
                     AI_SERVICE_ENDPOINT: PUBLIC_AI_SERVICE_BASE_URL,
-                    APPWRITE_ENDPOINT: PUBLIC_APPWRITE_ENDPOINT
+                    APPWRITE_ENDPOINT: PUBLIC_APPWRITE_ENDPOINT,
+                    APPWRITE_SITES_BASE_URL: 'https://stage.appwrite.network'
                 },
                 {
                     initialTheme: get(app).themeInUse,
