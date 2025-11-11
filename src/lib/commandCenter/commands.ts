@@ -100,8 +100,32 @@ const commandsEnabled = derived(disabledMap, ($disabledMap) => {
     return Array.from($disabledMap.values()).every((disabled) => !disabled);
 });
 
-function isInputEvent(event: KeyboardEvent) {
-    return ['INPUT', 'TEXTAREA', 'SELECT'].includes((event.target as HTMLElement).tagName);
+const INPUT_TAGS = ['INPUT', 'TEXTAREA', 'SELECT'];
+const INPUT_ROLES = ['combobox', 'textbox', 'searchbox'];
+
+function isTargetInputLike(element: EventTarget | null) {
+    const el = (element as Element) ?? null;
+    if (!(el instanceof HTMLElement)) return false;
+
+    if (INPUT_TAGS.includes(el.tagName)) return true;
+    if (el.isContentEditable) return true;
+
+    const role = el.getAttribute('role');
+    if (role && INPUT_ROLES.includes(role.toLowerCase())) return true;
+
+    if (
+        el.closest(
+            'input,textarea,select,[contenteditable],[role="combobox"],[role="textbox"],[role="searchbox"],[data-command-center-ignore]'
+        )
+    ) {
+        return true;
+    }
+
+    return false;
+}
+
+export function isKeyboardEventFromInput(event: KeyboardEvent) {
+    return isTargetInputLike(event.target);
 }
 
 function getCommandRank(command: KeyedCommand) {
@@ -204,7 +228,12 @@ export const commandCenterKeyDownHandler = derived(
             for (const command of commandsArr) {
                 if (!isKeyedCommand(command)) continue;
                 if (!command.forceEnable) {
-                    if (command.disabled || !enabled || isInputEvent(event) || $wizard.show) {
+                    if (
+                        command.disabled ||
+                        !enabled ||
+                        isKeyboardEventFromInput(event) ||
+                        $wizard.show
+                    ) {
                         continue;
                     }
                 }

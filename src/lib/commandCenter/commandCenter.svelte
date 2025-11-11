@@ -30,7 +30,12 @@
     import { getContext, setContext } from 'svelte';
     import { get, writable, type Readable } from 'svelte/store';
     import { fade } from 'svelte/transition';
-    import { commandCenterKeyDownHandler, disableCommands, registerCommands } from './commands';
+    import {
+        commandCenterKeyDownHandler,
+        disableCommands,
+        isKeyboardEventFromInput,
+        registerCommands
+    } from './commands';
     import { RootPanel } from './panels';
     import { addSubPanel, clearSubPanels, subPanels } from './subPanels';
     import { addNotification } from '$lib/stores/notifications';
@@ -95,13 +100,9 @@
         keys = [];
     }, 1000);
 
-    function isInputEvent(event: KeyboardEvent) {
-        return ['INPUT', 'TEXTAREA', 'SELECT'].includes((event.target as HTMLElement).tagName);
-    }
-
     const handleKeydown = (e: KeyboardEvent) => {
         if (!$subPanels.length) {
-            if (isInputEvent(e)) return;
+            if (isKeyboardEventFromInput(e)) return;
             keys = [...keys, e.key].slice(-10);
             resetKeys();
         }
