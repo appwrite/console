@@ -11,7 +11,7 @@
     import { Dependencies } from '$lib/constants';
     import { goto, invalidate } from '$app/navigation';
     import { IconExternalLink } from '@appwrite.io/pink-icons-svelte';
-    import { Button, Layout, Typography, Icon } from '@appwrite.io/pink-svelte';
+    import { Layout, Typography, Icon } from '@appwrite.io/pink-svelte';
     import { ensureStudioComponent, initImagine, getWebComponents } from './studio-widget';
     import DomainsTable from './domainsTable.svelte';
     import SideSheet from '$routes/(console)/project-[region]-[project]/databases/database-[database]/table-[table]/layout/sidesheet.svelte';
@@ -28,6 +28,18 @@
     let showManageDomainsSheet = $state(false);
     let primaryDomainForSite = $state(`imagine-${projectId}.stage.appwrite.network`);
 
+    const addDomainUrl = $derived.by(() => {
+        const baseUrl = resolve(
+            '/(console)/project-[region]-[project]/sites/site-[site]/domains/add-domain',
+            {
+                region,
+                project: projectId,
+                site: siteId
+            }
+        );
+        return `${baseUrl}?types=false`;
+    });
+
     onMount(() => {
         ensureStudioComponent();
 
@@ -36,16 +48,7 @@
                 invalidate(Dependencies.PROJECT);
             },
             onAddDomain: async () => {
-                await goto(
-                    resolve(
-                        '/(console)/project-[region]-[project]/sites/site-[site]/domains/add-domain?types=false',
-                        {
-                            region,
-                            project: projectId,
-                            site: siteId
-                        }
-                    )
-                );
+                await goto(addDomainUrl);
             },
             onManageDomains: (primaryDomain) => {
                 if (primaryDomain) {

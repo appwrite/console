@@ -22,8 +22,7 @@
         Skeleton,
         Divider
     } from '@appwrite.io/pink-svelte';
-    import { base, resolve } from '$app/paths';
-    import { page } from '$app/state';
+    import { resolve } from '$app/paths';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { regionalProtocol } from '$routes/(console)/project-[region]-[project]/store';
     import { goto } from '$app/navigation';
@@ -82,6 +81,18 @@
         previousDeleteState = showDelete;
         previousDeleteState = showDelete;
         previousRetryState = showRetry;
+    });
+
+    const addDomainUrl = $derived.by(() => {
+        const baseUrl = resolve(
+            '/(console)/project-[region]-[project]/sites/site-[site]/domains/add-domain',
+            {
+                region,
+                project: projectId,
+                site: siteId
+            }
+        );
+        return `${baseUrl}?types=false`;
     });
 </script>
 
@@ -153,20 +164,7 @@
 </Table.Root>
 
 <Layout.Stack style="width: min-content;">
-    <Button
-        compact
-        on:onclick={async () => {
-            await goto(
-                resolve(
-                    '/(console)/project-[region]-[project]/sites/site-[site]/domains/add-domain?types=false',
-                    {
-                        region,
-                        project: projectId,
-                        site: siteId
-                    }
-                )
-            );
-        }}>
+    <Button compact on:onclick={async () => await goto(addDomainUrl)}>
         <Icon icon={IconPlus} size="s" />
         Add domain
     </Button>
@@ -180,11 +178,11 @@
     <RetryDomainModal bind:show={showRetry} {selectedProxyRule} />
 {/if}
 
-{#snippet domainActions(rule: Models.ProxyRule, toggle: (e: Event) => void)}
+{#snippet domainActions(rule: Models.ProxyRule, toggle: () => void)}
     <ActionMenu.Root>
-        <ActionMenu.Item.Link href={`${$regionalProtocol}${rule.domain}`} external>
+        <ActionMenu.Item.Anchor href={`${$regionalProtocol}${rule.domain}`} external>
             Open domain
-        </ActionMenu.Item.Link>
+        </ActionMenu.Item.Anchor>
         {#if rule.status !== 'verified' && rule.status !== 'verifying'}
             <ActionMenu.Item.Button
                 leadingIcon={IconRefresh}

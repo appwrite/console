@@ -43,7 +43,7 @@
     let statusCode = $state(StatusCode.TemporaryRedirect307);
 
     let routeBase = `${base}/project-${page.params.region}-${page.params.project}/sites/site-${page.params.site}/domains`;
-    let previousPage = routeBase;
+    let previousPage = $state(routeBase);
 
     afterNavigate(({ from }) => {
         if ($hideTypes) {
