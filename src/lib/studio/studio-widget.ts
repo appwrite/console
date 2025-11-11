@@ -276,7 +276,7 @@ export async function initImagine(
     callbacks?: {
         onProjectNameChange: () => void;
         onAddDomain: () => void | Promise<void>;
-        onManageDomains: () => void | Promise<void>;
+        onManageDomains: (primaryDomain?: string) => void | Promise<void>;
     }
 ) {
     try {
