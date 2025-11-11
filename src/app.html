@@ -11,7 +11,10 @@
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         %sveltekit.head%
     </head>
-    <body data-sveltekit-preload-data="hover" data-loading="true">
+    <body
+        data-sveltekit-preload-data="hover"
+        data-loading="true"
+        data-profile="%sveltekit.env.PUBLIC_CONSOLE_PROFILE%">
         <script src="%sveltekit.assets%/js/theme-loader.js"></script>
         <div id="svelte">%sveltekit.body%</div>
         <div class="page-loader">
@@ -25,13 +28,25 @@
                 src="%sveltekit.assets%/images/appwrite-logo-light.svg"
                 width="120"
                 height="22"
-                class="logo-light"
+                class="console-logo-light"
                 alt="Appwrite Logo" />
             <img
                 src="%sveltekit.assets%/images/appwrite-logo-dark.svg"
                 width="120"
                 height="22"
-                class="logo-dark"
+                class="console-logo-dark"
+                alt="Appwrite Logo" />
+            <img
+                src="%sveltekit.assets%/images/imagine-logo-light.svg"
+                width="120"
+                height="22"
+                class="studio-logo-light"
+                alt="Appwrite Logo" />
+            <img
+                src="%sveltekit.assets%/images/imagine-logo-dark.svg"
+                width="120"
+                height="22"
+                class="studio-logo-dark"
                 alt="Appwrite Logo" />
         </div>
     </body>
