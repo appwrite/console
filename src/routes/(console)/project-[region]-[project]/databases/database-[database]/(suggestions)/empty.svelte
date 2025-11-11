@@ -44,11 +44,14 @@
     import { fade } from 'svelte/transition';
 
     import IconAINotification from './icon/aiNotification.svelte';
+    import type { Models } from '@appwrite.io/console';
 
     let {
-        userColumns = []
+        userColumns = [],
+        userDataRows = []
     }: {
         userColumns?: Column[];
+        userDataRows?: Models.Row[];
     } = $props();
 
     const tableId = page.params.table;
@@ -79,6 +82,7 @@
             return {
                 ...column,
                 width: getUserColumnWidth(column.id, defaultWidth),
+                custom: false,
                 resizable: false,
                 draggable: false
             };
@@ -127,12 +131,17 @@
     let columnBeingDeleted: (SuggestedColumnSchema & { deletedIndex?: number }) | null =
         $state(null);
 
-    const baseColProps = { draggable: false, resizable: false };
+    const baseColProps = {
+        custom: false,
+        draggable: false,
+        resizable: false
+    };
 
     const NOTIFICATION_AND_MOCK_DELAY = 1250;
     const COLUMN_DELETION_UNDO_TIMER_LIMIT = 10000; // 10 seconds
 
     const getColumnWidth = (columnKey: string) => Math.max(180, columnKey.length * 8 + 60);
+
     const safeNumericValue = (value: number | undefined) =>
         value !== undefined && isWithinSafeRange(value) ? value : undefined;
 
@@ -512,13 +521,14 @@
                 width: { min: getColumnWidth(col.key) },
                 icon: columnOption?.icon,
                 draggable: false,
-                resizable: false
+                resizable: false,
+                custom: true
             };
         });
     });
 
-    const getRowColumns = (): Column[] => {
-        const minColumnWidth = 180;
+    const getRowColumns = (): (Column & { custom: boolean })[] => {
+        const minColumnWidth = 250;
         const fixedWidths = { id: minColumnWidth, actions: 40, selection: 40 };
 
         const equalWidthColumns = [...staticUserColumns, ...customSuggestedColumns];
@@ -571,7 +581,9 @@
     };
 
     const spreadsheetColumns = $derived(getRowColumns());
-    const emptyCells = $derived(($isSmallViewport ? 14 : 17) + (!$expandTabs ? 2 : 0));
+    const emptyCells = $derived(
+        ($isSmallViewport ? 14 : 17) + (!$expandTabs ? 2 : 0) - userDataRows.length
+    );
 
     onMount(async () => {
         columnsOrder.set(preferences.getColumnOrder(tableId));
@@ -1189,13 +1201,32 @@
 
         // get all custom column IDs
         const suggestedColumnIds = customColumns.map((col) => col.key);
+        const firstSuggestedColumnId = suggestedColumnIds[0];
+
+        const columnBeforeOverlay =
+            staticUserColumns.length > 0
+                ? staticUserColumns[staticUserColumns.length - 1].id
+                : '$id';
+
         const allCells = spreadsheetContainer.querySelectorAll('[role="cell"][data-column-id]');
         allCells.forEach((cell) => {
             const columnId = cell.getAttribute('data-column-id');
             if (columnId && suggestedColumnIds.includes(columnId)) {
                 cell.setAttribute('data-suggested-column', 'true');
+                if (columnId === firstSuggestedColumnId) {
+                    cell.setAttribute('data-first-suggested-column', 'true');
+                } else {
+                    cell.removeAttribute('data-first-suggested-column');
+                }
             } else {
                 cell.removeAttribute('data-suggested-column');
+                cell.removeAttribute('data-first-suggested-column');
+            }
+
+            if (columnId === columnBeforeOverlay) {
+                cell.setAttribute('data-column-before-overlay', 'true');
+            } else {
+                cell.removeAttribute('data-column-before-overlay');
             }
         });
     });
@@ -1258,6 +1289,13 @@
             class="columns-range-overlay"
             class:no-transition={hasTransitioned && customColumns.length > 0}
             class:thinking={$tableColumnSuggestions.thinking || creatingColumns}>
+            <div class="inner-glow-wrapper">
+                {@render edgeGradients('left')}
+                {@render edgeGradients('right')}
+
+                <div class="edge-glow top"></div>
+                <div class="edge-glow bottom"></div>
+            </div>
         </div>
 
         <!-- selection border -->
@@ -1308,11 +1346,9 @@
                             : '--overlay-icon-color'}
                         {@const isColumnInteractable =
                             isCustomColumn(column.id) && columnObj && !columnObj.isPlaceholder}
-                        {@const isUserColumn =
-                            column.id === '$id' ||
-                            staticUserColumns.some((col) => col.id === column.id)}
+                        {@const userColumn = column.id === '$id' || !column.custom}
 
-                        {#if isUserColumn}
+                        {#if userColumn}
                             <Spreadsheet.Header.Cell
                                 {root}
                                 column={column.id}
@@ -1495,41 +1531,34 @@
                 {/each}
             </svelte:fragment>
 
+            {#each userDataRows as row}
+                <Spreadsheet.Row.Base {root} select="disabled" hoverEffect={false}>
+                    {#each spreadsheetColumns as column}
+                        {@const columnObj = getColumn(column.id)}
+                        {@const interactable =
+                            isCustomColumn(column.id) && columnObj && !columnObj.isPlaceholder}
+                        <Spreadsheet.Cell {root} column={column.id} isEditable={false}>
+                            {@render rowCellInteractiveButton({
+                                interactable,
+                                column,
+                                row
+                            })}
+                        </Spreadsheet.Cell>
+                    {/each}
+                </Spreadsheet.Row.Base>
+            {/each}
+
             {#each Array.from({ length: emptyCells }) as _}
                 <Spreadsheet.Row.Base {root} select="disabled" hoverEffect={false}>
                     {#each spreadsheetColumns as column}
                         {@const columnObj = getColumn(column.id)}
-                        {@const isColumnInteractable =
+                        {@const interactable =
                             isCustomColumn(column.id) && columnObj && !columnObj.isPlaceholder}
                         <Spreadsheet.Cell {root} column={column.id} isEditable={false}>
-                            <button
-                                class="column-selector-button"
-                                aria-label="Select column"
-                                data-column-hover={column.id}
-                                onmouseenter={() => {
-                                    if (
-                                        isColumnInteractable &&
-                                        !selectedColumnId &&
-                                        !isInlineEditing &&
-                                        !$isTabletViewport &&
-                                        !$isSmallViewport &&
-                                        !$tableColumnSuggestions.thinking &&
-                                        !creatingColumns &&
-                                        hoveredColumnId !== column.id
-                                    ) {
-                                        hoveredColumnId = column.id;
-                                        /*tooltipTopPosition = 35 + Math.random() * 20;*/
-                                    }
-                                }}
-                                onclick={() => {
-                                    if (isColumnInteractable) {
-                                        if (!$isTabletViewport) {
-                                            selectColumnWithId(column);
-                                        } else if ($isSmallViewport) {
-                                            triggerColumnId = column.id;
-                                        }
-                                    }
-                                }}></button>
+                            {@render rowCellInteractiveButton({
+                                interactable,
+                                column
+                            })}
                         </Spreadsheet.Cell>
                     {/each}
                 </Spreadsheet.Row.Base>
@@ -1712,6 +1741,42 @@
     </div>
 {/snippet}-->
 
+{#snippet rowCellInteractiveButton({ interactable, column, row = null })}
+    <button
+        class="column-selector-button"
+        aria-label="Select column"
+        style:cursor={column.custom ? 'pointer' : 'default'}
+        data-column-hover={column.id}
+        onmouseenter={() => {
+            if (
+                interactable &&
+                !selectedColumnId &&
+                !isInlineEditing &&
+                !$isTabletViewport &&
+                !$isSmallViewport &&
+                !$tableColumnSuggestions.thinking &&
+                !creatingColumns &&
+                hoveredColumnId !== column.id
+            ) {
+                hoveredColumnId = column.id;
+                /*tooltipTopPosition = 35 + Math.random() * 20;*/
+            }
+        }}
+        onclick={() => {
+            if (interactable) {
+                if (!$isTabletViewport) {
+                    selectColumnWithId(column);
+                } else if ($isSmallViewport) {
+                    triggerColumnId = column.id;
+                }
+            }
+        }}>
+        {#if !column.custom && row}
+            <span class="u-trim fake-cell">{row[column.id] ?? ''}</span>
+        {/if}
+    </button>
+{/snippet}
+
 {#snippet changeColumnTypePopover({ id, columnObj, iconColor, icon, isColumnInteractable, index })}
     <Popover let:toggle portal padding="none" placement="bottom-start">
         <div
@@ -1761,6 +1826,27 @@
     </Popover>
 {/snippet}
 
+{#snippet edgeGradients(side: 'left' | 'right')}
+    <!-- Gradient config: pos (y-position) | color | spread | delay (stagger) -->
+    {@const gradientConfigs = [
+        { pos: '20%', color: 'var(--border-pink)', spread: '25%', delay: '0s' },
+        { pos: '50%', color: 'var(--border-orange)', spread: '15%', delay: '1s' },
+        { pos: '80%', color: 'var(--border-pink)', spread: '25%', delay: '2s' },
+        { pos: '35%', color: 'var(--border-pink)', spread: '40%', delay: '0.5s' },
+        { pos: '65%', color: 'var(--border-orange)', spread: '40%', delay: '1.5s' }
+    ]}
+    {@const xPosition = side === 'left' ? '0%' : '100%'}
+
+    <div class="edge-glow {side}">
+        {#each gradientConfigs as grad}
+            <div
+                class="grad"
+                style="background: radial-gradient(circle at {xPosition} {grad.pos}, {grad.color} 0%, transparent {grad.spread}); animation-delay: {grad.delay};">
+            </div>
+        {/each}
+    </div>
+{/snippet}
+
 <!--{#snippet countdownProgress()}-->
 <!--    {@const COUNTDOWN_DURATION = 10000}-->
 
@@ -1800,7 +1886,7 @@
         overflow: visible;
         scrollbar-width: none;
 
-        --columns-range-pink-border-color: rgba(253, 54, 110, 0.24);
+        --columns-range-pink-border-color: rgba(253, 54, 110, 0.18);
         --columns-range-pink-header-background-color: rgba(253, 54, 110, 0.12);
 
         &.custom-columns {
@@ -1827,6 +1913,14 @@
             ) {
                 border-left: var(--border-width-s, 1px) solid var(--columns-range-pink-border-color) !important;
                 transition: border-color 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            }
+
+            :global([role='cell'][data-column-before-overlay='true'] .column-resizer-disabled) {
+                opacity: 0 !important;
+            }
+
+            :global([role='cell'][data-column-id='actions']) {
+                border-left: none !important;
             }
 
             :global(
@@ -1895,6 +1989,14 @@
             width: 100%;
             height: 100%;
             cursor: pointer;
+
+            & :global(.fake-cell) {
+                min-height: 40px;
+                position: relative;
+                align-items: center;
+                font-size: var(--font-size-s);
+                padding: var(--space-4) var(--space-6);
+            }
         }
 
         .columns-range-overlay {
@@ -1923,29 +2025,125 @@
             }
 
             &.thinking {
-                margin-block-start: 2px;
-                height: calc(100% - 4px);
+                overflow: hidden;
                 border-radius: var(--border-radius-S, 8px);
-                box-shadow:
-                    0 0 0 var(--border-width-l, 2px) #fd366e,
-                    inset 0 0 0 1px color-mix(in oklab, #fe9567 20%, transparent);
 
-                transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+                background: transparent;
+
+                --border-pink: rgba(253, 54, 110, 0.4);
+                --border-orange: rgba(254, 149, 103, 0.25);
+
+                &::before {
+                    content: '';
+                    position: absolute;
+                    inset: 0;
+                    border-radius: inherit;
+                    padding: 2px;
+                    background: linear-gradient(
+                        120deg,
+                        var(--border-pink) 0%,
+                        var(--border-orange) 50%,
+                        var(--border-pink) 100%
+                    );
+                    background-size: 300% 300%;
+                    pointer-events: none;
+                    box-sizing: border-box;
+                    animation: borderGlow 12s ease-in-out infinite;
+                    -webkit-mask:
+                        linear-gradient(#fff 0 0) content-box,
+                        linear-gradient(#fff 0 0);
+                    -webkit-mask-composite: xor;
+                    mask:
+                        linear-gradient(#fff 0 0) content-box,
+                        linear-gradient(#fff 0 0);
+                    mask-composite: exclude;
+                }
 
                 &::after {
                     content: '';
                     position: absolute;
-                    top: 0;
-                    left: -100%;
-                    width: 100%;
-                    height: 100%;
+                    top: -50%;
+                    left: -50%;
+                    width: 200%;
+                    height: 200%;
                     background: linear-gradient(
-                        90deg,
-                        transparent,
-                        rgba(255, 255, 255, 0.8),
-                        transparent
+                        145deg,
+                        rgba(255, 255, 255, 0) 45%,
+                        rgba(255, 255, 255, 0.5) 50%,
+                        rgba(255, 255, 255, 0) 55%
                     );
-                    animation: inner-shimmer 2s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
+                    transform: rotate(-25deg);
+                    filter: blur(80px);
+                    pointer-events: none;
+                    animation: shine 2s linear infinite;
+                }
+
+                .inner-glow-wrapper {
+                    position: absolute;
+                    inset: 2px;
+                    border-radius: calc(var(--border-radius-S, 8px) - 2px);
+                    overflow: hidden;
+                }
+
+                .edge-glow {
+                    position: absolute;
+                    inset: 0;
+                    pointer-events: none;
+                    border-radius: inherit;
+                }
+
+                .edge-glow.left .grad,
+                .edge-glow.right .grad {
+                    position: absolute;
+                    inset: 0;
+                    border-radius: inherit;
+                    pointer-events: none;
+                }
+
+                .edge-glow.left .grad {
+                    animation: leftPulse 6s ease-in-out infinite backwards;
+                }
+
+                .edge-glow.right .grad {
+                    animation: rightPulse 6s ease-in-out infinite backwards;
+                }
+
+                .edge-glow.top {
+                    background:
+                        radial-gradient(
+                            circle at 20% 0%,
+                            rgba(254, 149, 103, 0.05) 0%,
+                            transparent 25%
+                        ),
+                        radial-gradient(
+                            circle at 50% 0%,
+                            rgba(253, 54, 110, 0.05) 0%,
+                            transparent 25%
+                        ),
+                        radial-gradient(
+                            circle at 80% 0%,
+                            rgba(253, 54, 110, 0.05) 0%,
+                            transparent 25%
+                        );
+                }
+
+                .edge-glow.bottom {
+                    background:
+                        radial-gradient(
+                            circle at 20% 100%,
+                            rgba(254, 149, 103, 0.05) 0%,
+                            transparent 25%
+                        ),
+                        radial-gradient(
+                            circle at 50% 100%,
+                            rgba(253, 54, 110, 0.05) 0%,
+                            transparent 25%
+                        ),
+                        radial-gradient(
+                            circle at 80% 100%,
+                            rgba(254, 149, 103, 0.05) 0%,
+                            transparent 25%
+                        );
                 }
             }
         }
@@ -2028,7 +2226,7 @@
         }
 
         & :global([data-select='true']) {
-            opacity: 0.85;
+            // opacity: 0.85;
             pointer-events: none;
         }
 
@@ -2077,7 +2275,7 @@
         );
     }
 
-    @keyframes inner-shimmer {
+    @keyframes legacy-shimmer {
         0% {
             left: -100%;
             opacity: 0;
@@ -2094,26 +2292,71 @@
         }
     }
 
+    @keyframes leftPulse {
+        0%,
+        100% {
+            opacity: 0;
+        }
+        33% {
+            opacity: 0.35;
+        }
+        66% {
+            opacity: 0.25;
+        }
+    }
+
+    @keyframes rightPulse {
+        0%,
+        100% {
+            opacity: 0;
+        }
+        33% {
+            opacity: 0.35;
+        }
+        66% {
+            opacity: 0.25;
+        }
+    }
+
+    @keyframes shine {
+        0% {
+            transform: translateX(-100%) rotate(-25deg);
+        }
+        100% {
+            transform: translateX(100%) rotate(-25deg);
+        }
+    }
+
+    @keyframes borderGlow {
+        0% {
+            background-position: 0 0;
+        }
+        25% {
+            background-position: 100% 0;
+        }
+        50% {
+            background-position: 100% 100%;
+        }
+        75% {
+            background-position: 0 100%;
+        }
+        100% {
+            background-position: 0 0;
+        }
+    }
+
     :global(.theme-dark) .spreadsheet-container-outer {
         --columns-range-pink-header-background-color: unset;
         --columns-range-pink-border-color: rgba(253, 54, 110, 0.12) !important;
     }
 
-    :global(.theme-dark) .columns-range-overlay.thinking {
-        &::before {
-            background: linear-gradient(
-                90deg,
-                rgba(253, 54, 110, 0.01),
-                rgba(254, 149, 103, 0.03),
-                rgba(253, 54, 110, 0.01),
-                rgba(254, 149, 103, 0.03),
-                rgba(253, 54, 110, 0.01)
-            );
-        }
-
-        &::after {
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.04), transparent);
-        }
+    :global(.theme-dark) .columns-range-overlay.thinking::after {
+        background: linear-gradient(
+            145deg,
+            rgba(255, 255, 255, 0) 45%,
+            rgba(255, 255, 255, 0.02) 50%,
+            rgba(255, 255, 255, 0) 55%
+        );
     }
 
     :global(.cell-editor) {

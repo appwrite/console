@@ -266,7 +266,7 @@
                 </EmptySheet>
             {/if}
         {:else if isCloud && canShowSuggestionsSheet}
-            <SuggestionsEmptySheet userColumns={$tableColumns} />
+            <SuggestionsEmptySheet userColumns={$tableColumns} userDataRows={data.rows.rows} />
         {:else}
             <EmptySheet mode="rows" showActions={$canWriteTables} title="You have no columns yet">
                 {#snippet subtitle()}
