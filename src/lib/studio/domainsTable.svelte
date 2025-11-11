@@ -126,16 +126,12 @@
                                 size="s"
                                 type="warning"
                                 variant="secondary"
-                                content="Verification failed"
-                            />
+                                content="Verification failed" />
                         {/if}
                     </Layout.Stack>
                 </Table.Cell>
                 <Table.Cell column="actions" {root}>
-                    <Popover
-                        let:toggle
-                        padding="none"
-                    >
+                    <Popover let:toggle padding="none">
                         <Button
                             text
                             icon
