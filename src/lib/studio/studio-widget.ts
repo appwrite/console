@@ -158,6 +158,13 @@ export function ensureStudioComponent(): HTMLElement | null {
     }
 
     const created = document.createElement('imagine-web-components-wrapper');
+    created.addEventListener(
+        'click',
+        (event) => {
+            event.stopPropagation();
+        },
+        { capture: true }
+    );
     created.dataset.appwriteStudio = 'true';
     ensureBaseStyles(created);
     document.body.appendChild(created);
