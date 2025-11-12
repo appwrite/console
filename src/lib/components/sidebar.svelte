@@ -12,8 +12,7 @@
         Button,
         Layout,
         Avatar,
-        Typography,
-        Badge
+        Typography
     } from '@appwrite.io/pink-svelte';
 
     import {
@@ -281,12 +280,6 @@
                                     class:has-text={state === 'open'}
                                     class="link-text">
                                     {projectOption.name}
-                                    {#if projectOption?.badge}
-                                        <Badge
-                                            variant="secondary"
-                                            content={projectOption.badge}
-                                            size="xs" />
-                                    {/if}
                                 </span>
                             </a>
                             <span slot="tooltip">{projectOption.name}</span>

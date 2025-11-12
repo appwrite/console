@@ -136,7 +136,8 @@
         title="Verify your email address"
         {onSubmit}
         dismissible={false}
-        autoClose={false}>
+        autoClose={false}
+        backdrop={false}>
         <Card.Base variant="secondary" padding="s">
             <Layout.Stack gap="xxs">
                 <Typography.Text gap="m">

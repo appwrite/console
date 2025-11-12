@@ -21,30 +21,29 @@
 
     onMount(() => {
         let previousStatus = null;
-        return realtime
-            .forProject(page.params.region, page.params.project)
-            .subscribe<Models.Deployment>('console', (message) => {
-                if (
-                    message.payload.status !== 'ready' &&
-                    previousStatus === message.payload.status
-                ) {
-                    return;
-                }
-                previousStatus = message.payload.status;
-                if (message.events.includes('functions.*.deployments.*.create')) {
-                    invalidate(Dependencies.DEPLOYMENTS);
-                    return;
-                }
-                if (message.events.includes('functions.*.deployments.*.update')) {
-                    invalidate(Dependencies.DEPLOYMENTS);
-                    invalidate(Dependencies.FUNCTION);
-                    return;
-                }
-                if (message.events.includes('functions.*.deployments.*.delete')) {
-                    invalidate(Dependencies.DEPLOYMENTS);
-                    return;
-                }
-            });
+        return realtime.forProject(page.params.region, 'console', (response) => {
+            const payload = response.payload as Models.Deployment;
+            if (payload.status !== 'ready' && previousStatus === payload.status) {
+                return;
+            }
+
+            previousStatus = payload.status;
+            if (response.events.includes('functions.*.deployments.*.create')) {
+                invalidate(Dependencies.DEPLOYMENTS);
+                return;
+            }
+
+            if (response.events.includes('functions.*.deployments.*.update')) {
+                invalidate(Dependencies.DEPLOYMENTS);
+                invalidate(Dependencies.FUNCTION);
+                return;
+            }
+
+            if (response.events.includes('functions.*.deployments.*.delete')) {
+                invalidate(Dependencies.DEPLOYMENTS);
+                return;
+            }
+        });
     });
 
     $: $registerCommands([

@@ -37,6 +37,7 @@
         IconTrash
     } from '@appwrite.io/pink-icons-svelte';
     import { type Columns, databaseColumnSheetOptions } from './store';
+    import { isRelationship } from './rows/store';
 
     interface MenuItem {
         label?: string;
@@ -116,10 +117,20 @@
 
         if (type === 'header') {
             if (isSequence) {
-                return ['sort-asc', 'sort-desc'].includes(item.action ?? '');
+                return ['sort-asc', 'sort-desc'].includes(item?.action);
             }
 
-            if (['delete', 'update', 'duplicate-header'].includes(item.action) && isSystemColumn) {
+            if (['delete', 'update', 'duplicate-header'].includes(item?.action) && isSystemColumn) {
+                return false;
+            }
+
+            // hide column-left and create-index for $id (first column, already indexed)
+            if (columnId === '$id' && ['column-left', 'create-index'].includes(item?.action)) {
+                return false;
+            }
+
+            // hide sort options for relationship columns
+            if (isRelationship(column) && ['sort-asc', 'sort-desc'].includes(item?.action)) {
                 return false;
             }
         }
