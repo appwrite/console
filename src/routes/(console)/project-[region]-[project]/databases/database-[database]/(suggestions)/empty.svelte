@@ -1773,7 +1773,7 @@
         }}>
         {#if !column.custom && row}
             {@const rowData = row[column.id]}
-            {@const isNullOrUndefined = rowData === null || typeof rowData === 'object'}
+            {@const isNullOrUndefined = rowData === null || typeof rowData === 'undefined'}
             <span class="u-trim suggestions-empty-fake-cell">
                 {#if isNullOrUndefined}
                     <Badge variant="secondary" content="NULL" size="xs" />
