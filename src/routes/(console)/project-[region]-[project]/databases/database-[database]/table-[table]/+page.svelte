@@ -99,6 +99,8 @@
         $tableColumnSuggestions.table &&
         $tableColumnSuggestions.table.id === page.params.table;
 
+    $: disableButton = canShowSuggestionsSheet;
+
     async function onSelect(file: Models.File, localFile = false) {
         $isCsvImportInProgress = true;
 
@@ -146,7 +148,8 @@
                                 columns={tableColumns}
                                 hideView
                                 showAnyway
-                                isCustomTable />
+                                isCustomTable
+                                {disableButton} />
                         </div>
 
                         <svelte:fragment slot="tooltip">Columns</svelte:fragment>
@@ -157,7 +160,7 @@
                             onlyIcon
                             query={data.query}
                             columns={filterColumns}
-                            disabled={!(hasColumns && hasValidColumns)}
+                            disabled={!(hasColumns && hasValidColumns) || disableButton}
                             analyticsSource="database_tables" />
 
                         <svelte:fragment slot="tooltip">Filters</svelte:fragment>
@@ -176,7 +179,7 @@
                         <Button
                             secondary
                             event={Click.DatabaseImportCsv}
-                            disabled={!(hasColumns && hasValidColumns)}
+                            disabled={!(hasColumns && hasValidColumns) || disableButton}
                             on:click={() => (showImportCSV = true)}>
                             Import CSV
                         </Button>
@@ -184,7 +187,7 @@
                             <Button
                                 secondary
                                 event="create_row"
-                                disabled={!(hasColumns && hasValidColumns)}
+                                disabled={!(hasColumns && hasValidColumns) || disableButton}
                                 on:click={() => ($showRowCreateSheet.show = true)}>
                                 <Icon icon={IconPlus} slot="start" size="s" />
                                 Create row
@@ -211,7 +214,8 @@
                                     secondary
                                     disabled={isRefreshing ||
                                         !data.rows.total ||
-                                        !(hasColumns && hasValidColumns)}
+                                        !(hasColumns && hasValidColumns) ||
+                                        disableButton}
                                     class="small-button-dimensions"
                                     on:click={async () => {
                                         isRefreshing = true;
@@ -233,7 +237,7 @@
                 <Button
                     secondary
                     event="create_row"
-                    disabled={!(hasColumns && hasValidColumns)}
+                    disabled={!(hasColumns && hasValidColumns) || disableButton}
                     on:click={() => ($showRowCreateSheet.show = true)}>
                     <Icon icon={IconPlus} slot="start" size="s" />
                     Create row
