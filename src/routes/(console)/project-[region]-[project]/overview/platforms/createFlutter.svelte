@@ -18,7 +18,7 @@
     import { Card } from '$lib/components';
     import { page } from '$app/state';
     import { onMount } from 'svelte';
-    import { sdk } from '$lib/stores/sdk';
+    import { realtime, sdk } from '$lib/stores/sdk';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { addNotification } from '$lib/stores/notifications';
     import { fade } from 'svelte/transition';
@@ -27,11 +27,16 @@
     import { PlatformType } from '@appwrite.io/console';
     import { project } from '../../store';
     import { resolvedProfile } from '$lib/profiles/index.svelte';
+    import { getCorrectTitle, type PlatformProps } from './store';
 
-    let showExitModal = false;
-    let isPlatformCreated = false;
-    let isCreatingPlatform = false;
-    let connectionSuccessful = false;
+    let { isConnectPlatform = false, platform = PlatformType.Flutterandroid }: PlatformProps =
+        $props();
+
+    let showExitModal = $state(false);
+    let isCreatingPlatform = $state(false);
+    let connectionSuccessful = $state(false);
+    let isPlatformCreated = $state(isConnectPlatform);
+
     const projectId = page.params.project;
 
     const gitCloneCode =
@@ -42,8 +47,6 @@
   static const String appwriteProjectName = '${$project.name}';
   static const String appwritePublicEndpoint = '${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}';
 }`;
-
-    export let platform: PlatformType = PlatformType.Flutterandroid;
 
     let platforms: { [key: string]: PlatformType } = {
         Android: PlatformType.Flutterandroid,
@@ -135,8 +138,10 @@
                 message: 'Platform created.'
             });
 
-            invalidate(Dependencies.PROJECT);
-            invalidate(Dependencies.PLATFORMS);
+            await Promise.all([
+                invalidate(Dependencies.PROJECT),
+                invalidate(Dependencies.PLATFORMS)
+            ]);
         } catch (error) {
             trackError(error, Submit.PlatformCreate);
             addNotification({
@@ -153,7 +158,7 @@
     }
 
     onMount(() => {
-        const unsubscribe = sdk.forConsole.client.subscribe('console', (response) => {
+        const unsubscribe = realtime.forConsole(page.params.region, 'console', (response) => {
             if (response.events.includes(`projects.${projectId}.ping`)) {
                 connectionSuccessful = true;
                 invalidate(Dependencies.ORGANIZATION);
@@ -169,7 +174,10 @@
     });
 </script>
 
-<Wizard title="Add Flutter platform" bind:showExitModal confirmExit={!isPlatformCreated}>
+<Wizard
+    bind:showExitModal
+    confirmExit={!isPlatformCreated}
+    title={getCorrectTitle(isConnectPlatform, 'Flutter')}>
     <Layout.Stack gap="xxl">
         <Form onSubmit={createFlutterPlatform}>
             <Layout.Stack gap="xxl">

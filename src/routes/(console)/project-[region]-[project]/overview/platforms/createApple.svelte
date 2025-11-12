@@ -18,7 +18,7 @@
     import { Card } from '$lib/components';
     import { page } from '$app/state';
     import { onMount } from 'svelte';
-    import { sdk } from '$lib/stores/sdk';
+    import { realtime, sdk } from '$lib/stores/sdk';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { addNotification } from '$lib/stores/notifications';
     import { fade } from 'svelte/transition';
@@ -27,11 +27,15 @@
     import { PlatformType } from '@appwrite.io/console';
     import { app } from '$lib/stores/app';
     import { project } from '../../store';
+    import { getCorrectTitle, type PlatformProps } from './store';
 
-    let showExitModal = false;
-    let isPlatformCreated = false;
-    let isCreatingPlatform = false;
-    let connectionSuccessful = false;
+    let { isConnectPlatform = false, platform = PlatformType.Appleios }: PlatformProps = $props();
+
+    let showExitModal = $state(false);
+    let isCreatingPlatform = $state(false);
+    let connectionSuccessful = $state(false);
+    let isPlatformCreated = $state(isConnectPlatform);
+
     const projectId = page.params.project;
 
     const gitCloneCode =
@@ -40,8 +44,6 @@
     const configCode = `APPWRITE_PROJECT_ID: "${projectId}"
 APPWRITE_PROJECT_NAME: "${$project.name}"
 APPWRITE_PUBLIC_ENDPOINT: "${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}"`;
-
-    export let platform: PlatformType = PlatformType.Appleios;
 
     let platforms: { [key: string]: PlatformType } = {
         iOS: PlatformType.Appleios,
@@ -70,8 +72,10 @@ APPWRITE_PUBLIC_ENDPOINT: "${sdk.forProject(page.params.region, page.params.proj
                 message: 'Platform created.'
             });
 
-            invalidate(Dependencies.PROJECT);
-            invalidate(Dependencies.PLATFORMS);
+            await Promise.all([
+                invalidate(Dependencies.PROJECT),
+                invalidate(Dependencies.PLATFORMS)
+            ]);
         } catch (error) {
             trackError(error, Submit.PlatformCreate);
             addNotification({
@@ -88,7 +92,7 @@ APPWRITE_PUBLIC_ENDPOINT: "${sdk.forProject(page.params.region, page.params.proj
     }
 
     onMount(() => {
-        const unsubscribe = sdk.forConsole.client.subscribe('console', (response) => {
+        const unsubscribe = realtime.forConsole(page.params.region, 'console', (response) => {
             if (response.events.includes(`projects.${projectId}.ping`)) {
                 connectionSuccessful = true;
                 invalidate(Dependencies.ORGANIZATION);
@@ -104,7 +108,10 @@ APPWRITE_PUBLIC_ENDPOINT: "${sdk.forProject(page.params.region, page.params.proj
     });
 </script>
 
-<Wizard title="Add Apple platform" bind:showExitModal confirmExit={!isPlatformCreated}>
+<Wizard
+    bind:showExitModal
+    confirmExit={!isPlatformCreated}
+    title={getCorrectTitle(isConnectPlatform, 'Apple')}>
     <Layout.Stack gap="xxl">
         <Form onSubmit={createApplePlatform}>
             <Layout.Stack gap="xxl">

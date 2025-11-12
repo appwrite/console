@@ -140,7 +140,7 @@
                 </Link.Anchor>
             {/if}
             {#if $isSmallViewport}
-                {#if $version && !isCloud}
+                {#if $version && isSelfHosted}
                     <span class="divider-wrapper">
                         <Divider vertical />
                     </span>
@@ -158,6 +158,9 @@
                 {/if}
 
                 {#if isCloud && resolvedProfile.showGeneralAvailability}
+                    <span class="divider-wrapper">
+                        <Divider vertical />
+                    </span>
                     <Icon size="s" icon={IconCloud} />
 
                     <Badge

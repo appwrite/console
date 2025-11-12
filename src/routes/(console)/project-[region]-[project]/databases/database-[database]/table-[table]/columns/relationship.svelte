@@ -69,6 +69,7 @@
 
     // Props
     export let editing = false;
+    export let disabled = false;
     export let data: Models.ColumnRelationship;
 
     // Constants
@@ -158,7 +159,7 @@
         bind:group={way}
         name="one"
         value="one"
-        disabled={editing}
+        disabled={editing || disabled}
         icon={IconArrowSmRight}>
         One Relation column within this table
     </Card.Selector>
@@ -167,7 +168,7 @@
         bind:group={way}
         name="two"
         value="two"
-        disabled={editing}
+        disabled={editing || disabled}
         icon={IconSwitchHorizontal}>
         One Relation column within this table and another within the related table
     </Card.Selector>
@@ -180,7 +181,7 @@
     placeholder="Select a table"
     bind:value={data.relatedTable}
     on:change={updateKeyName}
-    disabled={editing}
+    disabled={editing || disabled}
     options={tables?.map((n) => ({ value: n.$id, label: `${n.name} (${n.$id})` })) ?? []} />
 
 {#if data?.relatedTable}
@@ -190,7 +191,8 @@
         placeholder="Enter key"
         bind:value={data.key}
         helper="Allowed characters: a-z, A-Z, 0-9, -, ."
-        required />
+        required
+        {disabled} />
 
     {#if way === 'two'}
         <InputText
@@ -199,6 +201,7 @@
             placeholder="Enter key"
             bind:value={data.twoWayKey}
             required
+            {disabled}
             helper="Allowed characters: a-z, A-Z, 0-9, -, . Once created, column key cannot be
                 adjusted to maintain data integrity."
             readonly={editing} />
@@ -211,7 +214,7 @@
         required
         placeholder="Select a relation"
         options={relationshipType}
-        disabled={editing} />
+        disabled={editing || disabled} />
 
     <div class="u-flex u-flex-vertical u-gap-16">
         <Box>
@@ -251,6 +254,7 @@
         label="On deleting a row"
         bind:value={data.onDelete}
         required
+        {disabled}
         placeholder="Select a deletion method"
         options={deleteOptions} />
 {/if}

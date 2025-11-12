@@ -125,11 +125,11 @@
                 </Layout.Stack>
             </Layout.Stack>
             <InputSelect
+                required
                 id="project"
                 label="Choose a project"
                 options={projectOptions ?? []}
                 bind:value={$supportData.project}
-                required={false}
                 placeholder="Select project" />
             <InputText
                 id="subject"
