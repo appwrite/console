@@ -291,7 +291,8 @@ export async function initImagine(
             initImagineConfig(
                 {
                     AI_SERVICE_ENDPOINT: PUBLIC_AI_SERVICE_BASE_URL,
-                    APPWRITE_ENDPOINT: PUBLIC_APPWRITE_ENDPOINT
+                    APPWRITE_ENDPOINT: PUBLIC_APPWRITE_ENDPOINT,
+                    APPWRITE_SITES_BASE_URL: ''
                 },
                 {
                     initialTheme: get(app).themeInUse,
