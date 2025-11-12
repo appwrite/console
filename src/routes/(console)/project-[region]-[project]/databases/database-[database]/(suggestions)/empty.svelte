@@ -635,7 +635,7 @@
         try {
             if (VARS.MOCK_AI_SUGGESTIONS) {
                 /* animation */
-                await sleep(NOTIFICATION_AND_MOCK_DELAY * 100);
+                await sleep(NOTIFICATION_AND_MOCK_DELAY);
                 suggestedColumns = mockSuggestions;
             } else {
                 suggestedColumns = (await sdk
@@ -1772,7 +1772,15 @@
             }
         }}>
         {#if !column.custom && row}
-            <span class="u-trim fake-cell">{row[column.id] ?? ''}</span>
+            {@const rowData = row[column.id]}
+            {@const isNullOrUndefined = rowData === null || typeof rowData === 'undefined'}
+            <span class="u-trim suggestions-empty-fake-cell">
+                {#if isNullOrUndefined}
+                    <Badge variant="secondary" content="NULL" size="xs" />
+                {:else}
+                    {rowData}
+                {/if}
+            </span>
         {/if}
     </button>
 {/snippet}
@@ -1990,7 +1998,7 @@
             height: 100%;
             cursor: pointer;
 
-            & :global(.fake-cell) {
+            & :global(.suggestions-empty-fake-cell) {
                 min-height: 40px;
                 position: relative;
                 align-items: center;
