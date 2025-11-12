@@ -1773,9 +1773,10 @@
         }}>
         {#if !column.custom && row}
             {@const rowData = row[column.id]}
+            {@const isActions = column.id === 'actions'}
             {@const isNullOrUndefined = rowData === null || typeof rowData === 'undefined'}
             <span class="u-trim suggestions-empty-fake-cell">
-                {#if isNullOrUndefined}
+                {#if isNullOrUndefined && !isActions}
                     <Badge variant="secondary" content="NULL" size="xs" />
                 {:else}
                     {rowData}
