@@ -5,17 +5,19 @@
     import { projectRegion } from '../store';
     import { hasOnboardingDismissed, setHasOnboardingDismissed } from '$lib/helpers/onboarding';
     import { goto } from '$app/navigation';
-    import { resolve } from '$app/paths';
     import { Layout, Button, Typography } from '@appwrite.io/pink-svelte';
     import { user } from '$lib/stores/user';
     import { isSmallViewport } from '$lib/stores/viewport';
     import { trackEvent } from '$lib/actions/analytics';
     import { resolvedProfile } from '$lib/profiles/index.svelte';
 
+    const region = $derived(page.params.region);
+    const project = $derived(page.params.project);
+
     function dismissOnboarding() {
-        setHasOnboardingDismissed(page.params.project, $user);
+        setHasOnboardingDismissed(project, $user);
         trackEvent('onboarding_hub_platform_dismiss');
-        goto(resolvedProfile.getProjectRoute({ region: $project.region, project: $project.$id }));
+        goto(resolvedProfile.getProjectRoute({ region, project }));
     }
 </script>
 
@@ -29,8 +31,7 @@
                     </span>
                 </Typography.Title>
                 <Layout.Stack direction="row" inline>
-                    <Id value={page.params.project} copyText="Copy project ID"
-                        >{page.params.project}</Id>
+                    <Id value={project} copyText="Copy project ID">{project}</Id>
                     {#if $projectRegion}
                         <RegionEndpoint region={$projectRegion} />
                     {/if}
@@ -57,7 +58,7 @@
                         >Follow a few quick steps to get started with {resolvedProfile.platform}</Typography.Text>
                 </Layout.Stack>
                 <div class="dashboard-header-button">
-                    {#if !hasOnboardingDismissed(page.params.project, $user)}
+                    {#if !hasOnboardingDismissed(project, $user)}
                         <Button.Button size="s" variant="secondary" on:click={dismissOnboarding}>
                             Dismiss this page
                         </Button.Button>
