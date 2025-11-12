@@ -25,7 +25,9 @@
     import type { PageData } from './$types';
 
     export let data: PageData;
-    let organization = data.organization;
+
+    // Reactive statement to update organization when data changes
+    $: organization = data.organization;
 
     // why are these reactive?
     $: defaultPaymentMethod = data?.paymentMethods?.paymentMethods?.find(
