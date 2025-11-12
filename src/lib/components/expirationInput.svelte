@@ -159,5 +159,5 @@
         min={minDate}
         label={dateSelectorLabel}
         bind:value={expirationCustom}
-        on:change={() => (hasUserInteracted = true)} />
+        on:input={() => (hasUserInteracted = true)} />
 {/if}
