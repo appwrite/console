@@ -32,6 +32,7 @@
         IconChevronDown,
         IconChevronUp,
         IconPlus,
+        IconRefresh,
         IconUpload,
         IconDownload
     } from '@appwrite.io/pink-icons-svelte';
@@ -41,9 +42,12 @@
     import { onDestroy } from 'svelte';
     import { isCloud } from '$lib/system';
     import { Empty as SuggestionsEmptySheet, tableColumnSuggestions } from '../(suggestions)';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
 
     export let data: PageData;
 
+    let isRefreshing = false;
     let showImportCSV = false;
 
     // todo: might need a type fix here.
@@ -169,17 +173,43 @@
                         <svelte:fragment slot="tooltip">Filters</svelte:fragment>
                     </Tooltip>
                 </Layout.Stack>
-                <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
-                    {#if !$isSmallViewport}
+                <Layout.Stack
+                    direction="row"
+                    alignItems="center"
+                    justifyContent="flex-end"
+                    style="padding-right: 40px;">
+                    <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
                         <Button
                             secondary
-                            event="create_row"
+                            event={Click.DatabaseImportCsv}
                             disabled={!(hasColumns && hasValidColumns)}
-                            on:click={() => ($showRowCreateSheet.show = true)}>
-                            <Icon icon={IconPlus} slot="start" size="s" />
-                            Create row
+                            on:click={() => (showImportCSV = true)}>
+                            Import CSV
                         </Button>
-                    {/if}
+                        {#if !$isSmallViewport}
+                            <Button
+                                secondary
+                                event="create_row"
+                                disabled={!(hasColumns && hasValidColumns)}
+                                on:click={() => ($showRowCreateSheet.show = true)}>
+                                <Icon icon={IconPlus} slot="start" size="s" />
+                                Create row
+                            </Button>
+
+                            <Button
+                                icon
+                                size="s"
+                                secondary
+                                class="small-button-dimensions"
+                                on:click={() => {
+                                    $expandTabs = !$expandTabs;
+                                    preferences.setKey('tableHeaderExpanded', $expandTabs);
+                                }}>
+                                <Icon
+                                    icon={!$expandTabs ? IconChevronDown : IconChevronUp}
+                                    size="s" />
+                            </Button>
+
                     <Popover padding="none" placement="bottom-start" let:toggle let:showing>
                         <Button
                             secondary
@@ -190,35 +220,45 @@
                                 <Icon icon={IconChevronDown} size="s" />
                             </span>
                         </Button>
-                        <ActionMenu.Root slot="tooltip">
-                            <ActionMenu.Item.Button
-                                leadingIcon={IconUpload}
-                                on:click={() => (showImportCSV = true)}>
-                                Import CSV
-                            </ActionMenu.Item.Button>
-                            <ActionMenu.Item.Button
-                                leadingIcon={IconDownload}
-                                on:click={() => {
-                                    trackEvent(Click.DatabaseExportCsv);
-                                    goto(getTableExportUrl());
-                                }}>
-                                Export CSV
-                            </ActionMenu.Item.Button>
-                        </ActionMenu.Root>
-                    </Popover>
-                    {#if !$isSmallViewport}
+               
                         <Button
-                            icon
-                            size="s"
-                            secondary
-                            class="small-button-dimensions"
-                            on:click={() => {
-                                $expandTabs = !$expandTabs;
-                                preferences.setKey('tableHeaderExpanded', $expandTabs);
-                            }}>
-                            <Icon icon={!$expandTabs ? IconChevronDown : IconChevronUp} size="s" />
+                            leadingIcon={IconUpload}
+                            on:click={() => (showImportCSV = true)}>
+                            Import CSV
                         </Button>
-                    {/if}
+
+                        <Button
+                            leadingIcon={IconDownload}
+                            on:click={() => {
+                                trackEvent(Click.DatabaseExportCsv);
+                                goto(getTableExportUrl());
+                            }}>
+                            Export CSV
+                        </Button>
+
+                            <Tooltip disabled={isRefreshing || !data.rows.total} placement="top">
+                                <Button
+                                    icon
+                                    size="s"
+                                    secondary
+                                    disabled={isRefreshing ||
+                                        !data.rows.total ||
+                                        !(hasColumns && hasValidColumns)}
+                                    class="small-button-dimensions"
+                                    on:click={async () => {
+                                        isRefreshing = true;
+                                        await invalidate(Dependencies.TABLE);
+                                        isRefreshing = false;
+                                    }}>
+                                    <div style:line-height="0px" class:rotating={isRefreshing}>
+                                        <Icon icon={IconRefresh} size="s" />
+                                    </div>
+                                </Button>
+
+                                <svelte:fragment slot="tooltip">Refresh</svelte:fragment>
+                            </Tooltip>
+                        {/if}
+                    </Layout.Stack>
                 </Layout.Stack>
             </Layout.Stack>
             {#if $isSmallViewport}
@@ -332,5 +372,18 @@
 
     .chevron-wrapper.rotate {
         transform: rotate(180deg);
+    }
+
+    :global(.rotating) {
+        animation: rotate 1s linear infinite;
+    }
+
+    @keyframes rotate {
+        from {
+            transform: rotate(0deg);
+        }
+        to {
+            transform: rotate(360deg);
+        }
     }
 </style>

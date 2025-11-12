@@ -24,6 +24,8 @@
     } from '@appwrite.io/pink-svelte';
     import { capitalize } from '$lib/helpers/string';
     import { formatTimeDetailed } from '$lib/helpers/timeConversion';
+    import { getEffectiveBuildStatus } from '$lib/helpers/buildTimeout';
+    import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
     import { timer } from '$lib/actions/timer';
     import { app } from '$lib/stores/app';
     import { IconDotsHorizontal, IconRefresh, IconTrash } from '@appwrite.io/pink-icons-svelte';
@@ -36,22 +38,29 @@
     import { readOnly } from '$lib/stores/billing';
     import RedeployModal from '../(modals)/redeployModal.svelte';
 
-    export let data;
+    let { data } = $props();
 
-    let showDelete = false;
-    let showCancel = false;
-    let showActivate = false;
-    let showRedeploy = false;
+    let effectiveStatus = $derived(
+        getEffectiveBuildStatus(
+            data.deployment.status,
+            data.deployment.$createdAt,
+            $regionalConsoleVariables
+        )
+    );
+    let showDelete = $state(false);
+    let showCancel = $state(false);
+    let showActivate = $state(false);
+    let showRedeploy = $state(false);
 
     onMount(() => {
-        return realtime.forProject(page.params.region, 'console', (response) => {
+        return realtime.forConsole(page.params.region, 'console', (message) => {
             if (
-                response.events.includes(
+                message.events.includes(
                     `functions.${page.params.function}.deployments.${page.params.deployment}.update`
                 )
             ) {
-                const payload = response.payload as Models.Deployment;
-                if (payload.status === 'ready') {
+                const payload = message.payload as Models.Deployment;
+                if (['ready', 'failed'].includes(payload.status)) {
                     invalidate(Dependencies.DEPLOYMENT);
                 }
             }
@@ -78,7 +87,7 @@
     <DeploymentCard proxyRuleList={data.proxyRuleList} deployment={data.deployment}>
         {#snippet footer()}
             <Layout.Stack direction="row" alignItems="center" inline>
-                {#if data.deployment.status === 'processing' || data.deployment.status === 'building' || data.deployment.status === 'waiting'}
+                {#if effectiveStatus === 'processing' || effectiveStatus === 'building' || effectiveStatus === 'waiting'}
                     <Button
                         text
                         on:click={() => {
@@ -152,9 +161,9 @@
     <Card.Base padding="s">
         <Accordion
             title="Deployment logs"
-            badge={capitalize(data.deployment.status)}
+            badge={capitalize(effectiveStatus)}
             open
-            badgeType={badgeTypeDeployment(data.deployment.status)}
+            badgeType={badgeTypeDeployment(effectiveStatus)}
             hideDivider>
             <Layout.Stack gap="xl">
                 {#key data.deployment.buildLogs}
@@ -167,7 +176,7 @@
 
             <svelte:fragment slot="end">
                 <Layout.Stack direction="row" alignItems="center" inline>
-                    {#if ['processing', 'building'].includes(data.deployment.status)}
+                    {#if ['processing', 'building'].includes(effectiveStatus)}
                         <Typography.Code color="--fgcolor-neutral-secondary">
                             <Layout.Stack direction="row" alignItems="center" inline>
                                 <p use:timer={{ start: data.deployment.$createdAt }}></p>
