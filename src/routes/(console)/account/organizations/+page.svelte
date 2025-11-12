@@ -13,7 +13,7 @@
     import { sdk } from '$lib/stores/sdk';
     import type { PageData } from './$types';
     import { isCloud } from '$lib/system';
-    import { Badge } from '@appwrite.io/pink-svelte';
+    import { Badge, Skeleton } from '@appwrite.io/pink-svelte';
     import type { Models } from '@appwrite.io/console';
     import type { Organization } from '$lib/stores/organization';
     import { daysLeftInTrial, plansInfo, tierToPlan, type Tier } from '$lib/stores/billing';
@@ -129,7 +129,9 @@
                         {#if isCloudOrg(organization)}
                             {#if isNonPayingOrganization(organization)}
                                 {#if planName}
-                                    {#await planName then name}
+                                    {#await planName}
+                                        <Skeleton width={30} height={20} variant="line" />
+                                    {:then name}
                                         <Tooltip>
                                             <Badge size="xs" variant="secondary" content={name} />
 
@@ -157,7 +159,9 @@
                             {/if}
 
                             {#if payingOrg}
-                                {#await getPlanName(payingOrg.billingPlan) then name}
+                                {#await planName}
+                                    <Skeleton width={30} height={20} variant="line" />
+                                {:then name}
                                     <Badge
                                         size="xs"
                                         type="success"
@@ -168,7 +172,7 @@
                         {/if}
                     </svelte:fragment>
                     {#await avatarList}
-                        <span class="avatar is-color-empty"></span>
+                        <Skeleton width={40} height={40} variant="circle" />
                     {:then avatars}
                         <AvatarGroup {avatars} />
                     {/await}
