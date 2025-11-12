@@ -209,6 +209,12 @@ export const oAuthProviders: Record<string, Provider> = {
         docs: 'https://developers.tradeshift.com/docs/api',
         component: Main
     },
+    tiktok: {
+        name: 'TikTok',
+        icon: 'tiktok',
+        docs: 'https://developers.tiktok.com/doc/login-kit-web',
+        component: Main
+    },
     twitch: {
         name: 'Twitch',
         icon: 'twitch',
