@@ -42,6 +42,7 @@
     import RequiredArrayCheckboxes from './requiredArrayCheckboxes.svelte';
 
     export let editing = false;
+    export let disabled = false;
     export let data: Partial<Models.ColumnBoolean> = {
         required: false,
         array: false,
@@ -77,7 +78,7 @@
     id="default"
     label="Default value"
     placeholder="Select a value"
-    disabled={data.required || data.array}
+    disabled={data.required || data.array || disabled}
     options={[
         { label: 'NULL', value: null },
         { label: 'True', value: true },
@@ -85,4 +86,8 @@
     ]}
     bind:value={data.default} />
 
-<RequiredArrayCheckboxes {editing} bind:array={data.array} bind:required={data.required} />
+<RequiredArrayCheckboxes
+    {editing}
+    {disabled}
+    bind:array={data.array}
+    bind:required={data.required} />

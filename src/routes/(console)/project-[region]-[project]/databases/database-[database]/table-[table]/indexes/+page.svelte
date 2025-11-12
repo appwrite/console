@@ -23,6 +23,7 @@
         Typography
     } from '@appwrite.io/pink-svelte';
     import {
+        IconBookOpen,
         IconDotsHorizontal,
         IconEye,
         IconPlus,
@@ -37,6 +38,10 @@
     import { showCreateColumnSheet } from '../store';
     import { isSmallViewport } from '$lib/stores/viewport';
     import { page } from '$app/state';
+    import { showIndexesSuggestions, showColumnsSuggestionsModal } from '../../(suggestions)';
+    import IconAI from '../../(suggestions)/icon/aiForButton.svelte';
+    import EmptySheetCards from '../layout/emptySheetCards.svelte';
+    import { isCloud } from '$lib/system';
     import { realtime } from '$lib/stores/sdk';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
@@ -66,14 +71,14 @@
     const spreadsheetColumns = $derived([
         {
             id: 'key',
-            width: getColumnWidth('key', $isSmallViewport ? 250 : 200),
-            minimumWidth: $isSmallViewport ? 250 : 200,
+            width: getColumnWidth('key', 250),
+            minimumWidth: 250,
             resizable: true
         },
         {
             id: 'type',
-            width: getColumnWidth('type', 120),
-            minimumWidth: 120,
+            width: getColumnWidth('type', 200),
+            minimumWidth: 200,
             resizable: true
         },
         {
@@ -296,27 +301,100 @@
                 </Spreadsheet.Root>
             </SpreadsheetContainer>
         {:else}
-            <EmptySheet
-                mode="indexes"
-                actions={{
-                    primary: {
-                        onClick: () => (showCreateIndex = true),
-                        disabled: !$table?.columns?.length
-                    }
-                }} />
+            <EmptySheet mode="indexes" showActions={$canWriteTables}>
+                {#snippet subtitle()}
+                    {#if isCloud}
+                        <Typography.Text align="center">
+                            Need a hand? Learn more in the
+                            <Link.Anchor
+                                target="_blank"
+                                href="https://appwrite.io/docs/products/databases/tables#indexes">
+                                docs.
+                            </Link.Anchor>
+                        </Typography.Text>
+                    {/if}
+                {/snippet}
+
+                {#snippet actions()}
+                    {#if isCloud}
+                        <EmptySheetCards
+                            icon={IconAI}
+                            title="Suggest indexes"
+                            disabled={!$table?.columns?.length}
+                            subtitle="Use AI to generate indexes"
+                            onClick={() => {
+                                showIndexesSuggestions.update(() => true);
+                            }} />
+                    {/if}
+
+                    <EmptySheetCards
+                        icon={IconPlus}
+                        title="Create index"
+                        disabled={!$table?.columns?.length}
+                        subtitle="Create indexes manually"
+                        onClick={() => {
+                            showCreateIndex = true;
+                        }} />
+
+                    {#if !isCloud}
+                        <EmptySheetCards
+                            icon={IconBookOpen}
+                            title="Documentation"
+                            subtitle="Read the Appwrite docs"
+                            href="https://appwrite.io/docs/products/databases/tables#indexes" />
+                    {/if}
+                {/snippet}
+            </EmptySheet>
         {/if}
     {:else}
-        <EmptySheet
-            mode="indexes"
-            title="You have no columns yet"
-            actions={{
-                primary: {
-                    text: 'Create columns',
-                    onClick: async () => {
-                        $showCreateColumnSheet.show = true;
-                    }
-                }
-            }} />
+        <EmptySheet mode="indexes" title="You have no columns yet" showActions={$canWriteTables}>
+            {#snippet subtitle()}
+                {#if isCloud}
+                    <Typography.Text align="center">
+                        Need a hand? Learn more in the
+                        <Link.Anchor
+                            target="_blank"
+                            href="https://appwrite.io/docs/products/databases/tables#columns">
+                            docs.
+                        </Link.Anchor>
+                    </Typography.Text>
+                {/if}
+            {/snippet}
+
+            {#snippet actions()}
+                {#if isCloud}
+                    <EmptySheetCards
+                        icon={IconAI}
+                        title="Suggest columns"
+                        subtitle="Use AI to generate columns"
+                        onClick={() => {
+                            $showColumnsSuggestionsModal = true;
+                        }} />
+
+                    <EmptySheetCards
+                        icon={IconPlus}
+                        title="Create column"
+                        subtitle="Create columns manually"
+                        onClick={() => {
+                            $showCreateColumnSheet.show = true;
+                        }} />
+                {:else}
+                    <EmptySheetCards
+                        icon={IconPlus}
+                        title="Create column"
+                        subtitle="Create columns manually"
+                        onClick={() => {
+                            $showCreateColumnSheet.show = true;
+                        }} />
+
+                    <EmptySheetCards
+                        icon={IconBookOpen}
+                        title="Documentation"
+                        subtitle="Read the Appwrite docs"
+                        href="https://appwrite.io/docs/products/databases/tables#columns" />
+                {/if}
+            {/snippet}
+        </EmptySheet>
     {/if}
 
     {#if selectedIndexes.length > 0}

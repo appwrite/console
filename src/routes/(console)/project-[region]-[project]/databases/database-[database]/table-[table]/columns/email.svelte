@@ -42,6 +42,7 @@
     import RequiredArrayCheckboxes from './requiredArrayCheckboxes.svelte';
 
     export let editing = false;
+    export let disabled = false;
     export let data: Partial<Models.ColumnEmail>;
 
     let savedDefault = data.default;
@@ -74,7 +75,11 @@
     label="Default value"
     placeholder="Enter value"
     bind:value={data.default}
-    disabled={data.required || data.array}
+    disabled={data.required || data.array || disabled}
     nullable={!data.required && !data.array} />
 
-<RequiredArrayCheckboxes {editing} bind:array={data.array} bind:required={data.required} />
+<RequiredArrayCheckboxes
+    {editing}
+    {disabled}
+    bind:array={data.array}
+    bind:required={data.required} />
