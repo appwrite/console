@@ -104,10 +104,16 @@
     };
 
     $: rows = writable(data.rows);
-    $: if (rows) {
+    $: if ($rows) {
         paginatedRows.clear();
         paginatedRows.setPage(1, $rows.rows);
+
+        /* reset ui when the underlying data changes */
+        spreadsheetRenderKey.set(hash(Date.now().toString()));
     }
+
+    // create index map for O(1) row lookups, reactive!
+    $: rowIndexMap = new Map($paginatedRows.items.map((row, index) => [row.$id, index]));
 
     const tableId = page.params.table;
     const databaseId = page.params.database;
@@ -475,7 +481,7 @@
                 message: 'Column deleted'
             });
 
-            invalidate(Dependencies.TABLE);
+            await invalidate(Dependencies.TABLE);
 
             $databaseColumnSheetOptions.column = null;
         } catch (error) {
@@ -543,11 +549,14 @@
         } else if (type === 'row') {
             if (action === 'update') {
                 databaseRowSheetOptions.update((opts) => {
+                    const rowIndex = rowIndexMap.get(row.$id) ?? -1;
                     return {
                         ...opts,
                         row,
+                        rowIndex,
                         show: true,
-                        title: 'Update row'
+                        title: 'Update row',
+                        rows: $paginatedRows.items
                     };
                 });
             }
@@ -797,9 +806,10 @@
             expandKbdShortcut="Cmd+Enter"
             on:expandKbdShortcut={({ detail }) => {
                 const focusedRowId = detail.rowId;
-                const focusedRow = $rows.rows.find((row) => row.$id === focusedRowId);
+                const focusedRow = $paginatedRows.items.find((row) => row.$id === focusedRowId);
 
                 previouslyFocusedElement = document.activeElement;
+                $databaseRowSheetOptions.autoFocus = false;
                 onSelectSheetOption('update', null, 'row', focusedRow);
             }}>
             <svelte:fragment slot="header" let:root>
@@ -927,6 +937,7 @@
                                                             hide();
                                                             previouslyFocusedElement =
                                                                 document.activeElement;
+                                                            $databaseRowSheetOptions.autoFocus = false;
                                                             onSelectSheetOption(
                                                                 'update',
                                                                 null,
@@ -977,8 +988,10 @@
                                         <SheetOptions
                                             type="row"
                                             column={rowColumn}
-                                            onSelect={(option) =>
-                                                onSelectSheetOption(option, null, 'row', row)}
+                                            onSelect={(option) => {
+                                                $databaseRowSheetOptions.autoFocus = true;
+                                                onSelectSheetOption(option, null, 'row', row);
+                                            }}
                                             onVisibilityChanged={(visible) => {
                                                 canShowDatetimePopover = !visible;
                                             }}>
@@ -1105,6 +1118,7 @@
                                                         rowColumn
                                                     );
                                                 } else {
+                                                    $databaseRowSheetOptions.autoFocus = true;
                                                     onSelectSheetOption('update', null, 'row', row);
                                                 }
                                             }} />

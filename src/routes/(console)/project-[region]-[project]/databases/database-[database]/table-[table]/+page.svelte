@@ -31,13 +31,16 @@
         IconChevronDown,
         IconChevronUp,
         IconPlus,
-        IconViewBoards
+        IconViewBoards,
+        IconRefresh
     } from '@appwrite.io/pink-icons-svelte';
     import type { Models } from '@appwrite.io/console';
     import EmptySheet from './layout/emptySheet.svelte';
     import CreateRow from './rows/create.svelte';
     import { onDestroy } from 'svelte';
     import { isCloud } from '$lib/system';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
     import {
         Empty as SuggestionsEmptySheet,
         tableColumnSuggestions,
@@ -48,6 +51,7 @@
 
     export let data: PageData;
 
+    let isRefreshing = false;
     let showImportCSV = false;
 
     // todo: might need a type fix here.
@@ -165,9 +169,9 @@
                     justifyContent="flex-end"
                     style="padding-right: 40px;">
                     <Layout.Stack
+                        gap="s"
                         direction="row"
                         alignItems="center"
-                        gap="s"
                         justifyContent="flex-end">
                         <Button
                             secondary
@@ -196,9 +200,31 @@
                                     preferences.setKey('tableHeaderExpanded', $expandTabs);
                                 }}>
                                 <Icon
-                                    icon={!$expandTabs ? IconChevronDown : IconChevronUp}
-                                    size="s" />
+                                    size="s"
+                                    icon={!$expandTabs ? IconChevronDown : IconChevronUp} />
                             </Button>
+
+                            <Tooltip disabled={isRefreshing || !data.rows.total} placement="top">
+                                <Button
+                                    icon
+                                    size="s"
+                                    secondary
+                                    disabled={isRefreshing ||
+                                        !data.rows.total ||
+                                        !(hasColumns && hasValidColumns)}
+                                    class="small-button-dimensions"
+                                    on:click={async () => {
+                                        isRefreshing = true;
+                                        await invalidate(Dependencies.TABLE);
+                                        isRefreshing = false;
+                                    }}>
+                                    <div style:line-height="0px" class:rotating={isRefreshing}>
+                                        <Icon icon={IconRefresh} size="s" />
+                                    </div>
+                                </Button>
+
+                                <svelte:fragment slot="tooltip">Refresh</svelte:fragment>
+                            </Tooltip>
                         {/if}
                     </Layout.Stack>
                 </Layout.Stack>
@@ -349,5 +375,18 @@
     :global(.small-button-dimensions) {
         width: 32px !important;
         height: 32px !important;
+    }
+
+    :global(.rotating) {
+        animation: rotate 1s linear infinite;
+    }
+
+    @keyframes rotate {
+        from {
+            transform: rotate(0deg);
+        }
+        to {
+            transform: rotate(360deg);
+        }
     }
 </style>

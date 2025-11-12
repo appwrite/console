@@ -42,6 +42,9 @@
     import IconAI from '../../(suggestions)/icon/aiForButton.svelte';
     import EmptySheetCards from '../layout/emptySheetCards.svelte';
     import { isCloud } from '$lib/system';
+    import { realtime } from '$lib/stores/sdk';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
 
     let {
         data
@@ -101,6 +104,12 @@
 
     onMount(() => {
         columnsWidth = preferences.getColumnWidths(tableId + '#indexes');
+
+        return realtime.forProject(page.params.region, ['project', 'console'], (response) => {
+            if (response.events.includes('databases.*.tables.*.indexes.*')) {
+                invalidate(Dependencies.TABLE);
+            }
+        });
     });
 
     function getColumnStatusBadge(status: string): ComponentProps<Badge>['type'] {

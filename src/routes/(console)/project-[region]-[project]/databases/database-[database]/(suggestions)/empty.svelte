@@ -635,7 +635,7 @@
         try {
             if (VARS.MOCK_AI_SUGGESTIONS) {
                 /* animation */
-                await sleep(NOTIFICATION_AND_MOCK_DELAY);
+                await sleep(NOTIFICATION_AND_MOCK_DELAY * 100);
                 suggestedColumns = mockSuggestions;
             } else {
                 suggestedColumns = (await sdk

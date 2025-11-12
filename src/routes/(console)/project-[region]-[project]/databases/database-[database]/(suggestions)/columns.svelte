@@ -28,6 +28,12 @@
     }
 
     async function triggerColumnSuggestions() {
+        // set table info. first!
+        $tableColumnSuggestions.table = {
+            id: page.params.table,
+            name: page.data.table?.name ?? 'Table'
+        };
+
         if (!isOnRowsPage) {
             await goto(
                 resolve(
@@ -42,13 +48,10 @@
             );
         }
 
-        show = false;
-        $tableColumnSuggestions.enabled = true;
-        $tableColumnSuggestions.table = {
-            id: page.params.table,
-            name: page.data.table?.name ?? 'Table'
-        };
         $tableColumnSuggestions.force = true;
+        $tableColumnSuggestions.enabled = true;
+
+        show = false;
     }
 </script>
 
