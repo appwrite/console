@@ -33,7 +33,7 @@
     import {
         commandCenterKeyDownHandler,
         disableCommands,
-        isKeyboardEventFromInput,
+        isTargetInputLike,
         registerCommands
     } from './commands';
     import { RootPanel } from './panels';
@@ -102,7 +102,7 @@
 
     const handleKeydown = (e: KeyboardEvent) => {
         if (!$subPanels.length) {
-            if (isKeyboardEventFromInput(e)) return;
+            if (isTargetInputLike(e.target)) return;
             keys = [...keys, e.key].slice(-10);
             resetKeys();
         }
