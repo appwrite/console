@@ -25,6 +25,7 @@
     import { isSmallViewport, updateViewport } from '$lib/stores/viewport';
     import { feedback } from '$lib/stores/feedback';
     import { ProfileMode, resolvedProfile } from '$lib/profiles/index.svelte';
+    import { CDN_CSS_URL, CDN_URL } from '$lib/studio/studio-widget';
 
     function resolveTheme(theme: AppStore['themeInUse']) {
         switch (theme) {
@@ -185,6 +186,11 @@
     {/if}
 
     <link rel="stylesheet" href={`${base}/css/profiles/${resolvedProfile.id}.css`} />
+
+    {#if resolvedProfile.id === ProfileMode.STUDIO}
+        <link rel="preload" as="style" type="text/css" href={CDN_CSS_URL} />
+        <link rel="preload" as="script" type="text/javascript" href={CDN_URL} />
+    {/if}
 </svelte:head>
 
 <Root theme={resolveTheme($app.themeInUse)}>
