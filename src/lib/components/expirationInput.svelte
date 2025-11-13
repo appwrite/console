@@ -6,8 +6,8 @@
 </script>
 
 <script lang="ts">
-    import { InputDateTime, InputSelect } from '$lib/elements/forms';
-    import { isSameDay, isValidDate, toLocaleDate } from '$lib/helpers/date';
+    import { InputDate, InputSelect } from '$lib/elements/forms';
+    import { isSameDay, isValidDate, toLocaleDate, toLocaleDateISO } from '$lib/helpers/date';
 
     function incrementToday(value: number, type: 'day' | 'month' | 'year'): string {
         const date = new Date();
@@ -74,6 +74,10 @@
     export let resourceType: string | 'key' | 'token' | undefined = 'key';
     export let expiryOptions: 'default' | 'limited' | ExpirationOptions[] = 'default';
 
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    let minDate: string = toLocaleDateISO(tomorrow.getTime());
+
     const options = Array.isArray(expiryOptions)
         ? expiryOptions
         : expiryOptions === 'default'
@@ -129,6 +133,8 @@
         if (hasUserInteracted && !isSameDay(new Date(expirationSelect), new Date(value))) {
             value = expirationSelect === 'custom' ? expirationCustom : expirationSelect;
         }
+
+        value = toLocaleDateISO(new Date(value).getTime());
     }
 
     $: helper =
@@ -147,11 +153,11 @@
     on:change={() => (hasUserInteracted = true)} />
 
 {#if expirationSelect === 'custom'}
-    <InputDateTime
+    <InputDate
         required
-        type="date"
         id="expire"
+        min={minDate}
         label={dateSelectorLabel}
         bind:value={expirationCustom}
-        on:change={() => (hasUserInteracted = true)} />
+        on:input={() => (hasUserInteracted = true)} />
 {/if}
