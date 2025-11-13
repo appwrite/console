@@ -7,6 +7,7 @@ import BackupDatabase from '$lib/components/backupDatabaseAlert.svelte';
 import { shouldShowNotification } from '$lib/helpers/notifications';
 import { isCloud } from '$lib/system';
 import { currentPlan } from '$lib/stores/organization';
+import { ProfileMode, resolvedProfile } from '$lib/profiles/index.svelte';
 
 export const database = derived(page, ($page) => $page.data?.database as Models.Database);
 
@@ -19,7 +20,10 @@ export async function checkForDatabaseBackupPolicies(
     projectId: string,
     database: Models.Database
 ) {
-    // fast path: return if user dismissed the banner
+    // fast path: not the valid profile to show this!
+    if (resolvedProfile.id !== ProfileMode.CONSOLE) return;
+
+    // fast path: return if user dismissed the banner.
     if (!shouldShowNotification(backupsBannerId)) return;
 
     let total = 0;
