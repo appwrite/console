@@ -52,11 +52,10 @@
 </script>
 
 <Layout.Stack gap="l" alignItems="center" style="max-width: 500px;">
-    {#if error}
-        <Badge type="error" variant="secondary" content={error} />
-    {/if}
     {#if success}
         <Badge type="success" variant="secondary" content={success} />
+    {:else if error}
+        <Badge type="error" variant="secondary" content={error} />
     {/if}
     <Typography.Title size="l" align="center">
         The deployment for pull request #{providerPullRequestId}
