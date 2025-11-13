@@ -8,12 +8,15 @@
         Spreadsheet,
         Typography,
         FloatingActionBar,
-        Popover
+        Popover,
+        Badge
     } from '@appwrite.io/pink-svelte';
-    import { IconFingerPrint, IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { IconFingerPrint, IconPlus, IconText } from '@appwrite.io/pink-icons-svelte';
     import { isSmallViewport, isTabletViewport } from '$lib/stores/viewport';
     import type { Column } from '$lib/helpers/types';
-    import { expandTabs } from '../table-[table]/store';
+    import { SortButton } from '$lib/components';
+    import { expandTabs, columnsOrder, columnsWidth, reorderItems } from '../table-[table]/store';
+    import { preferences } from '$lib/stores/preferences';
     import SpreadsheetContainer from '../table-[table]/layout/spreadsheet.svelte';
     import { onDestroy, onMount, tick } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
@@ -38,8 +41,62 @@
     import Options from './options.svelte';
     import { InputSelect, InputText } from '$lib/elements/forms';
     import { isCloud, VARS } from '$lib/system';
+    import { fade } from 'svelte/transition';
 
     import IconAINotification from './icon/aiNotification.svelte';
+    import type { Models } from '@appwrite.io/console';
+
+    let {
+        userColumns = [],
+        userDataRows = []
+    }: {
+        userColumns?: Column[];
+        userDataRows?: Models.Row[];
+    } = $props();
+
+    const tableId = page.params.table;
+    const minimumUserColumnWidth = 168;
+
+    function getUserColumnWidth(
+        columnId: string,
+        defaultWidth: number | { min: number }
+    ): number | { min: number; max?: number } {
+        const savedWidth = $columnsWidth?.[columnId];
+        if (!savedWidth) return defaultWidth;
+        return savedWidth.resized;
+    }
+
+    // apply order & width to user columns
+    const staticUserColumns = $derived.by(() => {
+        if (!userColumns.length) return [];
+
+        // apply widths to columns
+        const columnsWithWidths = userColumns.map((column) => {
+            const defaultWidth =
+                typeof column.width === 'object' && 'min' in column.width
+                    ? column.width
+                    : typeof column.width === 'number'
+                      ? column.width
+                      : minimumUserColumnWidth;
+
+            return {
+                ...column,
+                width: getUserColumnWidth(column.id, defaultWidth),
+                custom: false,
+                resizable: false,
+                draggable: false
+            };
+        });
+
+        // apply ordering if preferences exist
+        if ($columnsOrder && $columnsOrder.length > 0) {
+            return reorderItems(columnsWithWidths, $columnsOrder);
+        }
+
+        return columnsWithWidths.filter(
+            (column) => !['$id', '$createdAt', '$updatedAt', 'actions'].includes(column.id)
+        );
+    });
 
     let resizeObserver: ResizeObserver;
     let spreadsheetContainer: HTMLElement;
@@ -48,21 +105,43 @@
     let headerElement: HTMLElement | null = null;
     let rangeOverlayEl: HTMLDivElement | null = null;
     let fadeBottomOverlayEl: HTMLDivElement | null = null;
+    let snowFadeBottomOverlayEl: HTMLDivElement | null = null;
 
-    let customColumns = $state<
-        (SuggestedColumnSchema & { elements?: []; isPlaceholder?: boolean })[]
-    >(Array.from({ length: 7 }, (_, index) => createPlaceholderColumn(index)));
+    let customColumns = $state<SuggestedColumnSchema[]>(
+        Array.from({ length: 7 }, (_, index) => createPlaceholderColumn(index))
+    );
 
     let showFloatingBar = $state(true);
     let hasTransitioned = $state(false);
     let scrollAnimationFrame: number | null = null;
 
     let creatingColumns = $state(false);
-    const baseColProps = { draggable: false, resizable: false };
+    let selectedColumnId = $state<string | null>(null);
+    let previousColumnId = $state<string | null>(null);
+    let selectedColumnName = $state<string | null>(null);
+
+    let showHeadTooltip = $state(true);
+    let isInlineEditing = $state(false);
+    // let tooltipTopPosition = $state(50);
+    let triggerColumnId = $state<string | null>(null);
+    let hoveredColumnId = $state<string | null>(null);
+
+    // for deleting a column + undo
+    let undoTimer: ReturnType<typeof setTimeout> | null = $state(null);
+    let columnBeingDeleted: (SuggestedColumnSchema & { deletedIndex?: number }) | null =
+        $state(null);
+
+    const baseColProps = {
+        custom: false,
+        draggable: false,
+        resizable: false
+    };
 
     const NOTIFICATION_AND_MOCK_DELAY = 1250;
+    const COLUMN_DELETION_UNDO_TIMER_LIMIT = 10000; // 10 seconds
 
     const getColumnWidth = (columnKey: string) => Math.max(180, columnKey.length * 8 + 60);
+
     const safeNumericValue = (value: number | undefined) =>
         value !== undefined && isWithinSafeRange(value) ? value : undefined;
 
@@ -85,7 +164,7 @@
     const updateOverlayHeight = () => {
         if (!spreadsheetContainer) return;
         if (!headerElement || !headerElement.isConnected) {
-            headerElement = spreadsheetContainer.querySelector('[role="rowheader"]');
+            headerElement = spreadsheetContainer?.querySelector('[role="rowheader"]');
         }
 
         if (!headerElement) return;
@@ -106,7 +185,7 @@
     const updateOverlayBounds = () => {
         if (!spreadsheetContainer) return;
         if (!headerElement || !headerElement.isConnected) {
-            headerElement = spreadsheetContainer.querySelector('[role="rowheader"]');
+            headerElement = spreadsheetContainer?.querySelector('[role="rowheader"]');
         }
         if (!headerElement) return;
 
@@ -136,17 +215,44 @@
 
         const hasRealColumns = customColumns.some((col) => !col.isPlaceholder);
         if (!hasRealColumns) {
-            // For placeholders or no columns, position overlay to cover custom columns area
-            const idCell = getById('$id');
+            // for placeholders or no columns,
+            // position overlay to cover custom columns area
+            let startCell = getById('$id');
+
+            if (staticUserColumns.length > 0) {
+                const lastUserColumn = staticUserColumns[staticUserColumns.length - 1];
+                let lastUserCell = getById(lastUserColumn.id);
+
+                // if not found with data-header="true", try without it
+                if (!lastUserCell) {
+                    lastUserCell = headerElement!.querySelector<HTMLElement>(
+                        `[role="cell"][data-column-id="${lastUserColumn.id}"]`
+                    );
+                }
+
+                if (lastUserCell) {
+                    startCell = lastUserCell;
+                }
+            }
+
             const actionsCell = headerElement!.querySelector<HTMLElement>(
                 '[role="cell"][data-column-id="actions"]'
             );
 
-            if (idCell && actionsCell) {
-                const idRect = idCell.getBoundingClientRect();
+            if (startCell && actionsCell) {
+                const startRect = startCell.getBoundingClientRect();
                 const actionsRect = actionsCell.getBoundingClientRect();
-                const left = Math.round(idRect.right - containerRect.left);
+                let left = Math.round(startRect.right - containerRect.left);
                 const actionsLeft = actionsRect.left - containerRect.left;
+
+                // ensure overlay doesn't go over select
+                const selectionRect = spreadsheetContainer
+                    .querySelector('[data-select="true"]')
+                    ?.getBoundingClientRect();
+                if (selectionRect) {
+                    const selectionRight = Math.round(selectionRect.right - containerRect.left);
+                    left = Math.max(left, selectionRight);
+                }
 
                 const width = actionsLeft - left;
 
@@ -200,15 +306,35 @@
             .querySelector('[data-select="true"]')
             ?.getBoundingClientRect();
 
-        // Start overlay after selection column if it exists, otherwise after $id
+        // determine starting point for overlay
         let startLeft = idRect.right;
         if (selectionRect && selectionRect.right > idRect.right) {
             startLeft = selectionRect.right;
         }
 
+        // if userColumns exist,
+        // start overlay **after** the last userColumn
+        if (staticUserColumns.length > 0) {
+            const lastUserColumn = staticUserColumns[staticUserColumns.length - 1];
+            const lastUserCell = getById(lastUserColumn.id);
+
+            if (lastUserCell) {
+                const lastUserRect = lastUserCell.getBoundingClientRect();
+                startLeft = lastUserRect.right;
+            }
+        }
+
+        if (selectionRect) {
+            startLeft = Math.max(startLeft, selectionRect.right);
+        }
+
         const left = Math.round(startLeft - containerRect.left);
 
-        // get the actions column and use its left border as the boundary
+        // use the last visible custom column's right edge as the overlay boundary
+        const endRect = endCell.getBoundingClientRect();
+        const endRight = Math.round(endRect.right - containerRect.left);
+
+        // also get the actions column to ensure we don't exceed it
         const actionsCell = headerElement!.querySelector<HTMLElement>(
             '[role="cell"][data-column-id="actions"]'
         );
@@ -223,7 +349,9 @@
         const actionsRect = actionsCell.getBoundingClientRect();
         const actionsLeft = actionsRect.left - containerRect.left;
 
-        const width = actionsLeft - left;
+        // ensure overlay doesn't exceed bounds
+        const right = Math.min(endRight, actionsLeft);
+        const width = right - left;
 
         // Apply overlay positioning
         spreadsheetContainer.style.setProperty('--group-left', `${left - 2}px`);
@@ -232,17 +360,13 @@
 
     // only for mobile, we can remove if not needed!
     const scrollToFirstCustomColumn = () => {
-        if (!$isSmallViewport) return;
+        if (!staticUserColumns.length && !$isSmallViewport) return;
 
         if (!headerElement || !headerElement.isConnected) {
-            headerElement = spreadsheetContainer.querySelector('[role="rowheader"]');
+            headerElement = spreadsheetContainer?.querySelector('[role="rowheader"]');
         }
 
         if (!headerElement) return;
-
-        const firstCustomColumnCell = headerElement.querySelector<HTMLElement>(
-            `[role="cell"][data-header="true"][data-column-id="${customColumns[0]?.key}"]`
-        );
 
         const directAccessScroller =
             hScroller ??
@@ -250,22 +374,112 @@
             // internal spreadsheet root main container!
             spreadsheetContainer.querySelector('.spreadsheet-container');
 
-        if (firstCustomColumnCell && directAccessScroller) {
-            const cellRect = firstCustomColumnCell.getBoundingClientRect();
+        if (!directAccessScroller) return;
+
+        let targetCell: HTMLElement | null = null;
+
+        if (staticUserColumns.length > 0 && !$isSmallViewport) {
+            const lastUserColumn = staticUserColumns[staticUserColumns.length - 1];
+            targetCell = headerElement.querySelector<HTMLElement>(
+                `[role="cell"][data-header="true"][data-column-id="${lastUserColumn.id}"]`
+            );
+        } else {
+            targetCell = headerElement.querySelector<HTMLElement>(
+                `[role="cell"][data-header="true"][data-column-id="${customColumns[0]?.key}"]`
+            );
+        }
+
+        if (targetCell) {
+            const cellRect = targetCell.getBoundingClientRect();
             const scrollerRect = directAccessScroller.getBoundingClientRect();
             const scrollLeft =
                 directAccessScroller.scrollLeft + cellRect.left - scrollerRect.left - 40;
 
             directAccessScroller.scrollTo({
                 left: Math.max(0, scrollLeft),
-                behavior: 'smooth'
+                behavior: 'instant'
             });
         }
     };
 
+    function updateColumnHighlight() {
+        const activeColumnId = selectedColumnId || hoveredColumnId;
+        if (!spreadsheetContainer || !activeColumnId) return;
+
+        const headerCell = spreadsheetContainer.querySelector(
+            `[role="rowheader"] [role="cell"][data-column-id="${activeColumnId}"]`
+        );
+
+        if (!headerCell) return;
+
+        // calculate position similar to columns-range-overlay logic
+        if (!headerElement || !headerElement.isConnected) {
+            headerElement = spreadsheetContainer.querySelector('[role="rowheader"]');
+        }
+
+        if (!headerElement) return;
+
+        const containerRect = spreadsheetContainer.getBoundingClientRect();
+        const cellRect = headerCell.getBoundingClientRect();
+
+        const left = Math.round(cellRect.left - containerRect.left);
+        const width = cellRect.width;
+
+        const isHovered = !selectedColumnId && hoveredColumnId;
+        const isFirstColumn = activeColumnId === customColumns[0]?.key;
+        const isLastColumn = activeColumnId === customColumns[customColumns.length - 1]?.key;
+
+        let leftAdjustment = -2;
+        let widthAdjustment = 2;
+        if (isHovered && (isFirstColumn || isLastColumn)) {
+            leftAdjustment = 0;
+        }
+
+        // get actions boundary to prevent hover overlay over it
+        const actionsCell = headerElement.querySelector<HTMLElement>(
+            '[role="cell"][data-column-id="actions"]'
+        );
+
+        let finalWidth = width + widthAdjustment;
+
+        if (isHovered && actionsCell) {
+            const actionsRect = actionsCell.getBoundingClientRect();
+            const actionsLeft = actionsRect.left - containerRect.left;
+            const overlayRight = left + leftAdjustment + finalWidth;
+
+            const borderWidth = 2;
+            if (overlayRight + borderWidth > actionsLeft) {
+                finalWidth = actionsLeft - (left + leftAdjustment) - borderWidth;
+            }
+        }
+
+        spreadsheetContainer.style.setProperty('--highlight-left', `${left + leftAdjustment}px`);
+        spreadsheetContainer.style.setProperty('--highlight-width', `${finalWidth}px`);
+
+        if (isHovered) {
+            const tooltipElement =
+                spreadsheetContainer.querySelector<HTMLElement>('.custom-tooltip');
+            const tooltipWidth = tooltipElement ? tooltipElement.offsetWidth : 200;
+            const defaultOffset = 325;
+            const smallerOffset = 225;
+            const viewportWidth = window.innerWidth;
+
+            // check how much space is available to the right of the column
+            const columnRightEdge = left + leftAdjustment + finalWidth;
+            const availableSpace = viewportWidth - columnRightEdge;
+
+            // use smaller offset if there isn't enough space for default offset + tooltip
+            const shouldUseSmallerOffset = availableSpace < defaultOffset + tooltipWidth;
+            const tooltipOffset = shouldUseSmallerOffset ? smallerOffset : defaultOffset;
+
+            spreadsheetContainer.style.setProperty('--tooltip-offset', `${tooltipOffset}px`);
+        }
+    }
+
     const recalcAll = () => {
         updateOverlayHeight();
         updateOverlayBounds();
+        updateColumnHighlight();
     };
 
     /**
@@ -276,6 +490,16 @@
 
         scrollAnimationFrame = requestAnimationFrame(() => {
             recalcAll();
+
+            // check if selected column is still visible after scroll
+            if (selectedColumnId && !isColumnVisible(selectedColumnId)) {
+                resetSelectedColumn();
+            }
+
+            if (hoveredColumnId && !isColumnVisible(hoveredColumnId)) {
+                hoveredColumnId = null;
+            }
+
             scrollAnimationFrame = null;
         });
     };
@@ -297,38 +521,41 @@
                 width: { min: getColumnWidth(col.key) },
                 icon: columnOption?.icon,
                 draggable: false,
-                resizable: false
+                resizable: false,
+                custom: true
             };
         });
     });
 
-    const getRowColumns = (): Column[] => {
-        const minColumnWidth = 180;
+    const getRowColumns = (): (Column & { custom: boolean })[] => {
+        const minColumnWidth = 250;
         const fixedWidths = { id: minColumnWidth, actions: 40, selection: 40 };
 
-        // calculate base widths and total
-        const columnsWithBase = customSuggestedColumns.map((col) => ({
-            ...col,
-            baseWidth: Math.max(minColumnWidth, getColumnWidth(col.id))
-        }));
+        const equalWidthColumns = [...staticUserColumns, ...customSuggestedColumns];
 
-        const totalUsed =
+        const totalBaseWidth =
             fixedWidths.id +
             fixedWidths.actions +
             fixedWidths.selection +
-            columnsWithBase.reduce((sum, col) => sum + col.baseWidth, 0);
+            equalWidthColumns.length * minColumnWidth;
 
-        // distribute excess space equally across custom columns
         const viewportWidth =
             spreadsheetContainer?.clientWidth ||
-            (typeof window !== 'undefined' ? window.innerWidth : totalUsed);
+            (typeof window !== 'undefined' ? window.innerWidth : totalBaseWidth);
 
+        const excessSpace = Math.max(0, viewportWidth - totalBaseWidth);
         const extraPerColumn =
-            Math.max(0, viewportWidth - totalUsed) / (columnsWithBase.length || 1);
+            equalWidthColumns.length > 0 ? excessSpace / equalWidthColumns.length : 0;
+        const distributedWidth = minColumnWidth + extraPerColumn;
 
-        const finalCustomColumns = columnsWithBase.map((col) => ({
+        const userColumnsWithWidth = staticUserColumns.map((col) => ({
             ...col,
-            width: { min: col.baseWidth + extraPerColumn }
+            width: distributedWidth
+        }));
+
+        const finalCustomColumns = customSuggestedColumns.map((col) => ({
+            ...col,
+            width: { min: distributedWidth }
         }));
 
         return [
@@ -340,6 +567,7 @@
                 icon: IconFingerPrint,
                 ...baseColProps
             },
+            ...userColumnsWithWidth,
             ...finalCustomColumns,
             {
                 id: 'actions',
@@ -353,9 +581,14 @@
     };
 
     const spreadsheetColumns = $derived(getRowColumns());
-    const emptyCells = $derived(($isSmallViewport ? 14 : 17) + (!$expandTabs ? 2 : 0));
+    const emptyCells = $derived(
+        ($isSmallViewport ? 14 : 17) + (!$expandTabs ? 2 : 0) - userDataRows.length
+    );
 
     onMount(async () => {
+        columnsOrder.set(preferences.getColumnOrder(tableId));
+        columnsWidth.set(preferences.getColumnWidths(tableId));
+
         if (spreadsheetContainer) {
             resizeObserver = new ResizeObserver(recalcAll);
             resizeObserver.observe(spreadsheetContainer);
@@ -374,20 +607,22 @@
             // these are referenced in
             // `table-[table]/+page.svelte`
             $tableColumnSuggestions.table = null;
+            $tableColumnSuggestions.force = false;
             $tableColumnSuggestions.enabled = false;
         }
 
         $tableColumnSuggestions.context = null;
         $tableColumnSuggestions.thinking = false;
+
+        // reset selection!
+        resetSelectedColumn();
     }
 
     async function suggestColumns() {
         $tableColumnSuggestions.thinking = true;
 
-        if ($isSmallViewport) {
-            await tick();
-            scrollToFirstCustomColumn();
-        }
+        await tick();
+        scrollToFirstCustomColumn();
 
         let suggestedColumns: {
             total: number;
@@ -473,17 +708,22 @@
         }
     }
 
-    function onPopoverShowStateChanged(value: boolean) {
-        showFloatingBar = !value;
+    async function updateOverlaysForMobile(value: boolean) {
         if ($isSmallViewport) {
             setTimeout(() => {
-                [rangeOverlayEl, fadeBottomOverlayEl].forEach((el) => {
+                [rangeOverlayEl, fadeBottomOverlayEl, snowFadeBottomOverlayEl].forEach((el) => {
                     if (el) {
                         el.style.opacity = value ? '0' : '1';
                     }
                 });
             }, 0);
         }
+    }
+
+    function onPopoverShowStateChanged(value: boolean) {
+        showFloatingBar = !value;
+        showHeadTooltip = !value;
+        updateOverlaysForMobile(value);
 
         const currentScrollLeft = hScroller?.scrollLeft || 0;
 
@@ -492,6 +732,9 @@
                 hScroller.scrollLeft = currentScrollLeft;
             }
         });
+
+        // reset selection!
+        resetSelectedColumn();
     }
 
     function updateColumn(columnId: string, updates: Partial<SuggestedColumnSchema>) {
@@ -513,6 +756,174 @@
 
     function isCustomColumn(id: string) {
         return !['$id', '$createdAt', '$updatedAt', 'actions'].includes(id);
+    }
+
+    function resetSelectedColumn() {
+        selectedColumnId = null;
+        previousColumnId = null;
+        /*selectedColumnName = null;*/
+    }
+
+    // small decor, hides previous cell's right border visibility!
+    function handlePreviousColumnsBorder(columnId: string, hide: boolean = true) {
+        const allHeaders = Array.from(
+            spreadsheetContainer.querySelectorAll(
+                '[role="rowheader"] [role="cell"][data-column-id]'
+            )
+        );
+
+        const selectedIndex = allHeaders.findIndex(
+            (cell) => cell.getAttribute('data-column-id') === columnId
+        );
+
+        if (selectedIndex > 0) {
+            const prevColumnId = allHeaders[selectedIndex - 1].getAttribute('data-column-id');
+            if (prevColumnId) {
+                const previousCells = spreadsheetContainer.querySelectorAll(
+                    `[role="rowheader"] [role="cell"][data-column-id="${prevColumnId}"]`
+                );
+
+                previousCells.forEach((cell) => {
+                    if (hide) {
+                        cell.classList.add('hide-border');
+                    } else {
+                        cell.classList.remove('hide-border');
+                    }
+                });
+            }
+        }
+    }
+
+    function isColumnVisible(columnId: string) {
+        if (!spreadsheetContainer || !hScroller) return true;
+
+        const columnCell = spreadsheetContainer.querySelector(
+            `[role="rowheader"] [role="cell"][data-column-id="${columnId}"]`
+        );
+
+        if (!columnCell) return false;
+
+        const cellRect = columnCell.getBoundingClientRect();
+        const scrollerRect = hScroller.getBoundingClientRect();
+
+        // stickies have 40px width
+        const STICKY_COLUMN_WIDTH = 40;
+
+        // calculate available viewport bounds (excluding both 40px sticky columns)
+        const leftBound = scrollerRect.left + STICKY_COLUMN_WIDTH; // Selection column (40px)
+        const rightBound = scrollerRect.right - STICKY_COLUMN_WIDTH; // Actions column (40px)
+
+        const safetyMargin = 2;
+        return (
+            cellRect.left >= leftBound - safetyMargin && cellRect.right <= rightBound + safetyMargin
+        );
+    }
+
+    function scrollColumnIntoView(columnId: string) {
+        if (!spreadsheetContainer || !hScroller) return false;
+
+        const columnCell = spreadsheetContainer.querySelector(
+            `[role="rowheader"] [role="cell"][data-column-id="${columnId}"]`
+        );
+
+        if (!columnCell) return false;
+
+        const cellRect = columnCell.getBoundingClientRect();
+        const scrollerRect = hScroller.getBoundingClientRect();
+
+        // calculate scroll needed to center the column in view
+        const scrollLeft =
+            hScroller.scrollLeft +
+            cellRect.left -
+            scrollerRect.left -
+            (scrollerRect.width - cellRect.width) / 2;
+
+        hScroller.scrollTo({
+            left: Math.max(0, scrollLeft),
+            behavior: 'smooth'
+        });
+
+        return true;
+    }
+
+    function deleteColumn(columnId: string) {
+        if (!columnId) return;
+
+        let columnIndex = -1;
+        let columnSchema: SuggestedColumnSchema = null;
+
+        for (let index = 0; index < customColumns.length; index++) {
+            if (customColumns[index].key === columnId) {
+                columnIndex = index;
+                columnSchema = customColumns[index];
+                break;
+            }
+        }
+
+        if (columnIndex === -1 || !columnSchema) {
+            return;
+        }
+
+        // remove the column
+        customColumns.splice(columnIndex, 1);
+
+        // store column with its index for undo
+        columnBeingDeleted = { ...columnSchema, deletedIndex: columnIndex };
+
+        // clear any existing timer
+        if (undoTimer) {
+            clearTimeout(undoTimer);
+        }
+
+        // start 10-second undo timer
+        undoTimer = setTimeout(() => {
+            undoTimer = null;
+            selectedColumnId = null;
+            columnBeingDeleted = null;
+            selectedColumnName = null;
+        }, COLUMN_DELETION_UNDO_TIMER_LIMIT);
+
+        // reset selection!
+        resetSelectedColumn();
+
+        // see overlay is visible after deletion on mobile!
+        setTimeout(() => updateOverlaysForMobile(false), 150);
+
+        // recalculate view after deletion
+        requestAnimationFrame(() => recalcAll());
+    }
+
+    function undoDelete() {
+        if (!columnBeingDeleted) return;
+
+        const { deletedIndex, ...columnData } = columnBeingDeleted;
+
+        // restore column at its original index
+        if (deletedIndex !== undefined && deletedIndex >= 0) {
+            customColumns.splice(deletedIndex, 0, columnData);
+        } else {
+            // fallback: add at the end if index is missing
+            customColumns.push(columnData);
+        }
+
+        // clear undo state
+        columnBeingDeleted = null;
+
+        // clear timer
+        if (undoTimer) {
+            clearTimeout(undoTimer);
+            undoTimer = null;
+        }
+
+        // recalculate view after restore
+        requestAnimationFrame(() => {
+            recalcAll();
+
+            tick().then(() => {
+                selectedColumnId = columnData.key;
+                selectedColumnName = columnData.key;
+            });
+        });
     }
 
     function showIndexSuggestionsNotification() {
@@ -542,7 +953,19 @@
 
     async function createColumns() {
         creatingColumns = true;
+        selectedColumnId = null;
+
         const client = sdk.forProject(page.params.region, page.params.project);
+
+        const isAnyEmpty = customColumns.some((col) => !col.key);
+        if (isAnyEmpty) {
+            creatingColumns = false;
+            addNotification({
+                type: 'warning',
+                message: 'Some columns have invalid keys'
+            });
+            return;
+        }
 
         try {
             const results = [];
@@ -552,7 +975,8 @@
                     databaseId: page.params.database,
                     tableId: page.params.table,
                     key: column.key,
-                    required: column.required || false
+                    required: column.required || false,
+                    encrypt: 'encrypt' in column ? column.encrypt : undefined
                 };
 
                 let columnResult: Columns;
@@ -650,6 +1074,8 @@
                 timeout: NOTIFICATION_AND_MOCK_DELAY
             });
 
+            resetSuggestionsStore(true);
+
             // show index notification!
             showIndexSuggestionsNotification();
 
@@ -664,13 +1090,12 @@
         }
     }
 
-    function createPlaceholderColumn(
-        index: number
-    ): SuggestedColumnSchema & { elements?: []; isPlaceholder?: boolean } {
+    function createPlaceholderColumn(index: number): SuggestedColumnSchema {
         return {
             key: `column${index + 1}`,
             type: 'string',
             required: false,
+            array: false,
             default: null,
             format: null,
             size: undefined,
@@ -680,6 +1105,159 @@
             isPlaceholder: true
         };
     }
+
+    // scroll to view if needed and select!
+    function selectColumnWithId(column: Column) {
+        if (creatingColumns) return;
+
+        const columnId = column.id;
+        selectedColumnName = column.title;
+        if (!isColumnVisible(columnId)) {
+            scrollColumnIntoView(columnId);
+            setTimeout(() => (selectedColumnId = columnId), 300);
+        } else {
+            selectedColumnId = columnId;
+        }
+
+        columnBeingDeleted = null;
+    }
+
+    /*function fadeSlide(_: Node, { y = 8, duration = 200 } = {}) {
+        return {
+            duration,
+            css: (time: number) => `
+                opacity: ${time};
+                transform: translateY(${(1 - time) * y}px);
+             `
+        };
+    }*/
+
+    function columnHoverMouseTracker(event: MouseEvent) {
+        if (hoveredColumnId && event.target instanceof Element) {
+            const hoveredButton = event.target.closest('[data-column-hover]');
+            const currentColumnId = hoveredButton?.getAttribute('data-column-hover');
+
+            if (currentColumnId !== hoveredColumnId) {
+                hoveredColumnId = null;
+            }
+        }
+    }
+
+    $effect(() => {
+        if (!spreadsheetContainer) return;
+
+        // remove existing hide-border classes
+        const hiddenCells = spreadsheetContainer.querySelectorAll('[role="cell"].hide-border');
+        hiddenCells.forEach((cell) => cell.classList.remove('hide-border'));
+
+        if (!selectedColumnId) return;
+
+        setTimeout(() => {
+            // hide borders for selected column and previous column
+            const selectedCells = spreadsheetContainer.querySelectorAll(
+                `[role="cell"][data-column-id="${selectedColumnId}"]`
+            );
+
+            selectedCells.forEach((cell) => cell.classList.add('hide-border'));
+
+            // find and hide previous column's borders (which create the left edge of selected column)
+            const allHeaders = Array.from(
+                spreadsheetContainer.querySelectorAll(
+                    '[role="rowheader"] [role="cell"][data-column-id]'
+                )
+            );
+            const selectedIndex = allHeaders.findIndex(
+                (cell) => cell.getAttribute('data-column-id') === selectedColumnId
+            );
+
+            if (selectedIndex > 0) {
+                const prevColumnId = allHeaders[selectedIndex - 1].getAttribute('data-column-id');
+                if (prevColumnId) {
+                    const previousCells = spreadsheetContainer.querySelectorAll(
+                        `[role="cell"][data-column-id="${prevColumnId}"]`
+                    );
+                    previousCells.forEach((cell) => cell.classList.add('hide-border'));
+                }
+            }
+        }, 300);
+
+        // update position
+        updateColumnHighlight();
+
+        // track for next selection -
+        // but only if we had a `real` previous selection
+        if (previousColumnId !== null) {
+            previousColumnId = selectedColumnId;
+        } else {
+            // fresh after a deselect
+            // set it for future switches
+            setTimeout(() => (previousColumnId = selectedColumnId), 25);
+        }
+    });
+
+    // mark suggested column cells so CSS can target them specifically
+    $effect(() => {
+        if (!spreadsheetContainer) return;
+
+        // get all custom column IDs
+        const suggestedColumnIds = customColumns.map((col) => col.key);
+        const firstSuggestedColumnId = suggestedColumnIds[0];
+
+        const columnBeforeOverlay =
+            staticUserColumns.length > 0
+                ? staticUserColumns[staticUserColumns.length - 1].id
+                : '$id';
+
+        const allCells = spreadsheetContainer.querySelectorAll('[role="cell"][data-column-id]');
+        allCells.forEach((cell) => {
+            const columnId = cell.getAttribute('data-column-id');
+            if (columnId && suggestedColumnIds.includes(columnId)) {
+                cell.setAttribute('data-suggested-column', 'true');
+                if (columnId === firstSuggestedColumnId) {
+                    cell.setAttribute('data-first-suggested-column', 'true');
+                } else {
+                    cell.removeAttribute('data-first-suggested-column');
+                }
+            } else {
+                cell.removeAttribute('data-suggested-column');
+                cell.removeAttribute('data-first-suggested-column');
+            }
+
+            if (columnId === columnBeforeOverlay) {
+                cell.setAttribute('data-column-before-overlay', 'true');
+            } else {
+                cell.removeAttribute('data-column-before-overlay');
+            }
+        });
+    });
+
+    $effect(() => {
+        if (!spreadsheetContainer) return;
+
+        const allCells = spreadsheetContainer.querySelectorAll('[role="cell"]');
+        allCells.forEach((cell) => {
+            const resizer = cell.querySelector('.column-resizer-disabled') as HTMLDivElement;
+            if (resizer) resizer.style.display = '';
+        });
+
+        if (!hoveredColumnId) return;
+
+        // auto-scroll if hovered column is out of bounds
+        /*if (!isColumnVisible(hoveredColumnId)) {
+            scrollColumnIntoView(hoveredColumnId);
+        }*/
+
+        const hoveredCells = spreadsheetContainer.querySelectorAll(
+            `[role="cell"][data-column-id="${hoveredColumnId}"]`
+        );
+
+        hoveredCells.forEach((cell) => {
+            const resizer = cell.querySelector('.column-resizer-disabled') as HTMLDivElement;
+            if (resizer) resizer.style.display = 'none';
+        });
+
+        updateColumnHighlight();
+    });
 
     onDestroy(() => {
         resizeObserver?.disconnect();
@@ -696,12 +1274,14 @@
 <svelte:window on:resize={recalcAll} on:scroll={recalcAll} />
 
 <div
+    role="none"
     bind:this={spreadsheetContainer}
     class:custom-columns={customColumns.length > 0}
     class:thinking={$tableColumnSuggestions.thinking}
     class="databases-spreadsheet spreadsheet-container-outer"
     style:--overlay-icon-color="#fd366e99"
-    style:--non-overlay-icon-color="--fgcolor-neutral-weak">
+    style:--non-overlay-icon-color="--fgcolor-neutral-weak"
+    onmousemove={columnHoverMouseTracker}>
     <div>
         <div
             aria-hidden="true"
@@ -709,21 +1289,50 @@
             class="columns-range-overlay"
             class:no-transition={hasTransitioned && customColumns.length > 0}
             class:thinking={$tableColumnSuggestions.thinking || creatingColumns}>
+            <div class="inner-glow-wrapper">
+                {@render edgeGradients('left')}
+                {@render edgeGradients('right')}
+
+                <div class="edge-glow top"></div>
+                <div class="edge-glow bottom"></div>
+            </div>
         </div>
+
+        <!-- selection border -->
+        {#if selectedColumnId || hoveredColumnId}
+            {@const activeColumnId = selectedColumnId || hoveredColumnId}
+            {@const isHovered = !selectedColumnId && hoveredColumnId}
+            {@const isFirstColumn = activeColumnId === customColumns[0]?.key}
+            {@const isLastColumn = activeColumnId === customColumns[customColumns.length - 1]?.key}
+            <div
+                class="column-highlight-overlay"
+                class:hover={isHovered}
+                class:selected={!isHovered}
+                class:last-column={isHovered && isLastColumn}
+                class:first-column={isHovered && isFirstColumn}
+                class:slide={previousColumnId !== null && !isHovered}
+                style:height="100%"
+                style:left="var(--highlight-left, 0px)"
+                style:width="var(--highlight-width, 0px)"
+                out:fade={{ duration: 200 }}>
+            </div>
+
+            <!--{@render customTooltip({ text: 'Click to select column', show: isHovered })}-->
+        {/if}
     </div>
 
     <SpreadsheetContainer>
         <Spreadsheet.Root
-            {emptyCells}
             allowSelection
             height="100%"
             columns={spreadsheetColumns}
-            bottomActionClick={() => {}}>
+            bottomActionClick={() => {}}
+            let:root>
             <svelte:fragment slot="header" let:root>
                 {#each spreadsheetColumns as column, index (index)}
                     {#if column.isAction}
                         <Spreadsheet.Header.Cell column="actions" {root}>
-                            <Button.Button icon variant="extra-compact">
+                            <Button.Button disabled icon variant="extra-compact">
                                 <Icon icon={IconPlus} color="--fgcolor-neutral-primary" />
                             </Button.Button>
                         </Spreadsheet.Header.Cell>
@@ -736,184 +1345,236 @@
                             ? '--non-overlay-icon-color'
                             : '--overlay-icon-color'}
                         {@const isColumnInteractable =
-                            isCustomColumn(column.id) && !columnObj.isPlaceholder}
+                            isCustomColumn(column.id) && columnObj && !columnObj.isPlaceholder}
+                        {@const userColumn = column.id === '$id' || !column.custom}
 
-                        <Options
-                            enabled={isColumnInteractable}
-                            onShowStateChanged={onPopoverShowStateChanged}>
-                            {#snippet children(toggle)}
-                                <Spreadsheet.Header.Cell
-                                    {root}
-                                    isEditable={isColumnInteractable && !$isTabletViewport}
-                                    openEditOnTap={isColumnInteractable && !$isTabletViewport}
-                                    column={column.id}
-                                    on:contextmenu={(event) => {
-                                        // tablet viewport check because context-menu
-                                        // can be triggered on long hold clicks as well!
-                                        if (isColumnInteractable && !$isTabletViewport) {
-                                            toggle(event);
-                                        }
-                                    }}>
-                                    <Layout.Stack
-                                        direction="row"
-                                        alignItems="center"
-                                        alignContent="center"
-                                        justifyContent="space-between">
-                                        <span
-                                            class="column-title"
-                                            class:animate-in={!columnObj?.isPlaceholder}
-                                            style:--animation-delay={`${isColumnInteractable ? (index - 1) * 100 : 0}ms`}>
-                                            {column.title}
-                                        </span>
+                        {#if userColumn}
+                            <Spreadsheet.Header.Cell
+                                {root}
+                                column={column.id}
+                                icon={column.icon ?? IconText}>
+                                <Layout.Stack
+                                    gap="xs"
+                                    direction="row"
+                                    alignItems="center"
+                                    alignContent="center"
+                                    style="min-width: 0;">
+                                    <Typography.Text truncate>
+                                        {column.title}
+                                    </Typography.Text>
 
-                                        <Popover
-                                            let:toggle
-                                            portal
-                                            padding="none"
-                                            placement="bottom-start">
-                                            <div
-                                                class="column-icon-wrapper"
-                                                class:animate-in={!columnObj?.isPlaceholder}
-                                                style:--animation-delay={`${isColumnInteractable ? (index - 1) * 100 : 0}ms`}>
-                                                <Button.Button
-                                                    size="xs"
-                                                    variant="extra-compact"
-                                                    disabled={!isColumnInteractable}
-                                                    on:click={(event) => {
-                                                        if (
-                                                            isColumnInteractable &&
-                                                            !$isTabletViewport
-                                                        ) {
-                                                            toggle(event);
-                                                        }
-                                                    }}>
-                                                    {#if !columnObj?.isPlaceholder}
-                                                        <Icon
-                                                            size="s"
-                                                            color={columnIconColor}
-                                                            icon={column.icon ?? undefined} />
-                                                    {/if}
-                                                </Button.Button>
-                                            </div>
+                                    <SortButton disabled={true} column={column.id} />
+                                </Layout.Stack>
+                            </Spreadsheet.Header.Cell>
+                        {:else}
+                            <Options
+                                enabled={isColumnInteractable}
+                                headerTooltipText={isColumnInteractable && showHeadTooltip
+                                    ? 'Right click for advanced editing'
+                                    : undefined}
+                                onShowStateChanged={onPopoverShowStateChanged}
+                                triggerOpen={() => {
+                                    if (triggerColumnId === column.id) {
+                                        triggerColumnId = null;
+                                        return true;
+                                    }
 
-                                            <div
-                                                let:toggle
-                                                slot="tooltip"
-                                                class="actions-menu-wrapper">
-                                                <ActionMenu.Root width="228px">
-                                                    <Layout.Stack
-                                                        gap="none"
-                                                        direction="column"
-                                                        class="filter-modal-actions-menu variant">
-                                                        {#each basicColumnOptions as option}
-                                                            <ActionMenu.Item.Button
-                                                                on:click={() => {
-                                                                    toggle();
-                                                                    updateColumn(column.id, {
-                                                                        type: option.type,
-                                                                        format:
-                                                                            option.format || null
-                                                                    });
-                                                                }}>
-                                                                <Layout.Stack
-                                                                    gap="s"
-                                                                    direction="row"
-                                                                    alignContent="center">
-                                                                    <Icon icon={option.icon} />
-                                                                    {option.name}
-                                                                </Layout.Stack>
-                                                            </ActionMenu.Item.Button>
-                                                        {/each}
-                                                    </Layout.Stack>
-                                                </ActionMenu.Root>
-                                            </div>
-                                        </Popover>
-                                    </Layout.Stack>
-
-                                    <svelte:fragment slot="cell-editor">
-                                        {#if !$isTabletViewport}
-                                            <div class="cell-editor">
-                                                <InputText
-                                                    id="key"
-                                                    autofocus
-                                                    required
-                                                    bind:value={columnObj.key}
-                                                    pattern="^[A-Za-z0-9][A-Za-z0-9._\-]*$">
-                                                    <svelte:fragment slot="end">
-                                                        {#if columnIcon}
-                                                            <Icon
-                                                                size="s"
-                                                                icon={columnIcon}
-                                                                color={columnIconColor} />
-                                                        {/if}
-                                                    </svelte:fragment>
-                                                </InputText>
-                                            </div>
-                                        {/if}
-                                    </svelte:fragment>
-                                </Spreadsheet.Header.Cell>
-                            {/snippet}
-
-                            {#snippet tooltipChildren()}
-                                {#if columnObj}
-                                    {@const selectedOption = getColumnOption(
-                                        columnObj.type,
-                                        columnObj.format
-                                    )}
-                                    {@const ColumnComponent = selectedOption?.component}
-                                    <Layout.Stack gap="xl">
+                                    return false;
+                                }}>
+                                {#snippet children(toggle)}
+                                    <Spreadsheet.Header.Cell
+                                        {root}
+                                        isEditable={isColumnInteractable && !$isTabletViewport}
+                                        openEditOnTap={isColumnInteractable && !$isTabletViewport}
+                                        column={column.id}
+                                        on:contextmenu={(event) => {
+                                            // tablet viewport check because context-menu
+                                            // can be triggered on long hold clicks as well!
+                                            if (isColumnInteractable && !$isTabletViewport) {
+                                                toggle(event);
+                                            }
+                                        }}>
                                         <Layout.Stack
-                                            direction={$isSmallViewport ? 'column' : 'row'}>
-                                            <InputText
-                                                id="key"
-                                                label="Key"
-                                                placeholder="Enter key"
-                                                bind:value={columnObj.key}
-                                                autofocus
-                                                required
-                                                pattern="^[A-Za-z0-9][A-Za-z0-9._\-]*$" />
+                                            direction="row"
+                                            alignItems="center"
+                                            alignContent="center"
+                                            justifyContent="space-between">
+                                            <span
+                                                class="column-title"
+                                                class:animate-in={!columnObj?.isPlaceholder}
+                                                style:--animation-delay={`${isColumnInteractable ? (index - 1) * 100 : 0}ms`}
+                                                title={column.title}>
+                                                {column.title}
+                                            </span>
 
-                                            <InputSelect
-                                                id="type"
-                                                required
-                                                label="Type"
-                                                value={selectedOption?.name || 'String'}
-                                                on:change={(e) => {
-                                                    const newOption = columnOptions.find(
-                                                        (opt) => opt.name === e.detail
-                                                    );
-                                                    if (newOption) {
-                                                        updateColumn(column.id, {
-                                                            type: newOption.type,
-                                                            format: newOption.format || null
-                                                        });
-                                                    }
-                                                }}
-                                                options={basicColumnOptions.map((col) => {
-                                                    return {
-                                                        label: col.name,
-                                                        value: col.name,
-                                                        leadingIcon: col.icon
-                                                    };
-                                                })} />
+                                            {@render changeColumnTypePopover({
+                                                id: column.id,
+                                                columnObj,
+                                                iconColor: columnIconColor,
+                                                icon: column.icon,
+                                                isColumnInteractable,
+                                                index
+                                            })}
                                         </Layout.Stack>
 
-                                        {#if ColumnComponent}
-                                            <ColumnComponent data={columnObj} />
-                                        {/if}
-                                    </Layout.Stack>
-                                {/if}
-                            {/snippet}
-                        </Options>
+                                        <svelte:fragment slot="cell-editor">
+                                            {#if !$isTabletViewport}
+                                                <div
+                                                    class="cell-editor"
+                                                    onfocusin={() => {
+                                                        isInlineEditing = true;
+                                                        showHeadTooltip = false;
+                                                        resetSelectedColumn();
+                                                        handlePreviousColumnsBorder(column.id);
+                                                    }}
+                                                    onfocusout={() => {
+                                                        showHeadTooltip = true;
+                                                        isInlineEditing = false;
+                                                        handlePreviousColumnsBorder(
+                                                            column.id,
+                                                            false
+                                                        );
+                                                    }}>
+                                                    <InputText
+                                                        id="key"
+                                                        autofocus
+                                                        required
+                                                        bind:value={columnObj.key}
+                                                        pattern="^[A-Za-z0-9][A-Za-z0-9._\-]*$">
+                                                        <svelte:fragment slot="end">
+                                                            {#if columnIcon}
+                                                                {@render changeColumnTypePopover({
+                                                                    id: column.id,
+                                                                    columnObj,
+                                                                    iconColor: columnIconColor,
+                                                                    icon: column.icon,
+                                                                    isColumnInteractable,
+                                                                    index
+                                                                })}
+                                                            {/if}
+                                                        </svelte:fragment>
+                                                    </InputText>
+                                                </div>
+                                            {/if}
+                                        </svelte:fragment>
+                                    </Spreadsheet.Header.Cell>
+                                {/snippet}
+
+                                {#snippet tooltipChildren()}
+                                    {#if columnObj}
+                                        {@const selectedOption = getColumnOption(
+                                            columnObj.type,
+                                            columnObj.format
+                                        )}
+                                        {@const ColumnComponent = selectedOption?.component}
+                                        <Layout.Stack gap="xl">
+                                            <Layout.Stack
+                                                direction={$isSmallViewport ? 'column' : 'row'}>
+                                                <InputText
+                                                    id="key"
+                                                    label="Key"
+                                                    placeholder="Enter key"
+                                                    bind:value={columnObj.key}
+                                                    autofocus
+                                                    required
+                                                    pattern="^[A-Za-z0-9][A-Za-z0-9._\-]*$" />
+
+                                                <InputSelect
+                                                    id="type"
+                                                    required
+                                                    label="Type"
+                                                    value={selectedOption?.name || 'String'}
+                                                    on:change={(e) => {
+                                                        const newOption = columnOptions.find(
+                                                            (opt) => opt.name === e.detail
+                                                        );
+                                                        if (newOption) {
+                                                            updateColumn(column.id, {
+                                                                type: newOption.type,
+                                                                format: newOption.format || null
+                                                            });
+                                                        }
+                                                    }}
+                                                    options={basicColumnOptions.map((col) => {
+                                                        return {
+                                                            label: col.name,
+                                                            value: col.name,
+                                                            leadingIcon: col.icon
+                                                        };
+                                                    })} />
+                                            </Layout.Stack>
+
+                                            {#if ColumnComponent}
+                                                <ColumnComponent
+                                                    data={columnObj}
+                                                    autoIncreaseSize />
+                                            {/if}
+                                        </Layout.Stack>
+                                    {/if}
+                                {/snippet}
+
+                                {#snippet mobileFooterChildren(toggle)}
+                                    <Button.Button
+                                        size="s"
+                                        variant="danger"
+                                        on:click={(event) => {
+                                            toggle(event);
+                                            deleteColumn(column.id);
+                                        }}
+                                        style="position: absolute; left: 1rem;"
+                                        >Delete
+                                    </Button.Button>
+                                {/snippet}
+                            </Options>
+                        {/if}
                     {/if}
                 {/each}
             </svelte:fragment>
+
+            {#each userDataRows as row}
+                <Spreadsheet.Row.Base {root} select="disabled" hoverEffect={false}>
+                    {#each spreadsheetColumns as column}
+                        {@const columnObj = getColumn(column.id)}
+                        {@const interactable =
+                            isCustomColumn(column.id) && columnObj && !columnObj.isPlaceholder}
+                        <Spreadsheet.Cell {root} column={column.id} isEditable={false}>
+                            {@render rowCellInteractiveButton({
+                                interactable,
+                                column,
+                                row
+                            })}
+                        </Spreadsheet.Cell>
+                    {/each}
+                </Spreadsheet.Row.Base>
+            {/each}
+
+            {#each Array.from({ length: emptyCells }) as _}
+                <Spreadsheet.Row.Base {root} select="disabled" hoverEffect={false}>
+                    {#each spreadsheetColumns as column}
+                        {@const columnObj = getColumn(column.id)}
+                        {@const interactable =
+                            isCustomColumn(column.id) && columnObj && !columnObj.isPlaceholder}
+                        <Spreadsheet.Cell {root} column={column.id} isEditable={false}>
+                            {@render rowCellInteractiveButton({
+                                interactable,
+                                column
+                            })}
+                        </Spreadsheet.Cell>
+                    {/each}
+                </Spreadsheet.Row.Base>
+            {/each}
         </Spreadsheet.Root>
     </SpreadsheetContainer>
 
     <div
         bind:this={fadeBottomOverlayEl}
         class="spreadsheet-fade-bottom"
+        data-collapsed-tabs={!$expandTabs}>
+    </div>
+
+    <div
+        bind:this={snowFadeBottomOverlayEl}
+        class="snow-fade-bottom"
         data-collapsed-tabs={!$expandTabs}>
     </div>
 
@@ -942,13 +1603,85 @@
             </FloatingActionBar>
         </div>
     {:else if customColumns.some((col) => !col.isPlaceholder) && showFloatingBar}
+        <!-- undo or delete and cancel sub action -->
+        {@const isUndoDeleteMode = columnBeingDeleted && columnBeingDeleted?.key !== null}
+        {@const columnName = isUndoDeleteMode ? columnBeingDeleted?.key : selectedColumnName}
+        {@const hasSelection = selectedColumnId !== null || isUndoDeleteMode}
+
+        {#if !creatingColumns}
+            <div class="floating-action-wrapper expanded" class:selection={hasSelection}>
+                <FloatingActionBar>
+                    <svelte:fragment slot="start">
+                        <Layout.Stack
+                            gap="xs"
+                            direction="row"
+                            alignItems="center"
+                            style="padding-bottom: 0;">
+                            <Badge
+                                size="xs"
+                                variant="secondary"
+                                content={columnName}
+                                type={isUndoDeleteMode ? 'error' : undefined} />
+
+                            <Typography.Caption
+                                variant="400"
+                                color="--fgcolor-neutral-primary"
+                                style="white-space: nowrap;">
+                                {#if isUndoDeleteMode}
+                                    was deleted. You can undo this action.
+                                {:else}
+                                    is selected
+                                {/if}
+                            </Typography.Caption>
+                        </Layout.Stack>
+                    </svelte:fragment>
+
+                    <svelte:fragment slot="end">
+                        <Layout.Stack direction="row" gap="xs" alignItems="center" inline>
+                            {#if !isUndoDeleteMode}
+                                <Button.Button
+                                    size="xs"
+                                    variant="text"
+                                    on:click={() => (selectedColumnId = null)}>
+                                    Cancel
+                                </Button.Button>
+
+                                <!--{:else}-->
+                                <!--    {@render countdownProgress()}-->
+                            {/if}
+                            <Button.Button
+                                size="xs"
+                                variant="secondary"
+                                disabled={!isUndoDeleteMode &&
+                                    customColumns.filter((col) => !col.isPlaceholder).length <= 1}
+                                on:click={() => {
+                                    if (isUndoDeleteMode) {
+                                        undoDelete();
+                                    } else {
+                                        deleteColumn(selectedColumnId);
+                                    }
+                                }}>
+                                {#if isUndoDeleteMode}
+                                    Undo
+                                {:else}
+                                    Delete
+                                {/if}
+                            </Button.Button>
+                        </Layout.Stack>
+                    </svelte:fragment>
+                </FloatingActionBar>
+            </div>
+        {/if}
+
+        <!-- review columns action -->
         <div
             class="floating-action-wrapper"
             class:expanded={!creatingColumns}
-            class:creating-columns={creatingColumns}>
+            class:creating-columns={creatingColumns}
+            class:has-selection={hasSelection}>
             <FloatingActionBar>
                 <svelte:fragment slot="start">
-                    <Layout.Stack gap="xl" direction="row" alignItems="center">
+                    <Layout.Stack gap="xs" direction="row" alignItems="center">
                         {#if creatingColumns}
                             <Spinner size="s" />
                         {/if}
@@ -958,41 +1691,202 @@
                             color="--fgcolor-neutral-secondary"
                             style="white-space: nowrap">
                             {creatingColumns
-                                ? 'Creating columns'
+                                ? 'Creating columns...'
                                 : $isSmallViewport
-                                  ? 'Review and edit suggested columns'
-                                  : 'Review and edit suggested columns before applying'}
+                                  ? 'Click headers or cells to edit columns'
+                                  : 'Click headers or cells to edit columns before applying'}
                         </Typography.Caption>
                     </Layout.Stack>
                 </svelte:fragment>
 
                 <svelte:fragment slot="end">
-                    <Layout.Stack direction="row" gap="xs" alignItems="center" inline>
-                        <Button.Button
-                            size="xs"
-                            variant="text"
-                            disabled={creatingColumns}
-                            on:click={() => {
-                                customColumns = [];
-                                resetSuggestionsStore();
-                            }}
-                            style="opacity: {creatingColumns ? '0' : '1'}"
-                            >Dismiss
-                        </Button.Button>
-                        <Button.Button
-                            size="xs"
-                            variant="primary"
-                            disabled={creatingColumns}
-                            on:click={createColumns}
-                            style="opacity: {creatingColumns ? '0' : '1'}"
-                            >Apply
-                        </Button.Button>
-                    </Layout.Stack>
+                    {#if !creatingColumns}
+                        <Layout.Stack direction="row" gap="xs" alignItems="center" inline>
+                            <Button.Button
+                                size="xs"
+                                variant="text"
+                                disabled={creatingColumns}
+                                on:click={() => {
+                                    customColumns = [];
+                                    resetSuggestionsStore();
+                                }}
+                                style="opacity: {creatingColumns ? '0' : '1'}"
+                                >Dismiss
+                            </Button.Button>
+                            <Button.Button
+                                size="xs"
+                                variant="primary"
+                                disabled={creatingColumns}
+                                on:click={createColumns}
+                                style="opacity: {creatingColumns ? '0' : '1'}"
+                                >Apply
+                            </Button.Button>
+                        </Layout.Stack>
+                    {/if}
                 </svelte:fragment>
             </FloatingActionBar>
         </div>
     {/if}
 </div>
+
+<!--{#snippet customTooltip({ text, show })}
+    <div
+        transition:fadeSlide
+        class="custom-tooltip"
+        style:top={`${tooltipTopPosition}%`}
+        class:show-tooltip={show && !$isTabletViewport}>
+        <Typography.Text>
+            {text}
+        </Typography.Text>
+    </div>
+{/snippet}-->
+
+{#snippet rowCellInteractiveButton({ interactable, column, row = null })}
+    <button
+        class="column-selector-button"
+        aria-label="Select column"
+        style:cursor={column.custom ? 'pointer' : 'default'}
+        data-column-hover={column.id}
+        onmouseenter={() => {
+            if (
+                interactable &&
+                !selectedColumnId &&
+                !isInlineEditing &&
+                !$isTabletViewport &&
+                !$isSmallViewport &&
+                !$tableColumnSuggestions.thinking &&
+                !creatingColumns &&
+                hoveredColumnId !== column.id
+            ) {
+                hoveredColumnId = column.id;
+                /*tooltipTopPosition = 35 + Math.random() * 20;*/
+            }
+        }}
+        onclick={() => {
+            if (interactable) {
+                if (!$isTabletViewport) {
+                    selectColumnWithId(column);
+                } else if ($isSmallViewport) {
+                    triggerColumnId = column.id;
+                }
+            }
+        }}>
+        {#if !column.custom && row}
+            {@const rowData = row[column.id]}
+            {@const isActions = column.id === 'actions'}
+            {@const isNullOrUndefined = rowData === null || typeof rowData === 'undefined'}
+            <span class="u-trim suggestions-empty-fake-cell">
+                {#if isNullOrUndefined && !isActions}
+                    <Badge variant="secondary" content="NULL" size="xs" />
+                {:else}
+                    {rowData}
+                {/if}
+            </span>
+        {/if}
+    </button>
+{/snippet}
+
+{#snippet changeColumnTypePopover({ id, columnObj, iconColor, icon, isColumnInteractable, index })}
+    <Popover let:toggle portal padding="none" placement="bottom-start">
+        <div
+            class="column-icon-wrapper"
+            class:animate-in={!columnObj?.isPlaceholder}
+            style:--animation-delay={`${isColumnInteractable ? (index - 1) * 100 : 0}ms`}>
+            <Button.Button
+                size="xs"
+                variant="extra-compact"
+                disabled={!isColumnInteractable}
+                on:click={(event) => {
+                    if (isColumnInteractable && !$isTabletViewport) {
+                        toggle(event);
+                        resetSelectedColumn();
+                    }
+                }}>
+                {#if !columnObj?.isPlaceholder}
+                    <Icon size="s" color={iconColor ?? undefined} icon={icon ?? undefined} />
+                {/if}
+            </Button.Button>
+        </div>
+
+        <div let:toggle slot="tooltip" class="actions-menu-wrapper">
+            <ActionMenu.Root width="228px">
+                <Layout.Stack
+                    gap="none"
+                    direction="column"
+                    class="filter-modal-actions-menu variant">
+                    {#each basicColumnOptions as option}
+                        <ActionMenu.Item.Button
+                            on:click={() => {
+                                toggle();
+                                updateColumn(id, {
+                                    type: option.type,
+                                    format: option.format || null
+                                });
+                            }}>
+                            <Layout.Stack gap="s" direction="row" alignContent="center">
+                                <Icon icon={option.icon} />
+                                {option.name}
+                            </Layout.Stack>
+                        </ActionMenu.Item.Button>
+                    {/each}
+                </Layout.Stack>
+            </ActionMenu.Root>
+        </div>
+    </Popover>
+{/snippet}
+
+{#snippet edgeGradients(side: 'left' | 'right')}
+    <!-- Gradient config: pos (y-position) | color | spread | delay (stagger) -->
+    {@const gradientConfigs = [
+        { pos: '20%', color: 'var(--border-pink)', spread: '25%', delay: '0s' },
+        { pos: '50%', color: 'var(--border-orange)', spread: '15%', delay: '1s' },
+        { pos: '80%', color: 'var(--border-pink)', spread: '25%', delay: '2s' },
+        { pos: '35%', color: 'var(--border-pink)', spread: '40%', delay: '0.5s' },
+        { pos: '65%', color: 'var(--border-orange)', spread: '40%', delay: '1.5s' }
+    ]}
+    {@const xPosition = side === 'left' ? '0%' : '100%'}
+
+    <div class="edge-glow {side}">
+        {#each gradientConfigs as grad}
+            <div
+                class="grad"
+                style="background: radial-gradient(circle at {xPosition} {grad.pos}, {grad.color} 0%, transparent {grad.spread}); animation-delay: {grad.delay};">
+            </div>
+        {/each}
+    </div>
+{/snippet}
+
+<!--{#snippet countdownProgress()}-->
+<!--    {@const COUNTDOWN_DURATION = 10000}-->
+
+<!--    <div class="countdown-wrapper" style="padding-bottom: 0;">-->
+<!--        <svg-->
+<!--            xmlns="http://www.w3.org/2000/svg"-->
+<!--            width={`var(&#45;&#45;icon-size-s)`}-->
+<!--            height={`var(&#45;&#45;icon-size-s)`}-->
+<!--            viewBox="0 0 24 24"-->
+<!--            fill="none"-->
+<!--            style="transform: rotate(-90deg)">-->
+<!--            &lt;!&ndash; Background circle &ndash;&gt;-->
+<!--            <path-->
+<!--                opacity="0.2"-->
+<!--                d="M24 12C24 18.6274 18.6274 24 12 24C5.37258 24 0 18.6274 0 12C0 5.37258 5.37258 0 12 0C18.6274 0 24 5.37258 24 12ZM2.4 12C2.4 17.3019 6.69807 21.6 12 21.6C17.3019 21.6 21.6 17.3019 21.6 12C21.6 6.69807 17.3019 2.4 12 2.4C6.69807 2.4 2.4 6.69807 2.4 12Z"-->
+<!--                fill="#56565C" />-->
+<!--            &lt;!&ndash; Progress circle &ndash;&gt;-->
+<!--            <circle-->
+<!--                cx="12"-->
+<!--                cy="12"-->
+<!--                r="10.8"-->
+<!--                fill="none"-->
+<!--                stroke="#56565C"-->
+<!--                stroke-width="2.4"-->
+<!--                stroke-dasharray="67.858"-->
+<!--                stroke-dashoffset="0"-->
+<!--                class="countdown-circle"-->
+<!--                style="animation-duration: {COUNTDOWN_DURATION}ms" />-->
+<!--        </svg>-->
+<!--    </div>-->
+<!--{/snippet}-->
 
 <style lang="scss">
     .spreadsheet-container-outer {
@@ -1000,7 +1894,9 @@
         position: fixed;
         overflow: visible;
         scrollbar-width: none;
-        --columns-range-pink-border-color: rgba(253, 54, 110, 0.24);
+
+        --columns-range-pink-border-color: rgba(253, 54, 110, 0.18);
+        --columns-range-pink-header-background-color: rgba(253, 54, 110, 0.12);
 
         &.custom-columns {
             width: unset;
@@ -1011,19 +1907,104 @@
         }
 
         &:has(.columns-range-overlay) {
-            &
-                :global(
-                    [role='cell']:has(.column-resizer-disabled):not([data-column-id^='$']):not(
-                            [data-column-id='actions']
-                        )
-                ) {
+            :global([role='rowheader'][data-suggested-column='true']) {
+                background: var(--columns-range-pink-header-background-color);
+            }
+
+            :global([role='cell']:has(.column-resizer-disabled)[data-suggested-column='true']) {
                 box-shadow: 0 -1px 0 0 var(--columns-range-pink-border-color) inset !important;
                 transition: box-shadow 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             }
 
-            & :global([role='cell']:not([data-column-id='actions']) .column-resizer-disabled) {
+            :global(
+                [role='cell']:not([data-column-id='actions'])[data-suggested-column='true']
+                    .column-resizer-disabled
+            ) {
                 border-left: var(--border-width-s, 1px) solid var(--columns-range-pink-border-color) !important;
                 transition: border-color 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            }
+
+            :global([role='cell'][data-column-before-overlay='true'] .column-resizer-disabled) {
+                opacity: 0 !important;
+            }
+
+            :global([role='cell'][data-column-id='actions']) {
+                border-left: none !important;
+            }
+
+            :global(
+                [role='cell'][data-suggested-column='true']:has(+ [data-column-id='actions'])
+                    .column-resizer-disabled
+            ) {
+                display: none !important;
+            }
+        }
+
+        .column-highlight-overlay {
+            opacity: 0;
+            z-index: 10;
+            position: absolute;
+            pointer-events: none;
+            animation: fadeIn 0.2s ease-out forwards;
+            border-radius: var(--border-radius-s, 4px);
+
+            &.selected {
+                border: var(--border-width-l) solid rgba(253, 54, 110, 0.6);
+            }
+
+            &.hover {
+                margin-left: 0;
+                background: rgba(253, 54, 110, 0.05);
+                border-radius: var(--border-radius-xxs);
+                border: var(--border-width-m) solid rgba(253, 54, 110, 0.24);
+                transition: background 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+                &.first-column,
+                &.last-column {
+                    margin-left: -2px;
+                }
+
+                &.last-column {
+                    width: calc(var(--highlight-width, 0px) + 4.5px) !important;
+                }
+            }
+
+            &.slide {
+                transition:
+                    left 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                    width 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Hide selected column borders when overlay is active - targeted via JS */
+        & :global([role='cell'].hide-border .column-resizer-disabled) {
+            display: none !important;
+        }
+
+        & :global([role='cell']:has(.column-selector-button)) {
+            padding: unset;
+        }
+
+        & :global(.column-selector-button) {
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+
+            & :global(.suggestions-empty-fake-cell) {
+                min-height: 40px;
+                position: relative;
+                align-items: center;
+                font-size: var(--font-size-s);
+                padding: var(--space-4) var(--space-6);
             }
         }
 
@@ -1053,41 +2034,145 @@
             }
 
             &.thinking {
-                margin-block-start: 2px;
-                height: calc(100% - 4px);
+                overflow: hidden;
                 border-radius: var(--border-radius-S, 8px);
-                box-shadow:
-                    0 0 0 var(--border-width-l, 2px) #fd366e,
-                    inset 0 0 0 1px color-mix(in oklab, #fe9567 20%, transparent);
 
-                transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+                background: transparent;
+
+                --border-pink: rgba(253, 54, 110, 0.4);
+                --border-orange: rgba(254, 149, 103, 0.25);
+
+                &::before {
+                    content: '';
+                    position: absolute;
+                    inset: 0;
+                    border-radius: inherit;
+                    padding: 2px;
+                    background: linear-gradient(
+                        120deg,
+                        var(--border-pink) 0%,
+                        var(--border-orange) 50%,
+                        var(--border-pink) 100%
+                    );
+                    background-size: 300% 300%;
+                    pointer-events: none;
+                    box-sizing: border-box;
+                    animation: borderGlow 12s ease-in-out infinite;
+                    -webkit-mask:
+                        linear-gradient(#fff 0 0) content-box,
+                        linear-gradient(#fff 0 0);
+                    -webkit-mask-composite: xor;
+                    mask:
+                        linear-gradient(#fff 0 0) content-box,
+                        linear-gradient(#fff 0 0);
+                    mask-composite: exclude;
+                }
 
                 &::after {
                     content: '';
                     position: absolute;
-                    top: 0;
-                    left: -100%;
-                    width: 100%;
-                    height: 100%;
+                    top: -50%;
+                    left: -50%;
+                    width: 200%;
+                    height: 200%;
                     background: linear-gradient(
-                        90deg,
-                        transparent,
-                        rgba(255, 255, 255, 0.8),
-                        transparent
+                        145deg,
+                        rgba(255, 255, 255, 0) 45%,
+                        rgba(255, 255, 255, 0.5) 50%,
+                        rgba(255, 255, 255, 0) 55%
                     );
-                    animation: inner-shimmer 2s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
+                    transform: rotate(-25deg);
+                    filter: blur(80px);
+                    pointer-events: none;
+                    animation: shine 2s linear infinite;
+                }
+
+                .inner-glow-wrapper {
+                    position: absolute;
+                    inset: 2px;
+                    border-radius: calc(var(--border-radius-S, 8px) - 2px);
+                    overflow: hidden;
+                }
+
+                .edge-glow {
+                    position: absolute;
+                    inset: 0;
+                    pointer-events: none;
+                    border-radius: inherit;
+                }
+
+                .edge-glow.left .grad,
+                .edge-glow.right .grad {
+                    position: absolute;
+                    inset: 0;
+                    border-radius: inherit;
+                    pointer-events: none;
+                }
+
+                .edge-glow.left .grad {
+                    animation: leftPulse 6s ease-in-out infinite backwards;
+                }
+
+                .edge-glow.right .grad {
+                    animation: rightPulse 6s ease-in-out infinite backwards;
+                }
+
+                .edge-glow.top {
+                    background:
+                        radial-gradient(
+                            circle at 20% 0%,
+                            rgba(254, 149, 103, 0.05) 0%,
+                            transparent 25%
+                        ),
+                        radial-gradient(
+                            circle at 50% 0%,
+                            rgba(253, 54, 110, 0.05) 0%,
+                            transparent 25%
+                        ),
+                        radial-gradient(
+                            circle at 80% 0%,
+                            rgba(253, 54, 110, 0.05) 0%,
+                            transparent 25%
+                        );
+                }
+
+                .edge-glow.bottom {
+                    background:
+                        radial-gradient(
+                            circle at 20% 100%,
+                            rgba(254, 149, 103, 0.05) 0%,
+                            transparent 25%
+                        ),
+                        radial-gradient(
+                            circle at 50% 100%,
+                            rgba(253, 54, 110, 0.05) 0%,
+                            transparent 25%
+                        ),
+                        radial-gradient(
+                            circle at 80% 100%,
+                            rgba(254, 149, 103, 0.05) 0%,
+                            transparent 25%
+                        );
                 }
             }
         }
 
         & .floating-action-wrapper {
-            & :global(:first-child) {
-                z-index: 21;
-                left: calc(65% - 525px / 2);
+            // probably limited, but has good support
+            // for height transition with fit-content and auto, etc.
+            @supports (interpolate-size: allow-keywords) {
+                interpolate-size: allow-keywords;
+            }
+
+            & > :global(div:first-child) {
+                z-index: 22;
+                bottom: 24px;
+                height: 44px;
+                left: calc(65% - 480px / 2);
                 transition: all 600ms cubic-bezier(0.4, 0, 0.2, 1);
 
                 @media (max-width: 1024px) {
-                    left: calc(50% - 525px / 2);
+                    left: calc(50% - 480px / 2);
                 }
 
                 @media (max-width: 768px) {
@@ -1096,31 +2181,43 @@
                 }
             }
 
-            &.expanded :global(:first-child) {
-                left: calc(60% - 525px / 2);
-                max-width: 525px !important;
+            &.expanded > :global(div:first-child) {
+                left: calc(60% - 480px / 2);
+                max-width: 480px !important;
 
                 @media (max-width: 1024px) {
-                    left: calc(50% - 525px / 2);
+                    left: calc(50% - 480px / 2);
                 }
 
                 @media (max-width: 768px) {
                     left: calc(50% - 400px / 2);
                     max-width: 400px !important;
+                }
+            }
+
+            &.selection {
+                & > :global(div:first-child) {
+                    padding: var(--space-3) var(--space-5) !important;
+                }
+
+                & :global(div:first-child) {
+                    z-index: 21;
+                    bottom: 56px; /* oddly specific maybe, but diff as per design */
+                    height: fit-content;
+                    padding-bottom: 10px;
+                    border-bottom: unset;
+                    border-bottom-left-radius: 0;
+                    border-bottom-right-radius: 0;
+                    background: var(--bgcolor-neutral-default);
                 }
             }
 
             &.creating-columns :global(:first-child) {
-                left: calc(67.5% - 525px / 2);
-                max-width: 300px !important;
+                left: calc(67.5% - 480px / 2);
+                max-width: 157px !important;
 
                 @media (max-width: 1024px) {
-                    left: calc(60% - 300px / 2);
-                }
-
-                @media (max-width: 768px) {
-                    left: calc(50% - 400px / 2);
-                    max-width: 400px !important;
+                    left: calc(50% - 157px / 2);
                 }
             }
         }
@@ -1138,7 +2235,7 @@
         }
 
         & :global([data-select='true']) {
-            opacity: 0.85;
+            // opacity: 0.85;
             pointer-events: none;
         }
 
@@ -1149,17 +2246,11 @@
         }
     }
 
+    .snow-fade-bottom,
     .spreadsheet-fade-bottom {
         bottom: 0;
         width: 100%;
         position: fixed;
-        height: var(--overlay-height);
-        background: linear-gradient(
-            180deg,
-            rgba(255, 255, 255, 0) 0%,
-            rgba(255, 255, 255, 0.86) 32.25%,
-            #fff 100%
-        );
         z-index: 20; /* under overlay */
         display: flex;
         justify-content: center;
@@ -1168,16 +2259,32 @@
         pointer-events: none;
     }
 
+    .spreadsheet-fade-bottom {
+        height: var(--overlay-height);
+        background: linear-gradient(
+            180deg,
+            rgba(255, 255, 255, 0) 0%,
+            rgba(255, 255, 255, 0.86) 85%,
+            /* show more of the bottom area */ var(--bgcolor-neutral-primary) 100%
+        );
+    }
+
+    .snow-fade-bottom {
+        height: calc(var(--overlay-height) / 2);
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, #fff 94.45%);
+    }
+
+    :global(.theme-dark) .snow-fade-bottom,
     :global(.theme-dark) .spreadsheet-fade-bottom {
         background: linear-gradient(
             180deg,
             rgba(29, 29, 33, 0) 0%,
-            rgba(29, 29, 33, 0.86) 21%,
-            #1d1d21 100%
+            rgba(29, 29, 33, 0.86) 85%,
+            /* show more of the bottom area */ var(--bgcolor-neutral-primary) 100%
         );
     }
 
-    @keyframes inner-shimmer {
+    @keyframes legacy-shimmer {
         0% {
             left: -100%;
             opacity: 0;
@@ -1194,25 +2301,71 @@
         }
     }
 
+    @keyframes leftPulse {
+        0%,
+        100% {
+            opacity: 0;
+        }
+        33% {
+            opacity: 0.35;
+        }
+        66% {
+            opacity: 0.25;
+        }
+    }
+
+    @keyframes rightPulse {
+        0%,
+        100% {
+            opacity: 0;
+        }
+        33% {
+            opacity: 0.35;
+        }
+        66% {
+            opacity: 0.25;
+        }
+    }
+
+    @keyframes shine {
+        0% {
+            transform: translateX(-100%) rotate(-25deg);
+        }
+        100% {
+            transform: translateX(100%) rotate(-25deg);
+        }
+    }
+
+    @keyframes borderGlow {
+        0% {
+            background-position: 0 0;
+        }
+        25% {
+            background-position: 100% 0;
+        }
+        50% {
+            background-position: 100% 100%;
+        }
+        75% {
+            background-position: 0 100%;
+        }
+        100% {
+            background-position: 0 0;
+        }
+    }
+
     :global(.theme-dark) .spreadsheet-container-outer {
+        --columns-range-pink-header-background-color: unset;
         --columns-range-pink-border-color: rgba(253, 54, 110, 0.12) !important;
     }
 
-    :global(.theme-dark) .columns-range-overlay.thinking {
-        &::before {
-            background: linear-gradient(
-                90deg,
-                rgba(253, 54, 110, 0.01),
-                rgba(254, 149, 103, 0.03),
-                rgba(253, 54, 110, 0.01),
-                rgba(254, 149, 103, 0.03),
-                rgba(253, 54, 110, 0.01)
-            );
-        }
-
-        &::after {
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.04), transparent);
-        }
+    :global(.theme-dark) .columns-range-overlay.thinking::after {
+        background: linear-gradient(
+            145deg,
+            rgba(255, 255, 255, 0) 45%,
+            rgba(255, 255, 255, 0.02) 50%,
+            rgba(255, 255, 255, 0) 55%
+        );
     }
 
     :global(.cell-editor) {
@@ -1227,8 +2380,8 @@
         border: var(--border-width-L, 2px) solid rgba(253, 54, 110, 0.24) !important;
 
         & :global(i) {
-            margin-inline-end: 6px !important;
-            margin-block-start: -4px !important;
+            margin-inline-end: 4px !important;
+            //margin-block-start: -4px !important;
         }
 
         & :global(::selection) {
@@ -1240,10 +2393,17 @@
         max-height: 184px;
     }
 
+    .column-title {
+        max-width: 125px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
     /* Sequential animation for column titles and icons */
     .column-title,
     .column-icon-wrapper {
         opacity: 0;
+        flex-shrink: 0;
         transform: translateY(4px);
         transition:
             opacity 0.4s ease-out,
@@ -1256,4 +2416,59 @@
         transform: translateY(0);
         transition-delay: var(--animation-delay, 0ms);
     }
+
+    .custom-tooltip {
+        opacity: 0;
+        z-index: 22;
+        visibility: hidden;
+
+        position: fixed;
+        touch-action: none;
+        pointer-events: none;
+        align-items: center;
+        display: inline-flex;
+        justify-content: center;
+        gap: var(--space-0, 0);
+        margin-inline-start: 0.5rem;
+        color: var(--fgcolor-on-invert);
+        border-radius: var(--border-radius-s);
+        padding: var(--space-2) var(--space-4);
+        background: var(--bgcolor-neutral-invert-weak);
+        left: calc(var(--highlight-left, 0px) + var(--tooltip-offset, 325px));
+
+        transition:
+            top 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+            left 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+        &.show-tooltip {
+            opacity: 1;
+            visibility: visible;
+        }
+    }
+
+    /* Countdown progress styles */
+    //.countdown-wrapper {
+    //    display: flex;
+    //    width: var(--icon-size-s);
+    //    height: var(--icon-size-s);
+    //}
+    //
+    //:global(.countdown-circle) {
+    //    animation: countdown-progress linear forwards;
+    //}
+    //
+    //@media (prefers-reduced-motion: reduce) {
+    //    :global(.countdown-circle) {
+    //        animation: none;
+    //    }
+    //}
+    //
+    //@keyframes countdown-progress {
+    //    from {
+    //        stroke-dashoffset: 0;
+    //    }
+    //    to {
+    //        stroke-dashoffset: 67.858;
+    //    }
+    //}
 </style>

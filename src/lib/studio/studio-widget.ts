@@ -271,7 +271,11 @@ export function hideStudio() {
 export async function initImagine(
     region: string,
     projectId: string,
-    callbacks?: { onProjectNameChange?: (name: string) => void }
+    callbacks?: {
+        onProjectNameChange: () => void;
+        onAddDomain: () => void | Promise<void>;
+        onManageDomains: (primaryDomain?: string) => void | Promise<void>;
+    }
 ) {
     try {
         const { initImagineConfig, initImagineRouting } = await getWebComponents();

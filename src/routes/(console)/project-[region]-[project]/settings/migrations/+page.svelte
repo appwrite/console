@@ -39,13 +39,11 @@
     let migration: Models.Migration = null;
 
     onMount(() => {
-        return realtime
-            .forProject(page.params.region, page.params.project)
-            .subscribe(['project', 'console'], (response) => {
-                if (response.events.includes('migrations.*')) {
-                    invalidate(Dependencies.MIGRATIONS);
-                }
-            });
+        return realtime.forProject(page.params.region, ['project', 'console'], (response) => {
+            if (response.events.includes('migrations.*')) {
+                invalidate(Dependencies.MIGRATIONS);
+            }
+        });
     });
 
     $: $registerCommands([

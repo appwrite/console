@@ -41,9 +41,13 @@
 </script>
 
 <script lang="ts">
+    import { Layout } from '@appwrite.io/pink-svelte';
     import { InputNumber } from '$lib/elements/forms';
+    import { createConservative } from '$lib/helpers/stores';
+    import RequiredArrayCheckboxes from './requiredArrayCheckboxes.svelte';
 
     export let editing = false;
+    export let disabled = false;
     export let data: Partial<Models.ColumnFloat> = {
         required: false,
         min: 0,
@@ -51,9 +55,6 @@
         default: 0,
         array: false
     };
-
-    import { createConservative } from '$lib/helpers/stores';
-    import { Layout, Selector } from '@appwrite.io/pink-svelte';
 
     let savedDefault = data.default;
 
@@ -86,15 +87,19 @@
         placeholder="Enter size"
         bind:value={data.min}
         step={0.1}
+        {disabled}
         required={editing} />
+
     <InputNumber
         id="max"
         label="Max"
         placeholder="Enter size"
         bind:value={data.max}
         step={0.1}
+        {disabled}
         required={editing} />
 </Layout.Stack>
+
 <InputNumber
     id="default"
     label="Default value"
@@ -102,20 +107,12 @@
     min={data.min}
     max={data.max}
     bind:value={data.default}
-    disabled={data.required || data.array}
+    disabled={data.required || data.array || disabled}
     nullable={!data.required && !data.array}
     step={0.1} />
-<Selector.Checkbox
-    size="s"
-    id="required"
-    label="Required"
-    bind:checked={data.required}
-    disabled={data.array}
-    description="Indicate whether this column is required" />
-<Selector.Checkbox
-    size="s"
-    id="array"
-    label="Array"
-    bind:checked={data.array}
-    disabled={data.required || editing}
-    description="Indicate whether this column is an array. Defaults to an empty array." />
+
+<RequiredArrayCheckboxes
+    {editing}
+    {disabled}
+    bind:array={data.array}
+    bind:required={data.required} />
