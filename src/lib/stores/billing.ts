@@ -41,6 +41,7 @@ import BudgetLimitAlert from '$routes/(console)/organization-[organization]/budg
 import TeamReadonlyAlert from '$routes/(console)/organization-[organization]/teamReadonlyAlert.svelte';
 import ProjectsLimit from '$lib/components/billing/alerts/projectsLimit.svelte';
 import EnterpriseTrial from '$routes/(console)/organization-[organization]/enterpriseTrial.svelte';
+import { ProfileMode, resolvedProfile } from '$lib/profiles/index.svelte';
 
 export type Tier = 'tier-0' | 'tier-1' | 'tier-2' | 'auto-1' | 'cont-1' | 'ent-1';
 
@@ -572,6 +573,8 @@ export async function checkForMissingPaymentMethod() {
 
 // Display upgrade banner for new users after 1 week for 30 days
 export async function checkForNewDevUpgradePro(org: Organization) {
+    if (resolvedProfile.id !== ProfileMode.CONSOLE) return;
+
     // browser or plan check.
     if (!browser || org?.billingPlan !== BillingPlan.FREE) return;
 
