@@ -53,9 +53,13 @@
     <Layout.Stack>
         {#if !isGlobal}
             <Alert.Inline>
-                When there is a naming conflict with a global variable in your <Link
-                    href={`${base}/project-${$project.region}-${$project.$id}/settings/variables`}>
-                    project settings</Link>
+                When there is a naming conflict with a global variable in your {#if $project && $project.region && $project.$id}
+                    <Link
+                        href={`${base}/project-${$project.region}-${$project.$id}/settings/variables`}>
+                        project settings</Link>
+                {:else}
+                    project settings
+                {/if}
                 and a {product} environment variable, the global variable will be ignored.
             </Alert.Inline>
         {/if}
