@@ -244,7 +244,8 @@
     $: shouldReloadProjects = isLoadingProjects
         ? false
         : currentProject && loadedProjects.projects.length
-          ? loadedProjects.projects[0].teamId != currentProject.teamId
+          ? loadedProjects.projects[0].teamId != currentProject.teamId ||
+            !loadedProjects.projects.some((p) => p.$id === currentProject.$id)
           : !loadedProjects.projects.length;
 
     $: if (shouldReloadProjects) {
