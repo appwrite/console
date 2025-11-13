@@ -4,7 +4,7 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal, CustomId } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Badge, Icon } from '@appwrite.io/pink-svelte';
+    import { Tag, Icon } from '@appwrite.io/pink-svelte';
     import { IconPencil } from '@appwrite.io/pink-icons-svelte';
     import { Button, InputText, InputSelect, InputPhone } from '$lib/elements/forms';
     import InputEmail from '$lib/elements/forms/inputEmail.svelte';
@@ -18,7 +18,7 @@
     let identifier = '';
     let name = '';
     let providerId = '';
-    let id: string = null;
+    let id: string | null = null;
     let showCustomId = false;
 
     const providerTypeOptions = [
@@ -115,12 +115,10 @@
 
     {#if !showCustomId}
         <div>
-            <Badge
-                variant="secondary"
-                content="Target ID"
-                on:click={() => (showCustomId = !showCustomId)}>
-                <Icon icon={IconPencil} size="s" slot="start" />
-            </Badge>
+            <Tag size="s" on:click={() => (showCustomId = !showCustomId)}>
+                <Icon icon={IconPencil} size="s" />
+                Target ID
+            </Tag>
         </div>
     {:else}
         <CustomId bind:show={showCustomId} name="Target" bind:id autofocus={false} />

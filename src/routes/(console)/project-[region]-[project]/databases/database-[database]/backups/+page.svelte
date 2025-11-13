@@ -23,6 +23,7 @@
     import { trackEvent } from '$lib/actions/analytics';
     import { Layout, Typography } from '@appwrite.io/pink-svelte';
     import { page } from '$app/state';
+    import IconQuestionMarkCircle from './components/questionIcon.svelte';
 
     let policyCreateError: string;
     let totalPolicies: UserBackupPolicy[] = [];
@@ -40,7 +41,7 @@
         if (parsedCounter === showOnCount || !counter) {
             addNotification({
                 type: 'info',
-                icon: 'question-mark-circle',
+                icon: IconQuestionMarkCircle,
                 message:
                     'How was your experience with our new Backups feature? Give us your feedback and help us improve!',
                 timeout: 15000,
@@ -68,11 +69,11 @@
             await sdk
                 .forProject(page.params.region, page.params.project)
                 .backups.createArchive(['databases'], data.database.$id);
+            await invalidate(Dependencies.BACKUPS);
             addNotification({
                 type: 'success',
                 message: 'Database backup has started'
             });
-            invalidate(Dependencies.BACKUPS);
             trackEvent('click_manual_submit');
             showFeedbackNotification();
         } catch (error) {
@@ -85,7 +86,7 @@
         }
     };
 
-    const trackEvents = (policies) => {
+    const trackEvents = (policies: UserBackupPolicy[]) => {
         policies.forEach((policy) => {
             let actualDay = null;
             const monthlyBackupFrequency = policy.monthlyBackupFrequency;
@@ -138,7 +139,6 @@
                     ? `Backup policies have been created`
                     : `<b>${totalPolicies[0].label}</b> policy has been created`;
 
-            // TODO: html isn't yet supported on Toast.
             addNotification({
                 isHtml: true,
                 type: 'success',
@@ -147,7 +147,7 @@
 
             trackEvents(totalPolicies);
 
-            invalidate(Dependencies.BACKUPS);
+            await invalidate(Dependencies.BACKUPS);
             showFeedbackNotification();
         } catch (err) {
             addNotification({
@@ -161,19 +161,14 @@
     };
 
     onMount(() => {
-        return realtime
-            .forProject(page.params.region, page.params.project)
-            .subscribe(['project', 'console'], (response) => {
-                // fast path return.
-                if (!response.channels.includes(`projects.${getProjectId()}`)) return;
+        return realtime.forProject(page.params.region, ['project', 'console'], (response) => {
+            // fast path return.
+            if (!response.channels.includes(`projects.${getProjectId()}`)) return;
 
-                if (
-                    response.events.includes('archives.*') ||
-                    response.events.includes('policies.*')
-                ) {
-                    invalidate(Dependencies.BACKUPS);
-                }
-            });
+            if (response.events.includes('archives.*') || response.events.includes('policies.*')) {
+                invalidate(Dependencies.BACKUPS);
+            }
+        });
     });
 </script>
 

@@ -20,7 +20,7 @@
 <script lang="ts">
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import { realtime, sdk } from '$lib/stores/sdk';
+    import { type RealtimeResponse, realtime, sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import {
         table,
@@ -35,7 +35,9 @@
         spreadsheetRenderKey,
         expandTabs,
         databaseRelatedRowSheetOptions,
-        rowPermissionSheet
+        rowPermissionSheet,
+        isWaterfallFromFaker,
+        type Columns
     } from './store';
     import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import CreateColumn from './createColumn.svelte';
@@ -45,23 +47,35 @@
     import { page } from '$app/state';
     import { base } from '$app/paths';
     import { canWriteTables } from '$lib/stores/roles';
-    import { IconEye, IconLockClosed, IconPlus, IconPuzzle } from '@appwrite.io/pink-icons-svelte';
+    import {
+        IconChevronDown,
+        IconChevronUp,
+        IconEye,
+        IconLockClosed,
+        IconPlus,
+        IconPuzzle
+    } from '@appwrite.io/pink-icons-svelte';
     import SideSheet from './layout/sidesheet.svelte';
     import EditRow from './rows/edit.svelte';
     import EditRelatedRow from './rows/editRelated.svelte';
     import EditColumn from './columns/edit.svelte';
     import RowActivity from './rows/activity.svelte';
     import EditRowPermissions from './rows/editPermissions.svelte';
-    import { Dialog, Layout, Typography, Selector } from '@appwrite.io/pink-svelte';
+    import { Dialog, Layout, Typography, Selector, Icon } from '@appwrite.io/pink-svelte';
     import { Button, Seekbar } from '$lib/elements/forms';
     import { generateFakeRecords, generateColumns } from '$lib/helpers/faker';
     import { addNotification } from '$lib/stores/notifications';
-    import { sleep } from '$lib/helpers/promises';
     import CreateIndex from './indexes/createIndex.svelte';
     import { hash } from '$lib/helpers/string';
     import { preferences } from '$lib/stores/preferences';
     import { buildRowUrl, isRelationship } from './rows/store';
     import { chunks } from '$lib/helpers/array';
+    import { Submit, trackEvent } from '$lib/actions/analytics';
+
+    import { isTabletViewport } from '$lib/stores/viewport';
+    import IndexesSuggestions from '../(suggestions)/indexes.svelte';
+    import ColumnsSuggestions from '../(suggestions)/columns.svelte';
+    import { showColumnsSuggestionsModal } from '../(suggestions)';
 
     let editRow: EditRow;
     let editRelatedRow: EditRelatedRow;
@@ -72,27 +86,48 @@
     let selectedOption: Option['name'] = 'String';
     let createMoreColumns = false;
 
-    /**
-     * adding a lot of fake data will trigger the realtime below
-     * and will keep invalidating the `Dependencies.TABLE` making a lot of API noise!
-     */
-    let isWaterfallFromFaker = false;
+    let columnCreationHandler: ((response: RealtimeResponse) => void) | null = null;
+
+    // manual management of focus is needed!
+    const autoFocusAction = (node: HTMLElement, shouldFocus: boolean) => {
+        const button = node.querySelector('button');
+        if (!button) return;
+
+        const handleBlur = () => button.classList.remove('focus-visible');
+        const applyFocus = (focus: boolean) => {
+            if (focus) {
+                button.classList.add('focus-visible');
+                button.focus();
+            } else {
+                button.classList.remove('focus-visible');
+            }
+        };
+
+        button.addEventListener('blur', handleBlur);
+        applyFocus(shouldFocus);
+
+        return {
+            update: applyFocus,
+            destroy() {
+                button.removeEventListener('blur', handleBlur);
+                button.classList.remove('focus-visible');
+            }
+        };
+    };
 
     onMount(() => {
         expandTabs.set(preferences.getKey('tableHeaderExpanded', true));
 
-        return realtime
-            .forProject(page.params.region, page.params.project)
-            .subscribe(['project', 'console'], (response) => {
-                if (
-                    response.events.includes('databases.*.tables.*.columns.*') ||
-                    response.events.includes('databases.*.tables.*.indexes.*')
-                ) {
-                    if (!isWaterfallFromFaker) {
-                        invalidate(Dependencies.TABLE);
-                    }
+        return realtime.forProject(page.params.region, ['project', 'console'], (response) => {
+            if (
+                response.events.includes('databases.*.tables.*.columns.*') ||
+                response.events.includes('databases.*.tables.*.indexes.*')
+            ) {
+                if ($isWaterfallFromFaker) {
+                    columnCreationHandler?.(response);
                 }
-            });
+            }
+        });
     });
 
     // TODO: use route ids instead of pathname
@@ -241,21 +276,77 @@
         indexes: 700
     });
 
+    function setupColumnObserver() {
+        let expectedCount = 0;
+        let resolvePromise: () => void;
+        let timeout: ReturnType<typeof setTimeout>;
+
+        const availableColumns = new Set<string>();
+        const waitPromise = new Promise<void>((resolve) => (resolvePromise = resolve));
+
+        columnCreationHandler = (response: RealtimeResponse) => {
+            const { events, payload } = response;
+
+            if (
+                events.includes('databases.*.tables.*.columns.*.create') ||
+                events.includes('databases.*.tables.*.columns.*.update')
+            ) {
+                const asColumn = payload as Columns;
+                const columnId = asColumn.key;
+                const status = asColumn.status;
+
+                if (status === 'available') {
+                    availableColumns.add(columnId);
+
+                    if (expectedCount > 0 && availableColumns.size >= expectedCount) {
+                        clearTimeout(timeout);
+                        columnCreationHandler = null;
+                        resolvePromise();
+                    }
+                }
+            }
+        };
+
+        // return function to start waiting!
+        const startWaiting = (count: number) => {
+            expectedCount = count;
+
+            timeout = setTimeout(() => {
+                columnCreationHandler = null;
+                resolvePromise();
+            }, 10000);
+
+            if (availableColumns.size >= expectedCount) {
+                clearTimeout(timeout);
+                columnCreationHandler = null;
+                resolvePromise();
+            }
+        };
+
+        return { startWaiting, waitPromise };
+    }
+
     async function createFakeData() {
-        isWaterfallFromFaker = true;
+        isWaterfallFromFaker.set(true);
 
         $spreadsheetLoading = true;
         $randomDataModalState.show = false;
 
-        let columns = $table.columns;
+        let columns = page.data.table.columns as Columns[];
         const hasAnyRelationships = columns.some((column) => isRelationship(column));
         const filteredColumns = columns.filter((col) => col.type !== 'relationship');
 
         if (!filteredColumns.length) {
             try {
+                const { startWaiting, waitPromise } = setupColumnObserver();
                 columns = await generateColumns($project, page.params.database, page.params.table);
+                startWaiting(columns.length);
+                await waitPromise;
 
                 await invalidate(Dependencies.TABLE);
+                columns = page.data.table.columns as Columns[];
+
+                trackEvent(Submit.ColumnCreate, { type: 'faker' });
             } catch (e) {
                 addNotification({
                     type: 'error',
@@ -265,9 +356,6 @@
                 return;
             }
         }
-
-        /* let the columns be processed! */
-        await sleep(1250);
 
         let rowIds = [];
         try {
@@ -317,10 +405,8 @@
             $randomDataModalState.value = 25;
         }
 
-        /* api is too fast! */
-        // await sleep(1250);
         $spreadsheetLoading = false;
-        isWaterfallFromFaker = false;
+        isWaterfallFromFaker.set(false);
 
         spreadsheetRenderKey.set(hash(rowIds));
     }
@@ -328,6 +414,8 @@
     $: if (!$showCreateColumnSheet.show) {
         createMoreColumns = false;
     }
+
+    $: currentRowId = $databaseRowSheetOptions.row?.$id ?? $databaseRowSheetOptions.rowId;
 </script>
 
 <svelte:head>
@@ -384,7 +472,6 @@
 </SideSheet>
 
 <SideSheet
-    closeOnBlur
     title={$databaseRowSheetOptions.title}
     bind:show={$databaseRowSheetOptions.show}
     submit={{
@@ -395,13 +482,67 @@
     topAction={{
         mode: 'copy-tag',
         text: 'Row URL',
-        show: !!($databaseRowSheetOptions.rowId ?? $databaseRowSheetOptions.row?.$id),
-        value: buildRowUrl($databaseRowSheetOptions.rowId ?? $databaseRowSheetOptions.row?.$id)
+        show: !!currentRowId,
+        value: buildRowUrl(currentRowId)
     }}>
-    <EditRow
-        bind:this={editRow}
-        bind:row={$databaseRowSheetOptions.row}
-        bind:rowId={$databaseRowSheetOptions.rowId} />
+    {#snippet topEndActions()}
+        {@const rows = $databaseRowSheetOptions.rows ?? []}
+        {@const currentIndex = $databaseRowSheetOptions.rowIndex ?? -1}
+        {@const isFirstRow = currentIndex <= 0}
+        {@const isLastRow = currentIndex >= rows.length - 1}
+
+        {#if !$isTabletViewport}
+            {@const shouldFocusPrev = !$databaseRowSheetOptions.autoFocus && !isFirstRow}
+            {@const shouldFocusNext =
+                !$databaseRowSheetOptions.autoFocus && isFirstRow && !isLastRow}
+
+            <div use:autoFocusAction={shouldFocusPrev} class:nav-button-wrapper={shouldFocusPrev}>
+                <Button
+                    icon
+                    text
+                    size="xs"
+                    on:click={() => {
+                        if (currentIndex > 0) {
+                            databaseRowSheetOptions.update((opts) => ({
+                                ...opts,
+                                row: rows[currentIndex - 1],
+                                rowIndex: currentIndex - 1
+                            }));
+                        }
+                    }}
+                    disabled={isFirstRow}>
+                    <Icon icon={IconChevronUp} />
+                </Button>
+            </div>
+
+            <div use:autoFocusAction={shouldFocusNext} class:nav-button-wrapper={shouldFocusNext}>
+                <Button
+                    icon
+                    text
+                    size="xs"
+                    on:click={() => {
+                        if (currentIndex < rows.length - 1) {
+                            databaseRowSheetOptions.update((opts) => ({
+                                ...opts,
+                                row: rows[currentIndex + 1],
+                                rowIndex: currentIndex + 1
+                            }));
+                        }
+                    }}
+                    disabled={isLastRow}>
+                    <Icon icon={IconChevronDown} />
+                </Button>
+            </div>
+        {/if}
+    {/snippet}
+
+    {#key currentRowId}
+        <EditRow
+            bind:this={editRow}
+            bind:row={$databaseRowSheetOptions.row}
+            bind:rowId={$databaseRowSheetOptions.rowId}
+            autoFocus={$databaseRowSheetOptions.autoFocus} />
+    {/key}
 </SideSheet>
 
 <SideSheet
@@ -440,7 +581,7 @@
     title="Row permissions"
     bind:show={$rowPermissionSheet.show}
     submit={{
-        text: 'Create',
+        text: 'Update',
         disabled: editRowPermissions?.disableSubmit(),
         onClick: async () => editRowPermissions?.updatePermissions()
     }}>
@@ -468,3 +609,14 @@
         </Layout.Stack>
     </svelte:fragment>
 </Dialog>
+
+<ColumnsSuggestions bind:show={$showColumnsSuggestionsModal} />
+
+<IndexesSuggestions />
+
+<style lang="scss">
+    // not the best solution but needed!
+    .nav-button-wrapper :global(button.focus-visible) {
+        outline: var(--border-width-l) solid var(--border-focus);
+    }
+</style>

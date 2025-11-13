@@ -488,6 +488,9 @@ export async function paymentExpired(org: Organization) {
     const nots = get(notifications);
     const expiredNotification = nots.some((n) => n.message === expiredMessage);
     const expiringNotification = nots.some((n) => n.message === expiringMessage);
+    const cardExpiry = new Date(payment.expiryYear, payment.expiryMonth, 1);
+    const nextMonth = new Date(year, month + 1, 1);
+    const isExpiringNextMonth = cardExpiry.getTime() === nextMonth.getTime();
     if (payment.expired && !expiredNotification) {
         addNotification({
             type: 'error',
@@ -503,7 +506,7 @@ export async function paymentExpired(org: Organization) {
                 }
             ]
         });
-    } else if (!expiringNotification && payment.expiryYear <= year && payment.expiryMonth < month) {
+    } else if (!expiringNotification && !payment.expired && isExpiringNextMonth) {
         addNotification({
             type: 'warning',
             isHtml: true,

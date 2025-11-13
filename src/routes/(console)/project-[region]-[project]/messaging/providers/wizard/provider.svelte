@@ -4,14 +4,14 @@
     import { CustomId, LabelCard } from '$lib/components';
     import { providers } from '../store';
     import { InputText } from '$lib/elements/forms';
-    import { Badge, Icon } from '@appwrite.io/pink-svelte';
+    import { Tag, Icon } from '@appwrite.io/pink-svelte';
     import { IconPencil } from '@appwrite.io/pink-icons-svelte';
     import { Providers } from '../../provider.svelte';
     import { SmtpEncryption } from '@appwrite.io/console';
 
     let name = '';
     let showCustomId = false;
-    let id: string = null;
+    let id: string | null = null;
 
     $: {
         name;
@@ -99,6 +99,18 @@
                     replyToName: ''
                 };
                 break;
+            case Providers.Resend:
+                $providerParams[$provider] = {
+                    providerId: id,
+                    name: name,
+                    enabled: true,
+                    apiKey: '',
+                    fromEmail: '',
+                    fromName: '',
+                    replyToEmail: '',
+                    replyToName: ''
+                };
+                break;
             case Providers.SMTP:
                 $providerParams[$provider] = {
                     providerId: id,
@@ -152,12 +164,10 @@
 
     {#if !showCustomId}
         <div>
-            <Badge
-                variant="secondary"
-                content="Provider ID"
-                on:click={() => (showCustomId = !showCustomId)}>
-                <Icon icon={IconPencil} size="s" slot="start" />
-            </Badge>
+            <Tag size="s" on:click={() => (showCustomId = !showCustomId)}>
+                <Icon icon={IconPencil} size="s" />
+                Provider ID
+            </Tag>
         </div>
     {:else}
         <CustomId bind:show={showCustomId} name="Provider" bind:id autofocus={false} />

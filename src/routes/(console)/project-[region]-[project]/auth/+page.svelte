@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
     export let showCreateUser = writable(false);
 </script>
 
@@ -9,25 +9,20 @@
     import {
         AvatarInitials,
         Copy,
+        type DeleteOperationState,
         Empty,
         EmptySearch,
+        MultiSelectionTable,
         PaginationWithLimit,
         SearchQuery
     } from '$lib/components';
     import { Button } from '$lib/elements/forms';
-    import { toLocaleDate, toLocaleDateTime } from '$lib/helpers/date';
+    import DualTimeView from '$lib/components/dualTimeView.svelte';
     import { Container } from '$lib/layout';
     import type { Models } from '@appwrite.io/console';
     import { writable } from 'svelte/store';
     import Create from './createUser.svelte';
-    import {
-        Badge,
-        Icon,
-        Table,
-        Layout,
-        Typography,
-        FloatingActionBar
-    } from '@appwrite.io/pink-svelte';
+    import { Badge, Icon, Table, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { Tag } from '@appwrite.io/pink-svelte';
     import { IconDuplicate, IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { canWriteUsers } from '$lib/stores/roles';
@@ -37,11 +32,11 @@
     import { sdk } from '$lib/stores/sdk';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Dependencies } from '$lib/constants';
-    import { addNotification } from '$lib/stores/notifications';
     import { invalidate } from '$app/navigation';
-    import Confirm from '$lib/components/confirm.svelte';
 
-    export let data;
+    import type { PageProps } from './$types';
+
+    let { data }: PageProps = $props();
 
     const columns = writable<Column[]>([
         { id: '$id', title: 'User ID', type: 'string', width: 200 },
@@ -59,44 +54,25 @@
         }
     ]);
 
-    let selectedUsers: string[] = [];
-    let showDelete = false;
-    let deleting = false;
-
     async function userCreated(event: CustomEvent<Models.User<Record<string, unknown>>>) {
         await goto(
             `${base}/project-${page.params.region}-${page.params.project}/auth/user-${event.detail.$id}`
         );
     }
 
-    async function handleDelete() {
-        showDelete = false;
-        deleting = true;
-
-        const promises = selectedUsers.map((userId) =>
-            sdk.forProject(page.params.region, page.params.project).users.delete(userId)
-        );
+    async function handleDelete(selectedRows: string[]): Promise<DeleteOperationState> {
+        const promises = selectedRows.map((userId) => {
+            return sdk.forProject(page.params.region, page.params.project).users.delete({ userId });
+        });
 
         try {
             await Promise.all(promises);
-            trackEvent(Submit.UserDelete, {
-                total: selectedUsers.length
-            });
-            addNotification({
-                type: 'success',
-                message: `${selectedUsers.length} user${selectedUsers.length > 1 ? 's' : ''} deleted`
-            });
-            invalidate(Dependencies.USERS);
+            trackEvent(Submit.UserDelete, { total: selectedRows.length });
         } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
             trackError(error, Submit.UserDelete);
+            return error;
         } finally {
-            selectedUsers = [];
-            showDelete = false;
-            deleting = false;
+            await invalidate(Dependencies.USERS);
         }
     }
 </script>
@@ -116,97 +92,111 @@
     </Layout.Stack>
 
     {#if data.users.total}
-        <Table.Root
+        <MultiSelectionTable
+            resource="user"
             columns={$columns}
-            allowSelection={$canWriteUsers}
-            bind:selectedRows={selectedUsers}
-            let:root>
-            <svelte:fragment slot="header" let:root>
+            onDelete={handleDelete}
+            allowSelection={$canWriteUsers}>
+            {#snippet header(root)}
                 {#each $columns as { id, title } (id)}
                     <Table.Header.Cell column={id} {root}>{title}</Table.Header.Cell>
                 {/each}
-            </svelte:fragment>
-            {#each data.users.users as user}
-                <Table.Row.Link
-                    href={`${base}/project-${page.params.region}-${page.params.project}/auth/user-${user.$id}`}
-                    {root}
-                    id={user.$id}>
-                    {#each $columns as { id } (id)}
-                        <Table.Cell column={id} {root}>
-                            {#if id === '$id'}
-                                <Copy value={user.$id} event="user">
-                                    <Tag size="xs" variant="code">
-                                        <Icon size="s" icon={IconDuplicate} slot="start" />
-                                        {user.$id}
-                                    </Tag>
-                                </Copy>
-                            {:else if id === 'name'}
-                                <Layout.Stack direction="row" alignItems="center" gap="s">
-                                    {#if user.email || user.phone}
-                                        {#if user.name}
-                                            <AvatarInitials size="xs" name={user.name} />
+            {/snippet}
+
+            {#snippet children(root)}
+                {#each data.users.users as user}
+                    <Table.Row.Link
+                        href={`${base}/project-${page.params.region}-${page.params.project}/auth/user-${user.$id}`}
+                        {root}
+                        id={user.$id}>
+                        {#each $columns as { id } (id)}
+                            <Table.Cell column={id} {root}>
+                                {#if id === '$id'}
+                                    <Copy value={user.$id} event="user">
+                                        <Tag size="xs" variant="code">
+                                            <Icon size="s" icon={IconDuplicate} slot="start" />
+                                            {user.$id}
+                                        </Tag>
+                                    </Copy>
+                                {:else if id === 'name'}
+                                    <Layout.Stack direction="row" alignItems="center" gap="s">
+                                        {#if user.email || user.phone}
+                                            {#if user.name}
+                                                <AvatarInitials size="xs" name={user.name} />
+                                                <Typography.Text truncate>
+                                                    {user.name}
+                                                </Typography.Text>
+                                            {:else}
+                                                <div class="avatar is-size-small">
+                                                    <span class="icon-minus-sm" aria-hidden="true"
+                                                    ></span>
+                                                </div>
+                                            {/if}
+                                        {:else}
+                                            <div class="avatar is-size-small">
+                                                <span class="icon-anonymous" aria-hidden="true"
+                                                ></span>
+                                            </div>
                                             <Typography.Text truncate>
                                                 {user.name}
                                             </Typography.Text>
-                                        {:else}
-                                            <div class="avatar is-size-small">
-                                                <span class="icon-minus-sm" aria-hidden="true"
-                                                ></span>
-                                            </div>
                                         {/if}
+                                    </Layout.Stack>
+                                {:else if id === 'identifiers'}
+                                    <Typography.Text truncate>
+                                        {user.email && user.phone
+                                            ? [user.email, user.phone].join(',')
+                                            : user.email || user.phone}
+                                    </Typography.Text>
+                                {:else if id === 'status'}
+                                    {#if user.status}
+                                        {@const success =
+                                            user.emailVerification || user.phoneVerification}
+                                        <Badge
+                                            size="xs"
+                                            variant="secondary"
+                                            type={success ? 'success' : undefined}
+                                            content={user.emailVerification &&
+                                            user.phoneVerification
+                                                ? 'Verified'
+                                                : user.emailVerification
+                                                  ? 'Verified email'
+                                                  : user.phoneVerification
+                                                    ? 'Verified phone'
+                                                    : 'Unverified'} />
                                     {:else}
-                                        <div class="avatar is-size-small">
-                                            <span class="icon-anonymous" aria-hidden="true"></span>
-                                        </div>
-                                        <Typography.Text truncate>
-                                            {user.name}
-                                        </Typography.Text>
+                                        <Badge
+                                            size="xs"
+                                            variant="secondary"
+                                            type="error"
+                                            content="blocked" />
                                     {/if}
-                                </Layout.Stack>
-                            {:else if id === 'identifiers'}
-                                <Typography.Text truncate>
-                                    {user.email && user.phone
-                                        ? [user.email, user.phone].join(',')
-                                        : user.email || user.phone}
-                                </Typography.Text>
-                            {:else if id === 'status'}
-                                {#if user.status}
-                                    {@const success =
-                                        user.emailVerification || user.phoneVerification}
-                                    <Badge
-                                        size="xs"
-                                        variant="secondary"
-                                        type={success ? 'success' : undefined}
-                                        content={user.emailVerification && user.phoneVerification
-                                            ? 'Verified'
-                                            : user.emailVerification
-                                              ? 'Verified email'
-                                              : user.phoneVerification
-                                                ? 'Verified phone'
-                                                : 'Unverified'} />
+                                {:else if id === 'labels'}
+                                    <Typography.Text truncate>
+                                        {user.labels.join(', ')}
+                                    </Typography.Text>
+                                {:else if id === 'joined'}
+                                    <DualTimeView time={user.registration} />
+                                {:else if id === 'lastActivity'}
+                                    {#if user.accessedAt}
+                                        <DualTimeView time={user.accessedAt} />
+                                    {:else}
+                                        never
+                                    {/if}
                                 {:else}
-                                    <Badge
-                                        size="xs"
-                                        variant="secondary"
-                                        type="error"
-                                        content="blocked" />
+                                    {user[id]}
                                 {/if}
-                            {:else if id === 'labels'}
-                                <Typography.Text truncate>
-                                    {user.labels.join(', ')}
-                                </Typography.Text>
-                            {:else if id === 'joined'}
-                                {toLocaleDateTime(user.registration)}
-                            {:else if id === 'lastActivity'}
-                                {user.accessedAt ? toLocaleDate(user.accessedAt) : 'never'}
-                            {:else}
-                                {user[id]}
-                            {/if}
-                        </Table.Cell>
-                    {/each}
-                </Table.Row.Link>
-            {/each}
-        </Table.Root>
+                            </Table.Cell>
+                        {/each}
+                    </Table.Row.Link>
+                {/each}
+            {/snippet}
+
+            {#snippet deleteContentNotice()}
+                This action is irreversible and will permanently remove the selected users and all
+                their data.
+            {/snippet}
+        </MultiSelectionTable>
 
         <PaginationWithLimit
             name="Users"
@@ -216,9 +206,10 @@
     {:else if data.search}
         <EmptySearch target="users" hidePagination>
             <Button
-                href={`${base}/project-${page.params.region}-${page.params.project}/auth`}
                 size="s"
-                secondary>Clear Search</Button>
+                secondary
+                href={`${base}/project-${page.params.region}-${page.params.project}/auth`}
+                >Clear Search</Button>
         </EmptySearch>
     {:else}
         <Empty
@@ -228,33 +219,6 @@
             allowCreate={$canWriteUsers}
             on:click={() => showCreateUser.set(true)} />
     {/if}
-
-    {#if selectedUsers.length > 0}
-        <FloatingActionBar>
-            <svelte:fragment slot="start">
-                <Badge content={selectedUsers.length.toString()} />
-                <span>
-                    {selectedUsers.length > 1 ? 'users' : 'user'}
-                    selected
-                </span>
-            </svelte:fragment>
-            <svelte:fragment slot="end">
-                <Button text on:click={() => (selectedUsers = [])}>Cancel</Button>
-                <Button secondary on:click={() => (showDelete = true)}>Delete</Button>
-            </svelte:fragment>
-        </FloatingActionBar>
-    {/if}
 </Container>
 
 <Create bind:showCreate={$showCreateUser} on:created={userCreated} />
-
-<Confirm title="Delete users" bind:open={showDelete} onSubmit={handleDelete} disabled={deleting}>
-    <Typography.Text>
-        Are you sure you want to delete <b>{selectedUsers.length}</b>
-        {selectedUsers.length > 1 ? 'users' : 'user'}?
-    </Typography.Text>
-    <Typography.Text>
-        This action is irreversible and will permanently remove the selected users and all their
-        data.
-    </Typography.Text>
-</Confirm>

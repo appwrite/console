@@ -8,11 +8,15 @@ export const REGION_FRA = 'fra';
 export const REGION_SYD = 'syd';
 export const REGION_NYC = 'nyc';
 export const REGION_SFO = 'sfo';
+export const REGION_SGP = 'sgp';
+export const REGION_TOR = 'tor';
 
 export const SUBDOMAIN_FRA = 'fra.';
 export const SUBDOMAIN_SYD = 'syd.';
 export const SUBDOMAIN_NYC = 'nyc.';
 export const SUBDOMAIN_SFO = 'sfo.';
+export const SUBDOMAIN_SGP = 'sgp.';
+export const SUBDOMAIN_TOR = 'tor.';
 
 export enum Dependencies {
     FACTORS = 'dependency:factors',

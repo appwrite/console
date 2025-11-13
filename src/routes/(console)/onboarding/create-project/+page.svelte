@@ -1,5 +1,6 @@
 <script lang="ts">
     import { Card, Layout, Button } from '@appwrite.io/pink-svelte';
+    import { Form } from '$lib/elements/forms';
     import { isCloud } from '$lib/system';
     import { sdk } from '$lib/stores/sdk';
     import { ID, Region } from '@appwrite.io/console';
@@ -15,10 +16,13 @@
     import { user } from '$lib/stores/user';
 
     let isLoading = false;
-    let id: string = ID.unique();
     let startAnimation = false;
-    let projectName = 'Appwrite project';
-    let region = Region.Fra;
+
+    let projectId = ID.unique();
+    let projectRegion = Region.Fra;
+    let projectName = 'Appwrite Project';
+
+    const projectIdForLog = projectId;
 
     export let data;
 
@@ -39,17 +43,17 @@
         try {
             const teamId = data.organization.$id;
             const project = await sdk.forConsole.projects.create({
-                projectId: id ?? ID.unique(),
+                projectId: projectId ?? ID.unique(),
                 name: projectName,
                 teamId,
-                region: isCloud ? region : undefined
+                region: isCloud ? projectRegion : undefined
             });
 
             markOnboardingComplete();
 
             trackEvent(Submit.ProjectCreate, {
-                customId: !!id,
-                teamId
+                teamId,
+                customId: projectId !== projectIdForLog
             });
 
             startAnimation = true;
@@ -94,24 +98,22 @@
             class="u-only-dark"
             alt="Appwrite Logo" />
         <Card.Base variant="primary" padding="l">
-            <CreateProject
-                regions={$regionsStore?.regions}
-                bind:projectName
-                bind:id
-                bind:region
-                showTitle={true}>
-                {#snippet submit()}
-                    <Layout.Stack direction="row" justifyContent="flex-end">
-                        <Button.Button
-                            on:click={createProject}
-                            type="submit"
-                            variant="primary"
-                            size="s">
-                            Create
-                        </Button.Button>
-                    </Layout.Stack>
-                {/snippet}
-            </CreateProject>
+            <Form noStyle onSubmit={createProject}>
+                <CreateProject
+                    showTitle
+                    bind:projectName
+                    bind:id={projectId}
+                    bind:region={projectRegion}
+                    regions={$regionsStore?.regions}>
+                    {#snippet submit()}
+                        <Layout.Stack direction="row" justifyContent="flex-end">
+                            <Button.Button type="submit" variant="primary" size="s">
+                                Create
+                            </Button.Button>
+                        </Layout.Stack>
+                    {/snippet}
+                </CreateProject>
+            </Form>
         </Card.Base>
     {/if}
 </div>

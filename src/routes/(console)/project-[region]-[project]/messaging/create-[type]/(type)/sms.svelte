@@ -22,7 +22,7 @@
     let formComponent: Form;
     let isSubmitting = writable(false);
     let showCustomId = false;
-    let id: string;
+    let id: string | null = null;
     let content: string;
     let topics: string[];
     let users: string[];
@@ -115,7 +115,7 @@
             <Fieldset legend="Targets">
                 <Targets type={MessagingProviderType.Sms} bind:topics bind:targets />
             </Fieldset>
-            <Fieldset legend="Schedule">
+            <Fieldset legend="Settings">
                 <Schedule bind:scheduledAt {targets} />
             </Fieldset>
         </Layout.Stack>

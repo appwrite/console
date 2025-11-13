@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Container } from '$lib/layout';
-    import { table } from '../store';
+    import { table, type ColumnsWidth } from '../store';
     import Delete from './deleteIndex.svelte';
     import CreateIndex from './createIndex.svelte';
     import Overview from './overviewIndex.svelte';
@@ -8,6 +8,8 @@
     import { Button } from '$lib/elements/forms';
     import FailedModal from '../failedModal.svelte';
     import { canWriteTables } from '$lib/stores/roles';
+    import { preferences } from '$lib/stores/preferences';
+    import { debounce } from '$lib/helpers/debounce';
     import {
         ActionMenu,
         Badge,
@@ -21,12 +23,13 @@
         Typography
     } from '@appwrite.io/pink-svelte';
     import {
+        IconBookOpen,
         IconDotsHorizontal,
         IconEye,
         IconPlus,
         IconTrash
     } from '@appwrite.io/pink-icons-svelte';
-    import { type ComponentProps, onDestroy } from 'svelte';
+    import { type ComponentProps, onDestroy, onMount } from 'svelte';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import EmptySheet from '../layout/emptySheet.svelte';
     import SpreadsheetContainer from '../layout/spreadsheet.svelte';
@@ -34,6 +37,14 @@
     import type { PageData } from './$types';
     import { showCreateColumnSheet } from '../store';
     import { isSmallViewport } from '$lib/stores/viewport';
+    import { page } from '$app/state';
+    import { showIndexesSuggestions, showColumnsSuggestionsModal } from '../../(suggestions)';
+    import IconAI from '../../(suggestions)/icon/aiForButton.svelte';
+    import EmptySheetCards from '../layout/emptySheetCards.svelte';
+    import { isCloud } from '$lib/system';
+    import { realtime } from '$lib/stores/sdk';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
 
     let {
         data
@@ -52,14 +63,54 @@
     let showDelete = $state(false);
     let showOverview = $state(false);
 
-    let columns = $state([
-        { id: 'key' },
-        { id: 'type' },
-        { id: 'columns' },
+    let columnsWidth = $state<ColumnsWidth | null>(null);
+
+    const tableId = page.params.table;
+    const organizationId = data.organization.$id ?? data.project.teamId;
+
+    const spreadsheetColumns = $derived([
+        {
+            id: 'key',
+            width: getColumnWidth('key', 250),
+            minimumWidth: 250,
+            resizable: true
+        },
+        {
+            id: 'type',
+            width: getColumnWidth('type', 200),
+            minimumWidth: 200,
+            resizable: true
+        },
+        {
+            id: 'columns',
+            width: getColumnWidth('columns', 200),
+            minimumWidth: 200,
+            resizable: true
+        },
         // { id: 'orders' }, // design doesn't have orders atm
-        { id: 'lengths' },
-        { id: 'actions', width: 40, isAction: true }
+        {
+            id: 'lengths',
+            width: getColumnWidth('lengths', 180),
+            minimumWidth: 180,
+            resizable: true
+        },
+        {
+            id: 'actions',
+            width: 40,
+            isAction: true,
+            resizable: false
+        }
     ]);
+
+    onMount(() => {
+        columnsWidth = preferences.getColumnWidths(tableId + '#indexes');
+
+        return realtime.forProject(page.params.region, ['project', 'console'], (response) => {
+            if (response.events.includes('databases.*.tables.*.indexes.*')) {
+                invalidate(Dependencies.TABLE);
+            }
+        });
+    });
 
     function getColumnStatusBadge(status: string): ComponentProps<Badge>['type'] {
         switch (status) {
@@ -73,6 +124,46 @@
                 return undefined;
         }
     }
+
+    function getColumnWidth(columnId: string, defaultWidth: number): number {
+        const savedWidth = columnsWidth?.[columnId];
+        if (!savedWidth) return defaultWidth;
+
+        return savedWidth.resized;
+    }
+
+    function saveColumnsWidth({ columnId, newWidth }: { columnId: string; newWidth: number }) {
+        const existing = columnsWidth?.[columnId];
+        const fixed = existing
+            ? typeof existing?.fixed === 'number'
+                ? existing.fixed
+                : existing?.fixed?.min
+            : newWidth;
+
+        columnsWidth = {
+            ...(columnsWidth ?? {}),
+            [columnId]: {
+                fixed,
+                resized: Math.ceil(newWidth)
+            }
+        };
+
+        saveColumnWidthsToPreferences({ columnId, newWidth, fixedWidth: fixed });
+    }
+
+    const saveColumnWidthsToPreferences = debounce(
+        (column: { columnId: string; newWidth: number; fixedWidth: number }) => {
+            if (!organizationId) return;
+
+            preferences.saveColumnWidths(organizationId, tableId + '#indexes', {
+                [column.columnId]: {
+                    fixed: column.fixedWidth,
+                    resized: Math.ceil(column.newWidth)
+                }
+            });
+        },
+        1000
+    );
 
     onDestroy(() => ($showCreateColumnSheet.show = false));
 
@@ -108,12 +199,13 @@
             <SpreadsheetContainer>
                 <Spreadsheet.Root
                     let:root
-                    {columns}
+                    columns={spreadsheetColumns}
                     height="100%"
                     allowSelection
                     emptyCells={emptyCellsCount}
                     bind:selectedRows={selectedIndexes}
-                    bottomActionClick={() => (showCreateIndex = true)}>
+                    bottomActionClick={() => (showCreateIndex = true)}
+                    on:columnsResize={(resize) => saveColumnsWidth(resize.detail)}>
                     <svelte:fragment slot="header" let:root>
                         <Spreadsheet.Header.Cell column="key" {root}>Key</Spreadsheet.Header.Cell>
                         <Spreadsheet.Header.Cell column="type" {root}>Type</Spreadsheet.Header.Cell>
@@ -209,27 +301,100 @@
                 </Spreadsheet.Root>
             </SpreadsheetContainer>
         {:else}
-            <EmptySheet
-                mode="indexes"
-                actions={{
-                    primary: {
-                        onClick: () => (showCreateIndex = true),
-                        disabled: !$table?.columns?.length
-                    }
-                }} />
+            <EmptySheet mode="indexes" showActions={$canWriteTables}>
+                {#snippet subtitle()}
+                    {#if isCloud}
+                        <Typography.Text align="center">
+                            Need a hand? Learn more in the
+                            <Link.Anchor
+                                target="_blank"
+                                href="https://appwrite.io/docs/products/databases/tables#indexes">
+                                docs.
+                            </Link.Anchor>
+                        </Typography.Text>
+                    {/if}
+                {/snippet}
+
+                {#snippet actions()}
+                    {#if isCloud}
+                        <EmptySheetCards
+                            icon={IconAI}
+                            title="Suggest indexes"
+                            disabled={!$table?.columns?.length}
+                            subtitle="Use AI to generate indexes"
+                            onClick={() => {
+                                showIndexesSuggestions.update(() => true);
+                            }} />
+                    {/if}
+
+                    <EmptySheetCards
+                        icon={IconPlus}
+                        title="Create index"
+                        disabled={!$table?.columns?.length}
+                        subtitle="Create indexes manually"
+                        onClick={() => {
+                            showCreateIndex = true;
+                        }} />
+
+                    {#if !isCloud}
+                        <EmptySheetCards
+                            icon={IconBookOpen}
+                            title="Documentation"
+                            subtitle="Read the Appwrite docs"
+                            href="https://appwrite.io/docs/products/databases/tables#indexes" />
+                    {/if}
+                {/snippet}
+            </EmptySheet>
         {/if}
     {:else}
-        <EmptySheet
-            mode="indexes"
-            title="You have no columns yet"
-            actions={{
-                primary: {
-                    text: 'Create columns',
-                    onClick: async () => {
-                        $showCreateColumnSheet.show = true;
-                    }
-                }
-            }} />
+        <EmptySheet mode="indexes" title="You have no columns yet" showActions={$canWriteTables}>
+            {#snippet subtitle()}
+                {#if isCloud}
+                    <Typography.Text align="center">
+                        Need a hand? Learn more in the
+                        <Link.Anchor
+                            target="_blank"
+                            href="https://appwrite.io/docs/products/databases/tables#columns">
+                            docs.
+                        </Link.Anchor>
+                    </Typography.Text>
+                {/if}
+            {/snippet}
+
+            {#snippet actions()}
+                {#if isCloud}
+                    <EmptySheetCards
+                        icon={IconAI}
+                        title="Suggest columns"
+                        subtitle="Use AI to generate columns"
+                        onClick={() => {
+                            $showColumnsSuggestionsModal = true;
+                        }} />
+
+                    <EmptySheetCards
+                        icon={IconPlus}
+                        title="Create column"
+                        subtitle="Create columns manually"
+                        onClick={() => {
+                            $showCreateColumnSheet.show = true;
+                        }} />
+                {:else}
+                    <EmptySheetCards
+                        icon={IconPlus}
+                        title="Create column"
+                        subtitle="Create columns manually"
+                        onClick={() => {
+                            $showCreateColumnSheet.show = true;
+                        }} />
+
+                    <EmptySheetCards
+                        icon={IconBookOpen}
+                        title="Documentation"
+                        subtitle="Read the Appwrite docs"
+                        href="https://appwrite.io/docs/products/databases/tables#columns" />
+                {/if}
+            {/snippet}
+        </EmptySheet>
     {/if}
 
     {#if selectedIndexes.length > 0}

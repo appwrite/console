@@ -1,9 +1,8 @@
 <script lang="ts">
     import { page } from '$app/state';
-    import { type Columns, type ColumnDirection } from './store';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import { Layout } from '@appwrite.io/pink-svelte';
+    import { Alert, Layout, Link } from '@appwrite.io/pink-svelte';
     import { InputSelect, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
@@ -11,6 +10,12 @@
     import type { Column } from '$lib/helpers/types';
     import { preferences } from '$lib/stores/preferences';
     import { onMount } from 'svelte';
+
+    import { showColumnsSuggestionsModal } from '../(suggestions)/store';
+    import IconAINotification from '../(suggestions)/icon/aiNotification.svelte';
+    import { type Columns, type ColumnDirection, showCreateColumnSheet } from './store';
+    import { isCloud } from '$lib/system';
+    import { slide } from 'svelte/transition';
 
     let {
         direction = null,
@@ -34,6 +39,8 @@
 
     const tableId = page.params.table;
     const databaseId = page.params.database;
+
+    let showSuggestionsAlert = $state(true);
 
     let key: string = $state(column?.key ?? null);
     let data: Partial<Columns> = $state({
@@ -149,7 +156,8 @@
                 type: 'success',
                 message: `Column ${key ?? data?.key} has been created`
             });
-            trackEvent(Submit.ColumnCreate);
+
+            trackEvent(Submit.ColumnCreate, { type: 'manual' });
 
             if (createMore) {
                 init();
@@ -179,6 +187,22 @@
 </script>
 
 <Layout.Stack gap="xl">
+    {#if isCloud && showSuggestionsAlert}
+        <div class="custom-inline-alert" transition:slide>
+            <Alert.Inline dismissible on:dismiss={() => (showSuggestionsAlert = false)}>
+                <svelte:fragment slot="icon">
+                    <IconAINotification />
+                </svelte:fragment>
+
+                Need help? Let AI <Link.Button
+                    on:click={() => {
+                        $showCreateColumnSheet.show = false;
+                        $showColumnsSuggestionsModal = true;
+                    }}>suggest columns</Link.Button> based on your data
+            </Alert.Inline>
+        </div>
+    {/if}
+
     <Layout.Stack direction="row">
         <InputText
             id="key"
@@ -208,3 +232,22 @@
         <ColumnComponent bind:data onclose={() => ($option = null)} />
     {/if}
 </Layout.Stack>
+
+<style lang="scss">
+    .custom-inline-alert {
+        & :global(article) {
+            border-radius: var(--border-radius-medium);
+            padding: var(--space-4, 8px);
+            background: var(--bgcolor-neutral-primary);
+            border: var(--border-width-s) solid var(--border-neutral);
+        }
+
+        & :global(div:first-child > :nth-child(2)) {
+            align-self: center;
+        }
+
+        & :global(.ai-icon-holder.notification) {
+            height: 36px !important;
+        }
+    }
+</style>

@@ -4,20 +4,19 @@
 
 <script lang="ts">
     import { goto } from '$app/navigation';
-    import { Empty, PaginationWithLimit, SearchQuery } from '$lib/components';
+    import { Empty, PaginationWithLimit } from '$lib/components';
     import Create from './create.svelte';
-    import { Container } from '$lib/layout';
+    import { Container, ResponsiveContainerHeader } from '$lib/layout';
     import { base } from '$app/paths';
     import { page } from '$app/state';
     import type { Models } from '@appwrite.io/console';
     import { writable } from 'svelte/store';
     import { canWriteBuckets } from '$lib/stores/roles';
-    import { Icon, Layout } from '@appwrite.io/pink-svelte';
+    import { Icon } from '@appwrite.io/pink-svelte';
     import { Button } from '$lib/elements/forms';
     import { columns } from './store';
     import Grid from './grid.svelte';
     import Table from './table.svelte';
-    import ViewSelector from '$lib/components/viewSelector.svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     export let data;
@@ -33,25 +32,19 @@
 </script>
 
 <Container>
-    <Layout.Stack direction="row" justifyContent="space-between">
-        <Layout.Stack direction="row" alignItems="center">
-            <SearchQuery placeholder="Search by name or ID" />
-        </Layout.Stack>
-        <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
-            <ViewSelector
-                ui="new"
-                {columns}
-                view={data.view}
-                hideColumns={!data.buckets.total}
-                hideView={!data.buckets.total} />
-            {#if $canWriteBuckets}
-                <Button on:click={() => ($showCreateBucket = true)} event="create_bucket" size="s">
-                    <Icon icon={IconPlus} slot="start" size="s" />
-                    Create bucket
-                </Button>
-            {/if}
-        </Layout.Stack>
-    </Layout.Stack>
+    <ResponsiveContainerHeader
+        {columns}
+        hasSearch
+        bind:view={data.view}
+        searchPlaceholder="Search by name or ID">
+        {#if $canWriteBuckets}
+            <Button on:click={() => ($showCreateBucket = true)} event="create_bucket" size="s">
+                <Icon icon={IconPlus} slot="start" size="s" />
+                Create bucket
+            </Button>
+        {/if}
+    </ResponsiveContainerHeader>
+
     {#if data.buckets.total}
         {#if data.view === 'grid'}
             <Grid {data} bind:showCreate={$showCreateBucket} />

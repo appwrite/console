@@ -1,22 +1,26 @@
 <script lang="ts">
-    import { dismissNotification, notifications } from '../stores/notifications';
     import { flip } from 'svelte/animate';
+    import { fly } from 'svelte/transition';
     import { Layout, Toast } from '@appwrite.io/pink-svelte';
+    import { dismissNotification, notifications } from '../stores/notifications';
 </script>
 
 {#if $notifications}
     <section>
         <Layout.Stack gap="s">
             {#each $notifications as notification (notification.id)}
-                <span animate:flip={{ duration: 500 }}>
+                <span animate:flip={{ duration: 500 }} transition:fly|global={{ x: 50 }}>
                     <Toast
+                        isHtml={notification.isHtml}
                         title={notification.title}
                         status={notification.type}
+                        icon={notification.icon}
                         description={notification.message}
                         actions={notification.buttons?.map((button) => {
                             return {
                                 label: button.name,
-                                onClick: button.method
+                                onClick: button.method,
+                                isHtml: button.isHtml
                             };
                         })}
                         on:dismiss={() => dismissNotification(notification.id)} />
@@ -28,16 +32,16 @@
 
 <style lang="scss">
     section {
+        right: 3.25px;
+        z-index: 1001;
         position: fixed;
         top: calc(var(--main-header-height) + 12px);
-        right: 12px;
-        z-index: 1001;
     }
 
     @media (min-width: 768px) {
         section {
-            top: calc(var(--main-header-height) + 24px);
             right: 24px;
+            top: calc(var(--main-header-height) + 24px);
         }
     }
 </style>

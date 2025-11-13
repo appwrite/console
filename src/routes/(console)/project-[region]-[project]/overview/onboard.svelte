@@ -14,12 +14,7 @@
     import { app } from '$lib/stores/app';
     import AuthPreview from './assets/auth-preview.svg';
     import AuthPreviewDark from './assets/auth-preview-dark.svg';
-    import {
-        IconArrowRight,
-        IconNodeJs,
-        IconPhp,
-        IconPython
-    } from '@appwrite.io/pink-icons-svelte';
+    import { IconArrowRight } from '@appwrite.io/pink-icons-svelte';
     import DatabaseImgSource from './assets/database.png';
     import DatabaseImgSourceDark from './assets/database-dark.png';
     import DiscordImgSource from './assets/discord.png';
@@ -31,14 +26,18 @@
     import PlatformAndroidImgSourceDark from './assets/platform-android-dark.svg';
     import PlatformFlutterImgSource from './assets/platform-flutter.svg';
     import PlatformFlutterImgSourceDark from './assets/platform-flutter-dark.svg';
+    import PlatformSdkImgSource from './assets/platform-sdk.jpg';
+    import PlatformSdkImgSourceDark from './assets/platform-sdk-dark.png';
     import { base } from '$app/paths';
     import { isSmallViewport } from '$lib/stores/viewport';
-    import { AvatarGroup } from '$lib/components';
     import type { Models } from '@appwrite.io/console';
     import { getPlatformInfo } from '$lib/helpers/platform';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { goto } from '$app/navigation';
     import { page } from '$app/state';
+
+    export let pingCount = 0;
+    export let platforms: Models.Platform[] = [];
 
     function createKey() {
         trackEvent(Click.KeyCreateClick, {
@@ -51,9 +50,6 @@
             }
         );
     }
-
-    export let platforms: Models.Platform[] = [];
-    export let pingCount = 0;
 
     function openPlatformWizard(type: number, platform?: Models.Platform) {
         if (platform) {
@@ -103,7 +99,9 @@
                                 </Layout.Stack>
                             </div>
                             <Layout.Stack gap="l">
-                                <Layout.Stack gap="l" direction="row">
+                                <Layout.Stack
+                                    gap="l"
+                                    direction={$isSmallViewport ? 'column' : 'row'}>
                                     <Card.Button
                                         on:click={() => {
                                             openPlatformWizard(0, platformMap.get('Web'));
@@ -341,17 +339,34 @@
                                         </Layout.Stack>
                                     </Card.Button>
                                 </Layout.Stack>
-                                <Layout.Stack direction="row" gap="xxs" alignItems="center">
-                                    <Typography.Text>Or connect</Typography.Text>
-                                    <Link.Button variant="muted" on:click={createKey}
-                                        >server side</Link.Button>
-                                    <div style:padding-inline-start="8px">
-                                        <AvatarGroup
-                                            icons={[IconPython, IconNodeJs, IconPhp]}
-                                            total={7}
-                                            size="s" />
-                                    </div>
-                                </Layout.Stack>
+                                <span class="with-separators eyebrow-heading-3">or</span>
+
+                                <Card.Button on:click={createKey} padding="none">
+                                    <Layout.Stack gap="xl">
+                                        <div
+                                            class="card-top-image api-key-card-image"
+                                            style:background-image={`url('${
+                                                $app.themeInUse === 'dark'
+                                                    ? PlatformSdkImgSourceDark
+                                                    : PlatformSdkImgSource
+                                            }')`}>
+                                            <Layout.Stack
+                                                direction="row"
+                                                alignItems="center"
+                                                justifyContent="space-between">
+                                                <Layout.Stack gap="xxs">
+                                                    <Typography.Title size="s"
+                                                        >Create API key</Typography.Title>
+                                                    <Typography.Text
+                                                        >Connect your server or backend to Appwrite</Typography.Text>
+                                                </Layout.Stack>
+                                                <div class="arrow-icon">
+                                                    <Icon icon={IconArrowRight} size="s" />
+                                                </div>
+                                            </Layout.Stack>
+                                        </div>
+                                    </Layout.Stack>
+                                </Card.Button>
                             </Layout.Stack>
                         </Layout.Stack></Step.Item>
                     <Step.Item state="next"
@@ -683,6 +698,24 @@
             background-size: cover;
             background-position: bottom;
             background-repeat: no-repeat;
+        }
+        .api-key-card-image {
+            background-size: cover;
+            background-position: right center;
+            background-repeat: no-repeat;
+            margin: 0;
+            width: 100%;
+            height: 100%;
+            min-height: 160px;
+            border-radius: var(--border-radius-m);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: flex-start;
+            padding: var(--base-16, 16px);
+            @media (min-width: 1200px) {
+                min-height: 187px;
+            }
         }
         .full-height-card {
             height: 100%;
