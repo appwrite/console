@@ -112,7 +112,6 @@
                         repository.set(e);
                         repositoryName = e.name;
                         selectedRepository = e.id;
-                        connectRepo();
                     }} />
             {/if}
         </Layout.Stack>
