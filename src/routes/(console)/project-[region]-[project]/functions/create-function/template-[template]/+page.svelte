@@ -31,6 +31,7 @@
     import { Dependencies } from '$lib/constants';
     import { getIconFromRuntime } from '$lib/stores/runtimes';
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
+    import { isCloud } from '$lib/system';
 
     export let data;
 
@@ -148,7 +149,7 @@
                         providerBranch: branch,
                         providerSilentMode: silentMode,
                         providerRootDirectory: rootDir,
-                        specification: specification || undefined
+                        specification: isCloud ? specification || undefined : undefined
                     });
 
                 // Add domain
