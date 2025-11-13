@@ -5,25 +5,17 @@
     import { Badge, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { Button } from '$lib/elements/forms';
 
-    export let data;
+    const { data } = $props();
 
     const endpoint = getApiEndpoint();
     const client = new Client();
     const vcs = new Vcs(client);
 
-    let installationId: string;
-    let repositoryId: string;
-    let providerPullRequestId: string;
-
-    let error = '';
-    let success = '';
-    let loading = false;
+    let error = $state('');
+    let success = $state('');
+    let loading = $state(false);
 
     onMount(async () => {
-        repositoryId = data.repositoryId;
-        installationId = data.installationId;
-        providerPullRequestId = data.providerPullRequestId;
-
         client.setEndpoint(endpoint).setProject(data.projectId).setMode('admin');
     });
 
@@ -38,9 +30,9 @@
 
         try {
             await vcs.updateExternalDeployments({
-                installationId,
-                repositoryId,
-                providerPullRequestId
+                installationId: data.installationId,
+                repositoryId: data.repositoryId,
+                providerPullRequestId: data.providerPullRequestId
             });
             success = 'Deployment approved successfully! Build will start soon.';
         } catch (e) {
@@ -58,7 +50,7 @@
         <Badge type="error" variant="secondary" content={error} />
     {/if}
     <Typography.Title size="l" align="center">
-        The deployment for pull request #{providerPullRequestId}
+        The deployment for pull request #{data.providerPullRequestId}
         is awaiting approval. When authorized, deployments will be started.
     </Typography.Title>
     <Button on:click={approveDeployment} secondary>Approve Deployment</Button>
