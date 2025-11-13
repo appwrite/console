@@ -51,18 +51,16 @@
     }
 </script>
 
-<section class="container" style="display: grid; place-items: center;">
-    <Layout.Stack gap="l" alignItems="center" style="max-width: 500px;">
-        {#if error}
-            <Badge type="error" variant="secondary" content={error} />
-        {/if}
-        {#if success}
-            <Badge type="success" variant="secondary" content={success} />
-        {/if}
-        <Typography.Title size="l" align="center">
-            The deployment for pull request #{providerPullRequestId}
-            is awaiting approval. When authorized, deployments will be started.
-        </Typography.Title>
-        <Button on:click={approveDeployment} secondary>Approve Deployment</Button>
-    </Layout.Stack>
-</section>
+<Layout.Stack gap="l" alignItems="center" style="max-width: 500px;">
+    {#if error}
+        <Badge type="error" variant="secondary" content={error} />
+    {/if}
+    {#if success}
+        <Badge type="success" variant="secondary" content={success} />
+    {/if}
+    <Typography.Title size="l" align="center">
+        The deployment for pull request #{providerPullRequestId}
+        is awaiting approval. When authorized, deployments will be started.
+    </Typography.Title>
+    <Button on:click={approveDeployment} secondary>Approve Deployment</Button>
+</Layout.Stack>

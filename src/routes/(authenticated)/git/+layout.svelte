@@ -2,16 +2,19 @@
     import { base } from '$app/paths';
     import { loading } from '$routes/store';
     import { app } from '$lib/stores/app';
-    import { Typography } from '@appwrite.io/pink-svelte';
+    import { Layout, Typography } from '@appwrite.io/pink-svelte';
 
     loading.set(false);
 </script>
 
-<div class="auth-bg">
-    <section>
-        <div class="console-container">
-            <slot />
-        </div>
+<Layout.Stack
+    height="100vh"
+    direction="column"
+    alignItems="center"
+    justifyContent="center"
+    style="background: var(--bgcolor-neutral-primary, #fff);">
+    <section class="console-container">
+        <slot />
     </section>
     <footer>
         <Typography.Eyebrow color="--fgcolor-neutral-secondary">POWERED BY</Typography.Eyebrow>
@@ -29,34 +32,20 @@
                 alt="Appwrite Logo" />
         {/if}
     </footer>
-</div>
+</Layout.Stack>
 
 <style lang="scss">
-    .auth-bg {
-        position: fixed;
-        background: var(--bgcolor-neutral-primary, #fff);
-        background-size: cover;
-        top: 0;
-        left: 0;
-        height: 100%;
-        width: 100%;
+    section {
+        flex: 1;
         display: flex;
-        flex-direction: column;
         align-items: center;
+    }
+    footer {
+        padding: 2rem 1rem;
+        display: flex;
+        gap: 0.5rem;
         justify-content: center;
-        justify-content: space-between;
-        section {
-            flex: 1;
-            display: flex;
-            align-items: center;
-        }
-        footer {
-            padding: 2rem 1rem;
-            display: flex;
-            gap: 0.5rem;
-            justify-content: center;
-            align-items: center;
-            flex-wrap: wrap;
-        }
+        align-items: center;
+        flex-wrap: wrap;
     }
 </style>
