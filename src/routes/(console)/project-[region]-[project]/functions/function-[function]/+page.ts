@@ -41,7 +41,15 @@ export const load: PageLoad = async ({ params, depends, url, route, parent }) =>
                         'buildDuration',
                         'status',
                         'type',
-                        'resourceId'
+                        'resourceId',
+                        'providerRepositoryUrl',
+                        'providerRepositoryOwner',
+                        'providerRepositoryName',
+                        'providerBranchUrl',
+                        'providerBranch',
+                        'providerCommitMessage',
+                        'providerCommitHash',
+                        'providerCommitUrl'
                     ]),
                     ...parsedQueries.values()
                 ]
