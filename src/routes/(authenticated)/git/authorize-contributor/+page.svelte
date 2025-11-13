@@ -60,7 +60,7 @@
             <Badge type="success" variant="secondary" content={success} />
         {/if}
         <Typography.Title size="l" align="center">
-            The deployment for pull request #{providerPullRequestId} 
+            The deployment for pull request #{providerPullRequestId}
             is awaiting approval. When authorized, deployments will be started.
         </Typography.Title>
         <Button on:click={approveDeployment} secondary>Approve Deployment</Button>
