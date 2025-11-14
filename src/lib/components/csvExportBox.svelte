@@ -161,7 +161,7 @@
 
         const existing = exportItems.get(exportData.$id);
 
-        const isDone = (s: string) => s === 'completed' || s === 'failed';
+        const isDone = (s: string) => ['completed', 'failed'].includes(s);
         const isInProgress = (s: string) => ['pending', 'processing'].includes(s);
 
         const shouldSkip =
@@ -178,10 +178,26 @@
             fileName: fileName,
             errors: exportData.errors || []
         });
+
         exportItems = new Map(exportItems);
 
-        if (status === 'completed' || status === 'failed') {
-            await showCompletionNotification(tableName ?? tableId, bucketId, fileName, exportData);
+        switch (status) {
+            case 'completed':
+                await downloadExportedFile(
+                    page.params.region,
+                    page.params.project,
+                    bucketId,
+                    fileName
+                );
+                break;
+            case 'failed':
+                await showCompletionNotification(
+                    tableName ?? tableId,
+                    bucketId,
+                    fileName,
+                    exportData
+                );
+                break;
         }
     }
 
