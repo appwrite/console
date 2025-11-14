@@ -114,8 +114,8 @@
                     name,
                     BillingPlan.FREE,
                     null,
-                    null,
-                    resolvedProfile.organizationPlatform
+                    resolvedProfile.organizationPlatform,
+                    null
                 );
             } else {
                 org = await sdk.forConsole.billing.createOrganization(
