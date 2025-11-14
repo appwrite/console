@@ -58,7 +58,6 @@
     let delimiter = $state<DelimiterOption>('Comma');
     let includeHeader = $state(true);
     let exportWithFilters = $state(false);
-    let emailOnComplete = $state(false);
 
     const columnLimit = $derived($isSmallViewport ? 6 : 9);
     const visibleColumns = $derived(
@@ -150,7 +149,7 @@
                     queries: exportWithFilters ? Array.from(localQueries.values()) : [],
                     delimiter: delimiterMap[delimiter],
                     header: includeHeader,
-                    notify: emailOnComplete
+                    notify: true
                 });
 
             addNotification({
@@ -295,12 +294,6 @@
                             </Layout.Stack>
                         {/if}
                     </Layout.Stack>
-
-                    <InputCheckbox
-                        id="emailOnComplete"
-                        label="Email me when export is complete"
-                        description="Useful for large exports that may take a few minutes"
-                        bind:checked={emailOnComplete} />
                 </Layout.Stack>
             </Fieldset>
         </Layout.Stack>
