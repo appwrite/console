@@ -30,10 +30,6 @@
     let formComponent: Form;
     let isSubmitting = writable(false);
 
-    let selectedBucket = $state<string | null>(null);
-    let buckets = $state<Models.BucketList | null>(null);
-    let loadingBuckets = $state(false);
-
     let localQueries = $state<Map<TagValue, string>>(new Map());
     const localTags = $derived(Array.from(localQueries.keys()));
 
@@ -42,7 +38,7 @@
         .split('T')
         .join('_')
         .slice(0, -4);
-    let filename = $state(`${$table.name}_${timestamp}.csv`);
+    const filename = `${$table.name}_${timestamp}.csv`;
 
     let selectedColumns = $state<Record<string, boolean>>({});
     let showAllColumns = $state(false);
@@ -85,26 +81,6 @@
         localQueries = new Map(localQueries);
     }
 
-    async function loadBuckets() {
-        loadingBuckets = true;
-        try {
-            buckets = await sdk
-                .forProject(page.params.region, page.params.project)
-                .storage.listBuckets();
-
-            if (buckets.buckets.length > 0 && !selectedBucket) {
-                selectedBucket = buckets.buckets[0].$id;
-            }
-        } catch (e) {
-            addNotification({
-                type: 'error',
-                message: 'Failed to load storage buckets'
-            });
-        } finally {
-            loadingBuckets = false;
-        }
-    }
-
     function initializeColumns() {
         selectedColumns = Object.fromEntries($table.columns.map((col) => [col.key, true]));
     }
@@ -130,19 +106,10 @@
             return;
         }
 
-        if (!selectedBucket) {
-            addNotification({
-                type: 'error',
-                message: 'Please select a storage bucket'
-            });
-            return;
-        }
-
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
                 .migrations.createCSVExport({
-                    bucketId: selectedBucket,
                     resourceId: `${page.params.database}:${page.params.table}`,
                     filename: filename,
                     columns: selectedCols,
@@ -171,7 +138,6 @@
     }
 
     onMount(() => {
-        loadBuckets();
         initializeColumns();
         localQueries = new Map($queries);
     });
@@ -180,35 +146,6 @@
 <Wizard title="Export CSV" columnSize="s" href={tableUrl} bind:showExitModal confirmExit column>
     <Form bind:this={formComponent} bind:isSubmitting onSubmit={handleExport}>
         <Layout.Stack gap="xxl">
-            <Fieldset legend="Destination">
-                <Layout.Stack gap="l">
-                    {#if loadingBuckets}
-                        <Layout.Stack gap="xs">
-                            <Typography.Text as="label" for="bucket" variant="m-500"
-                                >Bucket</Typography.Text>
-                            <Skeleton variant="line" width="100%" height={35} />
-                        </Layout.Stack>
-                    {:else if buckets && buckets.buckets.length > 0}
-                        <InputSelect
-                            id="bucket"
-                            label="Bucket"
-                            required
-                            bind:value={selectedBucket}
-                            placeholder="Select bucket"
-                            options={buckets.buckets.map((bucket) => ({
-                                value: bucket.$id,
-                                label: bucket.name
-                            }))} />
-                    {:else}
-                        <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
-                            No storage buckets found. Please create a bucket first.
-                        </Typography.Text>
-                    {/if}
-
-                    <InputText id="filename" label="Filename" bind:value={filename} />
-                </Layout.Stack>
-            </Fieldset>
-
             <Fieldset legend="Columns">
                 <Layout.Stack gap="l">
                     <Layout.Stack direction="row" gap="s" alignItems="center">
@@ -306,7 +243,7 @@
             <Button
                 fullWidthMobile
                 on:click={() => formComponent.triggerSubmit()}
-                disabled={$isSubmitting || !selectedBucket || selectedColumnCount === 0}>
+                disabled={$isSubmitting || selectedColumnCount === 0}>
                 Export
             </Button>
         </Layout.Stack>
