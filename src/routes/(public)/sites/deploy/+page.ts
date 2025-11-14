@@ -8,6 +8,7 @@ import type { OrganizationList } from '$lib/stores/organization';
 import { redirectTo } from '$routes/store';
 import type { PageLoad } from './$types';
 import { getRepositoryInfo } from '$lib/helpers/github';
+import { resolvedProfile } from '$lib/profiles/index.svelte';
 
 export const load: PageLoad = async ({ parent, url }) => {
     const { account } = await parent();
@@ -95,7 +96,8 @@ export const load: PageLoad = async ({ parent, url }) => {
                     ID.unique(),
                     'Personal Projects',
                     BillingPlan.FREE,
-                    null
+                    null,
+                    resolvedProfile.organizationPlatform
                 );
             } else {
                 await sdk.forConsole.teams.create({

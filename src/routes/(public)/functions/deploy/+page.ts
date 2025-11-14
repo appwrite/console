@@ -8,6 +8,7 @@ import type { OrganizationList } from '$lib/stores/organization';
 import { redirectTo } from '$routes/store';
 import type { PageLoad } from './$types';
 import { getRepositoryInfo } from '$lib/helpers/github';
+import { resolvedProfile } from '$lib/profiles/index.svelte';
 
 export const load: PageLoad = async ({ parent, url }) => {
     const { account } = await parent();
@@ -79,6 +80,7 @@ export const load: PageLoad = async ({ parent, url }) => {
                     'Personal Projects',
                     BillingPlan.FREE,
                     null,
+                    resolvedProfile.organizationPlatform,
                     null
                 );
             } else {

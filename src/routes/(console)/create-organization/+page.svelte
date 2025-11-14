@@ -114,6 +114,7 @@
                     name,
                     BillingPlan.FREE,
                     null,
+                    resolvedProfile.organizationPlatform,
                     null
                 );
             } else {
@@ -122,6 +123,7 @@
                     name,
                     selectedPlan,
                     paymentMethodId,
+                    resolvedProfile.organizationPlatform,
                     null,
                     selectedCoupon?.code,
                     collaborators,

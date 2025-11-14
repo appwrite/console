@@ -27,6 +27,7 @@
                     organizationName,
                     BillingPlan.FREE,
                     null,
+                    resolvedProfile.organizationPlatform,
                     null
                 );
 
