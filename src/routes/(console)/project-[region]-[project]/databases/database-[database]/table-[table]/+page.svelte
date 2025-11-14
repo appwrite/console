@@ -8,7 +8,7 @@
     import { Container } from '$lib/layout';
     import { preferences } from '$lib/stores/preferences';
     import { canWriteTables, canWriteRows } from '$lib/stores/roles';
-    import { Icon, Layout, Divider, Tooltip, Popover, ActionMenu } from '@appwrite.io/pink-svelte';
+    import { Icon, Layout, Divider, Tooltip } from '@appwrite.io/pink-svelte';
     import type { PageData } from './$types';
     import {
         table,
@@ -179,13 +179,6 @@
                     justifyContent="flex-end"
                     style="padding-right: 40px;">
                     <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
-                        <Button
-                            secondary
-                            event={Click.DatabaseImportCsv}
-                            disabled={!(hasColumns && hasValidColumns)}
-                            on:click={() => (showImportCSV = true)}>
-                            Import CSV
-                        </Button>
                         {#if !$isSmallViewport}
                             <Button
                                 secondary
@@ -196,45 +189,52 @@
                                 Create row
                             </Button>
 
-                            <Button
-                                icon
-                                size="s"
-                                secondary
-                                class="small-button-dimensions"
-                                on:click={() => {
-                                    $expandTabs = !$expandTabs;
-                                    preferences.setKey('tableHeaderExpanded', $expandTabs);
+                            <Tooltip placement="top">
+                                <Button
+                                    icon
+                                    size="s"
+                                    secondary
+                                    class="small-button-dimensions"
+                                    on:click={() => (showImportCSV = true)}>
+                                    <Icon icon={IconUpload} size="s" />
+                                </Button>
+
+                                <svelte:fragment slot="tooltip">Import CSV</svelte:fragment>
+                            </Tooltip>
+
+                            <Tooltip placement="top">
+                                <Button
+                                    icon
+                                    size="s"
+                                    secondary
+                                    class="small-button-dimensions"
+                                    on:click={() => {
+                                    trackEvent(Click.DatabaseExportCsv);
+                                    goto(getTableExportUrl());
                                 }}>
-                                <Icon
-                                    icon={!$expandTabs ? IconChevronDown : IconChevronUp}
-                                    size="s" />
-                            </Button>
+                                    <Icon icon={IconDownload} size="s" />
+                                </Button>
 
-                    <Popover padding="none" placement="bottom-start" let:toggle let:showing>
-                        <Button
-                            secondary
-                            disabled={!(hasColumns && hasValidColumns)}
-                            on:click={toggle}>
-                            Manage rows
-                            <span slot="end" class="chevron-wrapper" class:rotate={showing}>
-                                <Icon icon={IconChevronDown} size="s" />
-                            </span>
-                        </Button>
-               
-                        <Button
-                            leadingIcon={IconUpload}
-                            on:click={() => (showImportCSV = true)}>
-                            Import CSV
-                        </Button>
+                                <svelte:fragment slot="tooltip">Export CSV</svelte:fragment>
+                            </Tooltip>
 
-                        <Button
-                            leadingIcon={IconDownload}
-                            on:click={() => {
-                                trackEvent(Click.DatabaseExportCsv);
-                                goto(getTableExportUrl());
-                            }}>
-                            Export CSV
-                        </Button>
+                            <Tooltip placement="top">
+                                <Button
+                                    icon
+                                    size="s"
+                                    secondary
+                                    class="small-button-dimensions"
+                                    on:click={() => {
+                                        $expandTabs = !$expandTabs;
+                                        preferences.setKey('tableHeaderExpanded', $expandTabs);
+                                    }}>
+                                    <Icon
+                                        icon={!$expandTabs ? IconChevronDown : IconChevronUp}
+                                        size="s" />
+                                </Button>
+
+                                <svelte:fragment slot="tooltip">{!$expandTabs ? 'Expand' : 'Collapse'}</svelte:fragment>
+                            </Tooltip>
 
                             <Tooltip disabled={isRefreshing || !data.rows.total} placement="top">
                                 <Button
@@ -363,15 +363,6 @@
     :global(.small-button-dimensions) {
         width: 32px !important;
         height: 32px !important;
-    }
-
-    .chevron-wrapper {
-        display: inline-flex;
-        transition: transform 0.15s ease-out;
-    }
-
-    .chevron-wrapper.rotate {
-        transform: rotate(180deg);
     }
 
     :global(.rotating) {
