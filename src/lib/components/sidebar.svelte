@@ -277,7 +277,7 @@
                     {/if}
                 </Layout.Stack>
             {/if}
-            {#if project && $isSmallViewport}
+            {#if project && $isSmallViewport && !$isTabletViewport}
                 <div class="action-buttons">
                     <Layout.Stack direction="column" gap="s">
                         <DropList show={$feedback.show} scrollable>
