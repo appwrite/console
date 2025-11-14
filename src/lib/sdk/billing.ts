@@ -1,6 +1,6 @@
 import type { Tier } from '$lib/stores/billing';
 import type { Campaign } from '$lib/stores/campaigns';
-import type { Client, Models } from '@appwrite.io/console';
+import type { Client, Models, Platform } from '@appwrite.io/console';
 import type { PaymentMethod } from '@stripe/stripe-js';
 import type { Organization, OrganizationError, OrganizationList } from '../stores/organization';
 
@@ -490,6 +490,7 @@ export class Billing {
         name: string,
         billingPlan: string,
         paymentMethodId: string,
+        platform: Platform,
         billingAddressId: string = null,
         couponId: string = null,
         invites: Array<string> = [],
@@ -500,6 +501,7 @@ export class Billing {
         const params = {
             organizationId,
             name,
+            platform,
             billingPlan,
             paymentMethodId,
             billingAddressId,

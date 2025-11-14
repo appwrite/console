@@ -46,6 +46,7 @@ export const load: PageLoad = async ({ parent }) => {
                     'Personal projects',
                     BillingPlan.FREE,
                     null,
+                    resolvedProfile.organizationPlatform,
                     null
                 );
                 trackEvent(Submit.OrganizationCreate, {

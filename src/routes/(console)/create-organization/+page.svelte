@@ -114,7 +114,8 @@
                     name,
                     BillingPlan.FREE,
                     null,
-                    null
+                    null,
+                    resolvedProfile.organizationPlatform
                 );
             } else {
                 org = await sdk.forConsole.billing.createOrganization(
@@ -122,6 +123,7 @@
                     name,
                     selectedPlan,
                     paymentMethodId,
+                    resolvedProfile.organizationPlatform,
                     null,
                     selectedCoupon?.code,
                     collaborators,
