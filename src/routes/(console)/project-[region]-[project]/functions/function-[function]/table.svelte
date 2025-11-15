@@ -79,12 +79,6 @@
                 trackError(error, Submit.DeploymentDelete);
                 return error;
             }
-            
-            const warning = new Error(
-                'Deleting all deployments will leave this function without any deployments. Consider keeping at least one deployment or delete the function instead.'
-            );
-            trackError(warning, Submit.DeploymentDelete);
-            return warning;
         }
         
         const promises = selectedRows.map((deploymentId) =>
@@ -97,9 +91,10 @@
         try {
             await Promise.all(promises);
             trackEvent(Submit.DeploymentDelete);
+            return undefined;
         } catch (error) {
-            trackError(error, Submit.DeploymentDelete);
-            return error;
+            trackError(error as Error, Submit.DeploymentDelete);
+            return error as Error;
         } finally {
             await invalidate(Dependencies.DEPLOYMENTS);
         }
