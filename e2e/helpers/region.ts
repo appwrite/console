@@ -7,10 +7,15 @@ export async function selectRandomRegion(page: Page, dialog: Locator): Promise<s
     if (await regionPicker.isVisible()) {
         await regionPicker.click();
 
-        const options = await page
-            .getByRole('option')
-            .filter({ hasNot: page.locator('[aria-disabled="true"]') })
-            .all();
+        const allOptions = await page.getByRole('option').all();
+        const options = [];
+
+        for (const option of allOptions) {
+            const isDisabled = await option.getAttribute('aria-disabled');
+            if (isDisabled !== 'true') {
+                options.push(option);
+            }
+        }
 
         if (options.length > 0) {
             const randomIndex = Math.floor(Math.random() * options.length);
