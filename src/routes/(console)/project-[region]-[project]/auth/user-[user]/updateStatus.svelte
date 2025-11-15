@@ -18,20 +18,21 @@
     async function updateVerificationEmail() {
         showVerificationDropdown = false;
         try {
-            await sdk
+            const userUpdated = await sdk
                 .forProject(page.params.region, page.params.project)
                 .users.updateEmailVerification({
                     userId: $user.$id,
                     emailVerification: !$user.emailVerification
                 });
-            await invalidate(Dependencies.USER);
+
             addNotification({
-                message: `${$user.name || $user.email || $user.phone || 'The account'} has been ${
-                    !$user.emailVerification ? 'unverified' : 'verified'
+                message: `${userUpdated.name || userUpdated.email || userUpdated.phone || 'The account'} has been ${
+                    !userUpdated.emailVerification ? 'unverified' : 'verified'
                 }`,
                 type: 'success'
             });
             trackEvent(Submit.UserUpdateVerificationEmail);
+            await invalidate(Dependencies.USER);
         } catch (error) {
             addNotification({
                 message: error.message,
@@ -43,19 +44,20 @@
     async function updateVerificationPhone() {
         showVerificationDropdown = false;
         try {
-            await sdk
+            const userUpdated = await sdk
                 .forProject(page.params.region, page.params.project)
                 .users.updatePhoneVerification({
                     userId: $user.$id,
                     phoneVerification: !$user.phoneVerification
                 });
-            await invalidate(Dependencies.USER);
+
             addNotification({
-                message: `${$user.name || $user.email || $user.phone || 'The account'} has been ${
-                    $user.phoneVerification ? 'unverified' : 'verified'
+                message: `${userUpdated.name || userUpdated.email || userUpdated.phone || 'The account'} has been ${
+                    !userUpdated.phoneVerification ? 'unverified' : 'verified'
                 }`,
                 type: 'success'
             });
+            await invalidate(Dependencies.USER);
             trackEvent(Submit.UserUpdateVerificationPhone);
         } catch (error) {
             addNotification({
@@ -120,7 +122,7 @@
                 <p>Joined: {toLocaleDateTime($user.registration)}</p>
                 <p>Last activity: {accessedAt ? toLocaleDate(accessedAt) : 'never'}</p>
             </div>
-            <div>
+            <div data-user-status>
                 {#if !$user.status}
                     <Badge content="blocked" variant="secondary" type="warning" />
                 {:else if $user.email && $user.phone}
