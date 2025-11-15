@@ -33,7 +33,6 @@
     import { addNotification } from '$lib/stores/notifications';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import { billingURL } from '$lib/stores/billing';
 
     import { isSmallViewport } from '$lib/stores/viewport';
     import { isCloud } from '$lib/system';
@@ -195,13 +194,14 @@
 
 {#if projectsToArchive.length > 0}
     <div class="archive-projects-margin-top">
-        <Accordion title="Archived projects" badge={`${projectsToArchive.length}`}>
+        <Accordion
+            title={isPlanBelowPro ? 'Archived projects' : 'Pending archive'}
+            badge={`${projectsToArchive.length}`}>
             <Typography.Text tag="p" size="s">
                 {#if isPlanBelowPro}
                     These projects are archived and require a plan upgrade to restore access.
                 {:else}
-                    These projects will be archived and are read-only. You can view and migrate
-                    their data.
+                    These projects will be archived at the end of your billing cycle.
                 {/if}
             </Typography.Text>
 
@@ -212,10 +212,7 @@
                             project.platforms.map((platform) => getPlatformInfo(platform.type))
                         )}
                         {@const formatted = formatName(project.name)}
-                        <GridItem1
-                            href={!isPlanBelowPro
-                                ? `${base}/project-${project.region}-${project.$id}/overview/platforms`
-                                : undefined}>
+                        <GridItem1>
                             <svelte:fragment slot="eyebrow">
                                 {project?.platforms?.length ? project?.platforms?.length : 'No'} apps
                             </svelte:fragment>
@@ -236,35 +233,24 @@
                                             <Icon icon={IconDotsHorizontal} size="s" />
                                         </Button>
                                         <ActionMenu.Root slot="tooltip">
-                                            {#if isPlanBelowPro}
-                                                <ActionMenu.Item.Anchor
-                                                    leadingIcon={IconInboxIn}
-                                                    href={$billingURL}>
-                                                    Restore access
-                                                </ActionMenu.Item.Anchor>
-                                            {:else}
-                                                <ActionMenu.Item.Button
-                                                    leadingIcon={IconInboxIn}
-                                                    disabled={isUnarchiveDisabled()}
-                                                    on:click={() =>
-                                                        handleUnarchiveProject(project)}>
-                                                    Unarchive project
-                                                </ActionMenu.Item.Button>
-                                                <ActionMenu.Item.Button
-                                                    leadingIcon={IconSwitchHorizontal}
-                                                    on:click={() => handleMigrateProject(project)}>
-                                                    Migrate project
-                                                </ActionMenu.Item.Button>
-                                            {/if}
+                                            <ActionMenu.Item.Button
+                                                leadingIcon={IconInboxIn}
+                                                disabled={isUnarchiveDisabled()}
+                                                on:click={() => handleUnarchiveProject(project)}
+                                                >Unarchive project</ActionMenu.Item.Button>
+                                            <ActionMenu.Item.Button
+                                                leadingIcon={IconSwitchHorizontal}
+                                                disabled={isUnarchiveDisabled()}
+                                                on:click={() => handleMigrateProject(project)}
+                                                >Migrate project</ActionMenu.Item.Button>
                                             <div class="action-menu-divider">
                                                 <Divider />
                                             </div>
                                             <ActionMenu.Item.Button
                                                 status="danger"
                                                 leadingIcon={IconTrash}
-                                                on:click={() => handleDeleteProject(project)}>
-                                                Delete project
-                                            </ActionMenu.Item.Button>
+                                                on:click={() => handleDeleteProject(project)}
+                                                >Delete project</ActionMenu.Item.Button>
                                         </ActionMenu.Root>
                                     </Popover>
                                 </div>
