@@ -33,7 +33,7 @@
                 if (resolvedProfile.id === ProfileMode.STUDIO) return ThemeDarkStudio;
                 return isCloud ? ThemeDarkCloud : ThemeDark;
             case 'light':
-                if (resolvedProfile.id === ProfileMode.CONSOLE) return ThemeLightStudio;
+                if (resolvedProfile.id === ProfileMode.STUDIO) return ThemeLightStudio;
                 return isCloud ? ThemeLightCloud : ThemeLight;
         }
     }

@@ -59,6 +59,11 @@ function ensureBaseStyles(node: HTMLElement) {
     node.style.position = 'fixed';
     node.style.height = `calc(100vh - ${BLOCK_START_BASE_OFFSET}px)`;
     node.style.maxHeight = `calc(100vh - ${BLOCK_START_BASE_OFFSET}px)`;
+    node.style.borderRadius = '16px';
+    node.style.border = '1px solid var(--border-neutral)';
+    node.style.padding = '0';
+    node.style.overflow = 'hidden';
+
     if (!node.style.display) {
         node.style.display = 'none';
     }
@@ -190,12 +195,11 @@ function updatePosition() {
 
     const rect = anchorElement.getBoundingClientRect();
     const { offsetX, offsetY } = currentOptions;
-    const left = rect.left + offsetX;
+    const left = rect.left + offsetX + 10;
     const top = BLOCK_START_BASE_OFFSET + offsetY;
 
-    component.style.width = `${rect.width}px`;
-    component.style.height = `calc(100vh - ${BLOCK_START_BASE_OFFSET}px)`;
-    component.style.paddingInlineStart = `${INLINE_START_BASE_OFFSET}px`;
+    component.style.width = `${rect.width - 20}px`;
+    component.style.height = `calc(100vh - ${BLOCK_START_BASE_OFFSET + 10}px)`;
     component.style.left = `${left}px`;
     component.style.top = `${top}px`;
 }
@@ -285,7 +289,7 @@ export async function initImagine(
                 {
                     AI_SERVICE_ENDPOINT: PUBLIC_AI_SERVICE_BASE_URL,
                     APPWRITE_ENDPOINT: PUBLIC_APPWRITE_ENDPOINT,
-                    APPWRITE_SITES_BASE_URL: ''
+                    APPWRITE_SITES_BASE_URL: 'https://stage.appwrite.network'
                 },
                 {
                     initialTheme: get(app).themeInUse,

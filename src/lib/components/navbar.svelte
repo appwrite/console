@@ -120,7 +120,7 @@
     beforeNavigate(() => (showAccountMenu = false));
 </script>
 
-<Navbar.Base>
+<Navbar.Base --border-width-s="none">
     <div slot="left" class="left">
         <div class="only-mobile-tablet">
             <button
@@ -149,7 +149,7 @@
             </div>
         {/if}
     </div>
-    <div slot="right" class="only-desktop">
+    <div slot="right" class="only-desktop" style:--border-width-s="1px">
         <div class="right">
             <Layout.Stack gap="l" direction="row" alignItems="center">
                 {#if isCloud && currentOrg?.showUpgrade}

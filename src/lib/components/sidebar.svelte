@@ -119,6 +119,7 @@
     class="sidebar"
     class:only-mobile-tablet={!project}
     class:no-transitions={$noWidthTransition}
+    style:--border-width-s="0"
     style:--overlay-on-neutral={$app.themeInUse === 'dark'
         ? 'var(--neutral-750)'
         : 'var(--neutral-100)'}>
