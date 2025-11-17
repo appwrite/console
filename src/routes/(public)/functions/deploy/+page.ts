@@ -2,7 +2,6 @@ import { sdk } from '$lib/stores/sdk.js';
 import { redirect } from '@sveltejs/kit';
 import { base } from '$app/paths';
 import { isCloud } from '$lib/system';
-import { BillingPlan } from '$lib/constants';
 import { ID, type Models } from '@appwrite.io/console';
 import type { OrganizationList } from '$lib/stores/organization';
 import { redirectTo } from '$routes/store';

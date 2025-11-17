@@ -18,7 +18,6 @@
     import { trackEvent, Click } from '$lib/actions/analytics';
     import { type Models } from '@appwrite.io/console';
     import { getServiceLimit, readOnly, upgradeURL } from '$lib/stores/billing';
-    import { BillingPlan } from '$lib/constants';
     import { hideNotification, shouldShowNotification } from '$lib/helpers/notifications';
     import { onMount, type ComponentType } from 'svelte';
     import { canWriteProjects } from '$lib/stores/roles';

@@ -1,6 +1,5 @@
 <script lang="ts">
     import { page } from '$app/state';
-    import { BillingPlan } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { organization } from '$lib/stores/organization';
     import { HeaderAlert } from '$lib/layout';

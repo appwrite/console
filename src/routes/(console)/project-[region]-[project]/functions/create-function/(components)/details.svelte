@@ -1,6 +1,5 @@
 <script lang="ts">
     import { CustomId } from '$lib/components';
-    import { BillingPlan } from '$lib/constants';
     import { InputSelect, InputText } from '$lib/elements/forms';
     import Link from '$lib/elements/link.svelte';
     import { isFreePlan } from '$lib/helpers/billing';

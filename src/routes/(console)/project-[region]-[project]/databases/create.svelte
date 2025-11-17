@@ -7,7 +7,6 @@
     import { ID } from '@appwrite.io/console';
     import { createEventDispatcher } from 'svelte';
     import { isCloud } from '$lib/system';
-    import { BillingPlan } from '$lib/constants';
     import { organization } from '$lib/stores/organization';
     import { upgradeURL } from '$lib/stores/billing';
     import CreatePolicy from './database-[database]/backups/createPolicy.svelte';

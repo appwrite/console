@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from '$app/state';
-    import { BillingPlan, INTERVAL } from '$lib/constants';
+    import { INTERVAL } from '$lib/constants';
     import Footer from '$lib/layout/footer.svelte';
     import Shell from '$lib/layout/shell.svelte';
 

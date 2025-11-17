@@ -2,7 +2,6 @@
     import { Click, Submit, trackEvent } from '$lib/actions/analytics';
     import { CardGrid } from '$lib/components';
     import { Alert } from '@appwrite.io/pink-svelte';
-    import { BillingPlan } from '$lib/constants';
     import { Button, Form, InputNumber, InputSelect } from '$lib/elements/forms';
     import { humanFileSize, sizeToBytes } from '$lib/helpers/sizeConvertion';
     import { createByteUnitPair } from '$lib/helpers/unit';

@@ -2,7 +2,6 @@
     import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Click, trackEvent } from '$lib/actions/analytics';
-    import { BillingPlan } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { isFreePlan } from '$lib/helpers/billing';
     import { HeaderAlert } from '$lib/layout';

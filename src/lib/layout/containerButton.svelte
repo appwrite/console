@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { BillingPlan } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { isFreePlan } from '$lib/helpers/billing';
     import { tierToPlan } from '$lib/stores/billing';

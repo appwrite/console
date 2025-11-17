@@ -34,7 +34,6 @@
         ActionMenu,
         Tooltip
     } from '@appwrite.io/pink-svelte';
-    import { BillingPlan } from '$lib/constants';
     import { tierToPlan } from '$lib/stores/billing';
     import { isFreePlan } from '$lib/helpers/billing';
 

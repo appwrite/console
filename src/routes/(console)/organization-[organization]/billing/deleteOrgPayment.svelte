@@ -4,7 +4,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { organization } from '$lib/stores/organization';
-    import { BillingPlan, Dependencies } from '$lib/constants';
+    import { Dependencies } from '$lib/constants';
     import Confirm from '$lib/components/confirm.svelte';
     import { Typography } from '@appwrite.io/pink-svelte';
     import { isFreePlan } from '$lib/helpers/billing';

@@ -3,7 +3,6 @@
     import { upgradeURL } from '$lib/stores/billing';
     import { isCloud } from '$lib/system';
     import { organization } from '$lib/stores/organization';
-    import { BillingPlan } from '$lib/constants';
     import Button from '$lib/elements/forms/button.svelte';
     import { Badge, Layout, Link, Typography } from '@appwrite.io/pink-svelte';
     import { isFreePlan } from '$lib/helpers/billing';
