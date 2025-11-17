@@ -5,6 +5,7 @@ import { goto } from '$app/navigation';
 import { resolve } from '$app/paths';
 import { ensureMonacoStyles } from './monaco-style-manager';
 import DEV_CSS_URL from '@imagine.dev/web-components/imagine-web-components.css?url';
+import { getSessionId } from '$lib/sentry';
 
 const COMPONENT_SELECTOR = 'imagine-web-components-wrapper[data-appwrite-studio]';
 const STYLE_ATTRIBUTE = 'data-appwrite-studio-style';
@@ -273,6 +274,7 @@ export function hideStudio() {
 export async function initImagine(
     region: string,
     projectId: string,
+    userId: string,
     callbacks?: {
         onProjectNameChange: () => void;
         onAddDomain: () => void | Promise<void>;
@@ -291,6 +293,7 @@ export async function initImagine(
                 },
                 {
                     initialTheme: get(app).themeInUse,
+                    consoleSessionId: getSessionId(userId),
                     callbacks
                 }
             );

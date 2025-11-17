@@ -333,7 +333,7 @@
     });
 </script>
 
-<Studio region={page.params.region} projectId={page.params.project} />
+<Studio region={page.params.region} projectId={page.params.project} userId={data.account.$id} />
 <CommandCenter />
 <Shell
     showSideNavigation={page.url.pathname !== '/' &&

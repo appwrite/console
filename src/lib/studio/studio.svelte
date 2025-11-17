@@ -18,10 +18,12 @@
 
     const {
         region,
-        projectId
+        projectId,
+        userId
     }: {
         region: string;
         projectId: string;
+        userId: string;
     } = $props();
 
     const siteId = `project-${projectId}`;
@@ -31,7 +33,7 @@
     onMount(() => {
         ensureStudioComponent();
 
-        initImagine(region, projectId, {
+        initImagine(region, projectId, userId, {
             onProjectNameChange: () => {
                 invalidate(Dependencies.PROJECT);
             },
