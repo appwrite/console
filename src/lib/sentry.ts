@@ -2,13 +2,21 @@ import { env } from '$env/dynamic/public';
 import * as Sentry from '@sentry/sveltekit';
 import { isCloud } from './system';
 
-let sessionId: string = null;
+const timestamp = Date.now();
+
+export function getSessionId(userId: string) {
+    return `${userId}-${timestamp}`;
+}
+
 export function identify(userId: string) {
-    if (isCloud)
-        sessionId ??= `${userId}-${Date.now()}`;
-        Sentry.setUser({
-            id: sessionId
+    if (isCloud) {
+        Sentry.setContext('Imagine Request Context', {
+            session_id: getSessionId(userId)
         });
+        Sentry.setUser({
+            id: userId
+        });
+    }
 }
 
 export function setupSentry({ withSessionReplay }: { withSessionReplay: boolean }) {
