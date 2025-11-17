@@ -57,3 +57,8 @@ EXPOSE 80
 
 COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /app/build /usr/share/nginx/html/console
+
+# feat-profiles
+RUN mkdir -p /app
+COPY docker/generate-env.sh /app/generate-env.sh
+RUN chmod +x /app/generate-env.sh
