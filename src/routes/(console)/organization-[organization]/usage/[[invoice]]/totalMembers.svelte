@@ -10,6 +10,7 @@
     import { IconInfo, IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { Icon, Layout, Table, Tooltip, Typography } from '@appwrite.io/pink-svelte';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
+    import { isFreePlan } from '$lib/helpers/billing';
 
     export let members: Models.MembershipList;
 
@@ -21,7 +22,7 @@
     <svelte:fragment slot="title">Members</svelte:fragment>
     The number of members in your organization.
     <svelte:fragment slot="aside">
-        {#if $organization.billingPlan !== BillingPlan.FREE}
+        {#if !isFreePlan($organization?.billingPlan)}
             <div class="u-flex u-flex-vertical">
                 <Layout.Stack direction="row" justifyContent="space-between">
                     <Layout.Stack gap="s" direction="row" alignItems="center">

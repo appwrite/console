@@ -10,13 +10,13 @@
     import { Button } from '$lib/elements/forms';
     import AddCreditModal from './addCreditModal.svelte';
     import { formatCurrency } from '$lib/helpers/numbers';
-    import { BillingPlan } from '$lib/constants';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { upgradeURL } from '$lib/stores/billing';
 
     import { resolvedProfile } from '$lib/profiles/index.svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { Alert, Badge, Icon, Link, Table, Tooltip, Typography } from '@appwrite.io/pink-svelte';
+    import { isFreePlan } from '$lib/helpers/billing';
 
     export let areCreditsSupported: boolean;
 
@@ -82,7 +82,7 @@
     }
 </script>
 
-<CardGrid hideFooter={$organization?.billingPlan !== BillingPlan.FREE}>
+<CardGrid hideFooter={!isFreePlan($organization?.billingPlan)}>
     <svelte:fragment slot="title">
         {!areCreditsSupported ? 'Credits' : 'Available credit'}
     </svelte:fragment>
@@ -172,7 +172,7 @@
         {/if}
     </svelte:fragment>
     <svelte:fragment slot="actions">
-        {#if $organization?.billingPlan === BillingPlan.FREE}
+        {#if isFreePlan($organization?.billingPlan)}
             <Button
                 secondary
                 href={$upgradeURL}

@@ -44,8 +44,9 @@ export const load: PageLoad = async ({ parent }) => {
                 const org = await sdk.forConsole.billing.createOrganization(
                     ID.unique(),
                     'Personal projects',
-                    BillingPlan.FREE,
+                    resolvedProfile.freeTier,
                     null,
+                    resolvedProfile.organizationPlatform,
                     null
                 );
                 trackEvent(Submit.OrganizationCreate, {

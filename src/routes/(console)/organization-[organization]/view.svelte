@@ -18,7 +18,6 @@
     import { trackEvent, Click } from '$lib/actions/analytics';
     import { type Models } from '@appwrite.io/console';
     import { getServiceLimit, readOnly, upgradeURL } from '$lib/stores/billing';
-    import { BillingPlan } from '$lib/constants';
     import { hideNotification, shouldShowNotification } from '$lib/helpers/notifications';
     import { onMount, type ComponentType } from 'svelte';
     import { canWriteProjects } from '$lib/stores/roles';
@@ -41,6 +40,7 @@
     import ArchiveProject from '$lib/components/archiveProject.svelte';
     import { resolvedProfile } from '$lib/profiles/index.svelte';
     import type { PageData } from './$types';
+    import { isFreePlan } from '$lib/helpers/billing';
 
     export let data: PageData;
 
@@ -201,7 +201,7 @@
         </Alert.Inline>
     {/if}
 
-    {#if isCloud && data.organization.billingPlan === BillingPlan.FREE && projectsToArchive.length === 0 && !freePlanAlertDismissed}
+    {#if isCloud && isFreePlan(data.organization.billingPlan) && projectsToArchive.length === 0 && !freePlanAlertDismissed}
         <Alert.Inline dismissible on:dismiss={dismissFreePlanAlert}>
             <Typography.Text
                 >Your Free plan includes up to 2 projects and limited resources. Upgrade to unlock

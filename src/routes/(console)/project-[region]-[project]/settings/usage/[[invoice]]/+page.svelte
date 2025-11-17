@@ -15,6 +15,7 @@
     import { Accordion, Icon, Layout, Link, Table, Typography } from '@appwrite.io/pink-svelte';
     import { IconChartSquareBar } from '@appwrite.io/pink-icons-svelte';
     import { page } from '$app/state';
+    import { isFreePlan } from '$lib/helpers/billing.js';
 
     export let data;
 
@@ -52,7 +53,7 @@
     <div class="u-flex u-cross-center u-main-space-between">
         <Typography.Title>Usage</Typography.Title>
 
-        {#if $organization?.billingPlan === BillingPlan.FREE}
+        {#if isFreePlan($organization?.billingPlan)}
             <Button href={$upgradeURL}>
                 <span class="text">Upgrade</span>
             </Button>
@@ -73,7 +74,7 @@
                     on:click={() => ($showUsageRatesModal = true)}
                     >Learn more about plan usage limits.</Link.Button>
             </p>
-        {:else if $organization.billingPlan === BillingPlan.FREE}
+        {:else if isFreePlan($organization?.billingPlan)}
             <p class="text">
                 If you exceed the limits of the {plan} plan, services for your projects may be disrupted.
                 <Link.Anchor href={$upgradeURL} class="link"

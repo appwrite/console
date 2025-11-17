@@ -21,6 +21,7 @@
     import { ContainerButton } from '.';
     import { goto } from '$app/navigation';
     import { Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { isFreePlan } from '$lib/helpers/billing';
 
     export let title: string;
     export let serviceId = title.toLocaleLowerCase() as PlanServices;
@@ -68,7 +69,7 @@
     // these can be organization level limitations as well.
     // we need to migrate this sometime later, but soon!
     $: hasProjectLimitation =
-        checkForProjectLimitation(serviceId) && $organization?.billingPlan === BillingPlan.FREE;
+        checkForProjectLimitation(serviceId) && isFreePlan($organization?.billingPlan);
     $: hasUsageFees = hasProjectLimitation
         ? checkForUsageFees($organization?.billingPlan, serviceId)
         : false;
@@ -99,7 +100,7 @@
 
     {#if services.length}
         <slot name="alert" {limit} {tier} {title} {upgradeMethod} {hasUsageFees} {services}>
-            {#if $organization?.billingPlan !== BillingPlan.FREE && hasUsageFees}
+            {#if !isFreePlan($organization?.billingPlan) && hasUsageFees}
                 <Alert.Inline status="info">
                     <span class="text">
                         You've reached the {services} limit for the {tier} plan.
@@ -149,7 +150,7 @@
                             <p class="text">
                                 You are limited to {limit}
                                 {title.toLocaleLowerCase()} per project on the {tier} plan.
-                                {#if $organization?.billingPlan === BillingPlan.FREE}<Link
+                                {#if isFreePlan($organization?.billingPlan)}<Link
                                         href={$upgradeURL}
                                         event="organization_upgrade"
                                         eventData={{ from: 'button', source: 'resource_limit_tag' }}
@@ -169,7 +170,7 @@
                             <p class="text">
                                 You are limited to {limit}
                                 {title.toLocaleLowerCase()} per organization on the {tier} plan.
-                                {#if $organization?.billingPlan === BillingPlan.FREE}
+                                {#if isFreePlan($organization?.billingPlan)}
                                     <Link href={$upgradeURL}>Upgrade</Link>
                                     for additional {title.toLocaleLowerCase()}.
                                 {/if}
