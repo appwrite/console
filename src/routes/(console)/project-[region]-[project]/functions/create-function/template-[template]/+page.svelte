@@ -31,6 +31,7 @@
     import { Dependencies } from '$lib/constants';
     import { getIconFromRuntime } from '$lib/stores/runtimes';
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     export let data;
 
@@ -218,7 +219,7 @@
 </script>
 
 <svelte:head>
-    <title>Create function - Appwrite</title>
+    <title>Create function - {resolvedProfile.platform}</title>
 </svelte:head>
 
 <Wizard

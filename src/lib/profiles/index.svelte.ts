@@ -1,9 +1,19 @@
-import { resolve } from '$app/paths';
-import { PUBLIC_CONSOLE_PROFILE } from '$env/static/public';
+import { asset, resolve } from '$app/paths';
 import type { ResolvedPathname } from '$app/types';
+import { Platform } from '@appwrite.io/console';
+import { env } from '$env/dynamic/public';
+import { BillingPlan } from '@appwrite.io/console';
 
-type Profile = {
-    id: 'console' | 'studio';
+export const enum ProfileMode {
+    STUDIO = 'studio',
+    CONSOLE = 'console'
+}
+
+export type Profile = {
+    id: ProfileMode;
+    platform: string;
+    organizationPlatform: Platform;
+    freeTier: BillingPlan;
     logo: {
         src: {
             dark: string;
@@ -12,19 +22,58 @@ type Profile = {
         alt: string;
     };
     showOnboarding: boolean;
+    useCommandCenter: boolean;
+    showGithubIssueSupport: boolean;
+    showExtendedAccountsMenu: boolean;
+    showGeneralAvailability: boolean;
+    showConnectProjectOnToolbar: boolean;
+    services: {
+        'get-started': boolean;
+        overview: boolean;
+        auth: boolean;
+        databases: boolean;
+        functions: boolean;
+        messaging: boolean;
+        storage: boolean;
+        sites: boolean;
+        settings: boolean;
+    };
+    showOrgInBreadcrumbs: boolean;
+    minimalOrgHeader: boolean;
     getProjectRoute: (params: { region: string; project: string }) => ResolvedPathname;
 };
 
 export const base: Profile = {
-    id: 'console',
+    id: ProfileMode.CONSOLE,
+    platform: 'Appwrite',
+    organizationPlatform: Platform.Appwrite,
+    freeTier: BillingPlan.Tier0,
     logo: {
         src: {
-            dark: 'https://appwrite.io/images/logos/logo.svg',
-            light: 'https://appwrite.io/images/logos/logo.svg'
+            dark: asset('/images/appwrite-logo-dark.svg'),
+            light: asset('/images/appwrite-logo-light.svg')
         },
         alt: 'Logo Appwrite'
     },
     showOnboarding: true,
+    useCommandCenter: true,
+    showGithubIssueSupport: true,
+    showExtendedAccountsMenu: false,
+    showGeneralAvailability: true,
+    showConnectProjectOnToolbar: true,
+    services: {
+        'get-started': true,
+        overview: true,
+        auth: true,
+        databases: true,
+        functions: true,
+        messaging: true,
+        storage: true,
+        sites: true,
+        settings: true
+    },
+    showOrgInBreadcrumbs: true,
+    minimalOrgHeader: false,
     getProjectRoute({ region, project }) {
         return resolve(`/(console)/project-[region]-[project]/overview`, {
             region,
@@ -34,15 +83,36 @@ export const base: Profile = {
 };
 
 export const studio: Profile = {
-    id: 'studio',
+    id: ProfileMode.STUDIO,
+    platform: 'Imagine',
+    organizationPlatform: Platform.Imagine,
+    freeTier: BillingPlan.Imaginebasic,
     logo: {
         src: {
-            dark: 'https://imagine-console.up.railway.app/images/imagine-logo-dark.svg',
-            light: 'https://imagine-console.up.railway.app/images/imagine-logo-light.svg'
+            dark: asset('/images/imagine-logo-dark.svg'),
+            light: asset('/images/imagine-logo-light.svg')
         },
         alt: 'Imagine Appwrite'
     },
     showOnboarding: false,
+    useCommandCenter: false,
+    showGithubIssueSupport: false,
+    showExtendedAccountsMenu: true,
+    showGeneralAvailability: false,
+    showConnectProjectOnToolbar: false,
+    services: {
+        'get-started': false,
+        overview: false,
+        auth: true,
+        databases: true,
+        functions: false,
+        messaging: false,
+        storage: true,
+        sites: true,
+        settings: false
+    },
+    showOrgInBreadcrumbs: false,
+    minimalOrgHeader: true,
     getProjectRoute({ region, project }) {
         return resolve(`/(console)/project-[region]-[project]/(studio)/studio`, {
             region,
@@ -52,7 +122,7 @@ export const studio: Profile = {
 };
 
 const resolver = $derived(() => {
-    switch (PUBLIC_CONSOLE_PROFILE) {
+    switch (env.PUBLIC_CONSOLE_PROFILE) {
         case 'studio':
             return studio;
         default:

@@ -1,17 +1,22 @@
-import { initImagineConfig, initImagineRouting } from '@imagine.dev/web-components/web-components';
-import { PUBLIC_APPWRITE_ENDPOINT, PUBLIC_AI_SERVICE_BASE_URL } from '$env/static/public';
-import ImagineCss from '@imagine.dev/web-components/imagine-web-components.css?url';
+import { env } from '$env/dynamic/public';
 import { app } from '$lib/stores/app';
 import { get } from 'svelte/store';
 import { goto } from '$app/navigation';
 import { resolve } from '$app/paths';
 import { ensureMonacoStyles } from './monaco-style-manager';
+import DEV_CSS_URL from '@imagine.dev/web-components/imagine-web-components.css?url';
 
 const COMPONENT_SELECTOR = 'imagine-web-components-wrapper[data-appwrite-studio]';
 const STYLE_ATTRIBUTE = 'data-appwrite-studio-style';
 const BLOCK_START_BASE_OFFSET = 48;
 const INLINE_START_BASE_OFFSET = 8;
+export const CDN_URL = env?.PUBLIC_IMAGINE_CDN_URL + '/web-components.js';
+export const CDN_CSS_URL = env?.PUBLIC_IMAGINE_CDN_URL + '/web-components.css';
+const DEV_OVERRIDE_WEB_COMPONENTS = env?.PUBLIC_AI_OVERRIDE_WEB_COMPONENTS === 'true';
+
 let component: HTMLElement | null = null;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let webComponentsModule: Record<string, any> | null = null;
 let configInitialized = false;
 let routingInitialized = false;
 let lastRouteKey: string | null = null;
@@ -69,7 +74,7 @@ function injectStyles(node: HTMLElement, attempt = 0) {
 
     customElements
         .whenDefined('imagine-web-components-wrapper')
-        .then(() => {
+        .then(async () => {
             const shadow = node.shadowRoot;
             if (!shadow) {
                 if (attempt < 5 && typeof requestAnimationFrame !== 'undefined') {
@@ -85,7 +90,7 @@ function injectStyles(node: HTMLElement, attempt = 0) {
 
             const link = document.createElement('link');
             link.rel = 'stylesheet';
-            link.href = ImagineCss;
+            link.href = DEV_OVERRIDE_WEB_COMPONENTS ? DEV_CSS_URL : CDN_CSS_URL;
             link.setAttribute(STYLE_ATTRIBUTE, 'true');
             shadow.prepend(link);
             ensureMonacoStyles(shadow);
@@ -93,6 +98,33 @@ function injectStyles(node: HTMLElement, attempt = 0) {
         .catch(() => {
             /* no-op */
         });
+}
+
+/**
+ * Get the web components module, loading it from CDN if necessary
+ */
+export async function getWebComponents() {
+    if (!webComponentsModule) {
+        if (DEV_OVERRIDE_WEB_COMPONENTS) {
+            webComponentsModule = await import('@imagine.dev/web-components/web-components');
+        } else {
+            webComponentsModule = await import(/* @vite-ignore */ CDN_URL);
+        }
+    }
+    return webComponentsModule;
+}
+
+/**
+ * Navigate to a route in the web components
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function navigateToRoute(...args: any[]) {
+    try {
+        const { navigateToRoute: navigate } = await getWebComponents();
+        return navigate(...args);
+    } catch (error) {
+        console.error('Failed to navigate:', error);
+    }
 }
 
 export function ensureStudioComponent(): HTMLElement | null {
@@ -123,6 +155,9 @@ export function ensureStudioComponent(): HTMLElement | null {
     }
 
     const created = document.createElement('imagine-web-components-wrapper');
+    created.addEventListener('click', (event) => {
+        event.stopPropagation();
+    });
     created.dataset.appwriteStudio = 'true';
     ensureBaseStyles(created);
     document.body.appendChild(created);
@@ -235,48 +270,64 @@ export function hideStudio() {
     restoreBodyScroll();
 }
 
-export function initImagine(region: string, projectId: string) {
-    if (!configInitialized) {
-        initImagineConfig(
-            {
-                AI_SERVICE_ENDPOINT: PUBLIC_AI_SERVICE_BASE_URL,
-                APPWRITE_ENDPOINT: PUBLIC_APPWRITE_ENDPOINT
-            },
-            {
-                initialTheme: get(app).themeInUse
-            }
-        );
-        configInitialized = true;
+export async function initImagine(
+    region: string,
+    projectId: string,
+    callbacks?: {
+        onProjectNameChange: () => void;
+        onAddDomain: () => void | Promise<void>;
+        onManageDomains: (primaryDomain?: string) => void | Promise<void>;
     }
+) {
+    try {
+        const { initImagineConfig, initImagineRouting } = await getWebComponents();
 
-    const routeKey = region && projectId ? `project:${region}:${projectId}` : 'home';
-    if (routingInitialized && routeKey === lastRouteKey) {
-        return;
-    }
-
-    initImagineRouting({
-        initialRoute:
-            region && projectId
-                ? {
-                      id: 'project',
-                      props: { region, projectId }
-                  }
-                : {
-                      id: 'home',
-                      props: {}
-                  },
-        onNavigate(route) {
-            if (route.id === 'project') {
-                goto(
-                    resolve('/(console)/project-[region]-[project]/(studio)/studio', {
-                        region: route.props.region,
-                        project: route.props.projectId
-                    })
-                );
-            }
+        if (!configInitialized) {
+            initImagineConfig(
+                {
+                    AI_SERVICE_ENDPOINT: env.PUBLIC_AI_SERVICE_BASE_URL,
+                    APPWRITE_ENDPOINT: env.PUBLIC_APPWRITE_ENDPOINT,
+                    APPWRITE_SITES_BASE_URL: ''
+                },
+                {
+                    initialTheme: get(app).themeInUse,
+                    callbacks
+                }
+            );
+            configInitialized = true;
         }
-    });
 
-    routingInitialized = true;
-    lastRouteKey = routeKey;
+        const routeKey = region && projectId ? `project:${region}:${projectId}` : 'home';
+        if (routingInitialized && routeKey === lastRouteKey) {
+            return;
+        }
+
+        initImagineRouting({
+            initialRoute:
+                region && projectId
+                    ? {
+                          id: 'project',
+                          props: { region, projectId }
+                      }
+                    : {
+                          id: 'home',
+                          props: {}
+                      },
+            onNavigate(route) {
+                if (route.id === 'project') {
+                    goto(
+                        resolve('/(console)/project-[region]-[project]/(studio)/studio', {
+                            region: route.props.region,
+                            project: route.props.projectId
+                        })
+                    );
+                }
+            }
+        });
+
+        routingInitialized = true;
+        lastRouteKey = routeKey;
+    } catch (error) {
+        console.error('Failed to load web components library:', error);
+    }
 }

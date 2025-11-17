@@ -1,4 +1,7 @@
+import { writable } from 'svelte/store';
 import { StatusCode } from '@appwrite.io/console';
+
+export const hideTypes = writable<boolean>(false);
 
 export const statusCodeOptions = [
     {

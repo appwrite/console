@@ -1,10 +1,11 @@
 <script lang="ts" context="module">
     import { total } from '$lib/helpers/array';
+    import { clampMin } from '$lib/helpers/numbers';
     import type { Metric } from '$lib/sdk/usage';
 
     export function totalMetrics(set: Array<unknown>): number {
         if (!set) return 0;
-        return total((set as Metric[]).map((c) => c.value));
+        return clampMin(total((set as Metric[]).map((c) => c.value)));
     }
 </script>
 
@@ -28,6 +29,7 @@
     import { writable, type Writable } from 'svelte/store';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     let period: UsagePeriods = '30d';
     $: path = `${base}/project-${page.params.region}-${page.params.project}/overview`;
@@ -94,7 +96,7 @@
 </script>
 
 <svelte:head>
-    <title>Console - Appwrite</title>
+    <title>Console - {resolvedProfile.platform}</title>
 </svelte:head>
 
 <Container overlapCover>

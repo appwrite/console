@@ -1,8 +1,13 @@
 <script lang="ts">
     import { onDestroy, onMount, tick } from 'svelte';
-    import { attachStudioTo, ensureStudioComponent, hideStudio } from '$lib/studio/studio-widget';
-    import { navigateToRoute } from '@imagine.dev/web-components/web-components';
+    import {
+        attachStudioTo,
+        ensureStudioComponent,
+        hideStudio,
+        navigateToRoute
+    } from '$lib/studio/studio-widget';
     import { page } from '$app/state';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     let anchor: HTMLElement = $state();
 
@@ -34,7 +39,7 @@
 </script>
 
 <svelte:head>
-    <title>Studio - Appwrite</title>
+    <title>Studio - {resolvedProfile.platform}</title>
 </svelte:head>
 
 <div class="studio-page" bind:this={anchor}></div>

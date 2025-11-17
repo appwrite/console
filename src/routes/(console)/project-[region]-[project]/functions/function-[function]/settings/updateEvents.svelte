@@ -17,6 +17,7 @@
     import { Runtime } from '@appwrite.io/console';
     import { IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
     import { Icon, Layout, Link, Table, Typography } from '@appwrite.io/pink-svelte';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     const functionId = page.params.function;
     const eventSet: Writable<Set<string>> = writable(new Set($func.events));
@@ -135,11 +136,11 @@
 
 <EventModal bind:show={showEvents} initialValue={eventValue} on:created={handleEvent}>
     <Typography.Text
-        >Select events in your Appwrite project that will trigger your function.
+        >Select events in your {resolvedProfile.platform} project that will trigger your function.
         <Link.Anchor
             href="https://appwrite.io/docs/advanced/platform/events"
             target="_blank"
             rel="noopener noreferrer"
-            class="link">Learn more about Appwrite Events</Link.Anchor
+            class="link">Learn more about {resolvedProfile.platform} Events</Link.Anchor
         >.</Typography.Text>
 </EventModal>

@@ -89,6 +89,7 @@
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { Click } from '$lib/actions/analytics';
     import { page } from '$app/state';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     export let data: PageData;
 
@@ -330,8 +331,8 @@
                     label="Antivirus"
                     id="antivirus"
                     bind:checked={antivirus}
-                    description="This parameter allows you to configure whether or not the files inside the
-                    bucket should be scanned by the Appwrite Antivirus scanner." />
+                    description={`This parameter allows you to configure whether or not the files inside the
+                    bucket should be scanned by the ${resolvedProfile.platform} Antivirus scanner.`} />
             </svelte:fragment>
 
             <svelte:fragment slot="actions">

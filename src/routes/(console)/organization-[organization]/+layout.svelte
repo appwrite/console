@@ -10,6 +10,7 @@
     import { base } from '$app/paths';
     import { isOwner } from '$lib/stores/roles';
     import type { LayoutProps } from './$types';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     let { data, children }: LayoutProps = $props();
 
@@ -44,10 +45,11 @@
 </script>
 
 <svelte:head>
-    <title>Organizations - Appwrite</title>
+    <title>Organizations - {resolvedProfile.platform}</title>
 </svelte:head>
 
 {@render children()}
 
 <Create bind:show={$newOrgModal} />
+
 <CreateMember bind:showCreate={$newMemberModal} />

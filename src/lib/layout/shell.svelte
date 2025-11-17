@@ -14,12 +14,12 @@
     import SideNavigation from '$lib/layout/navigation.svelte';
     import { hasOnboardingDismissed } from '$lib/helpers/onboarding';
     import { isSidebarOpen, noWidthTransition } from '$lib/stores/sidebar';
-    import { BillingPlan } from '$lib/constants';
     import { page } from '$app/stores';
     import type { Models } from '@appwrite.io/console';
     import { getSidebarState, isInDatabasesRoute, updateSidebarState } from '$lib/helpers/sidebar';
     import { isTabletViewport } from '$lib/stores/viewport';
-    import { resolvedProfile } from '$lib/profiles/index.svelte';
+    import { ProfileMode, resolvedProfile } from '$lib/profiles/index.svelte';
+    import { isFreePlan } from '$lib/helpers/billing';
 
     export let showHeader = true;
     export let showFooter = true;
@@ -106,6 +106,11 @@
      * The sidebar is **always closed** on mobile and tablet devices!
      */
     afterNavigate((navigation) => {
+        if (resolvedProfile.id === ProfileMode.STUDIO) {
+            state = 'icons';
+            return;
+        }
+
         if ($isTabletViewport) {
             state = 'closed';
             return;
@@ -158,7 +163,7 @@
             return {
                 name: org.name,
                 $id: org.$id,
-                showUpgrade: billingPlan === BillingPlan.FREE,
+                showUpgrade: isFreePlan(billingPlan),
                 tierName: isCloud ? tierToPlan(billingPlan).name : null,
                 isSelected: $organization?.$id === org.$id
             };

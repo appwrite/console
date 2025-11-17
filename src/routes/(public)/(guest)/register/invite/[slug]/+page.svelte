@@ -20,6 +20,7 @@
     import LoginDark from '$lib/images/login/login-dark-mode.svg';
     import { isCloud } from '$lib/system';
     import { Layout } from '@appwrite.io/pink-svelte';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     let slug = page.params.slug;
     let imgLight = LoginLight;
@@ -98,7 +99,7 @@
 </script>
 
 <svelte:head>
-    <title>Sign up - Appwrite</title>
+    <title>Sign up - {resolvedProfile.platform}</title>
 </svelte:head>
 
 <Unauthenticated {imgLight} {imgDark}>

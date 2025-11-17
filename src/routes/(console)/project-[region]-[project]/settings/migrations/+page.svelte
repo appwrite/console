@@ -31,6 +31,7 @@
     import DualTimeView from '$lib/components/dualTimeView.svelte';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { page } from '$app/state';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     export let data;
     let showExport = false;
@@ -38,13 +39,11 @@
     let migration: Models.Migration = null;
 
     onMount(() => {
-        return realtime
-            .forProject(page.params.region, page.params.project)
-            .subscribe(['project', 'console'], (response) => {
-                if (response.events.includes('migrations.*')) {
-                    invalidate(Dependencies.MIGRATIONS);
-                }
-            });
+        return realtime.forProject(page.params.region, ['project', 'console'], (response) => {
+            if (response.events.includes('migrations.*')) {
+                invalidate(Dependencies.MIGRATIONS);
+            }
+        });
     });
 
     $: $registerCommands([
@@ -149,7 +148,7 @@
 <Container>
     <CardGrid>
         <svelte:fragment slot="title">Import project data</svelte:fragment>
-        Import data from another platform or from a different Appwrite instance.
+        Import data from another platform or from a different {resolvedProfile.platform} instance.
         <Link.Anchor
             href="https://appwrite.io/docs/advanced/migrations"
             target="_blank"
@@ -218,7 +217,7 @@
     {#if isSelfHosted}
         <CardGrid>
             <svelte:fragment slot="title">Deploy to Cloud</svelte:fragment>
-            Export data from your project to Appwrite Cloud.
+            Export data from your project to {resolvedProfile.platform} Cloud.
             <Link.Anchor
                 href="https://appwrite.io/docs/advanced/migrations/self-hosted"
                 target="_blank"

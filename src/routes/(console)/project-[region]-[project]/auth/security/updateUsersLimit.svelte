@@ -9,6 +9,7 @@
     import { Layout, Selector, Input, Badge } from '@appwrite.io/pink-svelte';
     import { project } from '../../store';
     import { tick } from 'svelte';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     let value = $project?.authLimit !== 0 ? 'limited' : 'unlimited';
 
@@ -59,7 +60,7 @@
 <CardGrid>
     <svelte:fragment slot="title">Users limit</svelte:fragment>
     Limit new users from signing up for your project, regardless of authentication method. You can still
-    create users and team memberships from your Appwrite console.
+    create users and team memberships from your {resolvedProfile.platform} console.
     <svelte:fragment slot="aside">
         <Layout.Stack>
             <Layout.Stack direction="row" alignItems="center">

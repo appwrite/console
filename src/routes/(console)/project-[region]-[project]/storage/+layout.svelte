@@ -8,6 +8,7 @@
     import { project } from '../store';
     import { showCreateBucket } from './+page.svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     $: $registerCommands([
         {
@@ -47,7 +48,7 @@
 </script>
 
 <svelte:head>
-    <title>Storage - Appwrite</title>
+    <title>Storage - {resolvedProfile.platform}</title>
 </svelte:head>
 
 <slot />

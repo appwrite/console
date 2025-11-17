@@ -24,15 +24,16 @@
     } from '../themes';
     import { isSmallViewport, updateViewport } from '$lib/stores/viewport';
     import { feedback } from '$lib/stores/feedback';
-    import { PUBLIC_CONSOLE_PROFILE } from '$env/static/public';
+    import { ProfileMode, resolvedProfile } from '$lib/profiles/index.svelte';
+    import { CDN_CSS_URL, CDN_URL } from '$lib/studio/studio-widget';
 
     function resolveTheme(theme: AppStore['themeInUse']) {
         switch (theme) {
             case 'dark':
-                if (PUBLIC_CONSOLE_PROFILE === 'studio') return ThemeDarkStudio;
+                if (resolvedProfile.id === ProfileMode.STUDIO) return ThemeDarkStudio;
                 return isCloud ? ThemeDarkCloud : ThemeDark;
             case 'light':
-                if (PUBLIC_CONSOLE_PROFILE === 'studio') return ThemeLightStudio;
+                if (resolvedProfile.id === ProfileMode.CONSOLE) return ThemeLightStudio;
                 return isCloud ? ThemeLightCloud : ThemeLight;
         }
     }
@@ -182,6 +183,13 @@
         {/each}
         <link rel="preload" as="style" type="text/css" href="{base}/fonts/cloud.css" />
         <link rel="stylesheet" href={`${base}/fonts/cloud.css`} />
+    {/if}
+
+    <link rel="stylesheet" href={`${base}/css/profiles/${resolvedProfile.id}.css`} />
+
+    {#if resolvedProfile.id === ProfileMode.STUDIO}
+        <link rel="preload" as="style" type="text/css" href={CDN_CSS_URL} />
+        <link rel="preload" as="script" type="text/javascript" href={CDN_URL} />
     {/if}
 </svelte:head>
 

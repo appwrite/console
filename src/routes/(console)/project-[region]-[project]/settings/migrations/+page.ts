@@ -1,6 +1,7 @@
 import { Dependencies } from '$lib/constants.js';
 import { sdk } from '$lib/stores/sdk';
 import { Query } from '@appwrite.io/console';
+import { resolvedProfile } from '$lib/profiles/index.svelte';
 
 export async function load({ depends, params }) {
     depends(Dependencies.MIGRATIONS);
@@ -9,9 +10,19 @@ export async function load({ depends, params }) {
         const { migrations } = await sdk.forProject(params.region, params.project).migrations.list({
             queries: [
                 // hides backups/restorations from migrations page.
-                Query.equal('source', ['Appwrite', 'Firebase', 'NHost', 'Supabase']),
+                Query.equal('source', [
+                    `${resolvedProfile.platform}`,
+                    'Firebase',
+                    'NHost',
+                    'Supabase'
+                ]),
                 Query.or([
-                    Query.equal('destination', ['Appwrite', 'Firebase', 'NHost', 'Supabase']),
+                    Query.equal('destination', [
+                        `${resolvedProfile.platform}`,
+                        'Firebase',
+                        'NHost',
+                        'Supabase'
+                    ]),
                     Query.isNull('destination')
                 ])
             ]

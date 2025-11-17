@@ -10,6 +10,7 @@
     import { capitalize } from '$lib/helpers/string';
     import { app } from '$lib/stores/app.js';
     import { getFrameworkIcon } from '$lib/stores/sites.js';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     export let data;
 
@@ -77,7 +78,7 @@
 </script>
 
 <svelte:head>
-    <title>Create site - Appwrite</title>
+    <title>Create site - {resolvedProfile.platform}</title>
 </svelte:head>
 
 <Wizard

@@ -12,6 +12,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { page } from '$app/state';
     import { showDevKeysCreateModal } from '$routes/(console)/project-[region]-[project]/overview/store';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     let name = '';
     let expire = null;
@@ -57,7 +58,7 @@
     <Form onSubmit={create} isModal>
         <Modal title="Create dev key" bind:open={$showDevKeysCreateModal}>
             <span slot="description">
-                Bypass Appwrite rate limits and CORS errors in your development environment.
+                Bypass {resolvedProfile.platform} rate limits and CORS errors in your development environment.
             </span>
 
             <Layout.Stack>

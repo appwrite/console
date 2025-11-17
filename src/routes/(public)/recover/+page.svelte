@@ -9,6 +9,7 @@
     import { page } from '$app/state';
     import { goto } from '$app/navigation';
     import { Divider, Layout, Link } from '@appwrite.io/pink-svelte';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     let email: string;
     let userId: string;
@@ -67,7 +68,7 @@
 </script>
 
 <svelte:head>
-    <title>Recover - Appwrite</title>
+    <title>Recover - {resolvedProfile.platform}</title>
 </svelte:head>
 
 <Unauthenticated>

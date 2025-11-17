@@ -14,14 +14,15 @@
     import { upgradeURL } from '$lib/stores/billing';
     import { isCloud } from '$lib/system';
     import { Card, Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     const title = isCloud
         ? 'Backups are available on paid plans'
-        : 'Database Backups are available on Appwrite Cloud';
+        : `Database Backups are available on ${resolvedProfile.platform} Cloud`;
 
     const message = isCloud
-        ? "Upgrade now to unlock Appwrite's backups."
-        : "Sign up now to access Appwrite's backups.";
+        ? `Upgrade now to unlock ${resolvedProfile.platform}'s backups.`
+        : `Sign up now to access ${resolvedProfile.platform}'s backups.`;
 
     const isDark = $app.themeInUse === 'dark';
 

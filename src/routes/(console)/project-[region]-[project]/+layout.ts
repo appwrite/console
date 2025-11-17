@@ -10,10 +10,37 @@ import { headerAlert } from '$lib/stores/headerAlert';
 import PaymentFailed from '$lib/components/billing/alerts/paymentFailed.svelte';
 import { loadAvailableRegions } from '$routes/(console)/regions';
 import type { Organization, OrganizationList } from '$lib/stores/organization';
+import { redirect } from '@sveltejs/kit';
+import { resolvedProfile } from '$lib/profiles/index.svelte';
+import { resolve } from '$app/paths';
 
-export const load: LayoutLoad = async ({ params, depends, parent }) => {
+function checkServiceAccess(routeId: string | null, params: { region: string; project: string }) {
+    if (!routeId) return;
+
+    const serviceName = Object.keys(resolvedProfile.services).find((service) =>
+        routeId.includes(`/${service}`)
+    );
+
+    if (
+        serviceName &&
+        serviceName !== 'studio' /* for avoiding looped redirects */ &&
+        resolvedProfile.services[serviceName as keyof typeof resolvedProfile.services] === false
+    ) {
+        redirect(
+            302,
+            resolve('/(console)/project-[region]-[project]/(studio)/studio', {
+                region: params.region,
+                project: params.project
+            })
+        );
+    }
+}
+
+export const load: LayoutLoad = async ({ params, route, depends, parent }) => {
     const { plansInfo, organizations, preferences: prefs } = await parent();
     depends(Dependencies.PROJECT);
+
+    checkServiceAccess(route.id, params);
 
     const project = await sdk.forConsole.projects.get({ projectId: params.project });
     project.region ??= 'default';

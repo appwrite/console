@@ -23,6 +23,7 @@
         Typography
     } from '@appwrite.io/pink-svelte';
     import { filterRegions } from '$lib/helpers/regions';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     let { data } = $props();
 
@@ -107,7 +108,7 @@
 </script>
 
 <svelte:head>
-    <title>Deploy {data.template.name} - Appwrite</title>
+    <title>Deploy {data.template.name} - {resolvedProfile.platform}</title>
 </svelte:head>
 
 <div style:max-width="592px" style:width="100%">

@@ -17,6 +17,7 @@
     import Scopes from '../api-keys/scopes.svelte';
     import { InteractiveText, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { getEffectiveScopes } from '../api-keys/scopes.svelte';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     export let key: Models.DevKey | Models.Key;
     export let keyType: 'api' | 'dev' = 'api';
@@ -111,7 +112,7 @@
 </script>
 
 <svelte:head>
-    <title>{label} key - Appwrite</title>
+    <title>{label} key - {resolvedProfile.platform}</title>
 </svelte:head>
 
 <Container>

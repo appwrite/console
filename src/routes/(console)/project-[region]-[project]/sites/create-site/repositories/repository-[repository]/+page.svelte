@@ -27,6 +27,7 @@
     import Configuration from '../../configuration.svelte';
     import Domain from '../../domain.svelte';
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     export let data;
     let showExitModal = false;
@@ -155,7 +156,7 @@
 </script>
 
 <svelte:head>
-    <title>Create site - Appwrite</title>
+    <title>Create site - {resolvedProfile.platform}</title>
 </svelte:head>
 
 <Wizard

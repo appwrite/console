@@ -2,13 +2,15 @@
     import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Click, trackEvent } from '$lib/actions/analytics';
-    import { BillingPlan, NEW_DEV_PRO_UPGRADE_COUPON } from '$lib/constants';
+    import { NEW_DEV_PRO_UPGRADE_COUPON } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { organization } from '$lib/stores/organization';
     import { activeHeaderAlert } from '$routes/(console)/store';
     import GradientBanner from '../gradientBanner.svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
     import { Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
+    import { isFreePlan } from '$lib/helpers/billing';
 
     let show = true;
 
@@ -23,14 +25,15 @@
     }
 </script>
 
-{#if show && $organization?.$id && $organization?.billingPlan === BillingPlan.FREE && !page.url.pathname.includes(base + '/account')}
+{#if show && $organization?.$id && isFreePlan($organization?.billingPlan) && !page.url.pathname.includes(base + '/account')}
     <GradientBanner on:close={handleClose}>
         <Layout.Stack
             gap="m"
             alignItems="center"
             alignContent="center"
             direction={$isSmallViewport ? 'column' : 'row'}>
-            <Typography.Text>Get $50 Cloud credits for Appwrite Pro.</Typography.Text>
+            <Typography.Text
+                >Get $50 Cloud credits for {resolvedProfile.platform} Pro.</Typography.Text>
 
             <Button
                 secondary

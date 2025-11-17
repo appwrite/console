@@ -8,9 +8,10 @@ import type { LayoutLoad } from './$types';
 import { redirectTo } from './store';
 import { base, resolve } from '$app/paths';
 import type { Account } from '$lib/stores/user';
-import type { AppwriteException } from '@appwrite.io/console';
+import { type AppwriteException, Query } from '@appwrite.io/console';
 import { isCloud, VARS } from '$lib/system';
 import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
+import { resolvedProfile } from '$lib/profiles/index.svelte';
 
 export const ssr = false;
 
@@ -42,7 +43,9 @@ export const load: LayoutLoad = async ({ depends, url, route }) => {
             account: account,
             organizations: !isCloud
                 ? await sdk.forConsole.teams.list()
-                : await sdk.forConsole.billing.listOrganization()
+                : await sdk.forConsole.billing.listOrganization([
+                      Query.equal('platform', resolvedProfile.organizationPlatform)
+                  ])
         };
     }
 

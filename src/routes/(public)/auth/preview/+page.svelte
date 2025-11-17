@@ -4,6 +4,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { Layout, Spinner, Typography } from '@appwrite.io/pink-svelte';
     import { onMount } from 'svelte';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     onMount(async () => {
         const params = new URLSearchParams(window.location.search);
@@ -24,7 +25,7 @@
 </script>
 
 <svelte:head>
-    <title>Preview - Appwrite</title>
+    <title>Preview - {resolvedProfile.platform}</title>
 </svelte:head>
 
 <Layout.Stack alignItems="center" justifyContent="center" style="max-width: 400px">

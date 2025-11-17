@@ -1,5 +1,9 @@
+<script>
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
+</script>
+
 <svelte:head>
-    <title>Webhook - Appwrite</title>
+    <title>Webhook - {resolvedProfile.platform}</title>
 </svelte:head>
 
 <slot />

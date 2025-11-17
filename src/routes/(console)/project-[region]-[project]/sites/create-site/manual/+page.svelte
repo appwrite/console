@@ -21,6 +21,7 @@
     import { isCloud } from '$lib/system';
     import { currentPlan } from '$lib/stores/organization';
     import Domain from '../domain.svelte';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     export let data;
     let showExitModal = false;
@@ -152,7 +153,7 @@
 </script>
 
 <svelte:head>
-    <title>Create site - Appwrite</title>
+    <title>Create site - {resolvedProfile.platform}</title>
 </svelte:head>
 
 <Wizard
@@ -174,24 +175,21 @@
                     on:invalid={handleInvalid}>
                     <Layout.Stack alignItems="center" gap="s">
                         <Layout.Stack alignItems="center" gap="s">
-                            <Layout.Stack
-                                alignItems="center"
-                                justifyContent="center"
-                                direction="row"
-                                gap="s">
-                                <Typography.Text variant="l-500">
-                                    Drag and drop file here or click to upload
-                                </Typography.Text>
-                                <Tooltip>
+                            <Layout.Stack alignItems="center" justifyContent="center" inline>
+                                <Typography.Text variant="l-500" align="center" inline>
+                                    Drag and drop file here or click to upload;
                                     <Layout.Stack
+                                        style="display: inline-flex; vertical-align: middle;"
+                                        inline
                                         alignItems="center"
-                                        justifyContent="center"
-                                        inline>
-                                        <Icon icon={IconInfo} size="s" />
+                                        justifyContent="center">
+                                        <Tooltip>
+                                            <Icon icon={IconInfo} size="s" />
+                                            <svelte:fragment slot="tooltip"
+                                                >Only .tar.gz files allowed</svelte:fragment>
+                                        </Tooltip>
                                     </Layout.Stack>
-                                    <svelte:fragment slot="tooltip"
-                                        >Only .tar.gz files allowed</svelte:fragment>
-                                </Tooltip>
+                                </Typography.Text>
                             </Layout.Stack>
                             {#if maxSize > 0}
                                 <Typography.Caption variant="400"

@@ -19,6 +19,7 @@
     import { currentPlan } from '$lib/stores/organization';
     import { isCloud } from '$lib/system';
     import { noWidthTransition } from '$lib/stores/sidebar';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     const project = page.params.project;
     const databaseId = page.params.database;
@@ -140,7 +141,7 @@
 <svelte:head>
     <!-- svelte bug, the table header just stays! -->
     {#key page.url.pathname}
-        <title>Database - Appwrite</title>
+        <title>Database - {resolvedProfile.platform}</title>
     {/key}
 </svelte:head>
 

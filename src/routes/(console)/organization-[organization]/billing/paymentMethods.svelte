@@ -3,7 +3,7 @@
     import { invalidate } from '$app/navigation';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid, CreditCardBrandImage, CreditCardInfo } from '$lib/components';
-    import { BillingPlan, Dependencies } from '$lib/constants';
+    import { Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
     import { type Organization } from '$lib/stores/organization';
     import { Button } from '$lib/elements/forms';
@@ -33,6 +33,7 @@
         IconSwitchHorizontal,
         IconTrash
     } from '@appwrite.io/pink-icons-svelte';
+    import { isFreePlan } from '$lib/helpers/billing';
 
     export let organization: Organization;
     export let methods: PaymentList;
@@ -332,5 +333,5 @@
         bind:showDelete
         {hasOtherMethod}
         isBackup={isSelectedBackup}
-        disabled={organization?.billingPlan !== BillingPlan.FREE && !hasOtherMethod} />
+        disabled={!isFreePlan(organization?.billingPlan) && !hasOtherMethod} />
 {/if}

@@ -14,7 +14,6 @@ import { defaultRoles, defaultScopes } from '$lib/constants';
 import type { Plan } from '$lib/sdk/billing';
 import { loadAvailableRegions } from '$routes/(console)/regions';
 import type { Organization } from '$lib/stores/organization';
-import { resolvedProfile } from '$lib/profiles/index.svelte';
 
 export const load: LayoutLoad = async ({ params, depends, parent }) => {
     const { preferences: prefs } = await parent();
@@ -52,10 +51,8 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
             loadAvailableRegions(params.organization)
         ]);
 
-        const header = resolvedProfile.id === 'studio' ? undefined : Header;
-
         return {
-            header,
+            header: Header,
             breadcrumbs: Breadcrumbs,
             organization,
             currentPlan,

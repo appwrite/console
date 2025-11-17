@@ -9,6 +9,7 @@
     import { onMount } from 'svelte';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Layout, Link, Typography, Alert } from '@appwrite.io/pink-svelte';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     let teamId: string, membershipId: string, userId: string, secret: string;
     let terms = false;
@@ -45,7 +46,7 @@
 </script>
 
 <svelte:head>
-    <title>Accept invite - Appwrite</title>
+    <title>Accept invite - {resolvedProfile.platform}</title>
 </svelte:head>
 
 <Unauthenticated>
@@ -63,13 +64,13 @@
                     Please ask the project owner to send you a new invite.
                 </Alert.Inline>
                 <div>
-                    <Button href={`${base}/register`}>Sign up to Appwrite</Button>
+                    <Button href={`${base}/register`}>Sign up to {resolvedProfile.platform}</Button>
                 </div>
             </Layout.Stack>
         {:else}
             <Layout.Stack>
                 <Typography.Text>
-                    You have been invited to join an organization on Appwrite
+                    You have been invited to join an organization on {resolvedProfile.platform}
                 </Typography.Text>
                 <Form onSubmit={acceptInvite}>
                     <Layout.Stack>

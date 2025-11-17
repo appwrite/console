@@ -21,15 +21,18 @@
 
     const options = [
         { label: 'Now', value: 'now' },
-        { label: 'Schedule', value: 'later' }
+        { label: 'Custom', value: 'later' }
     ];
 
-    const formatOptions: Intl.DateTimeFormatOptions = {
+    const dateOptions: Intl.DateTimeFormatOptions = {
         month: 'long',
         day: 'numeric',
-        year: 'numeric',
+        year: 'numeric'
+    };
+    const timeOptions: Intl.DateTimeFormatOptions = {
         hour: 'numeric',
         minute: 'numeric',
+        second: 'numeric',
         hourCycle: 'h23',
         timeZoneName: 'longGeneric'
     };
@@ -57,28 +60,23 @@
 </script>
 
 <Layout.Stack>
-    <InputSelect id="when" required {options} bind:value={when} />
-    <InputDate
-        id="date"
-        label="Date"
-        disabled={when === 'now'}
-        required={when === 'later'}
-        min={minDate}
-        bind:value={date} />
-    <InputTime
-        id="time"
-        label="Time"
-        disabled={when === 'now'}
-        required={when === 'later'}
-        min={minTime}
-        bind:value={time} />
+    <InputSelect id="when" label="Schedule" required {options} bind:value={when} />
+    {#if when === 'later'}
+        <Layout.Stack direction="row" gap="m">
+            <InputDate id="date" min={minDate} bind:value={date} required />
+            <InputTime id="time" min={minTime} bind:value={time} required />
+        </Layout.Stack>
+    {/if}
     <Helper type="neutral">
         {#if when === 'now'}
             The message will be sent immediately
         {:else if !dateTime || isNaN(dateTime.getTime())}
             The message will be sent later
         {:else}
-            The message will be sent at {dateTime.toLocaleString('en', formatOptions)}
+            The message will be sent on {dateTime.toLocaleDateString('en', dateOptions)} at {dateTime.toLocaleTimeString(
+                'en',
+                timeOptions
+            )}
         {/if}
     </Helper>
 </Layout.Stack>

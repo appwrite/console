@@ -5,6 +5,7 @@
     import { Vcs, Client } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { getApiEndpoint } from '$lib/stores/sdk';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     export let data;
 
@@ -86,13 +87,13 @@
                         src={AppwriteLogoDark}
                         width="120"
                         class="u-block u-only-dark"
-                        alt="Appwrite Logo" />
+                        alt="{resolvedProfile.platform} Logo" />
                 {:else}
                     <img
                         src={AppwriteLogoLight}
                         width="120"
                         class="u-block u-only-light"
-                        alt="Appwrite Logo" />
+                        alt="{resolvedProfile.platform} Logo" />
                 {/if}
             </a>
         </div>

@@ -8,11 +8,12 @@
     import EmailLight from './email-footer-light.png';
     import EmailMobileDark from './email-footer-mobile-dark.png';
     import EmailMobileLight from './email-footer-mobile-light.png';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 </script>
 
 <CardGrid>
     <svelte:fragment slot="title">Email signature</svelte:fragment>
-    Enable or disable Appwrite branding in your email template signature.
+    Enable or disable {resolvedProfile.platform} branding in your email template signature.
 
     <svelte:fragment slot="aside">
         <EmptyCardImageCloud source="email_signature_card" let:nextTier>
@@ -46,8 +47,10 @@
                     {/if}
                 </div>
             </svelte:fragment>
-            <svelte:fragment slot="title">Upgrade to remove Appwrite branding</svelte:fragment>
-            Upgrade to a {nextTier} plan to remove the Appwrite branding from your emails.
+            <svelte:fragment slot="title"
+                >Upgrade to remove {resolvedProfile.platform} branding</svelte:fragment>
+            Upgrade to a {nextTier} plan to remove the {resolvedProfile.platform} branding from your
+            emails.
 
             <svelte:fragment let:source slot="cta">
                 <Button

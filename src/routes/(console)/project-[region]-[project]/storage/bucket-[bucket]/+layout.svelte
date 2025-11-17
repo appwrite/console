@@ -12,6 +12,7 @@
     import { project } from '../../store';
     import { bucket } from './store';
     import { IconKey, IconLockClosed, IconPlus, IconPuzzle } from '@appwrite.io/pink-icons-svelte';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     $: $registerCommands([
         {
@@ -106,7 +107,7 @@
 </script>
 
 <svelte:head>
-    <title>Bucket - Appwrite</title>
+    <title>Bucket - {resolvedProfile.platform}</title>
 </svelte:head>
 
 <slot />

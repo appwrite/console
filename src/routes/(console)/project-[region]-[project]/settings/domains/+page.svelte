@@ -10,6 +10,7 @@
     import { Click, trackEvent } from '$lib/actions/analytics';
     import Table from './table.svelte';
     import { ResponsiveContainerHeader } from '$lib/layout';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     let { data } = $props();
 </script>
@@ -54,7 +55,7 @@
                     ? `${base}/images/domains/empty-domain-dark.svg`
                     : `${base}/images/domains/empty-domain-light.svg`}
                 title="Use a custom domain for your API"
-                description="Connect your own domain to Appwrite, so your API is accessible from a custom URL instead of the default Appwrite endpoint.">
+                description={`Connect your own domain to ${resolvedProfile.platform}, so your API is accessible from a custom URL instead of the default ${resolvedProfile.platform} endpoint.`}>
                 <svelte:fragment slot="actions">
                     <Button
                         external

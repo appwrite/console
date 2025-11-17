@@ -12,6 +12,7 @@
     import { project } from '../store';
     import { canWriteProjects } from '$lib/stores/roles';
     import { getProjectEndpoint } from '$lib/helpers/project';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     let name: string = null;
 
@@ -25,13 +26,18 @@
                 projectId: $project.$id,
                 name
             });
-            await invalidate(Dependencies.PROJECT);
-            await invalidate(Dependencies.ORGANIZATION);
+
             addNotification({
                 type: 'success',
                 message: 'Project name has been updated'
             });
+
             trackEvent(Submit.ProjectUpdateName);
+
+            await Promise.all([
+                await invalidate(Dependencies.PROJECT),
+                await invalidate(Dependencies.ORGANIZATION)
+            ]);
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -44,7 +50,7 @@
 
 <CardGrid>
     <svelte:fragment slot="title">API credentials</svelte:fragment>
-    Access Appwrite services using this project's API Endpoint and Project ID.
+    Access {resolvedProfile.platform} services using this project's API Endpoint and Project ID.
     <svelte:fragment slot="aside">
         <CopyInput label="Project ID" value={$project.$id} />
         <CopyInput label="API Endpoint" value={getProjectEndpoint()} />

@@ -12,6 +12,7 @@
     import {
         IconChevronDown,
         IconChevronRight,
+        IconList,
         IconPlus,
         IconPlusSm
     } from '@appwrite.io/pink-icons-svelte';
@@ -19,7 +20,7 @@
     import { isSmallViewport } from '$lib/stores/viewport';
     import { isCloud } from '$lib/system';
     import { goto, beforeNavigate } from '$app/navigation';
-    import { base } from '$app/paths';
+    import { base, resolve } from '$app/paths';
     import { currentPlan, newOrgModal, organization } from '$lib/stores/organization';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { ID, type Models, Query } from '@appwrite.io/console';
@@ -157,6 +158,14 @@
             href: `${base}/organization-${organization?.$id}?create-project`
         };
 
+        const allProjectsItem = {
+            name: 'All projects',
+            trailingIcon: IconList,
+            href: resolve('/(console)/organization-[organization]', {
+                organization: selectedOrg.$id
+            })
+        };
+
         if (loadedProjects.total > 1 && selectedOrg) {
             const projectLinks = loadedProjects.projects.slice(0, 4).map((project) => {
                 return {
@@ -168,16 +177,14 @@
                 };
             });
 
-            if (loadedProjects.projects.length > 4) {
-                projectLinks.push({
-                    name: 'All projects',
-                    href: `${base}/organization-${selectedOrg.$id}`
-                });
-            }
-
             return {
                 top: { title: 'Switch project', items: projectLinks },
-                bottom: { items: [createProjectItem] }
+                bottom: {
+                    items: [
+                        ...(loadedProjects.total > 4 ? [allProjectsItem] : []),
+                        createProjectItem
+                    ]
+                }
             };
         }
 
@@ -264,7 +271,7 @@
 
 {#key derivedKey}
     <div use:melt={$menubar}>
-        {#if !$isSmallViewport}
+        {#if !$isSmallViewport && resolvedProfile.showOrgInBreadcrumbs}
             <span class="breadcrumb-separator">/</span>
             <button
                 type="button"
@@ -281,7 +288,7 @@
                     {/if}</span>
                 <Icon icon={IconChevronDown} size="s" color="--fgcolor-neutral-secondary" />
             </button>
-        {:else}
+        {:else if resolvedProfile.showOrgInBreadcrumbs}
             <button
                 type="button"
                 class="trigger"
@@ -399,6 +406,7 @@
 
             <div class="menu" use:melt={$menuProjects}>
                 <Card.Base padding="xxxs" shadow={true}>
+                    {@const aboveFourProjects = loadedProjects.total >= 4}
                     {#if isLoadingProjects}
                         <div style:margin-inline="0.25rem" style:margin-block="0.25rem">
                             <Layout.Stack gap="s">
@@ -422,9 +430,12 @@
                                     </ActionMenu.Root>
                                 </div>
                             {:else if index === 4}
+                                <div class="separator" use:melt={$separatorProjects}></div>
+
                                 <div use:melt={$itemProjects}>
                                     <ActionMenu.Root>
                                         <ActionMenu.Item.Anchor
+                                            leadingIcon={IconList}
                                             href={`${base}/organization-${selectedOrg.$id}`}>
                                             All projects
                                         </ActionMenu.Item.Anchor>
@@ -432,8 +443,11 @@
                                 </div>
                             {/if}
                         {/each}
-                        <div class="separator" use:melt={$separatorProjects}></div>
+                        {#if !aboveFourProjects}
+                            <div class="separator" use:melt={$separatorProjects}></div>
+                        {/if}
                     {/if}
+
                     <div use:melt={$itemProjects}>
                         <ActionMenu.Root>
                             <ActionMenu.Item.Anchor
@@ -447,7 +461,11 @@
         {/if}
     </div>
 
-    <BottomSheet.Menu bind:isOpen={organisationBottomSheetOpen} menu={organizationsBottomSheet} />
+    {#if resolvedProfile.showOrgInBreadcrumbs}
+        <BottomSheet.Menu
+            bind:isOpen={organisationBottomSheetOpen}
+            menu={organizationsBottomSheet} />
+    {/if}
 
     {#await projectsBottomSheet then menu}
         {#if menu}
@@ -497,7 +515,7 @@
         }
 
         @media (min-width: 1024px) {
-            max-width: 150px;
+            max-width: 200px;
         }
 
         &.dropdown {

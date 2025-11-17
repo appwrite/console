@@ -20,6 +20,7 @@
     import { getLatestTag } from '$lib/helpers/github';
     import { writable } from 'svelte/store';
     import Link from '$lib/elements/link.svelte';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     let {
         data
@@ -160,7 +161,7 @@
 </script>
 
 <svelte:head>
-    <title>Deploy {data.repository.name} - Appwrite</title>
+    <title>Deploy {data.repository.name} - {resolvedProfile.platform}</title>
 </svelte:head>
 
 <Wizard

@@ -37,6 +37,8 @@
     import type { OrganizationUsage } from '$lib/sdk/billing';
     import type { Models } from '@appwrite.io/console';
     import { toLocaleDate } from '$lib/helpers/date';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
+    import { isFreePlan } from '$lib/helpers/billing.js';
 
     export let data;
 
@@ -314,11 +316,11 @@
     $: isDowngrade = $plansInfo.get(selectedPlan).order < $currentPlan?.order;
     $: isButtonDisabled =
         $organization?.billingPlan === selectedPlan ||
-        (isDowngrade && selectedPlan === BillingPlan.FREE && data.hasFreeOrgs);
+        (isDowngrade && isFreePlan(selectedPlan) && data.hasFreeOrgs);
 </script>
 
 <svelte:head>
-    <title>Change plan - Appwrite</title>
+    <title>Change plan - {resolvedProfile.platform}</title>
 </svelte:head>
 
 <Wizard title="Change plan" href={previousPage} bind:showExitModal confirmExit>
@@ -344,7 +346,7 @@
 
                     <PlanSelection bind:billingPlan={selectedPlan} selfService={data.selfService} />
 
-                    {#if isDowngrade && selectedPlan === BillingPlan.FREE && data.hasFreeOrgs}
+                    {#if isDowngrade && isFreePlan(selectedPlan) && data.hasFreeOrgs}
                         <Alert.Inline
                             status="warning"
                             title="You can only have one free organization per account">
@@ -376,7 +378,7 @@
                                     >you will be charged {price} monthly for {extraMembers} team members.</b>
                                 This will be reflected in your next invoice.
                             </Alert.Inline>
-                        {:else if selectedPlan === BillingPlan.FREE}
+                        {:else if isFreePlan(selectedPlan)}
                             <Alert.Inline
                                 status="error"
                                 title={`Your organization will switch to ${tierToPlan(selectedPlan).name} plan on ${toLocaleDate(
@@ -444,7 +446,7 @@
                         id="members" />
                 </Fieldset>
             {/if}
-            {#if isDowngrade && selectedPlan === BillingPlan.FREE && !data.hasFreeOrgs}
+            {#if isDowngrade && isFreePlan(selectedPlan) && !data.hasFreeOrgs}
                 <Fieldset legend="Feedback">
                     <Layout.Stack gap="xl">
                         <InputSelect
@@ -466,7 +468,7 @@
         </Layout.Stack>
     </Form>
     <svelte:fragment slot="aside">
-        {#if selectedPlan !== BillingPlan.FREE && data.organization.billingPlan !== selectedPlan && data.organization.billingPlan !== BillingPlan.CUSTOM}
+        {#if !isFreePlan(selectedPlan) && data.organization.billingPlan !== selectedPlan && data.organization.billingPlan !== BillingPlan.CUSTOM}
             <EstimatedTotalBox
                 {collaborators}
                 {isDowngrade}

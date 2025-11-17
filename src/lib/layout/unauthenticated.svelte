@@ -11,6 +11,7 @@
     import { Typography, Layout, Avatar } from '@appwrite.io/pink-svelte';
     import { getCampaignImageUrl } from '$routes/(public)/card/helpers';
     import { isSmallViewport } from '$lib/stores/viewport';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     export const imgLight = LoginLight;
     export const imgDark = LoginDark;
@@ -62,13 +63,13 @@
                         src={AppwriteLogoDark}
                         width="160"
                         class="u-block u-only-dark"
-                        alt="Appwrite Logo" />
+                        alt="{resolvedProfile.platform} Logo" />
                 {:else}
                     <img
                         src={AppwriteLogoLight}
                         width="160"
                         class="u-block u-only-light"
-                        alt="Appwrite Logo" />
+                        alt="{resolvedProfile.platform} Logo" />
                 {/if}
             </a>
         </div>
@@ -174,13 +175,13 @@
                             src={AppwriteLogoDark}
                             width="120"
                             class="u-block u-only-dark"
-                            alt="Appwrite Logo" />
+                            alt="{resolvedProfile.platform} Logo" />
                     {:else}
                         <img
                             src={AppwriteLogoLight}
                             width="120"
                             class="u-block u-only-light"
-                            alt="Appwrite Logo" />
+                            alt="{resolvedProfile.platform} Logo" />
                     {/if}
                 </a>
             </div>

@@ -3,6 +3,7 @@
     import { app } from '$lib/stores/app';
     import { loading } from '$routes/store';
     import { Typography } from '@appwrite.io/pink-svelte';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     loading.set(false);
 </script>
@@ -20,13 +21,13 @@
                 src="{base}/images/appwrite-logo-dark.svg"
                 width="120"
                 height="22"
-                alt="Appwrite Logo" />
+                alt="{resolvedProfile.platform} Logo" />
         {:else}
             <img
                 src="{base}/images/appwrite-logo-light.svg"
                 width="120"
                 height="22"
-                alt="Appwrite Logo" />
+                alt="{resolvedProfile.platform} Logo" />
         {/if}
     </footer>
 </div>

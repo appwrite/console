@@ -6,6 +6,7 @@
     import { Button } from '$lib/elements/forms';
     import type { Models } from '@appwrite.io/console';
     import { Alert, Code, Layout, Tabs } from '@appwrite.io/pink-svelte';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     export let show = false;
     export let site: Models.Site;
@@ -37,7 +38,7 @@
 
         return {
             Unix: {
-                code: `appwrite client --projectId="${projectId}" && \\
+                code: `appwrite client --project-id="${projectId}" && \\
 appwrite sites create-deployment \\
     --site-id="${siteId}" \\
     --code="${codePath}" \\
@@ -49,9 +50,9 @@ appwrite sites create-deployment \\
             },
 
             CMD: {
-                code: `appwrite client --projectId="${projectId}" && ^
-appwrite sites createDeployment ^
-    --siteId=${siteId} ^
+                code: `appwrite client --project-id="${projectId}" && ^
+appwrite sites create-deployment ^
+    --site-id=${siteId} ^
     --code="${codePath}" ^
     --activate ^
     --build-command="${buildCommand}" ^
@@ -61,9 +62,9 @@ appwrite sites createDeployment ^
             },
 
             PowerShell: {
-                code: `appwrite client --projectId="${projectId}" ;
-appwrite sites createDeployment ,
-    --siteId=${siteId} ,
+                code: `appwrite client --project-id="${projectId}" ;
+appwrite sites create-deployment ,
+    --site-id=${siteId} ,
     --code="${codePath}" ,
     --activate ,
     --build-command="${buildCommand}" ,
@@ -77,8 +78,8 @@ appwrite sites createDeployment ,
 
 <Modal title="Create CLI deployment" bind:show hideFooter>
     <span slot="description">
-        Deploy your site using the Appwrite CLI by running the following command inside your sites's
-        folder.
+        Deploy your site using the {resolvedProfile.platform} CLI by running the following command inside
+        your sites's folder.
     </span>
 
     <Layout.Stack gap="l">

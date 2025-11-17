@@ -15,6 +15,7 @@
     import type { Models } from '@appwrite.io/console';
     import type { sdk } from '$lib/stores/sdk';
     import ImportReport from '$routes/(console)/project-[region]-[project]/settings/migrations/(import)/importReport.svelte';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     export let errorInResources: boolean | undefined = undefined;
     export let formData: ReturnType<typeof createMigrationFormStore>;
@@ -128,8 +129,8 @@
     {#if report && !isVersionAtLeast(version, '1.4.0') && $provider.provider === 'appwrite'}
         <Alert.Inline status="warning">
             <svelte:fragment slot="title">Functions not available for import</svelte:fragment>
-            To migrate your functions, update the version of the Appwrite instance you're importing from
-            to a version newer than 1.4
+            To migrate your functions, update the version of the {resolvedProfile.platform} instance
+            you're importing from to a version newer than 1.4
         </Alert.Inline>
     {/if}
 

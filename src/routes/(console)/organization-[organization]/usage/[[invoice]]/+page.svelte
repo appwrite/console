@@ -24,6 +24,7 @@
     import { IconChartSquareBar, IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { onMount } from 'svelte';
     import type { UsageProjectInfo } from '../../store';
+    import { isFreePlan } from '$lib/helpers/billing';
 
     export let data;
 
@@ -61,7 +62,7 @@
     <div class="u-flex u-cross-center u-main-space-between">
         <Typography.Title>Usage</Typography.Title>
 
-        {#if $organization?.billingPlan === BillingPlan.FREE}
+        {#if isFreePlan($organization?.billingPlan)}
             <Button
                 href={$upgradeURL}
                 on:click={() => {
@@ -104,7 +105,7 @@
                 </Link.Anchor>
             {/if}
         </p>
-    {:else if $organization.billingPlan === BillingPlan.FREE}
+    {:else if isFreePlan($organization.billingPlan)}
         <p class="text">
             If you exceed the limits of the Free plan, services for your organization's projects may
             be disrupted.

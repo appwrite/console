@@ -4,6 +4,7 @@
     import { EventModal } from '$lib/components';
     import { Icon, Typography, Link, Table, Layout, Fieldset } from '@appwrite.io/pink-svelte';
     import { IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     let showCreate = false;
 
@@ -58,7 +59,8 @@
 {#if showCreate}
     <EventModal bind:show={showCreate} on:created={handleCreated}>
         <Typography.Text>
-            Select events in your Appwrite project that will trigger your webhook. <Link.Anchor
+            Select events in your {resolvedProfile.platform} project that will trigger your webhook.
+            <Link.Anchor
                 href="https://appwrite.io/docs/advanced/platform/events"
                 target="_blank"
                 rel="noopener noreferrer"

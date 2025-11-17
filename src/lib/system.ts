@@ -1,5 +1,6 @@
 import { env } from '$env/dynamic/public';
 import { dev } from '$app/environment';
+import type { ProfileMode } from '$lib/profiles/index.svelte';
 
 export const enum Mode {
     CLOUD = 'cloud',
@@ -8,6 +9,7 @@ export const enum Mode {
 
 export const VARS = {
     CONSOLE_MODE: (env.PUBLIC_CONSOLE_MODE as Mode) ?? undefined,
+    CONSOLE_PROFILE: (env.PUBLIC_CONSOLE_PROFILE as ProfileMode) ?? 'appwrite',
     APPWRITE_ENDPOINT: env.PUBLIC_APPWRITE_ENDPOINT ?? undefined,
     GROWTH_ENDPOINT: env.PUBLIC_GROWTH_ENDPOINT ?? undefined,
     PUBLIC_STRIPE_KEY: env.PUBLIC_STRIPE_KEY ?? undefined,

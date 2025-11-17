@@ -2,6 +2,7 @@
     import { addSubPanel, registerCommands } from '$lib/commandCenter';
     import { FunctionsPanel } from '$lib/commandCenter/panels';
     import { canSeeFunctions } from '$lib/stores/roles';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     $registerCommands([
         {
@@ -17,7 +18,7 @@
 </script>
 
 <svelte:head>
-    <title>Functions - Appwrite</title>
+    <title>Functions - {resolvedProfile.platform}</title>
 </svelte:head>
 
 <slot />

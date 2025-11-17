@@ -23,6 +23,7 @@
         IconTrash
     } from '@appwrite.io/pink-icons-svelte';
     import type { Models } from '@appwrite.io/console';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     export let organization: Organization;
     export let locale: Models.Locale;
@@ -58,7 +59,8 @@
 
 <CardGrid>
     <svelte:fragment slot="title">Billing address</svelte:fragment>
-    View or update your billing address. This address will be included in your invoices from Appwrite.
+    View or update your billing address. This address will be included in your invoices from {resolvedProfile.platform}
+    .
     <svelte:fragment slot="aside">
         {#if organization?.billingAddressId && billingAddress}
             <Card.Base variant="secondary" padding="s">

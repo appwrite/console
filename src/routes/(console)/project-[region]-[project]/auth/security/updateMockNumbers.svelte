@@ -19,6 +19,7 @@
     import type { Models } from '@appwrite.io/console';
     import { Icon, Input, Layout, Link, Tooltip } from '@appwrite.io/pink-svelte';
     import { IconPlus, IconRefresh } from '@appwrite.io/pink-icons-svelte';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     let numbers: Models.MockNumber[] = $project?.authMockNumbers ?? [];
     let initialNumbers = [];
@@ -28,12 +29,15 @@
 
     let isComponentDisabled: boolean =
         isSelfHosted || (isCloud && !$currentPlan.supportsMockNumbers);
+
     let emptyStateTitle: string = isSelfHosted
-        ? 'Available on Appwrite Cloud'
+        ? `Available on ${resolvedProfile.platform} Cloud`
         : 'Upgrade to add mock phone numbers';
+
     let emptyStateDescription: string = isSelfHosted
         ? 'Sign up for Cloud to add mock phone numbers to your projects.'
         : 'Upgrade to a Pro plan to add mock phone numbers to your project.';
+
     let cta: string = isSelfHosted ? 'Sign up' : 'Upgrade plan';
 
     async function updateMockNumbers() {

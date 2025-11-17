@@ -1,5 +1,5 @@
 <script>
-    import { isCloud } from '$lib/system';
+    import { isCloud, isSelfHosted } from '$lib/system';
     import { version } from '$routes/(console)/store';
     import { IconCloud, IconDiscord, IconGithub } from '@appwrite.io/pink-icons-svelte';
     import {
@@ -13,6 +13,7 @@
     } from '@appwrite.io/pink-svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
     import { page } from '$app/state';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     const currentYear = new Date().getFullYear();
 
@@ -31,12 +32,14 @@
             gap={$isSmallViewport ? 'm' : 'l'}
             justifyContent="flex-start">
             <Typography.Caption variant="400">
-                ⓒ {currentYear} Appwrite. All rights reserved.
+                ⓒ {currentYear}
+                {resolvedProfile.platform} . All rights reserved.
             </Typography.Caption>
             <span class="divider-wrapper">
                 <Divider vertical />
             </span>
             <Layout.Stack direction="row" gap="xxs" inline>
+                <!-- TODO: hide on studio mode. -->
                 <Button.Anchor
                     icon
                     size="xs"
@@ -44,7 +47,7 @@
                     href="https://github.com/appwrite/appwrite"
                     target="_blank"
                     rel="noreferrer"
-                    aria-label="Appwrite on Github">
+                    aria-label="{resolvedProfile.platform} on Github">
                     <Icon size="s" icon={IconGithub} />
                 </Button.Anchor>
                 <Button.Anchor
@@ -54,7 +57,7 @@
                     href="https://appwrite.io/discord"
                     target="_blank"
                     rel="noreferrer"
-                    aria-label="Appwrite on Discord">
+                    aria-label="{resolvedProfile.platform} on Discord">
                     <Icon size="s" icon={IconDiscord} />
                 </Button.Anchor>
             </Layout.Stack>
@@ -66,7 +69,7 @@
             alignItems="center"
             wrap={$isSmallViewport ? 'wrap' : 'normal'}>
             {#if !$isSmallViewport}
-                {#if isCloud}
+                {#if isCloud && resolvedProfile.showGeneralAvailability}
                     <Badge
                         size="xs"
                         type="success"
@@ -76,12 +79,12 @@
                     <Icon size="s" icon={IconCloud} />
                 {/if}
 
-                {#if $version}
+                {#if $version && isSelfHosted}
                     <Link.Anchor
                         size="s"
                         variant="quiet"
                         href="https://github.com/appwrite/appwrite/releases"
-                        aria-label="Appwrite releases on Github"
+                        aria-label="{resolvedProfile.platform} releases on Github"
                         target="_blank"
                         rel="noreferrer"
                         style="white-space: nowrap;">
@@ -137,29 +140,35 @@
                 </Link.Anchor>
             {/if}
             {#if $isSmallViewport}
-                {#if $version}
+                {#if $version && isSelfHosted}
                     <span class="divider-wrapper">
                         <Divider vertical />
                     </span>
+
                     <Link.Anchor
                         size="s"
                         variant="quiet"
                         href="https://github.com/appwrite/appwrite/releases"
-                        aria-label="Appwrite releases on Github"
+                        aria-label="{resolvedProfile.platform} releases on Github"
                         target="_blank"
                         rel="noreferrer"
                         style="white-space: nowrap;">
                         Version {$version}
                     </Link.Anchor>
-                    {#if isCloud}
-                        <Icon size="s" icon={IconCloud} />
-                        <Badge
-                            size="xs"
-                            type="success"
-                            variant="secondary"
-                            content="Generally Available"
-                            style="white-space: nowrap;" />
-                    {/if}
+                {/if}
+
+                {#if isCloud && resolvedProfile.showGeneralAvailability}
+                    <span class="divider-wrapper">
+                        <Divider vertical />
+                    </span>
+                    <Icon size="s" icon={IconCloud} />
+
+                    <Badge
+                        size="xs"
+                        type="success"
+                        variant="secondary"
+                        content="Generally Available"
+                        style="white-space: nowrap;" />
                 {/if}
             {/if}
         </Layout.Stack>

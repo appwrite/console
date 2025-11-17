@@ -13,6 +13,7 @@
     import { redirectTo } from '$routes/store';
     import { user } from '$lib/stores/user';
     import { Layout } from '@appwrite.io/pink-svelte';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     let mail: string, pass: string, disabled: boolean;
 
@@ -86,7 +87,7 @@
 </script>
 
 <svelte:head>
-    <title>Sign in - Appwrite</title>
+    <title>Sign in - {resolvedProfile.platform}</title>
 </svelte:head>
 
 <Unauthenticated coupon={data?.couponData} campaign={data?.campaign}>

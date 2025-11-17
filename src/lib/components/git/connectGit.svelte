@@ -5,6 +5,7 @@
     import { IconGithub } from '@appwrite.io/pink-icons-svelte';
     import { Alert, Card, Empty, Icon, Layout } from '@appwrite.io/pink-svelte';
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     export let callbackState: Record<string, string> = null;
 
@@ -16,8 +17,8 @@
         <Alert.Inline status="info" title="Installing Git on a self-hosted instance ">
             <Layout.Stack>
                 <p>
-                    Before installing Git in a locally hosted Appwrite project, ensure your
-                    environment variables are configured.
+                    Before installing Git in a locally hosted {resolvedProfile.platform} project, ensure
+                    your environment variables are configured.
                 </p>
                 <div>
                     <Button

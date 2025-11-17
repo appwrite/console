@@ -9,6 +9,7 @@
     import { fade } from 'svelte/transition';
     import Card from '../Card.svelte';
     import { base } from '$app/paths';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     export let data;
     const base64 = data.base64;
@@ -31,23 +32,27 @@
     let showEmbedCode = false;
 
     $: title =
-        variant === 'owner' ? 'Welcome to Cloud Public Beta' : 'Join Appwrite Cloud Public Beta';
+        variant === 'owner'
+            ? 'Welcome to Cloud Public Beta'
+            : `Join ${resolvedProfile.platform} Cloud Public Beta`;
     $: shareableLink =
         typeof window !== 'undefined' ? `${window.location.origin}/card/${userId}` : '';
     $: embedCode = [
         `<a href="${shareableLink}">`,
-        `\t<img width="350" src="${frontImg}" alt="Appwrite Cloud Card" />`,
+        `\t<img width="350" src="${frontImg}" alt="${resolvedProfile.platform} Cloud Card" />`,
         `</a>`
     ].join('\n');
     $: twitterText = encodeURIComponent(
         [
+            // TODO: @itznotabug - don't remember the social profile handle id atm
+            // {resolvedProfile.social}
             `Guess what I just received? 💳 My personalized Cloud card from @appwrite! 🚀`,
             ``,
-            `Appwrite Cloud just announced their Public Beta!`,
+            `${resolvedProfile.platform} Cloud just announced their Public Beta!`,
             ``,
             `🌥️ Sign up now and claim your own card at ${shareableLink}`,
             ``,
-            `#AppwriteCloud`
+            `#${resolvedProfile.platform}Cloud`
         ].join('\n')
     );
 
@@ -69,7 +74,7 @@
     }
 
     const seo = {
-        title: 'Appwrite Cloud Card',
+        title: `${resolvedProfile.platform} Cloud Card`,
         description:
             'Cloud is live in public beta, create your Cloud account and unlock your exclusive card!'
     };

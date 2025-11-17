@@ -4,7 +4,6 @@
     import { sdk } from '$lib/stores/sdk';
     import { MessagingProviderType, type Models, Query } from '@appwrite.io/console';
     import { createEventDispatcher } from 'svelte';
-    import { getTotal } from './wizard/store';
     import {
         Badge,
         Card,
@@ -17,21 +16,42 @@
     import { getProviderText } from './helper';
     import { page } from '$app/state';
 
-    export let providerType: MessagingProviderType;
-    export let show: boolean;
-    export let topicsById: Record<string, Models.Topic>;
-    export let title = 'Select topics';
+    let {
+        providerType,
+        show = $bindable(),
+        topicsById = $bindable(),
+        title = 'Select topics'
+    } = $props<{
+        providerType: MessagingProviderType;
+        show: boolean;
+        topicsById: Record<string, Models.Topic>;
+        title?: string;
+    }>();
 
     const dispatch = createEventDispatcher();
 
-    let search = '';
-    let offset = 0;
-    let totalResults = 0;
-    let topicResultsById: Record<string, Models.Topic> = {}; // use a hash map so we can quickly look up a user by id
-    let selected: Record<string, Models.Topic> = {};
-    let hasSelection = false;
+    let search = $state('');
+    let offset = $state(0);
+    let totalResults = $state(0);
+    let topicResultsById = $state<Record<string, Models.Topic>>({});
+    let selected = $state<Record<string, Models.Topic>>({});
+    let emptyTopicsExists = $state(false);
 
-    let emptyTopicsExists = false;
+    let previousSearch = $state('');
+    let wasOpen = $state(false);
+
+    function getTopicTotal(topic: Models.Topic): number {
+        switch (providerType) {
+            case MessagingProviderType.Email:
+                return topic.emailTotal;
+            case MessagingProviderType.Sms:
+                return topic.smsTotal;
+            case MessagingProviderType.Push:
+                return topic.pushTotal;
+            default:
+                return 0;
+        }
+    }
 
     function reset() {
         offset = 0;
@@ -87,31 +107,42 @@
         }
     }
 
-    $: if (show) {
-        request();
-    }
-    $: if (offset !== null) {
-        request();
-    }
-    $: if (search !== null) {
-        offset = 0;
-        request();
-    }
+    $effect(() => {
+        if (search !== previousSearch) {
+            previousSearch = search;
+            offset = 0;
+        }
+    });
 
-    $: selectedSize = Object.keys(selected).length;
+    $effect(() => {
+        if (!show) return;
+        offset ?? null;
+        search ?? null;
+        request();
+    });
 
-    $: hasSelection = selectedSize > 0;
+    $effect(() => {
+        if (show && !wasOpen) {
+            selected = topicsById;
+        }
+        wasOpen = show;
+    });
 
-    $: if (show) {
-        selected = topicsById;
-    }
+    let selectedSize = $derived(Object.keys(selected).length);
+    let hasSelection = $derived(selectedSize > 0);
+
+    let topicSelectionStates = $derived(
+        Object.fromEntries(Object.keys(topicResultsById).map((id) => [id, !!selected[id]]))
+    );
 </script>
 
 <Modal {title} bind:show onSubmit={submit} on:close={reset}>
-    <Typography.Text>
-        Select existing topics you want to send this message to its targets. The message will be
-        sent only to {getProviderText(providerType)} targets.
-    </Typography.Text>
+    <svelte:fragment slot="description">
+        <Typography.Text>
+            Select existing topics you want to send this message to its targets. The message will be
+            sent only to {getProviderText(providerType)} targets.
+        </Typography.Text>
+    </svelte:fragment>
     <Layout.Stack>
         <InputSearch
             autofocus
@@ -128,11 +159,11 @@
                                     id={topicId}
                                     label={topic.name}
                                     disabled={!!topicsById[topicId]}
-                                    checked={!!selected[topicId]}
+                                    checked={topicSelectionStates[topicId] || false}
                                     on:change={(event) => onTopicSelection(event, topic)}>
                                 </Selector.Checkbox>
                                 <span>
-                                    ({getTotal(topic)} targets)
+                                    ({getTopicTotal(topic)} targets)
                                 </span>
                             </Layout.Stack>
                         </Table.Cell>
@@ -174,7 +205,7 @@
                 <Badge variant="secondary" content={selectedSize.toString()} />
                 <span>Topics selected</span>
             </Layout.Stack>
-            <Button submit disabled={!hasSelection}>Add</Button>
+            <Button submit disabled={!hasSelection}>Create</Button>
         </Layout.Stack>
     </svelte:fragment>
 </Modal>

@@ -15,6 +15,7 @@
     import { canWriteMessages } from '$lib/stores/roles';
     import { project } from '../store';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     // TODO: finalize the commands
     $: $registerCommands([
@@ -58,7 +59,7 @@
 </script>
 
 <svelte:head>
-    <title>Messaging - Appwrite</title>
+    <title>Messaging - {resolvedProfile.platform}</title>
 </svelte:head>
 
 <slot />

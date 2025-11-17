@@ -4,13 +4,19 @@ import { getLimit, getPage, pageToOffset } from '$lib/helpers/load';
 import { CARD_LIMIT } from '$lib/constants';
 import type { PageLoad } from './$types';
 import { isCloud } from '$lib/system';
+import { resolvedProfile } from '$lib/profiles/index.svelte';
 
 export const load: PageLoad = async ({ url, route }) => {
     const page = getPage(url);
     const limit = getLimit(url, route, CARD_LIMIT);
     const offset = pageToOffset(page, limit);
 
-    const queries = [Query.offset(offset), Query.limit(limit), Query.orderDesc('')];
+    const queries = [
+        Query.offset(offset),
+        Query.limit(limit),
+        Query.orderDesc(''),
+        Query.equal('platform', resolvedProfile.organizationPlatform)
+    ];
 
     const organizations = !isCloud
         ? await sdk.forConsole.teams.list({ queries })
