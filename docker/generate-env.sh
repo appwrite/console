@@ -79,19 +79,6 @@ echo "Nuking all .br and .gz files..."
 find /usr/share/nginx/html/console -type f \( -name "*.br" -o -name "*.gz" \) -delete
 echo "✓ Nuked all compressed files"
 
-# Replace hardcoded PUBLIC_ values in JavaScript files
-# Vite inlines env vars at build time, so we need to replace them in the built JS
-echo "Replacing hardcoded env values in JavaScript files..."
-for var in $public_vars; do
-    value=$(printenv "$var")
-    echo "  Replacing $var in JS files..."
-    
-    # Find all .js files and replace the value
-    # Match pattern: "PUBLIC_VAR":"old_value" or 'PUBLIC_VAR':'old_value'
-    find /usr/share/nginx/html/console -type f -name "*.js" -exec sed -i "s|\"$var\":\"[^\"]*\"|\"$var\":\"$value\"|g" {} \;
-done
-echo "✓ Replaced env values in JS files"
-
 echo "========================================="
 echo "Starting nginx..."
 echo "========================================="
