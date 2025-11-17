@@ -19,6 +19,7 @@
     import { getSidebarState, isInDatabasesRoute, updateSidebarState } from '$lib/helpers/sidebar';
     import { isTabletViewport } from '$lib/stores/viewport';
     import { ProfileMode, resolvedProfile } from '$lib/profiles/index.svelte';
+    import { app } from '$lib/stores/app';
     import { isFreePlan } from '$lib/helpers/billing';
 
     export let showHeader = true;
@@ -154,7 +155,8 @@
             .getInitials({
                 name: $user?.name,
                 width: 80,
-                height: 80
+                height: 80,
+                background: $app.themeInUse === 'dark' ? 'E4E4E7' : '6C6C71'
             })
             .toString(),
 
@@ -254,13 +256,20 @@
         width: 100%;
 
         margin-block-start: 48px;
-
+        border-radius: 16px;
+        border: 1px solid var(--border-neutral);
+        overflow: scroll;
+        height: calc(100vh - 60px);
+        max-width: calc(100vw - 76px);
+        margin-top: 48px;
+        margin-right: 10px;
+        margin-left: 64px;
         @media (min-width: 1024px) {
             width: 100%;
             padding-left: 190px;
 
             &.icons-content {
-                padding-left: 54px;
+                padding-left: 0px;
             }
         }
     }
@@ -276,7 +285,7 @@
     }
 
     .main-content {
-        min-height: calc(100vh - 48px);
+        min-height: calc(100vh - 62px);
     }
 
     .no-header {

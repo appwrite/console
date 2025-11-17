@@ -11,7 +11,6 @@
     } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { Unauthenticated } from '$lib/layout';
     import { Dependencies } from '$lib/constants';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { ID, OAuthProvider } from '@appwrite.io/console';
@@ -114,6 +113,8 @@
             scopes: ['read:user', 'user:email']
         });
     }
+
+    const Unauthenticated = resolvedProfile.component.unauthenticated;
 </script>
 
 <svelte:head>

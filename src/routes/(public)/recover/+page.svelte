@@ -3,7 +3,6 @@
     import { Button, Form, InputEmail, InputPassword } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { Unauthenticated } from '$lib/layout';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { onMount } from 'svelte';
     import { page } from '$app/state';
@@ -65,6 +64,7 @@
             });
         }
     }
+    const Unauthenticated = resolvedProfile.component.unauthenticated;
 </script>
 
 <svelte:head>

@@ -7,4 +7,5 @@ import lightStudio from './light-studio.json';
 
 export const ThemeDarkStudio = { ...ThemeDarkCloud, ...darkStudio };
 export const ThemeLightStudio = { ...ThemeLightCloud, ...lightStudio };
+console.log(ThemeLightStudio);
 export { ThemeDark, ThemeLight, ThemeDarkCloud, ThemeLightCloud };

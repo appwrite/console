@@ -9,7 +9,7 @@ import { get } from 'svelte/store';
 import { headerAlert } from '$lib/stores/headerAlert';
 import PaymentFailed from '$lib/components/billing/alerts/paymentFailed.svelte';
 import { loadAvailableRegions } from '$routes/(console)/regions';
-import type { Organization, OrganizationList } from '$lib/stores/organization';
+import type { Organization } from '$lib/stores/organization';
 import { redirect } from '@sveltejs/kit';
 import { resolvedProfile } from '$lib/profiles/index.svelte';
 import { resolve } from '$app/paths';
@@ -46,9 +46,7 @@ export const load: LayoutLoad = async ({ params, route, depends, parent }) => {
     project.region ??= 'default';
 
     // fast path without a network call!
-    let organization = (organizations as OrganizationList)?.teams?.find(
-        (org) => org.$id === project.teamId
-    );
+    let organization = organizations?.teams?.find((org) => org.$id === project.teamId);
 
     const includedInBasePlans = plansInfo.has(organization.billingPlan);
 

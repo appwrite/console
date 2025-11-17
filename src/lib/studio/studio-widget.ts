@@ -10,7 +10,6 @@ import { getSessionId } from '$lib/sentry';
 const COMPONENT_SELECTOR = 'imagine-web-components-wrapper[data-appwrite-studio]';
 const STYLE_ATTRIBUTE = 'data-appwrite-studio-style';
 const BLOCK_START_BASE_OFFSET = 48;
-const INLINE_START_BASE_OFFSET = 8;
 export const CDN_URL = env?.PUBLIC_IMAGINE_CDN_URL + '/web-components.js';
 export const CDN_CSS_URL = env?.PUBLIC_IMAGINE_CDN_URL + '/web-components.css';
 const DEV_OVERRIDE_WEB_COMPONENTS = env?.PUBLIC_AI_OVERRIDE_WEB_COMPONENTS === 'true';
@@ -60,6 +59,10 @@ function ensureBaseStyles(node: HTMLElement) {
     node.style.position = 'fixed';
     node.style.height = `calc(100vh - ${BLOCK_START_BASE_OFFSET}px)`;
     node.style.maxHeight = `calc(100vh - ${BLOCK_START_BASE_OFFSET}px)`;
+    node.style.borderRadius = '16px';
+    node.style.padding = '0';
+    node.style.overflow = 'hidden';
+
     if (!node.style.display) {
         node.style.display = 'none';
     }
@@ -193,12 +196,10 @@ function updatePosition() {
 
     const rect = anchorElement.getBoundingClientRect();
     const { offsetX, offsetY } = currentOptions;
-    const left = rect.left + offsetX;
-    const top = BLOCK_START_BASE_OFFSET + offsetY;
-
-    component.style.width = `${rect.width}px`;
-    component.style.height = `calc(100vh - ${BLOCK_START_BASE_OFFSET}px)`;
-    component.style.paddingInlineStart = `${INLINE_START_BASE_OFFSET}px`;
+    const left = rect.left + offsetX + 10;
+    const top = BLOCK_START_BASE_OFFSET + offsetY + 1;
+    component.style.width = `${rect.width - 10}px`;
+    component.style.height = `calc(100vh - ${BLOCK_START_BASE_OFFSET + 14}px)`;
     component.style.left = `${left}px`;
     component.style.top = `${top}px`;
 }

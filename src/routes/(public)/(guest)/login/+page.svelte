@@ -4,7 +4,6 @@
     import { Button, Form, InputEmail, InputPassword } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { Unauthenticated } from '$lib/layout';
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { isCloud } from '$lib/system';
@@ -18,6 +17,7 @@
     let mail: string, pass: string, disabled: boolean;
 
     export let data;
+    const Unauthenticated = resolvedProfile.component.unauthenticated;
 
     async function login() {
         try {

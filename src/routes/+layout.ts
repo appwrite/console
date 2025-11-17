@@ -13,6 +13,7 @@ import { isCloud, VARS } from '$lib/system';
 import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
 import { identify } from '$lib/sentry';
 import { resolvedProfile } from '$lib/profiles/index.svelte';
+import type { OrganizationList } from '$lib/stores/organization';
 
 export const ssr = false;
 
@@ -41,14 +42,17 @@ export const load: LayoutLoad = async ({ depends, url, route }) => {
                 redirect(303, resolve('/verify-email'));
             }
         }
-
-        return {
-            account: account,
-            organizations: !isCloud
+        const organizations = (
+            !isCloud
                 ? await sdk.forConsole.teams.list()
                 : await sdk.forConsole.billing.listOrganization([
                       Query.equal('platform', resolvedProfile.organizationPlatform)
                   ])
+        ) as OrganizationList;
+
+        return {
+            account: account,
+            organizations
         };
     }
 

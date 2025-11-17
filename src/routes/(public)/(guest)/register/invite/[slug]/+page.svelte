@@ -11,7 +11,6 @@
     } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { Unauthenticated } from '$lib/layout';
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent } from '$lib/actions/analytics';
     import { onMount } from 'svelte';
@@ -96,6 +95,7 @@
             });
         }
     }
+    const Unauthenticated = resolvedProfile.component.unauthenticated;
 </script>
 
 <svelte:head>

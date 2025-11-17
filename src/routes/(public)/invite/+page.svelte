@@ -4,7 +4,6 @@
     import { Button, Form, InputChoice } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { Unauthenticated } from '$lib/layout';
     import { page } from '$app/state';
     import { onMount } from 'svelte';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
@@ -43,6 +42,7 @@
             trackError(error, Submit.MembershipUpdateStatus);
         }
     };
+    const Unauthenticated = resolvedProfile.component.unauthenticated;
 </script>
 
 <svelte:head>
