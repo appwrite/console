@@ -59,7 +59,6 @@ function ensureBaseStyles(node: HTMLElement) {
     node.style.height = `calc(100vh - ${BLOCK_START_BASE_OFFSET}px)`;
     node.style.maxHeight = `calc(100vh - ${BLOCK_START_BASE_OFFSET}px)`;
     node.style.borderRadius = '16px';
-    node.style.border = '1px solid var(--border-neutral)';
     node.style.padding = '0';
     node.style.overflow = 'hidden';
 
@@ -195,10 +194,9 @@ function updatePosition() {
     const rect = anchorElement.getBoundingClientRect();
     const { offsetX, offsetY } = currentOptions;
     const left = rect.left + offsetX + 10;
-    const top = BLOCK_START_BASE_OFFSET + offsetY;
-
-    component.style.width = `${rect.width - 20}px`;
-    component.style.height = `calc(100vh - ${BLOCK_START_BASE_OFFSET + 10}px)`;
+    const top = BLOCK_START_BASE_OFFSET + offsetY + 1;
+    component.style.width = `${rect.width - 10}px`;
+    component.style.height = `calc(100vh - ${BLOCK_START_BASE_OFFSET + 14}px)`;
     component.style.left = `${left}px`;
     component.style.top = `${top}px`;
 }
