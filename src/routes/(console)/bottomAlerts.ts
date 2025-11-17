@@ -1,32 +1,32 @@
 import { isCloud } from '$lib/system';
 import { isSameDay } from '$lib/helpers/date';
 import { type BottomModalAlertItem, showBottomModalAlert } from '$lib/stores/bottom-alerts';
-import TransactionsApiDark from '$lib/images/promos/transactions-api-dark.png';
-import TransactionsApiLight from '$lib/images/promos/transactions-api-light.png';
+import DbOperatorsDark from '$lib/images/promos/db-operators-dark.png';
+import DbOperatorsLight from '$lib/images/promos/db-operators-light.png';
 
 const listOfPromotions: BottomModalAlertItem[] = [];
 
 if (isCloud) {
-    const transactionsApiPromo: BottomModalAlertItem = {
-        id: 'modal:transactions_api_announcement',
+    const dbOperatorsPromo: BottomModalAlertItem = {
+        id: 'modal:db_operators_announcement',
         src: {
-            dark: TransactionsApiDark,
-            light: TransactionsApiLight
+            dark: DbOperatorsDark,
+            light: DbOperatorsLight
         },
-        title: 'Announcing Transactions API',
-        message: 'Ensure data consistency across tables with atomic, all-or-nothing commits.',
+        title: 'Announcing DB operators',
+        message: 'Update multiple fields without fetching the entire row.',
         plan: 'free',
         importance: 8,
         scope: 'project',
         cta: {
             text: 'Read announcement',
-            link: () => 'https://appwrite.io/blog/post/announcing-transactions-api',
+            link: () => 'https://appwrite.io/blog/post/announcing-db-operators',
             external: true,
             hideOnClick: true
         },
         show: true
     };
-    listOfPromotions.push(transactionsApiPromo);
+    listOfPromotions.push(dbOperatorsPromo);
 }
 
 export function addBottomModalAlerts() {

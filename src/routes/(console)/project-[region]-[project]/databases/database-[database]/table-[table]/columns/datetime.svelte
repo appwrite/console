@@ -46,6 +46,7 @@
     import RequiredArrayCheckboxes from './requiredArrayCheckboxes.svelte';
 
     export let editing = false;
+    export let disabled = false;
     export let data: Partial<Models.ColumnDatetime>;
 
     let savedDefault = data.default;
@@ -77,7 +78,11 @@
     id="default"
     label="Default value"
     bind:value={data.default}
-    disabled={data.required || data.array}
+    disabled={data.required || data.array || disabled}
     nullable={!data.required && !data.array} />
 
-<RequiredArrayCheckboxes {editing} bind:array={data.array} bind:required={data.required} />
+<RequiredArrayCheckboxes
+    {editing}
+    {disabled}
+    bind:array={data.array}
+    bind:required={data.required} />
