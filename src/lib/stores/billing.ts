@@ -557,9 +557,10 @@ export async function checkForMandate(org: Organization) {
 
 export async function checkForMissingPaymentMethod() {
     const orgs = await sdk.forConsole.billing.listOrganization([
-        Query.notEqual('billingPlan', BillingPlan.FREE),
+        Query.notEqual('billingPlan', resolvedProfile.freeTier),
         Query.isNull('paymentMethodId'),
-        Query.isNull('backupPaymentMethodId')
+        Query.isNull('backupPaymentMethodId'),
+        Query.equal('platform', resolvedProfile.organizationPlatform)
     ]);
     if (orgs?.total) {
         orgMissingPaymentMethod.set(orgs.teams[0]);
@@ -592,7 +593,8 @@ export async function checkForNewDevUpgradePro(org: Organization) {
     if (now - accountCreated < 1000 * 60 * 60 * 24 * 7) return;
 
     const organizations = await sdk.forConsole.billing.listOrganization([
-        Query.notEqual('billingPlan', BillingPlan.FREE)
+        Query.notEqual('billingPlan', resolvedProfile.freeTier),
+        Query.equal('platform', resolvedProfile.organizationPlatform)
     ]);
 
     if (organizations?.total) return;
