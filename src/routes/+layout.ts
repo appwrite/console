@@ -11,6 +11,7 @@ import type { Account } from '$lib/stores/user';
 import { type AppwriteException, Query } from '@appwrite.io/console';
 import { isCloud, VARS } from '$lib/system';
 import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
+import { identify } from '$lib/sentry';
 import { resolvedProfile } from '$lib/profiles/index.svelte';
 
 export const ssr = false;
@@ -23,6 +24,8 @@ export const load: LayoutLoad = async ({ depends, url, route }) => {
         .get()
         .then((response) => [response, null])
         .catch((error) => [null, error])) as [Account, AppwriteException];
+
+    if (account) identify(account.$id);
 
     if (url.searchParams.has('forceRedirect')) {
         redirectTo.set(url.searchParams.get('forceRedirect') || null);
