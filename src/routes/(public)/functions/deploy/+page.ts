@@ -2,7 +2,7 @@ import { sdk } from '$lib/stores/sdk.js';
 import { redirect } from '@sveltejs/kit';
 import { base } from '$app/paths';
 import { isCloud } from '$lib/system';
-import { ID, type Models } from '@appwrite.io/console';
+import { ID, type Models, Query } from '@appwrite.io/console';
 import type { OrganizationList } from '$lib/stores/organization';
 import { redirectTo } from '$routes/store';
 import type { PageLoad } from './$types';
@@ -66,7 +66,9 @@ export const load: PageLoad = async ({ parent, url }) => {
     // Get organizations
     let organizations: Models.TeamList<Record<string, unknown>> | OrganizationList | undefined;
     if (isCloud) {
-        organizations = await sdk.forConsole.billing.listOrganization();
+        organizations = await sdk.forConsole.billing.listOrganization([
+            Query.equal('platform', resolvedProfile.organizationPlatform)
+        ]);
     } else {
         organizations = await sdk.forConsole.teams.list();
     }
@@ -90,7 +92,9 @@ export const load: PageLoad = async ({ parent, url }) => {
             }
 
             if (isCloud) {
-                organizations = await sdk.forConsole.billing.listOrganization();
+                organizations = await sdk.forConsole.billing.listOrganization([
+                    Query.equal('platform', resolvedProfile.organizationPlatform)
+                ]);
             } else {
                 organizations = await sdk.forConsole.teams.list();
             }
