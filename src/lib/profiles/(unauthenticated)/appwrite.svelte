@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { base } from '$app/paths';
+    import { resolve } from '$app/paths';
     import { AvatarInitials, Card } from '$lib/components';
     import AppwriteLogoDark from '$lib/images/appwrite-logo-dark.svg';
     import AppwriteLogoLight from '$lib/images/appwrite-logo-light.svg';
@@ -57,19 +57,19 @@
             class="logo u-flex u-gap-16"
             class:is-not-mobile={variation === 'default'}
             class:logo-variation={variation !== 'default'}>
-            <a href={base}>
+            <a href={resolve('/')}>
                 {#if $app.themeInUse === 'dark'}
                     <img
-                        src={AppwriteLogoDark}
+                        src={resolvedProfile.logo.src.dark}
                         width="160"
                         class="u-block u-only-dark"
-                        alt="{resolvedProfile.platform} Logo" />
+                        alt={resolvedProfile.logo.alt} />
                 {:else}
                     <img
-                        src={AppwriteLogoLight}
+                        src={resolvedProfile.logo.src.light}
                         width="160"
                         class="u-block u-only-light"
-                        alt="{resolvedProfile.platform} Logo" />
+                        alt={resolvedProfile.logo.alt} />
                 {/if}
             </a>
         </div>
@@ -169,7 +169,7 @@
             </div>
             <div
                 class="logo u-flex u-gap-16 u-margin-inline-auto is-only-mobile u-margin-block-start-32 mobile-logo">
-                <a href={base}>
+                <a href={resolve('/')}>
                     {#if $app.themeInUse === 'dark'}
                         <img
                             src={AppwriteLogoDark}

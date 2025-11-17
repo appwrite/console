@@ -1,8 +1,10 @@
 <script>
     import { base } from '$app/paths';
-    import { Unauthenticated } from '$lib/layout';
     import { Button } from '$lib/elements/forms';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
     import { Badge, Typography, Layout } from '@appwrite.io/pink-svelte';
+
+    const Unauthenticated = resolvedProfile.component.unauthenticated;
 </script>
 
 <Unauthenticated>

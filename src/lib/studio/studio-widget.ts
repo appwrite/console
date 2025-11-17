@@ -10,7 +10,6 @@ import { getSessionId } from '$lib/sentry';
 const COMPONENT_SELECTOR = 'imagine-web-components-wrapper[data-appwrite-studio]';
 const STYLE_ATTRIBUTE = 'data-appwrite-studio-style';
 const BLOCK_START_BASE_OFFSET = 48;
-const INLINE_START_BASE_OFFSET = 8;
 export const CDN_URL = env?.PUBLIC_IMAGINE_CDN_URL + '/web-components.js';
 export const CDN_CSS_URL = env?.PUBLIC_IMAGINE_CDN_URL + '/web-components.css';
 const DEV_OVERRIDE_WEB_COMPONENTS = env?.PUBLIC_AI_OVERRIDE_WEB_COMPONENTS === 'true';

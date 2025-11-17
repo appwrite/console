@@ -3,7 +3,6 @@
     import { base } from '$app/paths';
     import { Button, Form } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
-    import { Unauthenticated } from '$lib/layout';
     import type { Models } from '@appwrite.io/console';
     import MfaChallengeFormList, { verify } from '$lib/components/mfaChallengeFormList.svelte';
     import { page } from '$app/state';
@@ -13,7 +12,7 @@
     import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     export let data;
-
+    const Unauthenticated = resolvedProfile.component.unauthenticated;
     const factors = data.factors as Models.MfaFactors & { recoveryCode: boolean };
 
     let disabled = false;

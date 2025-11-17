@@ -3,6 +3,9 @@ import type { ResolvedPathname } from '$app/types';
 import { Platform } from '@appwrite.io/console';
 import { env } from '$env/dynamic/public';
 import { BillingPlan } from '@appwrite.io/console';
+import type { Component } from 'svelte';
+import UnauthenticatedAppwrite from './(unauthenticated)/appwrite.svelte';
+import UnauthenticatedStudio from './(unauthenticated)/studio.svelte';
 
 export const enum ProfileMode {
     STUDIO = 'studio',
@@ -41,6 +44,9 @@ export type Profile = {
     showOrgInBreadcrumbs: boolean;
     minimalOrgHeader: boolean;
     getProjectRoute: (params: { region: string; project: string }) => ResolvedPathname;
+    component: {
+        unauthenticated: Component;
+    };
 };
 
 export const base: Profile = {
@@ -54,6 +60,9 @@ export const base: Profile = {
             light: asset('/images/appwrite-logo-light.svg')
         },
         alt: 'Logo Appwrite'
+    },
+    component: {
+        unauthenticated: UnauthenticatedAppwrite
     },
     showOnboarding: true,
     useCommandCenter: true,
@@ -93,6 +102,9 @@ export const studio: Profile = {
             light: asset('/images/imagine-logo-light.svg')
         },
         alt: 'Imagine Appwrite'
+    },
+    component: {
+        unauthenticated: UnauthenticatedStudio
     },
     showOnboarding: false,
     useCommandCenter: false,
