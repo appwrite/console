@@ -27,15 +27,17 @@ done
 env_json="$env_json}"
 
 # Write to env.js
-# Determine correct path based on script location
-if [ -d "./_app" ]; then
-    # Script is in build/ directory
-    env_file="./_app/env.js"
-elif [ -d "./build/_app" ]; then
-    # Script is in root or docker/ directory
+# Use CONSOLE_BUILD_PATH env var if set, otherwise try common locations
+if [ -n "$CONSOLE_BUILD_PATH" ]; then
+    env_file="$CONSOLE_BUILD_PATH/_app/env.js"
+elif [ -f "/usr/share/nginx/html/console/_app/env.js" ]; then
+    env_file="/usr/share/nginx/html/console/_app/env.js"
+elif [ -f "./build/_app/env.js" ]; then
     env_file="./build/_app/env.js"
+elif [ -f "./_app/env.js" ]; then
+    env_file="./_app/env.js"
 else
-    echo "⚠ Error: Cannot find _app directory"
+    echo "⚠ Error: Cannot find env.js file. Set CONSOLE_BUILD_PATH env var to the build directory."
     exit 1
 fi
 
