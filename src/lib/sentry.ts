@@ -1,5 +1,13 @@
 import { env } from '$env/dynamic/public';
 import * as Sentry from '@sentry/sveltekit';
+import { isCloud } from './system';
+
+export function identify(userId: string) {
+    if (isCloud)
+        Sentry.setUser({
+            id: userId
+        });
+}
 
 export function setupSentry({ withSessionReplay }: { withSessionReplay: boolean }) {
     const dsn = env.PUBLIC_SENTRY_DSN;
