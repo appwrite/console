@@ -13,6 +13,7 @@
     import { getProjectId } from '$lib/helpers/project';
     import { toLocaleDate } from '$lib/helpers/date';
     import { Typography } from '@appwrite.io/pink-svelte';
+    import { isFreePlan } from '$lib/helpers/billing';
 
     const backupRestoreItems: {
         archives: Map<string, BackupArchive>;
@@ -125,7 +126,7 @@
 
     onMount(() => {
         // fast path: don't subscribe if org is on a free plan or is self-hosted.
-        if (isSelfHosted || (isCloud && $organization?.billingPlan === BillingPlan.FREE)) return;
+        if (isSelfHosted || (isCloud && isFreePlan($organization?.billingPlan))) return;
 
         return realtime.forProject(page.params.region, 'console', (response) => {
             if (!response.channels.includes(`projects.${getProjectId()}`)) return;

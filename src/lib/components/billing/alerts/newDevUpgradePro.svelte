@@ -10,6 +10,7 @@
     import { isSmallViewport } from '$lib/stores/viewport';
     import { Layout, Typography } from '@appwrite.io/pink-svelte';
     import { resolvedProfile } from '$lib/profiles/index.svelte';
+    import { isFreePlan } from '$lib/helpers/billing';
 
     let show = true;
 
@@ -24,7 +25,7 @@
     }
 </script>
 
-{#if show && $organization?.$id && $organization?.billingPlan === BillingPlan.FREE && !page.url.pathname.includes(base + '/account')}
+{#if show && $organization?.$id && isFreePlan($organization?.billingPlan) && !page.url.pathname.includes(base + '/account')}
     <GradientBanner on:close={handleClose}>
         <Layout.Stack
             gap="m"

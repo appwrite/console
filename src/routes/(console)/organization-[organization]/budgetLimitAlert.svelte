@@ -7,11 +7,12 @@
     import { hideBillingHeaderRoutes, readOnly, showBudgetAlert } from '$lib/stores/billing';
     import { base } from '$app/paths';
     import { resolvedProfile } from '$lib/profiles/index.svelte';
+    import { isFreePlan } from '$lib/helpers/billing';
 
     $: redirectUrl = `${base}/organization-${$organization.$id}/billing#update-budget`;
 </script>
 
-{#if $showBudgetAlert && $organization?.$id && $organization?.billingPlan !== BillingPlan.FREE && $readOnly && !hideBillingHeaderRoutes.includes(page.url.pathname)}
+{#if $showBudgetAlert && $organization?.$id && !isFreePlan($organization?.billingPlan) && $readOnly && !hideBillingHeaderRoutes.includes(page.url.pathname)}
     <HeaderAlert type="error" title="Budget limit reached">
         <svelte:fragment>
             This organization has reached its budget limit and is now blocked. To continue using

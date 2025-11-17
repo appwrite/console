@@ -22,6 +22,7 @@
     import { isSmallViewport, isTabletViewport } from '$lib/stores/viewport';
     import CancelDowngradeModel from './cancelDowngradeModal.svelte';
     import { IconTag } from '@appwrite.io/pink-icons-svelte';
+    import { isFreePlan } from '$lib/helpers/billing';
 
     export let currentPlan: Plan;
     export let nextPlan: Plan | null = null;
@@ -497,7 +498,7 @@
 
         <!-- Actions -->
         <div class="actions-container">
-            {#if $organization?.billingPlan === BillingPlan.FREE || $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION}
+            {#if isFreePlan($organization?.billingPlan) || $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION}
                 <div
                     class="u-flex u-cross-center u-gap-8 u-flex-wrap u-width-full-line u-main-end actions-mobile">
                     {#if !currentPlan?.usagePerProject}

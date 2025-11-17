@@ -20,6 +20,7 @@
     import { getSidebarState, isInDatabasesRoute, updateSidebarState } from '$lib/helpers/sidebar';
     import { isTabletViewport } from '$lib/stores/viewport';
     import { ProfileMode, resolvedProfile } from '$lib/profiles/index.svelte';
+    import { isFreePlan } from '$lib/helpers/billing';
 
     export let showHeader = true;
     export let showFooter = true;
@@ -163,7 +164,7 @@
             return {
                 name: org.name,
                 $id: org.$id,
-                showUpgrade: billingPlan === BillingPlan.FREE,
+                showUpgrade: isFreePlan(billingPlan),
                 tierName: isCloud ? tierToPlan(billingPlan).name : null,
                 isSelected: $organization?.$id === org.$id
             };

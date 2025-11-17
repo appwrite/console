@@ -12,6 +12,7 @@
     import { updateBucket } from './+page.svelte';
     import type { Plan } from '$lib/sdk/billing';
     import type { Models } from '@appwrite.io/console';
+    import { isFreePlan } from '$lib/helpers/billing';
 
     export let bucket: Models.Bucket;
     export let currentPlan: Plan | null;
@@ -50,11 +51,11 @@
                     The {currentPlan.name} plan has a maximum upload file size limit of {Math.floor(
                         parseInt(size.value)
                     )}{size.unit}.
-                    {#if $organization?.billingPlan === BillingPlan.FREE}
+                    {#if isFreePlan($organization?.billingPlan)}
                         Upgrade to allow files of a larger size.
                     {/if}
                     <svelte:fragment slot="actions">
-                        {#if $organization?.billingPlan === BillingPlan.FREE}
+                        {#if isFreePlan($organization?.billingPlan)}
                             <div class="alert-buttons u-flex">
                                 <Button
                                     text

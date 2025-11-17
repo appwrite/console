@@ -14,6 +14,7 @@
     import { isCloud } from '$lib/system';
     import { organization } from '$lib/stores/organization';
     import { page } from '$app/state';
+    import { isFreePlan } from '$lib/helpers/billing';
 
     export let func: Models.Function;
     export let specs: Models.SpecificationList;
@@ -89,7 +90,7 @@
                 disabled={options.length < 1}
                 bind:value={specification}
                 {options} />
-            {#if isCloud && $organization.billingPlan === BillingPlan.FREE}
+            {#if isCloud && isFreePlan($organization?.billingPlan)}
                 <Alert.Inline title="Customizing specs available with Pro or Scale plans">
                     Upgrade to Pro or Scale to adjust your CPU and RAM beyond the default.
                     <svelte:fragment slot="actions">

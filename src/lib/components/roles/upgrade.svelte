@@ -6,12 +6,13 @@
     import { BillingPlan } from '$lib/constants';
     import Button from '$lib/elements/forms/button.svelte';
     import { Badge, Layout, Link, Typography } from '@appwrite.io/pink-svelte';
+    import { isFreePlan } from '$lib/helpers/billing';
 </script>
 
 <Base>
     <Layout.Stack gap="s">
         {#if isCloud}
-            {#if $organization?.billingPlan !== BillingPlan.FREE}
+            {#if !isFreePlan($organization?.billingPlan)}
                 <Typography.Text variant="m-600">Roles</Typography.Text>
                 <Typography.Text>Owner, Developer, Editor, Analyst and Billing.</Typography.Text>
                 <Typography.Text>

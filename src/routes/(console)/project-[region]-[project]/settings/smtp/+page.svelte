@@ -18,6 +18,7 @@
     import InputSelect from '$lib/elements/forms/inputSelect.svelte';
     import { upgradeURL } from '$lib/stores/billing';
     import { Link, Selector, Alert } from '@appwrite.io/pink-svelte';
+    import { isFreePlan } from '$lib/helpers/billing';
 
     let enabled = false;
     let senderName: string;
@@ -123,7 +124,7 @@
             <Link.Anchor href={`${base}/project-${$project.region}-${$project.$id}/auth/templates`}
                 >here</Link.Anchor>
             <svelte:fragment slot="aside">
-                {#if $organization.billingPlan === BillingPlan.FREE}
+                {#if isFreePlan($organization?.billingPlan)}
                     <Alert.Inline
                         status="info"
                         title="Custom SMTP is a Pro plan feature. Upgrade to enable custom SMTP sever.">
@@ -198,7 +199,7 @@
             <svelte:fragment slot="actions">
                 <Button
                     submit
-                    disabled={isButtonDisabled || $organization.billingPlan === BillingPlan.FREE}>
+                    disabled={isButtonDisabled || isFreePlan($organization?.billingPlan)}>
                     Update
                 </Button>
             </svelte:fragment>

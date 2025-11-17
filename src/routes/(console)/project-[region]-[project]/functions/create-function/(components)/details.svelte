@@ -3,6 +3,7 @@
     import { BillingPlan } from '$lib/constants';
     import { InputSelect, InputText } from '$lib/elements/forms';
     import Link from '$lib/elements/link.svelte';
+    import { isFreePlan } from '$lib/helpers/billing';
     import { upgradeURL } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { isCloud } from '$lib/system';
@@ -78,7 +79,7 @@
                     disabled={specificationOptions.length < 1}
                     options={specificationOptions}
                     bind:value={specification} />
-                {#if $organization?.billingPlan === BillingPlan.FREE}
+                {#if isFreePlan($organization?.billingPlan)}
                     <Input.Helper state="default">
                         <Link href={$upgradeURL} variant="muted">Upgrade</Link> to Pro or Scale to adjust
                         your CPU and RAM beyond the default.

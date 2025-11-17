@@ -21,6 +21,7 @@
     import EstimatedTotalBox from '$lib/components/billing/estimatedTotalBox.svelte';
     import { onMount } from 'svelte';
     import { resolvedProfile } from '$lib/profiles/index.svelte';
+    import { isFreePlan } from '$lib/helpers/billing.js';
 
     export let data;
 
@@ -108,11 +109,11 @@
         try {
             let org: Organization | OrganizationError;
 
-            if (selectedPlan === BillingPlan.FREE) {
+            if (isFreePlan(selectedPlan)) {
                 org = await sdk.forConsole.billing.createOrganization(
                     ID.unique(),
                     name,
-                    BillingPlan.FREE,
+                    resolvedProfile.freeTier,
                     null,
                     resolvedProfile.organizationPlatform,
                     null
@@ -207,7 +208,7 @@
                     <PlanSelection bind:billingPlan={selectedPlan} isNewOrg />
                 </Layout.Stack>
             </Fieldset>
-            {#if selectedPlan !== BillingPlan.FREE}
+            {#if !isFreePlan(selectedPlan)}
                 <Fieldset legend="Payment">
                     <Layout.Stack gap="s" alignItems="flex-start">
                         <SelectPaymentMethod
@@ -244,7 +245,7 @@
         </Layout.Stack>
     </Form>
     <svelte:fragment slot="aside">
-        {#if selectedPlan !== BillingPlan.FREE}
+        {#if !isFreePlan(selectedPlan)}
             <EstimatedTotalBox
                 billingPlan={selectedPlan}
                 {collaborators}

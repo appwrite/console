@@ -42,6 +42,7 @@ import TeamReadonlyAlert from '$routes/(console)/organization-[organization]/tea
 import ProjectsLimit from '$lib/components/billing/alerts/projectsLimit.svelte';
 import EnterpriseTrial from '$routes/(console)/organization-[organization]/enterpriseTrial.svelte';
 import { ProfileMode, resolvedProfile } from '$lib/profiles/index.svelte';
+import { isFreePlan } from '$lib/helpers/billing';
 
 export type Tier = 'tier-0' | 'tier-1' | 'tier-2' | 'auto-1' | 'cont-1' | 'ent-1';
 
@@ -322,7 +323,7 @@ export function calculateEnterpriseTrial(org: Organization) {
 }
 
 export function calculateTrialDay(org: Organization) {
-    if (org?.billingPlan === BillingPlan.FREE) return false;
+    if (isFreePlan(org?.billingPlan)) return false;
     const endDate = new Date(org?.billingStartDate);
     const today = new Date();
 
@@ -342,7 +343,7 @@ export async function checkForProjectsLimit(org: Organization, orgProjectCount?:
     const plan = await sdk.forConsole.billing.getOrganizationPlan(org.$id);
     if (!plan) return;
 
-    if (plan.$id !== BillingPlan.FREE) return;
+    if (!isFreePlan(plan.$id)) return;
     if (!org.projects) return;
     if (org.projects.length > 0) return;
 
@@ -374,7 +375,7 @@ export async function checkForUsageLimit(org: Organization) {
         readOnly.set(false);
         return;
     }
-    if (org?.billingPlan !== BillingPlan.FREE) {
+    if (!isFreePlan(org?.billingPlan)) {
         const { budgetLimit } = org?.billingLimits ?? {};
 
         if (budgetLimit && budgetLimit >= 100) {
@@ -454,7 +455,7 @@ export async function checkForUsageLimit(org: Organization) {
 }
 
 export async function checkPaymentAuthorizationRequired(org: Organization) {
-    if (org.billingPlan === BillingPlan.FREE) return;
+    if (isFreePlan(org.billingPlan)) return;
 
     const invoices = await sdk.forConsole.billing.listInvoices(org.$id, [
         Query.equal('status', 'requires_authentication')
@@ -576,7 +577,7 @@ export async function checkForNewDevUpgradePro(org: Organization) {
     if (resolvedProfile.id !== ProfileMode.CONSOLE) return;
 
     // browser or plan check.
-    if (!browser || org?.billingPlan !== BillingPlan.FREE) return;
+    if (!browser || !isFreePlan(org?.billingPlan)) return;
 
     // already dismissed by user!
     if (localStorage.getItem('newDevUpgradePro')) return;

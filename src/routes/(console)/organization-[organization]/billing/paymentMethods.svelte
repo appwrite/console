@@ -33,6 +33,7 @@
         IconSwitchHorizontal,
         IconTrash
     } from '@appwrite.io/pink-icons-svelte';
+    import { isFreePlan } from '$lib/helpers/billing';
 
     export let organization: Organization;
     export let methods: PaymentList;
@@ -332,5 +333,5 @@
         bind:showDelete
         {hasOtherMethod}
         isBackup={isSelectedBackup}
-        disabled={organization?.billingPlan !== BillingPlan.FREE && !hasOtherMethod} />
+        disabled={!isFreePlan(organization?.billingPlan) && !hasOtherMethod} />
 {/if}

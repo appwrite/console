@@ -13,6 +13,7 @@
     import { IconTrash } from '@appwrite.io/pink-icons-svelte';
     import InputSelect from '$lib/elements/forms/inputSelect.svelte';
     import type { Plan } from '$lib/sdk/billing';
+    import { isFreePlan } from '$lib/helpers/billing';
 
     export let organization: Organization;
     export let currentPlan: Plan;
@@ -148,7 +149,7 @@
 
     <svelte:fragment slot="actions">
         <Form onSubmit={updateBudget}>
-            {#if organization?.billingPlan === BillingPlan.FREE || organization?.billingPlan === BillingPlan.GITHUB_EDUCATION}
+            {#if isFreePlan(organization?.billingPlan) || organization?.billingPlan === BillingPlan.GITHUB_EDUCATION}
                 <Button
                     secondary
                     href={$upgradeURL}

@@ -7,6 +7,7 @@
     import { BillingPlan, Dependencies } from '$lib/constants';
     import Confirm from '$lib/components/confirm.svelte';
     import { Typography } from '@appwrite.io/pink-svelte';
+    import { isFreePlan } from '$lib/helpers/billing';
 
     export let showDelete = false;
     export let isBackup = false;
@@ -16,7 +17,7 @@
     let error: string;
 
     async function removeDefaultMethod() {
-        if ($organization?.billingPlan !== BillingPlan.FREE && !hasOtherMethod) return;
+        if (!isFreePlan($organization?.billingPlan) && !hasOtherMethod) return;
 
         try {
             await sdk.forConsole.billing.removeOrganizationPaymentMethod($organization.$id);
@@ -35,7 +36,7 @@
         }
     }
     async function removeBackuptMethod() {
-        if ($organization?.billingPlan !== BillingPlan.FREE && !hasOtherMethod) return;
+        if (!isFreePlan($organization?.billingPlan) && !hasOtherMethod) return;
         showDelete = false;
 
         try {

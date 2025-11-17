@@ -11,6 +11,7 @@
     import { Alert, Link } from '@appwrite.io/pink-svelte';
     import BudgetAlert from './budgetAlert.svelte';
     import type { Plan } from '$lib/sdk/billing';
+    import { isFreePlan } from '$lib/helpers/billing';
 
     export let currentPlan: Plan;
     export let organization: Organization;
@@ -89,7 +90,7 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            {#if organization?.billingPlan === BillingPlan.FREE}
+            {#if isFreePlan(organization?.billingPlan)}
                 <Button
                     secondary
                     href={$upgradeURL}

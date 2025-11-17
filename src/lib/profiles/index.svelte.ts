@@ -2,6 +2,7 @@ import { asset, resolve } from '$app/paths';
 import type { ResolvedPathname } from '$app/types';
 import { Platform } from '@appwrite.io/console';
 import { env } from '$env/dynamic/public';
+import { BillingPlan } from '@appwrite.io/console';
 
 export const enum ProfileMode {
     STUDIO = 'studio',
@@ -12,6 +13,7 @@ export type Profile = {
     id: ProfileMode;
     platform: string;
     organizationPlatform: Platform;
+    freeTier: BillingPlan;
     logo: {
         src: {
             dark: string;
@@ -45,6 +47,7 @@ export const base: Profile = {
     id: ProfileMode.CONSOLE,
     platform: 'Appwrite',
     organizationPlatform: Platform.Appwrite,
+    freeTier: BillingPlan.Tier0,
     logo: {
         src: {
             dark: asset('/images/appwrite-logo-dark.svg'),
@@ -83,6 +86,7 @@ export const studio: Profile = {
     id: ProfileMode.STUDIO,
     platform: 'Imagine',
     organizationPlatform: Platform.Imagine,
+    freeTier: BillingPlan.Imaginebasic,
     logo: {
         src: {
             dark: asset('/images/imagine-logo-dark.svg'),

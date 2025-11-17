@@ -78,7 +78,7 @@ export const load: PageLoad = async ({ parent, url }) => {
                 await sdk.forConsole.billing.createOrganization(
                     ID.unique(),
                     'Personal Projects',
-                    BillingPlan.FREE,
+                    resolvedProfile.freeTier,
                     null,
                     resolvedProfile.organizationPlatform,
                     null
