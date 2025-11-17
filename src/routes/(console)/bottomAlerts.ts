@@ -3,6 +3,7 @@ import { isSameDay } from '$lib/helpers/date';
 import { type BottomModalAlertItem, showBottomModalAlert } from '$lib/stores/bottom-alerts';
 import DbOperatorsDark from '$lib/images/promos/db-operators-dark.png';
 import DbOperatorsLight from '$lib/images/promos/db-operators-light.png';
+import { ProfileMode, resolvedProfile } from '$lib/profiles/index.svelte';
 
 const listOfPromotions: BottomModalAlertItem[] = [];
 
@@ -30,6 +31,9 @@ if (isCloud) {
 }
 
 export function addBottomModalAlerts() {
+    // fast path: not the valid profile to show this!
+    if (resolvedProfile.id !== ProfileMode.CONSOLE) return;
+
     listOfPromotions.forEach((promotion) => showBottomModalAlert(promotion));
 }
 

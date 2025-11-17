@@ -22,6 +22,7 @@
     import { goto } from '$app/navigation';
     import { Icon, Tooltip, Typography } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { isFreePlan } from '$lib/helpers/billing';
 
     const {
         data
@@ -39,14 +40,14 @@
     function isOrganizationOnTrial(organization: Organization): boolean {
         if (!organization?.billingTrialStartDate) return false;
         if ($daysLeftInTrial <= 0) return false;
-        if (organization.billingPlan === BillingPlan.FREE) return false;
+        if (isFreePlan(organization.billingPlan)) return false;
 
         return !!$plansInfo.get(organization.billingPlan)?.trialDays;
     }
 
     function isNonPayingOrganization(organization: Organization): boolean {
         return (
-            organization?.billingPlan === BillingPlan.FREE ||
+            isFreePlan(organization?.billingPlan) ||
             organization?.billingPlan === BillingPlan.GITHUB_EDUCATION
         );
     }

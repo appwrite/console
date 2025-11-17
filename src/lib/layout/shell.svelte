@@ -14,13 +14,13 @@
     import SideNavigation from '$lib/layout/navigation.svelte';
     import { hasOnboardingDismissed } from '$lib/helpers/onboarding';
     import { isSidebarOpen, noWidthTransition } from '$lib/stores/sidebar';
-    import { BillingPlan } from '$lib/constants';
     import { page } from '$app/stores';
     import type { Models } from '@appwrite.io/console';
     import { getSidebarState, isInDatabasesRoute, updateSidebarState } from '$lib/helpers/sidebar';
     import { isTabletViewport } from '$lib/stores/viewport';
     import { ProfileMode, resolvedProfile } from '$lib/profiles/index.svelte';
     import { app } from '$lib/stores/app';
+    import { isFreePlan } from '$lib/helpers/billing';
 
     export let showHeader = true;
     export let showFooter = true;
@@ -165,7 +165,7 @@
             return {
                 name: org.name,
                 $id: org.$id,
-                showUpgrade: billingPlan === BillingPlan.FREE,
+                showUpgrade: isFreePlan(billingPlan),
                 tierName: isCloud ? tierToPlan(billingPlan).name : null,
                 isSelected: $organization?.$id === org.$id
             };

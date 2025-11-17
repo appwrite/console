@@ -2,12 +2,12 @@ import { sdk } from '$lib/stores/sdk.js';
 import { redirect } from '@sveltejs/kit';
 import { base } from '$app/paths';
 import { isCloud } from '$lib/system';
-import { BillingPlan } from '$lib/constants';
-import { ID, type Models } from '@appwrite.io/console';
+import { ID, type Models, Query } from '@appwrite.io/console';
 import type { OrganizationList } from '$lib/stores/organization';
 import { redirectTo } from '$routes/store';
 import type { PageLoad } from './$types';
 import { getRepositoryInfo } from '$lib/helpers/github';
+import { resolvedProfile } from '$lib/profiles/index.svelte';
 
 export const load: PageLoad = async ({ parent, url }) => {
     const { account } = await parent();
@@ -66,7 +66,9 @@ export const load: PageLoad = async ({ parent, url }) => {
     // Get organizations
     let organizations: Models.TeamList<Record<string, unknown>> | OrganizationList | undefined;
     if (isCloud) {
-        organizations = await sdk.forConsole.billing.listOrganization();
+        organizations = await sdk.forConsole.billing.listOrganization([
+            Query.equal('platform', resolvedProfile.organizationPlatform)
+        ]);
     } else {
         organizations = await sdk.forConsole.teams.list();
     }
@@ -77,8 +79,9 @@ export const load: PageLoad = async ({ parent, url }) => {
                 await sdk.forConsole.billing.createOrganization(
                     ID.unique(),
                     'Personal Projects',
-                    BillingPlan.FREE,
+                    resolvedProfile.freeTier,
                     null,
+                    resolvedProfile.organizationPlatform,
                     null
                 );
             } else {
@@ -89,7 +92,9 @@ export const load: PageLoad = async ({ parent, url }) => {
             }
 
             if (isCloud) {
-                organizations = await sdk.forConsole.billing.listOrganization();
+                organizations = await sdk.forConsole.billing.listOrganization([
+                    Query.equal('platform', resolvedProfile.organizationPlatform)
+                ]);
             } else {
                 organizations = await sdk.forConsole.teams.list();
             }

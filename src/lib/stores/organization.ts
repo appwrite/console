@@ -1,6 +1,6 @@
 import { page } from '$app/stores';
 import { derived, writable } from 'svelte/store';
-import type { Models } from '@appwrite.io/console';
+import type { Models, Platform } from '@appwrite.io/console';
 import type { Tier } from './billing';
 import type { Plan } from '$lib/sdk/billing';
 
@@ -35,6 +35,7 @@ export type Organization = Models.Team<Record<string, unknown>> & {
     status: string;
     remarks: string;
     projects: string[];
+    platform: Platform;
 };
 
 export type OrganizationList = {
