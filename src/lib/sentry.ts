@@ -2,8 +2,10 @@ import { env } from '$env/dynamic/public';
 import * as Sentry from '@sentry/sveltekit';
 import { isCloud } from './system';
 
+let sessionId: string = null;
 export function identify(userId: string) {
     if (isCloud)
+        sessionId ??= `${userId}-${Date.now()}`;
         Sentry.setUser({
             id: userId
         });
