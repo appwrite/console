@@ -1,4 +1,3 @@
-import { PUBLIC_APPWRITE_ENDPOINT, PUBLIC_AI_SERVICE_BASE_URL } from '$env/static/public';
 import { env } from '$env/dynamic/public';
 import { app } from '$lib/stores/app';
 import { get } from 'svelte/store';
@@ -283,8 +282,8 @@ export async function initImagine(
         if (!configInitialized) {
             initImagineConfig(
                 {
-                    AI_SERVICE_ENDPOINT: PUBLIC_AI_SERVICE_BASE_URL,
-                    APPWRITE_ENDPOINT: PUBLIC_APPWRITE_ENDPOINT,
+                    AI_SERVICE_ENDPOINT: env.PUBLIC_AI_SERVICE_BASE_URL,
+                    APPWRITE_ENDPOINT: env.PUBLIC_APPWRITE_ENDPOINT,
                     APPWRITE_SITES_BASE_URL: ''
                 },
                 {

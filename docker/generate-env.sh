@@ -62,11 +62,6 @@ else
 fi
 
 echo "Writing to: $env_file"
-
-# Remove old compressed versions FIRST (nginx might serve these instead)
-rm -f "${env_file}.br" "${env_file}.gz"
-echo "  Removed old compressed files"
-
 echo "export const env=$env_json" > "$env_file"
 
 # Verify the file was written
@@ -78,6 +73,24 @@ fi
 echo "✓ Successfully generated $env_file"
 echo "File contents:"
 cat "$env_file"
+
+# NUKE all pre-compressed files so nginx serves fresh content
+echo "Nuking all .br and .gz files..."
+find /usr/share/nginx/html/console -type f \( -name "*.br" -o -name "*.gz" \) -delete
+echo "✓ Nuked all compressed files"
+
+# Replace hardcoded PUBLIC_ values in JavaScript files
+# Vite inlines env vars at build time, so we need to replace them in the built JS
+echo "Replacing hardcoded env values in JavaScript files..."
+for var in $public_vars; do
+    value=$(printenv "$var")
+    echo "  Replacing $var in JS files..."
+    
+    # Find all .js files and replace the value
+    # Match pattern: "PUBLIC_VAR":"old_value" or 'PUBLIC_VAR':'old_value'
+    find /usr/share/nginx/html/console -type f -name "*.js" -exec sed -i "s|\"$var\":\"[^\"]*\"|\"$var\":\"$value\"|g" {} \;
+done
+echo "✓ Replaced env values in JS files"
 
 echo "========================================="
 echo "Starting nginx..."

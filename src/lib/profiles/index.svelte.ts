@@ -1,6 +1,6 @@
 import { asset, resolve } from '$app/paths';
 import type { ResolvedPathname } from '$app/types';
-import { PUBLIC_CONSOLE_PROFILE } from '$env/static/public';
+import { env } from '$env/dynamic/public';
 
 export const enum ProfileMode {
     STUDIO = 'studio',
@@ -114,7 +114,7 @@ export const studio: Profile = {
 };
 
 const resolver = $derived(() => {
-    switch (PUBLIC_CONSOLE_PROFILE) {
+    switch (env.PUBLIC_CONSOLE_PROFILE) {
         case 'studio':
             return studio;
         default:
