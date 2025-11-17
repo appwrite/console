@@ -3,6 +3,7 @@ import { app } from '$lib/stores/app';
 import { get } from 'svelte/store';
 import { goto } from '$app/navigation';
 import { resolve } from '$app/paths';
+import { ensureMonacoStyles } from './monaco-style-manager';
 import DEV_CSS_URL from '@imagine.dev/web-components/imagine-web-components.css?url';
 
 const COMPONENT_SELECTOR = 'imagine-web-components-wrapper[data-appwrite-studio]';
@@ -83,6 +84,7 @@ function injectStyles(node: HTMLElement, attempt = 0) {
             }
 
             if (shadow.querySelector<HTMLLinkElement>(`link[${STYLE_ATTRIBUTE}]`)) {
+                ensureMonacoStyles(shadow);
                 return;
             }
 
@@ -91,6 +93,7 @@ function injectStyles(node: HTMLElement, attempt = 0) {
             link.href = DEV_OVERRIDE_WEB_COMPONENTS ? DEV_CSS_URL : CDN_CSS_URL;
             link.setAttribute(STYLE_ATTRIBUTE, 'true');
             shadow.prepend(link);
+            ensureMonacoStyles(shadow);
         })
         .catch(() => {
             /* no-op */
