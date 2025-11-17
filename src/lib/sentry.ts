@@ -7,7 +7,7 @@ export function identify(userId: string) {
     if (isCloud)
         sessionId ??= `${userId}-${Date.now()}`;
         Sentry.setUser({
-            id: userId
+            id: sessionId
         });
 }
 
