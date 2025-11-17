@@ -2,7 +2,7 @@
     import { page } from '$app/state';
     import { Id, RegionEndpoint } from '$lib/components';
     import { Cover } from '$lib/layout';
-    import { project, projectRegion } from '../store';
+    import { projectRegion } from '../store';
     import { hasOnboardingDismissed, setHasOnboardingDismissed } from '$lib/helpers/onboarding';
     import { goto } from '$app/navigation';
     import { Layout, Button, Typography } from '@appwrite.io/pink-svelte';
@@ -11,10 +11,13 @@
     import { trackEvent } from '$lib/actions/analytics';
     import { resolvedProfile } from '$lib/profiles/index.svelte';
 
+    const region = $derived(page.params.region);
+    const project = $derived(page.params.project);
+
     function dismissOnboarding() {
-        setHasOnboardingDismissed($project.$id, $user);
+        setHasOnboardingDismissed(project, $user);
         trackEvent('onboarding_hub_platform_dismiss');
-        goto(resolvedProfile.getProjectRoute({ region: $project.region, project: $project.$id }));
+        goto(resolvedProfile.getProjectRoute({ region, project }));
     }
 </script>
 
@@ -24,12 +27,14 @@
             <Layout.Stack alignItems="baseline" direction={$isSmallViewport ? 'column' : 'row'}>
                 <Typography.Title color="--fgcolor-neutral-primary" size="xl" truncate>
                     <span class="project-title">
-                        {$project?.name}
+                        {page.data.project?.name}
                     </span>
                 </Typography.Title>
                 <Layout.Stack direction="row" inline>
-                    <Id value={$project.$id}>{$project.$id}</Id>
-                    <RegionEndpoint region={$projectRegion} />
+                    <Id value={project} copyText="Copy project ID">{project}</Id>
+                    {#if $projectRegion}
+                        <RegionEndpoint region={$projectRegion} />
+                    {/if}
                 </Layout.Stack>
             </Layout.Stack>
         </svelte:fragment>
@@ -53,7 +58,7 @@
                         >Follow a few quick steps to get started with {resolvedProfile.platform}</Typography.Text>
                 </Layout.Stack>
                 <div class="dashboard-header-button">
-                    {#if !hasOnboardingDismissed($project.$id, $user)}
+                    {#if !hasOnboardingDismissed(project, $user)}
                         <Button.Button size="s" variant="secondary" on:click={dismissOnboarding}>
                             Dismiss this page
                         </Button.Button>

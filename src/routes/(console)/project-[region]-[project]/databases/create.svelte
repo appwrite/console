@@ -7,7 +7,6 @@
     import { ID } from '@appwrite.io/console';
     import { createEventDispatcher } from 'svelte';
     import { isCloud } from '$lib/system';
-    import { BillingPlan } from '$lib/constants';
     import { organization } from '$lib/stores/organization';
     import { upgradeURL } from '$lib/stores/billing';
     import CreatePolicy from './database-[database]/backups/createPolicy.svelte';
@@ -15,6 +14,7 @@
     import { Alert, Icon, Tag } from '@appwrite.io/pink-svelte';
     import { IconPencil } from '@appwrite.io/pink-icons-svelte';
     import { page } from '$app/state';
+    import { isFreePlan } from '$lib/helpers/billing';
 
     export let showCreate = false;
     let totalPolicies: UserBackupPolicy[] = [];
@@ -132,7 +132,7 @@
     <CustomId bind:show={showCustomId} name="Database" bind:id autofocus={false} />
 
     {#if isCloud}
-        {#if $organization?.billingPlan === BillingPlan.FREE}
+        {#if isFreePlan($organization?.billingPlan)}
             <Alert.Inline title="This database won't be backed up" status="warning">
                 Upgrade your plan to ensure your data stays safe and backed up.
                 <svelte:fragment slot="actions">

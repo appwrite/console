@@ -7,6 +7,7 @@
     import { abbreviateNumber, formatCurrency, isWithinSafeRange } from '$lib/helpers/numbers';
     import { BillingPlan } from '$lib/constants';
     import { Table, Typography } from '@appwrite.io/pink-svelte';
+    import { isFreePlan } from '$lib/helpers/billing';
 
     export let show = false;
     export let org: Organization;
@@ -17,7 +18,7 @@
         ? new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1).toString()
         : org?.billingNextInvoiceDate;
 
-    $: isFree = org.billingPlan === BillingPlan.FREE;
+    $: isFree = isFreePlan(org.billingPlan);
 
     // equal or above means unlimited!
     const getCorrectSeatsCountValue = (count: number): string | number => {

@@ -26,11 +26,12 @@
     import { IconGithub, IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { Badge, Icon, Layout, Tooltip, Typography } from '@appwrite.io/pink-svelte';
     import { resolvedProfile } from '$lib/profiles/index.svelte';
+    import { isFreePlan } from '$lib/helpers/billing';
 
     let areMembersLimited: boolean = $state(false);
 
     $effect(() => {
-        const limit = getServiceLimit('members') || Infinity;
+        const limit = getServiceLimit('members', null, page.data.currentPlan) || Infinity;
         const isLimited = limit !== 0 && limit < Infinity;
         areMembersLimited =
             isCloud &&
@@ -116,7 +117,7 @@
                         <Badge variant="secondary" content="Education">
                             <Icon icon={IconGithub} size="s" slot="start" />
                         </Badge>
-                    {:else if isCloud && organization?.billingPlan === BillingPlan.FREE}
+                    {:else if isCloud && isFreePlan(organization?.billingPlan)}
                         <Badge variant="secondary" content="Free"></Badge>
                     {/if}
 
@@ -154,7 +155,7 @@
                                 </Button>
                             </div>
                             <div slot="tooltip">
-                                {organization?.billingPlan === BillingPlan.FREE
+                                {isFreePlan(organization?.billingPlan)
                                     ? 'Upgrade to add more members'
                                     : `You've reached the members limit for the ${
                                           tierToPlan(organization?.billingPlan)?.name

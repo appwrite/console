@@ -13,6 +13,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { organization } from '$lib/stores/organization';
     import { addNotification } from '$lib/stores/notifications';
+    import { hideTypes } from '$lib/stores/domains';
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { isCloud } from '$lib/system';
@@ -24,6 +25,7 @@
     import RecordTable from '$lib/components/domains/recordTable.svelte';
     import NameserverTable from '$lib/components/domains/nameserverTable.svelte';
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
+    import { onDestroy } from 'svelte';
 
     let { data } = $props();
 
@@ -76,6 +78,7 @@
                 type: 'success',
                 message: 'Domain added successfully'
             });
+
             await goto(routeBase);
             await invalidate(Dependencies.DOMAINS);
             await invalidate(Dependencies.SITES_DOMAINS);
@@ -95,8 +98,12 @@
                 .forProject(page.params.region, page.params.project)
                 .proxy.deleteRule({ ruleId });
         }
-        await goto(`${routeBase}/add-domain?domain=${page.params.domain}`);
+
+        const typesParam = $hideTypes ? '&types=false' : '';
+        await goto(`${routeBase}/add-domain?domain=${page.params.domain}${typesParam}`);
     }
+
+    onDestroy(() => hideTypes.set(false));
 </script>
 
 <Wizard title="Add domain" href={routeBase} column columnSize="s">

@@ -4,7 +4,7 @@
     import { onMount } from 'svelte';
     import { isCloud, isSelfHosted } from '$lib/system';
     import { organization } from '$lib/stores/organization';
-    import { BillingPlan, Dependencies } from '$lib/constants';
+    import { Dependencies } from '$lib/constants';
     import type { BackupArchive, BackupRestoration } from '$lib/sdk/backups';
     import { goto, invalidate } from '$app/navigation';
     import { page } from '$app/state';
@@ -13,6 +13,7 @@
     import { getProjectId } from '$lib/helpers/project';
     import { toLocaleDate } from '$lib/helpers/date';
     import { Typography } from '@appwrite.io/pink-svelte';
+    import { isFreePlan } from '$lib/helpers/billing';
 
     const backupRestoreItems: {
         archives: Map<string, BackupArchive>;
@@ -125,20 +126,18 @@
 
     onMount(() => {
         // fast path: don't subscribe if org is on a free plan or is self-hosted.
-        if (isSelfHosted || (isCloud && $organization.billingPlan === BillingPlan.FREE)) return;
+        if (isSelfHosted || (isCloud && isFreePlan($organization?.billingPlan))) return;
 
-        return realtime
-            .forProject(page.params.region, page.params.project)
-            .subscribe('console', (response) => {
-                if (!response.channels.includes(`projects.${getProjectId()}`)) return;
+        return realtime.forProject(page.params.region, 'console', (response) => {
+            if (!response.channels.includes(`projects.${getProjectId()}`)) return;
 
-                if (
-                    response.events.includes('archives.*') ||
-                    response.events.includes('restorations.*')
-                ) {
-                    updateOrAddItem(response.payload);
-                }
-            });
+            if (
+                response.events.includes('archives.*') ||
+                response.events.includes('restorations.*')
+            ) {
+                updateOrAddItem(response.payload);
+            }
+        });
     });
 </script>
 

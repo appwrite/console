@@ -186,27 +186,24 @@
                     on:invalid={handleInvalid}>
                     <Layout.Stack alignItems="center" gap="s">
                         <Layout.Stack alignItems="center" gap="s">
-                            <Layout.Stack
-                                alignItems="center"
-                                justifyContent="center"
-                                direction="row"
-                                gap="s">
-                                <Typography.Text variant="l-500">
+                            <Layout.Stack alignItems="center" justifyContent="center" inline>
+                                <Typography.Text variant="l-500" align="center" inline>
                                     Drag and drop file here or click to upload
-                                </Typography.Text>
-                                <Tooltip>
                                     <Layout.Stack
+                                        style="display: inline-flex; vertical-align: middle;"
+                                        inline
                                         alignItems="center"
-                                        justifyContent="center"
-                                        inline>
-                                        <Icon icon={IconInfo} size="s" />
+                                        justifyContent="center">
+                                        <Tooltip>
+                                            <Icon icon={IconInfo} size="s" />
+                                            <svelte:fragment slot="tooltip"
+                                                >Only .tar.gz files allowed</svelte:fragment>
+                                        </Tooltip>
                                     </Layout.Stack>
-                                    <svelte:fragment slot="tooltip"
-                                        >Only .tar.gz files allowed</svelte:fragment>
-                                </Tooltip>
+                                </Typography.Text>
                             </Layout.Stack>
                             {#if maxSize > 0}
-                                <Typography.Caption variant="400"
+                                <Typography.Caption variant="400" align="center"
                                     >Max file size: {readableMaxSize.value +
                                         readableMaxSize.unit}</Typography.Caption>
                             {/if}

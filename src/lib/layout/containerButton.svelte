@@ -1,17 +1,16 @@
 <script lang="ts">
-    import { BillingPlan } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
+    import { isFreePlan } from '$lib/helpers/billing';
     import { tierToPlan } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { Tooltip } from '@appwrite.io/pink-svelte';
 
     export let title: string;
-    export let tooltipContent =
-        $organization?.billingPlan === BillingPlan.FREE
-            ? `Upgrade to add more ${title.toLocaleLowerCase()}`
-            : `You've reached the ${title.toLocaleLowerCase()} limit for the ${
-                  tierToPlan($organization?.billingPlan)?.name
-              } plan`;
+    export let tooltipContent = isFreePlan($organization?.billingPlan)
+        ? `Upgrade to add more ${title.toLocaleLowerCase()}`
+        : `You've reached the ${title.toLocaleLowerCase()} limit for the ${
+              tierToPlan($organization?.billingPlan)?.name
+          } plan`;
     export let disabled: boolean;
     export let buttonText: string;
     export let buttonMethod: () => void | Promise<void> = () => {};

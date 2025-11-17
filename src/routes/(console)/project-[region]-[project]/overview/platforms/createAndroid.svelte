@@ -17,7 +17,7 @@
     import { Card } from '$lib/components';
     import { page } from '$app/state';
     import { onMount } from 'svelte';
-    import { sdk } from '$lib/stores/sdk';
+    import { realtime, sdk } from '$lib/stores/sdk';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { addNotification } from '$lib/stores/notifications';
     import { fade } from 'svelte/transition';
@@ -25,11 +25,15 @@
     import OnboardingPlatformCard from './components/OnboardingPlatformCard.svelte';
     import { PlatformType } from '@appwrite.io/console';
     import { project } from '../../store';
+    import { getCorrectTitle, type PlatformProps } from './store';
 
-    let showExitModal = false;
-    let isPlatformCreated = false;
-    let isCreatingPlatform = false;
-    let connectionSuccessful = false;
+    let { isConnectPlatform = false }: PlatformProps = $props();
+
+    let showExitModal = $state(false);
+    let isCreatingPlatform = $state(false);
+    let connectionSuccessful = $state(false);
+    let isPlatformCreated = $state(isConnectPlatform);
+
     const projectId = page.params.project;
 
     const gitCloneCode =
@@ -59,8 +63,10 @@ const val APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject(page.params.region, page.
                 message: 'Platform created.'
             });
 
-            invalidate(Dependencies.PROJECT);
-            invalidate(Dependencies.PLATFORMS);
+            await Promise.all([
+                invalidate(Dependencies.PROJECT),
+                invalidate(Dependencies.PLATFORMS)
+            ]);
         } catch (error) {
             trackError(error, Submit.PlatformCreate);
             addNotification({
@@ -77,7 +83,7 @@ const val APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject(page.params.region, page.
     }
 
     onMount(() => {
-        const unsubscribe = sdk.forConsole.client.subscribe('console', (response) => {
+        const unsubscribe = realtime.forConsole(page.params.region, 'console', (response) => {
             if (response.events.includes(`projects.${projectId}.ping`)) {
                 connectionSuccessful = true;
                 invalidate(Dependencies.ORGANIZATION);
@@ -93,7 +99,10 @@ const val APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject(page.params.region, page.
     });
 </script>
 
-<Wizard title="Add Android platform" bind:showExitModal confirmExit={!isPlatformCreated}>
+<Wizard
+    bind:showExitModal
+    confirmExit={!isPlatformCreated}
+    title={getCorrectTitle(isConnectPlatform, 'Android')}>
     <Layout.Stack gap="xxl">
         <!-- Step One -->
         {#if !isPlatformCreated}

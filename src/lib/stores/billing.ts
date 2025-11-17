@@ -41,6 +41,8 @@ import BudgetLimitAlert from '$routes/(console)/organization-[organization]/budg
 import TeamReadonlyAlert from '$routes/(console)/organization-[organization]/teamReadonlyAlert.svelte';
 import ProjectsLimit from '$lib/components/billing/alerts/projectsLimit.svelte';
 import EnterpriseTrial from '$routes/(console)/organization-[organization]/enterpriseTrial.svelte';
+import { ProfileMode, resolvedProfile } from '$lib/profiles/index.svelte';
+import { isFreePlan } from '$lib/helpers/billing';
 
 export type Tier = 'tier-0' | 'tier-1' | 'tier-2' | 'auto-1' | 'cont-1' | 'ent-1';
 
@@ -321,7 +323,7 @@ export function calculateEnterpriseTrial(org: Organization) {
 }
 
 export function calculateTrialDay(org: Organization) {
-    if (org?.billingPlan === BillingPlan.FREE) return false;
+    if (isFreePlan(org?.billingPlan)) return false;
     const endDate = new Date(org?.billingStartDate);
     const today = new Date();
 
@@ -341,7 +343,7 @@ export async function checkForProjectsLimit(org: Organization, orgProjectCount?:
     const plan = await sdk.forConsole.billing.getOrganizationPlan(org.$id);
     if (!plan) return;
 
-    if (plan.$id !== BillingPlan.FREE) return;
+    if (!isFreePlan(plan.$id)) return;
     if (!org.projects) return;
     if (org.projects.length > 0) return;
 
@@ -373,7 +375,7 @@ export async function checkForUsageLimit(org: Organization) {
         readOnly.set(false);
         return;
     }
-    if (org?.billingPlan !== BillingPlan.FREE) {
+    if (!isFreePlan(org?.billingPlan)) {
         const { budgetLimit } = org?.billingLimits ?? {};
 
         if (budgetLimit && budgetLimit >= 100) {
@@ -453,7 +455,7 @@ export async function checkForUsageLimit(org: Organization) {
 }
 
 export async function checkPaymentAuthorizationRequired(org: Organization) {
-    if (org.billingPlan === BillingPlan.FREE) return;
+    if (isFreePlan(org.billingPlan)) return;
 
     const invoices = await sdk.forConsole.billing.listInvoices(org.$id, [
         Query.equal('status', 'requires_authentication')
@@ -488,6 +490,9 @@ export async function paymentExpired(org: Organization) {
     const nots = get(notifications);
     const expiredNotification = nots.some((n) => n.message === expiredMessage);
     const expiringNotification = nots.some((n) => n.message === expiringMessage);
+    const cardExpiry = new Date(payment.expiryYear, payment.expiryMonth, 1);
+    const nextMonth = new Date(year, month + 1, 1);
+    const isExpiringNextMonth = cardExpiry.getTime() === nextMonth.getTime();
     if (payment.expired && !expiredNotification) {
         addNotification({
             type: 'error',
@@ -503,7 +508,7 @@ export async function paymentExpired(org: Organization) {
                 }
             ]
         });
-    } else if (!expiringNotification && payment.expiryYear <= year && payment.expiryMonth < month) {
+    } else if (!expiringNotification && !payment.expired && isExpiringNextMonth) {
         addNotification({
             type: 'warning',
             isHtml: true,
@@ -552,9 +557,10 @@ export async function checkForMandate(org: Organization) {
 
 export async function checkForMissingPaymentMethod() {
     const orgs = await sdk.forConsole.billing.listOrganization([
-        Query.notEqual('billingPlan', BillingPlan.FREE),
+        Query.notEqual('billingPlan', resolvedProfile.freeTier),
         Query.isNull('paymentMethodId'),
-        Query.isNull('backupPaymentMethodId')
+        Query.isNull('backupPaymentMethodId'),
+        Query.equal('platform', resolvedProfile.organizationPlatform)
     ]);
     if (orgs?.total) {
         orgMissingPaymentMethod.set(orgs.teams[0]);
@@ -569,8 +575,10 @@ export async function checkForMissingPaymentMethod() {
 
 // Display upgrade banner for new users after 1 week for 30 days
 export async function checkForNewDevUpgradePro(org: Organization) {
+    if (resolvedProfile.id !== ProfileMode.CONSOLE) return;
+
     // browser or plan check.
-    if (!browser || org?.billingPlan !== BillingPlan.FREE) return;
+    if (!browser || !isFreePlan(org?.billingPlan)) return;
 
     // already dismissed by user!
     if (localStorage.getItem('newDevUpgradePro')) return;
@@ -585,7 +593,8 @@ export async function checkForNewDevUpgradePro(org: Organization) {
     if (now - accountCreated < 1000 * 60 * 60 * 24 * 7) return;
 
     const organizations = await sdk.forConsole.billing.listOrganization([
-        Query.notEqual('billingPlan', BillingPlan.FREE)
+        Query.notEqual('billingPlan', resolvedProfile.freeTier),
+        Query.equal('platform', resolvedProfile.organizationPlatform)
     ]);
 
     if (organizations?.total) return;

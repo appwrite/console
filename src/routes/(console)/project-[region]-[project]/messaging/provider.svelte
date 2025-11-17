@@ -7,6 +7,7 @@
         Vonage = 'vonage',
         Mailgun = 'mailgun',
         Sendgrid = 'sendgrid',
+        Resend = 'resend',
         SMTP = 'smtp',
         FCM = 'fcm',
         APNS = 'apns'
@@ -30,6 +31,9 @@
                 break;
             case Providers.Mailgun:
                 icon = 'mailgun';
+                break;
+            case Providers.Resend:
+                icon = 'resend';
                 break;
             case Providers.SMTP:
                 icon = 'smtp';

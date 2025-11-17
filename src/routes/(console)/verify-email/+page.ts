@@ -39,7 +39,6 @@ export const load: PageLoad = async ({ parent, depends, url }) => {
         } finally {
             redirect(303, resolve('/'));
         }
-    } else {
-        redirect(303, resolve('/'));
     }
+    return {};
 };

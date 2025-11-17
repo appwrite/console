@@ -18,7 +18,7 @@
     import { Card } from '$lib/components';
     import { page } from '$app/state';
     import { onMount } from 'svelte';
-    import { sdk } from '$lib/stores/sdk';
+    import { realtime, sdk } from '$lib/stores/sdk';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { addNotification } from '$lib/stores/notifications';
     import { fade } from 'svelte/transition';
@@ -27,11 +27,16 @@
     import { PlatformType } from '@appwrite.io/console';
     import { project } from '../../store';
     import { resolvedProfile } from '$lib/profiles/index.svelte';
+    import { getCorrectTitle, type PlatformProps } from './store';
 
-    let showExitModal = false;
-    let isPlatformCreated = false;
-    let isCreatingPlatform = false;
-    let connectionSuccessful = false;
+    let { isConnectPlatform = false, platform = PlatformType.Reactnativeandroid }: PlatformProps =
+        $props();
+
+    let showExitModal = $state(false);
+    let isCreatingPlatform = $state(false);
+    let connectionSuccessful = $state(false);
+    let isPlatformCreated = $state(isConnectPlatform);
+
     const projectId = page.params.project;
 
     const gitCloneCode =
@@ -40,8 +45,6 @@
     const updateConfigCode = `EXPO_PUBLIC_APPWRITE_PROJECT_ID=${projectId}
 EXPO_PUBLIC_APPWRITE_PROJECT_NAME="${$project.name}"
 EXPO_PUBLIC_APPWRITE_ENDPOINT=${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}`;
-
-    export let platform: PlatformType = PlatformType.Reactnativeandroid;
 
     let platforms: { [key: string]: PlatformType } = {
         Android: PlatformType.Reactnativeandroid,
@@ -97,8 +100,10 @@ EXPO_PUBLIC_APPWRITE_ENDPOINT=${sdk.forProject(page.params.region, page.params.p
                 message: 'Platform created.'
             });
 
-            invalidate(Dependencies.PROJECT);
-            invalidate(Dependencies.PLATFORMS);
+            await Promise.all([
+                invalidate(Dependencies.PROJECT),
+                invalidate(Dependencies.PLATFORMS)
+            ]);
         } catch (error) {
             trackError(error, Submit.PlatformCreate);
             addNotification({
@@ -115,7 +120,7 @@ EXPO_PUBLIC_APPWRITE_ENDPOINT=${sdk.forProject(page.params.region, page.params.p
     }
 
     onMount(() => {
-        const unsubscribe = sdk.forConsole.client.subscribe('console', (response) => {
+        const unsubscribe = realtime.forConsole(page.params.region, 'console', (response) => {
             if (response.events.includes(`projects.${projectId}.ping`)) {
                 connectionSuccessful = true;
                 invalidate(Dependencies.ORGANIZATION);
@@ -131,7 +136,10 @@ EXPO_PUBLIC_APPWRITE_ENDPOINT=${sdk.forProject(page.params.region, page.params.p
     });
 </script>
 
-<Wizard title="Add React Native platform" bind:showExitModal confirmExit={!isPlatformCreated}>
+<Wizard
+    bind:showExitModal
+    confirmExit={!isPlatformCreated}
+    title={getCorrectTitle(isConnectPlatform, 'React Native')}>
     <Layout.Stack gap="xxl">
         <Form onSubmit={createReactNativePlatform}>
             <Layout.Stack gap="xxl">

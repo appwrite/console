@@ -2,7 +2,7 @@
     import { invalidate } from '$app/navigation';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid } from '$lib/components';
-    import { BillingPlan, Dependencies } from '$lib/constants';
+    import { Dependencies } from '$lib/constants';
     import { Button, Form, InputSelect } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
@@ -14,6 +14,7 @@
     import { isCloud } from '$lib/system';
     import { organization } from '$lib/stores/organization';
     import { page } from '$app/state';
+    import { isFreePlan } from '$lib/helpers/billing';
 
     export let func: Models.Function;
     export let specs: Models.SpecificationList;
@@ -89,7 +90,7 @@
                 disabled={options.length < 1}
                 bind:value={specification}
                 {options} />
-            {#if isCloud && $organization.billingPlan === BillingPlan.FREE}
+            {#if isCloud && isFreePlan($organization?.billingPlan)}
                 <Alert.Inline title="Customizing specs available with Pro or Scale plans">
                     Upgrade to Pro or Scale to adjust your CPU and RAM beyond the default.
                     <svelte:fragment slot="actions">

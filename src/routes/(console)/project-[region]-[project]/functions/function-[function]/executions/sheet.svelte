@@ -1,6 +1,7 @@
 <script lang="ts">
     import Button from '$lib/elements/forms/button.svelte';
     import type { Models } from '@appwrite.io/console';
+    import { ExecutionStatus } from '@appwrite.io/console';
     import { IconChevronDown, IconChevronUp } from '@appwrite.io/pink-icons-svelte';
     import { calculateTime } from '$lib/helpers/timeConversion';
     import {
@@ -112,7 +113,7 @@
 
                                 <Tooltip
                                     disabled={!selectedLog?.scheduledAt ||
-                                        selectedLog.status !== 'scheduled'}
+                                        selectedLog.status !== ExecutionStatus.Scheduled}
                                     maxWidth="400px">
                                     <div>
                                         <Status

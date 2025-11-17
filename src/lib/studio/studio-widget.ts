@@ -1,19 +1,17 @@
-import { PUBLIC_APPWRITE_ENDPOINT, PUBLIC_AI_SERVICE_BASE_URL } from '$env/static/public';
 import { env } from '$env/dynamic/public';
 import { app } from '$lib/stores/app';
 import { get } from 'svelte/store';
 import { goto } from '$app/navigation';
 import { resolve } from '$app/paths';
+import { ensureMonacoStyles } from './monaco-style-manager';
 import DEV_CSS_URL from '@imagine.dev/web-components/imagine-web-components.css?url';
 
 const COMPONENT_SELECTOR = 'imagine-web-components-wrapper[data-appwrite-studio]';
 const STYLE_ATTRIBUTE = 'data-appwrite-studio-style';
 const BLOCK_START_BASE_OFFSET = 48;
 const INLINE_START_BASE_OFFSET = 8;
-const CACHE_BUSTER = new Date().getTime();
-const CDN_URL =
-    'https://esm.sh/@imagine.dev/web-components@0/web-components?bundle=false&deps=react@19.1.0,react-dom@19.1.0&cache=' +
-    CACHE_BUSTER;
+export const CDN_URL = env?.PUBLIC_IMAGINE_CDN_URL + '/web-components.js';
+export const CDN_CSS_URL = env?.PUBLIC_IMAGINE_CDN_URL + '/web-components.css';
 const DEV_OVERRIDE_WEB_COMPONENTS = env?.PUBLIC_AI_OVERRIDE_WEB_COMPONENTS === 'true';
 
 let component: HTMLElement | null = null;
@@ -86,17 +84,16 @@ function injectStyles(node: HTMLElement, attempt = 0) {
             }
 
             if (shadow.querySelector<HTMLLinkElement>(`link[${STYLE_ATTRIBUTE}]`)) {
+                ensureMonacoStyles(shadow);
                 return;
             }
 
             const link = document.createElement('link');
             link.rel = 'stylesheet';
-            link.href = DEV_OVERRIDE_WEB_COMPONENTS
-                ? DEV_CSS_URL
-                : 'https://esm.sh/@imagine.dev/web-components@0/imagine-web-components.css?cache=' +
-                  CACHE_BUSTER;
+            link.href = DEV_OVERRIDE_WEB_COMPONENTS ? DEV_CSS_URL : CDN_CSS_URL;
             link.setAttribute(STYLE_ATTRIBUTE, 'true');
             shadow.prepend(link);
+            ensureMonacoStyles(shadow);
         })
         .catch(() => {
             /* no-op */
@@ -158,6 +155,9 @@ export function ensureStudioComponent(): HTMLElement | null {
     }
 
     const created = document.createElement('imagine-web-components-wrapper');
+    created.addEventListener('click', (event) => {
+        event.stopPropagation();
+    });
     created.dataset.appwriteStudio = 'true';
     ensureBaseStyles(created);
     document.body.appendChild(created);
@@ -273,7 +273,11 @@ export function hideStudio() {
 export async function initImagine(
     region: string,
     projectId: string,
-    callbacks?: { onProjectNameChange?: (name: string) => void }
+    callbacks?: {
+        onProjectNameChange: () => void;
+        onAddDomain: () => void | Promise<void>;
+        onManageDomains: (primaryDomain?: string) => void | Promise<void>;
+    }
 ) {
     try {
         const { initImagineConfig, initImagineRouting } = await getWebComponents();
@@ -281,8 +285,9 @@ export async function initImagine(
         if (!configInitialized) {
             initImagineConfig(
                 {
-                    AI_SERVICE_ENDPOINT: PUBLIC_AI_SERVICE_BASE_URL,
-                    APPWRITE_ENDPOINT: PUBLIC_APPWRITE_ENDPOINT
+                    AI_SERVICE_ENDPOINT: env.PUBLIC_AI_SERVICE_BASE_URL,
+                    APPWRITE_ENDPOINT: env.PUBLIC_APPWRITE_ENDPOINT,
+                    APPWRITE_SITES_BASE_URL: ''
                 },
                 {
                     initialTheme: get(app).themeInUse,

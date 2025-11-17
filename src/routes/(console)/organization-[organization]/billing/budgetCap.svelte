@@ -2,7 +2,7 @@
     import { invalidate } from '$app/navigation';
     import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid } from '$lib/components';
-    import { BillingPlan, Dependencies } from '$lib/constants';
+    import { Dependencies } from '$lib/constants';
     import { Button, Form, InputNumber, InputSwitch } from '$lib/elements/forms';
     import { showUsageRatesModal, upgradeURL } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
@@ -11,6 +11,7 @@
     import { Alert, Link } from '@appwrite.io/pink-svelte';
     import BudgetAlert from './budgetAlert.svelte';
     import type { Plan } from '$lib/sdk/billing';
+    import { isFreePlan } from '$lib/helpers/billing';
 
     export let currentPlan: Plan;
     export let organization: Organization;
@@ -89,7 +90,7 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            {#if organization?.billingPlan === BillingPlan.FREE}
+            {#if isFreePlan(organization?.billingPlan)}
                 <Button
                     secondary
                     href={$upgradeURL}

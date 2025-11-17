@@ -24,7 +24,8 @@ body {
     --p-page-loader-background-color: #000;
 }
 [data-profile='studio'].theme-light .page-loader {
-    --p-page-loader-primary-color: #000: --p-page-loader-background-color: #fff;
+    --p-page-loader-primary-color: #000;
+    --p-page-loader-background-color: #fff;
 }
 
 .theme-light .page-loader {

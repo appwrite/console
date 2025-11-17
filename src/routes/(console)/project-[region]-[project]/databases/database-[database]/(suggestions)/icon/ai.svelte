@@ -71,8 +71,16 @@
         border: 1.25px solid rgba(253, 54, 110, 0.12);
 
         padding: 5px 0;
+        min-width: 40px;
         width: 40px !important;
         height: 40px !important;
+
+        & svg {
+            width: 30px;
+            height: 30px;
+            flex-shrink: 0;
+            aspect-ratio: 1/1;
+        }
     }
 
     :global(.ai-icon-holder.notification) {

@@ -20,6 +20,7 @@ ADD ./vite.config.ts /app/vite.config.ts
 ADD ./src /app/src
 ADD ./static /app/static
 
+ARG PUBLIC_IMAGINE_CDN_URL
 ARG PUBLIC_CONSOLE_MODE
 ARG PUBLIC_CONSOLE_PROFILE
 ARG PUBLIC_AI_SERVICE_BASE_URL
@@ -58,6 +59,7 @@ ENV PUBLIC_SENTRY_REPLAY_SAMPLE_RATE=$PUBLIC_SENTRY_REPLAY_SAMPLE_RATE
 ENV PUBLIC_SENTRY_DEBUG=$PUBLIC_SENTRY_DEBUG
 ENV SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN
 ENV SENTRY_RELEASE=$SENTRY_RELEASE
+ENV PUBLIC_IMAGINE_CDN_URL=$PUBLIC_IMAGINE_CDN_URL
 ENV NODE_OPTIONS=--max_old_space_size=8192
 
 RUN pnpm run build
@@ -68,3 +70,8 @@ EXPOSE 80
 
 COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /app/build /usr/share/nginx/html/console
+
+# feat-profiles
+RUN mkdir -p /app
+COPY docker/generate-env.sh /app/generate-env.sh
+RUN chmod +x /app/generate-env.sh

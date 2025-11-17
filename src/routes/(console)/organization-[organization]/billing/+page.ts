@@ -6,6 +6,7 @@ import { redirect } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 import { isCloud } from '$lib/system';
 import { base } from '$app/paths';
+import { isFreePlan } from '$lib/helpers/billing';
 
 export const load: PageLoad = async ({ parent, depends }) => {
     const { organization, scopes, currentPlan, countryList, locale } = await parent();
@@ -54,7 +55,7 @@ export const load: PageLoad = async ({ parent, depends }) => {
 
     const areCreditsSupported = isCloud
         ? (currentPlan?.supportsCredits ??
-          (organization.billingPlan !== BillingPlan.FREE &&
+          (!isFreePlan(organization.billingPlan) &&
               organization?.billingPlan !== BillingPlan.GITHUB_EDUCATION))
         : false;
 

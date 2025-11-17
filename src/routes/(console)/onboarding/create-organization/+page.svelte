@@ -25,8 +25,9 @@
                 organization = await sdk.forConsole.billing.createOrganization(
                     ID.unique(),
                     organizationName,
-                    BillingPlan.FREE,
+                    resolvedProfile.freeTier,
                     null,
+                    resolvedProfile.organizationPlatform,
                     null
                 );
 

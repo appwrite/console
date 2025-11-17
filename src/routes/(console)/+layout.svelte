@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from '$app/state';
-    import { BillingPlan, INTERVAL } from '$lib/constants';
+    import { INTERVAL } from '$lib/constants';
     import Footer from '$lib/layout/footer.svelte';
     import Shell from '$lib/layout/shell.svelte';
 
@@ -58,6 +58,7 @@
     } from '@appwrite.io/pink-icons-svelte';
     import type { LayoutData } from './$types';
     import Studio from '$lib/studio/studio.svelte';
+    import { isFreePlan } from '$lib/helpers/billing';
 
     export let data: LayoutData;
 
@@ -306,7 +307,7 @@
             checkForMarkedForDeletion(org);
             await checkForNewDevUpgradePro(org);
 
-            if (org?.billingPlan !== BillingPlan.FREE) {
+            if (!isFreePlan(org.billingPlan)) {
                 await paymentExpired(org);
                 await checkPaymentAuthorizationRequired(org);
                 await checkForMandate(org);
