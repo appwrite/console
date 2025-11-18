@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
-    import { sdk } from '$lib/stores/sdk';
+    import { realtime } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { type Models } from '@appwrite.io/console';
     import { page } from '$app/state';
@@ -44,24 +44,18 @@
     let showRedeploy = false;
 
     onMount(() => {
-        const unsubscribe = sdk.forConsole.client.subscribe<Models.Deployment>(
-            'console',
-            (message) => {
-                if (
-                    message.events.includes(
-                        `functions.${page.params.function}.deployments.${page.params.deployment}.update`
-                    )
-                ) {
-                    if (message.payload.status === 'ready') {
-                        invalidate(Dependencies.DEPLOYMENT);
-                    }
+        return realtime.forProject(page.params.region, 'console', (response) => {
+            if (
+                response.events.includes(
+                    `functions.${page.params.function}.deployments.${page.params.deployment}.update`
+                )
+            ) {
+                const payload = response.payload as Models.Deployment;
+                if (payload.status === 'ready') {
+                    invalidate(Dependencies.DEPLOYMENT);
                 }
             }
-        );
-
-        return () => {
-            unsubscribe();
-        };
+        });
     });
 
     export function badgeTypeDeployment(status: string) {

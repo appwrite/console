@@ -140,6 +140,9 @@
 {:else}
     <Popover let:show let:hide {placement} portal>
         <button
+            type="button"
+            onclick={(e) => e.stopPropagation()}
+            onkeydown={(e) => e.stopPropagation()}
             onmouseenter={() => {
                 if (!$menuOpen) {
                     setTimeout(show, 150);
@@ -159,7 +162,7 @@
                         {:then data}
                             {formatName(
                                 data.name ?? data?.email ?? data?.phone ?? '-',
-                                $isSmallViewport ? 5 : 7
+                                $isSmallViewport ? 16 : 18
                             )}
                         {/await}
                     </Typography.Text>
@@ -200,7 +203,7 @@
                                     <Layout.Stack alignItems="flex-start" gap="xxs">
                                         <Layout.Stack style="padding-left: 0.25rem;">
                                             <Typography.Text
-                                                size="s"
+                                                size="m"
                                                 color="--fgcolor-neutral-primary">
                                                 {data.customName}
                                             </Typography.Text>
@@ -254,14 +257,14 @@
                                                     ? `${base}/project-${page.params.region}-${page.params.project}/auth/user-${id}`
                                                     : `${base}/project-${page.params.region}-${page.params.project}/auth/teams/team-${id}`}>
                                                 <Typography.Text
-                                                    size="s"
+                                                    size="m"
                                                     color="--fgcolor-neutral-primary">
                                                     {formatName(
                                                         data.name ??
                                                             data?.email ??
                                                             data?.phone ??
                                                             '-',
-                                                        $isSmallViewport ? 12 : 20
+                                                        $isSmallViewport ? 18 : 24
                                                     )}
                                                 </Typography.Text>
                                             </Link.Anchor>
@@ -276,10 +279,11 @@
 
                                 {#if isUser && (data.email || data.phone)}
                                     <Divider />
-                                    <Layout.Stack gap="xs" alignItems="flex-start">
+                                    <Layout.Stack gap="xxs" alignItems="flex-start">
                                         {#if data.email}
                                             <Typography.Text
                                                 size="xs"
+                                                variant="m-400"
                                                 color="--fgcolor-neutral-secondary">
                                                 Email: {data.email}
                                             </Typography.Text>
@@ -287,6 +291,7 @@
                                         {#if data.phone}
                                             <Typography.Text
                                                 size="xs"
+                                                variant="m-400"
                                                 color="--fgcolor-neutral-secondary">
                                                 Phone: {data.phone}
                                             </Typography.Text>

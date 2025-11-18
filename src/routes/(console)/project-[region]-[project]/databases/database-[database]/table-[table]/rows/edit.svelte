@@ -76,7 +76,7 @@
     $effect(() => {
         if (row) {
             work = initWork();
-            focusFirstInput();
+            requestAnimationFrame(() => focusFirstInput());
         } else {
             work = null;
         }
