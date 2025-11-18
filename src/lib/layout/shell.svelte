@@ -257,7 +257,7 @@
         margin-block-start: 48px;
         border-radius: 16px;
         border: 1px solid var(--border-neutral);
-        overflow: scroll;
+        overflow: hidden;
         height: calc(100vh - 60px);
         max-width: calc(100vw - 76px);
         margin-top: 48px;
