@@ -125,8 +125,8 @@ export const studio: Profile = {
         functions: false,
         messaging: false,
         storage: true,
-        sites: true,
-        settings: false
+        sites: false,
+        settings: true
     },
     showOrgInBreadcrumbs: false,
     minimalOrgHeader: true,
