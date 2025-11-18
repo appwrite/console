@@ -196,9 +196,9 @@ function updatePosition() {
 
     const rect = anchorElement.getBoundingClientRect();
     const { offsetX, offsetY } = currentOptions;
-    const left = rect.left + offsetX + 10;
+    const left = rect.left + offsetX;
     const top = BLOCK_START_BASE_OFFSET + offsetY + 1;
-    component.style.width = `${rect.width - 10}px`;
+    component.style.width = `${rect.width}px`;
     component.style.height = `calc(100vh - ${BLOCK_START_BASE_OFFSET + 14}px)`;
     component.style.left = `${left}px`;
     component.style.top = `${top}px`;

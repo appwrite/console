@@ -254,7 +254,6 @@
 <style lang="scss">
     .content {
         width: 100%;
-
         margin-block-start: 48px;
         border-radius: 16px;
         border: 1px solid var(--border-neutral);
@@ -282,6 +281,8 @@
 
     .no-sidebar {
         padding-left: 0;
+        margin-left: auto;
+        margin-right: auto;
     }
 
     .main-content {
