@@ -123,8 +123,8 @@
     let hasUserInteracted = false;
 
     $: {
-        // Set initial value if value is null on first load
-        if (!initialized && value === null && expirationSelect !== null) {
+        // Set initial value if value is null or invalid on first load
+        if (!initialized && (value === null || !isValidDate(value))) {
             value = expirationSelect === 'custom' ? expirationCustom : expirationSelect;
             initialized = true;
         }
@@ -134,8 +134,8 @@
             value = expirationSelect === 'custom' ? expirationCustom : expirationSelect;
         }
 
-        // Only convert to ISO date if value is not null
-        if (value !== null) {
+        // Only convert to ISO date if value is not null and is a valid date
+        if (value !== null && isValidDate(value)) {
             value = toLocaleDateISO(new Date(value).getTime());
         }
     }
