@@ -7,7 +7,7 @@ import type { Component } from 'svelte';
 import UnauthenticatedConsole from './(unauthenticated)/console.svelte';
 import UnauthenticatedStudio from './(unauthenticated)/studio.svelte';
 import StudioCss from './css/studio.css?url';
-import ConsoleCss from './css/appwrite.css?url';
+import ConsoleCss from './css/console.css?url';
 
 export const enum ProfileMode {
     STUDIO = 'studio',
