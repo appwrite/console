@@ -55,8 +55,7 @@ ${config.alreadyExistsInstructions}
 ${config.cloneCommand} .
 \`\`\`
 
-2. Replace all the occurences of environment variables with the keys mentioned in the project details section with the values mentioned in the project details section. That'd mean we are hardcoding the project details wherever project details environment variables are used. Use grep to find all the occurences of the environment variables and replace them with the values mentioned in the project details section.
-
+2. Replace all occurrences of the environment variables described in the project details section with their corresponding values. This effectively hardcodes the project details wherever those environment variables are used. Use grep (or an equivalent search) to find and update all occurrences.
 3. ${config.runInstructions}`;
 }
 
