@@ -59,7 +59,7 @@
     On the homepage of the app, create a button that says "Send a ping" and when clicked, it should call the following function:
 
     \`\`\`
-    appwrite.ping()
+    client.ping()
     \`\`\`
 `;
 

@@ -34,6 +34,14 @@ export function getCorrectTitle(isConnectPlatform: boolean, platform: string) {
 
 export function generatePromptFromConfig(config: LLMPromptConfig): string {
     return `
+Goal: Setting up Appwrite SDK in the project depending on if a project already exists or not.
+
+Following are the project details:
+
+\`\`\`
+${config.configCode}
+\`\`\`
+
 Follow the steps depending on if a project already exists on user's working directory or not:
 
 ## If a project already exists:
@@ -41,17 +49,13 @@ ${config.alreadyExistsInstructions}
 
 ## If a project does not exist:
 
-1. If you're starting a new project, you can clone our starter kit from GitHub using ${config.using || 'the terminal'}. Make sure to clone in the current working directory root so that the files are directly available in the working directory.
+1. Clone the starter kit using ${config.using || 'the terminal'}. Make sure to clone in the current working directory so that the cloned files are directly available in the working directory.
 
 \`\`\`bash
-${config.cloneCommand}
+${config.cloneCommand} .
 \`\`\`
 
-2. Open the file \`${config.configFile}\`, find the code block, replace and hardcode the project details as mentioned below.
-
-\`\`\`
-${config.configCode}
-\`\`\`
+2. Replace all the occurences of environment variables with the keys mentioned in the project details section with the values mentioned in the project details section. That'd mean we are hardcoding the project details wherever project details environment variables are used. Use grep to find all the occurences of the environment variables and replace them with the values mentioned in the project details section.
 
 3. ${config.runInstructions}`;
 }
@@ -94,7 +98,7 @@ const platformConfigs: Record<string, PlatformConfig> = {
         configFile: 'lib/config/environment.dart',
         configLanguage: 'dart',
         runInstructions:
-            'Run the app on a connected device or simulator using `flutter run -d [device_name]`, then click the `Send a ping` button to verify the setup.',
+            'Run the app on a connected device or simulator using `flutter run -d [device_name]`, then click the `Send a ping` button to verify the setup. Ask the user if the AI agent should run the command to run the app for them. Provide the full command while you ask for permission.',
         using: 'the terminal'
     },
     reactnative: {
@@ -104,7 +108,7 @@ const platformConfigs: Record<string, PlatformConfig> = {
         configFile: 'index.ts',
         configLanguage: 'typescript',
         runInstructions:
-            'After replacing and hardcoding project details, run the app on a connected device or simulator using `npm install` followed by `npm run ios` or `npm run android`, then click the `Send a ping` button to verify the setup.',
+            'After replacing and hardcoding project details, run the app on a connected device or simulator using `npm install` followed by `npm run ios` or `npm run android`, then click the `Send a ping` button to verify the setup. Ask the user if the AI agent should run the command to run the app for them. Provide the full command while you ask for permission.',
         using: 'the terminal or VSCode'
     }
 };

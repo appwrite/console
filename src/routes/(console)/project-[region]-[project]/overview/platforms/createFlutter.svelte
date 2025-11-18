@@ -40,25 +40,25 @@
     const projectId = page.params.project;
 
     const alreadyExistsInstructions = `
-    Install the Appwrite Flutter SDK using the following command:
+Install the Appwrite Flutter SDK using the following command:
 
-    \`\`\`
-    flutter pub add appwrite:17.0.0
-    \`\`\`
+\`\`\`
+flutter pub add appwrite:20.3.0
+\`\`\`
 
-    From a suitable lib directory, export the Appwrite client as a global variable, hardcode the project details too:
+From a suitable lib directory, export the Appwrite client as a global variable, hardcode the project details too:
 
-    \`\`\`
-    final Client client = Client()
-      .setProject("${projectId}")
-      .setEndpoint("${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}");
-    \`\`\`
+\`\`\`
+final Client client = Client()
+  .setProject("${projectId}")
+  .setEndpoint("${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}");
+\`\`\`
 
-    On the homepage of the app, create a button that says "Send a ping" and when clicked, it should call the following function:
+On the homepage of the app, create a button that says "Send a ping" and when clicked, it should call the following function:
 
-    \`\`\`
-    client.ping();
-    \`\`\`
+\`\`\`
+client.ping();
+\`\`\`
     `;
 
     const gitCloneCode =

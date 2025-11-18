@@ -38,28 +38,48 @@
     const projectId = page.params.project;
 
     const alreadyExistsInstructions = `
-        Install the Appwrite Android SDK by adding the following dependency to app-level build.gradle.kts file under dependencies block:
+Confirm you're working inside the correct Android project before editing anything:
+- Navigate into the directory that contains the real Android app module (look for gradlew, settings.gradle, and the app-level build.gradle(.kts)).
+- If Cursor opens in a parent folder (like your home directory) or you see multiple Android projects, ask which one to modify before making changes.
+- Update the app-level build.gradle.kts by default, but be ready to edit a Groovy build.gradle if the project hasn't migrated to Kotlin DSL yet.
 
-        \`\`\`
-        implementation("io.appwrite:sdk-for-android:8.1.0")
-        \`\`\`
+Prefer Version Catalogs when adding the Appwrite SDK:
+1. If ./gradle/libs.versions.toml exists, add or reuse an Appwrite entry:
+\`\`\`toml
+[libraries]
+appwrite = { module = "io.appwrite:sdk-for-android", version = "11.3.0" }
+\`\`\`
+2. Reference it inside the module's dependencies block:
+\`\`\`kotlin
+dependencies {
+    implementation(libs.appwrite)
+}
+\`\`\`
+Only when the project lacks ./gradle/libs.versions.toml should you hardcode the dependency:
+\`\`\`kotlin
+implementation("io.appwrite:sdk-for-android:11.3.0")
+\`\`\`
+Legacy Groovy scripts should use:
+\`\`\`groovy
+implementation "io.appwrite:sdk-for-android:11.3.0"
+\`\`\`
 
-        From a suitable lib directory, export the Appwrite client as a global variable:
+Before introducing any new files, search the project (app/src, libs/, shared modules, etc.) for existing Appwrite client helpers (look for \`Client(\`, \`AppwriteClient\`, or \`.setEndpoint\`). If a client already exists, update its configuration instead of creating a duplicate.
 
-        \`\`\`
-        val client = Client()
-            .setEndpoint("${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}")
-            .setProject("${projectId}")
+Ensure the Appwrite client is initialized with the application context and current project info:
+\`\`\`kotlin
+val client = Client(applicationContext)
+    .setEndpoint("${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}")
+    .setProject("${projectId}")
 
-        val account = Account(client)
-        \`\`\`
+val account = Account(client)
+\`\`\`
 
-        On the homepage of the app, create a button that says "Send a ping" and when clicked, it should call the following function:
-
-        \`\`\`
-        client.ping()
-        \`\`\`
-    `;
+From the app's entry point (e.g., Application class or the first launched Activity), automatically invoke a helper that pings Appwrite so the user can verify connectivity and will be reflected on the Appwrite console:
+\`\`\`kotlin
+client.ping()
+\`\`\`
+`;
 
     const gitCloneCode =
         '\ngit clone https://github.com/appwrite/starter-for-android\ncd starter-for-android\n';
