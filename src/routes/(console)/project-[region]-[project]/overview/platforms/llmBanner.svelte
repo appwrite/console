@@ -168,7 +168,6 @@
                                                             variant="m-500"
                                                             >{o.label}</Typography.Text>
                                                         <Typography.Text
-                                                            variant="m-400"
                                                             color="--fgcolor-neutral-tertiary">
                                                             {o.description}
                                                         </Typography.Text>
