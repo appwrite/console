@@ -4,4 +4,4 @@
     import Dark from '../assets/dark/cursor-ai.svg';
 </script>
 
-<img src={$app.themeInUse === 'dark' ? Dark : Light} width="20" height="20" alt="" />
+<img src={$app.themeInUse === 'dark' ? Dark : Light} width="20" height="20" alt="Cursor" />

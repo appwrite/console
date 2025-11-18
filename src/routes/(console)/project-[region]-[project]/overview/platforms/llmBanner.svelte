@@ -110,7 +110,7 @@
             </svelte:fragment>
             <Layout.Stack direction="column" class="alert-content" gap="l">
                 <Layout.Stack direction="column" alignItems="center" gap="s">
-                    <Typography.Text variant="m-400">
+                    <Typography.Text>
                         Copy the prompt or open it directly in an AI tool like Cursor or Lovable to
                         get step-by-step instructions, starter code, and SDK commands for your
                         project.
