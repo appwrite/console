@@ -1,21 +1,29 @@
 <script lang="ts">
     import type { Snippet } from 'svelte';
-    import { Popover } from '@appwrite.io/pink-svelte';
+    import { Popover, Tooltip } from '@appwrite.io/pink-svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
     import SideSheet from '../table-[table]/layout/sidesheet.svelte';
 
     let {
         children,
         tooltipChildren,
+        mobileFooterChildren,
         toggleOnTapClick = true,
         onShowStateChanged = null,
-        enabled = true
+        enabled = true,
+        onChildrenClick,
+        triggerOpen,
+        headerTooltipText
     }: {
         children: Snippet<[toggle: (event: Event) => void]>;
         tooltipChildren: Snippet<[toggle: (event: Event) => void]>;
+        mobileFooterChildren?: Snippet<[toggle: (event: Event) => void]>;
         toggleOnTapClick?: boolean;
         onShowStateChanged?: (showing: boolean) => void;
         enabled?: boolean;
+        onChildrenClick?: () => void;
+        triggerOpen?: () => boolean;
+        headerTooltipText?: string;
     } = $props();
 
     let showSheet = $state(false);
@@ -23,6 +31,12 @@
     $effect(() => {
         if (!$isSmallViewport) {
             showSheet = false;
+        }
+    });
+
+    $effect(() => {
+        if ($isSmallViewport && triggerOpen && triggerOpen()) {
+            showSheet = true;
         }
     });
 </script>
@@ -36,9 +50,19 @@
             {@render children(() => (showSheet = false))}
         </button>
     {:else}
-        <button style:cursor={enabled ? 'pointer' : undefined}>
-            {@render children(toggle)}
-        </button>
+        <div style:display="grid">
+            <Tooltip maxWidth="225px" portal disabled={!headerTooltipText || showing} delay={100}>
+                <button
+                    onclick={() => enabled && onChildrenClick?.()}
+                    style:cursor={enabled ? 'pointer' : undefined}>
+                    {@render children(toggle)}
+                </button>
+
+                <svelte:fragment slot="tooltip">
+                    {headerTooltipText}
+                </svelte:fragment>
+            </Tooltip>
+        </div>
     {/if}
 
     <div let:toggle slot="tooltip" style:width="480px" style:padding="16px">
@@ -56,6 +80,10 @@
                 showSheet = false;
             }
         }}>
+        {#snippet footer()}
+            {@render mobileFooterChildren?.(() => (showSheet = false))}
+        {/snippet}
+
         {@render tooltipChildren(() => (showSheet = false))}
     </SideSheet>
 {/if}

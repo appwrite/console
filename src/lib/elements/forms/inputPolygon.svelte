@@ -17,6 +17,7 @@
             coordIndex: number,
             newValue: number
         ) => void;
+        disabled?: boolean;
     };
 
     let {
@@ -26,7 +27,8 @@
         onAddPoint,
         onAddLine,
         onDeletePoint,
-        onChangePoint
+        onChangePoint,
+        disabled
     }: Props = $props();
 </script>
 
@@ -34,6 +36,7 @@
     {#each values as value, index}
         <Layout.Stack gap="xs">
             <InputLine
+                {disabled}
                 values={value}
                 onAddPoint={() => onAddPoint(index)}
                 {nullable}

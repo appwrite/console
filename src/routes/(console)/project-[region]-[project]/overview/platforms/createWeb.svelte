@@ -28,7 +28,7 @@
     } from '@appwrite.io/pink-icons-svelte';
     import { page } from '$app/state';
     import { onMount } from 'svelte';
-    import { type AppwriteRealtimeSubscription, sdk } from '$lib/stores/sdk';
+    import { realtime, sdk } from '$lib/stores/sdk';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { addNotification } from '$lib/stores/notifications';
     import { fade } from 'svelte/transition';
@@ -215,7 +215,9 @@ APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.project).c
     });
 
     async function createWebPlatform() {
-        hostnameError = hostname !== '' ? !new RegExp(extendedHostnameRegex).test(hostname) : null;
+        const hostnameRegex = new RegExp(extendedHostnameRegex);
+        const finalHostname = hostname?.trim() || 'localhost';
+        hostnameError = !hostnameRegex.test(finalHostname);
 
         if (hostnameError) {
             return;
@@ -228,7 +230,7 @@ APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.project).c
                 type: PlatformType.Web,
                 name: `${selectedFramework.label} app`,
                 key: key,
-                hostname: hostname === '' ? undefined : hostname
+                hostname: finalHostname
             });
 
             isPlatformCreated = true;
@@ -241,8 +243,10 @@ APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.project).c
                 message: 'Platform created.'
             });
 
-            invalidate(Dependencies.PROJECT);
-            invalidate(Dependencies.PLATFORMS);
+            await Promise.all([
+                invalidate(Dependencies.PROJECT),
+                invalidate(Dependencies.PLATFORMS)
+            ]);
         } catch (error) {
             trackError(error, Submit.PlatformCreate);
             addNotification({
@@ -259,21 +263,18 @@ APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.project).c
     }
 
     onMount(() => {
-        let subscription: AppwriteRealtimeSubscription;
-        sdk.forConsole.realtime
-            .subscribe('console', (response) => {
-                if (response.events.includes(`projects.${projectId}.ping`)) {
-                    connectionSuccessful = true;
-                    invalidate(Dependencies.ORGANIZATION);
-                    invalidate(Dependencies.PROJECT);
-                    subscription?.close();
-                }
-            })
-            .then((realtime) => (subscription = realtime));
+        const unsubscribe = realtime.forConsole(page.params.region, 'console', (response) => {
+            if (response.events.includes(`projects.${projectId}.ping`)) {
+                connectionSuccessful = true;
+                invalidate(Dependencies.ORGANIZATION);
+                invalidate(Dependencies.PROJECT);
+                unsubscribe();
+            }
+        });
 
         return () => {
+            unsubscribe();
             resetPlatformStore();
-            subscription?.close();
         };
     });
 </script>
@@ -328,7 +329,8 @@ APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.project).c
                                         protocol or port number required.
                                     </span>
                                 </Tooltip>
-                            </InputText></Fieldset>
+                            </InputText>
+                        </Fieldset>
                         <Layout.Stack direction="row" justifyContent="flex-end">
                             <Button submit disabled={!selectedFramework}>Create platform</Button>
                         </Layout.Stack>
