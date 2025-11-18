@@ -4,8 +4,10 @@ import { Platform } from '@appwrite.io/console';
 import { env } from '$env/dynamic/public';
 import { BillingPlan } from '@appwrite.io/console';
 import type { Component } from 'svelte';
-import UnauthenticatedAppwrite from './(unauthenticated)/appwrite.svelte';
+import UnauthenticatedConsole from './(unauthenticated)/console.svelte';
 import UnauthenticatedStudio from './(unauthenticated)/studio.svelte';
+import StudioCss from './css/studio.css?url';
+import ConsoleCss from './css/appwrite.css?url';
 
 export const enum ProfileMode {
     STUDIO = 'studio',
@@ -24,6 +26,7 @@ export type Profile = {
         };
         alt: string;
     };
+    css: string;
     showOnboarding: boolean;
     useCommandCenter: boolean;
     showGithubIssueSupport: boolean;
@@ -62,8 +65,9 @@ export const base: Profile = {
         alt: 'Logo Appwrite'
     },
     component: {
-        unauthenticated: UnauthenticatedAppwrite
+        unauthenticated: UnauthenticatedConsole
     },
+    css: ConsoleCss,
     showOnboarding: true,
     useCommandCenter: true,
     showGithubIssueSupport: true,
@@ -103,6 +107,7 @@ export const studio: Profile = {
         },
         alt: 'Imagine Appwrite'
     },
+    css: StudioCss,
     component: {
         unauthenticated: UnauthenticatedStudio
     },

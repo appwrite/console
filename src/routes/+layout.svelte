@@ -185,7 +185,7 @@
         <link rel="stylesheet" href={`${base}/fonts/cloud.css`} />
     {/if}
 
-    <link rel="stylesheet" href={`${base}/css/profiles/${resolvedProfile.id}.css`} />
+    <link rel="stylesheet" href={resolvedProfile.css} />
 
     {#if resolvedProfile.id === ProfileMode.STUDIO}
         <link rel="preload" as="style" type="text/css" href={CDN_CSS_URL} />
