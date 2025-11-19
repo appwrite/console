@@ -24,7 +24,6 @@
     import RecordTable from '$lib/components/domains/recordTable.svelte';
     import NameserverTable from '$lib/components/domains/nameserverTable.svelte';
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
-    import { onDestroy } from 'svelte';
 
     let { data } = $props();
 

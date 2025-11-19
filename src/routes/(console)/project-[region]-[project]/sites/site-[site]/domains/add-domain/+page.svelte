@@ -6,7 +6,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Fieldset, Layout, Tooltip, Icon, Input, Alert } from '@appwrite.io/pink-svelte';
-    import { afterNavigate, goto, invalidate } from '$app/navigation';
+    import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { sortBranches } from '$lib/stores/vcs';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';

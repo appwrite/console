@@ -5,13 +5,9 @@
 <script lang="ts">
     import './shim.css';
     import { onMount } from 'svelte';
-    import { resolve } from '$app/paths';
-    import { Link } from '$lib/elements';
     import { app } from '$lib/stores/app';
     import { Dependencies } from '$lib/constants';
-    import { goto, invalidate } from '$app/navigation';
-    import { IconExternalLink } from '@appwrite.io/pink-icons-svelte';
-    import { Layout, Typography, Icon } from '@appwrite.io/pink-svelte';
+    import { invalidate } from '$app/navigation';
     import { ensureStudioComponent, initImagine, getWebComponents } from './studio-widget';
     import AddDomains from './domains/add/view.svelte';
     import VerifyDomain from './domains/verify/view.svelte';

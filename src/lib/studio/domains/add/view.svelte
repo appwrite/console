@@ -1,36 +1,14 @@
 <script lang="ts">
-    import { base } from '$app/paths';
     import { page } from '$app/state';
-    import { Button, Form, InputDomain, InputSelect, InputURL } from '$lib/elements/forms';
+    import { Button, Form, InputDomain } from '$lib/elements/forms';
     import { Wizard } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
-    import { RuleTrigger, RuleType, sdk } from '$lib/stores/sdk';
-    import {
-        Fieldset,
-        Layout,
-        Tooltip,
-        Icon,
-        Input,
-        Alert,
-        Skeleton
-    } from '@appwrite.io/pink-svelte';
-    import { afterNavigate, goto, invalidate } from '$app/navigation';
+    import { sdk } from '$lib/stores/sdk';
+    import { Fieldset, Layout, Skeleton } from '@appwrite.io/pink-svelte';
+    import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import { LabelCard } from '$lib/components';
-    import { sortBranches } from '$lib/stores/vcs';
-    import { IconInfo } from '@appwrite.io/pink-icons-svelte';
-    import {
-        Adapter,
-        BuildRuntime,
-        Framework,
-        type Models,
-        ProxyResourceType,
-        Query,
-        StatusCode
-    } from '@appwrite.io/console';
-    import { statusCodeOptions } from '$lib/stores/domains';
+    import { type Models, Query } from '@appwrite.io/console';
     import { writable } from 'svelte/store';
-    import { onMount } from 'svelte';
     import {
         project,
         regionalConsoleVariables
@@ -49,33 +27,15 @@
         onDomainAdded: (rule: string, domain: Models.Domain, verified: boolean) => void;
     } = $props();
 
-    let formComponent: Form;
     let domainName = $state('');
-
-    let rules = $state<Models.ProxyRuleList | null>(null);
+    let formComponent: Form = $state(null);
     let domains = $state<Models.DomainsList | null>(null);
 
     let loading = $state(true);
     let isSubmitting = $state(writable(false));
 
-    async function loadRules() {
-        try {
-            rules = await sdk.forProject(page.params.region, page.params.project).proxy.listRules({
-                queries: [
-                    Query.equal('type', RuleType.DEPLOYMENT),
-                    Query.equal('trigger', RuleTrigger.MANUAL)
-                ]
-            });
-        } catch (error) {
-            show = false;
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
-        }
-    }
-
     async function loadDomains() {
+        loading = true;
         try {
             domains = await sdk.forConsole.domains.list({
                 queries: [Query.equal('teamId', $organization.$id)]
@@ -86,6 +46,8 @@
                 type: 'error',
                 message: error.message
             });
+        } finally {
+            loading = false;
         }
     }
 
@@ -137,12 +99,8 @@
 
     $effect(() => {
         if (show) {
-            loading = true;
-            Promise.all([loadRules(), loadDomains()]).then(() => {
-                loading = false;
-            });
+            loadDomains();
         } else {
-            rules = null;
             domains = null;
             loading = false;
             domainName = null;
@@ -177,7 +135,7 @@
                     forceShowLoader
                     bind:disabled={$isSubmitting}
                     submissionLoader={$isSubmitting}
-                    on:click={() => formComponent.triggerSubmit()}>
+                    on:click={() => formComponent?.triggerSubmit()}>
                     Add
                 </Button>
             {/if}

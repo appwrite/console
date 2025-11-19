@@ -6,27 +6,23 @@
         Fieldset,
         Icon,
         Layout,
-        Skeleton,
-        Table,
         Tabs,
         Typography
     } from '@appwrite.io/pink-svelte';
     import { Button, Form } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
-    import { organization } from '$lib/stores/organization';
     import { addNotification } from '$lib/stores/notifications';
-    import { goto, invalidate } from '$app/navigation';
+    import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { isCloud } from '$lib/system';
     import { page } from '$app/state';
     import Wizard from '$lib/layout/wizard.svelte';
-    import { base } from '$app/paths';
     import { writable } from 'svelte/store';
     import { isASubdomain } from '$lib/helpers/tlds';
     import RecordTable from '$lib/components/domains/recordTable.svelte';
     import NameserverTable from '$lib/components/domains/nameserverTable.svelte';
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
-    import { type Models, Query } from '@appwrite.io/console';
+    import { type Models } from '@appwrite.io/console';
 
     let {
         rule,
