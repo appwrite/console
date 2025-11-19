@@ -95,6 +95,7 @@ export function setupSentry(
     }
 
     Sentry.init({
+        environment,
         enabled: variables.enabled,
         dsn,
         tracesSampleRate: variables.tracesSampleRate,
