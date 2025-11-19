@@ -490,7 +490,7 @@ export class Billing {
         name: string,
         billingPlan: string,
         paymentMethodId: string,
-        billingAddressId: string = null,
+        billingAddressId: string = undefined,
         couponId: string = null,
         invites: Array<string> = [],
         budget: number = undefined,

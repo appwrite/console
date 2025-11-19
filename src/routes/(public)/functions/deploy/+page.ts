@@ -78,7 +78,6 @@ export const load: PageLoad = async ({ parent, url }) => {
                     ID.unique(),
                     'Personal Projects',
                     BillingPlan.FREE,
-                    null,
                     null
                 );
             } else {
