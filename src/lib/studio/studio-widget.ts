@@ -283,11 +283,11 @@ export async function initImagine(
     }
 ) {
     const sessionId = getSessionId(userId);
-    
+
     Sentry.setTags({
         user_id: userId,
         session_id: sessionId,
-        project_id: projectId,
+        project_id: projectId
     });
 
     try {
