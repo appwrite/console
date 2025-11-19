@@ -13,7 +13,6 @@
     import { sdk } from '$lib/stores/sdk';
     import { organization } from '$lib/stores/organization';
     import { addNotification } from '$lib/stores/notifications';
-    import { hideTypes } from '$lib/stores/domains';
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { isCloud } from '$lib/system';
@@ -99,11 +98,8 @@
                 .proxy.deleteRule({ ruleId });
         }
 
-        const typesParam = $hideTypes ? '&types=false' : '';
-        await goto(`${routeBase}/add-domain?domain=${page.params.domain}${typesParam}`);
+        await goto(`${routeBase}/add-domain?domain=${page.params.domain}`);
     }
-
-    onDestroy(() => hideTypes.set(false));
 </script>
 
 <Wizard title="Add domain" href={routeBase} column columnSize="s">
