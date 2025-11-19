@@ -357,6 +357,7 @@ export enum Submit {
     BucketUpdateSize = 'submit_bucket_update_size',
     BucketUpdateCompression = 'submit_bucket_update_compression',
     BucketUpdateExtensions = 'submit_bucket_update_extensions',
+    BucketUpdateTransformations = 'submit_bucket_update_transformations',
     FileCreate = 'submit_file_create',
     FileDelete = 'submit_file_delete',
     FileUpdatePermissions = 'submit_file_update_permissions',
