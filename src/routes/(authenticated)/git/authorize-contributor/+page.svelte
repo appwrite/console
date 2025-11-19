@@ -4,7 +4,6 @@
     import { getApiEndpoint } from '$lib/stores/sdk';
     import { Badge, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { Button } from '$lib/elements/forms';
-    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     const { data } = $props();
 

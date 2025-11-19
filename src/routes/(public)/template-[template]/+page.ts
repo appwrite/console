@@ -54,7 +54,8 @@ export const load = async ({ parent, url, params }) => {
             ID.unique(),
             'Personal project',
             BillingPlan.FREE,
-            null
+            null,
+            resolvedProfile.organizationPlatform,
         );
     }
 
