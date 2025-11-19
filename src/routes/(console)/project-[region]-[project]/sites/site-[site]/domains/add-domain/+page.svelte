@@ -6,7 +6,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Fieldset, Layout, Tooltip, Icon, Input, Alert } from '@appwrite.io/pink-svelte';
-    import { afterNavigate, goto, invalidate } from '$app/navigation';
+    import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { sortBranches } from '$lib/stores/vcs';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
@@ -19,7 +19,7 @@
         ProxyResourceType,
         StatusCode
     } from '@appwrite.io/console';
-    import { statusCodeOptions, hideTypes } from '$lib/stores/domains';
+    import { statusCodeOptions } from '$lib/stores/domains';
     import { writable } from 'svelte/store';
     import { onMount } from 'svelte';
     import { ConnectRepoModal } from '$lib/components/git/index.js';
@@ -45,15 +45,7 @@
     let routeBase = `${base}/project-${params.region}-${params.project}/sites/site-${params.site}/domains`;
     let previousPage = $state(routeBase);
 
-    afterNavigate(({ from }) => {
-        if ($hideTypes) {
-            previousPage = from?.url?.pathname || routeBase;
-        }
-    });
-
     onMount(() => {
-        hideTypes.set(page.url.searchParams.get('types') === 'false');
-
         if (
             page.url.searchParams.has('connectRepo') &&
             page.url.searchParams.get('connectRepo') === 'true'
@@ -115,8 +107,6 @@
                 });
             }
             if (rule?.status === 'verified') {
-                hideTypes.set(false);
-
                 await goto(routeBase);
                 await invalidate(Dependencies.SITES_DOMAINS);
             } else {
@@ -181,98 +171,93 @@
                     placeholder="appwrite.example.com" />
             </Fieldset>
 
-            {#if !$hideTypes}
-                <Layout.Grid columns={3} columnsXS={1}>
-                    <LabelCard value="ACTIVE" bind:group={behaviour} title="Active deployment">
-                        Point this domain to the latest deployed version.
-                    </LabelCard>
-                    <LabelCard value="BRANCH" bind:group={behaviour} title="Git branch">
-                        Point this domain to a specific branch in your repository.
-                    </LabelCard>
-                    <LabelCard value="REDIRECT" bind:group={behaviour} title="Redirect">
-                        Forward all traffic from this domain to another URL.
-                    </LabelCard>
-                </Layout.Grid>
+            <Layout.Grid columns={3} columnsXS={1}>
+                <LabelCard value="ACTIVE" bind:group={behaviour} title="Active deployment">
+                    Point this domain to the latest deployed version.
+                </LabelCard>
+                <LabelCard value="BRANCH" bind:group={behaviour} title="Git branch">
+                    Point this domain to a specific branch in your repository.
+                </LabelCard>
+                <LabelCard value="REDIRECT" bind:group={behaviour} title="Redirect">
+                    Forward all traffic from this domain to another URL.
+                </LabelCard>
+            </Layout.Grid>
 
-                {#if behaviour === 'BRANCH'}
-                    <Fieldset legend="Settings">
-                        <Layout.Stack gap="xl">
-                            {#if data.site?.providerRepositoryId}
-                                {@const sortedBranches = sortBranches(data.branches.branches)}
-                                {@const options = sortedBranches.map((branch) => ({
-                                    label: branch.name,
-                                    value: branch.name
-                                }))}
-                                <Layout.Stack gap="s">
-                                    <Input.ComboBox
-                                        required
-                                        id="branch"
-                                        label="Production branch"
-                                        placeholder="Select branch"
-                                        bind:value={branch}
-                                        on:select={(event) => {
-                                            branch = event.detail.value;
-                                        }}
-                                        {options} />
-                                    {#if !data.branches?.total}
-                                        <Input.Helper state="default">
-                                            No branches found in the selected repository. Create a
-                                            branch to see it here.
-                                        </Input.Helper>
-                                    {/if}
-                                </Layout.Stack>
-                            {:else}
-                                <InputSelect
-                                    disabled
-                                    options={[{ label: 'main', value: 'main' }]}
-                                    label="Production branch"
-                                    id="branch"
+            {#if behaviour === 'BRANCH'}
+                <Fieldset legend="Settings">
+                    <Layout.Stack gap="xl">
+                        {#if data.site?.providerRepositoryId}
+                            {@const sortedBranches = sortBranches(data.branches.branches)}
+                            {@const options = sortedBranches.map((branch) => ({
+                                label: branch.name,
+                                value: branch.name
+                            }))}
+                            <Layout.Stack gap="s">
+                                <Input.ComboBox
                                     required
-                                    value="main"
-                                    placeholder="Select branch" />
-                                <Alert.Inline
-                                    title=" There is no repository connected to your site">
-                                    <Layout.Stack>
-                                        <p>
-                                            The domain will be connected to your active deployment.
-                                            Connect your Git repository to link a production branch.
-                                        </p>
-                                        <div>
-                                            <Button
-                                                compact
-                                                on:click={() => (showConnectRepo = true)}>
-                                                Connect repository
-                                            </Button>
-                                        </div>
-                                    </Layout.Stack>
-                                </Alert.Inline>
-                            {/if}
-                        </Layout.Stack>
-                    </Fieldset>
-                {:else if behaviour === 'REDIRECT'}
-                    <Fieldset legend="Settings">
-                        <Layout.Stack gap="xl">
-                            <InputURL
-                                label="Redirect to"
-                                id="redirect"
-                                placeholder="https://appwrite.io/docs"
-                                bind:value={redirect}
-                                required>
-                                <Tooltip slot="info">
-                                    <Icon icon={IconInfo} size="s" />
-                                    <span slot="tooltip"> Redirect your domain to this URL.</span>
-                                </Tooltip>
-                            </InputURL>
+                                    id="branch"
+                                    label="Production branch"
+                                    placeholder="Select branch"
+                                    bind:value={branch}
+                                    on:select={(event) => {
+                                        branch = event.detail.value;
+                                    }}
+                                    {options} />
+                                {#if !data.branches?.total}
+                                    <Input.Helper state="default">
+                                        No branches found in the selected repository. Create a
+                                        branch to see it here.
+                                    </Input.Helper>
+                                {/if}
+                            </Layout.Stack>
+                        {:else}
                             <InputSelect
-                                options={statusCodeOptions}
-                                label="Status code"
-                                id="code"
+                                disabled
+                                options={[{ label: 'main', value: 'main' }]}
+                                label="Production branch"
+                                id="branch"
                                 required
-                                bind:value={statusCode}
-                                placeholder="Select status code" />
-                        </Layout.Stack>
-                    </Fieldset>
-                {/if}
+                                value="main"
+                                placeholder="Select branch" />
+                            <Alert.Inline title=" There is no repository connected to your site">
+                                <Layout.Stack>
+                                    <p>
+                                        The domain will be connected to your active deployment.
+                                        Connect your Git repository to link a production branch.
+                                    </p>
+                                    <div>
+                                        <Button compact on:click={() => (showConnectRepo = true)}>
+                                            Connect repository
+                                        </Button>
+                                    </div>
+                                </Layout.Stack>
+                            </Alert.Inline>
+                        {/if}
+                    </Layout.Stack>
+                </Fieldset>
+            {:else if behaviour === 'REDIRECT'}
+                <Fieldset legend="Settings">
+                    <Layout.Stack gap="xl">
+                        <InputURL
+                            label="Redirect to"
+                            id="redirect"
+                            placeholder="https://appwrite.io/docs"
+                            bind:value={redirect}
+                            required>
+                            <Tooltip slot="info">
+                                <Icon icon={IconInfo} size="s" />
+                                <span slot="tooltip"> Redirect your domain to this URL.</span>
+                            </Tooltip>
+                        </InputURL>
+                        <InputSelect
+                            options={statusCodeOptions}
+                            label="Status code"
+                            id="code"
+                            required
+                            bind:value={statusCode}
+                            placeholder="Select status code" />
+                    </Layout.Stack>
+                </Fieldset>
             {/if}
         </Layout.Stack>
     </Form>
