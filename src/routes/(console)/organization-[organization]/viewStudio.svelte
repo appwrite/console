@@ -37,8 +37,9 @@
 
 <style>
     .studio-page {
-        position: relative;
-        width: 100%;
+        position: fixed;
+        width: calc(100vw - 20px);
+        left: 10px;
         height: calc(100vh - 48px);
         overflow: scroll;
         background: var(--bgcolor-neutral-primary);

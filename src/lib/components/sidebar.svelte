@@ -19,13 +19,13 @@
         IconChartBar,
         IconChatBubble,
         IconCog,
-        IconCommand,
         IconDatabase,
         IconFolder,
         IconGlobeAlt,
         IconLightningBolt,
         IconSearch,
-        IconUserGroup
+        IconUserGroup,
+        IconTemplate
     } from '@appwrite.io/pink-icons-svelte';
     import { toggleCommandCenter } from '$lib/commandCenter/commandCenter.svelte';
     import { feedback } from '$lib/stores/feedback';
@@ -188,7 +188,7 @@
                                     sideBarIsOpen = false;
                                 }}
                                 ><span class="link-icon"
-                                    ><Icon icon={IconCommand} size="s" />
+                                    ><Icon icon={IconTemplate} size="s" />
                                 </span><span
                                     class:no-text={state === 'icons'}
                                     class:has-text={state === 'open'}

@@ -6,6 +6,8 @@ import { resolve } from '$app/paths';
 import { ensureMonacoStyles } from './monaco-style-manager';
 import DEV_CSS_URL from '@imagine.dev/web-components/imagine-web-components.css?url';
 import { getSessionId } from '$lib/sentry';
+import type * as WebComponentsType from '@imagine.dev/web-components/web-components';
+import * as Sentry from '@sentry/sveltekit';
 
 const COMPONENT_SELECTOR = 'imagine-web-components-wrapper[data-appwrite-studio]';
 const STYLE_ATTRIBUTE = 'data-appwrite-studio-style';
@@ -15,8 +17,7 @@ export const CDN_CSS_URL = env?.PUBLIC_IMAGINE_CDN_URL + '/web-components.css';
 const DEV_OVERRIDE_WEB_COMPONENTS = env?.PUBLIC_AI_OVERRIDE_WEB_COMPONENTS === 'true';
 
 let component: HTMLElement | null = null;
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-let webComponentsModule: Record<string, any> | null = null;
+let webComponentsModule: typeof WebComponentsType | null = null;
 let configInitialized = false;
 let routingInitialized = false;
 let lastRouteKey: string | null = null;
@@ -107,7 +108,7 @@ function injectStyles(node: HTMLElement, attempt = 0) {
 /**
  * Get the web components module, loading it from CDN if necessary
  */
-export async function getWebComponents() {
+export async function getWebComponents(): Promise<typeof WebComponentsType> {
     if (!webComponentsModule) {
         if (DEV_OVERRIDE_WEB_COMPONENTS) {
             webComponentsModule = await import('@imagine.dev/web-components/web-components');
@@ -115,17 +116,16 @@ export async function getWebComponents() {
             webComponentsModule = await import(/* @vite-ignore */ CDN_URL);
         }
     }
-    return webComponentsModule;
+    return webComponentsModule as unknown as typeof WebComponentsType;
 }
 
 /**
  * Navigate to a route in the web components
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function navigateToRoute(...args: any[]) {
+export async function navigateToRoute(route: WebComponentsType.ImagineRoute) {
     try {
         const { navigateToRoute: navigate } = await getWebComponents();
-        return navigate(...args);
+        return navigate(route);
     } catch (error) {
         console.error('Failed to navigate:', error);
     }
@@ -282,6 +282,14 @@ export async function initImagine(
         onManageDomains: (primaryDomain?: string) => void | Promise<void>;
     }
 ) {
+    const sessionId = getSessionId(userId);
+    
+    Sentry.setTags({
+        user_id: userId,
+        session_id: sessionId,
+        project_id: projectId,
+    });
+
     try {
         const { initImagineConfig, initImagineRouting } = await getWebComponents();
 
@@ -294,7 +302,7 @@ export async function initImagine(
                 },
                 {
                     initialTheme: get(app).themeInUse,
-                    consoleSessionId: getSessionId(userId),
+                    consoleSessionId: sessionId,
                     callbacks
                 }
             );
