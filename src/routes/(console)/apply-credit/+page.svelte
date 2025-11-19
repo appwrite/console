@@ -148,7 +148,7 @@
                     selectedOrg.$id,
                     billingPlan,
                     paymentMethodId,
-                    null,
+                    undefined,
                     couponData.code ? couponData.code : null,
                     collaborators
                 );

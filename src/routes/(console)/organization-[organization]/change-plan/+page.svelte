@@ -253,7 +253,7 @@
                 data.organization.$id,
                 selectedPlan,
                 paymentMethodId,
-                null,
+                undefined,
                 selectedCoupon?.code,
                 newCollaborators,
                 billingBudget,

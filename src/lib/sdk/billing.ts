@@ -628,6 +628,7 @@ export class Billing {
             budget,
             taxId
         };
+
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(
             'patch',
