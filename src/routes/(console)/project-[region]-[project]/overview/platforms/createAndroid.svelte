@@ -17,7 +17,7 @@
     import { Card } from '$lib/components';
     import { page } from '$app/state';
     import { onMount } from 'svelte';
-    import { realtime, sdk } from '$lib/stores/sdk';
+    import { getApiEndpoint, realtime, sdk } from '$lib/stores/sdk';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { addNotification } from '$lib/stores/notifications';
     import { fade } from 'svelte/transition';
@@ -36,8 +36,10 @@
     let isPlatformCreated = $state(isConnectPlatform);
 
     const projectId = page.params.project;
-    const ANDROID_RELEASES_ENDPOINT =
-        'https://api.github.com/repos/appwrite/sdk-for-android/releases';
+    const VERSIONS_ENDPOINT = (() => {
+        const endpoint = getApiEndpoint(page.params.region);
+        return endpoint.replace(/\/v1\/?$/, '') + '/versions';
+    })();
     let androidSdkVersion = $state('11.3.0');
 
     function buildAndroidInstructions(version: string) {
@@ -97,14 +99,14 @@ const val APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject(page.params.region, page.
 
     async function fetchAndroidSdkVersion() {
         try {
-            const response = await fetch(ANDROID_RELEASES_ENDPOINT);
+            const response = await fetch(VERSIONS_ENDPOINT);
             if (!response.ok) {
-                throw new Error(`Failed to fetch Android SDK releases: ${response.status}`);
+                throw new Error(`Failed to fetch versions: ${response.status}`);
             }
             const data = await response.json();
-            const latestTag = data?.[0]?.tag_name;
-            if (latestTag) {
-                androidSdkVersion = latestTag;
+            const latestVersion = data?.['client-android'];
+            if (typeof latestVersion === 'string' && latestVersion.trim()) {
+                androidSdkVersion = latestVersion.trim();
             }
         } catch (error) {
             console.error('Unable to fetch latest Android SDK version', error);

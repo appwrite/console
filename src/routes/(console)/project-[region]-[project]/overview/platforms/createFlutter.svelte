@@ -18,7 +18,7 @@
     import { Card } from '$lib/components';
     import { page } from '$app/state';
     import { onMount } from 'svelte';
-    import { realtime, sdk } from '$lib/stores/sdk';
+    import { getApiEndpoint, realtime, sdk } from '$lib/stores/sdk';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { addNotification } from '$lib/stores/notifications';
     import { fade } from 'svelte/transition';
@@ -38,8 +38,10 @@
     let isPlatformCreated = $state(isConnectPlatform);
 
     const projectId = page.params.project;
-    const FLUTTER_RELEASES_ENDPOINT =
-        'https://api.github.com/repos/appwrite/sdk-for-flutter/releases';
+    const VERSIONS_ENDPOINT = (() => {
+        const endpoint = getApiEndpoint(page.params.region);
+        return endpoint.replace(/\/v1\/?$/, '') + '/versions';
+    })();
     let flutterSdkVersion = $state('20.3.0');
 
     function buildFlutterInstructions(version: string) {
@@ -143,14 +145,14 @@ client.ping();
 
     async function fetchFlutterSdkVersion() {
         try {
-            const response = await fetch(FLUTTER_RELEASES_ENDPOINT);
+            const response = await fetch(VERSIONS_ENDPOINT);
             if (!response.ok) {
-                throw new Error(`Failed to fetch Flutter releases: ${response.status}`);
+                throw new Error(`Failed to fetch versions: ${response.status}`);
             }
             const data = await response.json();
-            const latestTag = data?.[0]?.tag_name;
-            if (latestTag) {
-                flutterSdkVersion = latestTag;
+            const latestVersion = data?.['client-flutter'];
+            if (typeof latestVersion === 'string' && latestVersion.trim()) {
+                flutterSdkVersion = latestVersion.trim();
             }
         } catch (error) {
             console.error('Unable to fetch latest Flutter SDK version', error);
