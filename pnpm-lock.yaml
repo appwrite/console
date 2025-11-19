@@ -641,8 +641,8 @@ packages:
     resolution: {integrity: sha512-xeO57FpIu4p1Ri3Jq/EXq4ClRm86dVF2z/+kvFnyqVYRavTZmaFaUBbWCOuuTh0o/g7DSsk6kc2vrS4Vl5oPOQ==}
     engines: {node: '>=18.18'}
 
-  '@imagine.dev/web-components@file:../imagineCloud/packages/web-components':
-    resolution: {directory: ../imagineCloud/packages/web-components, type: directory}
+  '@imagine.dev/web-components@0.0.139':
+    resolution: {integrity: sha512-Zbwc26UWR0WkQtFkGgZbdsKQQca9UMTkGn7apuCpM1CeEXyQdhoOpjanBdoBlL3FcA3xZvx0L/m49tQT4CuNqQ==}
     peerDependencies:
       react: 19.1.0
       react-dom: 19.1.0
@@ -3989,7 +3989,7 @@ snapshots:
 
   '@humanwhocodes/retry@0.4.2': {}
 
-  '@imagine.dev/web-components@file:../imagineCloud/packages/web-components(react-dom@19.2.0(react@19.2.0))(react@19.2.0)':
+  '@imagine.dev/web-components@0.0.139(react-dom@19.2.0(react@19.2.0))(react@19.2.0)':
     dependencies:
       react: 19.2.0
       react-dom: 19.2.0(react@19.2.0)
