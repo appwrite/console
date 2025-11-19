@@ -2,9 +2,7 @@ import { AppwriteException } from '@appwrite.io/console';
 import type { HandleClientError } from '@sveltejs/kit';
 import { setupSentry } from '$lib/sentry';
 
-setupSentry({
-    withSessionReplay: true
-});
+setupSentry();
 
 export const handleError: HandleClientError = ({ error, message, status }) => {
     console.error(error);

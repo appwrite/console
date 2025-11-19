@@ -7,6 +7,7 @@ import { ensureMonacoStyles } from './monaco-style-manager';
 import DEV_CSS_URL from '@imagine.dev/web-components/imagine-web-components.css?url';
 import { getSessionId, getTraceData } from '$lib/sentry';
 import type * as WebComponentsType from '@imagine.dev/web-components/web-components';
+import * as Sentry from '@sentry/sveltekit';
 
 const COMPONENT_SELECTOR = 'imagine-web-components-wrapper[data-appwrite-studio]';
 const STYLE_ATTRIBUTE = 'data-appwrite-studio-style';
@@ -281,6 +282,14 @@ export async function initImagine(
         onManageDomains: (primaryDomain?: string) => void | Promise<void>;
     }
 ) {
+    const sessionId = getSessionId(userId);
+    
+    Sentry.setTags({
+        user_id: userId,
+        session_id: sessionId,
+        project_id: projectId,
+    });
+
     try {
         const { initImagineConfig, initImagineRouting } = await getWebComponents();
 
@@ -294,7 +303,7 @@ export async function initImagine(
                 },
                 {
                     initialTheme: get(app).themeInUse,
-                    consoleSessionId: getSessionId(userId),
+                    consoleSessionId: sessionId,
                     sentryTraceId,
                     sentryBaggage,
                     callbacks

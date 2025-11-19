@@ -3,7 +3,8 @@ import { handleErrorWithSentry, sentryHandle } from '@sentry/sveltekit';
 import { setupSentry } from '$lib/sentry';
 
 setupSentry({
-    withSessionReplay: false
+    withSessionReplay: false,
+    withBrowserTracing: false
 });
 
 export const handle = sequence(sentryHandle());

@@ -23,14 +23,41 @@ export function getTraceData(): {
     sentryTraceId?: string;
     sentryBaggage?: string;
 } {
-    const traceData = Sentry.getTraceData();
-    return {
-        sentryTraceId: traceData['sentry-trace'],
-        sentryBaggage: traceData.baggage
-    };
+    try {
+        const traceData = Sentry.getTraceData();
+
+        if (traceData) {
+            return {
+                sentryTraceId: traceData['sentry-trace'],
+                sentryBaggage: traceData.baggage
+            }
+        } else {
+            return {
+                sentryTraceId: undefined,
+                sentryBaggage: undefined
+            }
+        }
+    } catch (error) {
+        return {
+            sentryTraceId: undefined,
+            sentryBaggage: undefined
+        }
+    }
 }
 
-export function setupSentry({ withSessionReplay }: { withSessionReplay: boolean }) {
+export function setupSentry(
+    {
+        withSessionReplay = true,
+        withBrowserTracing = true
+    }: { withSessionReplay: boolean; withBrowserTracing: boolean } = {
+        withSessionReplay: true,
+        withBrowserTracing: true
+    }
+) {
+    if (Sentry.isInitialized()) {
+        return;
+    }
+
     const dsn = env.PUBLIC_SENTRY_DSN;
     const environment = env.PUBLIC_SENTRY_ENVIRONMENT;
 
@@ -53,6 +80,7 @@ export function setupSentry({ withSessionReplay }: { withSessionReplay: boolean 
     };
 
     const integrations = [];
+
     if (withSessionReplay) {
         integrations.push(
             Sentry.replayIntegration({
@@ -60,6 +88,10 @@ export function setupSentry({ withSessionReplay }: { withSessionReplay: boolean 
                 maskAllInputs: variables.includePII ? false : true
             })
         );
+    }
+
+    if (withBrowserTracing) {
+        integrations.push(Sentry.browserTracingIntegration());
     }
 
     Sentry.init({
@@ -70,6 +102,14 @@ export function setupSentry({ withSessionReplay }: { withSessionReplay: boolean 
         replaysOnErrorSampleRate: 1,
         integrations,
         debug: variables.debug,
-        sendDefaultPii: true
+        sendDefaultPii: true,
+        tracePropagationTargets: [
+            'localhost',
+            /^\//,
+            /^https:\/\/imagine\.dev(\/|$)/,
+            /^https:\/\/ai-service\.imagine\.dev(\/|$)/,
+            /^https:\/\/staging\.imagine\.dev(\/|$)/,
+            /^https:\/\/ai-service\.staging\.imagine\.dev(\/|$)/
+        ]
     });
 }
