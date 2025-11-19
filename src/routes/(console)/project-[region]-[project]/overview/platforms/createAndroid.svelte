@@ -38,7 +38,8 @@
     const projectId = page.params.project;
     const VERSIONS_ENDPOINT = (() => {
         const endpoint = getApiEndpoint(page.params.region);
-        return endpoint.replace(/\/v1\/?$/, '') + '/versions';
+        const url = new URL('/versions', endpoint);
+        return url.toString();
     })();
     let androidSdkVersion = $state('11.3.0');
 
