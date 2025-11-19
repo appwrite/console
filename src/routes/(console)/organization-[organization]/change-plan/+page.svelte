@@ -173,8 +173,7 @@
             await sdk.forConsole.billing.updatePlan(
                 data.organization.$id,
                 selectedPlan,
-                paymentMethodId,
-                null
+                paymentMethodId
             );
 
             // 2) If the target plan has a project limit, apply selected projects now
@@ -254,7 +253,7 @@
                 data.organization.$id,
                 selectedPlan,
                 paymentMethodId,
-                null,
+                undefined,
                 selectedCoupon?.code,
                 newCollaborators,
                 billingBudget,

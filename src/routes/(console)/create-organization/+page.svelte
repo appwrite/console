@@ -112,7 +112,6 @@
                     ID.unique(),
                     name,
                     BillingPlan.FREE,
-                    null,
                     null
                 );
             } else {
@@ -121,7 +120,7 @@
                     name,
                     selectedPlan,
                     paymentMethodId,
-                    null,
+                    undefined,
                     selectedCoupon?.code,
                     collaborators,
                     billingBudget,
