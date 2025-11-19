@@ -10,6 +10,7 @@
         deletePoints?: boolean;
         onDeletePoint?: () => void;
         disableDelete?: boolean;
+        disabled?: boolean;
         onChangePoint: (index: number, newValue: number) => void;
     }
 
@@ -21,7 +22,8 @@
         deletePoints = false,
         disableDelete = false,
         onDeletePoint,
-        onChangePoint
+        onChangePoint,
+        disabled
     }: Props = $props();
 </script>
 
@@ -38,6 +40,7 @@
                     placeholder="Enter value"
                     step={0.0001}
                     value={values[index]}
+                    {disabled}
                     on:change={(e) => onChangePoint(index, Number.parseFloat(`${e.detail}`))} />
             {/each}
         {/if}
@@ -45,7 +48,7 @@
             <Button
                 size="s"
                 secondary
-                disabled={nullable || disableDelete}
+                disabled={nullable || disableDelete || disabled}
                 on:click={() => onDeletePoint?.()}>
                 <Icon icon={IconX} size="s" />
             </Button>
