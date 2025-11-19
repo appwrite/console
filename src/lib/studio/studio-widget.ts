@@ -5,7 +5,7 @@ import { goto } from '$app/navigation';
 import { resolve } from '$app/paths';
 import { ensureMonacoStyles } from './monaco-style-manager';
 import DEV_CSS_URL from '@imagine.dev/web-components/imagine-web-components.css?url';
-import { getSessionId, getTraceData } from '$lib/sentry';
+import { getSessionId } from '$lib/sentry';
 import type * as WebComponentsType from '@imagine.dev/web-components/web-components';
 import * as Sentry from '@sentry/sveltekit';
 
@@ -294,7 +294,6 @@ export async function initImagine(
         const { initImagineConfig, initImagineRouting } = await getWebComponents();
 
         if (!configInitialized) {
-            const { sentryTraceId, sentryBaggage } = getTraceData();
             initImagineConfig(
                 {
                     AI_SERVICE_ENDPOINT: env.PUBLIC_AI_SERVICE_BASE_URL,
@@ -304,8 +303,6 @@ export async function initImagine(
                 {
                     initialTheme: get(app).themeInUse,
                     consoleSessionId: sessionId,
-                    sentryTraceId,
-                    sentryBaggage,
                     callbacks
                 }
             );

@@ -19,32 +19,6 @@ export function identify(userId: string) {
     }
 }
 
-export function getTraceData(): {
-    sentryTraceId?: string;
-    sentryBaggage?: string;
-} {
-    try {
-        const traceData = Sentry.getTraceData();
-
-        if (traceData) {
-            return {
-                sentryTraceId: traceData['sentry-trace'],
-                sentryBaggage: traceData.baggage
-            }
-        } else {
-            return {
-                sentryTraceId: undefined,
-                sentryBaggage: undefined
-            }
-        }
-    } catch (error) {
-        return {
-            sentryTraceId: undefined,
-            sentryBaggage: undefined
-        }
-    }
-}
-
 export function setupSentry(
     {
         withSessionReplay = true,
