@@ -382,14 +382,12 @@
     <Form onSubmit={updateTransformations}>
         <CardGrid>
             <svelte:fragment slot="title">Image transformations</svelte:fragment>
-            Enable or disable image transformations for this bucket. When enabled, you can use the Appwrite
-            API to manipulate images on the fly.
             <svelte:fragment slot="aside">
                 <Selector.Switch
                     label="Image transformations"
                     id="transformations"
                     bind:checked={transformations}
-                    description="Enable image transformations to allow on-the-fly image manipulation through the API, such as resizing, cropping, and format conversion." />
+                    description="Enabling this option allows image manipulation through the API, including resizing, cropping, and format conversion." />
             </svelte:fragment>
 
             <svelte:fragment slot="actions">
