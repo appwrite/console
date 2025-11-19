@@ -19,6 +19,11 @@ export function identify(userId: string) {
     }
 }
 
+export function getTraceId(): string | undefined {
+    const traceData = Sentry.getTraceData();
+    return traceData['sentry-trace'];
+}
+
 export function setupSentry({ withSessionReplay }: { withSessionReplay: boolean }) {
     const dsn = env.PUBLIC_SENTRY_DSN;
     const environment = env.PUBLIC_SENTRY_ENVIRONMENT;
