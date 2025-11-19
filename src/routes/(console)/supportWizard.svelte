@@ -25,6 +25,7 @@
     import { wizard } from '$lib/stores/wizard';
     import { VARS } from '$lib/system';
     import { IconCheckCircle, IconXCircle, IconInfo } from '@appwrite.io/pink-icons-svelte';
+    import { truncateNameForGrowthServer } from '$lib/helpers/string';
 
     let projectOptions = $state<Array<{ value: string; label: string }>>([]);
 
@@ -109,7 +110,7 @@
             body: JSON.stringify({
                 email: $user.email,
                 subject: $supportData.subject,
-                firstName: ($user?.name || 'Unknown').slice(0, 40),
+                firstName: truncateNameForGrowthServer($user?.name || ''),
                 message: $supportData.message,
                 tags: [categoryTopicTag],
                 customFields: [

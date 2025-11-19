@@ -76,6 +76,24 @@ export const hostnameRegex = String.raw`(\*)|(\*\.)?(?!-)[A-Za-z0-9\-]+([\-\.]{1
  */
 export const extendedHostnameRegex = String.raw`(\*)|(\*\.)?((?!-)[A-Za-z0-9\-]+([\-\.]{1}[a-z0-9]+)*\.[A-Za-z]{2,18}|localhost|(\d{1,3}\.){3}\d{1,3}|[a-z0-9]{32})`;
 
+/**
+ * Truncates a name to fit within the 40-character limit required by the growth server.
+ * If the name exceeds 40 characters, it truncates to 37 characters and appends '...'.
+ *
+ * @export
+ * @param {string} name - The name to truncate.
+ * @returns {string} The truncated name (max 40 chars).
+ */
+export function truncateNameForGrowthServer(name: string): string {
+    if (!name) {
+        return 'Unknown';
+    }
+    if (name.length > 40) {
+        return name.slice(0, 37) + '...';
+    }
+    return name;
+}
+
 export function hash(input: string | string[], delimiter: string = ','): string {
     const str = Array.isArray(input) ? input.join(delimiter) : input;
     let hash = 0;

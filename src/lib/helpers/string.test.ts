@@ -1,4 +1,4 @@
-import { singular, camelize, capitalize } from '$lib/helpers/string';
+import { singular, camelize, capitalize, truncateNameForGrowthServer } from '$lib/helpers/string';
 import { expect, test } from 'vitest';
 
 /*
@@ -96,4 +96,31 @@ test('capitalize should handle strings with no lowercase letters', () => {
 
 test('capitalize should handle strings with only one character', () => {
     expect(capitalize('a')).toBe('A');
+});
+
+/*
+TRUNCATE NAME FOR GROWTH SERVER
+*/
+
+test('truncateNameForGrowthServer should return the name as-is if it is 40 characters or less', () => {
+    expect(truncateNameForGrowthServer('John Doe')).toBe('John Doe');
+    expect(truncateNameForGrowthServer('A'.repeat(40))).toBe('A'.repeat(40));
+    expect(truncateNameForGrowthServer('A'.repeat(39))).toBe('A'.repeat(39));
+});
+
+test('truncateNameForGrowthServer should truncate to 37 chars and add ... if name exceeds 40 chars', () => {
+    const longName = 'A'.repeat(41);
+    expect(truncateNameForGrowthServer(longName)).toBe('A'.repeat(37) + '...');
+    expect(truncateNameForGrowthServer(longName).length).toBe(40);
+
+    const veryLongName = 'John Jacob Jingleheimer Schmidt is a very long name';
+    const result = truncateNameForGrowthServer(veryLongName);
+    expect(result).toBe('John Jacob Jingleheimer Schmidt is a ...');
+    expect(result.length).toBe(40);
+});
+
+test('truncateNameForGrowthServer should return "Unknown" for empty or falsy input', () => {
+    expect(truncateNameForGrowthServer('')).toBe('Unknown');
+    expect(truncateNameForGrowthServer(null)).toBe('Unknown');
+    expect(truncateNameForGrowthServer(undefined)).toBe('Unknown');
 });

@@ -5,6 +5,7 @@ import type { Component } from 'svelte';
 import FeedbackGeneral from '$lib/components/feedback/feedbackGeneral.svelte';
 import FeedbackNps from '$lib/components/feedback/feedbackNPS.svelte';
 import { Submit, trackEvent } from '$lib/actions/analytics';
+import { truncateNameForGrowthServer } from '$lib/helpers/string';
 
 export type Feedback = {
     elapsed: number;
@@ -144,7 +145,7 @@ function createFeedbackStore() {
                     message,
                     email,
                     customFields,
-                    firstname: (name || 'Unknown').slice(0, 40),
+                    firstname: truncateNameForGrowthServer(name || ''),
                     metaFields: {
                         source: get(feedback).source,
                         orgId,
