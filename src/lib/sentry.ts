@@ -19,9 +19,15 @@ export function identify(userId: string) {
     }
 }
 
-export function getTraceId(): string | undefined {
+export function getTraceData(): {
+    sentryTraceId?: string;
+    sentryBaggage?: string;
+} {
     const traceData = Sentry.getTraceData();
-    return traceData['sentry-trace'];
+    return {
+        sentryTraceId: traceData['sentry-trace'],
+        sentryBaggage: traceData.baggage
+    };
 }
 
 export function setupSentry({ withSessionReplay }: { withSessionReplay: boolean }) {
