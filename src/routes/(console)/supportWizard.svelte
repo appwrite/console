@@ -1,11 +1,17 @@
 <script lang="ts">
     import { Wizard } from '$lib/layout';
-    import { Icon, Layout, Tag, Typography, Button, Card } from '@appwrite.io/pink-svelte';
+    import { Icon, Input, Layout, Popover, Tag, Typography, Card } from '@appwrite.io/pink-svelte';
     import { supportData, isSupportOnline } from './wizard/support/store';
-    import { onMount } from 'svelte';
+    import { onMount, onDestroy } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
-    import { Form, InputSelect, InputText, InputTextarea } from '$lib/elements/forms/index.js';
-
+    import {
+        Form,
+        InputSelect,
+        InputText,
+        InputTextarea,
+        Button
+    } from '$lib/elements/forms/index.js';
+    import { Query } from '@appwrite.io/console';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import {
         localeTimezoneName,
@@ -18,30 +24,84 @@
     import { user } from '$lib/stores/user';
     import { wizard } from '$lib/stores/wizard';
     import { VARS } from '$lib/system';
-    import { onDestroy } from 'svelte';
-    import { IconCheckCircle, IconXCircle } from '@appwrite.io/pink-icons-svelte';
+    import { IconCheckCircle, IconXCircle, IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { resolvedProfile } from '$lib/profiles/index.svelte';
 
-    let projectOptions: Array<{ value: string; label: string }>;
+    let projectOptions = $state<Array<{ value: string; label: string }>>([]);
+
+    // Category options with display names
+    const categories = [
+        { value: 'general', label: 'General' },
+        { value: 'billing', label: 'Billing' },
+        { value: 'technical', label: 'Technical' }
+    ];
+
+    // Topic options based on category
+    const topicsByCategory = {
+        general: ['Security', 'Compliance', 'Performance'],
+        billing: ['Invoices', 'Plans'],
+        technical: [
+            'Auth',
+            'Databases',
+            'Storage',
+            'Functions',
+            'Realtime',
+            'Messaging',
+            'Migrations',
+            'Webhooks',
+            'SDKs',
+            'Console'
+        ]
+    };
+
+    // Severity options
+    const severityOptions = [
+        { value: 'critical', label: 'Critical' },
+        { value: 'high', label: 'High' },
+        { value: 'medium', label: 'Medium' },
+        { value: 'low', label: 'Low' },
+        { value: 'question', label: 'Question' }
+    ];
 
     onMount(async () => {
-        const projectList = await sdk.forConsole.projects.list();
+        // Filter projects by organization ID using server-side queries
+        const projectList = await sdk.forConsole.projects.list({
+            queries: $organization?.$id ? [Query.equal('teamId', $organization.$id)] : []
+        });
         projectOptions = projectList.projects.map((project) => ({
             value: project.$id,
             label: project.name
         }));
     });
 
+    // Cleanup on component destroy
     onDestroy(() => {
         $supportData = {
             message: null,
             subject: null,
-            category: 'general',
+            category: 'technical',
+            topic: undefined,
+            severity: 'question',
             file: null
         };
     });
 
+    // Update topic options when category changes
+    const topicOptions = $derived(
+        ($supportData.category ? topicsByCategory[$supportData.category] || [] : []).map(
+            (topic) => ({
+                value: topic.toLowerCase(),
+                label: topic
+            })
+        )
+    );
+
     async function handleSubmit() {
+        // Create category-topic tag
+        const categoryTopicTag = $supportData.topic
+            ? `${$supportData.category}-${$supportData.topic}`.toLowerCase()
+            : $supportData.category.toLowerCase();
+
         const response = await fetch(`${VARS.GROWTH_ENDPOINT}/support`, {
             method: 'POST',
             headers: {
@@ -52,13 +112,13 @@
                 subject: $supportData.subject,
                 firstName: ($user?.name || 'Unknown').slice(0, 40),
                 message: $supportData.message,
-                tags: ['cloud'],
+                tags: [categoryTopicTag],
                 customFields: [
                     { id: '41612', value: $supportData.category },
-                    { id: '48493', value: $user?.name ?? '' },
                     { id: '48492', value: $organization?.$id ?? '' },
                     { id: '48491', value: $supportData?.project ?? '' },
-                    { id: '48490', value: $user?.$id ?? '' }
+                    { id: '56023', value: $supportData?.severity ?? '' },
+                    { id: '56024', value: $organization?.billingPlan ?? '' }
                 ]
             })
         });
@@ -84,7 +144,9 @@
         $supportData = {
             message: null,
             subject: null,
-            category: 'general',
+            category: 'technical',
+            topic: undefined,
+            severity: undefined,
             file: null,
             project: null
         };
@@ -99,9 +161,42 @@
         endDay: 'Friday' as WeekDay
     };
 
-    $: supportTimings = `${utcHourToLocaleHour(workTimings.start)} - ${utcHourToLocaleHour(workTimings.end)} ${localeTimezoneName()}`;
-    $: supportWeekDays = `${utcWeekDayToLocaleWeekDay(workTimings.startDay, workTimings.start)} - ${utcWeekDayToLocaleWeekDay(workTimings.endDay, workTimings.end)}`;
+    const supportTimings = $derived(
+        `${utcHourToLocaleHour(workTimings.start)} - ${utcHourToLocaleHour(workTimings.end)} ${localeTimezoneName()}`
+    );
+    const supportWeekDays = $derived(
+        `${utcWeekDayToLocaleWeekDay(workTimings.startDay, workTimings.start)} - ${utcWeekDayToLocaleWeekDay(workTimings.endDay, workTimings.end)}`
+    );
 </script>
+
+{#snippet severityPopover()}
+    <Popover let:toggle>
+        <Button extraCompact size="s" on:click={toggle}>
+            <Icon size="s" icon={IconInfo} />
+        </Button>
+        <div slot="tooltip" style="max-width: 400px;">
+            <Layout.Stack gap="s">
+                <Typography.Text>
+                    <b>Critical:</b> System is down or a critical component is non-functional, causing
+                    a complete stoppage of work or significant business impact.
+                </Typography.Text>
+                <Typography.Text>
+                    <b>High:</b> Major functionality is impaired, but a workaround is available, or a
+                    critical component is significantly degraded.
+                </Typography.Text>
+                <Typography.Text>
+                    <b>Medium:</b> Minor functionality is impaired without significant business impact.
+                </Typography.Text>
+                <Typography.Text>
+                    <b>Low:</b> Issue has minor impact on business operations; workaround is not necessary.
+                </Typography.Text>
+                <Typography.Text>
+                    <b>Question:</b> Requests for information, general guidance, or feature requests.
+                </Typography.Text>
+            </Layout.Stack>
+        </div>
+    </Popover>
+{/snippet}
 
 <Wizard title="Contact us" confirmExit={true}>
     <Form onSubmit={handleSubmit}>
@@ -113,24 +208,48 @@
             </Layout.Stack>
             <Layout.Stack gap="s">
                 <Typography.Text color="--fgcolor-neutral-secondary"
-                    >Choose a topic</Typography.Text>
+                    >Choose a category</Typography.Text>
                 <Layout.Stack gap="s" direction="row">
-                    {#each ['general', 'billing', 'technical'] as category}
+                    {#each categories as category}
                         <Tag
                             on:click={() => {
-                                $supportData.category = category;
+                                if ($supportData.category !== category.value) {
+                                    $supportData.topic = undefined;
+                                }
+                                $supportData.category = category.value;
                             }}
-                            selected={$supportData.category === category}>{category}</Tag>
+                            selected={$supportData.category === category.value}
+                            >{category.label}</Tag>
                     {/each}
                 </Layout.Stack>
             </Layout.Stack>
-            <InputSelect
-                required
+            {#if topicOptions.length > 0}
+                {#key $supportData.category}
+                    <Input.ComboBox
+                        id="topic"
+                        label="Choose a topic"
+                        placeholder="Select topic"
+                        bind:value={$supportData.topic}
+                        options={topicOptions} />
+                {/key}
+            {/if}
+            <Input.ComboBox
                 id="project"
                 label="Choose a project"
                 options={projectOptions ?? []}
                 bind:value={$supportData.project}
                 placeholder="Select project" />
+            <InputSelect
+                id="severity"
+                label="Severity"
+                options={severityOptions}
+                bind:value={$supportData.severity}
+                required
+                placeholder="Select severity">
+                <div slot="info">
+                    {@render severityPopover()}
+                </div>
+            </InputSelect>
             <InputText
                 id="subject"
                 label="Subject"
@@ -143,15 +262,16 @@
                 bind:value={$supportData.message}
                 placeholder="Type here..."
                 label="Tell us a bit more"
+                required
                 maxlength={4096} />
             <Layout.Stack direction="row" justifyContent="flex-end" gap="s">
-                <Button.Button
+                <Button
                     size="s"
-                    variant="secondary"
+                    secondary
                     on:click={() => {
                         wizard.hide();
-                    }}>Cancel</Button.Button>
-                <Button.Button size="s">Submit</Button.Button>
+                    }}>Cancel</Button>
+                <Button submit size="s">Submit</Button>
             </Layout.Stack>
         </Layout.Stack>
     </Form>

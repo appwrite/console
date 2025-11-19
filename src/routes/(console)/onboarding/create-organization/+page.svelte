@@ -27,8 +27,7 @@
                     organizationName,
                     resolvedProfile.freeTier,
                     null,
-                    resolvedProfile.organizationPlatform,
-                    null
+                    resolvedProfile.organizationPlatform
                 );
 
                 trackEvent(Submit.OrganizationCreate, {

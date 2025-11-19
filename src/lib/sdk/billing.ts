@@ -491,7 +491,7 @@ export class Billing {
         billingPlan: string,
         paymentMethodId: string,
         platform: Platform,
-        billingAddressId: string = null,
+        billingAddressId: string = undefined,
         couponId: string = null,
         invites: Array<string> = [],
         budget: number = undefined,
@@ -630,6 +630,7 @@ export class Billing {
             budget,
             taxId
         };
+
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(
             'patch',
