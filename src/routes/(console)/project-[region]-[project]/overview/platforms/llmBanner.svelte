@@ -8,7 +8,7 @@
     import { Click, trackEvent } from '$lib/actions/analytics';
     import IconAINotification from '../../databases/database-[database]/(suggestions)/icon/aiNotification.svelte';
     import Avatar from '$lib/components/avatar.svelte';
-    import CursorIcon from '../components/CursorIconLarge.svelte';
+    import CursorIcon from '$routes/(console)/project-[region]-[project]/overview/components/CursorIconLarge.svelte';
     import type { ComponentType } from 'svelte';
 
     let {

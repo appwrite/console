@@ -38,12 +38,16 @@
     let isPlatformCreated = $state(isConnectPlatform);
 
     const projectId = page.params.project;
+    const FLUTTER_RELEASES_ENDPOINT =
+        'https://api.github.com/repos/appwrite/sdk-for-flutter/releases';
+    let flutterSdkVersion = $state('20.3.0');
 
-    const alreadyExistsInstructions = `
+    function buildFlutterInstructions(version: string) {
+        return `
 Install the Appwrite Flutter SDK using the following command:
 
 \`\`\`
-flutter pub add appwrite:20.3.0
+flutter pub add appwrite:${version}
 \`\`\`
 
 From a suitable lib directory, export the Appwrite client as a global variable, hardcode the project details too:
@@ -59,7 +63,10 @@ On the homepage of the app, create a button that says "Send a ping" and when cli
 \`\`\`
 client.ping();
 \`\`\`
-    `;
+        `;
+    }
+
+    const alreadyExistsInstructions = $derived(buildFlutterInstructions(flutterSdkVersion));
 
     const gitCloneCode =
         '\ngit clone https://github.com/appwrite/starter-for-flutter\ncd starter-for-flutter\n';
@@ -134,6 +141,22 @@ client.ping();
         [PlatformType.Flutterwindows]: 'Package name'
     };
 
+    async function fetchFlutterSdkVersion() {
+        try {
+            const response = await fetch(FLUTTER_RELEASES_ENDPOINT);
+            if (!response.ok) {
+                throw new Error(`Failed to fetch Flutter releases: ${response.status}`);
+            }
+            const data = await response.json();
+            const latestTag = data?.[0]?.tag_name;
+            if (latestTag) {
+                flutterSdkVersion = latestTag;
+            }
+        } catch (error) {
+            console.error('Unable to fetch latest Flutter SDK version', error);
+        }
+    }
+
     async function createFlutterPlatform() {
         try {
             isCreatingPlatform = true;
@@ -181,6 +204,7 @@ client.ping();
     }
 
     onMount(() => {
+        fetchFlutterSdkVersion();
         const unsubscribe = realtime.forConsole(page.params.region, 'console', (response) => {
             if (response.events.includes(`projects.${projectId}.ping`)) {
                 connectionSuccessful = true;
