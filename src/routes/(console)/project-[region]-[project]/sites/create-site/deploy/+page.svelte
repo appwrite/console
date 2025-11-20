@@ -12,7 +12,7 @@
     import { IconGithub, IconPencil } from '@appwrite.io/pink-icons-svelte';
     import { onMount } from 'svelte';
     import Domain from '../domain.svelte';
-    import { Adapter, BuildRuntime, Framework, ID } from '@appwrite.io/console';
+    import { Adapter, BuildRuntime, Framework, ID, Type } from '@appwrite.io/console';
     import { CustomId } from '$lib/components';
     import { getFrameworkIcon } from '$lib/stores/sites';
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
@@ -173,7 +173,8 @@
                     repository: data.repository.name,
                     owner: data.repository.owner,
                     rootDirectory: rootDir || '.',
-                    version: latestTag ?? '1.0.0',
+                    type: Type.Tag,
+                    reference: latestTag ?? '1.0.0',
                     activate: true
                 });
 
