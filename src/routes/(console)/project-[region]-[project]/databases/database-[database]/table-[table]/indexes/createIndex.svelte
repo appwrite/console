@@ -68,11 +68,26 @@
               ]
     );
 
-    // spatial type selected -> reset column list to single empty column
-    // and the column already is not spatial type
+    // Handle index type changes and reset incompatible columns
     $effect(() => {
-        if (selectedType === IndexType.Spatial && !columnList.at(0).value) {
-            columnList = [{ value: '', order: null, length: null }];
+        if (selectedType === IndexType.Spatial) {
+            // When switching to spatial, reset to single empty column with null order
+            // or clear any non-spatial columns that were previously selected
+            const currentColumn = columnList.at(0)?.value;
+            const currentColumnObj = $table.columns.find(col => col.key === currentColumn);
+            
+            if (!currentColumn || !currentColumnObj || !isSpatialType(currentColumnObj)) {
+                columnList = [{ value: '', order: null, length: null }];
+            } else {
+                // Keep the spatial column but ensure order is null
+                columnList = [{ value: currentColumn, order: null, length: null }];
+            }
+        } else {
+            // When switching away from spatial, ensure non-spatial columns have proper order
+            const currentColumn = columnList.at(0)?.value;
+            if (currentColumn && columnList.at(0)?.order === null) {
+                columnList = [{ value: currentColumn, order: 'ASC', length: null }];
+            }
         }
     });
 
@@ -122,7 +137,25 @@
     });
 
     export async function create() {
-        if (!key || !selectedType || (selectedType !== IndexType.Spatial && addColumnDisabled)) {
+        // Validate basic requirements
+        if (!key || !selectedType) {
+            addNotification({
+                type: 'error',
+                message: 'Index key and type are required'
+            });
+            throw new Error('Index key and type are required');
+        }
+
+        // Validate column selection for spatial indexes
+        if (selectedType === IndexType.Spatial) {
+            if (!columnList.at(0)?.value) {
+                addNotification({
+                    type: 'error',
+                    message: 'Please select a spatial column for the spatial index'
+                });
+                throw new Error('Please select a spatial column for the spatial index');
+            }
+        } else if (addColumnDisabled) {
             addNotification({
                 type: 'error',
                 message: 'Selected column key or type invalid'
