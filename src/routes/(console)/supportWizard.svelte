@@ -104,7 +104,7 @@
     const topicOptions = $derived(
         ($supportData.category ? topicsByCategory[$supportData.category] || [] : []).map(
             (topic) => ({
-                value: topic.toLowerCase().replace(/ /g, '-'),
+                value: topic.toLowerCase().trim().replace(/\s+/g, '-'),
                 label: topic
             })
         )
