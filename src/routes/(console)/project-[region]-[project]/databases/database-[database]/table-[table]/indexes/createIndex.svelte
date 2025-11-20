@@ -72,21 +72,31 @@
     // Handle index type changes and reset incompatible columns
     $effect(() => {
         if (selectedType === IndexType.Spatial) {
-            // When switching to spatial, reset column list appropriately
-            const currentColumn = columnList.at(0)?.value;
-            const currentColumnObj = $table.columns.find((col) => col.key === currentColumn);
+            // When switching to spatial, normalize to a single spatial column with no order
+            const currentEntry = columnList.at(0) ?? { value: '', order: null, length: null };
+            const currentColumnObj = currentEntry.value
+                ? $table.columns.find((col) => col.key === currentEntry.value)
+                : undefined;
 
-            if (!currentColumn || !currentColumnObj || !isSpatialType(currentColumnObj)) {
-                columnList = [{ value: '', order: null, length: null }];
-            } else {
-                // Keep the spatial column but ensure order is null
-                columnList = [{ value: currentColumn, order: null, length: null }];
+            const nextEntry =
+                !currentEntry.value || !currentColumnObj || !isSpatialType(currentColumnObj)
+                    ? { value: '', order: null, length: null }
+                    : { value: currentEntry.value, order: null, length: null };
+
+            const needsUpdate =
+                columnList.length !== 1 ||
+                columnList[0].value !== nextEntry.value ||
+                columnList[0].order !== nextEntry.order ||
+                columnList[0].length !== nextEntry.length;
+
+            if (needsUpdate) {
+                columnList = [nextEntry];
             }
         } else {
             // When switching away from spatial, ensure proper order
-            const currentColumn = columnList.at(0)?.value;
-            if (currentColumn && columnList.at(0)?.order === null) {
-                columnList = [{ value: currentColumn, order: 'ASC', length: null }];
+            const currentEntry = columnList.at(0);
+            if (currentEntry?.value && currentEntry.order === null) {
+                columnList = [{ ...currentEntry, order: 'ASC' }];
             }
         }
     });
