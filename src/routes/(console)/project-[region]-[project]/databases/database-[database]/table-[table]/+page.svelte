@@ -220,9 +220,9 @@
                                     secondary
                                     class="small-button-dimensions"
                                     on:click={() => {
-                                    trackEvent(Click.DatabaseExportCsv);
-                                    goto(getTableExportUrl());
-                                }}>
+                                        trackEvent(Click.DatabaseExportCsv);
+                                        goto(getTableExportUrl());
+                                    }}>
                                     <Icon icon={IconDownload} size="s" />
                                 </Button>
 
@@ -244,7 +244,8 @@
                                         size="s" />
                                 </Button>
 
-                                <svelte:fragment slot="tooltip">{!$expandTabs ? 'Expand' : 'Collapse'}</svelte:fragment>
+                                <svelte:fragment slot="tooltip"
+                                    >{!$expandTabs ? 'Expand' : 'Collapse'}</svelte:fragment>
                             </Tooltip>
 
                             <Tooltip disabled={isRefreshing || !data.rows.total} placement="top">

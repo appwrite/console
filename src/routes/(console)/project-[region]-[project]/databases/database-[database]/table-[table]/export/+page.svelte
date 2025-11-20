@@ -4,20 +4,11 @@
     import { page } from '$app/state';
     import { goto } from '$app/navigation';
     import { Wizard } from '$lib/layout';
-    import {
-        Fieldset,
-        Layout,
-        Typography,
-        Icon,
-        Divider,
-        Tooltip,
-        Skeleton
-    } from '@appwrite.io/pink-svelte';
-    import { Button, InputText, InputSelect, InputCheckbox, Form } from '$lib/elements/forms';
+    import { Fieldset, Layout, Icon, Divider, Tooltip } from '@appwrite.io/pink-svelte';
+    import { Button, InputSelect, InputCheckbox, Form } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
-    import type { Models } from '@appwrite.io/console';
     import { table } from '../store';
     import { queries, type TagValue } from '$lib/components/filters/store';
     import { TagList } from '$lib/components/filters';

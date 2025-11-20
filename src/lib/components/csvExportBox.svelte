@@ -7,8 +7,9 @@
     import { getProjectId } from '$lib/helpers/project';
     import { addNotification } from '$lib/stores/notifications';
     import { Layout, Typography, Code } from '@appwrite.io/pink-svelte';
-    import { type Models, type Payload, Query } from '@appwrite.io/console';
+    import { type Models, type Payload } from '@appwrite.io/console';
     import { Modal } from '$lib/components';
+    import { Query } from '@appwrite.io/console';
 
     type ExportItem = {
         status: string;
@@ -16,6 +17,7 @@
         bucketId?: string;
         bucketName?: string;
         fileName?: string;
+        downloadUrl?: string;
         errors?: string[];
     };
 
@@ -23,51 +25,22 @@
 
     let exportItems = $state<ExportItemsMap>(new Map());
 
-    async function downloadExportedFile(
-        region: string,
-        project: string,
-        bucketId: string,
-        fileName: string
-    ) {
-        try {
-            const files = await sdk.forProject(region, project).storage.listFiles({
-                bucketId,
-                queries: [Query.equal('name', fileName)]
-            });
-
-            const file = files.files[0];
-
-            if (file) {
-                const downloadUrl = new URL(
-                    sdk
-                        .forProject(region, project)
-                        .storage.getFileDownload({
-                            bucketId,
-                            fileId: file.$id
-                        })
-                        .toString()
-                );
-                downloadUrl.searchParams.set('mode', 'admin');
-
-                window.open(downloadUrl.toString(), '_blank');
-            } else {
-                addNotification({
-                    type: 'error',
-                    message: `File "${fileName}" not found in bucket`
-                });
-            }
-        } catch (e) {
+    function downloadExportedFile(downloadUrl: string) {
+        if (!downloadUrl) {
             addNotification({
                 type: 'error',
-                message: `Failed to download file: ${e instanceof Error ? e.message : String(e)}`
+                message: 'Download URL not found for this export'
             });
+            return;
         }
+
+        window.open(downloadUrl, '_blank');
     }
 
     async function showCompletionNotification(
         table: string,
         bucketId: string,
-        fileName: string,
+        downloadUrl: string,
         payload: Payload
     ) {
         const isSuccess = payload.status === 'completed';
@@ -106,7 +79,7 @@
                       },
                       {
                           name: 'Download',
-                          method: () => downloadExportedFile(region, project, bucketId, fileName)
+                          method: () => downloadExportedFile(downloadUrl)
                       }
                   ]
                 : undefined
@@ -118,46 +91,17 @@
 
         const status = exportData.status;
         const resourceId = exportData.resourceId ?? '';
-        const [databaseId, tableId] = resourceId.split(':') ?? [];
+        const [_, tableId] = resourceId.split(':') ?? [];
 
         const current = exportItems.get(exportData.$id);
         let tableName = current?.table;
 
-        // Get bucket and filename from migration options
+        // Get bucket, filename, and download URL from migration options
         const options = ('options' in exportData ? exportData.options : {}) || {};
         const bucketId = options.bucketId || '';
         const fileName = options.filename || '';
+        const downloadUrl = options.downloadUrl || '';
         let bucketName = current?.bucketName;
-
-        if (!tableName && tableId) {
-            try {
-                const table = await sdk
-                    .forProject(page.params.region, page.params.project)
-                    .tablesDB.getTable({
-                        databaseId,
-                        tableId
-                    });
-                tableName = table.name;
-            } catch {
-                tableName = null;
-            }
-        }
-
-        if (!bucketName && bucketId) {
-            try {
-                const bucket = await sdk
-                    .forProject(page.params.region, page.params.project)
-                    .storage.getBucket({ bucketId });
-                bucketName = bucket.name;
-            } catch {
-                bucketName = null;
-            }
-        }
-
-        if (tableId && tableName === null) {
-            exportItems.delete(exportData.$id);
-            return;
-        }
 
         const existing = exportItems.get(exportData.$id);
 
@@ -176,6 +120,7 @@
             bucketId: bucketId,
             bucketName: bucketName,
             fileName: fileName,
+            downloadUrl: downloadUrl,
             errors: exportData.errors || []
         });
 
@@ -183,18 +128,14 @@
 
         switch (status) {
             case 'completed':
-                await downloadExportedFile(
-                    page.params.region,
-                    page.params.project,
-                    bucketId,
-                    fileName
-                );
+                console.log('Downloading because complete!', exportData)
+                downloadExportedFile(downloadUrl);
                 break;
             case 'failed':
                 await showCompletionNotification(
                     tableName ?? tableId,
                     bucketId,
-                    fileName,
+                    downloadUrl,
                     exportData
                 );
                 break;
