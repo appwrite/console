@@ -121,8 +121,7 @@
 
     const isOnIndexesPage = $derived(page.route.id?.endsWith('/indexes'));
     const navigatorPathToIndexes = $derived(
-        `${base}/project-${page.params.region}-${page.params.project}/databases/` +
-        `database-${databaseId}/table-${$table?.$id}/indexes`
+        `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/table-${$table?.$id}/indexes`
     );
 
     let initializedForOpen = $state(false);
