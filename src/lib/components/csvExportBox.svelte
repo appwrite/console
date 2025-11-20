@@ -108,11 +108,14 @@
         const isDone = (s: string) => ['completed', 'failed'].includes(s);
         const isInProgress = (s: string) => ['pending', 'processing'].includes(s);
 
-        const shouldSkip =
-            (existing && isDone(existing.status) && isInProgress(status)) ||
-            existing?.status === status;
+        // Skip if we're trying to set an in-progress status on a completed migration
+        const shouldSkip = existing && isDone(existing.status) && isInProgress(status);
 
-        if (shouldSkip) return;
+        const hasNewData =
+            downloadUrl && (!existing?.downloadUrl || existing.downloadUrl !== downloadUrl);
+        const shouldSkipDuplicate = existing?.status === status && !hasNewData;
+
+        if (shouldSkip || shouldSkipDuplicate) return;
 
         exportItems.set(exportData.$id, {
             status,
@@ -128,7 +131,6 @@
 
         switch (status) {
             case 'completed':
-                console.log('Downloading because complete!', exportData)
                 downloadExportedFile(downloadUrl);
                 break;
             case 'failed':
