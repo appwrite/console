@@ -195,7 +195,10 @@ export enum Click {
     VariablesCreateClick = 'click_variable_create',
     VariablesUpdateClick = 'click_variable_update',
     VariablesImportClick = 'click_variable_import',
-    WebsiteOpenClick = 'click_open_website'
+    WebsiteOpenClick = 'click_open_website',
+    CopyPromptStarterKitClick = 'click_copy_prompt_starter_kit',
+    OpenInCursorClick = 'click_open_in_cursor',
+    OpenInLovableClick = 'click_open_in_lovable'
 }
 
 export enum Submit {
@@ -357,6 +360,7 @@ export enum Submit {
     BucketUpdateSize = 'submit_bucket_update_size',
     BucketUpdateCompression = 'submit_bucket_update_compression',
     BucketUpdateExtensions = 'submit_bucket_update_extensions',
+    BucketUpdateTransformations = 'submit_bucket_update_transformations',
     FileCreate = 'submit_file_create',
     FileDelete = 'submit_file_delete',
     FileUpdatePermissions = 'submit_file_update_permissions',

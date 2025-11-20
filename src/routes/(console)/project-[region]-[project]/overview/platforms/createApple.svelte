@@ -28,6 +28,7 @@
     import { app } from '$lib/stores/app';
     import { project } from '../../store';
     import { getCorrectTitle, type PlatformProps } from './store';
+    import LlmBanner from './llmBanner.svelte';
 
     let { isConnectPlatform = false, platform = PlatformType.Appleios }: PlatformProps = $props();
 
@@ -38,6 +39,30 @@
 
     const projectId = page.params.project;
 
+    const alreadyExistsInstructions = `
+Install the Appwrite iOS SDK using the following package URL:
+
+\`\`\`
+https://github.com/appwrite/sdk-for-apple
+\`\`\`
+
+From a suitable lib directory, export the Appwrite client as a global variable:
+
+\`\`\`
+let client = Client()
+    .setEndpoint("${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}")
+    .setProject("${projectId}")
+
+let account = Account(client)
+\`\`\`
+
+On the homepage of the app, create a button that says "Send a ping" and when clicked, it should call the following function:
+
+\`\`\`
+client.ping()
+\`\`\`
+`;
+
     const gitCloneCode =
         '\ngit clone https://github.com/appwrite/starter-for-ios\ncd starter-for-ios\n';
 
@@ -45,7 +70,7 @@
 APPWRITE_PROJECT_NAME: "${$project.name}"
 APPWRITE_PUBLIC_ENDPOINT: "${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}"`;
 
-    let platforms: { [key: string]: PlatformType } = {
+    const platforms: { [key: string]: PlatformType } = {
         iOS: PlatformType.Appleios,
         macOS: PlatformType.Applemacos,
         watchOS: PlatformType.Applewatchos,
@@ -199,6 +224,12 @@ APPWRITE_PUBLIC_ENDPOINT: "${sdk.forProject(page.params.region, page.params.proj
         {#if isPlatformCreated}
             <Fieldset legend="Clone starter" badge="Optional">
                 <Layout.Stack gap="l">
+                    <LlmBanner
+                        platform="apple"
+                        {configCode}
+                        {alreadyExistsInstructions}
+                        openers={['cursor']} />
+
                     <Typography.Text variant="m-500">
                         1. If you're starting a new project, you can clone our starter kit from
                         GitHub using the terminal or XCode.
