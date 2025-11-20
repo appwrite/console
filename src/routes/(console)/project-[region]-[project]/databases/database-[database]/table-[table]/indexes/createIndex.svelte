@@ -71,11 +71,10 @@
     // Handle index type changes and reset incompatible columns
     $effect(() => {
         if (selectedType === IndexType.Spatial) {
-            // When switching to spatial, reset to single empty column with null order
-            // or clear any non-spatial columns that were previously selected
+            // When switching to spatial, reset column list appropriately
             const currentColumn = columnList.at(0)?.value;
-            const currentColumnObj = $table.columns.find(col => col.key === currentColumn);
-            
+            const currentColumnObj = $table.columns.find((col) => col.key === currentColumn);
+
             if (!currentColumn || !currentColumnObj || !isSpatialType(currentColumnObj)) {
                 columnList = [{ value: '', order: null, length: null }];
             } else {
@@ -83,7 +82,7 @@
                 columnList = [{ value: currentColumn, order: null, length: null }];
             }
         } else {
-            // When switching away from spatial, ensure non-spatial columns have proper order
+            // When switching away from spatial, ensure proper order
             const currentColumn = columnList.at(0)?.value;
             if (currentColumn && columnList.at(0)?.order === null) {
                 columnList = [{ value: currentColumn, order: 'ASC', length: null }];
@@ -121,7 +120,8 @@
 
     const isOnIndexesPage = $derived(page.route.id?.endsWith('/indexes'));
     const navigatorPathToIndexes = $derived(
-        `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/table-${$table?.$id}/indexes`
+        `${base}/project-${page.params.region}-${page.params.project}/databases/` +
+        `database-${databaseId}/table-${$table?.$id}/indexes`
     );
 
     let initializedForOpen = $state(false);
