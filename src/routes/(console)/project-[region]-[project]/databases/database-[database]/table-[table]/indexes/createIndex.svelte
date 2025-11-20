@@ -36,7 +36,8 @@
                 if (selectedType === IndexType.Spatial) {
                     return isSpatialType(column); // keep only spatial
                 }
-                return !isRelationship(column) && !isSpatialType(column); // keep non-relationship and non-spatial
+                // keep non-relationship and non-spatial
+                return !isRelationship(column) && !isSpatialType(column);
             })
             .map((column) => ({
                 value: column.key,
