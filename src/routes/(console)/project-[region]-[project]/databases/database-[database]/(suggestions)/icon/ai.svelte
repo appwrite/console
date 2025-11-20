@@ -82,9 +82,4 @@
             aspect-ratio: 1/1;
         }
     }
-
-    :global(.ai-icon-holder.notification) {
-        width: 36px !important;
-        height: 32px !important;
-    }
 </style>

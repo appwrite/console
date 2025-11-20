@@ -160,7 +160,7 @@
                         owner: data.template.providerOwner,
                         rootDirectory: framework.providerRootDirectory,
                         type: Type.Tag,
-                        reference: data.template.providerVersion || '1.0.0',
+                        reference: data.template.providerVersion,
                         activate: true
                     });
 

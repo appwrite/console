@@ -180,7 +180,7 @@
                         owner: data.template.providerOwner || undefined,
                         rootDirectory: rt?.providerRootDirectory || undefined,
                         type: Type.Tag,
-                        reference: data.template.providerVersion || '1.0.0',
+                        reference: data.template.providerVersion || undefined,
                         activate: true
                     });
 
