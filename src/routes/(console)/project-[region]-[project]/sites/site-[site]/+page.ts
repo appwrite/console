@@ -46,11 +46,18 @@ export const load = async ({ params, depends, parent }) => {
         })
     ]);
 
-    const deployment = deploymentList?.total
-        ? await sdk
-              .forProject(params.region, params.project)
-              .sites.getDeployment({ siteId: params.site, deploymentId: site.deploymentId })
-        : null;
+    let deployment = null;
+    if (deploymentList?.total && site.deploymentId) {
+        try {
+            deployment = await sdk
+                .forProject(params.region, params.project)
+                .sites.getDeployment({ siteId: params.site, deploymentId: site.deploymentId });
+        } catch (error) {
+            // active deployment with the requested ID could not be found
+            deployment = null;
+        }
+    }
+
     return {
         site,
         deploymentList,

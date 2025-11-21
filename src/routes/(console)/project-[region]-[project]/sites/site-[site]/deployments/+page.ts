@@ -37,17 +37,24 @@ export const load = async ({ params, depends, url, route, parent }) => {
         sdk.forProject(params.region, params.project).vcs.listInstallations()
     ]);
 
+    let activeDeployment = null;
+    if (site.deploymentId && deploymentList?.total) {
+        try {
+            activeDeployment = await sdk
+                .forProject(params.region, params.project)
+                .sites.getDeployment({ siteId: params.site, deploymentId: site.deploymentId });
+        } catch (error) {
+            // active deployment with the requested ID could not be found
+            activeDeployment = null;
+        }
+    }
+
     return {
         offset,
         limit,
         query,
         deploymentList,
-        activeDeployment:
-            site.deploymentId && deploymentList?.total
-                ? await sdk
-                      .forProject(params.region, params.project)
-                      .sites.getDeployment({ siteId: params.site, deploymentId: site.deploymentId })
-                : null,
+        activeDeployment,
         installations
     };
 };

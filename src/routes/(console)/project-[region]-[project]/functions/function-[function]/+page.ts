@@ -15,17 +15,27 @@ export const load: PageLoad = async ({ params, depends, url, route, parent }) =>
 
     const parsedQueries = queryParamToMap(query || '[]');
     queries.set(parsedQueries);
+    let activeDeployment = null;
+    if (data.function.deploymentId) {
+        try {
+            activeDeployment = await sdk
+                .forProject(params.region, params.project)
+                .functions.getDeployment({
+                    functionId: params.function,
+                    deploymentId: data.function.deploymentId
+                });
+        } catch (error) {
+            // active deployment with the requested ID could not be found
+            activeDeployment = null;
+        }
+    }
+
     return {
         offset,
         limit,
         query,
         installations: data.installations,
-        activeDeployment: data.function.deploymentId
-            ? await sdk.forProject(params.region, params.project).functions.getDeployment({
-                  functionId: params.function,
-                  deploymentId: data.function.deploymentId
-              })
-            : null,
+        activeDeployment,
         deploymentList: await sdk
             .forProject(params.region, params.project)
             .functions.listDeployments({
