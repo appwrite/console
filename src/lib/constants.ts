@@ -253,14 +253,13 @@ export const scopes: {
     },
     {
         scope: 'indexes.read',
-        description: "Access to read your project's database tables's indexes",
+        description: "Access to read your project's database table's indexes",
         category: 'Database',
         icon: 'database'
     },
     {
         scope: 'indexes.write',
-        description:
-            "Access to create, update, and delete your project's database tables's indexes",
+        description: "Access to create, update, and delete your project's database table's indexes",
         category: 'Database',
         icon: 'database'
     },
