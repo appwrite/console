@@ -242,19 +242,19 @@
 
     $: organizationId = currentProject?.teamId;
 
-    // Track navigation to/from project pages to detect when cache might be stale
+    // Invalidate cache when navigating from non-project page back to project page
+    // This handles cases like project deletion where user is redirected to org page
     $: {
         const isOnProjectPage = !!currentProject;
-        if (!isOnProjectPage && wasOnProjectPage) {
-            // Navigated away from a project page - mark cache as potentially stale
-            wasOnProjectPage = false;
-        } else if (isOnProjectPage && !wasOnProjectPage && loadedProjects.projects.length > 0) {
-            // Navigated back to a project page - invalidate cache
+        const hasNavigatedBackToProjects =
+            isOnProjectPage && !wasOnProjectPage && loadedProjects.projects.length > 0;
+
+        if (hasNavigatedBackToProjects) {
+            // Clear cache to force reload after being away from project pages
             loadedProjects = { total: 0, projects: [] };
-            wasOnProjectPage = true;
-        } else if (isOnProjectPage) {
-            wasOnProjectPage = true;
         }
+
+        wasOnProjectPage = isOnProjectPage;
     }
 
     $: shouldReloadProjects = isLoadingProjects
