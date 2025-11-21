@@ -74,7 +74,6 @@
 
     let isLoadingProjects = false;
     let loadedProjects: Models.ProjectList = { total: 0, projects: [] };
-    let wasOnProjectPage = false;
 
     export let organizations: Organization[] = [];
     export let currentProject: Models.Project | null = null;
@@ -242,27 +241,15 @@
 
     $: organizationId = currentProject?.teamId;
 
-    // Invalidate cache when navigating from non-project page back to project page
-    // This handles cases like project deletion where user is redirected to org page
-    $: {
-        const isOnProjectPage = !!currentProject;
-        const hasNavigatedBackToProjects =
-            isOnProjectPage && !wasOnProjectPage && loadedProjects.projects.length > 0;
-
-        if (hasNavigatedBackToProjects) {
-            // Clear cache to force reload after being away from project pages
-            loadedProjects = { total: 0, projects: [] };
-        }
-
-        wasOnProjectPage = isOnProjectPage;
-    }
-
     $: shouldReloadProjects = isLoadingProjects
         ? false
         : currentProject && loadedProjects.projects.length
           ? // All projects in cache belong to same org, so check first project's teamId
             loadedProjects.projects[0].teamId != currentProject.teamId ||
-            !loadedProjects.projects.some((p) => p.$id === currentProject.$id)
+            !loadedProjects.projects.some((p) => p.$id === currentProject.$id) ||
+            // Reload if total project count changed (handles creation/deletion)
+            (page.data?.allProjectsCount !== undefined &&
+                loadedProjects.total !== page.data.allProjectsCount)
           : !loadedProjects.projects.length;
 
     $: if (shouldReloadProjects) {
