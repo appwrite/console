@@ -1,4 +1,5 @@
 import { Query } from '@appwrite.io/console';
+import type { Models } from '@appwrite.io/console';
 import { sdk } from '$lib/stores/sdk';
 import { getLimit, getPage, getQuery, pageToOffset } from '$lib/helpers/load';
 import { Dependencies, PAGE_LIMIT } from '$lib/constants';
@@ -15,7 +16,7 @@ export const load: PageLoad = async ({ params, depends, url, route, parent }) =>
 
     const parsedQueries = queryParamToMap(query || '[]');
     queries.set(parsedQueries);
-    let activeDeployment = null;
+    let activeDeployment: Models.Deployment | null = null;
     if (data.function.deploymentId) {
         try {
             activeDeployment = await sdk

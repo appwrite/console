@@ -1,4 +1,5 @@
 import { Query } from '@appwrite.io/console';
+import type { Models } from '@appwrite.io/console';
 import { sdk } from '$lib/stores/sdk';
 import { getLimit, getPage, getQuery, pageToOffset } from '$lib/helpers/load';
 import { Dependencies, PAGE_LIMIT } from '$lib/constants';
@@ -37,7 +38,7 @@ export const load = async ({ params, depends, url, route, parent }) => {
         sdk.forProject(params.region, params.project).vcs.listInstallations()
     ]);
 
-    let activeDeployment = null;
+    let activeDeployment: Models.Deployment | null = null;
     if (site.deploymentId && deploymentList?.total) {
         try {
             activeDeployment = await sdk
