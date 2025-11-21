@@ -1,7 +1,6 @@
 import { sdk } from '$lib/stores/sdk';
 import { Dependencies } from '$lib/constants';
-import { Query } from '@appwrite.io/console';
-import type { Models } from '@appwrite.io/console';
+import { Query, type Models } from '@appwrite.io/console';
 import { RuleType } from '$lib/stores/sdk';
 import { DeploymentResourceType } from '$lib/stores/sdk';
 

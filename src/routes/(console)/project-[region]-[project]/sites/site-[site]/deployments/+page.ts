@@ -1,5 +1,4 @@
-import { Query } from '@appwrite.io/console';
-import type { Models } from '@appwrite.io/console';
+import { Query, type Models } from '@appwrite.io/console';
 import { sdk } from '$lib/stores/sdk';
 import { getLimit, getPage, getQuery, pageToOffset } from '$lib/helpers/load';
 import { Dependencies, PAGE_LIMIT } from '$lib/constants';
