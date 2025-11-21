@@ -74,6 +74,7 @@
 
     let isLoadingProjects = false;
     let loadedProjects: Models.ProjectList = { total: 0, projects: [] };
+    let wasOnProjectPage = false;
 
     export let organizations: Organization[] = [];
     export let currentProject: Models.Project | null = null;
@@ -240,6 +241,21 @@
     $: derivedKey = `${selectedOrg?.$id}-${currentProject?.$id}-${ID.unique()}`;
 
     $: organizationId = currentProject?.teamId;
+
+    // Track navigation to/from project pages to detect when cache might be stale
+    $: {
+        const isOnProjectPage = !!currentProject;
+        if (!isOnProjectPage && wasOnProjectPage) {
+            // Navigated away from a project page - mark cache as potentially stale
+            wasOnProjectPage = false;
+        } else if (isOnProjectPage && !wasOnProjectPage && loadedProjects.projects.length > 0) {
+            // Navigated back to a project page - invalidate cache
+            loadedProjects = { total: 0, projects: [] };
+            wasOnProjectPage = true;
+        } else if (isOnProjectPage) {
+            wasOnProjectPage = true;
+        }
+    }
 
     $: shouldReloadProjects = isLoadingProjects
         ? false
