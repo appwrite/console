@@ -1,12 +1,11 @@
 <script lang="ts">
     import { Button, InputText } from '$lib/elements/forms';
-    import { DropList, GridItem1, CardContainer, Modal } from '$lib/components';
+    import { GridItem1, CardContainer, Modal } from '$lib/components';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import {
         Badge,
         Icon,
         Typography,
-        Tag,
         Accordion,
         ActionMenu,
         Popover,
@@ -20,7 +19,6 @@
         IconFlutter,
         IconReact,
         IconUnity,
-        IconInfo,
         IconDotsHorizontal,
         IconInboxIn,
         IconSwitchHorizontal,
@@ -29,7 +27,6 @@
     import { getPlatformInfo } from '$lib/helpers/platform';
     import { Status, type Models } from '@appwrite.io/console';
     import type { ComponentType } from 'svelte';
-    import { BillingPlan } from '$lib/constants';
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { sdk } from '$lib/stores/sdk';
@@ -52,8 +49,9 @@
 
     let { projectsToArchive, organization, currentPlan }: Props = $props();
 
-    // Track Read-only info droplist per archived project
-    let readOnlyInfoOpen = $state<Record<string, boolean>>({});
+    // Check if current plan order is less than Pro (order < 1 means FREE plan)
+    let isPlanBelowPro = $derived(currentPlan?.order < 1);
+
     let showUnarchiveModal = $state(false);
     let projectToUnarchive = $state<Models.Project | null>(null);
     let showDeleteModal = $state(false);
@@ -97,7 +95,7 @@
     function isUnarchiveDisabled(): boolean {
         if (!organization || !currentPlan) return true;
 
-        if (organization.billingPlan === BillingPlan.FREE) {
+        if (isPlanBelowPro) {
             const currentProjectCount = organization.projects?.length || 0;
             const projectLimit = currentPlan.projects || 0;
 
@@ -196,10 +194,15 @@
 
 {#if projectsToArchive.length > 0}
     <div class="archive-projects-margin-top">
-        <Accordion title="Archived projects" badge={`${projectsToArchive.length}`}>
+        <Accordion
+            title={isPlanBelowPro ? 'Archived projects' : 'Pending archive'}
+            badge={`${projectsToArchive.length}`}>
             <Typography.Text tag="p" size="s">
-                These projects have been archived and are read-only. You can view and migrate their
-                data.
+                {#if isPlanBelowPro}
+                    These projects are archived and require a plan upgrade to restore access.
+                {:else}
+                    These projects will be archived at the end of your billing cycle.
+                {/if}
             </Typography.Text>
 
             <div class="archive-projects-margin">
@@ -216,36 +219,6 @@
                             <svelte:fragment slot="title">{formatted}</svelte:fragment>
                             <svelte:fragment slot="status">
                                 <div class="status-container">
-                                    <DropList
-                                        bind:show={readOnlyInfoOpen[project.$id]}
-                                        placement="bottom-start"
-                                        noArrow>
-                                        <Tag
-                                            size="s"
-                                            style="white-space: nowrap;"
-                                            on:click={(e) => {
-                                                e.preventDefault();
-                                                e.stopPropagation();
-                                                readOnlyInfoOpen = {
-                                                    ...readOnlyInfoOpen,
-                                                    [project.$id]: !readOnlyInfoOpen[project.$id]
-                                                };
-                                            }}>
-                                            <Icon icon={IconInfo} size="s" />
-                                            <span>Read only</span>
-                                        </Tag>
-                                        <svelte:fragment slot="list">
-                                            <li
-                                                class="drop-list-item u-width-250"
-                                                style="padding: var(--space-5, 12px) var(--space-6, 16px)">
-                                                <span class="u-block u-mb-8">
-                                                    Archived projects are read-only. You can view
-                                                    and migrate their data, but they no longer
-                                                    accept edits or requests.
-                                                </span>
-                                            </li>
-                                        </svelte:fragment>
-                                    </DropList>
                                     <Popover let:toggle padding="none" placement="bottom-end">
                                         <Button
                                             text
@@ -267,6 +240,7 @@
                                                 >Unarchive project</ActionMenu.Item.Button>
                                             <ActionMenu.Item.Button
                                                 leadingIcon={IconSwitchHorizontal}
+                                                disabled={isUnarchiveDisabled()}
                                                 on:click={() => handleMigrateProject(project)}
                                                 >Migrate project</ActionMenu.Item.Button>
                                             <div class="action-menu-divider">
