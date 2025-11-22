@@ -1,7 +1,7 @@
 <script lang="ts" context="module">
     type Context = Readable<{
         isInitialPanel: boolean;
-        open: boolean;
+        open: boolean
     }>;
     type ReadableValue<T> = T extends Readable<infer U> ? U : never;
 
