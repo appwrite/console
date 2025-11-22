@@ -5,8 +5,6 @@
     import { Badge, Icon, Layout, Tag, Typography } from '@appwrite.io/pink-svelte';
     import { goto } from '$app/navigation';
     import { upgradeURL } from '$lib/stores/billing';
-    import { BillingPlan } from '$lib/constants';
-    import { organization } from '$lib/stores/organization';
 
     export let isFlex = true;
     export let title: string;
@@ -50,7 +48,7 @@
                     paddingBlock="var(--space-5, 12px)"
                     paddingInline="var(--space-6, 16px)"
                     resetListPadding>
-                    {#if $organization?.billingPlan === BillingPlan.PRO}
+                    {#if maxPolicies === 1}
                         <Tag
                             size="s"
                             style="white-space: nowrap; max-width: none;"

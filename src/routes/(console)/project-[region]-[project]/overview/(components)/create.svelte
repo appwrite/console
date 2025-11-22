@@ -24,8 +24,8 @@
     let isSubmitting = writable(false);
 
     let scopes: string[] = [];
-    let name = '',
-        expire = '';
+    let name = '';
+    let expire: string | null = null;
 
     async function create() {
         try {
