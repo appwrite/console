@@ -1,7 +1,15 @@
 import type { Models } from '@appwrite.io/console';
 
 /**
- * Example (GitHub): https://github.com/appwrite/templates-for-sites/tree/main/sveltekit/starter
+ * build VCS repo URL from the template response model.
+ * supports GitHub, GitLab, and Bitbucket.
+ *
+ * important: We use 'master' as the branch name because GitHub (and other providers)
+ * redirect 'master' to the repository's default branch, regardless of whether
+ * its actually named 'main', 'master', or something else. This ensures the
+ * link works across all repositories without needing to know their default branch.
+ *
+ * Example (GitHub): https://github.com/appwrite/templates-for-sites/tree/master/sveltekit/starter
  */
 export function getTemplateSourceUrl(
     t: Models.TemplateSite | Models.TemplateFunction
@@ -44,12 +52,13 @@ export function getTemplateSourceUrl(
         const normalizedPath = folderPath.replace(/^\/+|\/+$/g, '');
         if (normalizedPath) {
             const providerLower = provider.toLowerCase();
+            // Use 'master' as branch name - GitHub/GitLab/Bitbucket redirect it to default branch
             if (providerLower === 'github') {
-                url = `${url}/tree/main/${normalizedPath}`;
+                url = `${url}/tree/master/${normalizedPath}`;
             } else if (providerLower === 'gitlab') {
-                url = `${url}/-/tree/main/${normalizedPath}`;
+                url = `${url}/-/tree/master/${normalizedPath}`;
             } else if (providerLower === 'bitbucket') {
-                url = `${url}/src/main/${normalizedPath}`;
+                url = `${url}/src/master/${normalizedPath}`;
             }
         }
     }
