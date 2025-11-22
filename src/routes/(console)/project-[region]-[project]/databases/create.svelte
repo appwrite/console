@@ -87,17 +87,7 @@
                     name
                 });
 
-            try {
-                await createPolicies(databaseId);
-            } catch (policyError) {
-                addNotification({
-                    type: 'warning',
-                    message:
-                        policyError.message ||
-                        'Failed to create backup policies. The database was created successfully.'
-                });
-                trackError(policyError, Submit.DatabaseCreate);
-            }
+            await createPolicies(databaseId);
 
             showCreate = false;
             dispatch('created', database);
