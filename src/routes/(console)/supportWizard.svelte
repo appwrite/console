@@ -38,8 +38,16 @@
 
     // Topic options based on category
     const topicsByCategory = {
-        general: ['Security', 'Compliance', 'Performance'],
-        billing: ['Invoices', 'Plans'],
+        general: [
+            'Security',
+            'Compliance',
+            'Performance',
+            'Account',
+            'Project',
+            'Regions',
+            'Other'
+        ],
+        billing: ['Invoice', 'Plans', 'Payment methods', 'Downgrade', 'Refund', 'Usage', 'Other'],
         technical: [
             'Auth',
             'Databases',
@@ -50,7 +58,14 @@
             'Migrations',
             'Webhooks',
             'SDKs',
-            'Console'
+            'Console',
+            'Backups',
+            'Blocked project',
+            'Domains',
+            'Outage',
+            'Platforms',
+            'Sites',
+            'Other'
         ]
     };
 
@@ -90,7 +105,7 @@
     const topicOptions = $derived(
         ($supportData.category ? topicsByCategory[$supportData.category] || [] : []).map(
             (topic) => ({
-                value: topic.toLowerCase(),
+                value: topic.toLowerCase().trim().replace(/\s+/g, '-'),
                 label: topic
             })
         )

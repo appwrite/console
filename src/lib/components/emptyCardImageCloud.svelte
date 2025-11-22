@@ -1,13 +1,20 @@
-<script>
-    import { getNextTier, tierToPlan } from '$lib/stores/billing';
+<script lang="ts">
+    import { isSmallViewport } from '$lib/stores/viewport';
     import { organization } from '$lib/stores/organization';
+    import { getNextTier, tierToPlan } from '$lib/stores/billing';
     import { Card, Layout, Typography } from '@appwrite.io/pink-svelte';
 
     export let source = 'empty_state_card';
+    export let responsive = false;
+
+    // type def for Layout.Stack!
+    let direction: 'column' | 'row' | 'row-reverse' | 'column-reverse' = 'row';
+
+    $: direction = responsive ? ($isSmallViewport ? 'column' : 'row') : 'row';
 </script>
 
 <Card.Base variant="secondary" padding="s" radius="s">
-    <Layout.Stack direction="row" gap="l">
+    <Layout.Stack {direction} gap="l">
         {#if $$slots?.image}
             <div style="flex-shrink:0">
                 <slot name="image" />
