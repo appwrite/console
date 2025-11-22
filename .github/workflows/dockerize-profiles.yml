@@ -50,4 +50,4 @@ jobs:
                   build-args: |
                       "PUBLIC_CONSOLE_MODE=cloud"
                       "PUBLIC_CONSOLE_PROFILE=studio"
-                      "PUBLIC_APPWRITE_MULTI_REGOIN=false"
+                      "PUBLIC_APPWRITE_MULTI_REGION=false"
