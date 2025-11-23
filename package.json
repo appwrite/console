@@ -11,8 +11,8 @@
         "check:watch": "svelte-check --tsconfig ./tsconfig.json --watch",
         "format": "prettier --write --cache .",
         "lint": "prettier --check . && eslint .",
-        "test": "TZ=EST vitest run",
-        "test:ui": "TZ=EST vitest --ui",
+        "test:unit": "TZ=EST vitest run",
+        "test:unit-ui": "TZ=EST vitest --ui",
         "test:watch": "TZ=EST vitest watch",
         "e2e": "playwright test",
         "e2e:ui": "playwright test --ui"
