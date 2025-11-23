@@ -11,7 +11,7 @@ const config: PlaywrightTestConfig = {
         trace: 'on-first-retry'
     },
     webServer: {
-        timeout: 120000,
+        timeout: 180000,
         env: {
             PUBLIC_CONSOLE_PROFILE: 'console',
             PUBLIC_AI_SERVICE_BASE_URL: 'http://appwrite.test/v1',
