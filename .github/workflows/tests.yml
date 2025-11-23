@@ -33,7 +33,7 @@ jobs:
               run: bun lint
 
             - name: Unit Tests
-              run: bun test
+              run: bun test:unit
 
             - name: Build Console
               run: bun run build
