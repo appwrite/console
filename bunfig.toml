@@ -1,0 +1,5 @@
+# Bun configuration file
+# https://bun.sh/docs/runtime/bunfig
+
+[test]
+root = "./src"
