@@ -3,7 +3,7 @@ host = "::"
 port = 80
 
 root = "/public"
-log-level = "info"
+log-level = "error"
 
 cache-control-headers = false
 security-headers = false
