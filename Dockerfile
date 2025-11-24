@@ -45,9 +45,11 @@ ENV NODE_OPTIONS=--max_old_space_size=8192
 
 RUN pnpm run build
 
-FROM flashspys/nginx-static
+FROM joseluisq/static-web-server:2
 
 EXPOSE 80
 
-COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
-COPY --from=build /app/build /usr/share/nginx/html/console
+COPY docker/sws.toml /sws.toml
+COPY --from=build /app/build /public/console
+
+ENV SERVER_CONFIG_FILE=/sws.toml
