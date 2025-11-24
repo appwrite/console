@@ -40,7 +40,6 @@ import { user } from './user';
 import BudgetLimitAlert from '$routes/(console)/organization-[organization]/budgetLimitAlert.svelte';
 import TeamReadonlyAlert from '$routes/(console)/organization-[organization]/teamReadonlyAlert.svelte';
 import ProjectsLimit from '$lib/components/billing/alerts/projectsLimit.svelte';
-import EnterpriseTrial from '$routes/(console)/organization-[organization]/enterpriseTrial.svelte';
 import { ProfileMode, resolvedProfile } from '$lib/profiles/index.svelte';
 import { isFreePlan } from '$lib/helpers/billing';
 
@@ -293,18 +292,6 @@ export function isServiceLimited(serviceId: PlanServices, plan: Tier, total: num
     const isLimited = limit !== 0 && limit < Infinity;
     const hasUsageFees = checkForUsageFees(plan, serviceId);
     return isLimited && total >= limit && !hasUsageFees;
-}
-
-export function checkForEnterpriseTrial(org: Organization) {
-    if (!org || !org.billingNextInvoiceDate) return;
-    if (calculateEnterpriseTrial(org) > 0) {
-        headerAlert.add({
-            id: 'teamEnterpriseTrial',
-            component: EnterpriseTrial,
-            show: true,
-            importance: 11
-        });
-    }
 }
 
 export function calculateEnterpriseTrial(org: Organization) {
