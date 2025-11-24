@@ -33,7 +33,7 @@ jobs:
               run: bunx playwright install --with-deps chromium
 
             - name: E2E Tests
-              run: bun run e2e
+              run: bun test:e2e
             - uses: actions/upload-artifact@v4
               if: ${{ !cancelled() }}
               with:
