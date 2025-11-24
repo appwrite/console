@@ -294,21 +294,6 @@ export function isServiceLimited(serviceId: PlanServices, plan: Tier, total: num
     return isLimited && total >= limit && !hasUsageFees;
 }
 
-export function calculateEnterpriseTrial(org: Organization) {
-    if (!org || !org.billingNextInvoiceDate) return 0;
-    const endDate = new Date(org.billingNextInvoiceDate);
-    const startDate = new Date(org.billingCurrentInvoiceDate);
-    const today = new Date();
-
-    let diffCycle = endDate.getTime() - startDate.getTime();
-    diffCycle = Math.ceil(diffCycle / (1000 * 60 * 60 * 24));
-    if (diffCycle === 14) {
-        const remaining = endDate.getTime() - today.getTime();
-        return Math.ceil(remaining / (1000 * 60 * 60 * 24));
-    }
-    return 0;
-}
-
 export function calculateTrialDay(org: Organization) {
     if (isFreePlan(org?.billingPlan)) return false;
     const endDate = new Date(org?.billingStartDate);

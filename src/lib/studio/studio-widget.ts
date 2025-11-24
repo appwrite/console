@@ -8,6 +8,7 @@ import DEV_CSS_URL from '@imagine.dev/web-components/imagine-web-components.css?
 import { getSessionId } from '$lib/sentry';
 import type * as WebComponentsType from '@imagine.dev/web-components/web-components';
 import * as Sentry from '@sentry/sveltekit';
+import { headerAlert } from '$lib/stores/headerAlert';
 
 const COMPONENT_SELECTOR = 'imagine-web-components-wrapper[data-appwrite-studio]';
 const STYLE_ATTRIBUTE = 'data-appwrite-studio-style';
@@ -28,10 +29,6 @@ let previousDocumentOverflow: string | null = null;
 
 function hasDocument(): boolean {
     return typeof document !== 'undefined';
-}
-
-function hasBannerAttached(): boolean {
-    return !!document.querySelector('section.alert');
 }
 
 function disableBodyScroll() {
@@ -199,7 +196,7 @@ function updatePosition() {
         return;
     }
 
-    const bannerOffset = hasBannerAttached() ? BLOCK_BANNER_OFFSET : 0;
+    const bannerOffset = headerAlert.isShowing() ? BLOCK_BANNER_OFFSET : 0;
 
     const rect = anchorElement.getBoundingClientRect();
     const { offsetX, offsetY } = currentOptions;
