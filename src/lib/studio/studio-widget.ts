@@ -8,9 +8,11 @@ import DEV_CSS_URL from '@imagine.dev/web-components/imagine-web-components.css?
 import { getSessionId } from '$lib/sentry';
 import type * as WebComponentsType from '@imagine.dev/web-components/web-components';
 import * as Sentry from '@sentry/sveltekit';
+import { headerAlert } from '$lib/stores/headerAlert';
 
 const COMPONENT_SELECTOR = 'imagine-web-components-wrapper[data-appwrite-studio]';
 const STYLE_ATTRIBUTE = 'data-appwrite-studio-style';
+const BLOCK_BANNER_OFFSET = 24;
 const BLOCK_START_BASE_OFFSET = 48;
 export const CDN_URL = env?.PUBLIC_IMAGINE_CDN_URL + '/web-components.js';
 export const CDN_CSS_URL = env?.PUBLIC_IMAGINE_CDN_URL + '/web-components.css';
@@ -194,10 +196,12 @@ function updatePosition() {
         return;
     }
 
+    const bannerOffset = headerAlert.isShowing() ? BLOCK_BANNER_OFFSET : 0;
+
     const rect = anchorElement.getBoundingClientRect();
     const { offsetX, offsetY } = currentOptions;
     const left = rect.left + offsetX;
-    const top = BLOCK_START_BASE_OFFSET + offsetY + 1;
+    const top = BLOCK_START_BASE_OFFSET + bannerOffset + offsetY + 1;
     component.style.width = `${rect.width}px`;
     component.style.height = `calc(100vh - ${BLOCK_START_BASE_OFFSET + 14}px)`;
     component.style.left = `${left}px`;

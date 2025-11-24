@@ -47,6 +47,15 @@ function createHeaderAlertStore() {
                 return n;
             });
             return component as HeaderAlert;
+        },
+        isShowing: (): boolean => {
+            let showing = false;
+            update((n) => {
+                if (n.components.length === 0) return n;
+                showing = n.components.some((c) => c.show);
+                return n;
+            });
+            return showing;
         }
     };
 }
