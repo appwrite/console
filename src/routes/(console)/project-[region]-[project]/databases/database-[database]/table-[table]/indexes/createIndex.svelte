@@ -36,7 +36,8 @@
                 if (selectedType === IndexType.Spatial) {
                     return isSpatialType(column); // keep only spatial
                 }
-                return !isRelationship(column) && !isSpatialType(column); // keep non-relationship and non-spatial
+                // keep non-relationship and non-spatial
+                return !isRelationship(column) && !isSpatialType(column);
             })
             .map((column) => ({
                 value: column.key,
@@ -68,11 +69,35 @@
               ]
     );
 
-    // spatial type selected -> reset column list to single empty column
-    // and the column already is not spatial type
+    // Handle index type changes and reset incompatible columns
     $effect(() => {
-        if (selectedType === IndexType.Spatial && !columnList.at(0).value) {
-            columnList = [{ value: '', order: null, length: null }];
+        if (selectedType === IndexType.Spatial) {
+            // When switching to spatial, normalize to a single spatial column with no order
+            const currentEntry = columnList.at(0) ?? { value: '', order: null, length: null };
+            const currentColumnObj = currentEntry.value
+                ? $table.columns.find((col) => col.key === currentEntry.value)
+                : undefined;
+
+            const nextEntry =
+                !currentEntry.value || !currentColumnObj || !isSpatialType(currentColumnObj)
+                    ? { value: '', order: null, length: null }
+                    : { value: currentEntry.value, order: null, length: null };
+
+            const needsUpdate =
+                columnList.length !== 1 ||
+                columnList[0].value !== nextEntry.value ||
+                columnList[0].order !== nextEntry.order ||
+                columnList[0].length !== nextEntry.length;
+
+            if (needsUpdate) {
+                columnList = [nextEntry];
+            }
+        } else {
+            // When switching away from spatial, ensure proper order
+            const currentEntry = columnList.at(0);
+            if (currentEntry?.value && currentEntry.order === null) {
+                columnList = [{ ...currentEntry, order: 'ASC' }];
+            }
         }
     });
 
@@ -122,7 +147,25 @@
     });
 
     export async function create() {
-        if (!key || !selectedType || (selectedType !== IndexType.Spatial && addColumnDisabled)) {
+        // Validate basic requirements
+        if (!key || !selectedType) {
+            addNotification({
+                type: 'error',
+                message: 'Index key and type are required'
+            });
+            throw new Error('Index key and type are required');
+        }
+
+        // Validate column selection for spatial indexes
+        if (selectedType === IndexType.Spatial) {
+            if (!columnList.at(0)?.value) {
+                addNotification({
+                    type: 'error',
+                    message: 'Please select a spatial column for the spatial index'
+                });
+                throw new Error('Please select a spatial column for the spatial index');
+            }
+        } else if (addColumnDisabled) {
             addNotification({
                 type: 'error',
                 message: 'Selected column key or type invalid'
