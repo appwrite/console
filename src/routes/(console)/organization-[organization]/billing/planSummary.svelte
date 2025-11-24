@@ -57,10 +57,12 @@
     const projectsOffset = $derived(
         offset ?? ((Number(page.url.searchParams.get('page')) || 1) - 1) * projectsLimit
     );
+    const projectBreakdownCount = $derived(currentAggregation?.breakdown?.length ?? 0);
+    const hasProjectBreakdown = $derived(projectBreakdownCount > 0);
     const totalProjects = $derived(
         (currentAggregation?.resources?.find?.((r) => r.resourceId === 'projects')?.value ??
             null) ||
-            currentAggregation?.breakdown?.length ||
+            projectBreakdownCount ||
             0
     );
     const aggregationKey = $derived(
@@ -518,7 +520,7 @@
                             </svelte:fragment>
                         </AccordionTable.Row>
                     {/each}
-                    {#if totalProjects > projectsLimit}
+                    {#if totalProjects > projectsLimit && hasProjectBreakdown}
                         <AccordionTable.Row {root} id="pagination-row" expandable={false}>
                             <AccordionTable.Cell {root} column="item">
                                 <div class="pagination-left">
