@@ -11,6 +11,7 @@ import * as Sentry from '@sentry/sveltekit';
 
 const COMPONENT_SELECTOR = 'imagine-web-components-wrapper[data-appwrite-studio]';
 const STYLE_ATTRIBUTE = 'data-appwrite-studio-style';
+const BLOCK_BANNER_OFFSET = 24;
 const BLOCK_START_BASE_OFFSET = 48;
 export const CDN_URL = env?.PUBLIC_IMAGINE_CDN_URL + '/web-components.js';
 export const CDN_CSS_URL = env?.PUBLIC_IMAGINE_CDN_URL + '/web-components.css';
@@ -27,6 +28,10 @@ let previousDocumentOverflow: string | null = null;
 
 function hasDocument(): boolean {
     return typeof document !== 'undefined';
+}
+
+function hasBannerAttached(): boolean {
+    return !!document.querySelector('section.alert');
 }
 
 function disableBodyScroll() {
@@ -194,10 +199,12 @@ function updatePosition() {
         return;
     }
 
+    const bannerOffset = hasBannerAttached() ? BLOCK_BANNER_OFFSET : 0;
+
     const rect = anchorElement.getBoundingClientRect();
     const { offsetX, offsetY } = currentOptions;
     const left = rect.left + offsetX;
-    const top = BLOCK_START_BASE_OFFSET + offsetY + 1;
+    const top = BLOCK_START_BASE_OFFSET + bannerOffset + offsetY + 1;
     component.style.width = `${rect.width}px`;
     component.style.height = `calc(100vh - ${BLOCK_START_BASE_OFFSET + 14}px)`;
     component.style.left = `${left}px`;
