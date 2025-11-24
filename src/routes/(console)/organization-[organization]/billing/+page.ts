@@ -1,4 +1,4 @@
-import { BillingPlan, Dependencies } from '$lib/constants';
+import { BillingPlan, DEFAULT_BILLING_PROJECTS_LIMIT, Dependencies } from '$lib/constants';
 import type { Address } from '$lib/sdk/billing';
 import { type Organization } from '$lib/stores/organization';
 import { sdk } from '$lib/stores/sdk';
@@ -39,7 +39,7 @@ export const load: PageLoad = async ({ parent, depends, url, route }) => {
     let billingAggregation = null;
     try {
         const currentPage = getPage(url) || 1;
-        const limit = getLimit(url, route, 5);
+        const limit = getLimit(url, route, DEFAULT_BILLING_PROJECTS_LIMIT);
         const offset = pageToOffset(currentPage, limit);
         billingAggregation = await sdk.forConsole.billing.getAggregation(
             organization.$id,
@@ -94,8 +94,10 @@ export const load: PageLoad = async ({ parent, depends, url, route }) => {
         countryList,
         locale,
         nextPlan: billingPlanDowngrade,
-        // expose pagination for components
-        limit: getLimit(url, route, 5),
-        offset: pageToOffset(getPage(url) || 1, getLimit(url, route, 5))
+        limit: getLimit(url, route, DEFAULT_BILLING_PROJECTS_LIMIT),
+        offset: pageToOffset(
+            getPage(url) || 1,
+            getLimit(url, route, DEFAULT_BILLING_PROJECTS_LIMIT)
+        )
     };
 };
