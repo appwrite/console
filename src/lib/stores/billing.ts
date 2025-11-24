@@ -67,6 +67,8 @@ export const roles = [
     }
 ];
 
+export const projectSpecificRoles = roles.filter((r) => r.value !== 'billing');
+
 export const teamStatusReadonly = 'readonly';
 export const billingLimitOutstandingInvoice = 'outstanding_invoice';
 

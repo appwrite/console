@@ -23,6 +23,8 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
         (org) => org.$id === project.teamId
     );
 
+    console.log('organization', organization);
+
     const includedInBasePlans = plansInfo.has(organization.billingPlan);
 
     const [org, regionalConsoleVariables, rolesResult, organizationPlan] = await Promise.all([
