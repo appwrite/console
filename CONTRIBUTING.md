@@ -85,7 +85,7 @@ bun run build
 ### Tests
 
 ```bash
-bun test
+bun test:unit
 ```
 
 This will run tests in the `tests/` directory.
@@ -95,7 +95,7 @@ This will run tests in the `tests/` directory.
 Code should be consistently formatted everywhere. Before committing code, run the code-formatter.
 
 ```bash
-bun run format
+bun format
 ```
 
 ### Linter
@@ -113,7 +113,7 @@ Diagnostic tool that checks for the following:
 - TypeScript compiler errors
 
 ```bash
-bun run check
+bun check
 ```
 
 ## Submit a Pull Request 🚀
@@ -176,11 +176,13 @@ $ git push origin [name_of_your_new_branch]
 Before committing always make sure to run all available tools to improve the codebase:
 
 - Formatter
-    - `bun run format`
-- Tests
-    - `bun test`
+    - `bun format`
+- Tests (Unit)
+    - `bun test:unit`
+- Tests (E2E)
+    - `bun e2e`
 - Diagnostics
-    - `bun run check`
+    - `bun check`
 
 ### Performance
 
