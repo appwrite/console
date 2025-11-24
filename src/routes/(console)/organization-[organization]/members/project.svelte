@@ -1,18 +1,40 @@
 <script lang="ts">
-    import Modal from '../modal.svelte';
+    import Modal from '$lib/components/modal.svelte';
     import { sdk } from '$lib/stores/sdk';
     import { Query, type Models } from '@appwrite.io/console';
-    import { Card, Empty, Layout, Link, Selector, Spinner, Table, Typography } from '@appwrite.io/pink-svelte';
+    import {
+        Card,
+        Empty,
+        Layout,
+        Link,
+        Selector,
+        Spinner,
+        Table,
+        Typography
+    } from '@appwrite.io/pink-svelte';
     import { Button, InputSearch } from '$lib/elements/forms';
-    import { AvatarInitials, EmptySearch, PaginationInline } from '..';
+    import { AvatarInitials, EmptySearch, PaginationInline } from '$lib/components';
+    import { isSelfHosted } from '$lib/system';
 
-    let { orgId, projects = $bindable(), show = $bindable() } = $props();
-    let selectedProjects = $state<Models.Project[]>(projects);
+    let {
+        orgId,
+        projectsWithRole = $bindable(),
+        show = $bindable()
+    }: {
+        orgId: string;
+        projectsWithRole: { project: Models.Project; role: string }[];
+        show: boolean;
+    } = $props();
+
+    let selectedProjectsWithRole =
+        $state<{ project: Models.Project; role: string }[]>(projectsWithRole);
     let search = $state('');
     let offset = $state(0);
     let isLoading = $state(false);
     let hasSelection = $state(false);
     let results: Models.ProjectList = $state(null);
+
+    let defaultRole: string = isSelfHosted ? 'owner' : 'developer';
 
     async function request() {
         if (!show) return;
@@ -27,25 +49,30 @@
     function reset() {
         offset = 0;
         search = '';
-        selectedProjects = projects;
+        selectedProjectsWithRole = projectsWithRole;
         hasSelection = false;
     }
 
     function submit() {
-        projects = selectedProjects;
+        projectsWithRole = selectedProjectsWithRole;
         show = false;
         reset();
     }
 
     function toggleSelection(project: Models.Project) {
-        const checked = selectedProjects.some(p => p.$id === project.$id);
+        const checked = selectedProjectsWithRole.some((p) => p.project.$id === project.$id);
         if (checked) {
-            selectedProjects = selectedProjects.filter((p) => p.$id !== project.$id);
+            selectedProjectsWithRole = selectedProjectsWithRole.filter(
+                (p) => p.project.$id !== project.$id
+            );
         } else {
-            selectedProjects = [...selectedProjects, project];
+            selectedProjectsWithRole = [
+                ...selectedProjectsWithRole,
+                { project: project, role: defaultRole }
+            ];
         }
 
-        hasSelection = selectedProjects.length > 0;
+        hasSelection = selectedProjectsWithRole.length > 0;
     }
 
     $effect(() => {
@@ -55,7 +82,7 @@
     });
 
     $effect(() => {
-        selectedProjects = projects;
+        selectedProjectsWithRole = projectsWithRole;
     });
 </script>
 
@@ -73,7 +100,9 @@
                             <Selector.Checkbox
                                 size="s"
                                 id={project.$id}
-                                checked={selectedProjects.some(p => p.$id === project.$id)} />
+                                checked={selectedProjectsWithRole.some(
+                                    (p) => p.project.$id === project.$id
+                                )} />
                         </div>
                     </Table.Cell>
                     <Table.Cell column="project" {root}>
@@ -95,36 +124,36 @@
         </Table.Root>
 
         <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
-          <p class="text">Total results: {results?.total}</p>
-          <PaginationInline
-              limit={5}
-              bind:offset
-              total={results?.total}
-              hidePages
-              on:change={request} />
+            <p class="text">Total results: {results?.total}</p>
+            <PaginationInline
+                limit={5}
+                bind:offset
+                total={results?.total}
+                hidePages
+                on:change={request} />
         </Layout.Stack>
     {:else if search}
-      <EmptySearch bind:search target="projects" hidePages>
-          <Button secondary on:click={() => (search = '')}>Clear search</Button>
-      </EmptySearch>
+        <EmptySearch bind:search target="projects" hidePages>
+            <Button secondary on:click={() => (search = '')}>Clear search</Button>
+        </EmptySearch>
     {:else if isLoading}
-      <!-- 275px nearly matches the height of at-least 5 items in the table above -->
-      <div style:margin-inline="auto" style:min-height="275px" style:align-content="center">
-          <Spinner size="m" />
-      </div>
+        <!-- 275px nearly matches the height of at-least 5 items in the table above -->
+        <div style:margin-inline="auto" style:min-height="275px" style:align-content="center">
+            <Spinner size="m" />
+        </div>
     {:else}
-      <Card.Base padding="none">
-          <Empty title="No projects yet. Create a project to see it here." type="secondary">
-              <Typography.Text slot="description">
-                  Need a hand? Learn more in our <Link.Anchor
-                      href="https://appwrite.io/docs/products/auth/users"
-                      target="_blank"
-                      rel="noopener noreferrer">
-                      documentation</Link.Anchor
-                  >.
-              </Typography.Text>
-          </Empty>
-      </Card.Base>
+        <Card.Base padding="none">
+            <Empty title="No projects yet. Create a project to see it here." type="secondary">
+                <Typography.Text slot="description">
+                    Need a hand? Learn more in our <Link.Anchor
+                        href="https://appwrite.io/docs/products/auth/users"
+                        target="_blank"
+                        rel="noopener noreferrer">
+                        documentation</Link.Anchor
+                    >.
+                </Typography.Text>
+            </Empty>
+        </Card.Base>
     {/if}
 
     <svelte:fragment slot="footer">

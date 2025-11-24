@@ -143,7 +143,11 @@
                     </Typography.Text>
                 </Table.Cell>
                 <Table.Cell column="roles" {root}>
-                    {member.roles.map((role) => getRoleLabel(role)).join(', ')}
+                    {#if member.roles.some((role) => role.startsWith('project:'))}
+                        {"Custom"}
+                    {:else}
+                        {member.roles.map((role) => getRoleLabel(role)).join(', ')}
+                    {/if}
                 </Table.Cell>
                 <Table.Cell column="mfa" {root}>
                     <Badge
