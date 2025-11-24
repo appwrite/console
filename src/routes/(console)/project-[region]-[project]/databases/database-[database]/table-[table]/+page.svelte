@@ -189,7 +189,11 @@
                     alignItems="center"
                     justifyContent="flex-end"
                     style="padding-right: 40px;">
-                    <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
+                    <Layout.Stack
+                        direction="row"
+                        alignItems="center"
+                        justifyContent="flex-end"
+                        gap="s">
                         {#if !$isSmallViewport}
                             <Button
                                 secondary
@@ -206,6 +210,7 @@
                                     size="s"
                                     secondary
                                     class="small-button-dimensions"
+                                    disabled={!(hasColumns && hasValidColumns) || disableButton}
                                     on:click={() => (showImportCSV = true)}>
                                     <Icon icon={IconUpload} size="s" />
                                 </Button>
@@ -219,6 +224,7 @@
                                     size="s"
                                     secondary
                                     class="small-button-dimensions"
+                                    disabled={!(hasColumns && hasValidColumns) || disableButton}
                                     on:click={() => {
                                         trackEvent(Click.DatabaseExportCsv);
                                         goto(getTableExportUrl());
@@ -227,25 +233,6 @@
                                 </Button>
 
                                 <svelte:fragment slot="tooltip">Export CSV</svelte:fragment>
-                            </Tooltip>
-
-                            <Tooltip placement="top">
-                                <Button
-                                    icon
-                                    size="s"
-                                    secondary
-                                    class="small-button-dimensions"
-                                    on:click={() => {
-                                        $expandTabs = !$expandTabs;
-                                        preferences.setKey('tableHeaderExpanded', $expandTabs);
-                                    }}>
-                                    <Icon
-                                        icon={!$expandTabs ? IconChevronDown : IconChevronUp}
-                                        size="s" />
-                                </Button>
-
-                                <svelte:fragment slot="tooltip"
-                                    >{!$expandTabs ? 'Expand' : 'Collapse'}</svelte:fragment>
                             </Tooltip>
 
                             <Tooltip disabled={isRefreshing || !data.rows.total} placement="top">
@@ -269,6 +256,25 @@
                                 </Button>
 
                                 <svelte:fragment slot="tooltip">Refresh</svelte:fragment>
+                            </Tooltip>
+
+                            <Tooltip placement="top">
+                                <Button
+                                    icon
+                                    size="s"
+                                    secondary
+                                    class="small-button-dimensions"
+                                    on:click={() => {
+                                        $expandTabs = !$expandTabs;
+                                        preferences.setKey('tableHeaderExpanded', $expandTabs);
+                                    }}>
+                                    <Icon
+                                        icon={!$expandTabs ? IconChevronDown : IconChevronUp}
+                                        size="s" />
+                                </Button>
+
+                                <svelte:fragment slot="tooltip"
+                                    >{!$expandTabs ? 'Expand' : 'Collapse'}</svelte:fragment>
                             </Tooltip>
                         {/if}
                     </Layout.Stack>
