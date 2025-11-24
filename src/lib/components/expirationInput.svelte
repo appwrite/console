@@ -134,7 +134,10 @@
             value = expirationSelect === 'custom' ? expirationCustom : expirationSelect;
         }
 
-        value = toLocaleDateISO(new Date(value).getTime());
+        // Only convert to ISO date if value is not null
+        if (value !== null) {
+            value = toLocaleDateISO(new Date(value).getTime());
+        }
     }
 
     $: helper =

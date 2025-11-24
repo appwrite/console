@@ -10,7 +10,12 @@ export const load: PageLoad = async ({ url, route }) => {
     const limit = getLimit(url, route, CARD_LIMIT);
     const offset = pageToOffset(page, limit);
 
-    const queries = [Query.offset(offset), Query.limit(limit), Query.orderDesc('')];
+    const queries = [
+        Query.offset(offset),
+        Query.limit(limit),
+        Query.orderDesc(''),
+        Query.equal('platform', 'appwrite')
+    ];
 
     const organizations = !isCloud
         ? await sdk.forConsole.teams.list({ queries })
