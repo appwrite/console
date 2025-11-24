@@ -224,7 +224,7 @@
                                     size="s"
                                     secondary
                                     class="small-button-dimensions"
-                                    disabled={!(hasColumns && hasValidColumns) || disableButton}
+                                    disabled={!(hasColumns && hasValidColumns && data.rows.total) || disableButton}
                                     on:click={() => {
                                         trackEvent(Click.DatabaseExportCsv);
                                         goto(getTableExportUrl());
