@@ -16,7 +16,6 @@
     import { sdk } from '$lib/stores/sdk';
     import { confirmPayment } from '$lib/stores/stripe';
     import { user } from '$lib/stores/user';
-    import { VARS } from '$lib/system';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import {
         Alert,
