@@ -56,7 +56,7 @@ cd appwrite-console && bun install
 
 When you run the Appwrite Console locally, it needs to point to a backend as well. The easiest way to do this is to run an Appwrite instance locally.
 
-Follow the [install instructions](https://appwrite.io/docs/advanced/self-hosting) in the Appwrite docs.
+Follow the [installation instructions](https://appwrite.io/docs/advanced/self-hosting) in the Appwrite docs.
 
 ### 4. Setup environment variables
 
@@ -85,7 +85,7 @@ bun run build
 ### Tests
 
 ```bash
-bun test:unit
+bun tests
 ```
 
 This will run tests in the `tests/` directory.
@@ -177,10 +177,8 @@ Before committing always make sure to run all available tools to improve the cod
 
 - Formatter
     - `bun format`
-- Tests (Unit)
-    - `bun test:unit`
-- Tests (E2E)
-    - `bun e2e`
+- Tests
+    - `bun tests`
 - Diagnostics
     - `bun check`
 
