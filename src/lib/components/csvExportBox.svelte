@@ -44,7 +44,7 @@
             type: 'error',
             message: errorMessage,
             isHtml: true,
-            timeout: 10000,
+            timeout: 10000
         });
     }
 
