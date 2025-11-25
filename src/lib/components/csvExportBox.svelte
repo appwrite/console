@@ -131,7 +131,9 @@
 
         switch (status) {
             case 'completed':
-                downloadExportedFile(downloadUrl);
+                if (downloadUrl) {
+                    downloadExportedFile(downloadUrl);
+                }
                 break;
             case 'failed':
                 await showCompletionNotification(

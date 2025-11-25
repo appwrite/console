@@ -146,7 +146,7 @@
                 table: page.params.table
             }
         );
-        return queryParam ? `${url}?query=${queryParam}` : url;
+        return queryParam ? `${url}?query=${encodeURIComponent(queryParam)}` : url;
     }
 
     onDestroy(() => ($showCreateColumnSheet.show = false));
@@ -224,7 +224,8 @@
                                     size="s"
                                     secondary
                                     class="small-button-dimensions"
-                                    disabled={!(hasColumns && hasValidColumns && data.rows.total) || disableButton}
+                                    disabled={!(hasColumns && hasValidColumns && data.rows.total) ||
+                                        disableButton}
                                     on:click={() => {
                                         trackEvent(Click.DatabaseExportCsv);
                                         goto(getTableExportUrl());
@@ -430,6 +431,7 @@
 
     :global(.rotating) {
         animation: rotate 1s linear infinite;
+        animation-direction: reverse;
     }
 
     @keyframes rotate {
