@@ -121,41 +121,43 @@
 </script>
 
 {#if data.platforms.platforms.length}
-    <Table.Root columns={4} let:root>
-        <svelte:fragment slot="header" let:root>
-            <Table.Header.Cell {root}>Name</Table.Header.Cell>
-            <Table.Header.Cell {root}>Platform type</Table.Header.Cell>
-            <Table.Header.Cell {root}>Identifier</Table.Header.Cell>
-            <Table.Header.Cell {root}>Last updated</Table.Header.Cell>
-        </svelte:fragment>
-        {#each data.platforms.platforms as platform}
-            <Table.Row.Link href={`${path}/${platform.$id}`} {root}>
-                <Table.Cell {root}>
-                    {platform.name}
-                </Table.Cell>
-                <Table.Cell {root}>
-                    <Layout.Stack direction="row" gap="s" alignItems="center">
-                        <Icon icon={getPlatformInfo(platform.type)} />
-                        {PlatformTypes[platform.type]}
-                    </Layout.Stack>
-                </Table.Cell>
-                <Table.Cell {root}>
-                    {#if platform.type.includes('web') || platform.type === 'web'}
-                        {platform.hostname || '—'}
-                    {:else}
-                        {platform.key || platform.hostname || '—'}
-                    {/if}
-                </Table.Cell>
-                <Table.Cell {root}>
-                    {#if platform.$updatedAt}
-                        <DualTimeView time={platform.$updatedAt} />
-                    {:else}
-                        never
-                    {/if}
-                </Table.Cell>
-            </Table.Row.Link>
-        {/each}
-    </Table.Root>
+    <div class="table-scroll-wrapper">
+        <Table.Root columns={4} let:root>
+            <svelte:fragment slot="header" let:root>
+                <Table.Header.Cell {root}>Name</Table.Header.Cell>
+                <Table.Header.Cell {root}>Platform type</Table.Header.Cell>
+                <Table.Header.Cell {root}>Identifier</Table.Header.Cell>
+                <Table.Header.Cell {root}>Last updated</Table.Header.Cell>
+            </svelte:fragment>
+            {#each data.platforms.platforms as platform}
+                <Table.Row.Link href={`${path}/${platform.$id}`} {root}>
+                    <Table.Cell {root}>
+                        {platform.name}
+                    </Table.Cell>
+                    <Table.Cell {root}>
+                        <Layout.Stack direction="row" gap="s" alignItems="center">
+                            <Icon icon={getPlatformInfo(platform.type)} />
+                            {PlatformTypes[platform.type]}
+                        </Layout.Stack>
+                    </Table.Cell>
+                    <Table.Cell {root}>
+                        {#if platform.type.includes('web') || platform.type === 'web'}
+                            {platform.hostname || '—'}
+                        {:else}
+                            {platform.key || platform.hostname || '—'}
+                        {/if}
+                    </Table.Cell>
+                    <Table.Cell {root}>
+                        {#if platform.$updatedAt}
+                            <DualTimeView time={platform.$updatedAt} />
+                        {:else}
+                            never
+                        {/if}
+                    </Table.Cell>
+                </Table.Row.Link>
+            {/each}
+        </Table.Root>
+    </div>
 {:else}
     <Card.Base padding="none">
         <Empty
@@ -203,3 +205,19 @@
         </Empty>
     </Card.Base>
 {/if}
+
+<style lang="scss">
+    .table-scroll-wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        
+        :global([role='table']) {
+            display: grid;
+            grid-template-columns: minmax(calc(120px + var(--p-table-cell-padding-inline)), 1fr) 
+                                   minmax(calc(120px + var(--p-table-cell-padding-inline)), 1fr) 
+                                   minmax(calc(180px + var(--p-table-cell-padding-inline)), 2fr) 
+                                   minmax(calc(120px + var(--p-table-cell-padding-inline)), 1fr);
+            width: 100%;
+        }
+    }
+</style>

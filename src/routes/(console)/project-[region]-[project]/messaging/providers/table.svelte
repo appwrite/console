@@ -39,51 +39,68 @@
     }
 </script>
 
-<MultiSelectionTable
-    resource="provider"
-    columns={$columns}
-    onDelete={handleDelete}
-    allowSelection={$canWriteProviders}>
-    {#snippet header(root)}
-        {#each $columns as { id, title }}
-            <Table.Header.Cell column={id} {root}>{title}</Table.Header.Cell>
-        {/each}
-    {/snippet}
+<div class="table-scroll-wrapper">
+    <MultiSelectionTable
+        resource="provider"
+        columns={$columns}
+        onDelete={handleDelete}
+        allowSelection={$canWriteProviders}>
+        {#snippet header(root)}
+            {#each $columns as { id, title }}
+                <Table.Header.Cell column={id} {root}>{title}</Table.Header.Cell>
+            {/each}
+        {/snippet}
 
-    {#snippet children(root)}
-        {@const TableRowComponent = $canWriteProviders ? Table.Row.Link : Table.Row.Base}
-        {#each data.providers.providers as provider (provider.$id)}
-            {@const href = $canWriteProviders
-                ? `${base}/project-${page.params.region}-${page.params.project}/messaging/providers/provider-${provider.$id}`
-                : undefined}
-            <TableRowComponent {href} {root} id={provider.$id}>
-                {#each $columns as column}
-                    <Table.Cell column={column.id} {root}>
-                        {#if column.id === '$id'}
-                            {#key $columns}
-                                <Id value={provider.$id}>{provider.$id}</Id>
-                            {/key}
-                        {:else if column.id === 'provider'}
-                            <Provider provider={provider.provider} />
-                        {:else if column.id === 'type'}
-                            <ProviderType type={provider.type} size="xs" />
-                        {:else if column.id === 'enabled'}
-                            <Badge
-                                variant="secondary"
-                                type={provider.enabled ? 'success' : undefined}
-                                content={provider.enabled ? 'enabled' : 'disabled'}>
-                                <svelte:fragment slot="start">
-                                    {#if provider.enabled}
-                                        <Icon icon={IconCheckCircle} size="s" />
-                                    {/if}
-                                </svelte:fragment>
-                            </Badge>
-                        {:else}
-                            {provider[column.id]}
-                        {/if}
-                    </Table.Cell>
-                {/each}
-            </TableRowComponent>
-        {/each}
-    {/snippet}
-</MultiSelectionTable>
+        {#snippet children(root)}
+            {@const TableRowComponent = $canWriteProviders ? Table.Row.Link : Table.Row.Base}
+            {#each data.providers.providers as provider (provider.$id)}
+                {@const href = $canWriteProviders
+                    ? `${base}/project-${page.params.region}-${page.params.project}/messaging/providers/provider-${provider.$id}`
+                    : undefined}
+                <TableRowComponent {href} {root} id={provider.$id}>
+                    {#each $columns as column}
+                        <Table.Cell column={column.id} {root}>
+                            {#if column.id === '$id'}
+                                {#key $columns}
+                                    <Id value={provider.$id}>{provider.$id}</Id>
+                                {/key}
+                            {:else if column.id === 'provider'}
+                                <Provider provider={provider.provider} />
+                            {:else if column.id === 'type'}
+                                <ProviderType type={provider.type} size="xs" />
+                            {:else if column.id === 'enabled'}
+                                <Badge
+                                    variant="secondary"
+                                    type={provider.enabled ? 'success' : undefined}
+                                    content={provider.enabled ? 'enabled' : 'disabled'}>
+                                    <svelte:fragment slot="start">
+                                        {#if provider.enabled}
+                                            <Icon icon={IconCheckCircle} size="s" />
+                                        {/if}
+                                    </svelte:fragment>
+                                </Badge>
+                            {:else}
+                                {provider[column.id]}
+                            {/if}
+                        </Table.Cell>
+                    {/each}
+                </TableRowComponent>
+            {/each}
+        {/snippet}
+    </MultiSelectionTable>
+</div>
+
+<style lang="scss">
+    .table-scroll-wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+
+        :global([role='table']) {
+            display: grid;
+            grid-template-columns:
+                minmax(60px, 0.5fr) minmax(200px, 2.5fr) minmax(120px, 1fr) minmax(120px, 1fr)
+                minmax(120px, 1fr) minmax(120px, 1.5fr);
+            width: 100%;
+        }
+    }
+</style>
