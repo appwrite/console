@@ -411,15 +411,13 @@
             <svelte:fragment slot="aside">
                 <Layout.Stack gap="s">
                     {#key extensions.length}
-                        <div style="min-width: 0; width: 100%;">
-                            <InputTags
-                                id="user-labels"
-                                label="Labels"
-                                placeholder="Select or type user labels"
-                                bind:tags={extensions} />
-                        </div>
+                        <InputTags
+                            id="user-labels"
+                            label="Labels"
+                            placeholder="Select or type user labels"
+                            bind:tags={extensions} />
                     {/key}
-                    <Layout.Stack direction="row" style="flex-wrap: wrap; overflow-x: auto;">
+                    <Layout.Stack direction="row" wrap="wrap">
                         {#each suggestedExtensions as ext}
                             <Tag
                                 size="s"
@@ -465,8 +463,7 @@
                 on:click={() => {
                     showDelete = true;
                     trackEvent(Click.StorageBucketDeleteClick);
-                }}
-                >Delete</Button>
+                }}>Delete</Button>
         </svelte:fragment>
     </CardGrid>
 </Container>
