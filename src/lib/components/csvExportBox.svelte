@@ -1,9 +1,7 @@
 <script lang="ts">
     import { onMount } from 'svelte';
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import { realtime, sdk } from '$lib/stores/sdk';
-    import { goto } from '$app/navigation';
     import { getProjectId } from '$lib/helpers/project';
     import { addNotification } from '$lib/stores/notifications';
     import { Layout, Typography, Code } from '@appwrite.io/pink-svelte';
@@ -33,52 +31,20 @@
         window.open(downloadUrl, '_blank');
     }
 
-    async function showCompletionNotification(
-        table: string,
-        bucketId: string,
-        downloadUrl: string,
-        payload: Payload
-    ) {
-        const isSuccess = payload.status === 'completed';
-        const isError = !isSuccess && !!payload.errors;
-
-        if (!isSuccess && !isError) return;
-
+    async function showErrorNotification(payload: Payload) {
         let errorMessage = 'Export failed. Please try again.';
-        if (isError && Array.isArray(payload.errors) && payload.errors.length > 0) {
-            try {
-                const parsed = JSON.parse(payload.errors[0]);
-                errorMessage = parsed?.message || errorMessage;
-            } catch {
-                errorMessage = payload.errors[0] || errorMessage;
-            }
+        try {
+            const parsed = JSON.parse(payload.errors[0]);
+            errorMessage = parsed?.message || errorMessage;
+        } catch {
+            errorMessage = payload.errors[0] || errorMessage;
         }
 
-        const type = isSuccess ? 'success' : 'error';
-        const message = isError ? errorMessage : `"${table}" has been exported`;
-        const region = page.params.region;
-        const project = page.params.project;
-
         addNotification({
-            type,
-            message,
+            type: 'error',
+            message: errorMessage,
             isHtml: true,
             timeout: 10000,
-            buttons: isSuccess
-                ? [
-                      {
-                          name: 'View bucket',
-                          method: () =>
-                              goto(
-                                  `${base}/project-${region}-${project}/storage/bucket-${bucketId}`
-                              )
-                      },
-                      {
-                          name: 'Download',
-                          method: () => downloadExportedFile(downloadUrl)
-                      }
-                  ]
-                : undefined
         });
     }
 
@@ -86,9 +52,6 @@
         if (exportData.destination?.toLowerCase() !== 'csv') return;
 
         const status = exportData.status;
-        const resourceId = exportData.resourceId ?? '';
-        const [_, tableId] = resourceId.split(':') ?? [];
-
         const current = exportItems.get(exportData.$id);
         let tableName = current?.table;
 
@@ -132,12 +95,7 @@
                 }
                 break;
             case 'failed':
-                await showCompletionNotification(
-                    tableName ?? tableId,
-                    bucketId,
-                    downloadUrl,
-                    exportData
-                );
+                await showErrorNotification(exportData);
                 break;
         }
     }
