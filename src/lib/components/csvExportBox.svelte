@@ -27,10 +27,6 @@
 
     function downloadExportedFile(downloadUrl: string) {
         if (!downloadUrl) {
-            addNotification({
-                type: 'error',
-                message: 'Download URL not found for this export'
-            });
             return;
         }
 
@@ -164,15 +160,15 @@
         }
     }
 
-    function text(status: string, tableName = '', bucketName = '') {
+    function text(status: string, tableName = '') {
         const table = tableName ? `<b>${tableName}</b>` : '';
-        const bucket = bucketName ? `<b>${bucketName}</b>` : 'bucket';
         switch (status) {
             case 'completed':
+                return `Exporting ${table} completed`;
             case 'failed':
-                return `Export to ${bucket} ${status}`;
+                return `Exporting ${table} failed`;
             case 'processing':
-                return `Exporting ${table} to ${bucket}`;
+                return `Exporting ${table}`;
             default:
                 return 'Preparing export...';
         }
@@ -234,11 +230,7 @@
                                     <div
                                         class="progress-bar-top-line u-flex u-gap-8 u-main-space-between">
                                         <Typography.Text>
-                                            {@html text(
-                                                value.status,
-                                                value.table,
-                                                value.bucketName ?? 'bucket'
-                                            )}
+                                            {@html text(value.status, value.table)}
                                         </Typography.Text>
                                         {#if value.status === 'failed' && value.errors && value.errors.length > 0}
                                             <button
