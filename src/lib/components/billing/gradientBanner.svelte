@@ -7,6 +7,8 @@
     import PinkBackground from '$lib/images/pink-background.svg';
     import { bannerSpacing } from '$lib/layout/headerAlert.svelte';
     import { createEventDispatcher, onMount, onDestroy } from 'svelte';
+    import { headerAlert } from '$lib/stores/headerAlert';
+    import { ProfileMode, resolvedProfile } from '$lib/profiles/index.svelte';
 
     export let variant: 'gradient' | 'image' = 'gradient';
 
@@ -16,12 +18,13 @@
     const queryLayoutElements = () => ({
         header: document.querySelector<HTMLElement>('main > header'),
         sidebar: document.querySelector<HTMLElement>('main > div > nav'),
-        content: document.querySelector<HTMLElement>('main > div > section')
+        content: document.querySelector<HTMLElement>('main > div > section'),
+        contentDiv: document.querySelector<HTMLElement>('main > .content')
     });
 
     const setNavigationHeight = () => {
         const alertHeight = container?.getBoundingClientRect()?.height || 0;
-        const { header, sidebar, content } = queryLayoutElements();
+        const { header, sidebar, content, contentDiv } = queryLayoutElements();
         const headerHeight = header?.getBoundingClientRect().height || 0;
         const offset = alertHeight + (!$isTabletViewport && header ? headerHeight : 0);
 
@@ -35,10 +38,17 @@
 
             // for sidebar and sub-navigation!
             bannerSpacing.set(`${alertHeight}px`);
+            headerAlert.setTopSpacing(alertHeight);
         }
 
         if (content) {
             content.style.paddingBlockStart = `${alertHeight}px`;
+        }
+
+        if (contentDiv && resolvedProfile.id === ProfileMode.STUDIO) {
+            const headerHeight = header?.getBoundingClientRect().height ?? 0;
+            // push the content enough to show the borders of the content view!
+            contentDiv.style.marginBlockStart = `${alertHeight + headerHeight}px`;
         }
     };
 
