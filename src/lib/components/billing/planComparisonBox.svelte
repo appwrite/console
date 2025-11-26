@@ -11,7 +11,7 @@
     let {
         downgrade = false
     }: {
-        downgrade: boolean;
+        downgrade?: boolean;
     } = $props();
 
     let selectedTab = $state(resolvedProfile.freeTier);
