@@ -259,6 +259,8 @@
         <Button fullWidthMobile secondary on:click={() => (showExitModal = true)}>Cancel</Button>
         <Button
             fullWidthMobile
+            forceShowLoader
+            submissionLoader={$isSubmitting}
             on:click={() => formComponent.triggerSubmit()}
             disabled={$isSubmitting}>
             Create organization

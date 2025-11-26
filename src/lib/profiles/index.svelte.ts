@@ -44,6 +44,7 @@ export type Profile = {
         sites: boolean;
         settings: boolean;
     };
+    website: string;
     showOrgInBreadcrumbs: boolean;
     minimalOrgHeader: boolean;
     getProjectRoute: (params: { region: string; project: string }) => ResolvedPathname;
@@ -85,6 +86,7 @@ export const base: Profile = {
         sites: true,
         settings: true
     },
+    website: 'https://appwrite.io',
     showOrgInBreadcrumbs: true,
     minimalOrgHeader: false,
     getProjectRoute({ region, project }) {
@@ -128,6 +130,7 @@ export const studio: Profile = {
         sites: false,
         settings: true
     },
+    website: 'https://imagine.dev',
     showOrgInBreadcrumbs: false,
     minimalOrgHeader: true,
     getProjectRoute({ region, project }) {

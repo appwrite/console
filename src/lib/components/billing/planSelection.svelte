@@ -6,17 +6,27 @@
     import { LabelCard } from '..';
     import type { Plan } from '$lib/sdk/billing';
     import { page } from '$app/state';
+    import { ProfileMode, resolvedProfile } from '$lib/profiles/index.svelte';
 
-    export let billingPlan: BillingPlan;
     export let isNewOrg = false;
     export let selfService = true;
     export let anyOrgFree = false;
+    export let billingPlan: BillingPlan;
 
     $: plans = Object.values(page.data.plans.plans) as Plan[];
     $: currentPlanInList = plans.some((plan) => plan.$id === $currentPlan?.$id);
 
     // experiment to remove scale plan temporarily
     $: plansWithoutScale = plans.filter((plan) => plan.$id != BillingPlan.SCALE);
+
+    function message(plan: Plan): string {
+        const price = formatCurrency(plan?.price ?? 0);
+        if (resolvedProfile.id === ProfileMode.STUDIO) {
+            return `${plan.chatMessages} daily messages for ${price} per month + usage`;
+        } else {
+            return `${price} per month + usage`;
+        }
+    }
 </script>
 
 <Layout.Stack>
@@ -33,16 +43,21 @@
                     <Badge variant="secondary" size="xs" content="Current plan" />
                 {/if}
             </svelte:fragment>
-            <Typography.Caption variant="400">
-                {plan.desc}
-            </Typography.Caption>
-            <Typography.Text>
-                {@const isZeroPrice = (plan.price ?? 0) <= 0}
-                {@const price = formatCurrency(plan.price ?? 0)}
-                {isZeroPrice ? price : `${price} per month + usage`}
-            </Typography.Text>
+
+            <Layout.Stack direction="column" gap="xxs">
+                <Typography.Caption>
+                    {plan.desc}
+                </Typography.Caption>
+
+                <Typography.Text>
+                    {@const isZeroPrice = (plan.price ?? 0) <= 0}
+                    {@const price = formatCurrency(plan.price ?? 0)}
+                    {isZeroPrice ? price : message(plan)}
+                </Typography.Text>
+            </Layout.Stack>
         </LabelCard>
     {/each}
+
     {#if $currentPlan && !currentPlanInList}
         <LabelCard
             name="plan"
@@ -54,13 +69,15 @@
                     <Badge variant="secondary" size="xs" content="Current plan" />
                 {/if}
             </svelte:fragment>
+
             <Typography.Caption variant="400">
                 {$currentPlan.desc}
             </Typography.Caption>
+
             <Typography.Text>
                 {@const isZeroPrice = ($currentPlan?.price ?? 0) <= 0}
                 {@const price = formatCurrency($currentPlan?.price ?? 0)}
-                {isZeroPrice ? price : `${price} per month + usage`}
+                {isZeroPrice ? price : message($currentPlan)}
             </Typography.Text>
         </LabelCard>
     {/if}

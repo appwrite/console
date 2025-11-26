@@ -9,3 +9,13 @@ export function isFreePlan(plan: BillingPlan | string): boolean {
             return false;
     }
 }
+
+export function isProPlan(plan: BillingPlan | string): boolean {
+    switch (plan) {
+        case BillingPlan.Imaginepro:
+        case BillingPlan.Tier1:
+            return true;
+        default:
+            return false;
+    }
+}

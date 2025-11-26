@@ -13,6 +13,7 @@
     import { toLocaleDate, toLocaleDateTime } from '$lib/helpers/date';
     import { organization, type Organization } from '$lib/stores/organization';
     import type { Models } from '@appwrite.io/console';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     // Props
     type Props = {
@@ -30,37 +31,37 @@
     let showSelectionReminder = $state(false);
 
     // Derived state using runes
-    let freePlanLimits = $derived({
-        projects: $plansInfo?.get(BillingPlan.FREE)?.projects,
-        members: getServiceLimit('members', BillingPlan.FREE),
-        storage: getServiceLimit('storage', BillingPlan.FREE)
+    const freePlanLimits = $derived({
+        projects: $plansInfo?.get(resolvedProfile.freeTier)?.projects,
+        members: getServiceLimit('members', resolvedProfile.freeTier),
+        storage: getServiceLimit('storage', resolvedProfile.freeTier)
     });
 
     // When preparing to downgrade to Free, enforce Free plan limit locally (2)
-    let allowedProjectsToKeep = $derived(freePlanLimits.projects);
+    const allowedProjectsToKeep = $derived(freePlanLimits.projects);
 
-    let currentUsage = $derived({
+    const currentUsage = $derived({
         projects: projects?.length || 0,
         members: members?.length || 0,
         storage: storageUsage || 0
     });
 
-    let storageUsageGB = $derived(storageUsage / (1024 * 1024 * 1024));
+    const storageUsageGB = $derived(storageUsage / (1024 * 1024 * 1024));
 
-    let isLimitExceeded = $derived({
+    const isLimitExceeded = $derived({
         projects: currentUsage.projects > freePlanLimits.projects,
         members: currentUsage.members > freePlanLimits.members,
         storage: storageUsageGB > freePlanLimits.storage
     });
 
-    let excessUsage = $derived({
+    const excessUsage = $derived({
         projects: Math.max(0, currentUsage.projects),
         members: Math.max(0, currentUsage.members - freePlanLimits.members),
         storage: Math.max(0, storageUsageGB - freePlanLimits.storage)
     });
 
     // projects that would be archived with the current selection
-    let projectsToArchive = $derived(
+    const projectsToArchive = $derived(
         projects.filter((project) => !selectedProjects.includes(project.$id))
     );
 
@@ -113,7 +114,9 @@
             error = `You must select exactly ${allowedProjectsToKeep} projects to keep.`;
             return;
         }
-        // Keep selection locally; parent flow will apply after plan change
+
+        // Keep selection locally;
+        // parent flow will apply after plan change
         showSelectProject = false;
         showSelectionReminder = false;
         addNotification({ type: 'success', message: `Projects selected for archiving` });
