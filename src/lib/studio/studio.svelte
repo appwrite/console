@@ -12,6 +12,7 @@
     import AddDomains from './domains/add/view.svelte';
     import VerifyDomain from './domains/verify/view.svelte';
     import ManageDomains from './domains/manage/view.svelte';
+    import { sdk } from '$lib/stores/sdk';
 
     const {
         region,
@@ -24,9 +25,12 @@
     } = $props();
 
     const siteId = `project-${projectId}`;
+    const isStage = sdk.forConsole.client.config.endpoint.includes('stage');
     let showAddDomainsWizard = $state(false);
     let showManageDomainsSheet = $state(false);
-    let primaryDomainForSite = $state(`imagine-${projectId}.stage.appwrite.network`);
+    let primaryDomainForSite = $state(
+        `imagine-${projectId}.${isStage ? 'stage.' : ''}appwrite.network`
+    );
 
     let showVerifyDomainsWizard = $state(false);
     let ruleIdForVerification = $state(null);
