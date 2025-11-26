@@ -33,6 +33,7 @@ export type Profile = {
     showExtendedAccountsMenu: boolean;
     showGeneralAvailability: boolean;
     showConnectProjectOnToolbar: boolean;
+    showProgressBar: boolean;
     services: {
         'get-started': boolean;
         overview: boolean;
@@ -74,6 +75,7 @@ export const base: Profile = {
     showExtendedAccountsMenu: false,
     showGeneralAvailability: true,
     showConnectProjectOnToolbar: true,
+    showProgressBar: true,
     services: {
         'get-started': true,
         overview: true,
@@ -117,6 +119,7 @@ export const studio: Profile = {
     showExtendedAccountsMenu: true,
     showGeneralAvailability: false,
     showConnectProjectOnToolbar: false,
+    showProgressBar: false,
     services: {
         'get-started': false,
         overview: false,

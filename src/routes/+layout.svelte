@@ -201,7 +201,9 @@
 
     <slot />
 
-    <Progress />
+    {#if resolvedProfile.showProgressBar}
+        <Progress />
+    {/if}
 </Root>
 
 <style lang="scss" global>
