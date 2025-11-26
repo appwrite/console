@@ -1,10 +1,3 @@
-<script module lang="ts">
-    import { writable } from 'svelte/store';
-
-    // this is for backwards compatibility rn.
-    export const bannerSpacing = writable<string | null>(null);
-</script>
-
 <script lang="ts">
     import { onDestroy, onMount } from 'svelte';
     import { isTabletViewport } from '$lib/stores/viewport';
@@ -38,10 +31,8 @@
 
         if (alertHeight) {
             // for sidebar and sub-navigation!
-            bannerSpacing.set(`${alertHeight}px`);
             headerAlert.setTopSpacing(alertHeight);
         } else {
-            bannerSpacing.set(undefined);
             headerAlert.setTopSpacing(0);
         }
 
@@ -62,7 +53,7 @@
         }
 
         if (contentDiv && resolvedProfile.id === ProfileMode.STUDIO) {
-            const headerHeight = header?.getBoundingClientRect().height ?? 0;
+            const headerHeight = header?.getBoundingClientRect().height ?? 48;
             // push the content enough to show the borders of the content view!
             contentDiv.style.marginBlockStart = `${alertHeight + headerHeight}px`;
         }

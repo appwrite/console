@@ -5,7 +5,6 @@
     import { IconX } from '@appwrite.io/pink-icons-svelte';
     import { isTabletViewport } from '$lib/stores/viewport';
     import PinkBackground from '$lib/images/pink-background.svg';
-    import { bannerSpacing } from '$lib/layout/headerAlert.svelte';
     import { createEventDispatcher, onMount, onDestroy } from 'svelte';
     import { headerAlert } from '$lib/stores/headerAlert';
     import { ProfileMode, resolvedProfile } from '$lib/profiles/index.svelte';
@@ -37,7 +36,6 @@
             sidebar.style.height = `calc(100vh - ${offset}px)`;
 
             // for sidebar and sub-navigation!
-            bannerSpacing.set(`${alertHeight}px`);
             headerAlert.setTopSpacing(alertHeight);
         }
 
@@ -46,7 +44,7 @@
         }
 
         if (contentDiv && resolvedProfile.id === ProfileMode.STUDIO) {
-            const headerHeight = header?.getBoundingClientRect().height ?? 0;
+            const headerHeight = header?.getBoundingClientRect().height ?? 48;
             // push the content enough to show the borders of the content view!
             contentDiv.style.marginBlockStart = `${alertHeight + headerHeight}px`;
         }

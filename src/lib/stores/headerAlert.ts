@@ -1,5 +1,5 @@
 import type { Component } from 'svelte';
-import { writable } from 'svelte/store';
+import { writable, type Readable } from 'svelte/store';
 
 export type HeaderAlert = {
     id: string;
@@ -13,7 +13,15 @@ export type HeaderAlertStore = {
     components: HeaderAlert[];
 };
 
-function createHeaderAlertStore() {
+export type HeaderAlertStoreType = Readable<HeaderAlertStore> & {
+    set: (value: HeaderAlertStore) => void;
+    add: (component: HeaderAlert) => void;
+    get: () => HeaderAlert;
+    setTopSpacing: (value: number) => void;
+    getTopSpacing: () => number;
+};
+
+function createHeaderAlertStore(): HeaderAlertStoreType {
     const { set, update, subscribe } = writable<HeaderAlertStore>({
         top: 0,
         components: []
