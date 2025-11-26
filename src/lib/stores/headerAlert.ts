@@ -1,5 +1,5 @@
 import type { Component } from 'svelte';
-import { writable } from 'svelte/store';
+import { writable, type Readable } from 'svelte/store';
 
 export type HeaderAlert = {
     id: string;
@@ -9,11 +9,21 @@ export type HeaderAlert = {
 };
 
 export type HeaderAlertStore = {
+    top: number;
     components: HeaderAlert[];
 };
 
-function createHeaderAlertStore() {
-    const { subscribe, update, set } = writable<HeaderAlertStore>({
+export type HeaderAlertStoreType = Readable<HeaderAlertStore> & {
+    set: (value: HeaderAlertStore) => void;
+    add: (component: HeaderAlert) => void;
+    get: () => HeaderAlert;
+    setTopSpacing: (value: number) => void;
+    getTopSpacing: () => number;
+};
+
+function createHeaderAlertStore(): HeaderAlertStoreType {
+    const { set, update, subscribe } = writable<HeaderAlertStore>({
+        top: 0,
         components: []
     });
 
@@ -48,14 +58,23 @@ function createHeaderAlertStore() {
             });
             return component as HeaderAlert;
         },
-        isShowing: (): boolean => {
-            let showing = false;
+        setTopSpacing: (value: number) => {
+            update((n) => {
+                return {
+                    ...n,
+                    top: value
+                };
+            });
+        },
+        getTopSpacing: (): number => {
+            let top = 0;
             update((n) => {
                 if (n.components.length === 0) return n;
-                showing = n.components.some((c) => c.show);
+                top = n.top;
                 return n;
             });
-            return showing;
+
+            return top;
         }
     };
 }

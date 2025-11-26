@@ -3,7 +3,6 @@
     import { page } from '$app/state';
     import type { PageData } from './$types';
     import { showSubNavigation } from '$lib/stores/layout';
-    import { bannerSpacing } from '$lib/layout/headerAlert.svelte';
     import { showCreateTable, databaseSubNavigationItems } from './store';
 
     import {
@@ -28,6 +27,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { subNavigation } from '$lib/stores/database';
+    import { headerAlert } from '$lib/stores/headerAlert';
 
     const data = $derived(page.data) as PageData;
 
@@ -58,8 +58,8 @@
     // If banner open, adjust bottom position to account for banner container.
     // 70.5px is the size of the container of the banner holder and not just the banner!
     // Needed because things vary a bit much on how different browsers treat bottom layouts.
-    const bottomNavOffset = $derived($bannerSpacing ? '70.5px' : '0px');
-    const tableContentPadding = $derived($bannerSpacing ? '210px' : '140px');
+    const bottomNavOffset = $derived($headerAlert.top !== 0 ? '70.5px' : '0px');
+    const tableContentPadding = $derived($headerAlert.top !== 0 ? '210px' : '140px');
 
     async function loadTables() {
         tables = await sdk.forProject(region, project).tablesDB.listTables({
