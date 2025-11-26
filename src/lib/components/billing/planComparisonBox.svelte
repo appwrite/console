@@ -42,9 +42,9 @@
         <Typography.Text variant="m-600">{getCleanPlanName(currentPlan)} plan</Typography.Text>
 
         {#if resolvedProfile.platform === ProfileMode.CONSOLE}
-            {@render appwritePlanView(currentPlan)}
+            {@render appwritePlanView()}
         {:else}
-            {@render imaginePlanView(currentPlan)}
+            {@render imaginePlanView()}
         {/if}
     </Layout.Stack>
 </Card.Base>

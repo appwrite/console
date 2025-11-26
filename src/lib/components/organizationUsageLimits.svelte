@@ -1,7 +1,6 @@
 <script lang="ts">
     import { Button } from '$lib/elements/forms';
     import { getServiceLimit, plansInfo } from '$lib/stores/billing';
-    import { BillingPlan } from '$lib/constants';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { Badge, Icon, Layout, Table, Typography, Tooltip } from '@appwrite.io/pink-svelte';
     import { IconArrowUp, IconInfo } from '@appwrite.io/pink-icons-svelte';

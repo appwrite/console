@@ -45,7 +45,7 @@
             </svelte:fragment>
 
             <Layout.Stack direction="column" gap="xxs">
-                <Typography.Caption>
+                <Typography.Caption variant="400">
                     {plan.desc}
                 </Typography.Caption>
 
