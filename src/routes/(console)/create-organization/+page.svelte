@@ -199,7 +199,7 @@
                     <Typography.Text>
                         For more details on our plans, visit our
                         <Link.Anchor
-                            href="https://appwrite.io/pricing"
+                            href="{resolvedProfile.website}/pricing"
                             target="_blank"
                             rel="noopener noreferrer">pricing page</Link.Anchor
                         >.

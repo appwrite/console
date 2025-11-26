@@ -25,6 +25,7 @@
     import { onMount } from 'svelte';
     import type { UsageProjectInfo } from '../../store';
     import { isFreePlan } from '$lib/helpers/billing';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     export let data;
 
@@ -83,7 +84,7 @@
                 <Link.Button on:click={() => ($showUsageRatesModal = true)}>Learn more</Link.Button>
             {:else}
                 <Link.Anchor
-                    href="https://appwrite.io/pricing"
+                    href="{resolvedProfile.website}/pricing"
                     target="_blank"
                     rel="noopener noreferrer">
                     Learn more
@@ -98,7 +99,7 @@
                 <Link.Button on:click={() => ($showUsageRatesModal = true)}>Learn more</Link.Button>
             {:else}
                 <Link.Anchor
-                    href="https://appwrite.io/pricing"
+                    href="{resolvedProfile.website}/pricing"
                     target="_blank"
                     rel="noopener noreferrer">
                     Learn more

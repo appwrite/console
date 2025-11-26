@@ -565,7 +565,7 @@
                                                         color="--fgcolor-neutral-secondary">
                                                         Deploy the {resolvedProfile.platform} MCP server
                                                         with a single click, or view the <Link.Anchor
-                                                            href="https://appwrite.io/docs"
+                                                            href="{resolvedProfile.website}/docs"
                                                             target="_blank">docs</Link.Anchor> for instructions.
                                                     </Typography.Text>
                                                 </Layout.Stack>
@@ -598,7 +598,7 @@
                                     </Card.Base>
 
                                     <Card.Link
-                                        href="https://appwrite.io/discord"
+                                        href="{resolvedProfile.website}/discord"
                                         padding="s"
                                         on:click={() => {
                                             trackEvent(Click.OnboardingDiscordClick);
