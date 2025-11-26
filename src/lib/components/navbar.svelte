@@ -121,7 +121,7 @@
     beforeNavigate(() => (showAccountMenu = false));
 </script>
 
-<Navbar.Base --border-width-s="none" style="top: {$headerAlert.top}px;">
+<Navbar.Base --border-width-s="none" style="top: {$headerAlert.top}px; z-index: 100;">
     <div slot="left" class="left">
         <div class="only-mobile-tablet">
             <button
