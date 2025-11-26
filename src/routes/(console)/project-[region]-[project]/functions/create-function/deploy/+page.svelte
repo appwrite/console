@@ -17,7 +17,7 @@
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
     import { iconPath } from '$lib/stores/app';
     import type { PageData } from './$types';
-    import { getLatestTag } from '$lib/helpers/github';
+    import { getDefaultBranch, getBranches } from '$lib/helpers/github';
     import { writable } from 'svelte/store';
     import Link from '$lib/elements/link.svelte';
 
@@ -42,8 +42,9 @@
     let selectedScopes = $state<string[]>([]);
     let rootDir = $state(data.repository?.rootDirectory);
     let variables = $state<Array<{ key: string; value: string; secret: boolean }>>([]);
-
-    let latestTag = $state(null);
+    let branches = $state<string[]>([]);
+    let selectedBranch = $state<string>('');
+    let loadingBranches = $state(false);
 
     const specificationOptions = $derived(
         data.specificationsList?.specifications?.map((size) => ({
@@ -63,7 +64,7 @@
         })) || []
     );
 
-    onMount(() => {
+    onMount(async () => {
         const runtimeParam = data.runtime || page.url.searchParams.get('runtime') || 'node-18.0';
         runtime = runtimeParam as Runtime;
 
@@ -80,19 +81,61 @@
             variables = data.envKeys.map((key) => ({ key, value: '', secret: false }));
         }
 
-        getLatestTag(data.repository.owner, data.repository.name).then(
-            (tagName) => (latestTag = tagName)
-        );
+        // Load branches and set default branch
+        if (data.repository?.owner && data.repository?.name) {
+            loadingBranches = true;
+            try {
+                const [branchList, defaultBranch] = await Promise.all([
+                    getBranches(data.repository.owner, data.repository.name),
+                    getDefaultBranch(data.repository.owner, data.repository.name)
+                ]);
+
+                if (branchList && branchList.length > 0) {
+                    branches = branchList;
+                    // Pre-select default branch, or first branch if default not found
+                    selectedBranch =
+                        defaultBranch && branchList.includes(defaultBranch)
+                            ? defaultBranch
+                            : branchList[0];
+                } else {
+                    // Branch list is empty or null
+                    addNotification({
+                        type: 'error',
+                        message:
+                            'Failed to load branches from repository. Please check the repository URL or try again.'
+                    });
+                }
+            } catch (error) {
+                console.error('Failed to load branches:', error);
+                addNotification({
+                    type: 'error',
+                    message:
+                        'Failed to load branches from repository. Please check the repository URL or try again.'
+                });
+            } finally {
+                loadingBranches = false;
+            }
+        } else {
+            // Repository info is missing
+            addNotification({
+                type: 'error',
+                message: 'Repository information is missing. Please check the repository URL.'
+            });
+        }
     });
 
     async function create() {
+        if (!selectedBranch || branches.length === 0) {
+            addNotification({
+                type: 'error',
+                message: 'Please wait for branches to load or check the repository URL.'
+            });
+            return;
+        }
+
         $isSubmitting = true;
 
         try {
-            if (!latestTag) {
-                latestTag = await getLatestTag(data.repository.owner, data.repository.name);
-            }
-
             // Create function with configuration
             const func = await sdk
                 .forProject(page.params.region, page.params.project)
@@ -126,7 +169,7 @@
 
             await Promise.all(promises);
 
-            // Create deployment from GitHub repository using the latest tag
+            // Create deployment from GitHub repository using the selected branch
             await sdk
                 .forProject(page.params.region, page.params.project)
                 .functions.createTemplateDeployment({
@@ -134,8 +177,8 @@
                     repository: data.repository.name,
                     owner: data.repository.owner,
                     rootDirectory: rootDir || '.',
-                    type: Type.Tag,
-                    reference: latestTag ?? '1.0.0',
+                    type: Type.Branch,
+                    reference: selectedBranch,
                     activate: true
                 });
 
@@ -220,6 +263,22 @@
                 </Layout.Stack>
             </Fieldset>
 
+            <Fieldset legend="Git configuration">
+                <Layout.Stack gap="m">
+                    <Input.Select
+                        id="branch"
+                        label="Branch"
+                        required
+                        placeholder={loadingBranches ? 'Loading branches...' : 'Select branch'}
+                        bind:value={selectedBranch}
+                        disabled={loadingBranches}
+                        options={branches.map((branch) => ({
+                            value: branch,
+                            label: branch
+                        }))} />
+                </Layout.Stack>
+            </Fieldset>
+
             <Fieldset legend="Build configuration">
                 <Layout.Stack gap="m">
                     <Input.Text
@@ -276,7 +335,12 @@
                     fullWidthMobile
                     submissionLoader
                     forceShowLoader={$isSubmitting}
-                    disabled={!name || !runtime || !specification || $isSubmitting}>
+                    disabled={!name ||
+                        !runtime ||
+                        !specification ||
+                        !selectedBranch ||
+                        branches.length === 0 ||
+                        $isSubmitting}>
                     Deploy function
                 </Button>
             </Layout.Stack>

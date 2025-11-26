@@ -54,3 +54,20 @@ export async function getDefaultBranch(owner: string, name: string): Promise<str
         return null;
     }
 }
+
+export async function getBranches(owner: string, name: string): Promise<string[] | null> {
+    try {
+        const branchesResponse = await fetch(
+            `https://api.github.com/repos/${owner}/${name}/branches`
+        );
+        if (!branchesResponse.ok) {
+            return null;
+        }
+
+        const branches = await branchesResponse.json();
+        return branches.map((branch) => branch.name);
+    } catch (error) {
+        console.error('Failed to fetch branches from GitHub:', error);
+        return null;
+    }
+}
