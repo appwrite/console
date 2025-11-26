@@ -4,7 +4,7 @@
     import type { Plan } from '$lib/sdk/billing';
     import { formatNum } from '$lib/helpers/string';
     import { isFreePlan, isProPlan } from '$lib/helpers/billing';
-    import { plansInfo, type Tier, tierToPlan } from '$lib/stores/billing';
+    import { plansInfo, type Tier } from '$lib/stores/billing';
     import { ProfileMode, resolvedProfile } from '$lib/profiles/index.svelte';
     import { Card, Layout, Tabs, Typography } from '@appwrite.io/pink-svelte';
 
@@ -14,7 +14,7 @@
         downgrade?: boolean;
     } = $props();
 
-    let selectedTab = $state(resolvedProfile.freeTier);
+    let selectedTab: Tier = $state(resolvedProfile.freeTier as Tier);
 
     const currentPlan = $derived($plansInfo.get(selectedTab));
     const visiblePlans = $derived.by(() => {
