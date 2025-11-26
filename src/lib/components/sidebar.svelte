@@ -128,8 +128,7 @@
         bind:state
         on:resize={(event) => updateSidebarState(event.detail)}
         resizable={resolvedProfile.id !== ProfileMode.STUDIO}
-        style="padding-block-start: {$headerAlert.top}px"
-    >
+        style="padding-block-start: {$headerAlert.top}px">
         <div slot="top">
             <div class="only-mobile-tablet top">
                 <div class="icons search-icon">
