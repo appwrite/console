@@ -57,6 +57,7 @@
     import type { Models } from '@appwrite.io/console';
     import { organization } from '$lib/stores/organization';
     import { resolvedProfile } from '$lib/profiles/index.svelte';
+    import { bannerSpacing } from '$lib/layout/headerAlert.svelte';
 
     let showSupport = false;
 
@@ -120,7 +121,7 @@
     beforeNavigate(() => (showAccountMenu = false));
 </script>
 
-<Navbar.Base --border-width-s="none">
+<Navbar.Base --border-width-s="none" style="top: {$bannerSpacing || '0px'};">
     <div slot="left" class="left">
         <div class="only-mobile-tablet">
             <button
