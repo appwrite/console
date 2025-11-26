@@ -19,7 +19,19 @@ export function identify(userId: string) {
     }
 }
 
-export function setupSentry({ withSessionReplay }: { withSessionReplay: boolean }) {
+export function setupSentry(
+    {
+        withSessionReplay = true,
+        withBrowserTracing = true
+    }: { withSessionReplay: boolean; withBrowserTracing: boolean } = {
+        withSessionReplay: true,
+        withBrowserTracing: true
+    }
+) {
+    if (Sentry.isInitialized()) {
+        return;
+    }
+
     const dsn = env.PUBLIC_SENTRY_DSN;
     const environment = env.PUBLIC_SENTRY_ENVIRONMENT;
 
@@ -42,6 +54,7 @@ export function setupSentry({ withSessionReplay }: { withSessionReplay: boolean 
     };
 
     const integrations = [];
+
     if (withSessionReplay) {
         integrations.push(
             Sentry.replayIntegration({
@@ -51,7 +64,12 @@ export function setupSentry({ withSessionReplay }: { withSessionReplay: boolean 
         );
     }
 
+    if (withBrowserTracing) {
+        integrations.push(Sentry.browserTracingIntegration());
+    }
+
     Sentry.init({
+        environment,
         enabled: variables.enabled,
         dsn,
         tracesSampleRate: variables.tracesSampleRate,
@@ -59,6 +77,14 @@ export function setupSentry({ withSessionReplay }: { withSessionReplay: boolean 
         replaysOnErrorSampleRate: 1,
         integrations,
         debug: variables.debug,
-        sendDefaultPii: true
+        sendDefaultPii: true,
+        tracePropagationTargets: [
+            'localhost',
+            /^\//,
+            /^https:\/\/imagine\.dev(\/|$)/,
+            /^https:\/\/ai-service\.imagine\.dev(\/|$)/,
+            /^https:\/\/staging\.imagine\.dev(\/|$)/,
+            /^https:\/\/ai-service\.staging\.imagine\.dev(\/|$)/
+        ]
     });
 }
