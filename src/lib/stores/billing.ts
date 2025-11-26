@@ -100,7 +100,7 @@ export function tierToPlan(tier: Tier) {
         case BillingPlan.ENTERPRISE:
             return tierEnterprise;
         default:
-            return tierFree;
+            return tierCustom;
     }
 }
 
@@ -557,7 +557,8 @@ export async function checkForMissingPaymentMethod() {
     const orgs = await sdk.forConsole.billing.listOrganization([
         Query.notEqual('billingPlan', BillingPlan.FREE),
         Query.isNull('paymentMethodId'),
-        Query.isNull('backupPaymentMethodId')
+        Query.isNull('backupPaymentMethodId'),
+        Query.equal('platform', 'appwrite')
     ]);
     if (orgs?.total) {
         orgMissingPaymentMethod.set(orgs.teams[0]);

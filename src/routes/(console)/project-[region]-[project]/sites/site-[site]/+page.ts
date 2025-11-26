@@ -1,6 +1,6 @@
 import { sdk } from '$lib/stores/sdk';
 import { Dependencies } from '$lib/constants';
-import { Query } from '@appwrite.io/console';
+import { Query, type Models } from '@appwrite.io/console';
 import { RuleType } from '$lib/stores/sdk';
 import { DeploymentResourceType } from '$lib/stores/sdk';
 
@@ -58,11 +58,18 @@ export const load = async ({ params, depends, parent }) => {
         })
     ]);
 
-    const deployment = deploymentList?.total
-        ? await sdk
-              .forProject(params.region, params.project)
-              .sites.getDeployment({ siteId: params.site, deploymentId: site.deploymentId })
-        : null;
+    let deployment: Models.Deployment | null = null;
+    if (deploymentList?.total && site.deploymentId) {
+        try {
+            deployment = await sdk
+                .forProject(params.region, params.project)
+                .sites.getDeployment({ siteId: params.site, deploymentId: site.deploymentId });
+        } catch (error) {
+            // active deployment with the requested ID could not be found
+            deployment = null;
+        }
+    }
+
     return {
         site,
         deploymentList,

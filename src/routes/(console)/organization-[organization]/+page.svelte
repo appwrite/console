@@ -224,7 +224,7 @@
     {#if activeProjects.length > 0}
         <CardContainer
             disableEmpty={!$canWriteProjects}
-            total={data.projects.total}
+            total={activeProjects.length}
             offset={data.offset}
             on:click={handleCreateProject}>
             {#each activeProjects as project}
@@ -309,7 +309,7 @@
         name="Projects"
         limit={data.limit}
         offset={data.offset}
-        total={data.projects.total} />
+        total={activeProjects.length} />
 
     <!-- Archived Projects Section -->
     <ArchiveProject

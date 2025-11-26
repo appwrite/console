@@ -29,7 +29,6 @@ export const load: PageLoad = async ({ parent }) => {
                     ID.unique(),
                     'Personal projects',
                     BillingPlan.FREE,
-                    null,
                     null
                 );
                 trackEvent(Submit.OrganizationCreate, {

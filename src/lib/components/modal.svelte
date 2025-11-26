@@ -57,5 +57,6 @@
     /* temporary fix to modal width */
     :global(dialog section) {
         max-width: 100% !important;
+        overflow: visible !important;
     }
 </style>

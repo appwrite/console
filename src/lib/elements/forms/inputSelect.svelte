@@ -56,6 +56,7 @@
     helper={error ?? helper}
     {required}
     state={error ? 'error' : 'default'}
+    data-command-center-ignore
     on:invalid={handleInvalid}
     on:input
     on:change

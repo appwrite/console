@@ -74,6 +74,8 @@
 
     import { isTabletViewport } from '$lib/stores/viewport';
     import IndexesSuggestions from '../(suggestions)/indexes.svelte';
+    import ColumnsSuggestions from '../(suggestions)/columns.svelte';
+    import { showColumnsSuggestionsModal } from '../(suggestions)';
 
     let editRow: EditRow;
     let editRelatedRow: EditRelatedRow;
@@ -607,6 +609,8 @@
         </Layout.Stack>
     </svelte:fragment>
 </Dialog>
+
+<ColumnsSuggestions bind:show={$showColumnsSuggestionsModal} />
 
 <IndexesSuggestions />
 

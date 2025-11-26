@@ -2,11 +2,13 @@
     import { Filters, hasPageQueries, queries } from '$lib/components/filters';
     import ViewSelector from '$lib/components/viewSelector.svelte';
     import { Button } from '$lib/elements/forms';
+    import { goto } from '$app/navigation';
+    import { resolve } from '$app/paths';
     import type { Column, ColumnType } from '$lib/helpers/types';
     import { Container } from '$lib/layout';
     import { preferences } from '$lib/stores/preferences';
     import { canWriteTables, canWriteRows } from '$lib/stores/roles';
-    import { Icon, Layout, Divider, Tooltip } from '@appwrite.io/pink-svelte';
+    import { Icon, Layout, Divider, Tooltip, Typography, Link } from '@appwrite.io/pink-svelte';
     import type { PageData } from './$types';
     import {
         table,
@@ -27,19 +29,29 @@
     import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { isSmallViewport } from '$lib/stores/viewport';
     import {
+        IconBookOpen,
         IconChevronDown,
         IconChevronUp,
         IconPlus,
-        IconRefresh
+        IconViewBoards,
+        IconRefresh,
+        IconUpload,
+        IconDownload
     } from '@appwrite.io/pink-icons-svelte';
     import type { Models } from '@appwrite.io/console';
     import EmptySheet from './layout/emptySheet.svelte';
     import CreateRow from './rows/create.svelte';
     import { onDestroy } from 'svelte';
     import { isCloud } from '$lib/system';
-    import { Empty as SuggestionsEmptySheet, tableColumnSuggestions } from '../(suggestions)';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
+    import {
+        Empty as SuggestionsEmptySheet,
+        tableColumnSuggestions,
+        showColumnsSuggestionsModal
+    } from '../(suggestions)';
+    import EmptySheetCards from './layout/emptySheetCards.svelte';
+    import IconAI from '../(suggestions)/icon/aiForButton.svelte';
 
     export let data: PageData;
 
@@ -91,13 +103,15 @@
         $tableColumnSuggestions.table &&
         $tableColumnSuggestions.table.id === page.params.table;
 
+    $: disableButton = canShowSuggestionsSheet;
+
     async function onSelect(file: Models.File, localFile = false) {
         $isCsvImportInProgress = true;
 
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .migrations.createCsvMigration({
+                .migrations.createCSVImport({
                     bucketId: file.bucketId,
                     fileId: file.$id,
                     resourceId: `${page.params.database}:${page.params.table}`,
@@ -121,6 +135,20 @@
         }
     }
 
+    function getTableExportUrl() {
+        const queryParam = page.url.searchParams.get('query');
+        const url = resolve(
+            '/(console)/project-[region]-[project]/databases/database-[database]/table-[table]/export',
+            {
+                region: page.params.region,
+                project: page.params.project,
+                database: page.params.database,
+                table: page.params.table
+            }
+        );
+        return queryParam ? `${url}?query=${encodeURIComponent(queryParam)}` : url;
+    }
+
     onDestroy(() => ($showCreateColumnSheet.show = false));
 </script>
 
@@ -138,7 +166,8 @@
                                 columns={tableColumns}
                                 hideView
                                 showAnyway
-                                isCustomTable />
+                                isCustomTable
+                                {disableButton} />
                         </div>
 
                         <svelte:fragment slot="tooltip">Columns</svelte:fragment>
@@ -149,7 +178,7 @@
                             onlyIcon
                             query={data.query}
                             columns={filterColumns}
-                            disabled={!(hasColumns && hasValidColumns)}
+                            disabled={!(hasColumns && hasValidColumns) || disableButton}
                             analyticsSource="database_tables" />
 
                         <svelte:fragment slot="tooltip">Filters</svelte:fragment>
@@ -160,37 +189,52 @@
                     alignItems="center"
                     justifyContent="flex-end"
                     style="padding-right: 40px;">
-                    <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
-                        <Button
-                            secondary
-                            event={Click.DatabaseImportCsv}
-                            disabled={!(hasColumns && hasValidColumns)}
-                            on:click={() => (showImportCSV = true)}>
-                            Import CSV
-                        </Button>
+                    <Layout.Stack
+                        direction="row"
+                        alignItems="center"
+                        justifyContent="flex-end"
+                        gap="s">
                         {#if !$isSmallViewport}
                             <Button
                                 secondary
                                 event="create_row"
-                                disabled={!(hasColumns && hasValidColumns)}
+                                disabled={!(hasColumns && hasValidColumns) || disableButton}
                                 on:click={() => ($showRowCreateSheet.show = true)}>
                                 <Icon icon={IconPlus} slot="start" size="s" />
                                 Create row
                             </Button>
 
-                            <Button
-                                icon
-                                size="s"
-                                secondary
-                                class="small-button-dimensions"
-                                on:click={() => {
-                                    $expandTabs = !$expandTabs;
-                                    preferences.setKey('tableHeaderExpanded', $expandTabs);
-                                }}>
-                                <Icon
-                                    icon={!$expandTabs ? IconChevronDown : IconChevronUp}
-                                    size="s" />
-                            </Button>
+                            <Tooltip placement="top">
+                                <Button
+                                    icon
+                                    size="s"
+                                    secondary
+                                    class="small-button-dimensions"
+                                    disabled={!(hasColumns && hasValidColumns) || disableButton}
+                                    on:click={() => (showImportCSV = true)}>
+                                    <Icon icon={IconUpload} size="s" />
+                                </Button>
+
+                                <svelte:fragment slot="tooltip">Import CSV</svelte:fragment>
+                            </Tooltip>
+
+                            <Tooltip placement="top">
+                                <Button
+                                    icon
+                                    size="s"
+                                    secondary
+                                    class="small-button-dimensions"
+                                    disabled={!(hasColumns && hasValidColumns && data.rows.total) ||
+                                        disableButton}
+                                    on:click={() => {
+                                        trackEvent(Click.DatabaseExportCsv);
+                                        goto(getTableExportUrl());
+                                    }}>
+                                    <Icon icon={IconDownload} size="s" />
+                                </Button>
+
+                                <svelte:fragment slot="tooltip">Export CSV</svelte:fragment>
+                            </Tooltip>
 
                             <Tooltip disabled={isRefreshing || !data.rows.total} placement="top">
                                 <Button
@@ -199,7 +243,8 @@
                                     secondary
                                     disabled={isRefreshing ||
                                         !data.rows.total ||
-                                        !(hasColumns && hasValidColumns)}
+                                        !(hasColumns && hasValidColumns) ||
+                                        disableButton}
                                     class="small-button-dimensions"
                                     on:click={async () => {
                                         isRefreshing = true;
@@ -213,6 +258,25 @@
 
                                 <svelte:fragment slot="tooltip">Refresh</svelte:fragment>
                             </Tooltip>
+
+                            <Tooltip placement="top">
+                                <Button
+                                    icon
+                                    size="s"
+                                    secondary
+                                    class="small-button-dimensions"
+                                    on:click={() => {
+                                        $expandTabs = !$expandTabs;
+                                        preferences.setKey('tableHeaderExpanded', $expandTabs);
+                                    }}>
+                                    <Icon
+                                        icon={!$expandTabs ? IconChevronDown : IconChevronUp}
+                                        size="s" />
+                                </Button>
+
+                                <svelte:fragment slot="tooltip"
+                                    >{!$expandTabs ? 'Expand' : 'Collapse'}</svelte:fragment>
+                            </Tooltip>
                         {/if}
                     </Layout.Stack>
                 </Layout.Stack>
@@ -221,7 +285,7 @@
                 <Button
                     secondary
                     event="create_row"
-                    disabled={!(hasColumns && hasValidColumns)}
+                    disabled={!(hasColumns && hasValidColumns) || disableButton}
                     on:click={() => ($showRowCreateSheet.show = true)}>
                     <Icon icon={IconPlus} slot="start" size="s" />
                     Create row
@@ -231,7 +295,7 @@
     </Container>
 
     <div class="databases-spreadsheet">
-        {#if hasColumns && hasValidColumns}
+        {#if hasColumns && hasValidColumns && $tableColumnSuggestions.force !== true}
             {#if data.rows.total}
                 <Divider />
                 <SpreadSheet {data} bind:showRowCreateSheet={$showRowCreateSheet} />
@@ -239,58 +303,102 @@
                 <EmptySheet
                     mode="rows-filtered"
                     title="There are no rows that match your filters"
-                    customColumns={createTableColumns($table.columns, selected)}
-                    actions={{
-                        primary: {
-                            text: 'Clear filters',
-                            onClick: () => {
+                    customColumns={createTableColumns($table.columns, selected)}>
+                    {#snippet actions()}
+                        <Button
+                            size="s"
+                            secondary
+                            on:click={() => {
                                 queries.clearAll();
                                 queries.apply();
                                 trackEvent(Submit.FilterClear, {
                                     source: 'database_tables'
                                 });
-                            }
-                        }
-                    }} />
+                            }}>
+                            Clear filters
+                        </Button>
+                    {/snippet}
+                </EmptySheet>
             {:else}
                 <EmptySheet
                     mode="rows"
-                    customColumns={createTableColumns($table.columns, selected)}
                     showActions={$canWriteRows}
-                    actions={{
-                        primary: {
-                            text: 'Create rows',
-                            onClick: () => {
+                    customColumns={createTableColumns($table.columns, selected)}>
+                    {#snippet actions()}
+                        <EmptySheetCards
+                            icon={IconPlus}
+                            title="Create rows"
+                            subtitle="Create rows manually"
+                            onClick={() => {
                                 $showRowCreateSheet.show = true;
-                            }
-                        },
-                        random: {
-                            onClick: () => {
+                            }} />
+
+                        <EmptySheetCards
+                            icon={IconViewBoards}
+                            title="Generate sample data"
+                            subtitle="Generate data for testing"
+                            onClick={() => {
                                 $randomDataModalState.show = true;
-                            }
-                        }
-                    }} />
+                            }} />
+                    {/snippet}
+                </EmptySheet>
             {/if}
         {:else if isCloud && canShowSuggestionsSheet}
-            <SuggestionsEmptySheet />
+            <SuggestionsEmptySheet userColumns={$tableColumns} userDataRows={data.rows.rows} />
         {:else}
-            <EmptySheet
-                mode="rows"
-                title="You have no columns yet"
-                showActions={$canWriteTables}
-                actions={{
-                    primary: {
-                        text: 'Create column',
-                        onClick: async () => {
+            <EmptySheet mode="rows" showActions={$canWriteTables} title="You have no columns yet">
+                {#snippet subtitle()}
+                    {#if !isCloud}
+                        <!-- shown on self-hosted -->
+                        <Typography.Text align="center">
+                            Need a hand? Learn more in the
+                            <Link.Anchor
+                                target="_blank"
+                                href="https://appwrite.io/docs/products/databases">
+                                docs.
+                            </Link.Anchor>
+                        </Typography.Text>
+                    {/if}
+                {/snippet}
+
+                {#snippet actions()}
+                    {#if isCloud}
+                        <!-- shown on cloud -->
+                        <EmptySheetCards
+                            icon={IconAI}
+                            title="Suggest columns"
+                            subtitle="Use AI to generate columns"
+                            onClick={() => {
+                                $showColumnsSuggestionsModal = true;
+                            }} />
+                    {/if}
+
+                    <EmptySheetCards
+                        icon={IconPlus}
+                        title="Create column"
+                        subtitle="Create columns manually"
+                        onClick={() => {
                             $showCreateColumnSheet.show = true;
-                        }
-                    },
-                    random: {
-                        onClick: () => {
+                        }} />
+
+                    <EmptySheetCards
+                        icon={IconViewBoards}
+                        title="Generate sample data"
+                        subtitle="Generate data for testing"
+                        onClick={() => {
                             $randomDataModalState.show = true;
-                        }
-                    }
-                }} />
+                        }} />
+
+                    {#if isCloud}
+                        <!-- shown on cloud because self-hosted shows a link above -->
+                        <EmptySheetCards
+                            icon={IconBookOpen}
+                            title="Documentation"
+                            subtitle="Read the Appwrite docs"
+                            href="https://appwrite.io/docs/products/databases" />
+                    {/if}
+                {/snippet}
+            </EmptySheet>
         {/if}
     </div>
 {/key}
@@ -323,6 +431,7 @@
 
     :global(.rotating) {
         animation: rotate 1s linear infinite;
+        animation-direction: reverse;
     }
 
     @keyframes rotate {

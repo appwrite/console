@@ -153,6 +153,7 @@ export enum Click {
     DatabaseTableDelete = 'click_table_delete',
     DatabaseDatabaseDelete = 'click_database_delete',
     DatabaseImportCsv = 'click_database_import_csv',
+    DatabaseExportCsv = 'click_database_export_csv',
     DomainCreateClick = 'click_domain_create',
     DomainDeleteClick = 'click_domain_delete',
     DomainRetryDomainVerificationClick = 'click_domain_retry_domain_verification',
@@ -195,7 +196,10 @@ export enum Click {
     VariablesCreateClick = 'click_variable_create',
     VariablesUpdateClick = 'click_variable_update',
     VariablesImportClick = 'click_variable_import',
-    WebsiteOpenClick = 'click_open_website'
+    WebsiteOpenClick = 'click_open_website',
+    CopyPromptStarterKitClick = 'click_copy_prompt_starter_kit',
+    OpenInCursorClick = 'click_open_in_cursor',
+    OpenInLovableClick = 'click_open_in_lovable'
 }
 
 export enum Submit {
@@ -274,6 +278,7 @@ export enum Submit {
     DatabaseDelete = 'submit_database_delete',
     DatabaseUpdateName = 'submit_database_update_name',
     DatabaseImportCsv = 'submit_database_import_csv',
+    DatabaseExportCsv = 'submit_database_export_csv',
 
     ColumnCreate = 'submit_column_create',
     ColumnUpdate = 'submit_column_update',
@@ -357,6 +362,7 @@ export enum Submit {
     BucketUpdateSize = 'submit_bucket_update_size',
     BucketUpdateCompression = 'submit_bucket_update_compression',
     BucketUpdateExtensions = 'submit_bucket_update_extensions',
+    BucketUpdateTransformations = 'submit_bucket_update_transformations',
     FileCreate = 'submit_file_create',
     FileDelete = 'submit_file_delete',
     FileUpdatePermissions = 'submit_file_update_permissions',
