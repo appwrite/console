@@ -12,7 +12,6 @@ import { headerAlert } from '$lib/stores/headerAlert';
 
 const COMPONENT_SELECTOR = 'imagine-web-components-wrapper[data-appwrite-studio]';
 const STYLE_ATTRIBUTE = 'data-appwrite-studio-style';
-const BLOCK_BANNER_OFFSET = 24;
 const BLOCK_START_BASE_OFFSET = 48;
 export const CDN_URL = env?.PUBLIC_IMAGINE_CDN_URL + '/web-components.js';
 export const CDN_CSS_URL = env?.PUBLIC_IMAGINE_CDN_URL + '/web-components.css';
@@ -196,7 +195,7 @@ function updatePosition() {
         return;
     }
 
-    const bannerOffset = headerAlert.isShowing() ? BLOCK_BANNER_OFFSET : 0;
+    const bannerOffset = headerAlert.getTopSpacing();
 
     const rect = anchorElement.getBoundingClientRect();
     const { offsetX, offsetY } = currentOptions;

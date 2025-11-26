@@ -1,9 +1,3 @@
-<script module lang="ts">
-    import { writable } from 'svelte/store';
-
-    export const bannerSpacing = writable<string | null>(null);
-</script>
-
 <script lang="ts">
     import { onDestroy, onMount } from 'svelte';
     import { isTabletViewport } from '$lib/stores/viewport';
@@ -12,6 +6,8 @@
     import { Icon } from '@appwrite.io/pink-svelte';
     import { IconX } from '@appwrite.io/pink-icons-svelte';
     import { afterNavigate } from '$app/navigation';
+    import { headerAlert } from '$lib/stores/headerAlert';
+    import { ProfileMode, resolvedProfile } from '$lib/profiles/index.svelte';
 
     export let title: string;
     export let type: 'info' | 'success' | 'warning' | 'error' | 'default' = 'info';
@@ -31,12 +27,13 @@
         const header: HTMLHeadingElement = document.querySelector('main > header');
         const sidebar: HTMLElement = document.querySelector('main > div > nav');
         const contentSection: HTMLElement = document.querySelector('main > div > section');
+        const contentDiv: HTMLElement = document.querySelector('main > .content');
 
         if (alertHeight) {
             // for sidebar and sub-navigation!
-            bannerSpacing.set(`${alertHeight}px`);
+            headerAlert.setTopSpacing(alertHeight);
         } else {
-            bannerSpacing.set(undefined);
+            headerAlert.setTopSpacing(0);
         }
 
         if (header) {
@@ -53,6 +50,12 @@
 
         if (contentSection) {
             contentSection.style.paddingBlockStart = `${alertHeight}px`;
+        }
+
+        if (contentDiv && resolvedProfile.id === ProfileMode.STUDIO) {
+            const headerHeight = header?.getBoundingClientRect().height ?? 48;
+            // push the content enough to show the borders of the content view!
+            contentDiv.style.marginBlockStart = `${alertHeight + headerHeight}px`;
         }
     }
 
