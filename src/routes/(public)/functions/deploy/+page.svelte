@@ -127,8 +127,12 @@
             );
         if (branch) url.searchParams.set('branch', branch);
 
-        if (data.envKeys.length > 0) {
-            url.searchParams.set('env', data.envKeys.join(','));
+        if (data.envVars.length > 0) {
+            // Preserve KEY=value format for prefilled values
+            url.searchParams.set(
+                'env',
+                data.envVars.map((v) => (v.value ? `${v.key}=${v.value}` : v.key)).join(',')
+            );
         }
 
         return url.toString();

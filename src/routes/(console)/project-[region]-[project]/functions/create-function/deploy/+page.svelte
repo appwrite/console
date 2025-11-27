@@ -77,8 +77,13 @@
             specification = specificationOptions[0].value;
         }
 
-        if (data.envKeys.length > 0) {
-            variables = data.envKeys.map((key) => ({ key, value: '', secret: false }));
+        // Initialize environment variables from query params (with prefilled values if provided)
+        if (data.envVars.length > 0) {
+            variables = data.envVars.map((env) => ({
+                key: env.key,
+                value: env.value,
+                secret: false
+            }));
         }
 
         // Load branches and set default branch
@@ -314,7 +319,7 @@
                 </Layout.Stack>
             </Fieldset>
 
-            {#if data.envKeys.length > 0}
+            {#if data.envVars.length > 0}
                 <Fieldset legend="Environment variables">
                     <Layout.Stack gap="m">
                         {#each variables as variable, i}

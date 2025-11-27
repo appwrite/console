@@ -19,7 +19,21 @@ export const load: PageLoad = async ({ url, params, parent }) => {
     }
 
     const envParam = url.searchParams.get('env');
-    const envKeys = envParam ? envParam.split(',').map((key: string) => key.trim()) : [];
+
+    // Parse env vars - supports KEY or KEY=value format
+    const envVars: Array<{ key: string; value: string }> = envParam
+        ? envParam.split(',').map((entry: string) => {
+              const trimmed = entry.trim();
+              const eqIndex = trimmed.indexOf('=');
+              if (eqIndex === -1) {
+                  return { key: trimmed, value: '' };
+              }
+              return {
+                  key: trimmed.substring(0, eqIndex),
+                  value: trimmed.substring(eqIndex + 1)
+              };
+          })
+        : [];
 
     const runtime = url.searchParams.get('runtime');
 
@@ -35,7 +49,7 @@ export const load: PageLoad = async ({ url, params, parent }) => {
     }
 
     return {
-        envKeys,
+        envVars,
         runtime,
         runtimesList,
         installations,
