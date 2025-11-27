@@ -16,8 +16,6 @@
 
     const routeBase = `${base}/project-${page.params.region}-${page.params.project}/settings/domains`;
 
-    let { data } = $props();
-
     let formComponent: Form;
     let isSubmitting = $state(writable(false));
     let domainName = $state('');
@@ -30,25 +28,20 @@
 
     async function addDomain() {
         const apexDomain = getApexDomain(domainName);
-        let domain = data.domains?.domains.find((d: Models.Domain) => d.domain === apexDomain);
+        let domain: Models.Domain;
 
-        if (apexDomain && !domain && isCloud) {
-            try {
-                domain = await sdk.forConsole.domains.create({
+        if (isCloud && apexDomain) {
+            sdk.forConsole.domains
+                .create({
                     teamId: $project.teamId,
                     domain: apexDomain
+                })
+                .then((createdDomain) => {
+                    domain = createdDomain;
+                })
+                .catch(() => {
+                    // Empty as domain creation error needs to be silent
                 });
-            } catch (error) {
-                // apex might already be added on organization level, skip.
-                const alreadyAdded = error?.type === 'domain_already_exists';
-                if (!alreadyAdded) {
-                    addNotification({
-                        type: 'error',
-                        message: error.message
-                    });
-                    return;
-                }
-            }
         }
 
         try {
@@ -58,18 +51,13 @@
             if (rule?.status === 'verified') {
                 await goto(routeBase);
                 await invalidate(Dependencies.DOMAINS);
-            } else {
-                let redirect = `${routeBase}/add-domain/verify-${domainName}?rule=${rule.$id}`;
-
-                if (isCloud) {
-                    /**
-                     * Domains are only on cloud!
-                     * Self-hosted instances have rules.
-                     */
-                    redirect += `&domain=${domain.$id}`;
+                if (isCloud && domain) {
+                    sdk.forConsole.domains.updateNameservers({ domainId: domain.$id }).catch(() => {
+                        // Empty as domain update error needs to be silent
+                    });
                 }
-
-                await goto(redirect);
+            } else {
+                await goto(`${routeBase}/add-domain/verify-${domainName}?rule=${rule.$id}`);
                 await invalidate(Dependencies.DOMAINS);
             }
         } catch (error) {

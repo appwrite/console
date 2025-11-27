@@ -206,6 +206,21 @@ export function timeFromNow(datetime: string): string {
     return dayjs().to(dayjs(datetime));
 }
 
+export function timeFromNowShort(datetime: string): string {
+    if (!datetime) {
+        return 'unknown time';
+    }
+    if (!isValidDate(datetime)) {
+        return 'invalid date';
+    }
+
+    const timeStr = dayjs().to(dayjs(datetime));
+    return timeStr
+        .replace('second', 'sec') // seconds > secs
+        .replace('minute', 'min') // minutes > mins
+        .replace('hour', 'hr'); // hours > hrs
+}
+
 export function hoursToDays(hours: number) {
     if (hours > 24) {
         return `${Math.floor(hours / 24)} days`;

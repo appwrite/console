@@ -48,25 +48,20 @@
 
     async function addDomain() {
         const apexDomain = getApexDomain(domainName);
-        let domain = data.domains?.domains.find((d: Models.Domain) => d.domain === apexDomain);
+        let domain: Models.Domain;
 
-        if (apexDomain && !domain && isCloud) {
-            try {
-                domain = await sdk.forConsole.domains.create({
+        if (isCloud && apexDomain) {
+            sdk.forConsole.domains
+                .create({
                     teamId: $project.teamId,
                     domain: apexDomain
+                })
+                .then((createdDomain) => {
+                    domain = createdDomain;
+                })
+                .catch(() => {
+                    // Empty as domain creation error needs to be silent
                 });
-            } catch (error) {
-                // apex might already be added on organization level, skip.
-                const alreadyAdded = error?.type === 'domain_already_exists';
-                if (!alreadyAdded) {
-                    addNotification({
-                        type: 'error',
-                        message: error.message
-                    });
-                    return;
-                }
-            }
         }
 
         try {
@@ -100,10 +95,13 @@
             if (rule?.status === 'verified') {
                 await goto(routeBase);
                 await invalidate(Dependencies.FUNCTION_DOMAINS);
+                if (isCloud && domain) {
+                    sdk.forConsole.domains.updateNameservers({ domainId: domain.$id }).catch(() => {
+                        // Empty as domain update error needs to be silent
+                    });
+                }
             } else {
-                await goto(
-                    `${routeBase}/add-domain/verify-${domainName}?rule=${rule.$id}&domain=${domain.$id}`
-                );
+                await goto(`${routeBase}/add-domain/verify-${domainName}?rule=${rule.$id}`);
                 await invalidate(Dependencies.FUNCTION_DOMAINS);
             }
         } catch (error) {

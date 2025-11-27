@@ -12,6 +12,7 @@
     import { Button, Form } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
     import { organization } from '$lib/stores/organization';
+    import type { Models } from '@appwrite.io/console';
     import { addNotification } from '$lib/stores/notifications';
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
@@ -20,7 +21,7 @@
     import Wizard from '$lib/layout/wizard.svelte';
     import { base } from '$app/paths';
     import { writable } from 'svelte/store';
-    import { isASubdomain } from '$lib/helpers/tlds';
+    import { getApexDomain } from '$lib/helpers/tlds';
     import RecordTable from '$lib/components/domains/recordTable.svelte';
     import NameserverTable from '$lib/components/domains/nameserverTable.svelte';
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
@@ -28,12 +29,11 @@
     let { data } = $props();
 
     const ruleId = page.url.searchParams.get('rule');
-    const isSubDomain = $derived.by(() => isASubdomain(page.params.domain));
 
     let selectedTab = $state<'cname' | 'nameserver' | 'a' | 'aaaa'>('nameserver');
 
     $effect(() => {
-        if ($regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME && isSubDomain) {
+        if ($regionalConsoleVariables._APP_DOMAIN_SITES) {
             selectedTab = 'cname';
         } else if (!isCloud && $regionalConsoleVariables._APP_DOMAIN_TARGET_A) {
             selectedTab = 'a';
@@ -50,23 +50,50 @@
     let isSubmitting = $state(writable(false));
 
     async function verify() {
-        const isNewDomain =
-            data.domainsList.domains.findIndex((rule) => rule.domain === page.params.domain) === -1;
         try {
-            if (selectedTab !== 'nameserver') {
-                const ruleData = await sdk
-                    .forProject(page.params.region, page.params.project)
-                    .proxy.updateRuleVerification({ ruleId });
-                verified = ruleData.status === 'verified';
-                throw new Error(
-                    'Domain verification failed. Please check your domain settings or try again later'
-                );
-            } else if (isNewDomain && isCloud) {
-                const domainData = await sdk.forConsole.domains.create({
-                    teamId: $organization.$id,
-                    domain: page.params.domain
-                });
-                verified = domainData.nameservers.toLowerCase() === 'appwrite';
+            if (isCloud) {
+                const apexDomain = getApexDomain(data.proxyRule.domain);
+                if (apexDomain) {
+                    sdk.forConsole.domains
+                        .create({
+                            teamId: $organization.$id,
+                            domain: apexDomain
+                        })
+                        .then((domainData) => {
+                            if (domainData.nameservers.toLowerCase() === 'appwrite') {
+                                verified = true;
+                            }
+                        })
+                        .catch(() => {
+                            // Empty as domain creation error needs to be silent
+                        });
+
+                    const domain = data.domainsList.domains.find(
+                        (d: Models.Domain) => d.domain === apexDomain
+                    );
+                    if (domain) {
+                        sdk.forConsole.domains
+                            .updateNameservers({
+                                domainId: domain.$id
+                            })
+                            .then((output) => {
+                                if (output.nameservers.toLowerCase() === 'appwrite') {
+                                    verified = true;
+                                }
+                            })
+                            .catch(() => {
+                                // Empty as domain update error needs to be silent
+                            });
+                    }
+                }
+            }
+
+            const ruleData = await sdk
+                .forProject(page.params.region, page.params.project)
+                .proxy.updateRuleVerification({ ruleId });
+
+            verified = ruleData.status === 'verified';
+            if (!verified) {
                 throw new Error(
                     'Domain verification failed. Please check your domain settings or try again later'
                 );
@@ -95,7 +122,7 @@
                 .forProject(page.params.region, page.params.project)
                 .proxy.deleteRule({ ruleId });
         }
-        await goto(`${routeBase}/add-domain?domain=${page.params.domain}`);
+        await goto(`${routeBase}/add-domain?domain=${data.proxyRule.domain}`);
     }
 </script>
 
@@ -112,7 +139,7 @@
                         <Icon icon={IconGlobeAlt} color="--fgcolor-neutral-primary" />
 
                         <Typography.Text variation="m-500" color="--fgcolor-neutral-primary">
-                            {page.params.domain}
+                            {data.proxyRule.domain}
                         </Typography.Text>
                     </Layout.Stack>
                     <Button secondary on:click={back}>Change</Button>
@@ -123,7 +150,7 @@
                 <Layout.Stack gap="xl">
                     <div>
                         <Tabs.Root variant="secondary" let:root>
-                            {#if isSubDomain && !!$regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME && $regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME !== 'localhost'}
+                            {#if !!$regionalConsoleVariables._APP_DOMAIN_SITES && $regionalConsoleVariables._APP_DOMAIN_SITES !== 'localhost'}
                                 <Tabs.Item.Button
                                     {root}
                                     on:click={() => (selectedTab = 'cname')}
@@ -159,13 +186,20 @@
                         <Divider />
                     </div>
                     {#if selectedTab === 'nameserver'}
-                        <NameserverTable domain={page.params.domain} {verified} />
+                        <NameserverTable
+                            domain={data.proxyRule.domain}
+                            {verified}
+                            ruleStatus={data.proxyRule.status} />
                     {:else}
                         <RecordTable
                             {verified}
                             service="sites"
                             variant={selectedTab}
-                            domain={page.params.domain} />
+                            domain={data.proxyRule.domain}
+                            ruleStatus={data.proxyRule.status}
+                            onNavigateToNameservers={() => (selectedTab = 'nameserver')}
+                            onNavigateToA={() => (selectedTab = 'a')}
+                            onNavigateToAAAA={() => (selectedTab = 'aaaa')} />
                     {/if}
                     <Divider />
                     <Layout.Stack direction="row" justifyContent="flex-end">
