@@ -1,4 +1,6 @@
 {
+    "bgcolor-neutral-primary": "var(--neutral-25)",
+    "bgcolor-neutral-default": "var(--neutral-0)",
     "bgcolor-accent": "var(--neutral-1000)",
     "bgcolor-accent-secondary": "var(--neutral-900)",
     "bgcolor-accent-tertiary": "var(--neutral-850)",
