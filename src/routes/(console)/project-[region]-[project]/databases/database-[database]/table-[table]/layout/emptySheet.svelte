@@ -251,6 +251,7 @@
     data-mode={mode}
     bind:this={spreadsheetContainer}
     class:custom-columns={customColumns.length > 0}
+    class:no-custom-columns={customColumns.length <= 0}
     class="databases-spreadsheet spreadsheet-container-outer">
     <SpreadsheetContainer>
         <Spreadsheet.Root
@@ -381,6 +382,19 @@
             width: unset;
         }
 
+        &.no-custom-columns {
+            @media (max-width: 768px) {
+                & :global(.spreadsheet-wrapper) {
+                    opacity: 0;
+                }
+
+                & > .spreadsheet-fade-bottom {
+                    top: var(--top-actions-spacing) !important;
+                    background: var(--bgcolor-neutral-primary) !important;
+                }
+            }
+        }
+
         &:not(.custom-columns) :global(.spreadsheet-container) {
             overflow-x: hidden;
             overflow-y: hidden;
@@ -393,12 +407,16 @@
         }
 
         &[data-mode='rows'] {
+            --top-actions-spacing: 50%;
+
             & :global([role='rowheader'] :nth-last-child(2) [role='presentation']) {
                 display: none;
             }
         }
 
         &[data-mode='indexes'] {
+            --top-actions-spacing: 40%;
+
             & :global([role='cell']:last-child [role='presentation']) {
                 display: none;
             }
@@ -461,6 +479,13 @@
         @media (max-width: 1024px) {
             // experiment
             margin-bottom: 15%;
+        }
+    }
+
+    @media (max-width: 768px) {
+        // global but controlled properly!
+        :global(main:has(.no-custom-columns) .console-container) {
+            opacity: 0;
         }
     }
 </style>

@@ -135,6 +135,7 @@ export type ColumnInput = {
     formatOptions?: {
         min?: number;
         max?: number;
+        elements?: string[];
     };
 };
 
@@ -155,7 +156,10 @@ export function mapSuggestedColumns<T extends ColumnInput>(columns: T[]): Sugges
                 ? (col.max ?? col.formatOptions?.max ?? undefined)
                 : undefined,
         format: col.format ?? null,
-        elements: col.elements ?? undefined
+        elements:
+            col.format === 'enum'
+                ? (col.elements ?? col.formatOptions?.elements ?? undefined)
+                : undefined
     }));
 }
 

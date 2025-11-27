@@ -101,7 +101,7 @@ export function tierToPlan(tier: Tier) {
         case BillingPlan.ENTERPRISE:
             return tierEnterprise;
         default:
-            return tierFree;
+            return tierCustom;
     }
 }
 

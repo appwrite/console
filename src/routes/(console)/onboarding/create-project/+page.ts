@@ -46,8 +46,7 @@ export const load: PageLoad = async ({ parent }) => {
                     'Personal projects',
                     resolvedProfile.freeTier,
                     null,
-                    resolvedProfile.organizationPlatform,
-                    null
+                    resolvedProfile.organizationPlatform
                 );
                 trackEvent(Submit.OrganizationCreate, {
                     plan: tierToPlan(BillingPlan.FREE)?.name,

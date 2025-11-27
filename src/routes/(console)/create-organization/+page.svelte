@@ -115,8 +115,7 @@
                     name,
                     resolvedProfile.freeTier,
                     null,
-                    resolvedProfile.organizationPlatform,
-                    null
+                    resolvedProfile.organizationPlatform
                 );
             } else {
                 org = await sdk.forConsole.billing.createOrganization(
@@ -125,7 +124,7 @@
                     selectedPlan,
                     paymentMethodId,
                     resolvedProfile.organizationPlatform,
-                    null,
+                    undefined,
                     selectedCoupon?.code,
                     collaborators,
                     billingBudget,

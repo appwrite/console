@@ -4,6 +4,8 @@ export type SupportData = {
     message: string;
     subject: string;
     category: string;
+    topic?: string;
+    severity?: string;
     file?: File | null;
     project?: string;
 };
@@ -11,7 +13,8 @@ export type SupportData = {
 export const supportData = writable<SupportData>({
     message: '',
     subject: '',
-    category: 'general',
+    category: 'technical',
+    severity: 'question',
     file: null
 });
 
