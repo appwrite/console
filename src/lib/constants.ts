@@ -467,6 +467,45 @@ export const scopes: {
     }
 ];
 
+export const cloudOnlyBackupScopes = [
+    {
+        scope: 'policies.read',
+        description: 'Access to read your database backup policies',
+        category: 'Database',
+        icon: 'database'
+    },
+    {
+        scope: 'policies.write',
+        description: 'Access to create, update and delete your backup policies',
+        category: 'Database',
+        icon: 'database'
+    },
+    {
+        scope: 'archives.read',
+        description: 'Access to read your database backup archives',
+        category: 'Database',
+        icon: 'database'
+    },
+    {
+        scope: 'archives.write',
+        description: 'Access to create and delete your backup archives',
+        category: 'Database',
+        icon: 'database'
+    },
+    {
+        scope: 'restorations.read',
+        description: 'Access to read your backup restorations',
+        category: 'Database',
+        icon: 'database'
+    },
+    {
+        scope: 'restorations.write',
+        description: 'Access to create backup restorations',
+        category: 'Database',
+        icon: 'database'
+    }
+];
+
 export type EventService = {
     name: string;
     resources: EventResource[];
