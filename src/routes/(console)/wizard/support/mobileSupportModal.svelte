@@ -21,9 +21,9 @@
         background-color: #fff;
     }
 
-    :global(.theme-dark .mobile-support-dialog-modal dialog) {
+    /* :global(.theme-dark .mobile-support-dialog-modal dialog) {
         background-color: #131315;
-    }
+    } */
 
     /* pink2 modal doesn't allow removing the header divider yet, temporary fix*/
     :global(.mobile-support-dialog-modal dialog header) {
