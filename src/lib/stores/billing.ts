@@ -24,7 +24,7 @@ import type {
 } from '$lib/sdk/billing';
 import { isCloud } from '$lib/system';
 import { activeHeaderAlert, orgMissingPaymentMethod } from '$routes/(console)/store';
-import { AppwriteException, Query } from '@appwrite.io/console';
+import { AppwriteException, Query, Platform } from '@appwrite.io/console';
 import { derived, get, writable } from 'svelte/store';
 import { headerAlert } from './headerAlert';
 import { addNotification, notifications } from './notifications';
@@ -558,7 +558,7 @@ export async function checkForMissingPaymentMethod() {
         Query.notEqual('billingPlan', BillingPlan.FREE),
         Query.isNull('paymentMethodId'),
         Query.isNull('backupPaymentMethodId'),
-        Query.equal('platform', 'appwrite')
+        Query.equal('platform', Platform.Appwrite)
     ]);
     if (orgs?.total) {
         orgMissingPaymentMethod.set(orgs.teams[0]);
