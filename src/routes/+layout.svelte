@@ -1,7 +1,7 @@
 <script lang="ts">
     import { browser } from '$app/environment';
     import { afterNavigate, goto } from '$app/navigation';
-    import { base } from '$app/paths';
+    import { asset, base } from '$app/paths';
     import { page } from '$app/state';
     import { trackPageView } from '$lib/actions/analytics';
     import { Notifications, Progress } from '$lib/layout';
@@ -181,8 +181,10 @@
         {#each preloadFontsCloud as font}
             <link rel="preload" href={font} as="font" type="font/woff2" crossorigin="anonymous" />
         {/each}
-        <link rel="preload" as="style" type="text/css" href="{base}/fonts/cloud.css" />
-        <link rel="stylesheet" href={`${base}/fonts/cloud.css`} />
+        {#if resolvedProfile.id === ProfileMode.CONSOLE}
+            <link rel="preload" as="style" type="text/css" href="{base}/fonts/cloud.css" />
+            <link rel="stylesheet" href={`${base}/fonts/cloud.css`} />
+        {/if}
     {/if}
 
     <link rel="stylesheet" href={resolvedProfile.css} />
@@ -190,6 +192,8 @@
     {#if resolvedProfile.id === ProfileMode.STUDIO}
         <link rel="preload" as="style" type="text/css" href={CDN_CSS_URL} />
         <link rel="preload" as="script" type="text/javascript" href={CDN_URL} />
+        <link rel="preload" as="style" type="text/css" href={asset('/fonts/studio.css')} />
+        <link rel="stylesheet" href={asset('/fonts/studio.css')} />
     {/if}
 </svelte:head>
 
@@ -201,7 +205,9 @@
 
     <slot />
 
-    <Progress />
+    {#if resolvedProfile.showProgressBar}
+        <Progress />
+    {/if}
 </Root>
 
 <style lang="scss" global>

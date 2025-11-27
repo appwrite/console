@@ -1,0 +1,89 @@
+@font-face {
+    font-family: 'neue-haas-grotesk-display';
+    src:
+        url('https://use.typekit.net/af/174ae3/00000000000000007735bb5a/31/l?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n5&v=3')
+            format('woff2'),
+        url('https://use.typekit.net/af/174ae3/00000000000000007735bb5a/31/d?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n5&v=3')
+            format('woff'),
+        url('https://use.typekit.net/af/174ae3/00000000000000007735bb5a/31/a?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n5&v=3')
+            format('opentype');
+    font-display: auto;
+    font-style: normal;
+    font-weight: 500;
+    font-stretch: normal;
+}
+
+@font-face {
+    font-family: 'neue-haas-grotesk-display';
+    src:
+        url('https://use.typekit.net/af/c7a282/00000000000000007735bb62/31/l?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n6&v=3')
+            format('woff2'),
+        url('https://use.typekit.net/af/c7a282/00000000000000007735bb62/31/d?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n6&v=3')
+            format('woff'),
+        url('https://use.typekit.net/af/c7a282/00000000000000007735bb62/31/a?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n6&v=3')
+            format('opentype');
+    font-display: auto;
+    font-style: normal;
+    font-weight: 600;
+    font-stretch: normal;
+}
+
+@font-face {
+    font-family: 'neue-haas-grotesk-text';
+    src:
+        url('https://use.typekit.net/af/912d1e/00000000000000007735bb33/31/l?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n4&v=3')
+            format('woff2'),
+        url('https://use.typekit.net/af/912d1e/00000000000000007735bb33/31/d?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n4&v=3')
+            format('woff'),
+        url('https://use.typekit.net/af/912d1e/00000000000000007735bb33/31/a?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n4&v=3')
+            format('opentype');
+    font-display: auto;
+    font-style: normal;
+    font-weight: 400;
+    font-stretch: normal;
+}
+
+@font-face {
+    font-family: 'neue-haas-grotesk-text';
+    src:
+        url('https://use.typekit.net/af/68dda9/00000000000000007735bb35/31/l?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=i4&v=3')
+            format('woff2'),
+        url('https://use.typekit.net/af/68dda9/00000000000000007735bb35/31/d?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=i4&v=3')
+            format('woff'),
+        url('https://use.typekit.net/af/68dda9/00000000000000007735bb35/31/a?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=i4&v=3')
+            format('opentype');
+    font-display: auto;
+    font-style: italic;
+    font-weight: 400;
+    font-stretch: normal;
+}
+
+@font-face {
+    font-family: 'neue-haas-grotesk-text';
+    src:
+        url('https://use.typekit.net/af/c002e2/00000000000000007735bb32/31/l?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n5&v=3')
+            format('woff2'),
+        url('https://use.typekit.net/af/c002e2/00000000000000007735bb32/31/d?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n5&v=3')
+            format('woff'),
+        url('https://use.typekit.net/af/c002e2/00000000000000007735bb32/31/a?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n5&v=3')
+            format('opentype');
+    font-display: auto;
+    font-style: normal;
+    font-weight: 500;
+    font-stretch: normal;
+}
+
+@font-face {
+    font-family: 'neue-haas-grotesk-text';
+    src:
+        url('https://use.typekit.net/af/2288cb/00000000000000007735bb39/31/l?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n7&v=3')
+            format('woff2'),
+        url('https://use.typekit.net/af/2288cb/00000000000000007735bb39/31/d?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n7&v=3')
+            format('woff'),
+        url('https://use.typekit.net/af/2288cb/00000000000000007735bb39/31/a?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n7&v=3')
+            format('opentype');
+    font-display: auto;
+    font-style: normal;
+    font-weight: 700;
+    font-stretch: normal;
+}
