@@ -124,11 +124,14 @@
             const branch =
                 currentUrl.searchParams.get('branch') || data.deploymentData.repository.branch;
 
+            const quick = currentUrl.searchParams.get('quick');
+
             if (preset) url.searchParams.set('preset', preset);
             if (install) url.searchParams.set('install', install);
             if (build) url.searchParams.set('build', build);
             if (output) url.searchParams.set('output', output);
             if (branch) url.searchParams.set('branch', branch);
+            if (quick === 'true') url.searchParams.set('quick', 'true');
         }
 
         if (data.envVars.length > 0) {

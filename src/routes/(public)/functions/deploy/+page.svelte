@@ -117,6 +117,8 @@
         const branch =
             currentUrl.searchParams.get('branch') || data.deploymentData.repository.branch;
 
+        const quick = currentUrl.searchParams.get('quick');
+
         if (entrypoint) url.searchParams.set('entrypoint', entrypoint);
         if (install) url.searchParams.set('install', install);
         if (build) url.searchParams.set('build', build);
@@ -126,6 +128,7 @@
                 rootDir || data.deploymentData.repository.rootDirectory
             );
         if (branch) url.searchParams.set('branch', branch);
+        if (quick === 'true') url.searchParams.set('quick', 'true');
 
         if (data.envVars.length > 0) {
             // Preserve KEY=value format for prefilled values
