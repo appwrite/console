@@ -53,18 +53,48 @@
     }
 
     async function deleteDeployments(selectedRows: string[]): Promise<DeleteOperationState> {
+        const allDeployments = data.deploymentList.deployments;
+        const remainingDeployments = allDeployments.filter(
+            (d) => !selectedRows.includes(d.$id)
+        );
+        
+        if (remainingDeployments.length === 0) {
+            const selectedDeployments = allDeployments.filter(
+                (d) => selectedRows.includes(d.$id)
+            );
+            
+            const hasPendingDeployments = selectedDeployments.some((d) => {
+                const effectiveStatus = getEffectiveBuildStatus(
+                    d.status,
+                    d.$createdAt,
+                    $regionalConsoleVariables
+                );
+                return ['waiting', 'processing', 'building'].includes(effectiveStatus);
+            });
+            
+            if (hasPendingDeployments) {
+                const error = new Error(
+                    'Cannot delete all deployments while some are still building or processing. Please wait for them to complete or cancel them first.'
+                );
+                trackError(error, Submit.DeploymentDelete);
+                return error;
+            }
+        }
+        
         const promises = selectedRows.map((deploymentId) =>
             sdk.forProject(page.params.region, page.params.project).functions.deleteDeployment({
                 functionId: page.params.function,
                 deploymentId
             })
         );
+        
         try {
             await Promise.all(promises);
             trackEvent(Submit.DeploymentDelete);
+            return undefined;
         } catch (error) {
-            trackError(error, Submit.DeploymentDelete);
-            return error;
+            trackError(error as Error, Submit.DeploymentDelete);
+            return error as Error;
         } finally {
             await invalidate(Dependencies.DEPLOYMENTS);
         }
