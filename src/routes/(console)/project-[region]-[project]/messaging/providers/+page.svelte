@@ -23,6 +23,7 @@
         view={View.Table}
         hideView
         hasFilters
+        hasCustomFiltersOnly
         hasSearch
         analyticsSource="messaging_providers"
         searchPlaceholder="Search by name or ID">
