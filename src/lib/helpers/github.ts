@@ -71,3 +71,19 @@ export async function getBranches(owner: string, name: string): Promise<string[]
         return null;
     }
 }
+
+export async function validateBranch(
+    owner: string,
+    repo: string,
+    branch: string
+): Promise<boolean> {
+    try {
+        const response = await fetch(
+            `https://api.github.com/repos/${owner}/${repo}/branches/${encodeURIComponent(branch)}`
+        );
+        return response.ok;
+    } catch (error) {
+        console.error('Failed to validate branch from GitHub:', error);
+        return false;
+    }
+}

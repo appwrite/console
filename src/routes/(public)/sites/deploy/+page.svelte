@@ -120,11 +120,13 @@
             const install = currentUrl.searchParams.get('install');
             const build = currentUrl.searchParams.get('build');
             const output = currentUrl.searchParams.get('output');
+            const branch = currentUrl.searchParams.get('branch');
 
             if (preset) url.searchParams.set('preset', preset);
             if (install) url.searchParams.set('install', install);
             if (build) url.searchParams.set('build', build);
             if (output) url.searchParams.set('output', output);
+            if (branch) url.searchParams.set('branch', branch);
         }
 
         if (data.envKeys.length > 0) {

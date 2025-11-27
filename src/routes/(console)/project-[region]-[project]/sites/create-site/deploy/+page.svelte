@@ -19,7 +19,7 @@
     import { iconPath } from '$lib/stores/app';
     import type { PageData } from './$types';
     import { writable } from 'svelte/store';
-    import { getDefaultBranch, getBranches } from '$lib/helpers/github';
+    import { getDefaultBranch, getBranches, validateBranch } from '$lib/helpers/github';
     import Link from '$lib/elements/link.svelte';
 
     let {
@@ -125,18 +125,30 @@
         if (data.repository?.owner && data.repository?.name) {
             loadingBranches = true;
             try {
-                const [branchList, defaultBranch] = await Promise.all([
+                // Check for branch param from URL
+                const branchParam = page.url.searchParams.get('branch');
+
+                const [branchList, defaultBranch, isBranchValid] = await Promise.all([
                     getBranches(data.repository.owner, data.repository.name),
-                    getDefaultBranch(data.repository.owner, data.repository.name)
+                    getDefaultBranch(data.repository.owner, data.repository.name),
+                    branchParam
+                        ? validateBranch(data.repository.owner, data.repository.name, branchParam)
+                        : Promise.resolve(false)
                 ]);
 
                 if (branchList && branchList.length > 0) {
                     branches = branchList;
-                    // Pre-select default branch, or first branch if default not found
-                    selectedBranch =
-                        defaultBranch && branchList.includes(defaultBranch)
-                            ? defaultBranch
-                            : branchList[0];
+
+                    if (branchParam && isBranchValid) {
+                        // Use the provided branch if it's valid
+                        selectedBranch = branchParam;
+                    } else {
+                        // Fall back to default branch, or first branch if default not found
+                        selectedBranch =
+                            defaultBranch && branchList.includes(defaultBranch)
+                                ? defaultBranch
+                                : branchList[0];
+                    }
                 } else {
                     // Branch list is empty or null
                     addNotification({

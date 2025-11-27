@@ -113,6 +113,7 @@
         const install = currentUrl.searchParams.get('install');
         const build = currentUrl.searchParams.get('build');
         const rootDir = currentUrl.searchParams.get('rootDir');
+        const branch = currentUrl.searchParams.get('branch');
 
         if (entrypoint) url.searchParams.set('entrypoint', entrypoint);
         if (install) url.searchParams.set('install', install);
@@ -122,6 +123,7 @@
                 'rootDir',
                 rootDir || data.deploymentData.repository.rootDirectory
             );
+        if (branch) url.searchParams.set('branch', branch);
 
         if (data.envKeys.length > 0) {
             url.searchParams.set('env', data.envKeys.join(','));
