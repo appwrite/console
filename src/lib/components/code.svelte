@@ -1,26 +1,12 @@
-<script lang="ts" module>
-    const langArr = ['js', 'html', 'dart', 'kotlin', 'json', 'sh', 'yml', 'swift'] as const;
-    export type Language = (typeof langArr)[number];
-
-    export function isLanguage(str: string): str is Language {
-        return langArr.includes(str as Language);
-    }
-</script>
-
 <script lang="ts">
+    import { Copy } from '.';
+    import { onMount } from 'svelte';
+    import { browser } from '$app/environment';
     import { Badge, Icon } from '@appwrite.io/pink-svelte';
     import { IconCode, IconAndroid, IconFlutter, IconApple } from '@appwrite.io/pink-icons-svelte';
-    import Prism from 'prismjs';
-    import 'prismjs/components/prism-dart';
-    import 'prismjs/components/prism-kotlin';
-    import 'prismjs/components/prism-json';
-    import 'prismjs/components/prism-bash';
-    import 'prismjs/components/prism-yaml';
-    import 'prismjs/components/prism-swift';
-    import 'prismjs/plugins/autoloader/prism-autoloader';
-    import 'prismjs/plugins/custom-class/prism-custom-class';
-    import 'prismjs/plugins/line-numbers/prism-line-numbers';
-    import { Copy } from '.';
+    import { type Language, loadPrism, type PrismType } from '$lib/helpers/prism';
+
+    let Prism: PrismType | null = null;
 
     let {
         label = null,
@@ -37,7 +23,7 @@
         label?: string;
         labelIcon?: 'code' | 'android' | 'flutter' | 'apple';
         code: string;
-        language: 'js' | 'html' | 'dart' | 'kotlin' | 'json' | 'sh' | 'yml' | 'swift';
+        language: Language;
         withLineNumbers?: boolean;
         withCopy?: boolean;
         noMargin?: boolean;
@@ -61,7 +47,12 @@
         }
     }
 
-    Prism.plugins.customClass.prefix('prism-');
+    onMount(async () => {
+        if (!browser) return;
+
+        Prism = await loadPrism(language, withLineNumbers);
+        Prism.plugins.customClass.prefix('prism-');
+    });
 
     $effect(() => Prism.highlightAll());
 </script>
