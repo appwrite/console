@@ -412,6 +412,9 @@ export type Plan = {
         databasesWrites: AdditionalResource;
         GBHours: AdditionalResource;
         imageTransformations: AdditionalResource;
+
+        // imagine specific
+        credits: AdditionalResource;
     };
     addons: {
         seats: PlanAddon;
@@ -432,8 +435,9 @@ export type Plan = {
     buildSize: number; // in MB
     deploymentSize: number; // in MB
     usagePerProject: boolean;
-    // imagine specifics
-    chatMessages: number; // daily
+    limits: {
+        credits?: number
+    }
 };
 
 export type PlanList = {

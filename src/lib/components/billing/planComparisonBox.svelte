@@ -22,7 +22,7 @@
     });
 
     function getCleanPlanName(plan: Plan) {
-        return plan.name.replace(resolvedProfile.platform, '');
+        return plan?.name?.replace(resolvedProfile.platform, '');
     }
 </script>
 
@@ -125,6 +125,6 @@
 
 {#snippet imaginePlanView()}
     <Typography.Text variant="m-600">
-        {currentPlan?.chatMessages} daily messages
+        {currentPlan?.limits?.credits} daily messages
     </Typography.Text>
 {/snippet}

@@ -205,7 +205,11 @@
                         >.
                     </Typography.Text>
 
-                    <PlanSelection bind:billingPlan={selectedPlan} isNewOrg />
+                    <PlanSelection
+                        isNewOrg
+                        disabled={$isSubmitting}
+                        bind:billingPlan={selectedPlan}
+                    />
                 </Layout.Stack>
             </Fieldset>
             {#if !isFreePlan(selectedPlan)}

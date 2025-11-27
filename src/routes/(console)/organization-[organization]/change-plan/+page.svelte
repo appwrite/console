@@ -250,6 +250,7 @@
                         !data?.members?.memberships?.find((m) => m.userEmail === collaborator)
                 );
             }
+
             const org = await sdk.forConsole.billing.updatePlan(
                 data.organization.$id,
                 selectedPlan,
@@ -310,6 +311,8 @@
         }
     }
 
+    $: console.log($plansInfo.get(selectedPlan));
+
     $: isUpgrade = $plansInfo.get(selectedPlan)?.order > $currentPlan?.order;
     $: isDowngrade = $plansInfo.get(selectedPlan)?.order < $currentPlan?.order;
     $: isButtonDisabled =
@@ -342,7 +345,11 @@
                         </Alert.Inline>
                     {/if}
 
-                    <PlanSelection bind:billingPlan={selectedPlan} selfService={data.selfService} />
+                    <PlanSelection
+                        disabled={$isSubmitting}
+                        selfService={data.selfService}
+                        bind:billingPlan={selectedPlan}
+                    />
 
                     {#if isDowngrade && isFreePlan(selectedPlan) && data.hasFreeOrgs}
                         <Alert.Inline
