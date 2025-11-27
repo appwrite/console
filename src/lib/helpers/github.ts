@@ -3,6 +3,11 @@ export function getNestedRootDirectory(repository: string): string | null {
     return match ? match[1] : null;
 }
 
+export function getBranchFromUrl(repository: string): string | null {
+    const match = repository.match(/\/tree\/([^/]+)/);
+    return match ? decodeURIComponent(match[1]) : null;
+}
+
 export function getRepositoryInfo(
     repository: string
 ): { owner: string; name: string; url: string } | null {

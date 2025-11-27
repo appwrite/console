@@ -7,7 +7,7 @@ import { ID, type Models, Query } from '@appwrite.io/console';
 import type { OrganizationList } from '$lib/stores/organization';
 import { redirectTo } from '$routes/store';
 import type { PageLoad } from './$types';
-import { getRepositoryInfo } from '$lib/helpers/github';
+import { getRepositoryInfo, getBranchFromUrl } from '$lib/helpers/github';
 
 export const load: PageLoad = async ({ parent, url }) => {
     const { account } = await parent();
@@ -38,6 +38,7 @@ export const load: PageLoad = async ({ parent, url }) => {
             owner?: string;
             name?: string;
             rootDirectory?: string;
+            branch?: string;
         };
         runtime?: string;
         name?: string;
@@ -59,9 +60,13 @@ export const load: PageLoad = async ({ parent, url }) => {
         redirect(302, base + '/');
     }
 
+    // Extract branch from URL if present (e.g., github.com/owner/repo/tree/branch)
+    const branchFromUrl = getBranchFromUrl(repository);
+
     deploymentData.name = name || info.name;
     deploymentData.repository.name = info.name;
     deploymentData.repository.owner = info.owner;
+    deploymentData.repository.branch = branchFromUrl;
 
     // Get organizations
     let organizations: Models.TeamList<Record<string, unknown>> | OrganizationList | undefined;

@@ -120,7 +120,9 @@
             const install = currentUrl.searchParams.get('install');
             const build = currentUrl.searchParams.get('build');
             const output = currentUrl.searchParams.get('output');
-            const branch = currentUrl.searchParams.get('branch');
+            // Branch can come from explicit param or extracted from repo URL (e.g., /tree/branch)
+            const branch =
+                currentUrl.searchParams.get('branch') || data.deploymentData.repository.branch;
 
             if (preset) url.searchParams.set('preset', preset);
             if (install) url.searchParams.set('install', install);

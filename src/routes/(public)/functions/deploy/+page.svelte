@@ -113,7 +113,9 @@
         const install = currentUrl.searchParams.get('install');
         const build = currentUrl.searchParams.get('build');
         const rootDir = currentUrl.searchParams.get('rootDir');
-        const branch = currentUrl.searchParams.get('branch');
+        // Branch can come from explicit param or extracted from repo URL (e.g., /tree/branch)
+        const branch =
+            currentUrl.searchParams.get('branch') || data.deploymentData.repository.branch;
 
         if (entrypoint) url.searchParams.set('entrypoint', entrypoint);
         if (install) url.searchParams.set('install', install);
