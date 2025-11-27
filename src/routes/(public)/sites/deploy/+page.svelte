@@ -97,8 +97,8 @@
     }
 
     function buildDeployUrl(project: Models.Project) {
-        // Use the selected region or default to 'default' if not available
-        const projectRegion = isCloud ? region : 'default';
+        // Use the project's region when available; fall back to default for self-hosted
+        const projectRegion = isCloud ? (project.region ?? 'default') : 'default';
         let url: URL;
 
         if (data.deploymentData.type === 'template') {

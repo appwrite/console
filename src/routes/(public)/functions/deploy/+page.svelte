@@ -93,7 +93,7 @@
 
     function buildDeployUrl(project: Models.Project) {
         let url: URL;
-        const projectRegion = isCloud ? region : 'default';
+        const projectRegion = isCloud ? (project.region ?? 'default') : 'default';
 
         url = new URL(
             `${base}/project-${projectRegion}-${project.$id}/functions/create-function/deploy`,
