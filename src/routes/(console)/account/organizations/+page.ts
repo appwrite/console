@@ -1,4 +1,4 @@
-import { Query } from '@appwrite.io/console';
+import { Query, Platform } from '@appwrite.io/console';
 import { sdk } from '$lib/stores/sdk';
 import { getLimit, getPage, pageToOffset } from '$lib/helpers/load';
 import { CARD_LIMIT } from '$lib/constants';
@@ -14,7 +14,7 @@ export const load: PageLoad = async ({ url, route }) => {
         Query.offset(offset),
         Query.limit(limit),
         Query.orderDesc(''),
-        Query.equal('platform', 'appwrite')
+        Query.equal('platform', Platform.Appwrite)
     ];
 
     const organizations = !isCloud

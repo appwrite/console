@@ -8,7 +8,7 @@ import type { LayoutLoad } from './$types';
 import { redirectTo } from './store';
 import { base, resolve } from '$app/paths';
 import type { Account } from '$lib/stores/user';
-import { type AppwriteException, Query } from '@appwrite.io/console';
+import { type AppwriteException, Query, Platform } from '@appwrite.io/console';
 import { isCloud, VARS } from '$lib/system';
 import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
 
@@ -43,7 +43,7 @@ export const load: LayoutLoad = async ({ depends, url, route }) => {
             organizations: !isCloud
                 ? await sdk.forConsole.teams.list()
                 : await sdk.forConsole.billing.listOrganization([
-                      Query.equal('platform', 'appwrite')
+                      Query.equal('platform', Platform.Appwrite)
                   ])
         };
     }
