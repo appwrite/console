@@ -17,10 +17,12 @@ export const proxyRuleList = derived(
 export const repositories: Writable<{
     search: string;
     installationId: string;
-    repositories: Models.ProviderRepository[];
+    total: number;
+    repositories: Models.ProviderRepository[] | Models.ProviderRepositoryFramework[] | Models.ProviderRepositoryRuntime[];
 }> = writable({
     search: '',
     installationId: '',
+    total: 0,
     repositories: []
 });
 
