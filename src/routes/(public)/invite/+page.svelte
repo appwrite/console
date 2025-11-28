@@ -81,12 +81,12 @@
                             label="terms"
                             showLabel={false}>
                             By accepting the invitation, you agree to the <Link.Anchor
-                                href="https://appwrite.io/terms"
+                                href="{resolvedProfile.website}/terms"
                                 target="_blank"
                                 rel="noopener noreferrer">Terms and Conditions</Link.Anchor>
                             and
                             <Link.Anchor
-                                href="https://appwrite.io/privacy"
+                                href="{resolvedProfile.website}/privacy"
                                 target="_blank"
                                 rel="noopener noreferrer">
                                 Privacy Policy</Link.Anchor

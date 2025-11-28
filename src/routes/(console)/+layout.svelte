@@ -58,6 +58,7 @@
     import type { LayoutData } from './$types';
     import Studio from '$lib/studio/studio.svelte';
     import { isFreePlan } from '$lib/helpers/billing';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     export let data: LayoutData;
 
@@ -110,7 +111,7 @@
         {
             label: 'Open documentation',
             callback: () => {
-                window.open('https://appwrite.io/docs', '_blank');
+                window.open(`${resolvedProfile.website}/docs`, '_blank');
             },
             group: 'help',
             icon: IconBookOpen
@@ -118,7 +119,7 @@
         {
             label: 'Contact support',
             callback: () => {
-                window.open('https://appwrite.io/discord', '_blank');
+                window.open(`${resolvedProfile.website}/discord`, '_blank');
             },
             group: 'help',
             icon: IconQuestionMarkCircle
@@ -134,7 +135,7 @@
         {
             label: 'Join Discord community',
             callback: () => {
-                window.open('https://appwrite.io/discord', '_blank');
+                window.open('${resolvedProfile.website}/discord', '_blank');
             },
             group: 'help',
             icon: IconDiscord

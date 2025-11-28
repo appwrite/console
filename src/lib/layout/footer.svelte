@@ -99,7 +99,7 @@
             <Link.Anchor
                 size="s"
                 variant="quiet"
-                href="https://appwrite.io/docs"
+                href="{resolvedProfile.website}/docs"
                 target="_blank"
                 rel="noreferrer">
                 Docs
@@ -110,7 +110,7 @@
             <Link.Anchor
                 size="s"
                 variant="quiet"
-                href="https://appwrite.io/terms"
+                href="{resolvedProfile.website}/terms"
                 target="_blank"
                 rel="noreferrer">
                 Terms
@@ -121,7 +121,7 @@
             <Link.Anchor
                 size="s"
                 variant="quiet"
-                href="https://appwrite.io/privacy"
+                href="{resolvedProfile.website}/privacy"
                 target="_blank"
                 rel="noreferrer">
                 Privacy
@@ -133,7 +133,7 @@
                 <Link.Anchor
                     size="s"
                     variant="quiet"
-                    href="https://appwrite.io/cookies"
+                    href="{resolvedProfile.website}/cookies"
                     target="_blank"
                     rel="noreferrer">
                     Cookies

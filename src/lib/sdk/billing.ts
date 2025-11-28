@@ -2,6 +2,7 @@ import type { Tier } from '$lib/stores/billing';
 import type { Campaign } from '$lib/stores/campaigns';
 import type { Client, Models, Platform } from '@appwrite.io/console';
 import type { PaymentMethod } from '@stripe/stripe-js';
+import { resolvedProfile } from '$lib/profiles/index.svelte';
 import type { Organization, OrganizationError, OrganizationList } from '../stores/organization';
 
 export type PaymentMethodData = {
@@ -411,6 +412,9 @@ export type Plan = {
         databasesWrites: AdditionalResource;
         GBHours: AdditionalResource;
         imageTransformations: AdditionalResource;
+
+        // imagine specific
+        credits: AdditionalResource;
     };
     addons: {
         seats: PlanAddon;
@@ -431,6 +435,9 @@ export type Plan = {
     buildSize: number; // in MB
     deploymentSize: number; // in MB
     usagePerProject: boolean;
+    limits: {
+        credits?: number
+    }
 };
 
 export type PlanList = {
@@ -581,7 +588,8 @@ export class Billing {
         const path = `/console/plans`;
         const uri = new URL(this.client.config.endpoint + path);
         const params = {
-            queries
+            queries,
+            platform: resolvedProfile.platform.toLowerCase()
         };
         return await this.client.call(
             'get',
@@ -1418,20 +1426,6 @@ export class Billing {
         const params = {
             teamId
         };
-        const uri = new URL(this.client.config.endpoint + path);
-        return await this.client.call(
-            'GET',
-            uri,
-            {
-                'content-type': 'application/json'
-            },
-            params
-        );
-    }
-
-    async getPlansInfo(): Promise<PlanList> {
-        const path = `/console/plans`;
-        const params = {};
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(
             'GET',

@@ -42,6 +42,7 @@ import TeamReadonlyAlert from '$routes/(console)/organization-[organization]/tea
 import ProjectsLimit from '$lib/components/billing/alerts/projectsLimit.svelte';
 import { ProfileMode, resolvedProfile } from '$lib/profiles/index.svelte';
 import { isFreePlan } from '$lib/helpers/billing';
+import { BillingPlan as CloudSdkBillingPlan } from '@appwrite.io/console';
 
 export type Tier = 'tier-0' | 'tier-1' | 'tier-2' | 'auto-1' | 'cont-1' | 'ent-1';
 
@@ -153,7 +154,11 @@ export type PlanServices =
     | 'authPhone'
     | 'imageTransformations';
 
-export function getServiceLimit(serviceId: PlanServices, tier: Tier = null, plan?: Plan): number {
+export function getServiceLimit(
+    serviceId: PlanServices,
+    tier: Tier | CloudSdkBillingPlan = null,
+    plan?: Plan
+): number {
     if (!isCloud) return 0;
     if (!serviceId) return 0;
 
