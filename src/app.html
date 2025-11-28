@@ -10,8 +10,12 @@
             const description = isStudio
                 ? 'Build something real. Turn your ideas into real products by chatting with the most complete AI builder available to date'
                 : 'Appwrite is an open-source platform for building applications at any scale, using your preferred programming languages and tools.';
-            const iconSvg = isStudio ? `${baseLogosPath}/imagine-icon.svg` : `${baseLogosPath}/appwrite-icon.svg`;
-            const iconPng = isStudio ? `${baseLogosPath}/imagine-icon.png` : `${baseLogosPath}/appwrite-icon.png`;
+            const iconSvg = isStudio
+                ? `${baseLogosPath}/imagine-icon.svg`
+                : `${baseLogosPath}/appwrite-icon.svg`;
+            const iconPng = isStudio
+                ? `${baseLogosPath}/imagine-icon.png`
+                : `${baseLogosPath}/appwrite-icon.png`;
             const appleTouchSizes = ['180x180', '167x167', '152x152', '120x120'];
 
             document.write(`<meta name="description" content="${description}" />`);
