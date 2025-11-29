@@ -417,7 +417,7 @@
                             placeholder="Select or type user labels"
                             bind:tags={extensions} />
                     {/key}
-                    <Layout.Stack direction="row">
+                    <Layout.Stack direction="row" wrap="wrap">
                         {#each suggestedExtensions as ext}
                             <Tag
                                 size="s"

@@ -1,5 +1,14 @@
 import type { ComponentType } from 'svelte';
 import { PlatformType } from '@appwrite.io/console';
+import { writable } from 'svelte/store';
+import type { Column } from '$lib/helpers/types';
+
+export const columns = writable<Column[]>([
+    { id: 'name', title: 'Name', type: 'string', width: { min: 120 } },
+    { id: 'type', title: 'Platform type', type: 'string', width: { min: 120 } },
+    { id: 'identifier', title: 'Identifier', type: 'string', width: { min: 120 } },
+    { id: '$updatedAt', title: 'Last updated', type: 'string', width: { min: 120 } }
+]);
 
 export type PlatformProps = {
     key?: string;

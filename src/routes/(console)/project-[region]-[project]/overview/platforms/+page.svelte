@@ -1,4 +1,5 @@
 <script lang="ts" context="module">
+    import { columns } from './store';
     import { wizard } from '$lib/stores/wizard';
     import CreateAndroid from './createAndroid.svelte';
     import CreateApple from './createApple.svelte';
@@ -121,12 +122,13 @@
 </script>
 
 {#if data.platforms.platforms.length}
-    <Table.Root columns={4} let:root>
+    <Table.Root columns={$columns} let:root>
         <svelte:fragment slot="header" let:root>
-            <Table.Header.Cell {root}>Name</Table.Header.Cell>
-            <Table.Header.Cell {root}>Platform type</Table.Header.Cell>
-            <Table.Header.Cell {root}>Identifier</Table.Header.Cell>
-            <Table.Header.Cell {root}>Last updated</Table.Header.Cell>
+            {#each $columns as column}
+                <Table.Header.Cell {root} column={column.id}>
+                    {column.title}
+                </Table.Header.Cell>
+            {/each}
         </svelte:fragment>
         {#each data.platforms.platforms as platform}
             <Table.Row.Link href={`${path}/${platform.$id}`} {root}>
