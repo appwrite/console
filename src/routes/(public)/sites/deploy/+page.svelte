@@ -6,7 +6,7 @@
     import CustomId from '$lib/components/customId.svelte';
     import { SvgIcon } from '$lib/components/index.js';
     import { Button, Form, InputSelect } from '$lib/elements/forms';
-    import type { AllowedRegions } from '$lib/sdk/billing.js';
+    import type { AllowedRegions, Plan } from '$lib/sdk/billing.js';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { getFrameworkIcon } from '$lib/stores/sites.js';
@@ -14,6 +14,7 @@
     import { ID, Query, type Models, Region } from '@appwrite.io/console';
     import { IconGithub, IconPencil, IconPlus } from '@appwrite.io/pink-icons-svelte';
     import {
+        Alert,
         Badge,
         Card,
         Divider,
@@ -28,6 +29,7 @@
     import { filterRegions } from '$lib/helpers/regions';
     import { loadAvailableRegions } from '$routes/(console)/regions';
     import { regions as regionsStore } from '$lib/stores/organization';
+    import { formatCurrency } from '$lib/helpers/numbers';
 
     let { data } = $props();
 
@@ -44,12 +46,36 @@
     let imageLoading = $state(true);
 
     let loadingProjects = $state(false);
+    let currentPlan = $state<Plan>(null);
+
+    // Billing checks for project creation
+    let projectsLimited = $derived(
+        isCloud &&
+            currentPlan?.projects > 0 &&
+            projects?.total !== undefined &&
+            projects.total >= currentPlan.projects
+    );
+    let isAddonProject = $derived(
+        isCloud &&
+            currentPlan?.addons?.projects?.supported &&
+            projects?.total !== undefined &&
+            projects.total >= (currentPlan?.addons?.projects?.planIncluded ?? 0)
+    );
 
     async function fetchProjects() {
         loadingProjects = true;
         projects = await sdk.forConsole.projects.list({
             queries: [Query.equal('teamId', selectedOrg), Query.orderDesc('')]
         });
+
+        // Fetch plan info for billing checks
+        if (isCloud && selectedOrg) {
+            try {
+                currentPlan = await sdk.forConsole.billing.getOrganizationPlan(selectedOrg);
+            } catch {
+                currentPlan = null;
+            }
+        }
 
         selectedProject = projects?.total ? projects.projects[0].$id : null;
         loadingProjects = false;
@@ -97,8 +123,8 @@
     }
 
     function buildDeployUrl(project: Models.Project) {
-        // Use the selected region or default to 'default' if not available
-        const projectRegion = isCloud ? region : 'default';
+        // Use the project's region when available; fall back to default for self-hosted
+        const projectRegion = isCloud ? (project.region ?? 'default') : 'default';
         let url: URL;
 
         if (data.deploymentData.type === 'template') {
@@ -120,15 +146,26 @@
             const install = currentUrl.searchParams.get('install');
             const build = currentUrl.searchParams.get('build');
             const output = currentUrl.searchParams.get('output');
+            // Branch can come from explicit param or extracted from repo URL (e.g., /tree/branch)
+            const branch =
+                currentUrl.searchParams.get('branch') || data.deploymentData.repository.branch;
+
+            const quick = currentUrl.searchParams.get('quick');
 
             if (preset) url.searchParams.set('preset', preset);
             if (install) url.searchParams.set('install', install);
             if (build) url.searchParams.set('build', build);
             if (output) url.searchParams.set('output', output);
+            if (branch) url.searchParams.set('branch', branch);
+            if (quick === 'true') url.searchParams.set('quick', 'true');
         }
 
-        if (data.envKeys.length > 0) {
-            url.searchParams.set('env', data.envKeys.join(','));
+        if (data.envVars.length > 0) {
+            // Preserve KEY=value format for prefilled values
+            url.searchParams.set(
+                'env',
+                data.envVars.map((v) => (v.value ? `${v.key}=${v.value}` : v.key)).join(',')
+            );
         }
 
         return url.toString();
@@ -389,8 +426,9 @@
                                             label="Name"
                                             placeholder="Project name"
                                             required
+                                            disabled={projectsLimited}
                                             bind:value={projectName} />
-                                        {#if !showCustomId}
+                                        {#if !showCustomId && !projectsLimited}
                                             <div>
                                                 <Tag
                                                     size="s"
@@ -413,6 +451,7 @@
                                         <Layout.Stack gap="xs">
                                             <Input.Select
                                                 required
+                                                disabled={projectsLimited}
                                                 bind:value={region}
                                                 placeholder="Select a region"
                                                 options={filterRegions($regionsStore.regions || [])}
@@ -422,6 +461,24 @@
                                             </Typography.Text>
                                         </Layout.Stack>
                                     {/if}
+                                    {#if isAddonProject && !projectsLimited}
+                                        <Alert.Inline
+                                            status="info"
+                                            title="Expand for {formatCurrency(
+                                                currentPlan?.addons?.projects?.price || 15
+                                            )}/project per month">
+                                            Each added project comes with its own dedicated pool of
+                                            resources.
+                                        </Alert.Inline>
+                                    {/if}
+                                    {#if projectsLimited}
+                                        <Alert.Inline
+                                            status="warning"
+                                            title={`You've reached your limit of ${currentPlan?.projects} projects`}>
+                                            Extra projects are available on paid plans for an
+                                            additional fee
+                                        </Alert.Inline>
+                                    {/if}
                                 {/if}
 
                                 <Divider />
@@ -429,6 +486,7 @@
                                     <div>
                                         <Button
                                             disabled={!selectedOrg ||
+                                                (selectedProject === null && projectsLimited) ||
                                                 (selectedProject === 'create-new' &&
                                                     (!projectName || (isCloud && !region)))}
                                             submit>

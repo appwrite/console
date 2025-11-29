@@ -7,7 +7,7 @@ import { ID, type Models, Query, Platform } from '@appwrite.io/console';
 import type { OrganizationList } from '$lib/stores/organization';
 import { redirectTo } from '$routes/store';
 import type { PageLoad } from './$types';
-import { getRepositoryInfo } from '$lib/helpers/github';
+import { getRepositoryInfo, getBranchFromUrl } from '$lib/helpers/github';
 
 export const load: PageLoad = async ({ parent, url }) => {
     const { account } = await parent();
@@ -29,7 +29,24 @@ export const load: PageLoad = async ({ parent, url }) => {
     // Get common parameters
     const name = url.searchParams.get('name');
     const envParam = url.searchParams.get('env');
-    const envKeys = envParam ? envParam.split(',').map((key: string) => key.trim()) : [];
+
+    // Parse env vars - supports KEY or KEY=value format
+    const envVars: Array<{ key: string; value: string }> = envParam
+        ? envParam.split(',').map((entry: string) => {
+              const trimmed = entry.trim();
+              const eqIndex = trimmed.indexOf('=');
+              if (eqIndex === -1) {
+                  return { key: trimmed, value: '' };
+              }
+              return {
+                  key: trimmed.substring(0, eqIndex),
+                  value: trimmed.substring(eqIndex + 1)
+              };
+          })
+        : [];
+
+    // Keep envKeys for backward compatibility
+    const envKeys = envVars.map((v) => v.key);
 
     const deploymentData: {
         type: 'repo';
@@ -38,6 +55,7 @@ export const load: PageLoad = async ({ parent, url }) => {
             owner?: string;
             name?: string;
             rootDirectory?: string;
+            branch?: string;
         };
         runtime?: string;
         name?: string;
@@ -59,9 +77,13 @@ export const load: PageLoad = async ({ parent, url }) => {
         redirect(302, base + '/');
     }
 
+    // Extract branch from URL if present (e.g., github.com/owner/repo/tree/branch)
+    const branchFromUrl = getBranchFromUrl(repository);
+
     deploymentData.name = name || info.name;
     deploymentData.repository.name = info.name;
     deploymentData.repository.owner = info.owner;
+    deploymentData.repository.branch = branchFromUrl;
 
     // Get organizations
     let organizations: Models.TeamList<Record<string, unknown>> | OrganizationList | undefined;
@@ -106,6 +128,7 @@ export const load: PageLoad = async ({ parent, url }) => {
         organizations,
         deploymentData,
         envKeys,
+        envVars,
         runtimesList
     };
 };
