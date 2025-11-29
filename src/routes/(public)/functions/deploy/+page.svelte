@@ -5,13 +5,14 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import CustomId from '$lib/components/customId.svelte';
     import { Button, Form, InputSelect } from '$lib/elements/forms';
-    import type { AllowedRegions } from '$lib/sdk/billing.js';
+    import type { AllowedRegions, Plan } from '$lib/sdk/billing.js';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { isCloud } from '$lib/system';
     import { ID, Query, type Models, Region } from '@appwrite.io/console';
     import { IconGithub, IconPencil, IconPlus } from '@appwrite.io/pink-icons-svelte';
     import {
+        Alert,
         Badge,
         Card,
         Divider,
@@ -24,6 +25,7 @@
     import { filterRegions } from '$lib/helpers/regions';
     import { loadAvailableRegions } from '$routes/(console)/regions';
     import { regions as regionsStore } from '$lib/stores/organization';
+    import { formatCurrency } from '$lib/helpers/numbers';
 
     let { data } = $props();
 
@@ -38,6 +40,21 @@
     let id = $state<string>('');
 
     let loadingProjects = $state(false);
+    let currentPlan = $state<Plan>(null);
+
+    // Billing checks for project creation
+    let projectsLimited = $derived(
+        isCloud &&
+            currentPlan?.projects > 0 &&
+            projects?.total !== undefined &&
+            projects.total >= currentPlan.projects
+    );
+    let isAddonProject = $derived(
+        isCloud &&
+            currentPlan?.addons?.projects?.supported &&
+            projects?.total !== undefined &&
+            projects.total >= (currentPlan?.addons?.projects?.planIncluded ?? 0)
+    );
 
     async function fetchProjects() {
         loadingProjects = true;
@@ -45,6 +62,15 @@
         projects = await sdk.forConsole.projects.list({
             queries: [Query.equal('teamId', selectedOrg), Query.orderDesc('')]
         });
+
+        // Fetch plan info for billing checks
+        if (isCloud && selectedOrg) {
+            try {
+                currentPlan = await sdk.forConsole.billing.getOrganizationPlan(selectedOrg);
+            } catch {
+                currentPlan = null;
+            }
+        }
 
         selectedProject = projects?.total ? projects.projects[0].$id : null;
         loadingProjects = false;
@@ -244,8 +270,9 @@
                                             label="Name"
                                             placeholder="Project name"
                                             required
+                                            disabled={projectsLimited}
                                             bind:value={projectName} />
-                                        {#if !showCustomId}
+                                        {#if !showCustomId && !projectsLimited}
                                             <div>
                                                 <Tag
                                                     size="s"
@@ -268,6 +295,7 @@
                                         <Layout.Stack gap="xs">
                                             <Input.Select
                                                 required
+                                                disabled={projectsLimited}
                                                 bind:value={region}
                                                 placeholder="Select a region"
                                                 options={filterRegions($regionsStore.regions || [])}
@@ -277,6 +305,24 @@
                                             </Typography.Text>
                                         </Layout.Stack>
                                     {/if}
+                                    {#if isAddonProject && !projectsLimited}
+                                        <Alert.Inline
+                                            status="info"
+                                            title="Expand for {formatCurrency(
+                                                currentPlan?.addons?.projects?.price || 15
+                                            )}/project per month">
+                                            Each added project comes with its own dedicated pool of
+                                            resources.
+                                        </Alert.Inline>
+                                    {/if}
+                                    {#if projectsLimited}
+                                        <Alert.Inline
+                                            status="warning"
+                                            title={`You've reached your limit of ${currentPlan?.projects} projects`}>
+                                            Extra projects are available on paid plans for an
+                                            additional fee
+                                        </Alert.Inline>
+                                    {/if}
                                 {/if}
 
                                 <Divider />
@@ -284,6 +330,7 @@
                                     <div>
                                         <Button
                                             disabled={!selectedOrg ||
+                                                (selectedProject === null && projectsLimited) ||
                                                 (selectedProject === 'create-new' &&
                                                     (!projectName || (isCloud && !region)))}
                                             submit>
