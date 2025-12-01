@@ -1,6 +1,10 @@
 {
+    "bgcolor-neutral-primary": "var(--neutral-900)",
+    "bgcolor-neutral-default": "var(--neutral-850)",
     "bgcolor-accent": "var(--neutral-50)",
     "bgcolor-accent-secondary": "var(--neutral-100)",
     "bgcolor-accent-tertiary": "var(--neutral-150)",
-    "fgcolor-on-accent": "var(--neutral-950)"
+    "fgcolor-on-accent": "var(--neutral-950)",
+    "font-family-brand": "neue-haas-grotesk-display",
+    "font-family-sansserif": "neue-haas-grotesk-text"
 }

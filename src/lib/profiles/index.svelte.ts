@@ -1,6 +1,6 @@
 import { asset, resolve } from '$app/paths';
 import type { ResolvedPathname } from '$app/types';
-import { Platform } from '@appwrite.io/console';
+import { OAuthProvider, Platform } from '@appwrite.io/console';
 import { env } from '$env/dynamic/public';
 import { BillingPlan } from '@appwrite.io/console';
 import type { Component } from 'svelte';
@@ -8,10 +8,16 @@ import UnauthenticatedConsole from './(unauthenticated)/console.svelte';
 import UnauthenticatedStudio from './(unauthenticated)/studio.svelte';
 import StudioCss from './css/studio.css?url';
 import ConsoleCss from './css/console.css?url';
+import { isCloud } from '$lib/system';
 
 export const enum ProfileMode {
     STUDIO = 'studio',
     CONSOLE = 'console'
+}
+export const enum Logins {
+    EMAIL = 'email',
+    GITHUB = 'github',
+    GOOGLE = 'google'
 }
 
 export type Profile = {
@@ -26,6 +32,8 @@ export type Profile = {
         };
         alt: string;
     };
+    logins: Array<Logins>;
+    oauthProviders: Partial<Record<Logins, OAuthProvider>>;
     css: string;
     showOnboarding: boolean;
     useCommandCenter: boolean;
@@ -33,6 +41,7 @@ export type Profile = {
     showExtendedAccountsMenu: boolean;
     showGeneralAvailability: boolean;
     showConnectProjectOnToolbar: boolean;
+    showProgressBar: boolean;
     services: {
         'get-started': boolean;
         overview: boolean;
@@ -69,6 +78,10 @@ export const base: Profile = {
     component: {
         unauthenticated: UnauthenticatedConsole
     },
+    logins: [Logins.EMAIL, isCloud && Logins.GITHUB].filter(Boolean),
+    oauthProviders: {
+        github: OAuthProvider.Github
+    },
     css: ConsoleCss,
     showOnboarding: true,
     useCommandCenter: true,
@@ -76,6 +89,7 @@ export const base: Profile = {
     showExtendedAccountsMenu: false,
     showGeneralAvailability: true,
     showConnectProjectOnToolbar: true,
+    showProgressBar: true,
     services: {
         'get-started': true,
         overview: true,
@@ -111,6 +125,11 @@ export const studio: Profile = {
         },
         alt: 'Imagine Appwrite'
     },
+    logins: [/** temporary */ Logins.EMAIL, Logins.GITHUB, Logins.GOOGLE].filter(Boolean),
+    oauthProviders: {
+        github: OAuthProvider.GithubImagine,
+        google: OAuthProvider.Google
+    },
     css: StudioCss,
     component: {
         unauthenticated: UnauthenticatedStudio
@@ -121,6 +140,7 @@ export const studio: Profile = {
     showExtendedAccountsMenu: true,
     showGeneralAvailability: false,
     showConnectProjectOnToolbar: false,
+    showProgressBar: false,
     services: {
         'get-started': false,
         overview: false,

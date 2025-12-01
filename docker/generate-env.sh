@@ -74,11 +74,6 @@ echo "✓ Successfully generated $env_file"
 echo "File contents:"
 cat "$env_file"
 
-# NUKE all pre-compressed files so nginx serves fresh content
-echo "Nuking all .br and .gz files..."
-find /usr/share/nginx/html/console -type f \( -name "*.br" -o -name "*.gz" \) -delete
-echo "✓ Nuked all compressed files"
-
 echo "========================================="
 echo "Starting nginx..."
 echo "========================================="
