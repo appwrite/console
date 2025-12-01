@@ -125,7 +125,11 @@ export async function submitStripeCard(name: string, organizationId?: string) {
                 throw e;
             }
 
-            const method = await sdk.forConsole.billing.setPaymentMethod(paymentMethod.$id, providerId, name);
+            const method = await sdk.forConsole.billing.setPaymentMethod(
+                paymentMethod.$id,
+                providerId,
+                name
+            );
             paymentElement.destroy();
             isStripeInitialized.set(false);
             trackEvent(Submit.PaymentMethodCreate);
