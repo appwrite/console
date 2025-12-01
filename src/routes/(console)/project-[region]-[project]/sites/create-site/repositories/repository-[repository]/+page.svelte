@@ -19,7 +19,7 @@
         BuildRuntime,
         Framework,
         ID,
-        VCSDeploymentType,
+        VCSReferenceType,
         VCSDetectionType
     } from '@appwrite.io/console';
     import type { Models } from '@appwrite.io/console';
@@ -98,8 +98,8 @@
             let site = await sdk.forProject(page.params.region, page.params.project).sites.create({
                 siteId: id || ID.unique(),
                 name,
-                framework: fr,
-                buildRuntime,
+                framework: fr as Framework,
+                buildRuntime: buildRuntime as BuildRuntime,
                 installCommand,
                 buildCommand,
                 outputDirectory,
@@ -132,7 +132,7 @@
                 .forProject(page.params.region, page.params.project)
                 .sites.createVcsDeployment({
                     siteId: site.$id,
-                    type: VCSDeploymentType.Branch,
+                    type: VCSReferenceType.Branch,
                     reference: branch,
                     activate: true
                 });

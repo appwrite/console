@@ -3,7 +3,7 @@
     import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { Card } from '$lib/components';
+    import { Card, CustomId } from '$lib/components';
     import { Button, Form } from '$lib/elements/forms';
     import { Wizard } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
@@ -11,8 +11,7 @@
     import { Fieldset, Layout, Icon, Input, Tag } from '@appwrite.io/pink-svelte';
     import { IconGithub, IconPencil } from '@appwrite.io/pink-icons-svelte';
     import { onMount } from 'svelte';
-    import { ID, Runtime } from '@appwrite.io/console';
-    import { CustomId } from '$lib/components';
+    import { ID, Runtime, TemplateReferenceType } from '@appwrite.io/console';
     import { getIconFromRuntime } from '$lib/stores/runtimes';
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
     import { iconPath } from '$lib/stores/app';
@@ -32,8 +31,8 @@
     let showCustomId = $state(false);
     let isSubmitting = $state(writable(false));
 
-    let id = $state(ID.unique());
-    let name = $state(data.repository.name);
+    let id: string = $state(ID.unique());
+    let name: string = $state(data.repository.name);
 
     let execute = $state(true);
     let entrypoint = $state('');
@@ -135,7 +134,8 @@
                     repository: data.repository.name,
                     owner: data.repository.owner,
                     rootDirectory: rootDir || '.',
-                    version: latestTag ?? '1.0.0',
+                    type: TemplateReferenceType.Tag,
+                    reference: latestTag ?? '1.0.0',
                     activate: true
                 });
 

@@ -24,7 +24,14 @@
     import Details from '../../details.svelte';
     import Configuration from './configuration.svelte';
     import Aside from '../../aside.svelte';
-    import { Adapter, BuildRuntime, Framework, ID, type Models } from '@appwrite.io/console';
+    import {
+        Adapter,
+        BuildRuntime,
+        Framework,
+        ID,
+        type Models,
+        TemplateReferenceType
+    } from '@appwrite.io/console';
     import {
         ConnectBehaviour,
         NewRepository,
@@ -120,8 +127,8 @@
                     .sites.create({
                         siteId: id || ID.unique(),
                         name,
-                        framework: fr,
-                        buildRuntime,
+                        framework: fr as Framework,
+                        buildRuntime: buildRuntime as BuildRuntime,
                         installCommand: framework.installCommand,
                         buildCommand: framework.buildCommand,
                         outputDirectory: framework.outputDirectory,
@@ -160,7 +167,8 @@
                         repository: data.template.providerRepositoryId,
                         owner: data.template.providerOwner,
                         rootDirectory: framework.providerRootDirectory,
-                        version: data.template.providerVersion,
+                        type: TemplateReferenceType.Tag,
+                        reference: data.template.providerVersion,
                         activate: true
                     });
 

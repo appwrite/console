@@ -16,12 +16,12 @@
 
     let selectedTab: Tier = $state(resolvedProfile.freeTier as Tier);
 
-    const currentPlan = $derived($plansInfo.get(selectedTab));
-    const visiblePlans = $derived.by(() => {
+    const currentPlan: Plan = $derived($plansInfo.get(selectedTab));
+    const visiblePlans: Plan[] = $derived.by(() => {
         return page.data.plans.plans.filter((plan: Plan) => plan.$id !== BillingPlan.SCALE);
     });
 
-    const uniquePlans = $derived.by(() => {
+    const uniquePlans: Plan[] = $derived.by(() => {
         const map = new Map(visiblePlans.map((p) => [p.group ?? p.$id, p]));
 
         return [...map.values()];
@@ -43,6 +43,10 @@
         if (count === 1) return singular;
         return plural ?? `${singular}s`;
     }
+
+    function selectPlan(plan: string) {
+        selectedTab = plan as Tier;
+    }
 </script>
 
 <Card.Base>
@@ -52,7 +56,7 @@
                 <Tabs.Item.Button
                     {root}
                     active={selectedTab === plan.$id}
-                    on:click={() => (selectedTab = plan.$id)}>
+                    on:click={() => selectPlan(plan.$id)}>
                     {getCleanPlanName(plan)}
                 </Tabs.Item.Button>
             {/each}
