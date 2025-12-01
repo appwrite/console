@@ -177,6 +177,8 @@ export async function confirmPayment(
         const url =
             window.location.origin + (route ? route : `${base}/organization-${orgId}/billing`);
 
+        const paymentMethod = await sdk.forConsole.billing.getPaymentMethod(paymentMethodId);
+
         const { error } = await get(stripe).confirmPayment({
             clientSecret: clientSecret,
             confirmParams: {
@@ -206,8 +208,9 @@ export async function confirmSetup(
 
     const { setupIntent, error } = await get(stripe).confirmCardSetup(clientSecret, {
         payment_method: paymentMethodId,
-        return_url: `${baseUrl}${urlRoute ?? `organization-${get(organization).$id}/billing?clientSecret=${clientSecret}`
-            }`
+        return_url: `${baseUrl}${
+            urlRoute ?? `organization-${get(organization).$id}/billing?clientSecret=${clientSecret}`
+        }`
     });
 
     if (error) {
