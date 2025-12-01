@@ -102,15 +102,30 @@ export async function submitStripeCard(name: string, organizationId?: string) {
         }
 
         if (setupIntent && setupIntent.status === 'succeeded') {
-            if ((setupIntent.payment_method as PaymentMethod).card?.country === 'US') {
+            const pm = setupIntent.payment_method as PaymentMethod | string | undefined;
+            // If Stripe returned an expanded PaymentMethod object, check the card country.
+            // If it returned a string id (common), `typeof pm === 'string'` and we skip this.
+            if (typeof pm !== 'string' && pm?.card?.country === 'US') {
                 // need to get state
-                return setupIntent.payment_method as PaymentMethod;
+                return pm as PaymentMethod;
             }
-            const method = await sdk.forConsole.billing.setPaymentMethod(
-                paymentMethod.$id,
-                (setupIntent.payment_method as PaymentMethod).id,
-                name
-            );
+
+            // The backend expects a provider method ID (string). Extract the id
+            // whether Stripe returned the id string or an expanded object.
+            let providerId: string | undefined;
+            if (typeof pm === 'string') {
+                providerId = pm;
+            } else {
+                providerId = (pm as PaymentMethod)?.id;
+            }
+
+            if (!providerId) {
+                const e = new Error('Unable to verify payment method.');
+                trackError(e, Submit.PaymentMethodCreate);
+                throw e;
+            }
+
+            const method = await sdk.forConsole.billing.setPaymentMethod(paymentMethod.$id, providerId, name);
             paymentElement.destroy();
             isStripeInitialized.set(false);
             trackEvent(Submit.PaymentMethodCreate);
@@ -162,8 +177,6 @@ export async function confirmPayment(
         const url =
             window.location.origin + (route ? route : `${base}/organization-${orgId}/billing`);
 
-        const paymentMethod = await sdk.forConsole.billing.getPaymentMethod(paymentMethodId);
-
         const { error } = await get(stripe).confirmPayment({
             clientSecret: clientSecret,
             confirmParams: {
@@ -193,9 +206,8 @@ export async function confirmSetup(
 
     const { setupIntent, error } = await get(stripe).confirmCardSetup(clientSecret, {
         payment_method: paymentMethodId,
-        return_url: `${baseUrl}${
-            urlRoute ?? `organization-${get(organization).$id}/billing?clientSecret=${clientSecret}`
-        }`
+        return_url: `${baseUrl}${urlRoute ?? `organization-${get(organization).$id}/billing?clientSecret=${clientSecret}`
+            }`
     });
 
     if (error) {
