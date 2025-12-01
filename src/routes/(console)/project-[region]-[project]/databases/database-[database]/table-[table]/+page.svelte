@@ -48,6 +48,7 @@
     } from '../(suggestions)';
     import EmptySheetCards from './layout/emptySheetCards.svelte';
     import IconAI from '../(suggestions)/icon/aiForButton.svelte';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     export let data: PageData;
 
@@ -346,7 +347,7 @@
                         <EmptySheetCards
                             icon={IconBookOpen}
                             title="Documentation"
-                            subtitle="Read the Appwrite docs"
+                            subtitle="Read the {resolvedProfile.platform} docs"
                             href="https://appwrite.io/docs/products/databases" />
                     {/if}
                 {/snippet}

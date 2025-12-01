@@ -359,7 +359,7 @@
                                                     <Typography.Title size="s"
                                                         >Create API key</Typography.Title>
                                                     <Typography.Text
-                                                        >Connect your server or backend to Appwrite</Typography.Text>
+                                                        >Connect your server or backend to {resolvedProfile.platform}</Typography.Text>
                                                 </Layout.Stack>
                                                 <div class="arrow-icon">
                                                     <Icon icon={IconArrowRight} size="s" />
