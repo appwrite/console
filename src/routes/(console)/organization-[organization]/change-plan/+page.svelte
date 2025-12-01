@@ -384,7 +384,7 @@
                                 </svelte:fragment>
                                 {#if isSameGroupDowngrade}
                                     After switching plans,
-                                    <b>you will be charged {price} now.</b>
+                                    <b>you will be charged {price}.</b>
                                     This will be reflected in your next invoice.
                                 {:else}
                                     After switching plans,
