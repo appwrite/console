@@ -243,9 +243,16 @@ button.danger {
     color: var(--fgcolor-neutral-primary);
 }
 
+.theme-light body,
+.theme-light nav,
+.theme-light header,
+.theme-light main {
+    background: var(--bgcolor-neutral-default) !important;
+}
+
 .theme-light .top-cover-console,
 .theme-light .main-content {
-    background: var(--bgcolor-neutral-default);
+    background: var(--bgcolor-neutral-primary);
 }
 
 .theme-dark .top-cover-console,
