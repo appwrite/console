@@ -10,6 +10,6 @@ export function isFreePlan(plan: BillingPlan | string): boolean {
     }
 }
 
-export function isProPlan(plan: BillingPlan | string): boolean {
+export function isPaidPlan(plan: BillingPlan | string): boolean {
     return !isFreePlan(plan);
 }

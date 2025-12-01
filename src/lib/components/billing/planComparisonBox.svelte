@@ -3,7 +3,7 @@
     import { BillingPlan } from '$lib/constants';
     import type { Plan } from '$lib/sdk/billing';
     import { formatNum } from '$lib/helpers/string';
-    import { isFreePlan, isProPlan } from '$lib/helpers/billing';
+    import { isFreePlan, isPaidPlan } from '$lib/helpers/billing';
     import { plansInfo, type Tier } from '$lib/stores/billing';
     import { ProfileMode, resolvedProfile } from '$lib/profiles/index.svelte';
     import { Card, Layout, Tabs, Typography } from '@appwrite.io/pink-svelte';
@@ -21,15 +21,34 @@
         return page.data.plans.plans.filter((plan: Plan) => plan.$id !== BillingPlan.SCALE);
     });
 
+    const uniquePlans = $derived.by(() => {
+        const map = new Map(visiblePlans.map((p) => [p.group ?? p.$id, p]));
+
+        return [...map.values()];
+    });
+
+    const groupPlans = $derived.by(() => {
+        const selected = visiblePlans.find((p: Plan) => p.$id === selectedTab);
+        if (!selected) return [];
+
+        const groupKey = selected.group ?? selected.$id;
+        return visiblePlans.filter((p: Plan) => (p.group ?? p.$id) === groupKey);
+    });
+
     function getCleanPlanName(plan: Plan) {
         return plan?.name?.replace(resolvedProfile.platform, '');
+    }
+
+    function pluralize(count: number, singular: string, plural?: string) {
+        if (count === 1) return singular;
+        return plural ?? `${singular}s`;
     }
 </script>
 
 <Card.Base>
     <Layout.Stack>
         <Tabs.Root stretch let:root>
-            {#each visiblePlans as plan}
+            {#each uniquePlans as plan}
                 <Tabs.Item.Button
                     {root}
                     active={selectedTab === plan.$id}
@@ -41,7 +60,7 @@
 
         <Typography.Text variant="m-600">{getCleanPlanName(currentPlan)} plan</Typography.Text>
 
-        {#if resolvedProfile.platform === ProfileMode.CONSOLE}
+        {#if resolvedProfile.id === ProfileMode.CONSOLE}
             {@render appwritePlanView()}
         {:else}
             {@render imaginePlanView()}
@@ -56,8 +75,10 @@
                 <li class="list-item u-gap-4 u-cross-center">
                     <span class="icon-arrow-down u-color-text-danger" aria-hidden="true"></span>
                     <span class="text">
-                        Limited to {currentPlan.databases} Database, {currentPlan.buckets} Buckets, {currentPlan.functions}
-                        Functions per project
+                        Limited to {currentPlan.databases}
+                        {pluralize(currentPlan.databases, 'Database')}, {currentPlan.buckets}
+                        {pluralize(currentPlan.buckets, 'Bucket')}, {currentPlan.functions}
+                        {pluralize(currentPlan.functions, 'Function')} per project
                     </span>
                 </li>
                 <li class="list-item u-gap-4 u-cross-center">
@@ -86,8 +107,10 @@
         {:else}
             <ul class="un-order-list">
                 <li>
-                    Limited to {currentPlan.databases} Database, {currentPlan.buckets} Buckets, {currentPlan.functions}
-                    Functions per project
+                    Limited to {currentPlan.databases}
+                    {pluralize(currentPlan.databases, 'Database')}, {currentPlan.buckets}
+                    {pluralize(currentPlan.buckets, 'Bucket')}, {currentPlan.functions}
+                    {pluralize(currentPlan.functions, 'Function')} per project
                 </li>
                 <li>Limited to 1 organization member</li>
                 <li>
@@ -101,7 +124,7 @@
                 </li>
             </ul>
         {/if}
-    {:else if isProPlan(selectedTab)}
+    {:else if isPaidPlan(selectedTab)}
         <Typography.Text>Everything in the Free plan, plus:</Typography.Text>
         <ul class="un-order-list">
             <li>Unlimited databases, buckets, functions</li>
@@ -124,7 +147,56 @@
 {/snippet}
 
 {#snippet imaginePlanView()}
-    <Typography.Text variant="m-600">
-        {currentPlan?.limits?.credits} daily messages
-    </Typography.Text>
+    {#if isFreePlan(selectedTab)}
+        {#if downgrade}
+            <ul class="u-margin-block-start-8 list u-gap-4 u-small">
+                <li class="list-item u-gap-4 u-cross-center">
+                    <span class="icon-arrow-down u-color-text-danger" aria-hidden="true"></span>
+                    <span class="text">
+                        Limited to {currentPlan?.limits?.dailyCredits ??
+                            currentPlan?.limits?.credits} daily credits per project
+                    </span>
+                </li>
+                <li class="list-item u-gap-4 u-cross-center">
+                    <span class="icon-arrow-down u-color-text-danger" aria-hidden="true"></span>
+                    <span class="text">
+                        Limited to {currentPlan.databases}
+                        {pluralize(currentPlan.databases, 'Database')}, {currentPlan.buckets}
+                        {pluralize(currentPlan.buckets, 'Bucket')}, {currentPlan.functions}
+                        {pluralize(currentPlan.functions, 'Function')} per project
+                    </span>
+                </li>
+                <li class="list-item u-gap-4 u-cross-center">
+                    <span class="icon-arrow-down u-color-text-danger" aria-hidden="true"></span>
+                    <span class="text"> Limited to 1 organization member </span>
+                </li>
+            </ul>
+        {:else}
+            <ul class="un-order-list">
+                <li>
+                    Limited to {currentPlan?.limits?.dailyCredits ?? currentPlan?.limits?.credits} daily
+                    credits per project
+                </li>
+                <li>
+                    Limited to {currentPlan.databases}
+                    {pluralize(currentPlan.databases, 'Database')}, {currentPlan.buckets}
+                    {pluralize(currentPlan.buckets, 'Bucket')}, {currentPlan.functions}
+                    {pluralize(currentPlan.functions, 'Function')} per project
+                </li>
+                <li>Limited to 1 organization member</li>
+            </ul>
+        {/if}
+    {:else if isPaidPlan(selectedTab)}
+        <Typography.Text>Everything in the Starter plan, plus:</Typography.Text>
+        <ul class="un-order-list">
+            {#if groupPlans.length > 1}
+                <li>Credits based on the plan selected</li>
+            {:else}
+                <li>{currentPlan?.limits?.credits?.toLocaleString()} credits per month</li>
+            {/if}
+            <li>Unlimited databases, buckets, functions</li>
+            <li>Unlimited seats</li>
+            <li>Email support</li>
+        </ul>
+    {/if}
 {/snippet}

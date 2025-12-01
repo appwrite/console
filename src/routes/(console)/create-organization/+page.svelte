@@ -208,8 +208,7 @@
                     <PlanSelection
                         isNewOrg
                         disabled={$isSubmitting}
-                        bind:billingPlan={selectedPlan}
-                    />
+                        bind:billingPlan={selectedPlan} />
                 </Layout.Stack>
             </Fieldset>
             {#if !isFreePlan(selectedPlan)}

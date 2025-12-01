@@ -38,7 +38,7 @@
     import type { Models } from '@appwrite.io/console';
     import { toLocaleDate } from '$lib/helpers/date';
     import { resolvedProfile } from '$lib/profiles/index.svelte';
-    import { isFreePlan, isProPlan } from '$lib/helpers/billing.js';
+    import { isFreePlan, isPaidPlan } from '$lib/helpers/billing.js';
 
     export let data;
 
@@ -311,13 +311,17 @@
         }
     }
 
-    $: console.log($plansInfo.get(selectedPlan));
-
     $: isUpgrade = $plansInfo.get(selectedPlan)?.order > $currentPlan?.order;
     $: isDowngrade = $plansInfo.get(selectedPlan)?.order < $currentPlan?.order;
     $: isButtonDisabled =
         $organization?.billingPlan === selectedPlan ||
         (isDowngrade && isFreePlan(selectedPlan) && data.hasFreeOrgs);
+
+    // reactive vars for same group downgrades
+    $: selectedPlanGroup = $plansInfo?.get(selectedPlan)?.group;
+    $: currentPlanGroup = $plansInfo?.get($organization?.billingPlan)?.group;
+    $: isSameGroupDowngrade =
+        currentPlanGroup && selectedPlanGroup && currentPlanGroup === selectedPlanGroup;
 </script>
 
 <svelte:head>
@@ -348,8 +352,7 @@
                     <PlanSelection
                         disabled={$isSubmitting}
                         selfService={data.selfService}
-                        bind:billingPlan={selectedPlan}
-                    />
+                        bind:billingPlan={selectedPlan} />
 
                     {#if isDowngrade && isFreePlan(selectedPlan) && data.hasFreeOrgs}
                         <Alert.Inline
@@ -374,15 +377,22 @@
                             extraMembers *
                                 ($plansInfo?.get(selectedPlan)?.addons?.seats?.price ?? 0)
                         )}
-                        {#if isProPlan(selectedPlan)}
+                        {#if isPaidPlan(selectedPlan)}
                             <Alert.Inline status="error">
                                 <svelte:fragment slot="title">
                                     Your monthly payments will be adjusted for the Pro plan
                                 </svelte:fragment>
-                                After switching plans,
-                                <b
-                                    >you will be charged {price} monthly for {extraMembers} team members.</b>
-                                This will be reflected in your next invoice.
+                                {#if isSameGroupDowngrade}
+                                    After switching plans,
+                                    <b>you will be charged {price} now.</b>
+                                    This will be reflected in your next invoice.
+                                {:else}
+                                    After switching plans,
+                                    <b
+                                        >you will be charged {price} monthly for {extraMembers} team
+                                        members.</b>
+                                    This will be reflected in your next invoice.
+                                {/if}
                             </Alert.Inline>
                         {:else if isFreePlan(selectedPlan)}
                             <Alert.Inline
@@ -398,12 +408,14 @@
                             </Alert.Inline>
                         {/if}
 
-                        <OrganizationUsageLimits
-                            bind:this={usageLimitsComponent}
-                            organization={data.organization}
-                            projects={allProjects?.projects || []}
-                            members={data.members?.memberships || []}
-                            storageUsage={orgUsage?.storageTotal ?? 0} />
+                        {#if !isSameGroupDowngrade}
+                            <OrganizationUsageLimits
+                                bind:this={usageLimitsComponent}
+                                organization={data.organization}
+                                projects={allProjects?.projects || []}
+                                members={data.members?.memberships || []}
+                                storageUsage={orgUsage?.storageTotal ?? 0} />
+                        {/if}
                     {/if}
                 </Layout.Stack>
             </Fieldset>

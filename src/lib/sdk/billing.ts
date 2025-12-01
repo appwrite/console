@@ -1,6 +1,6 @@
 import type { Tier } from '$lib/stores/billing';
 import type { Campaign } from '$lib/stores/campaigns';
-import type { Client, Models, Platform } from '@appwrite.io/console';
+import { BillingPlanGroup, type Client, type Models, type Platform } from '@appwrite.io/console';
 import type { PaymentMethod } from '@stripe/stripe-js';
 import { resolvedProfile } from '$lib/profiles/index.svelte';
 import type { Organization, OrganizationError, OrganizationList } from '../stores/organization';
@@ -436,8 +436,10 @@ export type Plan = {
     deploymentSize: number; // in MB
     usagePerProject: boolean;
     limits: {
-        credits?: number
-    }
+        credits?: number;
+        dailyCredits?: number;
+    };
+    group: null | BillingPlanGroup;
 };
 
 export type PlanList = {

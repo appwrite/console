@@ -41,7 +41,7 @@ import BudgetLimitAlert from '$routes/(console)/organization-[organization]/budg
 import TeamReadonlyAlert from '$routes/(console)/organization-[organization]/teamReadonlyAlert.svelte';
 import ProjectsLimit from '$lib/components/billing/alerts/projectsLimit.svelte';
 import { ProfileMode, resolvedProfile } from '$lib/profiles/index.svelte';
-import { isFreePlan } from '$lib/helpers/billing';
+import { isFreePlan, isPaidPlan } from '$lib/helpers/billing';
 import { BillingPlan as CloudSdkBillingPlan } from '@appwrite.io/console';
 
 export type Tier = 'tier-0' | 'tier-1' | 'tier-2' | 'auto-1' | 'cont-1' | 'ent-1';
@@ -271,7 +271,7 @@ export function checkForProjectLimitation(id: PlanServices) {
     // Members are no longer limited on Pro and Scale plans (unlimited seats)
     if (id === 'members') {
         const currentTier = get(organization)?.billingPlan;
-        if (currentTier === BillingPlan.PRO || currentTier === BillingPlan.SCALE) {
+        if (isPaidPlan(currentTier)) {
             return false; // No project limitation for members on Pro/Scale plans
         }
     }

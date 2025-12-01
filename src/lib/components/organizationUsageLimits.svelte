@@ -321,7 +321,7 @@
         -webkit-overflow-scrolling: touch;
         scrollbar-width: thin;
         position: relative;
-        z-index: 2;
+        /*z-index: 2;*/
     }
 
     /* Small viewport optimizations */
@@ -329,7 +329,7 @@
         .responsive-table {
             margin-inline: -1rem;
             padding-inline: 1rem;
-            z-index: 5;
+            /*z-index: 5;*/
         }
 
         .responsive-table :global(td),
