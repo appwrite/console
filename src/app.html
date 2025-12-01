@@ -2,31 +2,6 @@
 <html lang="en">
     <head>
         <meta charset="utf-8" />
-        <script>
-            const profile = '%sveltekit.env.PUBLIC_CONSOLE_PROFILE%';
-            const isStudio = profile === 'studio';
-            const baseLogosPath = '%sveltekit.assets%/logos';
-            const appleTouchBase = isStudio ? `${baseLogosPath}/imagine` : baseLogosPath;
-            const description = isStudio
-                ? 'Build something real. Turn your ideas into real products by chatting with the most complete AI builder available to date'
-                : 'Appwrite is an open-source platform for building applications at any scale, using your preferred programming languages and tools.';
-            const iconSvg = isStudio
-                ? `${baseLogosPath}/imagine-icon.svg`
-                : `${baseLogosPath}/appwrite-icon.svg`;
-            const iconPng = isStudio
-                ? `${baseLogosPath}/imagine-icon.png`
-                : `${baseLogosPath}/appwrite-icon.png`;
-            const appleTouchSizes = ['180x180', '167x167', '152x152', '120x120'];
-
-            document.write(`<meta name="description" content="${description}" />`);
-            document.write(`<link rel="icon" type="image/svg+xml" href="${iconSvg}" />`);
-            document.write(`<link rel="mask-icon" type="image/png" href="${iconPng}" />`);
-            appleTouchSizes.forEach((size) => {
-                document.write(
-                    `<link rel="apple-touch-icon" sizes="${size}" href="${appleTouchBase}/apple-touch-icon-${size}.png" />`
-                );
-            });
-        </script>
 
         <!-- apple web app meta tags -->
         <meta name="apple-mobile-web-app-capable" content="yes" />
