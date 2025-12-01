@@ -24,12 +24,27 @@
         tierOptions?: { value: string; label: string; badge?: string }[];
     };
 
-    // filter, group, and sort plans
     $: groupedPlans = (() => {
         const plans = Object.values(page.data.plans.plans) as Plan[];
+        const groups = filterAndGroupPlans(plans);
+        return buildPlanGroups(groups);
+    })();
+
+    $: currentPlanInList = Object.values(page.data.plans.plans).some(
+        (plan: Plan) => plan.$id === $currentPlan?.$id
+    );
+
+    $: {
+        for (const group of groupedPlans) {
+            if (group.isGrouped) {
+                selectedTiers[group.key] = getDefaultTierForGroup(group);
+            }
+        }
+    }
+
+    function filterAndGroupPlans(plans: Plan[]): Map<string, Plan[]> {
         const groups = new Map<string, Plan[]>();
 
-        // Filter and group in one pass
         for (const plan of plans) {
             if (plan.$id === BillingPlan.SCALE) continue;
 
@@ -42,79 +57,61 @@
             }
         }
 
-        // convert to array and process groups
+        return groups;
+    }
+
+    function buildPlanGroups(groups: Map<string, Plan[]>): PlanGroup[] {
         return Array.from(groups.entries())
             .map(([key, groupPlans]) => {
                 const isGrouped = groupPlans.length > 1;
                 const group: PlanGroup = { key, plans: groupPlans, isGrouped };
 
-                // pre-compute tier options for grouped plans
                 if (isGrouped) {
-                    group.tierOptions = groupPlans.map((plan) => ({
-                        value: plan.$id,
-                        label: getTierLabel(plan),
-                        badge: $organization?.billingPlan === plan.$id ? 'Current' : undefined
-                    }));
+                    group.tierOptions = buildTierOptions(groupPlans);
                 }
 
                 return group;
             })
             .sort((a, b) => (a.plans[0]?.order ?? 0) - (b.plans[0]?.order ?? 0));
-    })();
+    }
 
-    $: currentPlanInList = Object.values(page.data.plans.plans).some(
-        (plan: Plan) => plan.$id === $currentPlan?.$id
-    );
+    function buildTierOptions(plans: Plan[]): { value: string; label: string; badge?: string }[] {
+        return plans.map((plan) => ({
+            value: plan.$id,
+            label: getPlanLabel(plan),
+            badge: $organization?.billingPlan === plan.$id ? 'Current' : undefined
+        }));
+    }
 
-    $: {
-        for (const group of groupedPlans) {
-            if (group.isGrouped) {
-                // check if billingPlan is in this group
-                const selectedGroupPlan = group.plans.find((p) => p.$id === billingPlan);
-                if (selectedGroupPlan) {
-                    selectedTiers[group.key] = selectedGroupPlan.$id;
-                } else {
-                    // If billingPlan not in group, check organization's current plan
-                    const orgCurrentPlan = group.plans.find(
-                        (p) => p.$id === $organization?.billingPlan
-                    );
-                    if (orgCurrentPlan) {
-                        selectedTiers[group.key] = orgCurrentPlan.$id;
-                    } else if (!selectedTiers[group.key]) {
-                        // default to first plan in group
-                        selectedTiers[group.key] = group.plans[0].$id;
-                    }
-                }
+    function getDefaultTierForGroup(group: PlanGroup): string {
+        // billingPlan if in group, else org's current plan, else first plan
+        const selectedGroupPlan = group.plans.find((p) => p.$id === billingPlan);
+        if (selectedGroupPlan) {
+            return selectedGroupPlan.$id;
+        }
+
+        const orgCurrentPlan = group.plans.find((p) => p.$id === $organization?.billingPlan);
+        if (orgCurrentPlan) {
+            return orgCurrentPlan.$id;
+        }
+
+        return selectedTiers[group.key] || group.plans[0].$id;
+    }
+
+    function getPlanLabel(plan: Plan): string {
+        const price = formatCurrency(plan?.price ?? 0);
+        if (resolvedProfile.id === ProfileMode.STUDIO) {
+            if (plan.limits?.dailyCredits) {
+                return `${plan.limits.dailyCredits.toLocaleString()} daily credits for ${price} per month`;
+            } else if (plan.limits?.credits) {
+                return `${plan.limits.credits.toLocaleString()} credits per month for ${price}`;
             }
         }
+        return `${price} per month`;
     }
 
     function handleTierChange(group: PlanGroup) {
         billingPlan = selectedTiers[group.key] as BillingPlan;
-    }
-
-    function message(plan: Plan): string {
-        const price = formatCurrency(plan?.price ?? 0);
-        if (resolvedProfile.id === ProfileMode.STUDIO) {
-            if (plan.limits?.dailyCredits) {
-                return `${plan.limits.dailyCredits.toLocaleString()} daily credits for ${price} per month`;
-            } else if (plan.limits?.credits) {
-                return `${plan.limits.credits.toLocaleString()} credits per month for ${price}`;
-            }
-        }
-        return `${price} per month`;
-    }
-
-    function getTierLabel(plan: Plan): string {
-        const price = formatCurrency(plan?.price ?? 0);
-        if (resolvedProfile.id === ProfileMode.STUDIO) {
-            if (plan.limits?.dailyCredits) {
-                return `${plan.limits.dailyCredits.toLocaleString()} daily credits for ${price} per month`;
-            } else if (plan.limits?.credits) {
-                return `${plan.limits.credits.toLocaleString()} credits per month for ${price}`;
-            }
-        }
-        return `${price} per month`;
     }
 </script>
 
@@ -145,9 +142,9 @@
                             {@const isZeroPrice = (basePlan.price ?? 0) <= 0}
                             {@const price = formatCurrency(basePlan.price ?? 0)}
                             {#if resolvedProfile.id === ProfileMode.STUDIO}
-                                {message(basePlan)}
+                                {getPlanLabel(basePlan)}
                             {:else}
-                                {isZeroPrice ? price : message(basePlan)}
+                                {isZeroPrice ? price : getPlanLabel(basePlan)}
                             {/if}
                         </Typography.Text>
                     {/if}
@@ -183,7 +180,7 @@
             <Typography.Text>
                 {@const isZeroPrice = ($currentPlan?.price ?? 0) <= 0}
                 {@const price = formatCurrency($currentPlan?.price ?? 0)}
-                {isZeroPrice ? price : message($currentPlan)}
+                {isZeroPrice ? price : getPlanLabel($currentPlan)}
             </Typography.Text>
         </LabelCard>
     {/if}
