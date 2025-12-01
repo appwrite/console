@@ -187,4 +187,8 @@
             </Typography.Text>
         </LabelCard>
     {/if}
+
+    <Typography.Text style="margin-left: 6px;" variant="m-500">
+        Additional charges apply when you <b>exceed</b> plan limits.
+    </Typography.Text>
 </Layout.Stack>
