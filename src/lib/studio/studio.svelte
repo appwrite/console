@@ -7,12 +7,15 @@
     import { onMount } from 'svelte';
     import { app } from '$lib/stores/app';
     import { Dependencies } from '$lib/constants';
-    import { invalidate } from '$app/navigation';
+    import { goto, invalidate } from '$app/navigation';
     import { ensureStudioComponent, initImagine, getWebComponents } from './studio-widget';
     import AddDomains from './domains/add/view.svelte';
     import VerifyDomain from './domains/verify/view.svelte';
     import ManageDomains from './domains/manage/view.svelte';
     import { sdk } from '$lib/stores/sdk';
+    import { resolve } from '$app/paths';
+    import { get } from 'svelte/store';
+    import { organization as organizationStore } from '$lib/stores/organization';
 
     const {
         region,
@@ -51,6 +54,14 @@
                     primaryDomainForSite = primaryDomain;
                 }
                 showManageDomainsSheet = true;
+            },
+            onUpgrade: async () => {
+                const organization = get(organizationStore).$id;
+                goto(
+                    resolve('/(console)/organization-[organization]/change-plan', {
+                        organization: organization
+                    })
+                );
             }
         });
 
