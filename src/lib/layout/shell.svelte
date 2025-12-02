@@ -263,6 +263,7 @@
         margin-top: 48px;
         margin-right: 10px;
         margin-left: 64px;
+        overflow: auto;
         @media (min-width: 1024px) {
             width: 100%;
             padding-left: 190px;

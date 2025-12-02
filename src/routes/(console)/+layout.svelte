@@ -14,7 +14,6 @@
     import Create from './createOrganization.svelte';
     import {
         calculateTrialDay,
-        checkForEnterpriseTrial,
         checkForMandate,
         checkForMarkedForDeletion,
         checkForMissingPaymentMethod,
@@ -302,7 +301,6 @@
             const orgProjectCount =
                 data.currentOrgId === org.$id ? data.allProjectsCount : undefined;
             await checkForProjectsLimit(org, orgProjectCount);
-            checkForEnterpriseTrial(org);
             await checkForUsageLimit(org);
             checkForMarkedForDeletion(org);
             await checkForNewDevUpgradePro(org);

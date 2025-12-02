@@ -23,9 +23,9 @@
         Divider
     } from '@appwrite.io/pink-svelte';
     import { resolve } from '$app/paths';
+    import { goto } from '$app/navigation';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { regionalProtocol } from '$routes/(console)/project-[region]-[project]/store';
-    import { goto } from '$app/navigation';
     import DeleteDomainModal from '$routes/(console)/project-[region]-[project]/sites/site-[site]/domains/deleteDomainModal.svelte';
     import RetryDomainModal from '$routes/(console)/project-[region]-[project]/sites/site-[site]/domains/retryDomainModal.svelte';
 

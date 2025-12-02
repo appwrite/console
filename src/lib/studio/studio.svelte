@@ -5,16 +5,17 @@
 <script lang="ts">
     import './shim.css';
     import { onMount } from 'svelte';
-    import { resolve } from '$app/paths';
-    import { Link } from '$lib/elements';
     import { app } from '$lib/stores/app';
     import { Dependencies } from '$lib/constants';
     import { goto, invalidate } from '$app/navigation';
-    import { IconExternalLink } from '@appwrite.io/pink-icons-svelte';
-    import { Layout, Typography, Icon } from '@appwrite.io/pink-svelte';
     import { ensureStudioComponent, initImagine, getWebComponents } from './studio-widget';
-    import DomainsTable from './domainsTable.svelte';
-    import SideSheet from '$routes/(console)/project-[region]-[project]/databases/database-[database]/table-[table]/layout/sidesheet.svelte';
+    import AddDomains from './domains/add/view.svelte';
+    import VerifyDomain from './domains/verify/view.svelte';
+    import ManageDomains from './domains/manage/view.svelte';
+    import { sdk } from '$lib/stores/sdk';
+    import { resolve } from '$app/paths';
+    import { get } from 'svelte/store';
+    import { organization as organizationStore } from '$lib/stores/organization';
 
     const {
         region,
@@ -27,8 +28,16 @@
     } = $props();
 
     const siteId = `project-${projectId}`;
+    const isStage = sdk.forConsole.client.config.endpoint.includes('stage');
+    let showAddDomainsWizard = $state(false);
     let showManageDomainsSheet = $state(false);
-    let primaryDomainForSite = $state(`imagine-${projectId}.stage.appwrite.network`);
+    let primaryDomainForSite = $state(
+        `imagine-${projectId}.${isStage ? 'stage.' : ''}appwrite.network`
+    );
+
+    let showVerifyDomainsWizard = $state(false);
+    let ruleIdForVerification = $state(null);
+    let domainForVerification = $state(null);
 
     onMount(() => {
         ensureStudioComponent();
@@ -38,21 +47,21 @@
                 invalidate(Dependencies.PROJECT);
             },
             onAddDomain: async () => {
-                const baseUrl = resolve(
-                    '/(console)/project-[region]-[project]/sites/site-[site]/domains/add-domain',
-                    {
-                        region,
-                        project: projectId,
-                        site: siteId
-                    }
-                );
-                await goto(`${baseUrl}?types=false`);
+                showAddDomainsWizard = true;
             },
             onManageDomains: (primaryDomain) => {
                 if (primaryDomain) {
                     primaryDomainForSite = primaryDomain;
                 }
                 showManageDomainsSheet = true;
+            },
+            onUpgrade: async () => {
+                const organization = get(organizationStore).$id;
+                goto(
+                    resolve('/(console)/organization-[organization]/change-plan', {
+                        organization: organization
+                    })
+                );
             }
         });
 
@@ -71,26 +80,30 @@
 
 <div aria-hidden="true" style:display="none"></div>
 
-<SideSheet title="Domains" bind:show={showManageDomainsSheet}>
-    <Layout.Stack gap="xl">
-        <Layout.Stack gap="xxs">
-            <Typography.Text color="--fgcolor-neutral-tertiary">Active domain</Typography.Text>
+<AddDomains
+    {siteId}
+    bind:show={showAddDomainsWizard}
+    onDomainAdded={(rule, domain, verified) => {
+        if (!verified) {
+            ruleIdForVerification = rule;
+            domainForVerification = domain;
+            showVerifyDomainsWizard = true;
+        }
+    }} />
 
-            <Typography.Text>
-                <Link size="m" external variant="quiet" href={primaryDomainForSite}>
-                    <Layout.Stack
-                        direction="row"
-                        gap="xxs"
-                        alignItems="center"
-                        alignContent="center">
-                        {primaryDomainForSite}
+<VerifyDomain
+    rule={ruleIdForVerification}
+    domain={domainForVerification}
+    bind:show={showVerifyDomainsWizard}
+    onChangeDomain={() => {
+        ruleIdForVerification = null;
+        domainForVerification = null;
+        showAddDomainsWizard = true;
+    }} />
 
-                        <Icon size="s" icon={IconExternalLink} />
-                    </Layout.Stack>
-                </Link>
-            </Typography.Text>
-        </Layout.Stack>
-
-        <DomainsTable {siteId} {region} {projectId} />
-    </Layout.Stack>
-</SideSheet>
+<ManageDomains
+    {siteId}
+    {region}
+    {projectId}
+    domain={primaryDomainForSite}
+    bind:show={showManageDomainsSheet} />

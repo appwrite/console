@@ -37,12 +37,12 @@
     import { getSidebarState, isInDatabasesRoute, updateSidebarState } from '$lib/helpers/sidebar';
     import { isSmallViewport, isTabletViewport } from '$lib/stores/viewport';
     import { Click, trackEvent } from '$lib/actions/analytics';
-    import { bannerSpacing } from '$lib/layout/headerAlert.svelte';
 
-    import type { HTMLAttributes } from 'svelte/elements';
-    import type { Models } from '@appwrite.io/console';
-    import { noWidthTransition } from '$lib/stores/sidebar';
     import { base } from '$app/paths';
+    import type { Models } from '@appwrite.io/console';
+    import type { HTMLAttributes } from 'svelte/elements';
+    import { headerAlert } from '$lib/stores/headerAlert';
+    import { noWidthTransition } from '$lib/stores/sidebar';
     import { ProfileMode, resolvedProfile } from '$lib/profiles/index.svelte';
 
     type Props = HTMLAttributes<HTMLElement> & {
@@ -127,7 +127,8 @@
         {...rest}
         bind:state
         on:resize={(event) => updateSidebarState(event.detail)}
-        resizable={resolvedProfile.id !== ProfileMode.STUDIO}>
+        resizable={resolvedProfile.id !== ProfileMode.STUDIO}
+        style="padding-block-start: {$headerAlert.top}px">
         <div slot="top">
             <div class="only-mobile-tablet top">
                 <div class="icons search-icon">
@@ -399,7 +400,7 @@
     </Sidebar.Base>
 </div>
 
-<div style:--banner-spacing={$bannerSpacing ? $bannerSpacing : undefined}>
+<div style:--banner-spacing={$headerAlert.top ? `${$headerAlert.top}px` : undefined}>
     {#if subNavigation}
         {@const SubNavigation = subNavigation}
         <div

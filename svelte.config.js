@@ -22,8 +22,7 @@ const config = {
             $themes: './src/themes'
         },
         adapter: adapter({
-            fallback: 'index.html',
-            precompress: true
+            fallback: 'index.html'
         }),
         paths: {
             base: process.env.PREVIEW ? '' : '/console'

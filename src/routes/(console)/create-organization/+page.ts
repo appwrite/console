@@ -3,9 +3,29 @@ import { sdk } from '$lib/stores/sdk';
 import type { PageLoad } from './$types';
 import type { Coupon } from '$lib/sdk/billing';
 import type { Organization } from '$lib/stores/organization';
+import { ProfileMode, resolvedProfile } from '$lib/profiles/index.svelte';
+import { ID } from '@appwrite.io/console';
+import { redirect } from '@sveltejs/kit';
+import { resolve } from '$app/paths';
 
 export const load: PageLoad = async ({ url, parent, depends }) => {
     const { organizations } = await parent();
+    if (resolvedProfile.id === ProfileMode.STUDIO) {
+        if (organizations.total === 0) {
+            const org = await sdk.forConsole.organizations.create({
+                organizationId: ID.unique(),
+                name: 'Personal projects',
+                billingPlan: resolvedProfile.freeTier,
+                platform: resolvedProfile.organizationPlatform
+            });
+            redirect(
+                303,
+                resolve('/(console)/organization-[organization]', {
+                    organization: org.$id
+                })
+            );
+        }
+    }
     depends(Dependencies.ORGANIZATIONS);
     const [coupon, paymentMethods, plans] = await Promise.all([
         getCoupon(url),

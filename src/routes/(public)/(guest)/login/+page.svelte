@@ -6,13 +6,12 @@
     import { sdk } from '$lib/stores/sdk';
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { isCloud } from '$lib/system';
     import { page } from '$app/state';
-    import { OAuthProvider } from '@appwrite.io/console';
     import { redirectTo } from '$routes/store';
     import { user } from '$lib/stores/user';
     import { Layout } from '@appwrite.io/pink-svelte';
-    import { resolvedProfile } from '$lib/profiles/index.svelte';
+    import { Logins, resolvedProfile } from '$lib/profiles/index.svelte';
+    import type { OAuthProvider } from '@appwrite.io/console';
 
     let mail: string, pass: string, disabled: boolean;
 
@@ -65,7 +64,7 @@
         }
     }
 
-    function onGithubLogin() {
+    function onOauthLogin(provider: OAuthProvider) {
         let url = window.location.origin;
 
         if (page.url.searchParams) {
@@ -78,7 +77,7 @@
             }
         }
         sdk.forConsole.account.createOAuth2Session({
-            provider: OAuthProvider.Github,
+            provider,
             success: window.location.origin + url,
             failure: window.location.origin,
             scopes: ['read:user', 'user:email']
@@ -95,38 +94,56 @@
     <svelte:fragment>
         <Form onSubmit={login}>
             <Layout.Stack>
-                <InputEmail
-                    id="email"
-                    label="Email"
-                    placeholder="Email"
-                    autofocus={true}
-                    required={true}
-                    bind:value={mail} />
-                <InputPassword
-                    id="password"
-                    label="Password"
-                    placeholder="Password"
-                    required={true}
-                    bind:value={pass} />
-                <Button fullWidth submit {disabled}>Sign in</Button>
-                {#if isCloud}
+                {#if resolvedProfile.logins.includes(Logins.EMAIL)}
+                    <InputEmail
+                        id="email"
+                        label="Email"
+                        placeholder="Email"
+                        autofocus={true}
+                        required={true}
+                        bind:value={mail} />
+                    <InputPassword
+                        id="password"
+                        label="Password"
+                        placeholder="Password"
+                        required={true}
+                        bind:value={pass} />
+                    <Button fullWidth submit {disabled}>Sign in</Button>
                     <span class="with-separators eyebrow-heading-3">or</span>
-                    <Button secondary fullWidth on:click={onGithubLogin} {disabled}>
+                {/if}
+                {#if resolvedProfile.logins.includes(Logins.GITHUB)}
+                    <Button
+                        secondary
+                        fullWidth
+                        on:click={() => onOauthLogin(resolvedProfile.oauthProviders.github)}
+                        {disabled}>
                         <span class="icon-github" aria-hidden="true"></span>
                         <span class="text">Sign in with GitHub</span>
+                    </Button>
+                {/if}
+                {#if resolvedProfile.logins.includes(Logins.GOOGLE)}
+                    <Button
+                        secondary
+                        fullWidth
+                        on:click={() => onOauthLogin(resolvedProfile.oauthProviders.google)}
+                        {disabled}>
+                        <span class="icon-google" aria-hidden="true"></span>
+                        <span class="text">Sign in with Google</span>
                     </Button>
                 {/if}
             </Layout.Stack>
         </Form>
     </svelte:fragment>
     <svelte:fragment slot="links">
-        <li class="inline-links-item">
-            <a href={`${base}/recover`}><span class="text">Forgot password?</span></a>
-        </li>
-        <li class="inline-links-item">
-            <a href={`${base}/register${page?.url?.search ?? ''}`}>
-                <span class="text">Sign up</span>
-            </a>
-        </li>
+        {#if resolvedProfile.logins.includes(Logins.EMAIL)}
+            <li class="inline-links-item">
+                <a href={`${base}/recover`}><span class="text">Forgot password?</span></a>
+            </li>
+            <li class="inline-links-item">
+                <a href={`${base}/register${page?.url?.search ?? ''}`}>
+                    <span class="text">Sign up</span>
+                </a>
+            </li>
+        {/if}
     </svelte:fragment>
 </Unauthenticated>

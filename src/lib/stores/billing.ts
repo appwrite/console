@@ -40,7 +40,6 @@ import { user } from './user';
 import BudgetLimitAlert from '$routes/(console)/organization-[organization]/budgetLimitAlert.svelte';
 import TeamReadonlyAlert from '$routes/(console)/organization-[organization]/teamReadonlyAlert.svelte';
 import ProjectsLimit from '$lib/components/billing/alerts/projectsLimit.svelte';
-import EnterpriseTrial from '$routes/(console)/organization-[organization]/enterpriseTrial.svelte';
 import { ProfileMode, resolvedProfile } from '$lib/profiles/index.svelte';
 import { isFreePlan } from '$lib/helpers/billing';
 
@@ -293,33 +292,6 @@ export function isServiceLimited(serviceId: PlanServices, plan: Tier, total: num
     const isLimited = limit !== 0 && limit < Infinity;
     const hasUsageFees = checkForUsageFees(plan, serviceId);
     return isLimited && total >= limit && !hasUsageFees;
-}
-
-export function checkForEnterpriseTrial(org: Organization) {
-    if (!org || !org.billingNextInvoiceDate) return;
-    if (calculateEnterpriseTrial(org) > 0) {
-        headerAlert.add({
-            id: 'teamEnterpriseTrial',
-            component: EnterpriseTrial,
-            show: true,
-            importance: 11
-        });
-    }
-}
-
-export function calculateEnterpriseTrial(org: Organization) {
-    if (!org || !org.billingNextInvoiceDate) return 0;
-    const endDate = new Date(org.billingNextInvoiceDate);
-    const startDate = new Date(org.billingCurrentInvoiceDate);
-    const today = new Date();
-
-    let diffCycle = endDate.getTime() - startDate.getTime();
-    diffCycle = Math.ceil(diffCycle / (1000 * 60 * 60 * 24));
-    if (diffCycle === 14) {
-        const remaining = endDate.getTime() - today.getTime();
-        return Math.ceil(remaining / (1000 * 60 * 60 * 24));
-    }
-    return 0;
 }
 
 export function calculateTrialDay(org: Organization) {

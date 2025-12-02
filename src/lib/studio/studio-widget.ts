@@ -8,6 +8,7 @@ import DEV_CSS_URL from '@imagine.dev/web-components/imagine-web-components.css?
 import { getSessionId } from '$lib/sentry';
 import type * as WebComponentsType from '@imagine.dev/web-components/web-components';
 import * as Sentry from '@sentry/sveltekit';
+import { headerAlert } from '$lib/stores/headerAlert';
 
 const COMPONENT_SELECTOR = 'imagine-web-components-wrapper[data-appwrite-studio]';
 const STYLE_ATTRIBUTE = 'data-appwrite-studio-style';
@@ -194,10 +195,12 @@ function updatePosition() {
         return;
     }
 
+    const bannerOffset = headerAlert.getTopSpacing();
+
     const rect = anchorElement.getBoundingClientRect();
     const { offsetX, offsetY } = currentOptions;
     const left = rect.left + offsetX;
-    const top = BLOCK_START_BASE_OFFSET + offsetY + 1;
+    const top = BLOCK_START_BASE_OFFSET + bannerOffset + offsetY + 1;
     component.style.width = `${rect.width}px`;
     component.style.height = `calc(100vh - ${BLOCK_START_BASE_OFFSET + 14}px)`;
     component.style.left = `${left}px`;
@@ -280,6 +283,7 @@ export async function initImagine(
         onProjectNameChange: () => void;
         onAddDomain: () => void | Promise<void>;
         onManageDomains: (primaryDomain?: string) => void | Promise<void>;
+        onUpgrade: () => void | Promise<void>;
     }
 ) {
     const sessionId = getSessionId(userId);

@@ -45,6 +45,7 @@
     import { realtime } from '$lib/stores/sdk';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     let {
         data
@@ -340,7 +341,7 @@
                         <EmptySheetCards
                             icon={IconBookOpen}
                             title="Documentation"
-                            subtitle="Read the Appwrite docs"
+                            subtitle="Read the {resolvedProfile.platform} docs"
                             href="https://appwrite.io/docs/products/databases/tables#indexes" />
                     {/if}
                 {/snippet}
@@ -390,7 +391,7 @@
                     <EmptySheetCards
                         icon={IconBookOpen}
                         title="Documentation"
-                        subtitle="Read the Appwrite docs"
+                        subtitle="Read the {resolvedProfile.platform} docs"
                         href="https://appwrite.io/docs/products/databases/tables#columns" />
                 {/if}
             {/snippet}
