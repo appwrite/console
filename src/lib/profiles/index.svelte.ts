@@ -53,13 +53,20 @@ export type Profile = {
         sites: boolean;
         settings: boolean;
     };
-    discord: string;
-    website: string;
     showOrgInBreadcrumbs: boolean;
     minimalOrgHeader: boolean;
     getProjectRoute: (params: { region: string; project: string }) => ResolvedPathname;
     component: {
         unauthenticated: Component;
+    };
+    links: {
+        docs: string;
+        website: string;
+        discord: string;
+        terms: string;
+        privacy: string;
+        cookies: string;
+        pricing: string;
     };
 };
 
@@ -101,8 +108,6 @@ export const base: Profile = {
         sites: true,
         settings: true
     },
-    discord: 'https://appwrite.io/discord',
-    website: 'https://appwrite.io',
     showOrgInBreadcrumbs: true,
     minimalOrgHeader: false,
     getProjectRoute({ region, project }) {
@@ -110,6 +115,15 @@ export const base: Profile = {
             region,
             project
         });
+    },
+    links: {
+        website: 'https://appwrite.io',
+        docs: 'https://appwrite.io/docs',
+        terms: 'https://appwrite.io/terms',
+        discord: 'https://appwrite.io/discord',
+        cookies: 'https://appwrite.io/cookies',
+        privacy: 'https://appwrite.io/privacy',
+        pricing: 'https://appwrite.io/pricing'
     }
 };
 
@@ -152,8 +166,6 @@ export const studio: Profile = {
         sites: false,
         settings: true
     },
-    website: 'https://imagine.dev',
-    discord: 'https://imagine.dev/discord',
     showOrgInBreadcrumbs: false,
     minimalOrgHeader: true,
     getProjectRoute({ region, project }) {
@@ -161,6 +173,15 @@ export const studio: Profile = {
             region,
             project
         });
+    },
+    links: {
+        website: 'https://imagine.dev',
+        docs: 'https://imagine.dev/docs',
+        terms: 'https://imagine.dev/terms',
+        discord: 'https://imagine.dev/discord',
+        cookies: 'https://imagine.dev/cookies',
+        privacy: 'https://imagine.dev/privacy',
+        pricing: 'https://imagine.dev/pricing'
     }
 };
 

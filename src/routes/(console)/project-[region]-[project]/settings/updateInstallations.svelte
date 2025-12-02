@@ -212,7 +212,7 @@
                 <svelte:fragment slot="description">
                     Deploy the {resolvedProfile.platform} MCP server with a single click, or view the
                     <PinkLink.Anchor
-                        href="{resolvedProfile.website}/docs"
+                        href={resolvedProfile.links.docs}
                         target="_blank"
                         rel="noreferrer">docs</PinkLink.Anchor> for instructions.
                 </svelte:fragment>

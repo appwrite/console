@@ -84,7 +84,7 @@
                 <Link.Button on:click={() => ($showUsageRatesModal = true)}>Learn more</Link.Button>
             {:else}
                 <Link.Anchor
-                    href="{resolvedProfile.website}/pricing"
+                    href={resolvedProfile.links.pricing}
                     target="_blank"
                     rel="noopener noreferrer">
                     Learn more
@@ -99,7 +99,7 @@
                 <Link.Button on:click={() => ($showUsageRatesModal = true)}>Learn more</Link.Button>
             {:else}
                 <Link.Anchor
-                    href="{resolvedProfile.website}/pricing"
+                    href={resolvedProfile.links.pricing}
                     target="_blank"
                     rel="noopener noreferrer">
                     Learn more

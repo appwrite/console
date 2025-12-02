@@ -336,7 +336,7 @@
                     <Typography.Text>
                         For more details on our plans, visit our
                         <Link.Anchor
-                            href="{resolvedProfile.website}/pricing"
+                            href={resolvedProfile.links.pricing}
                             target="_blank"
                             rel="noopener noreferrer">pricing page</Link.Anchor
                         >.
@@ -365,7 +365,7 @@
                                 <Button
                                     compact
                                     external
-                                    href="{resolvedProfile.website}/docs/advanced/migrations/cloud"
+                                    href="{resolvedProfile.links.docs}/advanced/migrations/cloud"
                                     >Migration guide</Button>
                             </Layout.Stack>
                         </Alert.Inline>
