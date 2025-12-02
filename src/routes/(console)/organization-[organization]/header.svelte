@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/state';
     import { AvatarGroup, Tab, Tabs } from '$lib/components';
@@ -14,7 +15,12 @@
         readOnly,
         tierToPlan
     } from '$lib/stores/billing';
-    import { members, newMemberModal, type Organization } from '$lib/stores/organization';
+    import {
+        members,
+        newMemberModal,
+        newOrgModal,
+        type Organization
+    } from '$lib/stores/organization';
     import {
         canSeeBilling,
         canSeeProjects,
@@ -93,7 +99,7 @@
 {#if organization?.$id}
     <Cover>
         <svelte:fragment slot="header">
-            <span class="u-flex u-cross-center u-gap-8 u-min-width-0">
+            <span class="u-flex u-cross-center u-gap-12 u-min-width-0">
                 <Typography.Title color="--fgcolor-neutral-primary" size="xl" truncate>
                     {organization.name}
                 </Typography.Title>
@@ -114,6 +120,13 @@
                         </svelte:fragment>
                     </Tooltip>
                 {/if}
+                <Button
+                    secondary
+                    size="xs"
+                    on:click={() =>
+                        isCloud ? goto(`${base}/create-organization`) : newOrgModal.set(true)}>
+                    <Icon icon={IconPlus} size="s" />
+                </Button>
             </span>
             <div class="u-margin-inline-start-auto">
                 <Layout.Stack direction="row" alignItems="center" gap="xl">
