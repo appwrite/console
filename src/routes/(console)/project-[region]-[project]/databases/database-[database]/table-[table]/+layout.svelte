@@ -73,9 +73,10 @@
     import { Submit, trackEvent } from '$lib/actions/analytics';
 
     import { isTabletViewport } from '$lib/stores/viewport';
+    import { showColumnsSuggestionsModal } from '../(suggestions)';
     import IndexesSuggestions from '../(suggestions)/indexes.svelte';
     import ColumnsSuggestions from '../(suggestions)/columns.svelte';
-    import { showColumnsSuggestionsModal } from '../(suggestions)';
+    import { setupColumnObserver } from '../(observer)/columnObserver';
 
     let editRow: EditRow;
     let editRelatedRow: EditRelatedRow;
@@ -276,56 +277,6 @@
         indexes: 700
     });
 
-    function setupColumnObserver() {
-        let expectedCount = 0;
-        let resolvePromise: () => void;
-        let timeout: ReturnType<typeof setTimeout>;
-
-        const availableColumns = new Set<string>();
-        const waitPromise = new Promise<void>((resolve) => (resolvePromise = resolve));
-
-        columnCreationHandler = (response: RealtimeResponse) => {
-            const { events, payload } = response;
-
-            if (
-                events.includes('databases.*.tables.*.columns.*.create') ||
-                events.includes('databases.*.tables.*.columns.*.update')
-            ) {
-                const asColumn = payload as Columns;
-                const columnId = asColumn.key;
-                const status = asColumn.status;
-
-                if (status === 'available') {
-                    availableColumns.add(columnId);
-
-                    if (expectedCount > 0 && availableColumns.size >= expectedCount) {
-                        clearTimeout(timeout);
-                        columnCreationHandler = null;
-                        resolvePromise();
-                    }
-                }
-            }
-        };
-
-        // return function to start waiting!
-        const startWaiting = (count: number) => {
-            expectedCount = count;
-
-            timeout = setTimeout(() => {
-                columnCreationHandler = null;
-                resolvePromise();
-            }, 10000);
-
-            if (availableColumns.size >= expectedCount) {
-                clearTimeout(timeout);
-                columnCreationHandler = null;
-                resolvePromise();
-            }
-        };
-
-        return { startWaiting, waitPromise };
-    }
-
     async function createFakeData() {
         isWaterfallFromFaker.set(true);
 
@@ -338,7 +289,14 @@
 
         if (!filteredColumns.length) {
             try {
-                const { startWaiting, waitPromise } = setupColumnObserver();
+                const {
+                    startWaiting,
+                    waitPromise,
+                    columnCreationHandler: handler
+                } = setupColumnObserver();
+
+                columnCreationHandler = handler;
+
                 columns = await generateColumns($project, page.params.database, page.params.table);
                 startWaiting(columns.length);
                 await waitPromise;
@@ -354,6 +312,8 @@
                 });
                 $spreadsheetLoading = false;
                 return;
+            } finally {
+                columnCreationHandler = null;
             }
         }
 
