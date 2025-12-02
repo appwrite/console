@@ -22,6 +22,7 @@
     import { formatCurrency } from '$lib/helpers/numbers';
     import { base } from '$app/paths';
     import type { PaymentMethod } from '@stripe/stripe-js';
+    import { Console } from '@appwrite.io/console';
 
     export let show = false;
     export let invoice: Invoice;
@@ -55,7 +56,7 @@
     async function handleSubmit() {
         isButtonDisabled = true;
         try {
-            if (paymentMethodId === null) {
+            if (paymentMethodId === null || paymentMethodId === '$new') {
                 try {
                     if (showState && !state) {
                         throw Error('Please select a state');
@@ -65,13 +66,18 @@
                         method = await setPaymentMethod(paymentMethod.id, name, state);
                     } else {
                         const card = await submitStripeCard(name, $organization.$id);
-                        if (card && Object.hasOwn(card, 'id')) {
+                        console.log('card', card);
+                        // When Stripe returns an expanded PaymentMethod for US cards, we need state.
+                        if (Object.hasOwn(card, 'id') && (card as PaymentMethod)?.card) {
                             if ((card as PaymentMethod).card?.country === 'US') {
                                 paymentMethod = card as PaymentMethod;
                                 showState = true;
                                 return;
                             }
-                        } else if (card && Object.hasOwn(card, '$id')) {
+                        }
+
+                        // Otherwise, we expect an Appwrite PaymentMethodData with `$id`.
+                        if (Object.hasOwn(card, '$id')) {
                             method = card as PaymentMethodData;
                         }
                     }
