@@ -66,7 +66,6 @@
                         method = await setPaymentMethod(paymentMethod.id, name, state);
                     } else {
                         const card = await submitStripeCard(name, $organization.$id);
-                        console.log('card', card);
                         // When Stripe returns an expanded PaymentMethod for US cards, we need state.
                         if (Object.hasOwn(card, 'id') && (card as PaymentMethod)?.card) {
                             if ((card as PaymentMethod).card?.country === 'US') {
