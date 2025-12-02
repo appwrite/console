@@ -937,12 +937,24 @@ export class Billing {
         );
     }
 
-    async getAggregation(organizationId: string, aggregationId: string): Promise<AggregationTeam> {
+    async getAggregation(
+        organizationId: string,
+        aggregationId: string,
+        limit?: number,
+        offset?: number
+    ): Promise<AggregationTeam> {
         const path = `/organizations/${organizationId}/aggregations/${aggregationId}`;
-        const params = {
+        const params: {
+            organizationId: string;
+            aggregationId: string;
+            limit?: number;
+            offset?: number;
+        } = {
             organizationId,
             aggregationId
         };
+        if (typeof limit === 'number') params.limit = limit;
+        if (typeof offset === 'number') params.offset = offset;
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(
             'get',

@@ -48,26 +48,28 @@ export const load: LayoutLoad = async ({ params, route, depends, parent }) => {
     // fast path without a network call!
     let organization = organizations?.teams?.find((org) => org.$id === project.teamId);
 
-    const includedInBasePlans = plansInfo.has(organization.billingPlan);
+    // organization can be null if not in the filtered list!
+    const includedInBasePlans = plansInfo.has(organization?.billingPlan);
 
-    const [org, regionalConsoleVariables, rolesResult, organizationPlan] = await Promise.all([
+    const [org, regionalConsoleVariables, rolesResult] = await Promise.all([
         !organization
             ? (sdk.forConsole.teams.get({ teamId: project.teamId }) as Promise<Organization>)
             : organization,
         sdk.forConsoleIn(project.region).console.variables(),
         isCloud ? sdk.forConsole.billing.getRoles(project.teamId) : null,
 
-        // fetch if not available in `plansInfo`
-        includedInBasePlans
-            ? plansInfo.get(organization.billingPlan)
-            : isCloud
-              ? sdk.forConsole.billing.getOrganizationPlan(organization.$id)
-              : null,
-
         loadAvailableRegions(project.teamId)
     ]);
 
     if (!organization) organization = org;
+
+    // fetch if not available in `plansInfo`.
+    // out of promise.all because we filter orgs based on platform now!
+    const organizationPlan = includedInBasePlans
+        ? plansInfo.get(organization?.billingPlan)
+        : isCloud
+          ? await sdk.forConsole.billing.getOrganizationPlan(organization?.$id)
+          : null;
 
     const roles = rolesResult?.roles ?? defaultRoles;
     const scopes = rolesResult?.scopes ?? defaultScopes;

@@ -40,8 +40,8 @@ import { user } from './user';
 import BudgetLimitAlert from '$routes/(console)/organization-[organization]/budgetLimitAlert.svelte';
 import TeamReadonlyAlert from '$routes/(console)/organization-[organization]/teamReadonlyAlert.svelte';
 import ProjectsLimit from '$lib/components/billing/alerts/projectsLimit.svelte';
-import { ProfileMode, resolvedProfile } from '$lib/profiles/index.svelte';
 import { isFreePlan } from '$lib/helpers/billing';
+import { ProfileMode, resolvedProfile } from '$lib/profiles/index.svelte';
 
 export type Tier = 'tier-0' | 'tier-1' | 'tier-2' | 'auto-1' | 'cont-1' | 'ent-1';
 

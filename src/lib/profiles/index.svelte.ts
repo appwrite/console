@@ -113,7 +113,7 @@ export const studio: Profile = {
     id: ProfileMode.STUDIO,
     platform: 'Imagine',
     organizationPlatform: Platform.Imagine,
-    freeTier: BillingPlan.Imaginebasic,
+    freeTier: BillingPlan.Imaginetier0,
     logo: {
         src: {
             dark: asset('/images/imagine-logo-dark.svg'),
