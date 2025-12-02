@@ -99,7 +99,7 @@
 {#if organization?.$id}
     <Cover>
         <svelte:fragment slot="header">
-            <span class="u-flex u-cross-center u-gap-12 u-min-width-0">
+            <Layout.Stack direction="row" alignItems="center" gap="m" class="u-min-width-0">
                 <Typography.Title color="--fgcolor-neutral-primary" size="xl" truncate>
                     {organization.name}
                 </Typography.Title>
@@ -127,7 +127,7 @@
                         isCloud ? goto(`${base}/create-organization`) : newOrgModal.set(true)}>
                     <Icon icon={IconPlus} size="s" />
                 </Button>
-            </span>
+            </Layout.Stack>
             <div class="u-margin-inline-start-auto">
                 <Layout.Stack direction="row" alignItems="center" gap="xl">
                     {#if $members.total > 1}
