@@ -22,7 +22,6 @@
     import { formatCurrency } from '$lib/helpers/numbers';
     import { base } from '$app/paths';
     import type { PaymentMethod } from '@stripe/stripe-js';
-    import { Console } from '@appwrite.io/console';
 
     export let show = false;
     export let invoice: Invoice;
