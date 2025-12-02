@@ -245,7 +245,7 @@ button.danger {
 
 .theme-light body,
 .theme-light nav,
-.theme-light header,
+.theme-light svelte-css-wrapper > header,
 .theme-light main {
     background: var(--bgcolor-neutral-default) !important;
 }
