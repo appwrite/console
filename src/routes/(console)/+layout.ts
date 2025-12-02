@@ -1,10 +1,11 @@
-import { Dependencies } from '$lib/constants';
 import { sdk } from '$lib/stores/sdk';
 import { isCloud } from '$lib/system';
 import type { LayoutLoad } from './$types';
+import { Query } from '@appwrite.io/console';
 import type { Tier } from '$lib/stores/billing';
 import type { Plan, PlanList } from '$lib/sdk/billing';
-import { Query } from '@appwrite.io/console';
+import { Dependencies } from '$lib/constants';
+import { resolvedProfile } from '$lib/profiles/index.svelte';
 
 export const load: LayoutLoad = async ({ depends, parent }) => {
     const { organizations } = await parent();
@@ -26,7 +27,7 @@ export const load: LayoutLoad = async ({ depends, parent }) => {
     const plansInfo = toPlanMap(plansArray);
 
     const currentOrgId =
-        preferences.organization ??
+        preferences[resolvedProfile.organizationPrefKey] ??
         (organizations.teams.length > 0 ? organizations.teams[0].$id : undefined);
 
     // Load projects for the current organization if one is selected
