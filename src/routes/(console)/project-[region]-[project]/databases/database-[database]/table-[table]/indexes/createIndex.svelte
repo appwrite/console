@@ -71,7 +71,8 @@
     // spatial type selected -> reset column list to single empty column
     // and the column already is not spatial type
     $effect(() => {
-        if (selectedType === IndexType.Spatial && !columnList.at(0).value) {
+        const firstColumn = $table.columns.find((col) => col.key === columnList.at(0)?.value);
+        if (selectedType === IndexType.Spatial && firstColumn && !isSpatialType(firstColumn)) {
             columnList = [{ value: '', order: null, length: null }];
         }
     });
