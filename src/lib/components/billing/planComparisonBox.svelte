@@ -35,6 +35,13 @@
         return visiblePlans.filter((p: Plan) => (p.group ?? p.$id) === groupKey);
     });
 
+    // get the smallest in the group!
+    const basePaidPlan = $derived.by(() => {
+        return groupPlans.length > 1
+            ? [...groupPlans].sort((a, b) => (a.order ?? 0) - (b.order ?? 0))[0]
+            : currentPlan;
+    });
+
     function getCleanPlanName(plan: Plan) {
         return plan?.name?.replace(resolvedProfile.platform, '');
     }
@@ -157,49 +164,56 @@
                 <li class="list-item u-gap-4 u-cross-center">
                     <span class="icon-arrow-down u-color-text-danger" aria-hidden="true"></span>
                     <span class="text">
-                        Limited to {currentPlan?.limits?.dailyCredits ??
-                            currentPlan?.limits?.credits} daily credits per project
+                        {currentPlan?.limits?.dailyCredits ?? currentPlan?.limits?.credits} credits /
+                        day
                     </span>
                 </li>
                 <li class="list-item u-gap-4 u-cross-center">
                     <span class="icon-arrow-down u-color-text-danger" aria-hidden="true"></span>
-                    <span class="text">
-                        Limited to {currentPlan.databases}
-                        {pluralize(currentPlan.databases, 'Database')}, {currentPlan.buckets}
-                        {pluralize(currentPlan.buckets, 'Bucket')}, {currentPlan.functions}
-                        {pluralize(currentPlan.functions, 'Function')} per project
-                    </span>
+                    <span class="text">{currentPlan.bandwidth}GB bandwidth</span>
                 </li>
                 <li class="list-item u-gap-4 u-cross-center">
                     <span class="icon-arrow-down u-color-text-danger" aria-hidden="true"></span>
-                    <span class="text"> Limited to 1 organization member </span>
+                    <span class="text">{currentPlan.storage}GB storage</span>
+                </li>
+                <li class="list-item u-gap-4 u-cross-center">
+                    <span class="icon-arrow-down u-color-text-danger" aria-hidden="true"></span>
+                    <span class="text"
+                        >{currentPlan.databases}
+                        {pluralize(currentPlan.databases, 'database')} per project</span>
+                </li>
+                <li class="list-item u-gap-4 u-cross-center">
+                    <span class="icon-arrow-down u-color-text-danger" aria-hidden="true"></span>
+                    <span class="text">Community support</span>
                 </li>
             </ul>
         {:else}
             <ul class="un-order-list">
                 <li>
-                    Limited to {currentPlan?.limits?.dailyCredits ?? currentPlan?.limits?.credits} daily
-                    credits per project
+                    {currentPlan?.limits?.dailyCredits ?? currentPlan?.limits?.credits} credits / day
                 </li>
+                <li>{currentPlan.bandwidth}GB bandwidth</li>
+                <li>{currentPlan.storage}GB storage</li>
                 <li>
-                    Limited to {currentPlan.databases}
-                    {pluralize(currentPlan.databases, 'Database')}, {currentPlan.buckets}
-                    {pluralize(currentPlan.buckets, 'Bucket')}, {currentPlan.functions}
-                    {pluralize(currentPlan.functions, 'Function')} per project
+                    {currentPlan.databases}
+                    {pluralize(currentPlan.databases, 'database')} per project
                 </li>
-                <li>Limited to 1 organization member</li>
+                <li>Community support</li>
             </ul>
         {/if}
     {:else if isPaidPlan(selectedTab)}
-        <Typography.Text>Everything in the Starter plan, plus:</Typography.Text>
         <ul class="un-order-list">
-            {#if groupPlans.length > 1}
-                <li>Credits based on the plan selected</li>
-            {:else}
-                <li>{currentPlan?.limits?.credits?.toLocaleString()} credits per month</li>
-            {/if}
-            <li>Unlimited databases, buckets, functions</li>
-            <li>Unlimited seats</li>
+            <li>
+                {basePaidPlan?.limits?.credits?.toLocaleString()} credits / month
+                {#if basePaidPlan?.usage?.credits}
+                    (${basePaidPlan.usage.credits.price} per {basePaidPlan.usage.credits.value} additional
+                    credits)
+                {/if}
+            </li>
+            <li>{currentPlan.bandwidth / 1000}TB bandwidth</li>
+            <li>{currentPlan.storage}GB storage</li>
+            <li>Unlimited databases</li>
+            <li>Removable {resolvedProfile.platform} branding</li>
             <li>Email support</li>
         </ul>
     {/if}
