@@ -20,6 +20,7 @@
     import { getLatestTag } from '$lib/helpers/github';
     import { writable } from 'svelte/store';
     import Link from '$lib/elements/link.svelte';
+    import { isCloud } from '$lib/system';
 
     let {
         data
@@ -105,7 +106,7 @@
                     commands: installCommand || undefined,
                     scopes: selectedScopes?.length ? selectedScopes : undefined,
                     providerSilentMode: false,
-                    specification: specification || undefined
+                    specification: isCloud ? specification || undefined : undefined
                 });
 
             // Add domain
