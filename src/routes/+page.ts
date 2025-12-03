@@ -3,6 +3,7 @@ import { base } from '$app/paths';
 import type { PageLoad } from './$types';
 import { sdk } from '$lib/stores/sdk';
 import { VARS } from '$lib/system';
+import { resolvedProfile } from '$lib/profiles/index.svelte';
 
 const handleGithubEducationMembership = async (name: string, email: string) => {
     const result = await sdk.forConsole.billing.setMembership('github-student-developer');
@@ -37,7 +38,8 @@ export const load: PageLoad = async ({ parent, url }) => {
         await handleGithubEducationMembership(account.name, account.email);
         redirect(303, base);
     } else if (organizations.total && !isApplyingCredit) {
-        const teamId = account.prefs.organization ?? organizations.teams[0].$id;
+        const teamId =
+            account.prefs[resolvedProfile.organizationPrefKey] ?? organizations.teams[0].$id;
         if (!teamId) {
             redirect(303, `${base}/account/organizations${url.search}`);
         } else {

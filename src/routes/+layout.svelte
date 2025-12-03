@@ -177,6 +177,56 @@
     <link rel="preload" as="style" type="text/css" href="{base}/fonts/main.css" />
     <link rel="stylesheet" href={`${base}/fonts/main.css`} />
 
+    {#if resolvedProfile.id === ProfileMode.STUDIO}
+        <link rel="icon" type="image/svg+xml" href={`${base}/logos/imagine-icon.svg`} />
+        <link rel="mask-icon" type="image/png" href={`${base}/logos/imagine-icon.png`} />
+        <link
+            rel="apple-touch-icon"
+            sizes="120x120"
+            href={`${base}/logos/imagine/apple-touch-icon-120x120.png`} />
+        <link
+            rel="apple-touch-icon"
+            sizes="152x152"
+            href={`${base}/logos/imagine/apple-touch-icon-152x152.png`} />
+        <link
+            rel="apple-touch-icon"
+            sizes="167x167"
+            href={`${base}/logos/imagine/apple-touch-icon-167x167.png`} />
+        <link
+            rel="apple-touch-icon"
+            sizes="180x180"
+            href={`${base}/logos/imagine/apple-touch-icon-180x180.png`} />
+    {:else}
+        <link rel="icon" type="image/svg+xml" href={`${base}/logos/appwrite-icon.svg`} />
+        <link rel="mask-icon" type="image/png" href={`${base}/logos/appwrite-icon.png`} />
+        <link
+            rel="apple-touch-icon"
+            sizes="120x120"
+            href={`${base}/logos/apple-touch-icon-120x120.png`} />
+        <link
+            rel="apple-touch-icon"
+            sizes="152x152"
+            href={`${base}/logos/apple-touch-icon-152x152.png`} />
+        <link
+            rel="apple-touch-icon"
+            sizes="167x167"
+            href={`${base}/logos/apple-touch-icon-167x167.png`} />
+        <link
+            rel="apple-touch-icon"
+            sizes="180x180"
+            href={`${base}/logos/apple-touch-icon-180x180.png`} />
+    {/if}
+
+    {#if resolvedProfile.id === ProfileMode.STUDIO}
+        <meta
+            name="description"
+            content="Build something real. Turn your ideas into real products by chatting with the most complete AI builder available to date" />
+    {:else}
+        <meta
+            name="description"
+            content="Appwrite is an open-source platform for building applications at any scale, using your preferred programming languages and tools." />
+    {/if}
+
     {#if isCloud}
         {#each preloadFontsCloud as font}
             <link rel="preload" href={font} as="font" type="font/woff2" crossorigin="anonymous" />
@@ -311,6 +361,11 @@
                 }
             }
         }
+    }
+
+    /* Fix when no vertical scrollbar is present, some environments reserve a gutter by default */
+    html {
+        scrollbar-gutter: auto !important;
     }
 
     /* TODO: remove this block once Pink V2 is incorporated */

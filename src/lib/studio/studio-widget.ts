@@ -283,6 +283,7 @@ export async function initImagine(
         onProjectNameChange: () => void;
         onAddDomain: () => void | Promise<void>;
         onManageDomains: (primaryDomain?: string) => void | Promise<void>;
+        onUpgrade: () => void | Promise<void>;
     }
 ) {
     const sessionId = getSessionId(userId);

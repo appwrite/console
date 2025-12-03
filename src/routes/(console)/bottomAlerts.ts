@@ -1,33 +1,33 @@
 import { isCloud } from '$lib/system';
 import { isSameDay } from '$lib/helpers/date';
 import { type BottomModalAlertItem, showBottomModalAlert } from '$lib/stores/bottom-alerts';
-import DbOperatorsDark from '$lib/images/promos/db-operators-dark.png';
-import DbOperatorsLight from '$lib/images/promos/db-operators-light.png';
+import AiSuggestionsDark from '$lib/images/promos/ai-suggestions-dark.png';
+import AiSuggestionsLight from '$lib/images/promos/ai-suggestions-light.png';
 import { ProfileMode, resolvedProfile } from '$lib/profiles/index.svelte';
 
 const listOfPromotions: BottomModalAlertItem[] = [];
 
 if (isCloud) {
-    const dbOperatorsPromo: BottomModalAlertItem = {
-        id: 'modal:db_operators_announcement',
+    const aiSuggestionsPromo: BottomModalAlertItem = {
+        id: 'modal:database_ai_suggestions_announcement',
         src: {
-            dark: DbOperatorsDark,
-            light: DbOperatorsLight
+            dark: AiSuggestionsDark,
+            light: AiSuggestionsLight
         },
-        title: 'Announcing DB operators',
-        message: 'Update multiple fields without fetching the entire row.',
+        title: 'Announcing Database AI suggestions',
+        message: 'From table name to schema in one click.',
         plan: 'free',
         importance: 8,
         scope: 'project',
         cta: {
             text: 'Read announcement',
-            link: () => 'https://appwrite.io/blog/post/announcing-db-operators',
+            link: () => 'https://appwrite.io/blog/post/announcing-database-ai-suggestions',
             external: true,
             hideOnClick: true
         },
         show: true
     };
-    listOfPromotions.push(dbOperatorsPromo);
+    listOfPromotions.push(aiSuggestionsPromo);
 }
 
 export function addBottomModalAlerts() {

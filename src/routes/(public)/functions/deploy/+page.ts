@@ -81,8 +81,7 @@ export const load: PageLoad = async ({ parent, url }) => {
                     'Personal Projects',
                     resolvedProfile.freeTier,
                     null,
-                    resolvedProfile.organizationPlatform,
-                    null
+                    resolvedProfile.organizationPlatform
                 );
             } else {
                 await sdk.forConsole.teams.create({

@@ -1,6 +1,7 @@
 export const PAGE_LIMIT = 12; // default page limit
 export const SPREADSHEET_PAGE_LIMIT = 50; // default sheet page limit
 export const CARD_LIMIT = 6; // default card limit
+export const DEFAULT_BILLING_PROJECTS_LIMIT = 5; // default billing projects page limit
 export const INTERVAL = 5 * 60000; // default interval to check for feedback
 export const NEW_DEV_PRO_UPGRADE_COUPON = 'appw50';
 
@@ -24,6 +25,7 @@ export enum Dependencies {
     CREDIT = 'dependency:credit',
     INVOICES = 'dependency:invoices',
     ADDRESS = 'dependency:address',
+    BILLING_AGGREGATION = 'dependency:billing_aggregation',
     UPGRADE_PLAN = 'dependency:upgrade_plan',
     ORGANIZATIONS = 'dependency:organizations',
     PAYMENT_METHODS = 'dependency:paymentMethods',
@@ -253,14 +255,13 @@ export const scopes: {
     },
     {
         scope: 'indexes.read',
-        description: "Access to read your project's database collection's indexes",
+        description: "Access to read your project's database table's indexes",
         category: 'Database',
         icon: 'database'
     },
     {
         scope: 'indexes.write',
-        description:
-            "Access to create, update, and delete your project's database collection's indexes",
+        description: "Access to create, update, and delete your project's database table's indexes",
         category: 'Database',
         icon: 'database'
     },
@@ -463,6 +464,45 @@ export const scopes: {
         description: "Access to delete your site's logs",
         category: 'Sites',
         icon: 'globe'
+    }
+];
+
+export const cloudOnlyBackupScopes = [
+    {
+        scope: 'policies.read',
+        description: 'Access to read your database backup policies',
+        category: 'Database',
+        icon: 'database'
+    },
+    {
+        scope: 'policies.write',
+        description: 'Access to create, update and delete your backup policies',
+        category: 'Database',
+        icon: 'database'
+    },
+    {
+        scope: 'archives.read',
+        description: 'Access to read your database backup archives',
+        category: 'Database',
+        icon: 'database'
+    },
+    {
+        scope: 'archives.write',
+        description: 'Access to create and delete your backup archives',
+        category: 'Database',
+        icon: 'database'
+    },
+    {
+        scope: 'restorations.read',
+        description: 'Access to read your backup restorations',
+        category: 'Database',
+        icon: 'database'
+    },
+    {
+        scope: 'restorations.write',
+        description: 'Access to create backup restorations',
+        category: 'Database',
+        icon: 'database'
     }
 ];
 

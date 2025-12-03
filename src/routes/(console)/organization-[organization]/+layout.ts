@@ -14,6 +14,7 @@ import { defaultRoles, defaultScopes } from '$lib/constants';
 import type { Plan } from '$lib/sdk/billing';
 import { loadAvailableRegions } from '$routes/(console)/regions';
 import type { Organization } from '$lib/stores/organization';
+import { resolvedProfile } from '$lib/profiles/index.svelte';
 
 export const load: LayoutLoad = async ({ params, depends, parent }) => {
     const { preferences: prefs } = await parent();
@@ -37,8 +38,11 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
                 loadFailedInvoices(params.organization);
             }
         }
-        if (prefs.organization !== params.organization) {
-            const newPrefs = { ...prefs, organization: params.organization };
+        if (prefs[resolvedProfile.organizationPrefKey] !== params.organization) {
+            const newPrefs = {
+                ...prefs,
+                [resolvedProfile.organizationPrefKey]: params.organization
+            };
             sdk.forConsole.account.updatePrefs({ prefs: newPrefs });
         }
 
@@ -63,8 +67,13 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
             locale
         };
     } catch (e) {
-        const newPrefs = { ...prefs, organization: null };
-        sdk.forConsole.account.updatePrefs({ prefs: newPrefs });
+        const newPrefs = {
+            ...prefs,
+            [resolvedProfile.organizationPrefKey]: null
+        };
+        sdk.forConsole.account.updatePrefs({
+            prefs: newPrefs
+        });
         error(e.code, e.message);
     }
 };

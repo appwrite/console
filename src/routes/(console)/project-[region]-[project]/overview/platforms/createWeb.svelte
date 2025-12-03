@@ -48,8 +48,14 @@
     } from './components/index';
     import { extendedHostnameRegex } from '$lib/helpers/string';
     import { project } from '../../store';
+    import {
+        type PlatformProps,
+        type FrameworkType,
+        type LLMPromptConfig,
+        getCorrectTitle
+    } from './store';
+    import LlmBanner from './llmBanner.svelte';
     import { resolvedProfile } from '$lib/profiles/index.svelte';
-    import { type PlatformProps, type FrameworkType, getCorrectTitle } from './store';
 
     let { key, isConnectPlatform = false, platform = PlatformType.Web }: PlatformProps = $props();
 
@@ -157,6 +163,57 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
     const selectedFrameworkIcon = $derived(
         selectedFramework ? selectedFramework.icon : NoFrameworkIcon
     );
+
+    const llmConfig: LLMPromptConfig = $derived({
+        alreadyExistsInstructions: `
+Install the Appwrite web SDK using the following command. Respect the user's package manager of choice. Do not use NPM if the user uses Bun for example.
+
+\`\`\`bash
+npm install appwrite
+\`\`\`
+
+Create a new \`appwrite.js\` (or equivalent, respecting the framework and language, don't create a JS file if TS is being used in the project) file in a suitable lib directory and have the following code:
+
+\`\`\`js
+import { Client, Account, Databases } from "appwrite";
+
+const client = new Client()
+    .setEndpoint("${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}")
+    .setProject("${projectId}");
+
+const account = new Account(client);
+const databases = new Databases(client);
+
+export { client, account, databases };
+\`\`\`
+
+When the app is opened, make it so that the following function is automatically called which will ping the Appwrite backend server to verify the setup. Let the user know about this function being added
+
+\`\`\`js
+client.ping();
+\`\`\`
+`,
+        title: `Copy prompt: starter kit for Appwrite in ${selectedFramework?.label || 'Web'}`,
+        cloneCommand: `git clone https://github.com/appwrite/starter-for-${selectedFramework?.key}\ncd starter-for-${selectedFramework?.key}`,
+        configFile:
+            selectedFramework?.key === 'angular'
+                ? 'src/environments/environment.ts'
+                : 'appwrite.js',
+        configCode:
+            // selectedFramework?.key === 'angular'
+            //     ? `APPWRITE_PROJECT_ID=${projectId}\nAPPWRITE_PROJECT_NAME=${$project.name}\nAPPWRITE_ENDPOINT=${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}`
+            //     : `
+            //     const client = new Client()
+            //         .setEndpoint("${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}")
+            //         .setProject("${projectId}");
+            //     `,
+            `APPWRITE_PROJECT_ID = "${projectId}"
+APPWRITE_PROJECT_NAME = "${$project.name}"
+APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}"`,
+        configLanguage: selectedFramework?.key === 'angular' ? 'ts' : 'dotenv',
+        runInstructions: `Install project dependencies using \`npm install\`, then run the app using \`${selectedFramework?.runCommand}\`. Demo app runs on http://localhost:${selectedFramework?.portNumber}. Click the \`Send a ping\` button to verify the setup.`,
+        using: 'the terminal or VSCode'
+    });
 
     async function createWebPlatform() {
         const hostnameRegex = new RegExp(extendedHostnameRegex);
@@ -302,6 +359,8 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
         {#if isPlatformCreated && !isChangingFramework}
             <Fieldset legend="Clone starter" badge="Optional">
                 <Layout.Stack gap="l">
+                    <LlmBanner config={llmConfig} openers={['cursor', 'lovable']} />
+
                     <Typography.Text variant="m-500">
                         1. If you're starting a new project, you can clone our starter kit from
                         GitHub using the terminal or VSCode.

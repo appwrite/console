@@ -32,12 +32,17 @@
 
 <script lang="ts">
     import { dev } from '$app/environment';
-    import { fade } from 'svelte/transition';
     import { last } from '$lib/helpers/array';
+    import { fade } from 'svelte/transition';
     import { portal } from '$lib/actions/portal';
     import { debounce } from '$lib/helpers/debounce';
+    import {
+        commandCenterKeyDownHandler,
+        disableCommands,
+        isTargetInputLike,
+        registerCommands
+    } from './commands';
     import { addNotification } from '$lib/stores/notifications';
-    import { commandCenterKeyDownHandler, disableCommands, registerCommands } from './commands';
 
     let debugOverlayEnabled = false;
 
@@ -99,20 +104,11 @@
         keys = [];
     }, 1000);
 
-    function isInputEvent(event: KeyboardEvent) {
-        if (
-            event.target instanceof HTMLElement &&
-            customElements.get(event.target.tagName.toLowerCase())
-        )
-            return true;
-        return ['INPUT', 'TEXTAREA', 'SELECT'].includes((event.target as HTMLElement).tagName);
-    }
-
     const handleKeydown = (e: KeyboardEvent) => {
         // check if in any webcomponent
 
         if (!$subPanels.length) {
-            if (isInputEvent(e)) return;
+            if (isTargetInputLike(e.target)) return;
             keys = [...keys, e.key].slice(-10);
             resetKeys();
         }

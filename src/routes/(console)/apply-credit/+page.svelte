@@ -136,7 +136,7 @@
                     billingPlan,
                     paymentMethodId,
                     resolvedProfile.organizationPlatform,
-                    null,
+                    undefined,
                     couponData.code ? couponData.code : null,
                     collaborators,
                     billingBudget,

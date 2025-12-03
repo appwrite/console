@@ -3,9 +3,9 @@ import type { Component } from 'svelte';
 import { browser } from '$app/environment';
 import { get, writable } from 'svelte/store';
 import { Submit, trackEvent } from '$lib/actions/analytics';
-import { resolvedProfile } from '$lib/profiles/index.svelte';
 import FeedbackNps from '$lib/components/feedback/feedbackNPS.svelte';
 import FeedbackGeneral from '$lib/components/feedback/feedbackGeneral.svelte';
+import { resolvedProfile } from '$lib/profiles/index.svelte';
 
 export type Feedback = {
     elapsed: number;

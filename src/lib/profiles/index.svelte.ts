@@ -23,6 +23,7 @@ export const enum Logins {
 export type Profile = {
     id: ProfileMode;
     platform: string;
+    organizationPrefKey: string; // used in prefs!
     organizationPlatform: Platform;
     freeTier: BillingPlan;
     logo: {
@@ -66,6 +67,7 @@ export type Profile = {
 export const base: Profile = {
     id: ProfileMode.CONSOLE,
     platform: 'Appwrite',
+    organizationPrefKey: 'organization',
     organizationPlatform: Platform.Appwrite,
     freeTier: BillingPlan.Tier0,
     logo: {
@@ -116,6 +118,7 @@ export const base: Profile = {
 export const studio: Profile = {
     id: ProfileMode.STUDIO,
     platform: 'Imagine',
+    organizationPrefKey: 'imagine-organization',
     organizationPlatform: Platform.Imagine,
     freeTier: BillingPlan.Imaginetier0,
     logo: {

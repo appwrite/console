@@ -16,6 +16,7 @@
     import { Table, Tabs, Alert } from '@appwrite.io/pink-svelte';
     import DeleteOrganizationEstimation from './deleteOrganizationEstimation.svelte';
     import type { EstimationDeleteOrganization, InvoiceList } from '$lib/sdk/billing';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     export let showDelete = false;
     export let invoices: InvoiceList;
@@ -35,7 +36,10 @@
                 });
             }
             const prefs = await sdk.forConsole.account.getPrefs();
-            const newPrefs = { ...prefs, organization: null };
+            const newPrefs = {
+                ...prefs,
+                [resolvedProfile.organizationPrefKey]: null
+            };
             await sdk.forConsole.account.updatePrefs({ prefs: newPrefs });
             if ($organizationList?.total > 1) {
                 await goto(`${base}/account/organizations`);
