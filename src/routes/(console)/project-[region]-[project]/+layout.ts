@@ -63,6 +63,17 @@ export const load: LayoutLoad = async ({ params, route, depends, parent }) => {
 
     if (!organization) organization = org;
 
+    // not the right organization project based on platform,
+    // redirect to organization, and it should handle the rest!
+    if (organization.platform !== resolvedProfile.organizationPlatform) {
+        redirect(
+            303,
+            resolve('/(console)/organization-[organization]', {
+                organization: organization.$id
+            })
+        );
+    }
+
     // fetch if not available in `plansInfo`.
     // out of promise.all because we filter orgs based on platform now!
     const organizationPlan = includedInBasePlans
