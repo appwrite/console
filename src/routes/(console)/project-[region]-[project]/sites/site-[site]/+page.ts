@@ -15,7 +15,19 @@ export const load = async ({ params, depends, parent }) => {
             queries: [
                 Query.limit(4),
                 Query.orderDesc(''),
-                Query.select(['status', 'type', 'resourceId'])
+                Query.select([
+                    'status',
+                    'type',
+                    'resourceId',
+                    'providerRepositoryUrl',
+                    'providerRepositoryOwner',
+                    'providerRepositoryName',
+                    'providerBranchUrl',
+                    'providerBranch',
+                    'providerCommitMessage',
+                    'providerCommitHash',
+                    'providerCommitUrl'
+                ])
             ]
         }),
         sdk.forProject(params.region, params.project).sites.listDeployments({

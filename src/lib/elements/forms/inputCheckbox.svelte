@@ -12,7 +12,6 @@
         indeterminate?: boolean;
         size?: 's' | 'm';
         description?: string;
-        truncate?: boolean;
     }
 
     export let id: string = '';
@@ -23,7 +22,6 @@
     export let element: HTMLInputElement | undefined = undefined;
     export let size: $$Props['size'] = 's';
     export let description = '';
-    export let truncate: boolean = false;
     let error: string;
 
     const handleInvalid = (event: Event) => {
@@ -52,7 +50,6 @@
                 {label}
                 {required}
                 {description}
-                {truncate}
                 on:invalid={handleInvalid}
                 on:click
                 on:change />
