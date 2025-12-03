@@ -30,12 +30,12 @@ export type FeedbackOption = {
 export const feedbackOptions: FeedbackOption[] = [
     {
         type: 'general',
-        desc: `Imagine evolves with your input. Share your thoughts and help us improve Imagine.`,
+        desc: `${resolvedProfile.platform} evolves with your input. Share your thoughts and help us improve ${resolvedProfile.platform}.`,
         component: FeedbackGeneral
     },
     {
         type: 'nps',
-        desc: `How likely are you to recommend Imagine to a friend or colleague?`,
+        desc: `How likely are you to recommend ${resolvedProfile.platform} to a friend or colleague?`,
         component: FeedbackNps
     }
 ];
