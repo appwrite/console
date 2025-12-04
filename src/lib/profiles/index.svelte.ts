@@ -34,7 +34,7 @@ export type Profile = {
         alt: string;
     };
     logins: Array<Logins>;
-    oauthProviders: Partial<Record<Logins, OAuthProvider>>;
+    oauthProviders: Partial<Record<Logins, { provider: OAuthProvider; scopes: string[] }>>;
     css: string;
     showOnboarding: boolean;
     useCommandCenter: boolean;
@@ -82,7 +82,10 @@ export const base: Profile = {
     },
     logins: [Logins.EMAIL, isCloud && Logins.GITHUB].filter(Boolean),
     oauthProviders: {
-        github: OAuthProvider.Github
+        github: {
+            provider: OAuthProvider.Github,
+            scopes: ['read:user', 'user:email']
+        }
     },
     css: ConsoleCss,
     showOnboarding: true,
@@ -130,8 +133,14 @@ export const studio: Profile = {
     },
     logins: [/** temporary */ Logins.EMAIL, Logins.GITHUB, Logins.GOOGLE].filter(Boolean),
     oauthProviders: {
-        github: OAuthProvider.GithubImagine,
-        google: OAuthProvider.GoogleImagine
+        github: {
+            provider: OAuthProvider.GithubImagine,
+            scopes: ['read:user', 'user:email']
+        },
+        google: {
+            provider: OAuthProvider.GoogleImagine,
+            scopes: ['openid', 'email', 'profile']
+        }
     },
     css: StudioCss,
     component: {

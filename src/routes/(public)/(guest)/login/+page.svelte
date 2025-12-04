@@ -64,7 +64,7 @@
         }
     }
 
-    function onOauthLogin(provider: OAuthProvider) {
+    function onOauthLogin(config: { provider: OAuthProvider; scopes: string[] }) {
         let url = window.location.origin;
 
         if (page.url.searchParams) {
@@ -77,10 +77,10 @@
             }
         }
         sdk.forConsole.account.createOAuth2Session({
-            provider,
+            provider: config.provider,
             success: window.location.origin + url,
             failure: window.location.origin,
-            scopes: ['read:user', 'user:email']
+            scopes: config.scopes
         });
     }
 </script>
