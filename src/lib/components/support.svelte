@@ -55,7 +55,7 @@
             cta: 'Discord',
             showSupport: false,
             label: 'Community support',
-            link: 'https://appwrite.io/discord',
+            link: `${resolvedProfile.discord}`,
             description: 'Get support from our community through Discord'
         },
         ...(!resolvedProfile.showGithubIssueSupport

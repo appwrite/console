@@ -3,7 +3,7 @@
     import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { Card } from '$lib/components';
+    import { Card, CustomId } from '$lib/components';
     import { Button, Form } from '$lib/elements/forms';
     import { Wizard } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
@@ -12,8 +12,13 @@
     import { IconGithub, IconPencil } from '@appwrite.io/pink-icons-svelte';
     import { onMount } from 'svelte';
     import Domain from '../domain.svelte';
-    import { Adapter, BuildRuntime, Framework, ID, Type } from '@appwrite.io/console';
-    import { CustomId } from '$lib/components';
+    import {
+        Adapter,
+        BuildRuntime,
+        Framework,
+        ID,
+        TemplateReferenceType
+    } from '@appwrite.io/console';
     import { getFrameworkIcon } from '$lib/stores/sites';
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
     import { iconPath } from '$lib/stores/app';
@@ -173,7 +178,7 @@
                     repository: data.repository.name,
                     owner: data.repository.owner,
                     rootDirectory: rootDir || '.',
-                    type: Type.Tag,
+                    type: TemplateReferenceType.Tag,
                     reference: latestTag ?? '1.0.0',
                     activate: true
                 });

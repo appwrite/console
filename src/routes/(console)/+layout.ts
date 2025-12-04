@@ -17,7 +17,7 @@ export const load: LayoutLoad = async ({ depends, parent }) => {
     const { endpoint, project } = sdk.forConsole.client.config;
     const [preferences, plansArray, versionData, consoleVariables] = await Promise.all([
         sdk.forConsole.account.getPrefs(),
-        isCloud ? sdk.forConsole.billing.getPlansInfo() : null,
+        isCloud ? sdk.forConsole.billing.listPlans() : null,
         fetch(`${endpoint}/health/version`, {
             headers: { 'X-Appwrite-Project': project }
         }).then((response) => response.json() as { version?: string }),

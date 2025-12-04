@@ -198,13 +198,16 @@
                     <Typography.Text>
                         For more details on our plans, visit our
                         <Link.Anchor
-                            href="https://appwrite.io/pricing"
+                            href="{resolvedProfile.website}/pricing"
                             target="_blank"
                             rel="noopener noreferrer">pricing page</Link.Anchor
                         >.
                     </Typography.Text>
 
-                    <PlanSelection bind:billingPlan={selectedPlan} isNewOrg />
+                    <PlanSelection
+                        isNewOrg
+                        disabled={$isSubmitting}
+                        bind:billingPlan={selectedPlan} />
                 </Layout.Stack>
             </Fieldset>
             {#if !isFreePlan(selectedPlan)}
@@ -258,6 +261,8 @@
         <Button fullWidthMobile secondary on:click={() => (showExitModal = true)}>Cancel</Button>
         <Button
             fullWidthMobile
+            forceShowLoader
+            submissionLoader={$isSubmitting}
             on:click={() => formComponent.triggerSubmit()}
             disabled={$isSubmitting}>
             Create organization

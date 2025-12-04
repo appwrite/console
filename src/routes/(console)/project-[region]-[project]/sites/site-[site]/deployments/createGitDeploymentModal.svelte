@@ -14,7 +14,7 @@
         Adapter,
         BuildRuntime,
         Framework,
-        VCSDeploymentType,
+        VCSReferenceType,
         type Models
     } from '@appwrite.io/console';
     import { IconGithub } from '@appwrite.io/pink-icons-svelte';
@@ -106,7 +106,7 @@
                     .forProject(page.params.region, page.params.project)
                     .sites.createVcsDeployment({
                         siteId: site.$id,
-                        type: VCSDeploymentType.Commit,
+                        type: VCSReferenceType.Commit,
                         reference: commit,
                         activate
                     });
@@ -115,7 +115,7 @@
                     .forProject(page.params.region, page.params.project)
                     .sites.createVcsDeployment({
                         siteId: site.$id,
-                        type: VCSDeploymentType.Branch,
+                        type: VCSReferenceType.Branch,
                         reference: branch,
                         activate
                     });
