@@ -48,7 +48,7 @@
     let imageLoading = $state(true);
 
     let loadingProjects = $state(false);
-    let currentPlan = $state<Plan>(null);
+    let currentPlan = $state<Plan | null>(null);
 
     // Billing checks for project creation
     let projectsLimited = $derived(
