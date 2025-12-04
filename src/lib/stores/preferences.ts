@@ -2,7 +2,6 @@ import { browser } from '$app/environment';
 import type { View } from '$lib/helpers/load';
 import type { Page } from '@sveltejs/kit';
 import { get, writable } from 'svelte/store';
-import { sdk } from './sdk';
 import { page } from '$app/state';
 import { user } from '$lib/stores/user';
 import deepEqual from 'deep-equal';
@@ -45,7 +44,18 @@ type ConsolePreferencesStore = {
     };
 } & { hideAiDisclaimer?: boolean };
 
+type ConsoleSdk = typeof import('./sdk').sdk;
+
+let sdkPromise: Promise<ConsoleSdk> | null = null;
+const getSdk = async () => {
+    if (!sdkPromise) {
+        sdkPromise = import('./sdk').then((mod) => mod.sdk);
+    }
+    return sdkPromise;
+};
+
 async function updateConsolePreferences(store: ConsolePreferencesStore): Promise<void> {
+    const sdk = await getSdk();
     const currentPreferences = get(user)?.prefs ?? (await sdk.forConsole.account.getPrefs());
     if (!currentPreferences?.console || Array.isArray(currentPreferences.console)) {
         currentPreferences.console = {};
@@ -104,15 +114,16 @@ function createPreferences() {
 
     if (browser) {
         // fresh fetch.
-        sdk.forConsole.account
-            .getPrefs()
-            .then((userPreferences) => {
-                if (!userPreferences?.console || Array.isArray(userPreferences.console)) {
-                    userPreferences.console = {};
-                }
+        getSdk()
+            .then((sdk) =>
+                sdk.forConsole.account.getPrefs().then((userPreferences) => {
+                    if (!userPreferences?.console || Array.isArray(userPreferences.console)) {
+                        userPreferences.console = {};
+                    }
 
-                set(userPreferences.console);
-            })
+                    set(userPreferences.console);
+                })
+            )
             .catch(() => {
                 // exception is thrown if there's no session; in that case - fallback!
                 set(JSON.parse(globalThis.localStorage.getItem('preferences') ?? '{}'));
@@ -128,6 +139,7 @@ function createPreferences() {
 
     async function loadTeamPreferences(orgId: string) {
         try {
+            const sdk = await getSdk();
             const teamPrefs = await sdk.forConsole.teams.getPrefs({ teamId: orgId });
             teamPreferences = teamPrefs ?? {};
             return teamPreferences;
@@ -227,6 +239,7 @@ function createPreferences() {
             delete teamPreferences?.columnWidths?.[tableId + '#columns'];
             delete teamPreferences?.columnWidths?.[tableId + '#indexes'];
 
+            const sdk = await getSdk();
             const removeTablePreferences = sdk.forConsole.teams.updatePrefs({
                 teamId: orgId,
                 prefs: teamPreferences
@@ -247,6 +260,7 @@ function createPreferences() {
             tableId: string,
             displayNames: TeamPreferences['names']
         ) => {
+            const sdk = await getSdk();
             teamPreferences = ensureObjectProperty(teamPreferences, 'displayNames');
             teamPreferences.displayNames[tableId] = displayNames;
 
@@ -271,6 +285,7 @@ function createPreferences() {
                 safePrefsKeyForOrder(tableOrder, '$id', '$uid');
             }
 
+            const sdk = await getSdk();
             await sdk.forConsole.teams.updatePrefs({
                 teamId: orgId,
                 prefs: teamPreferences
@@ -296,6 +311,7 @@ function createPreferences() {
                 safePrefsKey(tableWidths, '$id', '$uid');
             }
 
+            const sdk = await getSdk();
             await sdk.forConsole.teams.updatePrefs({
                 teamId: orgId,
                 prefs: teamPreferences
