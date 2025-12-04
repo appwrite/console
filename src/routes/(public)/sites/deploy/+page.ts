@@ -8,6 +8,7 @@ import type { OrganizationList } from '$lib/stores/organization';
 import { redirectTo } from '$routes/store';
 import type { PageLoad } from './$types';
 import { getRepositoryInfo, getBranchFromUrl } from '$lib/helpers/github';
+import { parseEnvParam } from '$lib/helpers/env';
 
 export const load: PageLoad = async ({ parent, url }) => {
     const { account } = await parent();
@@ -36,21 +37,7 @@ export const load: PageLoad = async ({ parent, url }) => {
     const tagline = url.searchParams.get('tagline');
     const screenshot = url.searchParams.get('screenshot');
 
-    // Parse env vars - supports KEY or KEY=value format
-    const envVars: Array<{ key: string; value: string }> = envParam
-        ? envParam.split(',').map((entry: string) => {
-              const trimmed = entry.trim();
-              const eqIndex = trimmed.indexOf('=');
-              if (eqIndex === -1) {
-                  return { key: trimmed, value: '' };
-              }
-              return {
-                  key: trimmed.substring(0, eqIndex),
-                  value: trimmed.substring(eqIndex + 1)
-              };
-          })
-        : [];
-
+    const envVars = parseEnvParam(envParam);
     // Keep envKeys for backward compatibility (just the keys)
     const envKeys = envVars.map((v) => v.key);
 
@@ -136,7 +123,7 @@ export const load: PageLoad = async ({ parent, url }) => {
                 organizations = await sdk.forConsole.teams.list();
             }
         } catch (e) {
-            console.error('Failed to create default organization:', e);
+            // ignore
         }
     }
 

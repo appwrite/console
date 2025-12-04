@@ -3,11 +3,12 @@ import { redirect } from '@sveltejs/kit';
 import { base } from '$app/paths';
 import { isCloud } from '$lib/system';
 import { BillingPlan } from '$lib/constants';
-import { ID, type Models, Query } from '@appwrite.io/console';
+import { ID, type Models, Query, Runtime } from '@appwrite.io/console';
 import type { OrganizationList } from '$lib/stores/organization';
 import { redirectTo } from '$routes/store';
 import type { PageLoad } from './$types';
 import { getRepositoryInfo, getBranchFromUrl } from '$lib/helpers/github';
+import { parseEnvParam } from '$lib/helpers/env';
 
 export const load: PageLoad = async ({ parent, url }) => {
     const { account } = await parent();
@@ -30,21 +31,7 @@ export const load: PageLoad = async ({ parent, url }) => {
     const name = url.searchParams.get('name');
     const envParam = url.searchParams.get('env');
 
-    // Parse env vars - supports KEY or KEY=value format
-    const envVars: Array<{ key: string; value: string }> = envParam
-        ? envParam.split(',').map((entry: string) => {
-              const trimmed = entry.trim();
-              const eqIndex = trimmed.indexOf('=');
-              if (eqIndex === -1) {
-                  return { key: trimmed, value: '' };
-              }
-              return {
-                  key: trimmed.substring(0, eqIndex),
-                  value: trimmed.substring(eqIndex + 1)
-              };
-          })
-        : [];
-
+    const envVars = parseEnvParam(envParam);
     // Keep envKeys for backward compatibility
     const envKeys = envVars.map((v) => v.key);
 
@@ -66,7 +53,7 @@ export const load: PageLoad = async ({ parent, url }) => {
             rootDirectory: null
         },
         name: name || '',
-        runtime: runtime || 'node-18.0'
+        runtime: runtime || Runtime.Node22
     };
 
     // Get available runtimes

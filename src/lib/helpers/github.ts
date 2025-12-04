@@ -4,7 +4,7 @@ export function getNestedRootDirectory(repository: string): string | null {
 }
 
 export function getBranchFromUrl(repository: string): string | null {
-    const match = repository.match(/\/tree\/([^/]+)/);
+    const match = repository.match(/\/tree\/([^/?#]+)/);
     return match ? decodeURIComponent(match[1]) : null;
 }
 
@@ -39,7 +39,6 @@ export async function getLatestTag(owner: string, name: string): Promise<string 
 
         return null;
     } catch (error) {
-        console.error('Failed to fetch tags from GitHub:', error);
         return null;
     }
 }
@@ -55,7 +54,6 @@ export async function getDefaultBranch(owner: string, name: string): Promise<str
         const repo = await repoResponse.json();
         return repo.default_branch || null;
     } catch (error) {
-        console.error('Failed to fetch default branch from GitHub:', error);
         return null;
     }
 }
@@ -72,7 +70,6 @@ export async function getBranches(owner: string, name: string): Promise<string[]
         const branches = await branchesResponse.json();
         return branches.map((branch) => branch.name);
     } catch (error) {
-        console.error('Failed to fetch branches from GitHub:', error);
         return null;
     }
 }
@@ -88,7 +85,6 @@ export async function validateBranch(
         );
         return response.ok;
     } catch (error) {
-        console.error('Failed to validate branch from GitHub:', error);
         return false;
     }
 }

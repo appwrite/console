@@ -65,7 +65,7 @@
     );
 
     onMount(async () => {
-        const runtimeParam = data.runtime || page.url.searchParams.get('runtime') || 'node-18.0';
+        const runtimeParam = data.runtime || page.url.searchParams.get('runtime') || Runtime.Node22;
         runtime = runtimeParam as Runtime;
 
         entrypoint = page.url.searchParams.get('entrypoint') || '';
@@ -123,7 +123,6 @@
                     });
                 }
             } catch (error) {
-                console.error('Failed to load branches:', error);
                 addNotification({
                     type: 'error',
                     message:

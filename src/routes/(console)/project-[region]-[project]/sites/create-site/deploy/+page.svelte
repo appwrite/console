@@ -162,7 +162,6 @@
                     });
                 }
             } catch (error) {
-                console.error('Failed to load branches:', error);
                 addNotification({
                     type: 'error',
                     message:

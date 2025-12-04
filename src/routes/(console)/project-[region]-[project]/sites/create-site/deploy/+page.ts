@@ -1,6 +1,6 @@
 import { sdk } from '$lib/stores/sdk';
 import { redirect, isRedirect } from '@sveltejs/kit';
-import { base } from '$app/paths';
+import { base, resolve } from '$app/paths';
 import type { PageLoad } from './$types';
 import {
     getNestedRootDirectory,
@@ -8,6 +8,7 @@ import {
     getDefaultBranch,
     validateBranch
 } from '$lib/helpers/github';
+import { parseEnvParam } from '$lib/helpers/env';
 import { Adapter, BuildRuntime, Framework, ID, Type } from '@appwrite.io/console';
 
 export const load: PageLoad = async ({ url, params, parent }) => {
@@ -23,21 +24,7 @@ export const load: PageLoad = async ({ url, params, parent }) => {
     }
 
     const envParam = url.searchParams.get('env');
-
-    // Parse env vars - supports KEY or KEY=value format
-    const envVars: Array<{ key: string; value: string }> = envParam
-        ? envParam.split(',').map((entry: string) => {
-              const trimmed = entry.trim();
-              const eqIndex = trimmed.indexOf('=');
-              if (eqIndex === -1) {
-                  return { key: trimmed, value: '' };
-              }
-              return {
-                  key: trimmed.substring(0, eqIndex),
-                  value: trimmed.substring(eqIndex + 1)
-              };
-          })
-        : [];
+    const envVars = parseEnvParam(envParam);
 
     // Quick mode - create site and redirect directly to deploying page
     const quickMode = url.searchParams.get('quick') === 'true';
@@ -134,17 +121,19 @@ export const load: PageLoad = async ({ url, params, parent }) => {
                 });
 
             // Redirect to deploying page
-            redirect(
-                302,
-                `${base}/project-${params.region}-${params.project}/sites/create-site/deploying?site=${site.$id}&deployment=${deployment.$id}`
+            const deployingPath = resolve(
+                '/(console)/project-[region]-[project]/sites/create-site/deploying',
+                {
+                    region: params.region,
+                    project: params.project
+                }
             );
+            redirect(302, `${deployingPath}?site=${site.$id}&deployment=${deployment.$id}`);
         } catch (e) {
             // Re-throw redirects (they're not errors)
             if (isRedirect(e)) {
                 throw e;
             }
-            // On error, fall through to show the wizard
-            console.error('Quick deploy failed:', e);
         }
     }
 

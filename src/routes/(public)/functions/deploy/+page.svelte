@@ -1,6 +1,7 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
+    import { get } from 'svelte/store';
     import { app } from '$lib/stores/app';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import CustomId from '$lib/components/customId.svelte';
@@ -8,6 +9,7 @@
     import type { AllowedRegions, Plan } from '$lib/sdk/billing.js';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
+    import { plansInfo, type Tier } from '$lib/stores/billing';
     import { isCloud } from '$lib/system';
     import { ID, Query, type Models, Region } from '@appwrite.io/console';
     import { IconGithub, IconPencil, IconPlus } from '@appwrite.io/pink-icons-svelte';
@@ -63,12 +65,22 @@
             queries: [Query.equal('teamId', selectedOrg), Query.orderDesc('')]
         });
 
-        // Fetch plan info for billing checks
+        // Fetch plan info for billing checks - use cached plansInfo if available
         if (isCloud && selectedOrg) {
-            try {
-                currentPlan = await sdk.forConsole.billing.getOrganizationPlan(selectedOrg);
-            } catch {
-                currentPlan = null;
+            const org = data.organizations.teams.find((o) => o.$id === selectedOrg) as
+                | ((typeof data.organizations.teams)[number] & { billingPlan?: Tier })
+                | undefined;
+            const cachedPlans = get(plansInfo);
+            const cachedPlan = org?.billingPlan ? cachedPlans?.get(org.billingPlan) : null;
+
+            if (cachedPlan) {
+                currentPlan = cachedPlan;
+            } else {
+                try {
+                    currentPlan = await sdk.forConsole.billing.getOrganizationPlan(selectedOrg);
+                } catch {
+                    currentPlan = null;
+                }
             }
         }
 
