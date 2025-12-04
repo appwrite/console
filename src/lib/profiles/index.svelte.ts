@@ -23,6 +23,7 @@ export const enum Logins {
 export type Profile = {
     id: ProfileMode;
     platform: string;
+    organizationPrefKey: string; // used in prefs!
     organizationPlatform: Platform;
     freeTier: BillingPlan;
     logo: {
@@ -53,6 +54,8 @@ export type Profile = {
         sites: boolean;
         settings: boolean;
     };
+    discord: string;
+    website: string;
     showOrgInBreadcrumbs: boolean;
     minimalOrgHeader: boolean;
     getProjectRoute: (params: { region: string; project: string }) => ResolvedPathname;
@@ -64,6 +67,7 @@ export type Profile = {
 export const base: Profile = {
     id: ProfileMode.CONSOLE,
     platform: 'Appwrite',
+    organizationPrefKey: 'organization',
     organizationPlatform: Platform.Appwrite,
     freeTier: BillingPlan.Tier0,
     logo: {
@@ -99,6 +103,8 @@ export const base: Profile = {
         sites: true,
         settings: true
     },
+    discord: 'https://appwrite.io/discord',
+    website: 'https://appwrite.io',
     showOrgInBreadcrumbs: true,
     minimalOrgHeader: false,
     getProjectRoute({ region, project }) {
@@ -112,6 +118,7 @@ export const base: Profile = {
 export const studio: Profile = {
     id: ProfileMode.STUDIO,
     platform: 'Imagine',
+    organizationPrefKey: 'imagine-organization',
     organizationPlatform: Platform.Imagine,
     freeTier: BillingPlan.Imaginetier0,
     logo: {
@@ -148,6 +155,8 @@ export const studio: Profile = {
         sites: false,
         settings: true
     },
+    website: 'https://imagine.dev',
+    discord: 'https://imagine.dev/discord',
     showOrgInBreadcrumbs: false,
     minimalOrgHeader: true,
     getProjectRoute({ region, project }) {

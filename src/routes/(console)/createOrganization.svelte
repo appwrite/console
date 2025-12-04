@@ -51,7 +51,7 @@
             will need to either upgrade to the Pro plan, transfer your projects to a Pro
             organization, or migrate to self-hosting.
             <svelte:fragment slot="actions">
-                <Button href="https://appwrite.io/pricing" external text>Learn more</Button>
+                <Button href="{resolvedProfile.website}/pricing" external text>Learn more</Button>
             </svelte:fragment>
         </Alert.Inline>
     {/if}

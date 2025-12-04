@@ -9,3 +9,7 @@ export function isFreePlan(plan: BillingPlan | string): boolean {
             return false;
     }
 }
+
+export function isPaidPlan(plan: BillingPlan | string): boolean {
+    return !isFreePlan(plan);
+}
