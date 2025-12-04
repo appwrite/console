@@ -124,7 +124,7 @@ export const studio: Profile = {
     logins: [/** temporary */ Logins.EMAIL, Logins.GITHUB, Logins.GOOGLE].filter(Boolean),
     oauthProviders: {
         github: OAuthProvider.GithubImagine,
-        google: OAuthProvider.Google
+        google: OAuthProvider.GoogleImagine
     },
     css: StudioCss,
     component: {
