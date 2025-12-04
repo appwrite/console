@@ -37,13 +37,14 @@
     import type { Models } from '@appwrite.io/console';
     import { toLocaleDate } from '$lib/helpers/date';
     import { resolvedProfile } from '$lib/profiles/index.svelte';
-    import { isFreePlan } from '$lib/helpers/billing.js';
+    import { isFreePlan, isPaidPlan } from '$lib/helpers/billing.js';
 
     export let data;
 
     let selectedCoupon: Partial<Coupon> = null;
 
     let selectedPlan: BillingPlan = data.plan as BillingPlan;
+
     let previousPage: string = base;
     let showExitModal = false;
     let formComponent: Form;
@@ -98,8 +99,7 @@
             await validate(organizationId, invites);
         }
 
-        selectedPlan =
-            $currentPlan?.$id === BillingPlan.SCALE ? BillingPlan.SCALE : BillingPlan.PRO;
+        selectedPlan = $currentPlan?.$id as BillingPlan;
 
         try {
             orgUsage = await sdk.forConsole.billing.listUsage(data.organization.$id);
@@ -108,11 +108,10 @@
         }
 
         try {
-            allProjects = await sdk.forConsole.projects.list([
-                Query.equal('teamId', data.organization.$id),
-                Query.limit(1000)
-            ]);
-        } catch {
+            allProjects = await sdk.forConsole.projects.list({
+                queries: [Query.limit(1000), Query.equal('teamId', data.organization.$id)]
+            });
+        } catch (error) {
             allProjects = { projects: [] };
         }
     });
@@ -234,6 +233,7 @@
                         !data?.members?.memberships?.find((m) => m.userEmail === collaborator)
                 );
             }
+
             const org = await sdk.forConsole.billing.updatePlan(
                 data.organization.$id,
                 selectedPlan,
@@ -294,11 +294,17 @@
         }
     }
 
-    $: isUpgrade = $plansInfo.get(selectedPlan).order > $currentPlan?.order;
-    $: isDowngrade = $plansInfo.get(selectedPlan).order < $currentPlan?.order;
+    $: isUpgrade = $plansInfo.get(selectedPlan)?.order > $currentPlan?.order;
+    $: isDowngrade = $plansInfo.get(selectedPlan)?.order < $currentPlan?.order;
     $: isButtonDisabled =
         $organization?.billingPlan === selectedPlan ||
         (isDowngrade && isFreePlan(selectedPlan) && data.hasFreeOrgs);
+
+    // reactive vars for same group downgrades
+    $: selectedPlanGroup = $plansInfo?.get(selectedPlan)?.group;
+    $: currentPlanGroup = $plansInfo?.get($organization?.billingPlan)?.group;
+    $: isSameGroupDowngrade =
+        currentPlanGroup && selectedPlanGroup && currentPlanGroup === selectedPlanGroup;
 </script>
 
 <svelte:head>
@@ -313,7 +319,7 @@
                     <Typography.Text>
                         For more details on our plans, visit our
                         <Link.Anchor
-                            href="https://appwrite.io/pricing"
+                            href="{resolvedProfile.website}/pricing"
                             target="_blank"
                             rel="noopener noreferrer">pricing page</Link.Anchor
                         >.
@@ -326,7 +332,10 @@
                         </Alert.Inline>
                     {/if}
 
-                    <PlanSelection bind:billingPlan={selectedPlan} selfService={data.selfService} />
+                    <PlanSelection
+                        disabled={$isSubmitting}
+                        selfService={data.selfService}
+                        bind:billingPlan={selectedPlan} />
 
                     {#if isDowngrade && isFreePlan(selectedPlan) && data.hasFreeOrgs}
                         <Alert.Inline
@@ -335,10 +344,11 @@
                             To downgrade this organization, first migrate or delete your existing
                             free organization.
                             <Layout.Stack gap="xs" direction="row" justifyContent="flex-start">
+                                <!-- check the link on imagine later -->
                                 <Button
                                     compact
                                     external
-                                    href="https://appwrite.io/docs/advanced/migrations/cloud"
+                                    href="{resolvedProfile.website}/docs/advanced/migrations/cloud"
                                     >Migration guide</Button>
                             </Layout.Stack>
                         </Alert.Inline>
@@ -350,15 +360,22 @@
                             extraMembers *
                                 ($plansInfo?.get(selectedPlan)?.addons?.seats?.price ?? 0)
                         )}
-                        {#if selectedPlan === BillingPlan.PRO}
+                        {#if isPaidPlan(selectedPlan)}
                             <Alert.Inline status="error">
                                 <svelte:fragment slot="title">
                                     Your monthly payments will be adjusted for the Pro plan
                                 </svelte:fragment>
-                                After switching plans,
-                                <b
-                                    >you will be charged {price} monthly for {extraMembers} team members.</b>
-                                This will be reflected in your next invoice.
+                                {#if isSameGroupDowngrade}
+                                    After switching plans,
+                                    <b>you will be charged {price}.</b>
+                                    This will be reflected in your next invoice.
+                                {:else}
+                                    After switching plans,
+                                    <b
+                                        >you will be charged {price} monthly for {extraMembers} team
+                                        members.</b>
+                                    This will be reflected in your next invoice.
+                                {/if}
                             </Alert.Inline>
                         {:else if isFreePlan(selectedPlan)}
                             <Alert.Inline
@@ -374,12 +391,14 @@
                             </Alert.Inline>
                         {/if}
 
-                        <OrganizationUsageLimits
-                            bind:this={usageLimitsComponent}
-                            organization={data.organization}
-                            projects={allProjects?.projects || []}
-                            members={data.members?.memberships || []}
-                            storageUsage={orgUsage?.storageTotal ?? 0} />
+                        {#if !isSameGroupDowngrade}
+                            <OrganizationUsageLimits
+                                bind:this={usageLimitsComponent}
+                                organization={data.organization}
+                                projects={allProjects?.projects || []}
+                                members={data.members?.memberships || []}
+                                storageUsage={orgUsage?.storageTotal ?? 0} />
+                        {/if}
                     {/if}
                 </Layout.Stack>
             </Fieldset>

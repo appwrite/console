@@ -134,14 +134,14 @@
                 <InputChoice required value={terms} id="terms" label="terms" showLabel={false}>
                     By registering, you agree that you have read, understand, and acknowledge our <a
                         class="link"
-                        href="https://appwrite.io/privacy"
+                        href="{resolvedProfile.website}/privacy"
                         target="_blank"
                         rel="noopener noreferrer">
                         Privacy Policy</a>
                     and accept our
                     <a
                         class="link"
-                        href="https://appwrite.io/terms"
+                        href="{resolvedProfile.website}/terms"
                         target="_blank"
                         rel="noopener noreferrer">General Terms of Use</a
                     >.</InputChoice>

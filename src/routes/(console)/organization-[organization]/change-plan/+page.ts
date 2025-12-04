@@ -3,17 +3,18 @@ import type { Organization } from '$lib/stores/organization';
 import { BillingPlan, Dependencies } from '$lib/constants';
 import { sdk } from '$lib/stores/sdk';
 import { isFreePlan } from '$lib/helpers/billing';
+import type { PlanList } from '$lib/sdk/billing';
 
 export const load: PageLoad = async ({ depends, parent }) => {
     const { members, currentPlan, organizations } = await parent();
     depends(Dependencies.UPGRADE_PLAN);
 
-    let plans;
+    let plans: PlanList;
     try {
         plans = await sdk.forConsole.billing.listPlans();
     } catch (error) {
         console.error('Failed to load billing plans:', error);
-        plans = { plans: {} };
+        plans = { total: 0, plans: [] };
     }
 
     let plan: BillingPlan;

@@ -54,6 +54,8 @@ export type Profile = {
         sites: boolean;
         settings: boolean;
     };
+    discord: string;
+    website: string;
     showOrgInBreadcrumbs: boolean;
     minimalOrgHeader: boolean;
     getProjectRoute: (params: { region: string; project: string }) => ResolvedPathname;
@@ -101,6 +103,8 @@ export const base: Profile = {
         sites: true,
         settings: true
     },
+    discord: 'https://appwrite.io/discord',
+    website: 'https://appwrite.io',
     showOrgInBreadcrumbs: true,
     minimalOrgHeader: false,
     getProjectRoute({ region, project }) {
@@ -127,7 +131,7 @@ export const studio: Profile = {
     logins: [/** temporary */ Logins.EMAIL, Logins.GITHUB, Logins.GOOGLE].filter(Boolean),
     oauthProviders: {
         github: OAuthProvider.GithubImagine,
-        google: OAuthProvider.Google
+        google: OAuthProvider.GoogleImagine
     },
     css: StudioCss,
     component: {
@@ -151,6 +155,8 @@ export const studio: Profile = {
         sites: false,
         settings: true
     },
+    website: 'https://imagine.dev',
+    discord: 'https://imagine.dev/discord',
     showOrgInBreadcrumbs: false,
     minimalOrgHeader: true,
     getProjectRoute({ region, project }) {
