@@ -39,7 +39,7 @@
     });
 
     const organization = $derived(page.data.organization as Organization);
-    const path = $derived(`${base}/organization-${organization.$id}`);
+    const path = $derived(`${base}/organization-${organization?.$id}`);
 
     const tabs = $derived(
         [
