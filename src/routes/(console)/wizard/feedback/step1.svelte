@@ -11,8 +11,11 @@
     import { addNotification } from '$lib/stores/notifications';
     import { page } from '$app/state';
     import { project } from '$routes/(console)/project-[region]-[project]/store';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
-    $: $selectedFeedback = feedbackOptions.find((option) => option.type === $feedback.type);
+    $: $selectedFeedback = feedbackOptions(resolvedProfile).find(
+        (option) => option.type === $feedback.type
+    );
 
     async function beforeSubmit() {
         try {

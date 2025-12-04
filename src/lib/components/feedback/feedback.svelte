@@ -12,8 +12,11 @@
     import { page } from '$app/state';
     import { Typography } from '@appwrite.io/pink-svelte';
     import { project } from '$routes/(console)/project-[region]-[project]/store';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
-    $: $selectedFeedback = feedbackOptions.find((option) => option.type === $feedback.type);
+    $: $selectedFeedback = feedbackOptions(resolvedProfile).find(
+        (option) => option.type === $feedback.type
+    );
 
     export let isMobile: boolean = false;
 

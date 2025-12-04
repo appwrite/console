@@ -5,6 +5,7 @@ import { get, writable } from 'svelte/store';
 import { Submit, trackEvent } from '$lib/actions/analytics';
 import FeedbackNps from '$lib/components/feedback/feedbackNPS.svelte';
 import FeedbackGeneral from '$lib/components/feedback/feedbackGeneral.svelte';
+import type { Profile } from '$lib/profiles/index.svelte';
 
 export type Feedback = {
     elapsed: number;
@@ -26,15 +27,15 @@ export type FeedbackOption = {
     component: Component;
 };
 
-export const feedbackOptions: FeedbackOption[] = [
+export const feedbackOptions = (profile: Profile): FeedbackOption[] => [
     {
         type: 'general',
-        desc: `${resolvedProfile.platform} evolves with your input. Share your thoughts and help us improve ${resolvedProfile.platform}.`,
+        desc: `${profile.platform} evolves with your input. Share your thoughts and help us improve ${profile.platform}.`,
         component: FeedbackGeneral
     },
     {
         type: 'nps',
-        desc: `How likely are you to recommend ${resolvedProfile.platform} to a friend or colleague?`,
+        desc: `How likely are you to recommend ${profile.platform} to a friend or colleague?`,
         component: FeedbackNps
     }
 ];
