@@ -134,14 +134,14 @@
                 <InputChoice required value={terms} id="terms" label="terms" showLabel={false}>
                     By registering, you agree that you have read, understand, and acknowledge our <a
                         class="link"
-                        href="{resolvedProfile.website}/privacy"
+                        href={resolvedProfile.links.privacy}
                         target="_blank"
                         rel="noopener noreferrer">
                         Privacy Policy</a>
                     and accept our
                     <a
                         class="link"
-                        href="{resolvedProfile.website}/terms"
+                        href={resolvedProfile.links.terms}
                         target="_blank"
                         rel="noopener noreferrer">General Terms of Use</a
                     >.</InputChoice>

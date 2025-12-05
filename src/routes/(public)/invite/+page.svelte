@@ -81,12 +81,12 @@
                             label="terms"
                             showLabel={false}>
                             By accepting the invitation, you agree to the <Link.Anchor
-                                href="{resolvedProfile.website}/terms"
+                                href={resolvedProfile.links.terms}
                                 target="_blank"
                                 rel="noopener noreferrer">Terms and Conditions</Link.Anchor>
                             and
                             <Link.Anchor
-                                href="{resolvedProfile.website}/privacy"
+                                href={resolvedProfile.links.privacy}
                                 target="_blank"
                                 rel="noopener noreferrer">
                                 Privacy Policy</Link.Anchor

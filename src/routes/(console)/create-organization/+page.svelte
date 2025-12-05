@@ -198,7 +198,7 @@
                     <Typography.Text>
                         For more details on our plans, visit our
                         <Link.Anchor
-                            href="{resolvedProfile.website}/pricing"
+                            href={resolvedProfile.links.pricing}
                             target="_blank"
                             rel="noopener noreferrer">pricing page</Link.Anchor
                         >.

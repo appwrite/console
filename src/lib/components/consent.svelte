@@ -118,7 +118,7 @@
         </div>
     </div>
     <svelte:fragment slot="footer">
-        <Button text external href="{resolvedProfile.website}/privacy">Privacy Policy</Button>
+        <Button text external href={resolvedProfile.links.privacy}>Privacy Policy</Button>
         <Button on:click={() => confirmChoices(selected)}>Save preferences</Button>
     </svelte:fragment>
 </Modal>

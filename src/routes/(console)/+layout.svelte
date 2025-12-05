@@ -111,7 +111,7 @@
         {
             label: 'Open documentation',
             callback: () => {
-                window.open(`${resolvedProfile.website}/docs`, '_blank');
+                window.open(resolvedProfile.links.docs, '_blank');
             },
             group: 'help',
             icon: IconBookOpen
@@ -119,7 +119,7 @@
         {
             label: 'Contact support',
             callback: () => {
-                window.open(`${resolvedProfile.website}/discord`, '_blank');
+                window.open(resolvedProfile.links.discord, '_blank');
             },
             group: 'help',
             icon: IconQuestionMarkCircle
@@ -135,7 +135,7 @@
         {
             label: 'Join Discord community',
             callback: () => {
-                window.open('${resolvedProfile.website}/discord', '_blank');
+                window.open(resolvedProfile.links.discord, '_blank');
             },
             group: 'help',
             icon: IconDiscord

@@ -149,13 +149,13 @@
                     bind:value={pass} />
                 <InputChoice required bind:value={terms} id="terms" label="terms" showLabel={false}>
                     By registering, you agree that you have read, understand, and acknowledge our <Link.Anchor
-                        href="{resolvedProfile.website}/privacy"
+                        href={resolvedProfile.links.privacy}
                         target="_blank"
                         rel="noopener noreferrer">
                         Privacy Policy</Link.Anchor>
                     and accept our
                     <Link.Anchor
-                        href="{resolvedProfile.website}/terms"
+                        href={resolvedProfile.links.privacy}
                         target="_blank"
                         rel="noopener noreferrer">General Terms of Use</Link.Anchor
                     >.</InputChoice>

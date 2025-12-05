@@ -99,7 +99,7 @@
             <Link.Anchor
                 size="s"
                 variant="quiet"
-                href="{resolvedProfile.website}/docs"
+                href={resolvedProfile.links.docs}
                 target="_blank"
                 rel="noreferrer">
                 Docs
@@ -110,7 +110,7 @@
             <Link.Anchor
                 size="s"
                 variant="quiet"
-                href="{resolvedProfile.website}/terms"
+                href={resolvedProfile.links.terms}
                 target="_blank"
                 rel="noreferrer">
                 Terms
@@ -121,7 +121,7 @@
             <Link.Anchor
                 size="s"
                 variant="quiet"
-                href="{resolvedProfile.website}/privacy"
+                href={resolvedProfile.links.privacy}
                 target="_blank"
                 rel="noreferrer">
                 Privacy
@@ -133,7 +133,7 @@
                 <Link.Anchor
                     size="s"
                     variant="quiet"
-                    href="{resolvedProfile.website}/cookies"
+                    href={resolvedProfile.links.cookies}
                     target="_blank"
                     rel="noreferrer">
                     Cookies

@@ -565,7 +565,7 @@
                                                         color="--fgcolor-neutral-secondary">
                                                         Deploy the {resolvedProfile.platform} MCP server
                                                         with a single click, or view the <Link.Anchor
-                                                            href="{resolvedProfile.website}/docs"
+                                                            href={resolvedProfile.links.docs}
                                                             target="_blank">docs</Link.Anchor> for instructions.
                                                     </Typography.Text>
                                                 </Layout.Stack>
@@ -598,7 +598,7 @@
                                     </Card.Base>
 
                                     <Card.Link
-                                        href="{resolvedProfile.website}/discord"
+                                        href={resolvedProfile.links.discord}
                                         padding="s"
                                         on:click={() => {
                                             trackEvent(Click.OnboardingDiscordClick);
