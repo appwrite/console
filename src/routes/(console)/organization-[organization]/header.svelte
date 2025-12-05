@@ -29,7 +29,7 @@
         isOwner
     } from '$lib/stores/roles';
     import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
-    import { IconGithub, IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { IconGithub, IconPlus, IconPlusSm } from '@appwrite.io/pink-icons-svelte';
     import { Badge, Icon, Layout, Tooltip, Typography } from '@appwrite.io/pink-svelte';
 
     let areMembersLimited: boolean = $state(false);
@@ -125,7 +125,7 @@
                     size="xs"
                     on:click={() =>
                         isCloud ? goto(`${base}/create-organization`) : newOrgModal.set(true)}>
-                    <Icon icon={IconPlus} size="s" />
+                    <Icon icon={IconPlusSm} size="m" />
                 </Button>
             </Layout.Stack>
             <div class="u-margin-inline-start-auto">
