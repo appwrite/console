@@ -1,15 +1,17 @@
-import { Dependencies } from '$lib/constants';
+import { defaultRoles, defaultScopes, Dependencies } from '$lib/constants';
 import { sdk } from '$lib/stores/sdk';
 import type { LayoutLoad } from './$types';
 import { preferences } from '$lib/stores/preferences';
 import { failedInvoice } from '$lib/stores/billing';
 import { isCloud } from '$lib/system';
-import { defaultRoles, defaultScopes } from '$lib/constants';
 import { get } from 'svelte/store';
 import { headerAlert } from '$lib/stores/headerAlert';
 import PaymentFailed from '$lib/components/billing/alerts/paymentFailed.svelte';
 import { loadAvailableRegions } from '$routes/(console)/regions';
 import type { Organization, OrganizationList } from '$lib/stores/organization';
+import { Platform } from '@appwrite.io/console';
+import { redirect } from '@sveltejs/kit';
+import { resolve } from '$app/paths';
 
 export const load: LayoutLoad = async ({ params, depends, parent }) => {
     const { plansInfo, organizations, preferences: prefs } = await parent();
@@ -37,6 +39,17 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
     ]);
 
     if (!organization) organization = org;
+
+    // not the right organization project based on platform,
+    // redirect to organization, and it should handle the rest!
+    if (organization.platform !== Platform.Appwrite) {
+        redirect(
+            303,
+            resolve('/(console)/organization-[organization]', {
+                organization: organization.$id
+            })
+        );
+    }
 
     // fetch if not available in `plansInfo`.
     // out of promise.all because we filter orgs based on platform now!
