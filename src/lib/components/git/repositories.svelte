@@ -49,7 +49,7 @@
     let isLoadingRepositories = $state(null);
     let installationsMap = $state(null);
     let offset = $state(0);
-    let limit = 5;
+    const limit = 5;
 
     onMount(() => {
         loadInstallations();
@@ -115,29 +115,23 @@
     }
 
     async function loadRepositories(installationId: string, search: string) {
-        if (product === 'functions') {
-            const result = (await sdk
-                .forProject(page.params.region, page.params.project)
-                .vcs.listRepositories({
-                    installationId,
-                    type: VCSDetectionType.Runtime,
-                    search: search || undefined,
-                    queries: [Query.limit(limit), Query.offset(offset)]
-                })) as unknown as Models.ProviderRepositoryRuntimeList;
-            $repositories.repositories = result.runtimeProviderRepositories; //TODO: remove forced cast after backend fixes
-            $repositories.total = result.total;
-        } else {
-            const result = (await sdk
-                .forProject(page.params.region, page.params.project)
-                .vcs.listRepositories({
-                    installationId,
-                    type: VCSDetectionType.Framework,
-                    search: search || undefined,
-                    queries: [Query.limit(limit), Query.offset(offset)]
-                })) as unknown as Models.ProviderRepositoryFrameworkList;
-            $repositories.repositories = result.frameworkProviderRepositories;
-            $repositories.total = result.total;
-        }
+        const result = await sdk
+            .forProject(page.params.region, page.params.project)
+            .vcs.listRepositories({
+                installationId,
+                type:
+                    product === 'functions' ? VCSDetectionType.Runtime : VCSDetectionType.Framework,
+                search: search || undefined,
+                queries: [Query.limit(limit), Query.offset(offset)]
+            });
+
+        $repositories.repositories =
+            product === 'functions'
+                ? (result as unknown as Models.ProviderRepositoryRuntimeList)
+                      .runtimeProviderRepositories
+                : (result as unknown as Models.ProviderRepositoryFrameworkList)
+                      .frameworkProviderRepositories; //TODO: remove forced cast after backend fixes
+        $repositories.total = result.total;
         $repositories.search = search;
         $repositories.installationId = installationId;
         return $repositories.repositories;
