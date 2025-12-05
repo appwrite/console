@@ -7,7 +7,8 @@ import { ID, type Models, Query, Platform } from '@appwrite.io/console';
 import type { OrganizationList } from '$lib/stores/organization';
 import { redirectTo } from '$routes/store';
 import type { PageLoad } from './$types';
-import { getRepositoryInfo } from '$lib/helpers/github';
+import { getRepositoryInfo, getBranchFromUrl } from '$lib/helpers/github';
+import { parseEnvParam } from '$lib/helpers/env';
 
 export const load: PageLoad = async ({ parent, url }) => {
     const { account } = await parent();
@@ -35,12 +36,15 @@ export const load: PageLoad = async ({ parent, url }) => {
     const envParam = url.searchParams.get('env');
     const tagline = url.searchParams.get('tagline');
     const screenshot = url.searchParams.get('screenshot');
-    const envKeys = envParam ? envParam.split(',').map((key: string) => key.trim()) : [];
+
+    const envVars = parseEnvParam(envParam);
+    // Keep envKeys for backward compatibility (just the keys)
+    const envKeys = envVars.map((v) => v.key);
 
     let deploymentData: {
         type: 'template' | 'repo';
         template?: Models.TemplateSite;
-        repository?: { url: string; owner: string; name: string };
+        repository?: { url: string; owner: string; name: string; branch?: string };
         screenshot?: string;
         name?: string;
         tagline?: string;
@@ -67,12 +71,16 @@ export const load: PageLoad = async ({ parent, url }) => {
             redirect(302, base + '/');
         }
 
+        // Extract branch from URL if present (e.g., github.com/owner/repo/tree/branch)
+        const branchFromUrl = getBranchFromUrl(repository);
+
         deploymentData = {
             type: 'repo',
             repository: {
                 url: repository,
                 name: info.name,
-                owner: info.owner
+                owner: info.owner,
+                branch: branchFromUrl
             },
             screenshot,
             name: name || info.name,
@@ -115,7 +123,7 @@ export const load: PageLoad = async ({ parent, url }) => {
                 organizations = await sdk.forConsole.teams.list();
             }
         } catch (e) {
-            console.error('Failed to create default organization:', e);
+            // ignore
         }
     }
 
@@ -123,6 +131,7 @@ export const load: PageLoad = async ({ parent, url }) => {
         account,
         organizations,
         deploymentData,
-        envKeys
+        envKeys,
+        envVars
     };
 };

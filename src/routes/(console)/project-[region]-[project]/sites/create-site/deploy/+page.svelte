@@ -19,7 +19,7 @@
     import { iconPath } from '$lib/stores/app';
     import type { PageData } from './$types';
     import { writable } from 'svelte/store';
-    import { getLatestTag } from '$lib/helpers/github';
+    import { getDefaultBranch, getBranches, validateBranch } from '$lib/helpers/github';
     import Link from '$lib/elements/link.svelte';
 
     let {
@@ -44,6 +44,9 @@
     let domainIsValid = $state(false);
     let framework = $state<Framework>(Framework.Nextjs);
     let variables = $state<Array<{ key: string; value: string; secret: boolean }>>([]);
+    let branches = $state<string[]>([]);
+    let selectedBranch = $state<string>('');
+    let loadingBranches = $state(false);
 
     // Track if we have custom commands from URL
     let hasCustomCommands = $state(false);
@@ -86,7 +89,7 @@
         }
     });
 
-    onMount(() => {
+    onMount(async () => {
         const preset = page.url.searchParams.get('preset') || 'nextjs';
 
         // Map preset string to Framework enum
@@ -113,9 +116,66 @@
             }
         }
 
-        // Initialize environment variables from query params
-        if (data.envKeys.length > 0) {
-            variables = data.envKeys.map((key) => ({ key, value: '', secret: false }));
+        // Initialize environment variables from query params (with prefilled values if provided)
+        if (data.envVars.length > 0) {
+            variables = data.envVars.map((env) => ({
+                key: env.key,
+                value: env.value,
+                secret: false
+            }));
+        }
+
+        // Load branches and set default branch
+        if (data.repository?.owner && data.repository?.name) {
+            loadingBranches = true;
+            try {
+                // Check for branch param from URL
+                const branchParam = page.url.searchParams.get('branch');
+
+                const [branchList, defaultBranch, isBranchValid] = await Promise.all([
+                    getBranches(data.repository.owner, data.repository.name),
+                    getDefaultBranch(data.repository.owner, data.repository.name),
+                    branchParam
+                        ? validateBranch(data.repository.owner, data.repository.name, branchParam)
+                        : Promise.resolve(false)
+                ]);
+
+                if (branchList && branchList.length > 0) {
+                    branches = branchList;
+
+                    if (branchParam && isBranchValid) {
+                        // Use the provided branch if it's valid
+                        selectedBranch = branchParam;
+                    } else {
+                        // Fall back to default branch, or first branch if default not found
+                        selectedBranch =
+                            defaultBranch && branchList.includes(defaultBranch)
+                                ? defaultBranch
+                                : branchList[0];
+                    }
+                } else {
+                    // Branch list is empty or null
+                    addNotification({
+                        type: 'error',
+                        message:
+                            'Failed to load branches from repository. Please check the repository URL or try again.'
+                    });
+                }
+            } catch (error) {
+                addNotification({
+                    type: 'error',
+                    message:
+                        'Failed to load branches from repository. Please check the repository URL or try again.'
+                });
+            } finally {
+                loadingBranches = false;
+            }
+        } else {
+            // Repository info is missing
+            addNotification({
+                type: 'error',
+                message: 'Repository information is missing. Please check the repository URL.'
+            });
         }
     });
 
@@ -124,6 +184,14 @@
             addNotification({
                 type: 'error',
                 message: 'Domain is not valid'
+            });
+            return;
+        }
+
+        if (!selectedBranch || branches.length === 0) {
+            addNotification({
+                type: 'error',
+                message: 'Please wait for branches to load or check the repository URL.'
             });
             return;
         }
@@ -161,10 +229,7 @@
             );
             await Promise.all(promises);
 
-            // Fetch latest tag from GitHub
-            const latestTag = await getLatestTag(data.repository.owner, data.repository.name);
-
-            // Create deployment from GitHub repository using the latest tag
+            // Create deployment from GitHub repository using the selected branch
             const deployment = await sdk
                 .forProject(page.params.region, page.params.project)
                 .sites.createTemplateDeployment({
@@ -172,8 +237,8 @@
                     repository: data.repository.name,
                     owner: data.repository.owner,
                     rootDirectory: rootDir || '.',
-                    type: Type.Tag,
-                    reference: latestTag ?? '1.0.0',
+                    type: Type.Branch,
+                    reference: selectedBranch,
                     activate: true
                 });
 
@@ -252,6 +317,17 @@
 
             <Fieldset legend="Git configuration">
                 <Layout.Stack gap="m">
+                    <Input.Select
+                        id="branch"
+                        label="Branch"
+                        required
+                        placeholder={loadingBranches ? 'Loading branches...' : 'Select branch'}
+                        bind:value={selectedBranch}
+                        disabled={loadingBranches}
+                        options={branches.map((branch) => ({
+                            value: branch,
+                            label: branch
+                        }))} />
                     <Input.Text label="Root directory" placeholder="./" bind:value={rootDir} />
                 </Layout.Stack>
             </Fieldset>

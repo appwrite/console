@@ -3,6 +3,11 @@ export function getNestedRootDirectory(repository: string): string | null {
     return match ? match[1] : null;
 }
 
+export function getBranchFromUrl(repository: string): string | null {
+    const match = repository.match(/\/tree\/([^/?#]+)/);
+    return match ? decodeURIComponent(match[1]) : null;
+}
+
 export function getRepositoryInfo(
     repository: string
 ): { owner: string; name: string; url: string } | null {
@@ -34,7 +39,6 @@ export async function getLatestTag(owner: string, name: string): Promise<string 
 
         return null;
     } catch (error) {
-        console.error('Failed to fetch tags from GitHub:', error);
         return null;
     }
 }
@@ -50,7 +54,37 @@ export async function getDefaultBranch(owner: string, name: string): Promise<str
         const repo = await repoResponse.json();
         return repo.default_branch || null;
     } catch (error) {
-        console.error('Failed to fetch default branch from GitHub:', error);
         return null;
+    }
+}
+
+export async function getBranches(owner: string, name: string): Promise<string[] | null> {
+    try {
+        const branchesResponse = await fetch(
+            `https://api.github.com/repos/${owner}/${name}/branches`
+        );
+        if (!branchesResponse.ok) {
+            return null;
+        }
+
+        const branches = await branchesResponse.json();
+        return branches.map((branch) => branch.name);
+    } catch (error) {
+        return null;
+    }
+}
+
+export async function validateBranch(
+    owner: string,
+    repo: string,
+    branch: string
+): Promise<boolean> {
+    try {
+        const response = await fetch(
+            `https://api.github.com/repos/${owner}/${repo}/branches/${encodeURIComponent(branch)}`
+        );
+        return response.ok;
+    } catch (error) {
+        return false;
     }
 }
