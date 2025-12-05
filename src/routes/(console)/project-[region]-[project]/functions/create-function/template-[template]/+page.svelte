@@ -15,7 +15,7 @@
     import { writable } from 'svelte/store';
     import ProductionBranch from '$lib/components/git/productionBranchFieldset.svelte';
     import Configuration from './configuration.svelte';
-    import { ID, Runtime, Type, type Models } from '@appwrite.io/console';
+    import { ID, Runtime, TemplateReferenceType, type Models } from '@appwrite.io/console';
     import {
         ConnectBehaviour,
         NewRepository,
@@ -179,7 +179,7 @@
                         repository: data.template.providerRepositoryId || undefined,
                         owner: data.template.providerOwner || undefined,
                         rootDirectory: rt?.providerRootDirectory || undefined,
-                        type: Type.Tag,
+                        type: TemplateReferenceType.Tag,
                         reference: data.template.providerVersion || undefined,
                         activate: true
                     });
