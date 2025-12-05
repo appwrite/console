@@ -55,7 +55,7 @@
             cta: 'Discord',
             showSupport: false,
             label: 'Community support',
-            link: `${resolvedProfile.discord}`,
+            link: `${resolvedProfile.links.discord}`,
             description: 'Get support from our community through Discord'
         },
         ...(!resolvedProfile.showGithubIssueSupport
