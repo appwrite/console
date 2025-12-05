@@ -123,6 +123,7 @@
                 <Icon icon={IconMenuAlt4} />
             </button>
         </div>
+        
         <a
             href={currentOrg?.$id ? `${base}/organization-${currentOrg?.$id}` : base}
             class="only-desktop">
@@ -195,6 +196,14 @@
                         <Support bind:show={showSupport} />
                     </svelte:fragment>
                 </DropList>
+                <Button.Anchor
+                    variant="compact"
+                    size="s"
+                    href="https://appwrite.io/docs"
+                    target="_blank"
+                    rel="noreferrer">
+                    Docs
+                </Button.Anchor>
             </Layout.Stack>
             <Layout.Stack direction="row">
                 <Tooltip>
@@ -392,11 +401,8 @@
         }
     }
 
-    /* The default drop list has a max-inline width of 280px, which squeezes the support modal. */
     :global(.extended-width) {
         max-inline-size: none;
-
-        /* `desltop` is not a typo—it comes from the `pink2/legacy` module! */
         inline-size: var(--p-drop-width-size-desltop);
     }
 
