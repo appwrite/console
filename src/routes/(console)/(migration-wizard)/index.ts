@@ -2,19 +2,20 @@ import { createMigrationFormStore, createMigrationProviderStore } from '$lib/sto
 import { wizard } from '$lib/stores/wizard';
 import { requestedMigration } from '$routes/store';
 import { get, writable } from 'svelte/store';
-import Wizard from './wizard.svelte';
 import { Region } from '@appwrite.io/console';
 
 export const formData = createMigrationFormStore();
 
-export function openMigrationWizard() {
+export async function openMigrationWizard() {
+    const { default: Wizard } = await import('./wizard.svelte');
     wizard.start(Wizard);
-    const migData = get(requestedMigration);
+
+    const migrationData = get(requestedMigration);
     provider.set({
         provider: 'appwrite',
-        apiKey: migData?.apiKey,
-        endpoint: migData?.endpoint,
-        projectID: migData?.projectId
+        apiKey: migrationData?.apiKey,
+        endpoint: migrationData?.endpoint,
+        projectID: migrationData?.projectId
     });
 }
 
