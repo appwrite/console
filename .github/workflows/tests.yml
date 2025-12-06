@@ -11,6 +11,7 @@ env:
     PUBLIC_CONSOLE_PROFILE: 'default'
     PUBLIC_APPWRITE_ENDPOINT: http://appwrite.test/v1
     PUBLIC_AI_SERVICE_BASE_URL: 'http://appwrite.test/v1'
+    PUBLIC_REALTIME_URI: 'ws://appwrite.test/graphql'
 
 jobs:
     build:
