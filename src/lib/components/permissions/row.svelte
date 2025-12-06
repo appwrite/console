@@ -221,20 +221,26 @@
                                             <Typography.Text
                                                 size="m"
                                                 color="--fgcolor-neutral-primary">
-                                                {data.customName}
+                                                {formatName(
+                                                    data.customName ?? '',
+                                                    $isSmallViewport ? 20 : 32
+                                                )}
                                             </Typography.Text>
                                         </Layout.Stack>
                                         {#if data.roleName}
                                             <InteractiveText
                                                 isVisible
                                                 variant="copy"
-                                                text={data.roleName}
+                                                text={formatName(
+                                                    data.roleName,
+                                                    $isSmallViewport ? 20 : 32
+                                                )}
                                                 value={data.roleName} />
                                         {:else}
                                             <InteractiveText
                                                 isVisible
                                                 variant="copy"
-                                                text={role}
+                                                text={formatName(role, $isSmallViewport ? 20 : 32)}
                                                 value={role} />
                                         {/if}
                                     </Layout.Stack>
