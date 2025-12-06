@@ -100,8 +100,8 @@ importers:
         specifier: ^9.37.0
         version: 9.39.1
       '@imagine.dev/web-components':
-        specifier: ^0.0.139
-        version: 0.0.139(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+        specifier: ^0.0.140
+        version: 0.0.140(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@melt-ui/pp':
         specifier: ^0.3.2
         version: 0.3.2(@melt-ui/svelte@0.86.6(svelte@5.45.5))(svelte@5.45.5)
@@ -641,8 +641,8 @@ packages:
     resolution: {integrity: sha512-xeO57FpIu4p1Ri3Jq/EXq4ClRm86dVF2z/+kvFnyqVYRavTZmaFaUBbWCOuuTh0o/g7DSsk6kc2vrS4Vl5oPOQ==}
     engines: {node: '>=18.18'}
 
-  '@imagine.dev/web-components@0.0.139':
-    resolution: {integrity: sha512-Zbwc26UWR0WkQtFkGgZbdsKQQca9UMTkGn7apuCpM1CeEXyQdhoOpjanBdoBlL3FcA3xZvx0L/m49tQT4CuNqQ==}
+  '@imagine.dev/web-components@0.0.140':
+    resolution: {integrity: sha512-QPgl1uhHw5KBU3pWU6SygMVJ0jXxbpXt0EZ3QoQtXqWh6dBoy4cbhugfuaM6UxMZlNbooR8/SRIZVjFNCayj/A==}
     peerDependencies:
       react: 19.1.0
       react-dom: 19.1.0
@@ -3995,7 +3995,7 @@ snapshots:
 
   '@humanwhocodes/retry@0.4.2': {}
 
-  '@imagine.dev/web-components@0.0.139(react-dom@19.2.0(react@19.2.0))(react@19.2.0)':
+  '@imagine.dev/web-components@0.0.140(react-dom@19.2.0(react@19.2.0))(react@19.2.0)':
     dependencies:
       react: 19.2.0
       react-dom: 19.2.0(react@19.2.0)
