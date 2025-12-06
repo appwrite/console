@@ -13,7 +13,8 @@
         Layout,
         Link,
         Typography,
-        Divider
+        Divider,
+        Skeleton
     } from '@appwrite.io/pink-svelte';
     import {
         IconChevronDown,
@@ -37,6 +38,7 @@
     const databaseId = $derived(page.params.database);
 
     let openBottomSheet = $state(false);
+    let loading = $state(true);
 
     let tables = $state<Models.TableList>({
         total: 0,
@@ -62,10 +64,14 @@
     const tableContentPadding = $derived($bannerSpacing ? '210px' : '140px');
 
     async function loadTables() {
-        tables = await sdk.forProject(region, project).tablesDB.listTables({
-            databaseId: databaseId,
-            queries: [Query.orderDesc(''), Query.limit(100)]
-        });
+        try {
+            tables = await sdk.forProject(region, project).tablesDB.listTables({
+                databaseId: databaseId,
+                queries: [Query.orderDesc(''), Query.limit(100)]
+            });
+        } finally {
+            loading = false;
+        }
     }
 
     onMount(() => {
@@ -94,7 +100,18 @@
                 {data.database?.name}
             </a>
             <div class="table-content" style:padding-bottom={tableContentPadding}>
-                {#if tables?.total}
+                {#if loading}
+                    <div class="u-margin-inline-start-8 u-margin-block-start-8">
+                        <Layout.Stack gap="s">
+                            {#each Array(3) as _}
+                                <Layout.Stack gap="s" direction="row" alignItems="center">
+                                    <Skeleton variant="line" width={16} height={16} />
+                                    <Skeleton variant="line" width="70%" height={16} />
+                                </Layout.Stack>
+                            {/each}
+                        </Layout.Stack>
+                    </div>
+                {:else if tables?.total}
                     <ul class="drop-list u-margin-inline-start-8 u-margin-block-start-4">
                         {#each sortedTables as table, index}
                             {@const href = `${base}/project-${region}-${project}/databases/database-${databaseId}/table-${table.$id}`}
