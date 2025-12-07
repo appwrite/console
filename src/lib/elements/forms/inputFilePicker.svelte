@@ -12,6 +12,8 @@
     export let optionalText: string = null;
     export let tooltip: string = null;
     export let isPopoverDefined = true;
+    export let mimeTypeQuery: string = 'image/';
+    export let allowedExtension: string = '*';
 
     let show = false;
 
@@ -93,5 +95,12 @@
 </div>
 
 {#if show}
-    <FilePicker selectedFile={value?.$id} selectedBucket={value?.bucketId} bind:show {onSelect} />
+    <FilePicker
+        selectedFile={value?.$id}
+        selectedBucket={value?.bucketId}
+        bind:show
+        {onSelect}
+        showLocalFileBucket={true}
+        {mimeTypeQuery}
+        {allowedExtension} />
 {/if}

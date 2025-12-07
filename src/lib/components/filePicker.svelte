@@ -33,6 +33,7 @@
     import { IconInfo, IconPlus, IconViewGrid, IconViewList } from '@appwrite.io/pink-icons-svelte';
     import { showCreateBucket } from '$routes/(console)/project-[region]-[project]/storage/+page.svelte';
     import { preferences } from '$lib/stores/preferences';
+    import { addNotification } from '$lib/stores/notifications';
 
     export let show: boolean;
     export let mimeTypeQuery: string = 'image/';
@@ -111,6 +112,10 @@
             selectFile(file);
         } catch (e) {
             console.error(e);
+            addNotification({
+                type: 'error',
+                message: e.message || 'Failed to upload file'
+            });
         } finally {
             uploading = false;
         }
@@ -351,7 +356,9 @@
                     <Layout.Stack gap="l">
                         <Typography.Title size="s" color="--fgcolor-neutral-primary"
                             >{localFileBucketTitle}</Typography.Title>
-                        <Upload.Dropzone bind:files={localFile} extensions={[allowedExtension]}>
+                        <Upload.Dropzone
+                            bind:files={localFile}
+                            extensions={allowedExtension === '*' ? undefined : [allowedExtension]}>
                             <Layout.Stack alignItems="center" gap="s">
                                 <Layout.Stack alignItems="center" gap="s">
                                     <Layout.Stack
@@ -370,7 +377,9 @@
                                                 <Icon icon={IconInfo} size="s" />
                                             </Layout.Stack>
                                             <svelte:fragment slot="tooltip"
-                                                >{allowedExtension} files are allowed</svelte:fragment>
+                                                >{allowedExtension === '*'
+                                                    ? `${mimeTypeQuery} files are allowed`
+                                                    : `${allowedExtension} files are allowed`}</svelte:fragment>
                                         </Tooltip>
                                     </Layout.Stack>
                                     <Typography.Caption variant="400"
