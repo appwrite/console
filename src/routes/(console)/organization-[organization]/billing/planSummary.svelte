@@ -1,20 +1,21 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { EstimatedCard } from '$lib/components';
+    import { EstimatedCard, Pagination as PaginationComponent } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
     import { upgradeURL } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
-    import type { AggregationTeam, Plan } from '$lib/sdk/billing';
+    import type { AggregationTeam, InvoiceUsage, Plan } from '$lib/sdk/billing';
     import { formatCurrency } from '$lib/helpers/numbers';
-    import { BillingPlan } from '$lib/constants';
+    import { BillingPlan, DEFAULT_BILLING_PROJECTS_LIMIT } from '$lib/constants';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import {
         Typography,
-        Expandable as ExpandableTable,
+        AccordionTable,
         Icon,
         Layout,
-        Divider
+        Divider,
+        Badge
     } from '@appwrite.io/pink-svelte';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { formatNum } from '$lib/helpers/string';
@@ -22,20 +23,55 @@
     import { isSmallViewport, isTabletViewport } from '$lib/stores/viewport';
     import CancelDowngradeModel from './cancelDowngradeModal.svelte';
     import { IconTag } from '@appwrite.io/pink-icons-svelte';
+    import { page } from '$app/state';
+    import type { RowFactoryOptions } from '$routes/(console)/organization-[organization]/billing/store';
 
-    export let currentPlan: Plan;
-    export let nextPlan: Plan | null = null;
-    export let availableCredit: number | undefined = undefined;
-    export let currentAggregation: AggregationTeam | undefined = undefined;
+    let {
+        currentPlan,
+        nextPlan = null,
+        availableCredit = undefined,
+        currentAggregation = undefined,
+        limit = undefined,
+        offset = undefined
+    }: {
+        currentPlan: Plan;
+        nextPlan?: Plan | null;
+        availableCredit?: number | undefined;
+        currentAggregation?: AggregationTeam | undefined;
+        limit?: number | undefined;
+        offset?: number | undefined;
+    } = $props();
 
-    let showCancel: boolean = false;
+    let showCancel = $state(false);
 
-    // define columns for the expandable table
+    // define columns for the accordion table
     const columns = [
-        { id: 'item', align: 'left' as const, width: '10fr' },
-        { id: 'usage', align: 'left' as const, width: '20fr' },
-        { id: 'price', align: 'right' as const, width: '0fr' }
+        { id: 'item', align: 'left' as const, width: { min: 200 } },
+        { id: 'usage', align: 'left' as const, width: { min: 500 } },
+        { id: 'price', align: 'right' as const, width: { min: 100 } }
     ];
+
+    const projectsLimit = $derived(
+        limit ?? (Number(page.url.searchParams.get('limit')) || DEFAULT_BILLING_PROJECTS_LIMIT)
+    );
+    const projectsOffset = $derived(
+        offset ?? ((Number(page.url.searchParams.get('page')) || 1) - 1) * projectsLimit
+    );
+    const projectBreakdownCount = $derived(currentAggregation?.breakdown?.length ?? 0);
+    const hasProjectBreakdown = $derived(projectBreakdownCount > 0);
+    const totalProjects = $derived(
+        (currentAggregation?.resources?.find?.((r) => r.resourceId === 'projects')?.value ??
+            null) ||
+            projectBreakdownCount ||
+            0
+    );
+    const aggregationKey = $derived(
+        `agg:${Number(page.url.searchParams.get('page')) || 1}:${projectsLimit}`
+    );
+    const billingData = $derived(getBillingData(currentPlan, currentAggregation, $isSmallViewport));
+    const baseAmount = $derived(currentAggregation?.amount ?? currentPlan?.price ?? 0);
+    const creditsApplied = $derived(Math.min(baseAmount, availableCredit ?? 0));
+    const totalAmount = $derived(Math.max(baseAmount - creditsApplied, 0));
 
     function formatHumanSize(bytes: number): string {
         const size = humanFileSize(bytes || 0);
@@ -110,45 +146,94 @@
         ];
     }
 
-    function getProjectsList(currentAggregation) {
-        return (
-            currentAggregation?.breakdown?.map((projectData) => ({
-                projectId: projectData.$id,
-                name: projectData.name,
-                region: projectData.region,
-                amount: projectData.amount,
-                storage: projectData?.resources?.find((res) => res.resourceId === 'storage'),
-                executions: projectData?.resources?.find(
-                    (resource) => resource.resourceId === 'executions'
-                ),
-                gbHours: projectData?.resources?.find(
-                    (resource) => resource.resourceId === 'GBHours'
-                ),
-                imageTransformations: projectData?.resources?.find(
-                    (resource) => resource.resourceId === 'imageTransformations'
-                ),
-                screenshotsGenerated: projectData?.resources?.find(
-                    (resource) => resource.resourceId === 'screenshotsGenerated'
-                ),
-                bandwidth: projectData?.resources?.find(
-                    (resource) => resource.resourceId === 'bandwidth'
-                ),
-                databasesReads: projectData?.resources?.find(
-                    (resource) => resource.resourceId === 'databasesReads'
-                ),
-                databasesWrites: projectData?.resources?.find(
-                    (resource) => resource.resourceId === 'databasesWrites'
-                ),
-                users: projectData?.resources?.find((resource) => resource.resourceId === 'users'),
-                authPhone: projectData?.resources?.find(
-                    (resource) => resource.resourceId === 'authPhone'
-                )
-            })) || []
-        );
+    function getResource(resources: InvoiceUsage[] | undefined, resourceId: string) {
+        return resources?.find((r) => r.resourceId === resourceId);
     }
 
-    function getBillingData(currentPlan, currentAggregation, isSmallViewport) {
-        const projectsList = getProjectsList(currentAggregation);
+    function createRow({
+        id,
+        label,
+        resource,
+        planLimit,
+        formatValue = formatNum,
+        usageFormatter,
+        priceFormatter,
+        progressFactory,
+        maxFactory,
+        includeProgress = true
+    }: RowFactoryOptions) {
+        const hasLimit = !!planLimit;
+        const value = resource?.value || 0;
+        const amount = resource?.amount || 0;
+
+        const usage = usageFormatter
+            ? usageFormatter({ value, planLimit, resource, formatValue, hasLimit })
+            : hasLimit
+              ? `${formatValue(value)} / ${formatValue(planLimit)}`
+              : `${formatValue(value)} / Unlimited`;
+
+        const price = priceFormatter
+            ? priceFormatter({ amount, resource })
+            : formatCurrency(amount);
+
+        const progressData = includeProgress
+            ? progressFactory
+                ? progressFactory({ value, planLimit, resource, hasLimit })
+                : hasLimit
+                  ? createProgressData(value, planLimit)
+                  : []
+            : undefined;
+
+        const maxValue = includeProgress
+            ? maxFactory
+                ? maxFactory({ planLimit, hasLimit, resource })
+                : hasLimit
+                  ? planLimit || null
+                  : null
+            : undefined;
+
+        const row: {
+            id: string;
+            cells: { item: string; usage: string; price: string };
+            progressData?: Array<{
+                size: number;
+                color: string;
+                tooltip?: { title: string; label: string };
+            }>;
+            maxValue?: number | null;
+        } = {
+            id,
+            cells: {
+                item: label,
+                usage,
+                price
+            }
+        };
+
+        if (includeProgress) {
+            row.progressData = progressData;
+            row.maxValue = maxValue ?? null;
+        }
+
+        return row;
+    }
+
+    function createResourceRow(
+        id: string,
+        label: string,
+        resource: InvoiceUsage | undefined,
+        planLimit: number | null | undefined,
+        formatValue = formatNum
+    ) {
+        return createRow({ id, label, resource, planLimit, formatValue });
+    }
+
+    function getBillingData(
+        currentPlan: Plan,
+        currentAggregation: AggregationTeam | undefined,
+        isSmallViewport: boolean
+    ) {
+        // base plan row
         const basePlan = {
             id: 'base-plan',
             expandable: false,
@@ -157,408 +242,411 @@
                 usage: '',
                 price: formatCurrency(nextPlan?.price ?? currentPlan?.price ?? 0)
             },
+            badge: null,
             children: []
         };
+
+        // addons (additional members, projects, etc.)
         const addons = (currentAggregation?.resources || [])
-            .filter(
-                (r) =>
-                    r.amount &&
-                    r.amount > 0 &&
-                    Object.keys(currentPlan?.addons || {}).includes(r.resourceId) &&
-                    currentPlan.addons[r.resourceId]?.price > 0
-            )
-            .map((excess) => ({
-                id: `addon-${excess.resourceId}`,
+            .filter((r) => r.amount > 0 && currentPlan?.addons?.[r.resourceId]?.price > 0)
+            .map((addon) => ({
+                id: `addon-${addon.resourceId}`,
                 expandable: false,
                 cells: {
                     item:
-                        excess.resourceId === 'seats'
+                        addon.resourceId === 'seats'
                             ? 'Additional members'
-                            : excess.resourceId === 'projects'
-                              ? `Additional Projects (${formatNum(excess.value)})`
-                              : `${excess.resourceId} overage (${formatNum(excess.value)})`,
+                            : addon.resourceId === 'projects'
+                              ? 'Additional projects'
+                              : `${addon.resourceId} overage (${formatNum(addon.value)})`,
                     usage: '',
-                    price: formatCurrency(excess.amount)
+                    price: formatCurrency(addon.amount)
                 },
+                badge: addon.resourceId === 'projects' ? formatNum(addon.value) : null,
                 children: []
             }));
-        const projects = projectsList.map((project) => ({
-            id: `project-${project.projectId}`,
-            expandable: true,
-            cells: {
-                item: isSmallViewport
-                    ? truncateForSmall(project.name)
-                    : project.name || `Project ${project.projectId}`,
-                usage: '',
-                price: formatCurrency(project.amount || 0)
-            },
-            children: [
-                {
-                    id: `bandwidth`,
-                    cells: {
-                        item: 'Bandwidth',
-                        usage: `${formatBandwidthUsage(project.bandwidth.value, currentPlan?.bandwidth)}`,
-                        price: formatCurrency(project.bandwidth.amount || 0)
-                    },
-                    progressData: createStorageProgressData(
-                        project.bandwidth.value || 0,
-                        currentPlan?.bandwidth || 0
+
+        // project breakdown rows
+        const projects = (currentAggregation?.breakdown || []).map((projectData) => {
+            const resources = projectData.resources || [];
+            const bandwidth = getResource(resources, 'bandwidth');
+            const storage = getResource(resources, 'storage');
+            const authPhone = getResource(resources, 'authPhone');
+
+            return {
+                id: `project-${projectData.$id}`,
+                expandable: true,
+                cells: {
+                    item: isSmallViewport
+                        ? truncateForSmall(projectData.name)
+                        : projectData.name || `Project ${projectData.$id}`,
+                    usage: '',
+                    price: formatCurrency(projectData.amount || 0)
+                },
+                badge: null,
+                children: [
+                    createRow({
+                        id: 'bandwidth',
+                        label: 'Bandwidth',
+                        resource: bandwidth,
+                        planLimit: currentPlan?.bandwidth,
+                        usageFormatter: ({ value, planLimit, hasLimit }) =>
+                            formatBandwidthUsage(
+                                value,
+                                hasLimit ? (planLimit ?? undefined) : undefined
+                            ),
+                        priceFormatter: ({ amount }) => formatCurrency(amount),
+                        progressFactory: ({ value, planLimit, hasLimit }) =>
+                            hasLimit ? createStorageProgressData(value, planLimit || 0) : [],
+                        maxFactory: ({ planLimit, hasLimit }) =>
+                            hasLimit ? (planLimit || 0) * 1000 * 1000 * 1000 : null
+                    }),
+                    // standard resources (numeric)
+                    createResourceRow(
+                        'users',
+                        'Users',
+                        getResource(resources, 'users'),
+                        currentPlan?.users
                     ),
-                    maxValue: currentPlan?.bandwidth
-                        ? currentPlan.bandwidth * 1000 * 1000 * 1000
-                        : 0
-                },
-                {
-                    id: `users`,
-                    cells: {
-                        item: 'Users',
-                        usage: `${formatNum(project.users.value || 0)} / ${currentPlan?.users ? formatNum(currentPlan.users) : 'Unlimited'}`,
-                        price: formatCurrency(project.users.amount || 0)
-                    },
-                    progressData: createProgressData(project.users.value || 0, currentPlan?.users),
-                    maxValue: currentPlan?.users
-                },
-                {
-                    id: `reads`,
-                    cells: {
-                        item: 'Database reads',
-                        usage: `${formatNum(project.databasesReads.value || 0)} / ${currentPlan?.databasesReads ? formatNum(currentPlan.databasesReads) : 'Unlimited'}`,
-                        price: formatCurrency(project.databasesReads.amount || 0)
-                    },
-                    progressData: createProgressData(
-                        project.databasesReads.value || 0,
+                    createResourceRow(
+                        'reads',
+                        'Database reads',
+                        getResource(resources, 'databasesReads'),
                         currentPlan?.databasesReads
                     ),
-                    maxValue: currentPlan?.databasesReads
-                },
-                {
-                    id: `writes`,
-                    cells: {
-                        item: 'Database writes',
-                        usage: `${formatNum(project.databasesWrites.value || 0)} / ${currentPlan?.databasesWrites ? formatNum(currentPlan.databasesWrites) : 'Unlimited'}`,
-                        price: formatCurrency(project.databasesWrites.amount || 0)
-                    },
-                    progressData: createProgressData(
-                        project.databasesWrites.value || 0,
+                    createResourceRow(
+                        'writes',
+                        'Database writes',
+                        getResource(resources, 'databasesWrites'),
                         currentPlan?.databasesWrites
                     ),
-                    maxValue: currentPlan?.databasesWrites
-                },
-                {
-                    id: `executions`,
-                    cells: {
-                        item: 'Executions',
-                        usage: `${formatNum(project.executions.value || 0)} / ${currentPlan?.executions ? formatNum(currentPlan.executions) : 'Unlimited'}`,
-                        price: formatCurrency(project.executions.amount || 0)
-                    },
-                    progressData: createProgressData(
-                        project.executions.value || 0,
+                    createResourceRow(
+                        'executions',
+                        'Executions',
+                        getResource(resources, 'executions'),
                         currentPlan?.executions
                     ),
-                    maxValue: currentPlan?.executions
-                },
-                {
-                    id: `storage`,
-                    cells: {
-                        item: 'Storage',
-                        usage: `${formatHumanSize(project.storage.value || 0)} / ${currentPlan?.storage?.toString() || '0'} GB`,
-                        price: formatCurrency(project.storage.amount || 0)
-                    },
-                    progressData: createStorageProgressData(
-                        project.storage.value || 0,
-                        currentPlan?.storage || 0
-                    ),
-                    maxValue: currentPlan?.storage ? currentPlan.storage * 1000 * 1000 * 1000 : 0
-                },
-                {
-                    id: `image-transformations`,
-                    cells: {
-                        item: 'Image transformations',
-                        usage: `${formatNum(project.imageTransformations.value || 0)} / ${currentPlan?.imageTransformations ? formatNum(currentPlan.imageTransformations) : 'Unlimited'}`,
-                        price: formatCurrency(project.imageTransformations.amount || 0)
-                    },
-                    progressData: createProgressData(
-                        project.imageTransformations.value || 0,
+                    createRow({
+                        id: 'storage',
+                        label: 'Storage',
+                        resource: storage,
+                        planLimit: currentPlan?.storage,
+                        usageFormatter: ({ value, planLimit, hasLimit }) =>
+                            hasLimit
+                                ? `${formatHumanSize(value)} / ${planLimit?.toString() || '0'} GB`
+                                : `${formatHumanSize(value)} / Unlimited`,
+                        priceFormatter: ({ amount }) => formatCurrency(amount),
+                        progressFactory: ({ value, planLimit, hasLimit }) =>
+                            hasLimit ? createStorageProgressData(value, planLimit || 0) : [],
+                        maxFactory: ({ planLimit, hasLimit }) =>
+                            hasLimit ? (planLimit || 0) * 1000 * 1000 * 1000 : null
+                    }),
+                    createResourceRow(
+                        'image-transformations',
+                        'Image transformations',
+                        getResource(resources, 'imageTransformations'),
                         currentPlan?.imageTransformations
                     ),
-                    maxValue: currentPlan?.imageTransformations
-                },
-                {
-                    id: `screenshots-generated`,
-                    cells: {
-                        item: 'Screenshots generated',
-                        usage: `${formatNum(project.screenshotsGenerated.value || 0)} / ${currentPlan?.screenshotsGenerated ? formatNum(currentPlan.screenshotsGenerated) : 'Unlimited'}`,
-                        price: formatCurrency(project.screenshotsGenerated.amount || 0)
-                    },
-                    progressData: createProgressData(
-                        project.screenshotsGenerated.value || 0,
+                    createResourceRow(
+                        'screenshots-generated',
+                        'Screenshots generated',
+                        getResource(resources, 'screenshotsGenerated'),
                         currentPlan?.screenshotsGenerated
                     ),
-                    maxValue: currentPlan?.screenshotsGenerated
-                },
-                {
-                    id: `gb-hours`,
-                    cells: {
-                        item: 'GB-hours',
-                        usage: `${formatNum(project.gbHours.value || 0)} / ${currentPlan?.GBHours ? formatNum(currentPlan.GBHours) : 'Unlimited'}`,
-                        price: formatCurrency(project.gbHours.amount || 0)
-                    },
-                    progressData: currentPlan?.GBHours
-                        ? createProgressData(project.gbHours.value || 0, currentPlan.GBHours)
-                        : [],
-                    maxValue: currentPlan?.GBHours ? currentPlan.GBHours : null
-                },
-                {
-                    id: `sms`,
-                    cells: {
-                        item: 'Phone OTP',
-                        usage: `${formatNum(project.authPhone.value || 0)} SMS messages`,
-                        price: formatCurrency(project.authPhone.amount || 0)
-                    }
-                },
-                {
-                    id: `usage-details`,
-                    cells: {
-                        item: `<a href="${base}/project-${String(project.region || 'default')}-${project.projectId}/settings/usage" style="text-decoration: underline; color: var(--fgcolor-accent-neutral);">Usage details</a>`,
-                        usage: '',
-                        price: ''
-                    }
-                }
-            ]
-        }));
-        const noProjects = [];
-        return [basePlan, ...addons, ...projects, ...noProjects];
+                    createResourceRow(
+                        'gb-hours',
+                        'GB-hours',
+                        getResource(resources, 'GBHours'),
+                        currentPlan?.GBHours
+                    ),
+                    createRow({
+                        id: 'sms',
+                        label: 'Phone OTP',
+                        resource: authPhone,
+                        usageFormatter: ({ value }) => `${formatNum(value)} SMS messages`,
+                        priceFormatter: ({ amount }) => formatCurrency(amount),
+                        includeProgress: false
+                    }),
+                    createRow({
+                        id: 'usage-details',
+                        label: `<a href="${base}/project-${String(projectData.region || 'default')}-${projectData.$id}/settings/usage" style="text-decoration: underline; color: var(--fgcolor-accent-neutral);">Usage details</a>`,
+                        usageFormatter: () => '',
+                        priceFormatter: () => '',
+                        includeProgress: false
+                    })
+                ]
+            };
+        });
+
+        return [basePlan, ...addons, ...projects];
     }
-
-    $: billingData = getBillingData(currentPlan, currentAggregation, $isSmallViewport);
-
-    $: totalAmount = Math.max(currentAggregation?.amount - creditsApplied, 0);
-
-    $: creditsApplied = Math.min(
-        currentAggregation?.amount ?? currentPlan?.price ?? 0,
-        availableCredit
-    );
 </script>
 
 {#if $organization}
-    <EstimatedCard>
-        <Typography.Title size="s" gap="s">{currentPlan.name} plan</Typography.Title>
+    {#key aggregationKey}
+        <EstimatedCard>
+            <Typography.Title size="s" gap="s">{currentPlan.name} plan</Typography.Title>
 
-        {#if totalAmount > 0}
-            <Typography.Text color="--fgcolor-neutral-secondary">
-                Next payment of <span class="text --fgcolor-neutral-primary u-bold"
-                    >{formatCurrency(totalAmount)}</span>
-                will occur on
-                <span class="text --fgcolor-neutral-primary u-bold"
-                    >{toLocaleDate($organization?.billingNextInvoiceDate)}</span
-                >.
-            </Typography.Text>
-        {/if}
-        <Divider />
-        <div class="billing-cycle-header">
-            <Typography.Text color="--fgcolor-neutral-secondary" variant="m-500">
-                Current billing cycle ({new Date(
-                    $organization?.billingCurrentInvoiceDate
-                ).toLocaleDateString('en', { day: 'numeric', month: 'short' })}-{new Date(
-                    $organization?.billingNextInvoiceDate
-                ).toLocaleDateString('en', { day: 'numeric', month: 'short' })})
-            </Typography.Text>
-            <Typography.Text color="--fgcolor-neutral-tertiary" variant="m-400">
-                Estimate, subject to change based on usage.
-            </Typography.Text>
-        </div>
-        <!-- Billing breakdown table -->
-        <div class="table-wrapper" class:is-mobile={$isSmallViewport}>
-            <ExpandableTable.Root {columns} showHeader={false} let:root>
-                {#each billingData as row}
-                    <ExpandableTable.Row {root} id={row.id} expandable={row.expandable ?? false}>
-                        {#each columns as col}
-                            <ExpandableTable.Cell
-                                {root}
-                                column={col.id}
-                                expandable={row.expandable ?? false}>
-                                {#if col.id === 'item'}
-                                    <div class="cell-item-text">
+            {#if totalAmount > 0}
+                <Typography.Text color="--fgcolor-neutral-secondary">
+                    Next payment of <span class="text --fgcolor-neutral-primary u-bold"
+                        >{formatCurrency(totalAmount)}</span>
+                    will occur on
+                    <span class="text --fgcolor-neutral-primary u-bold"
+                        >{toLocaleDate($organization?.billingNextInvoiceDate)}</span
+                    >.
+                </Typography.Text>
+            {/if}
+            <Divider />
+            <div class="billing-cycle-header">
+                <Typography.Text color="--fgcolor-neutral-secondary" variant="m-500">
+                    Current billing cycle ({new Date(
+                        $organization?.billingCurrentInvoiceDate
+                    ).toLocaleDateString('en', { day: 'numeric', month: 'short' })}-{new Date(
+                        $organization?.billingNextInvoiceDate
+                    ).toLocaleDateString('en', { day: 'numeric', month: 'short' })})
+                </Typography.Text>
+                <Typography.Text color="--fgcolor-neutral-tertiary" variant="m-400">
+                    Estimate, subject to change based on usage.
+                </Typography.Text>
+            </div>
+            <!-- Billing breakdown table -->
+            <div class:is-mobile={$isSmallViewport}>
+                <AccordionTable.Root {columns} let:root>
+                    {#each billingData as row}
+                        <AccordionTable.Row {root} id={row.id} expandable={row.expandable ?? false}>
+                            {#each columns as col}
+                                <AccordionTable.Cell {root} column={col.id}>
+                                    {#if col.id === 'item'}
+                                        <div class="cell-item-text">
+                                            {#if row.badge}
+                                                <Layout.Stack
+                                                    direction="row"
+                                                    alignItems="center"
+                                                    gap="xs">
+                                                    <Typography.Text>
+                                                        {row.cells?.[col.id] ?? ''}
+                                                    </Typography.Text>
+                                                    <Badge
+                                                        variant="secondary"
+                                                        size="xs"
+                                                        content={row.badge} />
+                                                </Layout.Stack>
+                                            {:else}
+                                                <Typography.Text>
+                                                    {row.cells?.[col.id] ?? ''}
+                                                </Typography.Text>
+                                            {/if}
+                                        </div>
+                                    {:else}
                                         <Typography.Text>
                                             {row.cells?.[col.id] ?? ''}
                                         </Typography.Text>
-                                    </div>
-                                {:else}
-                                    <Typography.Text>
-                                        {row.cells?.[col.id] ?? ''}
-                                    </Typography.Text>
-                                {/if}
-                            </ExpandableTable.Cell>
-                        {/each}
+                                    {/if}
+                                </AccordionTable.Cell>
+                            {/each}
 
-                        <svelte:fragment slot="summary">
-                            {#if row.children}
-                                {#each row.children as child (child.id)}
-                                    <div
-                                        class="child-row"
-                                        class:is-tablet={$isTabletViewport && !$isSmallViewport}
-                                        style="grid-template-columns: {root.childGridTemplate}; --original-grid-template: {root.childGridTemplate};">
-                                        {#each columns as col}
-                                            <div
-                                                class="child-cell"
-                                                class:price={col.id === 'price'}
-                                                class:is-mobile={$isSmallViewport}
-                                                style="justify-content: {root.alignment(
-                                                    col.align
-                                                )};">
-                                                {#if child.cells?.[col.id]?.includes('<a href=')}
-                                                    {@html child.cells?.[col.id] ?? ''}
-                                                {:else if col.id === 'usage'}
-                                                    <div
-                                                        class="usage-cell-content"
-                                                        class:is-mobile={$isSmallViewport}
-                                                        class:is-tablet={$isTabletViewport &&
-                                                            !$isSmallViewport}>
-                                                        <div class="usage-progress-section">
-                                                            {#if child.progressData && child.progressData.length > 0 && child.maxValue}
-                                                                <ProgressBar
-                                                                    maxSize={child.maxValue}
-                                                                    data={child.progressData} />
-                                                            {/if}
-                                                        </div>
-                                                        <div class="usage-text-section">
-                                                            {#if child.cells?.[col.id]?.includes(' / ')}
-                                                                {@const usageParts = (
-                                                                    child.cells?.[col.id] ?? ''
-                                                                ).split(' / ')}
-                                                                <Typography.Text
-                                                                    variant="m-400"
-                                                                    color="--fgcolor-neutral-secondary">
-                                                                    {usageParts[0]}
-                                                                </Typography.Text>
-                                                                <Typography.Text
-                                                                    variant="m-400"
-                                                                    color="--fgcolor-neutral-tertiary">
-                                                                    {' / '}
-                                                                </Typography.Text>
-                                                                <Typography.Text
-                                                                    variant="m-400"
-                                                                    color="--fgcolor-neutral-tertiary">
-                                                                    {usageParts[1]}
-                                                                </Typography.Text>
-                                                            {:else}
-                                                                <Typography.Text
-                                                                    variant="m-400"
-                                                                    color="--fgcolor-neutral-secondary">
-                                                                    {child.cells?.[col.id] ?? ''}
-                                                                </Typography.Text>
-                                                            {/if}
-                                                        </div>
-                                                    </div>
+                            <svelte:fragment slot="summary" let:root>
+                                {#if row.children}
+                                    {#each row.children as child (child.id)}
+                                        <AccordionTable.Summary.Row {root}>
+                                            <AccordionTable.Summary.Cell
+                                                {root}
+                                                column="item"
+                                                alignment="middle-start">
+                                                {#if child.cells?.item?.includes('<a href=')}
+                                                    {@html child.cells?.item ?? ''}
                                                 {:else}
                                                     <Typography.Text
                                                         variant="m-400"
                                                         color="--fgcolor-neutral-secondary">
-                                                        {child.cells?.[col.id] ?? ''}
+                                                        {child.cells?.item ?? ''}
                                                     </Typography.Text>
                                                 {/if}
-                                            </div>
-                                        {/each}
-                                    </div>
-                                {/each}
-                            {/if}
-                        </svelte:fragment>
-                    </ExpandableTable.Row>
-                {/each}
-                {#if availableCredit > 0}
-                    <ExpandableTable.Row {root} id="total-row" expandable={false}>
-                        <ExpandableTable.Cell {root} column="item" expandable={false}>
-                            <Layout.Stack
-                                inline
-                                direction="row"
-                                gap="xxs"
-                                alignItems="center"
-                                alignContent="center">
-                                <Icon icon={IconTag} color="--fgcolor-success" size="s" />
-
-                                <Typography.Text color="--fgcolor-neutral-primary"
-                                    >Credits</Typography.Text>
-                            </Layout.Stack>
-                        </ExpandableTable.Cell>
-                        <ExpandableTable.Cell {root} column="usage" expandable={false}>
-                            <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
-                            </Typography.Text>
-                        </ExpandableTable.Cell>
-                        <ExpandableTable.Cell {root} column="price" expandable={false}>
-                            <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
-                                -{formatCurrency(creditsApplied)}
-                            </Typography.Text>
-                        </ExpandableTable.Cell>
-                    </ExpandableTable.Row>
-                {/if}
-
-                <ExpandableTable.Row {root} id="total-row" expandable={false}>
-                    <ExpandableTable.Cell {root} column="item" expandable={false}>
-                        <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
-                            Total
-                        </Typography.Text>
-                    </ExpandableTable.Cell>
-                    <ExpandableTable.Cell {root} column="usage" expandable={false}>
-                        <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
-                        </Typography.Text>
-                    </ExpandableTable.Cell>
-                    <ExpandableTable.Cell {root} column="price" expandable={false}>
-                        <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
-                            {formatCurrency(totalAmount)}
-                        </Typography.Text>
-                    </ExpandableTable.Cell>
-                </ExpandableTable.Row>
-            </ExpandableTable.Root>
-        </div>
-
-        <!-- Actions -->
-        <div class="actions-container">
-            {#if $organization?.billingPlan === BillingPlan.FREE || $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION}
-                <div
-                    class="u-flex u-cross-center u-gap-8 u-flex-wrap u-width-full-line u-main-end actions-mobile">
-                    {#if !currentPlan?.usagePerProject}
-                        <Button text href={`${base}/organization-${$organization?.$id}/usage`}>
-                            View estimated usage
-                        </Button>
+                                            </AccordionTable.Summary.Cell>
+                                            <AccordionTable.Summary.Cell
+                                                {root}
+                                                column="usage"
+                                                alignment="middle-start">
+                                                <div
+                                                    class="usage-cell-content"
+                                                    class:is-mobile={$isSmallViewport}
+                                                    class:is-tablet={$isTabletViewport &&
+                                                        !$isSmallViewport}>
+                                                    <div class="usage-progress-section">
+                                                        {#if child.progressData && child.progressData.length > 0 && child.maxValue}
+                                                            <ProgressBar
+                                                                maxSize={child.maxValue}
+                                                                data={child.progressData} />
+                                                        {/if}
+                                                    </div>
+                                                    <div class="usage-text-section">
+                                                        {#if child.cells?.usage?.includes(' / ')}
+                                                            {@const usageParts = (
+                                                                child.cells?.usage ?? ''
+                                                            ).split(' / ')}
+                                                            <Typography.Text
+                                                                variant="m-400"
+                                                                color="--fgcolor-neutral-secondary">
+                                                                {usageParts[0]}
+                                                            </Typography.Text>
+                                                            <Typography.Text
+                                                                variant="m-400"
+                                                                color="--fgcolor-neutral-tertiary">
+                                                                {' / '}
+                                                            </Typography.Text>
+                                                            <Typography.Text
+                                                                variant="m-400"
+                                                                color="--fgcolor-neutral-tertiary">
+                                                                {usageParts[1]}
+                                                            </Typography.Text>
+                                                        {:else}
+                                                            <Typography.Text
+                                                                variant="m-400"
+                                                                color="--fgcolor-neutral-secondary">
+                                                                {child.cells?.usage ?? ''}
+                                                            </Typography.Text>
+                                                        {/if}
+                                                    </div>
+                                                </div>
+                                            </AccordionTable.Summary.Cell>
+                                            <AccordionTable.Summary.Cell
+                                                {root}
+                                                column="price"
+                                                alignment="middle-end">
+                                                <Typography.Text
+                                                    variant="m-400"
+                                                    color="--fgcolor-neutral-secondary">
+                                                    {child.cells?.price ?? ''}
+                                                </Typography.Text>
+                                            </AccordionTable.Summary.Cell>
+                                        </AccordionTable.Summary.Row>
+                                    {/each}
+                                {/if}
+                            </svelte:fragment>
+                        </AccordionTable.Row>
+                    {/each}
+                    {#if totalProjects > projectsLimit && hasProjectBreakdown}
+                        <AccordionTable.Row {root} id="pagination-row" expandable={false}>
+                            <AccordionTable.Cell {root} column="item">
+                                <div class="pagination-left">
+                                    <PaginationComponent
+                                        limit={projectsLimit}
+                                        offset={projectsOffset}
+                                        sum={totalProjects} />
+                                </div>
+                            </AccordionTable.Cell>
+                            <AccordionTable.Cell {root} column="usage"></AccordionTable.Cell>
+                            <AccordionTable.Cell {root} column="price"></AccordionTable.Cell>
+                        </AccordionTable.Row>
                     {/if}
-                    <Button
-                        disabled={$organization?.markedForDeletion}
-                        href={$upgradeURL}
-                        on:click={() =>
-                            trackEvent(Click.OrganizationClickUpgrade, {
-                                from: 'button',
-                                source: 'billing_tab'
-                            })}>
-                        Upgrade
-                    </Button>
-                </div>
-            {:else}
-                <div
-                    class="u-flex u-cross-center u-gap-8 u-flex-wrap u-width-full-line u-main-end actions-mobile">
-                    {#if $organization?.billingPlanDowngrade !== null}
-                        <Button text on:click={() => (showCancel = true)}>Cancel change</Button>
-                    {:else}
+                    {#if availableCredit > 0}
+                        <AccordionTable.Row {root} id="credits-row" expandable={false}>
+                            <AccordionTable.Cell {root} column="item">
+                                <Layout.Stack
+                                    inline
+                                    direction="row"
+                                    gap="xxs"
+                                    alignItems="center"
+                                    alignContent="center">
+                                    <Icon icon={IconTag} color="--fgcolor-success" size="s" />
+
+                                    <Typography.Text color="--fgcolor-neutral-primary"
+                                        >Credits</Typography.Text>
+                                </Layout.Stack>
+                            </AccordionTable.Cell>
+                            <AccordionTable.Cell {root} column="usage">
+                                <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
+                                </Typography.Text>
+                            </AccordionTable.Cell>
+                            <AccordionTable.Cell {root} column="price">
+                                <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
+                                    -{formatCurrency(creditsApplied)}
+                                </Typography.Text>
+                            </AccordionTable.Cell>
+                        </AccordionTable.Row>
+                    {/if}
+
+                    <AccordionTable.Row {root} id="total-row" expandable={false}>
+                        <AccordionTable.Cell {root} column="item">
+                            <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
+                                Total
+                            </Typography.Text>
+                        </AccordionTable.Cell>
+                        <AccordionTable.Cell {root} column="usage">
+                            <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
+                            </Typography.Text>
+                        </AccordionTable.Cell>
+                        <AccordionTable.Cell {root} column="price">
+                            <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
+                                {formatCurrency(totalAmount)}
+                            </Typography.Text>
+                        </AccordionTable.Cell>
+                    </AccordionTable.Row>
+                </AccordionTable.Root>
+            </div>
+
+            <!-- Actions -->
+            <div class="actions-container">
+                {#if $organization?.billingPlan === BillingPlan.FREE || $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION}
+                    <Layout.Stack
+                        direction="row"
+                        alignItems="center"
+                        justifyContent="flex-end"
+                        gap="s"
+                        wrap="wrap"
+                        class="u-width-full-line actions-mobile">
+                        {#if !currentPlan?.usagePerProject}
+                            <Button text href={`${base}/organization-${$organization?.$id}/usage`}>
+                                View estimated usage
+                            </Button>
+                        {/if}
                         <Button
-                            text
                             disabled={$organization?.markedForDeletion}
                             href={$upgradeURL}
                             on:click={() =>
-                                trackEvent('click_organization_plan_update', {
+                                trackEvent(Click.OrganizationClickUpgrade, {
                                     from: 'button',
                                     source: 'billing_tab'
                                 })}>
-                            Change plan
+                            Upgrade
                         </Button>
-                    {/if}
-                    {#if !currentPlan?.usagePerProject}
-                        <Button secondary href={`${base}/organization-${$organization?.$id}/usage`}>
-                            View estimated usage
-                        </Button>
-                    {/if}
-                </div>
-            {/if}
-        </div>
-    </EstimatedCard>
+                    </Layout.Stack>
+                {:else}
+                    <Layout.Stack
+                        direction="row"
+                        alignItems="center"
+                        justifyContent="flex-end"
+                        gap="s"
+                        wrap="wrap"
+                        class="u-width-full-line actions-mobile">
+                        {#if $organization?.billingPlanDowngrade !== null}
+                            <Button text on:click={() => (showCancel = true)}>Cancel change</Button>
+                        {:else}
+                            <Button
+                                text
+                                disabled={$organization?.markedForDeletion}
+                                href={$upgradeURL}
+                                on:click={() =>
+                                    trackEvent(Click.OrganizationClickUpgrade, {
+                                        from: 'button',
+                                        source: 'billing_tab'
+                                    })}>
+                                Change plan
+                            </Button>
+                        {/if}
+                        {#if !currentPlan?.usagePerProject}
+                            <Button
+                                secondary
+                                href={`${base}/organization-${$organization?.$id}/usage`}>
+                                View estimated usage
+                            </Button>
+                        {/if}
+                    </Layout.Stack>
+                {/if}
+            </div>
+        </EstimatedCard>
+    {/key}
 {/if}
 
 <CancelDowngradeModel bind:showCancel />
@@ -684,50 +772,7 @@
         flex-shrink: 0;
     }
 
-    /* mobile table wrapper for horizontal scroll */
-    .table-wrapper.is-mobile {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        margin: 0 -1rem;
-        padding: 0 1rem;
-    }
-
-    /* reset mobile overrides - use desktop layout in scrollable container */
-    .table-wrapper.is-mobile :global(.child-row) {
-        grid-template-columns: var(--original-grid-template) !important;
-        min-width: 600px; /* ensure minimum width for proper layout */
-    }
-
-    .table-wrapper.is-mobile :global(.usage-cell-content) {
-        flex-direction: row !important;
-        align-items: center !important;
-        gap: 0.75rem !important;
-        padding-left: 1rem !important;
-        min-height: 2rem !important;
-    }
-
-    .table-wrapper.is-mobile :global(.usage-progress-section) {
-        width: 200px !important;
-        flex-shrink: 0 !important;
-    }
-
-    .table-wrapper.is-mobile :global(.usage-progress-section .progressbar__container) {
-        width: 200px !important;
-        max-width: 200px !important;
-    }
-
     @media (max-width: 768px) {
-        .actions-mobile {
-            justify-content: flex-start !important;
-            gap: 8px !important;
-        }
-
-        .actions-mobile :global(a),
-        .actions-mobile :global(button) {
-            padding: 6px 12px !important;
-            font-size: 14px !important;
-            border-radius: 8px !important;
-        }
         .billing-cycle-header {
             flex-direction: column;
             gap: 8px;
@@ -748,5 +793,12 @@
             border: unset !important;
             background: unset !important;
         }
+    }
+
+    /* reducingh size of paginator */
+    .pagination-left {
+        display: inline-block;
+        transform: scale(0.95);
+        transform-origin: left center;
     }
 </style>

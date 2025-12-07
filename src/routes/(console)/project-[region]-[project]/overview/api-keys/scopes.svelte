@@ -26,23 +26,39 @@
 </script>
 
 <script lang="ts">
-    import { Button } from '$lib/elements/forms';
-    import { scopes as allScopes } from '$lib/constants';
     import { onMount } from 'svelte';
+    import { isCloud } from '$lib/system';
+    import { Button } from '$lib/elements/forms';
     import { symmetricDifference } from '$lib/helpers/array';
+    import { scopes as allScopes, cloudOnlyBackupScopes } from '$lib/constants';
     import { Accordion, Divider, Layout, Selector } from '@appwrite.io/pink-svelte';
 
     export let scopes: string[];
 
-    const scopeCatalog = new Set(allScopes.map((s) => s.scope));
-
-    const filteredScopes = allScopes.filter((scope) => {
+    const baseFilteredScopes = allScopes.filter((scope) => {
         const val = scope.scope;
         if (!val) return false;
 
         const legacyPrefixes = ['collections.', 'attributes.', 'documents.'];
         return !legacyPrefixes.some((prefix) => val.startsWith(prefix));
     });
+
+    // insert cloud-only scopes right after databases.write
+    const databasesWriteIndex = baseFilteredScopes.findIndex((s) => s.scope === 'databases.write');
+    const filteredScopes =
+        isCloud && databasesWriteIndex !== -1
+            ? [
+                  ...baseFilteredScopes.slice(0, databasesWriteIndex + 1),
+                  ...cloudOnlyBackupScopes,
+                  ...baseFilteredScopes.slice(databasesWriteIndex + 1)
+              ]
+            : baseFilteredScopes;
+
+    // include all scopes
+    const scopeCatalog = new Set([
+        ...allScopes.map((s) => s.scope),
+        ...(isCloud ? cloudOnlyBackupScopes.map((s) => s.scope) : [])
+    ]);
 
     enum Category {
         Auth = 'Auth',

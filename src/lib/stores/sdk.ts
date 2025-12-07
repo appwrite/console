@@ -22,7 +22,8 @@ import {
     Tokens,
     TablesDB,
     Domains,
-    Realtime
+    Realtime,
+    Organizations
 } from '@appwrite.io/console';
 import { Billing } from '../sdk/billing';
 import { Backups } from '../sdk/backups';
@@ -95,7 +96,8 @@ function createConsoleSdk(client: Client) {
         sites: new Sites(client),
         domains: new Domains(client),
         storage: new Storage(client),
-        realtime: new Realtime(client)
+        realtime: new Realtime(client),
+        organizations: new Organizations(client)
     };
 }
 

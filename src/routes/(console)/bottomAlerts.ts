@@ -1,32 +1,32 @@
 import { isCloud } from '$lib/system';
 import { isSameDay } from '$lib/helpers/date';
 import { type BottomModalAlertItem, showBottomModalAlert } from '$lib/stores/bottom-alerts';
-import TransactionsApiDark from '$lib/images/promos/transactions-api-dark.png';
-import TransactionsApiLight from '$lib/images/promos/transactions-api-light.png';
+import AiSuggestionsDark from '$lib/images/promos/ai-suggestions-dark.png';
+import AiSuggestionsLight from '$lib/images/promos/ai-suggestions-light.png';
 
 const listOfPromotions: BottomModalAlertItem[] = [];
 
 if (isCloud) {
-    const transactionsApiPromo: BottomModalAlertItem = {
-        id: 'modal:transactions_api_announcement',
+    const aiSuggestionsPromo: BottomModalAlertItem = {
+        id: 'modal:database_ai_suggestions_announcement',
         src: {
-            dark: TransactionsApiDark,
-            light: TransactionsApiLight
+            dark: AiSuggestionsDark,
+            light: AiSuggestionsLight
         },
-        title: 'Announcing Transactions API',
-        message: 'Ensure data consistency across tables with atomic, all-or-nothing commits.',
+        title: 'Announcing Database AI suggestions',
+        message: 'From table name to schema in one click.',
         plan: 'free',
         importance: 8,
         scope: 'project',
         cta: {
             text: 'Read announcement',
-            link: () => 'https://appwrite.io/blog/post/announcing-transactions-api',
+            link: () => 'https://appwrite.io/blog/post/announcing-database-ai-suggestions',
             external: true,
             hideOnClick: true
         },
         show: true
     };
-    listOfPromotions.push(transactionsApiPromo);
+    listOfPromotions.push(aiSuggestionsPromo);
 }
 
 export function addBottomModalAlerts() {
