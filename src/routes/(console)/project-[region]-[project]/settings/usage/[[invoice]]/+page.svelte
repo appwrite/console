@@ -88,43 +88,48 @@
 
     {#if resolvedProfile.platform === Platform.Imagine}
         <CardGrid>
-        <svelte:fragment slot="title">Imagine Credits</svelte:fragment>
-        Total Imagine credits consumed across your project. Resets at the start of each billing cycle.
-        <svelte:fragment slot="aside">
-            {#if data.usage.imagineCredits}
-                {@const creditsTotal = data.usage.imagineCredits.reduce((sum, item) => sum + item.value, 0)}
-                <Layout.Stack gap="s" direction="row" alignItems="baseline">
-                    <Typography.Title>
-                        {formatNumberWithCommas(creditsTotal)}
-                    </Typography.Title>
-                    <Typography.Text>Credits</Typography.Text>
-                </Layout.Stack>
-                {#if data.usage.imagineCredits.length > 0}
-                    <BarChart
-                        options={{
-                            yAxis: {
-                                axisLabel: {
-                                    formatter: formatNum
-                                }
-                            }
-                        }}
-                        series={[
-                            {
-                                name: 'Credits',
-                                data: [...data.usage.imagineCredits.map((e) => [e.date, e.value])]
-                            }
-                        ]} />
-                {/if}
-            {:else}
-                <Card isDashed>
-                    <Layout.Stack gap="xs" alignItems="center" justifyContent="center">
-                        <Icon icon={IconChartSquareBar} size="l" />
-                        <Typography.Text variant="m-600">No data to show</Typography.Text>
+            <svelte:fragment slot="title">Imagine Credits</svelte:fragment>
+            Total Imagine credits consumed across your project. Resets at the start of each billing cycle.
+            <svelte:fragment slot="aside">
+                {#if data.usage.imagineCredits}
+                    {@const creditsTotal = data.usage.imagineCredits.reduce(
+                        (sum, item) => sum + item.value,
+                        0
+                    )}
+                    <Layout.Stack gap="s" direction="row" alignItems="baseline">
+                        <Typography.Title>
+                            {formatNumberWithCommas(creditsTotal)}
+                        </Typography.Title>
+                        <Typography.Text>Credits</Typography.Text>
                     </Layout.Stack>
-                </Card>
-            {/if}
-        </svelte:fragment>
-    </CardGrid>
+                    {#if data.usage.imagineCredits.length > 0}
+                        <BarChart
+                            options={{
+                                yAxis: {
+                                    axisLabel: {
+                                        formatter: formatNum
+                                    }
+                                }
+                            }}
+                            series={[
+                                {
+                                    name: 'Credits',
+                                    data: [
+                                        ...data.usage.imagineCredits.map((e) => [e.date, e.value])
+                                    ]
+                                }
+                            ]} />
+                    {/if}
+                {:else}
+                    <Card isDashed>
+                        <Layout.Stack gap="xs" alignItems="center" justifyContent="center">
+                            <Icon icon={IconChartSquareBar} size="l" />
+                            <Typography.Text variant="m-600">No data to show</Typography.Text>
+                        </Layout.Stack>
+                    </Card>
+                {/if}
+            </svelte:fragment>
+        </CardGrid>
     {/if}
 
     <CardGrid>

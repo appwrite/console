@@ -45,7 +45,8 @@
     // check if the plan allows multiple members
     $: planDetails = $plansInfo?.get(selectedPlan);
     $: seatsAddon = planDetails?.addons?.seats;
-    $: canAddMembers = !seatsAddon || (seatsAddon.supported ?? false) || (seatsAddon.limit ?? 0) > 1;
+    $: canAddMembers =
+        !seatsAddon || (seatsAddon.supported ?? false) || (seatsAddon.limit ?? 0) > 1;
 
     $: if (!canAddMembers && collaborators.length > 0) {
         collaborators = [];
