@@ -423,7 +423,7 @@
                                         <ActionMenu.Item.Anchor
                                             href={resolvedProfile.getProjectRoute({
                                                 region: project.region,
-                                                project: project.region
+                                                project: project.$id
                                             })}>
                                             <span class="projectName dropdown">{project.name}</span>
                                         </ActionMenu.Item.Anchor>
