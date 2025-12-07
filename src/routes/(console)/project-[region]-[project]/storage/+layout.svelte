@@ -5,7 +5,7 @@
     import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import { BucketsPanel } from '$lib/commandCenter/panels';
     import { canWriteBuckets } from '$lib/stores/roles';
-    import { project } from '../store';
+    import { getPageTitle, project } from '../store';
     import { showCreateBucket } from './+page.svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { resolvedProfile } from '$lib/profiles/index.svelte';
@@ -48,7 +48,7 @@
 </script>
 
 <svelte:head>
-    <title>Storage - {resolvedProfile.platform}</title>
+    <title>{getPageTitle(page.data?.project?.name, 'Storage', resolvedProfile.platform)}</title>
 </svelte:head>
 
 <slot />

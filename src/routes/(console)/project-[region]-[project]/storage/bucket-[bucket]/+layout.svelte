@@ -13,6 +13,7 @@
     import { bucket } from './store';
     import { IconKey, IconLockClosed, IconPlus, IconPuzzle } from '@appwrite.io/pink-icons-svelte';
     import { resolvedProfile } from '$lib/profiles/index.svelte';
+    import { getPageTitle } from '../../store';
 
     $: $registerCommands([
         {
@@ -107,7 +108,7 @@
 </script>
 
 <svelte:head>
-    <title>Bucket - {resolvedProfile.platform}</title>
+    <title>{getPageTitle(page.data?.project?.name, 'Bucket', resolvedProfile.platform)}</title>
 </svelte:head>
 
 <slot />

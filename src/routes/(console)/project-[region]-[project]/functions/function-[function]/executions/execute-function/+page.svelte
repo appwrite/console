@@ -39,6 +39,7 @@
     import Wizard from '$lib/layout/wizard.svelte';
     import Aside from './aside.svelte';
     import { resolvedProfile } from '$lib/profiles/index.svelte';
+    import { getPageTitle } from '$routes/(console)/project-[region]-[project]/store';
 
     let previousPage: string = `${base}/project-${page.params.region}-${page.params.project}/functions/function-${page.params.function}/executions`;
 
@@ -146,7 +147,12 @@
 </script>
 
 <svelte:head>
-    <title>Create execution - {resolvedProfile.platform}</title>
+    <title
+        >{getPageTitle(
+            page.data?.project?.name,
+            'Create execution',
+            resolvedProfile.platform
+        )}</title>
 </svelte:head>
 
 <Wizard title="Create execution" href={previousPage}>

@@ -71,6 +71,7 @@
     import { buildRowUrl, isRelationship } from './rows/store';
     import { chunks } from '$lib/helpers/array';
     import { Submit, trackEvent } from '$lib/actions/analytics';
+    import { getPageTitle } from '../../../store';
 
     import { isTabletViewport } from '$lib/stores/viewport';
     import IndexesSuggestions from '../(suggestions)/indexes.svelte';
@@ -420,7 +421,12 @@
 </script>
 
 <svelte:head>
-    <title>{$table?.name ?? 'Table'} - {resolvedProfile.platform}</title>
+    <title
+        >{getPageTitle(
+            page.data?.project?.name,
+            $table?.name ?? 'Table',
+            resolvedProfile.platform
+        )}</title>
 </svelte:head>
 
 <slot />

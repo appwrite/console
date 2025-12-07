@@ -84,3 +84,7 @@ export function hash(input: string | string[], delimiter: string = ','): string 
     }
     return Math.abs(hash).toString(36);
 }
+
+export function truncate(value: string, max: number = 25): string {
+    return value.length > max ? value.substring(0, max).trimEnd() : value;
+}
