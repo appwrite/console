@@ -43,7 +43,10 @@
     import { app, iconPath } from '$lib/stores/app';
     import { connectGitHub } from '$lib/stores/git';
     import { getFrameworkIcon } from '$lib/stores/sites';
-    import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
+    import {
+        regionalConsoleVariables,
+        getPageTitle
+    } from '$routes/(console)/project-[region]-[project]/store';
     import { getTemplateSourceUrl } from '$lib/helpers/templateSource';
     import { resolvedProfile } from '$lib/profiles/index.svelte';
 
@@ -202,7 +205,7 @@
 </script>
 
 <svelte:head>
-    <title>Create site - {resolvedProfile.platform}</title>
+    <title>{getPageTitle(page.data?.project?.name, 'Create site', resolvedProfile.platform)}</title>
 </svelte:head>
 
 <Wizard

@@ -13,7 +13,10 @@
     import { onMount } from 'svelte';
     import { ID, Runtime, TemplateReferenceType } from '@appwrite.io/console';
     import { getIconFromRuntime } from '$lib/stores/runtimes';
-    import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
+    import {
+        regionalConsoleVariables,
+        getPageTitle
+    } from '$routes/(console)/project-[region]-[project]/store';
     import { iconPath } from '$lib/stores/app';
     import type { PageData } from './$types';
     import { getLatestTag } from '$lib/helpers/github';
@@ -161,7 +164,12 @@
 </script>
 
 <svelte:head>
-    <title>Deploy {data.repository.name} - {resolvedProfile.platform}</title>
+    <title
+        >{getPageTitle(
+            page.data?.project?.name,
+            `Deploy ${data.repository.name}`,
+            resolvedProfile.platform
+        )}</title>
 </svelte:head>
 
 <Wizard

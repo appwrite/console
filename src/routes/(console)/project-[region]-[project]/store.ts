@@ -7,6 +7,7 @@ import CursorIcon from './overview/components/CursorIcon.svelte';
 import ClaudeIcon from './overview/components/ClaudeIcon.svelte';
 import VSCodeIcon from './overview/components/VSCodeIcon.svelte';
 import WindsurfIcon from './overview/components/WindsurfIcon.svelte';
+import { truncate } from '$lib/helpers/string';
 
 export const project = derived(page, ($page) => $page.data.project as Models.Project);
 
@@ -100,3 +101,9 @@ export const mcpTools = [
         label: 'Windsurf editor'
     }
 ];
+
+export function getPageTitle(projectName?: string, ...args: string[]): string {
+    const truncatedProjectName = projectName ? truncate(projectName) : '';
+    const parts = [truncatedProjectName, ...args].filter(Boolean);
+    return parts.join(' - ');
+}

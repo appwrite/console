@@ -20,6 +20,7 @@
     import { isCloud } from '$lib/system';
     import { noWidthTransition } from '$lib/stores/sidebar';
     import { resolvedProfile } from '$lib/profiles/index.svelte';
+    import { getPageTitle } from '../../store';
 
     const project = page.params.project;
     const databaseId = page.params.database;
@@ -141,7 +142,8 @@
 <svelte:head>
     <!-- svelte bug, the table header just stays! -->
     {#key page.url.pathname}
-        <title>Database - {resolvedProfile.platform}</title>
+        <title
+            >{getPageTitle(page.data?.project?.name, 'Database', resolvedProfile.platform)}</title>
     {/key}
 </svelte:head>
 

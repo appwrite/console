@@ -3,6 +3,8 @@
     import { FunctionsPanel } from '$lib/commandCenter/panels';
     import { canSeeFunctions } from '$lib/stores/roles';
     import { resolvedProfile } from '$lib/profiles/index.svelte';
+    import { page } from '$app/state';
+    import { getPageTitle } from '../store';
 
     $registerCommands([
         {
@@ -18,7 +20,7 @@
 </script>
 
 <svelte:head>
-    <title>Functions - {resolvedProfile.platform}</title>
+    <title>{getPageTitle(page.data?.project?.name, 'Functions', resolvedProfile.platform)}</title>
 </svelte:head>
 
 <slot />

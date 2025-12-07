@@ -30,6 +30,7 @@
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
     import { resolvedProfile } from '$lib/profiles/index.svelte';
+    import { getPageTitle } from '../store';
 
     let period: UsagePeriods = '30d';
     $: path = `${base}/project-${page.params.region}-${page.params.project}/overview`;
@@ -96,7 +97,7 @@
 </script>
 
 <svelte:head>
-    <title>Console - {resolvedProfile.platform}</title>
+    <title>{getPageTitle(page.data?.project?.name, 'Console', resolvedProfile.platform)}</title>
 </svelte:head>
 
 <Container overlapCover>

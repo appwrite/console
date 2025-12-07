@@ -11,6 +11,7 @@
     import { app } from '$lib/stores/app.js';
     import { getFrameworkIcon } from '$lib/stores/sites.js';
     import { resolvedProfile } from '$lib/profiles/index.svelte';
+    import { getPageTitle } from '../../../store';
 
     export let data;
 
@@ -78,7 +79,7 @@
 </script>
 
 <svelte:head>
-    <title>Create site - {resolvedProfile.platform}</title>
+    <title>{getPageTitle(page.data?.project?.name, 'Create site', resolvedProfile.platform)}</title>
 </svelte:head>
 
 <Wizard

@@ -21,7 +21,10 @@
     import { Dependencies } from '$lib/constants';
     import RepoCard from './repoCard.svelte';
     import { getIconFromRuntime } from '$lib/stores/runtimes';
-    import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
+    import {
+        regionalConsoleVariables,
+        getPageTitle
+    } from '$routes/(console)/project-[region]-[project]/store';
     import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     export let data;
@@ -159,7 +162,12 @@
 </script>
 
 <svelte:head>
-    <title>Create function - {resolvedProfile.platform}</title>
+    <title
+        >{getPageTitle(
+            page.data?.project?.name,
+            'Create function',
+            resolvedProfile.platform
+        )}</title>
 </svelte:head>
 
 <Wizard
