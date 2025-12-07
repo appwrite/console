@@ -111,10 +111,9 @@
             }
             selectFile(file);
         } catch (e) {
-            console.error(e);
             addNotification({
                 type: 'error',
-                message: e.message || 'Failed to upload file'
+                message: e.message
             });
         } finally {
             uploading = false;
