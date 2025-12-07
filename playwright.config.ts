@@ -16,6 +16,7 @@ const config: PlaywrightTestConfig = {
             NODE_OPTIONS: '--max_old_space_size=8192',
             PUBLIC_CONSOLE_PROFILE: 'console',
             PUBLIC_AI_SERVICE_BASE_URL: 'http://appwrite.test/v1',
+            PUBLIC_APPWRITE_SITES_BASE_URL: 'https://appwrite.network',
             PUBLIC_REALTIME_URI: 'ws://appwrite.test/v1',
             PUBLIC_APPWRITE_ENDPOINT: 'https://stage.cloud.appwrite.io/v1',
             PUBLIC_CONSOLE_MODE: 'cloud',
