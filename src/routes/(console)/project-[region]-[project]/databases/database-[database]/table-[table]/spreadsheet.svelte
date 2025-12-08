@@ -814,9 +814,7 @@
             }}>
             <svelte:fragment slot="header" let:root>
                 {#each $tableColumns as column (column.id)}
-                    {#if column.hide}
-                        <!-- Skip hidden columns -->
-                    {:else if column.isAction}
+                    {#if column.isAction}
                         <Spreadsheet.Header.Cell column="actions" {root}>
                             <Tooltip>
                                 <Button.Button
@@ -835,7 +833,7 @@
                                 <span slot="tooltip"> Create column </span>
                             </Tooltip>
                         </Spreadsheet.Header.Cell>
-                    {:else}
+                    {:else if !column.hide}
                         {@const structureColumn = $columns.find((col) => col.key === column.id)}
                         <SheetOptions
                             type="header"
