@@ -331,13 +331,25 @@ export async function initImagine(
                           props: {}
                       },
             onNavigate(route) {
-                if (route.id === 'project') {
-                    goto(
-                        resolve('/(console)/project-[region]-[project]/(studio)/studio', {
-                            region: route.props.region,
-                            project: route.props.projectId
-                        })
-                    );
+                switch (route.id) {
+                    case 'project':
+                        goto(
+                            resolve('/(console)/project-[region]-[project]/(studio)/studio', {
+                                region: route.props.region,
+                                project: route.props.projectId
+                            })
+                        );
+                        break;
+                    case 'view':
+                        goto(
+                            resolve('/(console)/(redirects)/template/[template]', {
+                                template: route.props.projectId
+                            })
+                        );
+                        break;
+                    case 'home':
+                        goto(resolve('/'));
+                        break;
                 }
             }
         });

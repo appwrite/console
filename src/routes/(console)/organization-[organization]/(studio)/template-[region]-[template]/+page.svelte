@@ -6,11 +6,9 @@
         hideStudio,
         navigateToRoute
     } from '$lib/studio/studio-widget';
-    import { getPageTitle } from '../../store';
     import { resolvedProfile } from '$lib/profiles/index.svelte';
-    import type { PageProps } from './$types';
 
-    let { params, data }: PageProps = $props();
+    let { params } = $props();
     let anchor: HTMLElement = $state();
 
     function positionStudio() {
@@ -23,9 +21,9 @@
         await tick();
         positionStudio();
         navigateToRoute({
-            id: 'project',
+            id: 'view',
             props: {
-                projectId: params.project,
+                projectId: params.template,
                 region: params.region
             }
         });
@@ -41,7 +39,7 @@
 </script>
 
 <svelte:head>
-    <title>{getPageTitle(data.project.name, 'Studio', resolvedProfile.platform)}</title>
+    <title>Template - {resolvedProfile.platform}</title>
 </svelte:head>
 
 <div class="studio-page" bind:this={anchor}></div>
