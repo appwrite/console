@@ -833,7 +833,7 @@
                                 <span slot="tooltip"> Create column </span>
                             </Tooltip>
                         </Spreadsheet.Header.Cell>
-                    {:else if !column.hide}
+                    {:else}
                         {@const structureColumn = $columns.find((col) => col.key === column.id)}
                         <SheetOptions
                             type="header"
@@ -904,140 +904,133 @@
                         showSelectOnHover
                         valueWithoutHover={row.$sequence}>
                         {#each $tableColumns as column (column.id)}
-                            {#if !column.hide}
-                                {@const columnId = column.id}
-                                {@const isEditable = column.isEditable}
-                                {@const rowColumn = $columns.find((col) => col.key === columnId)}
-                                {#if columnId === '$id'}
-                                    <button
-                                        on:mouseenter={() => {
-                                            showExpandIconForId = index;
-                                        }}
-                                        on:mouseleave={() => {
-                                            showExpandIconForId = null;
-                                        }}>
-                                        <Spreadsheet.Cell {root} {isEditable} column={columnId}>
-                                            <Layout.Stack
-                                                gap="none"
-                                                direction="row"
-                                                alignItems="center"
-                                                alignContent="center"
-                                                justifyContent="space-between">
-                                                <Id value={row.$id} tooltipPortal tooltipDelay={200}
-                                                    >{row.$id}</Id>
+                            {@const columnId = column.id}
+                            {@const isEditable = column.isEditable}
+                            {@const rowColumn = $columns.find((col) => col.key === columnId)}
+                            {#if !column.hide && columnId === '$id'}
+                                <button
+                                    on:mouseenter={() => {
+                                        showExpandIconForId = index;
+                                    }}
+                                    on:mouseleave={() => {
+                                        showExpandIconForId = null;
+                                    }}>
+                                    <Spreadsheet.Cell {root} {isEditable} column={columnId}>
+                                        <Layout.Stack
+                                            gap="none"
+                                            direction="row"
+                                            alignItems="center"
+                                            alignContent="center"
+                                            justifyContent="space-between">
+                                            <Id value={row.$id} tooltipPortal tooltipDelay={200}
+                                                >{row.$id}</Id>
 
-                                                <Popover let:show let:hide portal padding="none">
-                                                    {@const opacityValue =
-                                                        showExpandIconForId === index ? '1' : '0'}
-                                                    <button
-                                                        on:mouseenter={show}
-                                                        on:mouseleave={hide}
-                                                        style:opacity={opacityValue}
-                                                        style:transition="opacity 225ms ease-in-out">
-                                                        <Button.Button
-                                                            size="xs"
-                                                            icon
-                                                            variant="secondary"
-                                                            on:click={() => {
-                                                                hide();
-                                                                previouslyFocusedElement =
-                                                                    document.activeElement;
-                                                                $databaseRowSheetOptions.autoFocus = false;
-                                                                onSelectSheetOption(
-                                                                    'update',
-                                                                    null,
-                                                                    'row',
-                                                                    row
-                                                                );
-                                                            }}>
-                                                            <Icon icon={IconArrowExpand} size="s" />
-                                                        </Button.Button>
-                                                    </button>
+                                            <Popover let:show let:hide portal padding="none">
+                                                {@const opacityValue =
+                                                    showExpandIconForId === index ? '1' : '0'}
+                                                <button
+                                                    on:mouseenter={show}
+                                                    on:mouseleave={hide}
+                                                    style:opacity={opacityValue}
+                                                    style:transition="opacity 225ms ease-in-out">
+                                                    <Button.Button
+                                                        size="xs"
+                                                        icon
+                                                        variant="secondary"
+                                                        on:click={() => {
+                                                            hide();
+                                                            previouslyFocusedElement =
+                                                                document.activeElement;
+                                                            $databaseRowSheetOptions.autoFocus = false;
+                                                            onSelectSheetOption(
+                                                                'update',
+                                                                null,
+                                                                'row',
+                                                                row
+                                                            );
+                                                        }}>
+                                                        <Icon icon={IconArrowExpand} size="s" />
+                                                    </Button.Button>
+                                                </button>
 
-                                                    <svelte:fragment slot="tooltip">
+                                                <svelte:fragment slot="tooltip">
+                                                    <Layout.Stack
+                                                        inline
+                                                        gap="xxs"
+                                                        direction="row"
+                                                        alignItems="center"
+                                                        alignContent="center"
+                                                        style="padding: var(--gap-XS, 6px) var(--gap-S, 8px);">
+                                                        Expand row
+
                                                         <Layout.Stack
                                                             inline
-                                                            gap="xxs"
+                                                            gap="xxxs"
                                                             direction="row"
                                                             alignItems="center"
-                                                            alignContent="center"
-                                                            style="padding: var(--gap-XS, 6px) var(--gap-S, 8px);">
-                                                            Expand row
-
-                                                            <Layout.Stack
-                                                                inline
-                                                                gap="xxxs"
-                                                                direction="row"
-                                                                alignItems="center"
-                                                                alignContent="center">
-                                                                <Keyboard size="s" key="⌘" />
-                                                                <Keyboard
-                                                                    key={'Enter'}
-                                                                    autoWidth
-                                                                    size="s" />
-                                                            </Layout.Stack>
+                                                            alignContent="center">
+                                                            <Keyboard size="s" key="⌘" />
+                                                            <Keyboard
+                                                                key={'Enter'}
+                                                                autoWidth
+                                                                size="s" />
                                                         </Layout.Stack>
-                                                    </svelte:fragment>
-                                                </Popover>
-                                            </Layout.Stack>
-                                        </Spreadsheet.Cell>
-                                    </button>
-                                {:else}
-                                    <Spreadsheet.Cell {root} {isEditable} column={columnId}>
-                                        {#if columnId === '$createdAt' || columnId === '$updatedAt'}
-                                            <DualTimeView
-                                                showDatetime
-                                                time={row[columnId]}
-                                                canShowPopover={canShowDatetimePopover} />
-                                        {:else if columnId === 'actions'}
-                                            <SheetOptions
-                                                type="row"
-                                                column={rowColumn}
-                                                onSelect={(option) => {
-                                                    $databaseRowSheetOptions.autoFocus = true;
-                                                    onSelectSheetOption(option, null, 'row', row);
-                                                }}
-                                                onVisibilityChanged={(visible) => {
-                                                    canShowDatetimePopover = !visible;
-                                                }}>
-                                                {#snippet children(toggle)}
-                                                    <Button.Button
-                                                        icon
-                                                        variant="extra-compact"
-                                                        on:click={toggle}>
-                                                        <Icon
-                                                            icon={IconDotsHorizontal}
-                                                            color="--fgcolor-neutral-primary" />
-                                                    </Button.Button>
-                                                {/snippet}
-                                            </SheetOptions>
-                                        {:else if isRelationship(rowColumn)}
-                                            {@const args = getDisplayNamesForTable(row[columnId])}
-                                            {#if !isRelationshipToMany(rowColumn)}
-                                                {#if row[columnId]}
-                                                    {@const displayValue = args
-                                                        .map((arg) => row[columnId]?.[arg])
-                                                        .filter(Boolean)
-                                                        .join(' | ')}
+                                                    </Layout.Stack>
+                                                </svelte:fragment>
+                                            </Popover>
+                                        </Layout.Stack>
+                                    </Spreadsheet.Cell>
+                                </button>
+                            {:else if !column.hide}
+                                <Spreadsheet.Cell {root} {isEditable} column={columnId}>
+                                    {#if columnId === '$createdAt' || columnId === '$updatedAt'}
+                                        <DualTimeView
+                                            showDatetime
+                                            time={row[columnId]}
+                                            canShowPopover={canShowDatetimePopover} />
+                                    {:else if columnId === 'actions'}
+                                        <SheetOptions
+                                            type="row"
+                                            column={rowColumn}
+                                            onSelect={(option) => {
+                                                $databaseRowSheetOptions.autoFocus = true;
+                                                onSelectSheetOption(option, null, 'row', row);
+                                            }}
+                                            onVisibilityChanged={(visible) => {
+                                                canShowDatetimePopover = !visible;
+                                            }}>
+                                            {#snippet children(toggle)}
+                                                <Button.Button
+                                                    icon
+                                                    variant="extra-compact"
+                                                    on:click={toggle}>
+                                                    <Icon
+                                                        icon={IconDotsHorizontal}
+                                                        color="--fgcolor-neutral-primary" />
+                                                </Button.Button>
+                                            {/snippet}
+                                        </SheetOptions>
+                                    {:else if isRelationship(rowColumn)}
+                                        {@const args = getDisplayNamesForTable(row[columnId])}
+                                        {#if !isRelationshipToMany(rowColumn)}
+                                            {#if row[columnId]}
+                                                {@const displayValue = args
+                                                    .map((arg) => row[columnId]?.[arg])
+                                                    .filter(Boolean)
+                                                    .join(' | ')}
 
-                                                    {#if displayValue}
-                                                        <Link.Button
-                                                            variant="muted"
-                                                            on:click={() => {
-                                                                $databaseRelatedRowSheetOptions.tableId =
-                                                                    row[columnId]?.['$tableId'];
-                                                                $databaseRelatedRowSheetOptions.rows =
-                                                                    row[columnId]?.['$id'];
-                                                                $databaseRelatedRowSheetOptions.show = true;
-                                                            }}>
-                                                            {displayValue}
-                                                        </Link.Button>
-                                                    {:else}
-                                                        <Badge
-                                                            variant="secondary"
-                                                            content="NULL"
-                                                            size="xs" />
-                                                    {/if}
+                                                {#if displayValue}
+                                                    <Link.Button
+                                                        variant="muted"
+                                                        on:click={() => {
+                                                            $databaseRelatedRowSheetOptions.tableId =
+                                                                row[columnId]?.['$tableId'];
+                                                            $databaseRelatedRowSheetOptions.rows =
+                                                                row[columnId]?.['$id'];
+                                                            $databaseRelatedRowSheetOptions.show = true;
+                                                        }}>
+                                                        {displayValue}
+                                                    </Link.Button>
                                                 {:else}
                                                     <Badge
                                                         variant="secondary"
@@ -1045,101 +1038,96 @@
                                                         size="xs" />
                                                 {/if}
                                             {:else}
-                                                {@const itemsNum = row[columnId]?.length}
-                                                Items <Badge
-                                                    content={itemsNum}
-                                                    variant="secondary"
-                                                    size="s" />
-                                            {/if}
-                                        {:else if isSpatialType(rowColumn) && row[columnId] !== null}
-                                            <Typography.Text truncate>
-                                                {JSON.stringify(row[columnId])}
-                                            </Typography.Text>
-                                        {:else}
-                                            {@const value = row[columnId]}
-                                            {@const formatted = formatColumn(row[columnId])}
-                                            {@const isEmptyArray = formatted === 'Empty'}
-                                            {@const isDatetimeAttribute =
-                                                rowColumn.type === 'datetime'}
-                                            {@const isEncryptedAttribute =
-                                                isString(rowColumn) && rowColumn.encrypt}
-                                            {#if isDatetimeAttribute}
-                                                <DualTimeView time={value}>
-                                                    <span slot="title">Timestamp</span>
-                                                    {toLocaleDateTime(value, true)}
-                                                </DualTimeView>
-                                            {:else if isEncryptedAttribute}
-                                                <button on:click={(e) => e.preventDefault()}>
-                                                    <InteractiveText
-                                                        copy={false}
-                                                        variant="secret"
-                                                        isVisible={false}
-                                                        text={formatted} />
-                                                </button>
-                                            {:else if formatted.length > 20}
-                                                <Tooltip placement="bottom" portal>
-                                                    <Typography.Text truncate>
-                                                        {formatted}
-                                                    </Typography.Text>
-                                                    <span
-                                                        slot="tooltip"
-                                                        style:white-space="pre-wrap"
-                                                        style:word-break="break-word">
-                                                        {formatted}
-                                                    </span>
-                                                </Tooltip>
-                                            {:else if formatted === 'null'}
                                                 <Badge
                                                     variant="secondary"
                                                     content="NULL"
                                                     size="xs" />
-                                            {:else if isEmptyArray}
-                                                <Badge
-                                                    variant="secondary"
-                                                    content={formatted}
-                                                    size="xs" />
-                                            {:else}
+                                            {/if}
+                                        {:else}
+                                            {@const itemsNum = row[columnId]?.length}
+                                            Items <Badge
+                                                content={itemsNum}
+                                                variant="secondary"
+                                                size="s" />
+                                        {/if}
+                                    {:else if isSpatialType(rowColumn) && row[columnId] !== null}
+                                        <Typography.Text truncate>
+                                            {JSON.stringify(row[columnId])}
+                                        </Typography.Text>
+                                    {:else}
+                                        {@const value = row[columnId]}
+                                        {@const formatted = formatColumn(row[columnId])}
+                                        {@const isEmptyArray = formatted === 'Empty'}
+                                        {@const isDatetimeAttribute = rowColumn.type === 'datetime'}
+                                        {@const isEncryptedAttribute =
+                                            isString(rowColumn) && rowColumn.encrypt}
+                                        {#if isDatetimeAttribute}
+                                            <DualTimeView time={value}>
+                                                <span slot="title">Timestamp</span>
+                                                {toLocaleDateTime(value, true)}
+                                            </DualTimeView>
+                                        {:else if isEncryptedAttribute}
+                                            <button on:click={(e) => e.preventDefault()}>
+                                                <InteractiveText
+                                                    copy={false}
+                                                    variant="secret"
+                                                    isVisible={false}
+                                                    text={formatted} />
+                                            </button>
+                                        {:else if formatted.length > 20}
+                                            <Tooltip placement="bottom" portal>
                                                 <Typography.Text truncate>
                                                     {formatted}
                                                 </Typography.Text>
-                                            {/if}
+                                                <span
+                                                    slot="tooltip"
+                                                    style:white-space="pre-wrap"
+                                                    style:word-break="break-word">
+                                                    {formatted}
+                                                </span>
+                                            </Tooltip>
+                                        {:else if formatted === 'null'}
+                                            <Badge variant="secondary" content="NULL" size="xs" />
+                                        {:else if isEmptyArray}
+                                            <Badge
+                                                variant="secondary"
+                                                content={formatted}
+                                                size="xs" />
+                                        {:else}
+                                            <Typography.Text truncate>
+                                                {formatted}
+                                            </Typography.Text>
                                         {/if}
+                                    {/if}
 
-                                        <svelte:fragment slot="cell-editor" let:close>
-                                            {@const isRelatedToMany =
-                                                isRelationshipToMany(rowColumn)}
-                                            {@const hasItems = isRelatedToMany
-                                                ? row[columnId]?.length
-                                                : false}
+                                    <svelte:fragment slot="cell-editor" let:close>
+                                        {@const isRelatedToMany = isRelationshipToMany(rowColumn)}
+                                        {@const hasItems = isRelatedToMany
+                                            ? row[columnId]?.length
+                                            : false}
 
-                                            <EditRowCell
-                                                {row}
-                                                column={rowColumn}
-                                                onRowStructureUpdate={updateRowContents}
-                                                noInlineEdit={isRelatedToMany && hasItems}
-                                                onChange={(row) => paginatedRows.update(index, row)}
-                                                onRevert={(row) => paginatedRows.update(index, row)}
-                                                openSideSheet={() => {
-                                                    close(); /* closes the editor */
+                                        <EditRowCell
+                                            {row}
+                                            column={rowColumn}
+                                            onRowStructureUpdate={updateRowContents}
+                                            noInlineEdit={isRelatedToMany && hasItems}
+                                            onChange={(row) => paginatedRows.update(index, row)}
+                                            onRevert={(row) => paginatedRows.update(index, row)}
+                                            openSideSheet={() => {
+                                                close(); /* closes the editor */
 
-                                                    if (isRelationshipToMany(rowColumn)) {
-                                                        openSideSheetForRelationsToMany(
-                                                            row[columnId],
-                                                            rowColumn
-                                                        );
-                                                    } else {
-                                                        $databaseRowSheetOptions.autoFocus = true;
-                                                        onSelectSheetOption(
-                                                            'update',
-                                                            null,
-                                                            'row',
-                                                            row
-                                                        );
-                                                    }
-                                                }} />
-                                        </svelte:fragment>
-                                    </Spreadsheet.Cell>
-                                {/if}
+                                                if (isRelationshipToMany(rowColumn)) {
+                                                    openSideSheetForRelationsToMany(
+                                                        row[columnId],
+                                                        rowColumn
+                                                    );
+                                                } else {
+                                                    $databaseRowSheetOptions.autoFocus = true;
+                                                    onSelectSheetOption('update', null, 'row', row);
+                                                }
+                                            }} />
+                                    </svelte:fragment>
+                                </Spreadsheet.Cell>
                             {/if}
                         {/each}
                     </Spreadsheet.Row.Base>
