@@ -88,3 +88,64 @@ export async function validateBranch(
         return false;
     }
 }
+
+export interface LoadBranchesResult {
+    branches: string[];
+    selectedBranch: string;
+}
+
+export interface LoadBranchesError {
+    type: 'repository_missing' | 'load_failed' | 'empty_branches';
+    message: string;
+}
+
+/**
+ * Loads branches from a GitHub repository and selects the appropriate branch.
+ * Selection priority: branchParam (if valid) > defaultBranch > first branch.
+ */
+export async function loadAndSelectBranch(
+    owner: string,
+    name: string,
+    branchParam: string | null = null
+): Promise<LoadBranchesResult | LoadBranchesError> {
+    if (!owner || !name) {
+        return {
+            type: 'repository_missing',
+            message: 'Repository information is missing. Please check the repository URL.'
+        };
+    }
+
+    try {
+        const [branchList, defaultBranch, isBranchValid] = await Promise.all([
+            getBranches(owner, name),
+            getDefaultBranch(owner, name),
+            branchParam ? validateBranch(owner, name, branchParam) : Promise.resolve(false)
+        ]);
+
+        if (!branchList || branchList.length === 0) {
+            return {
+                type: 'empty_branches',
+                message:
+                    'Failed to load branches from repository. Please check the repository URL or try again.'
+            };
+        }
+
+        const selectedBranch =
+            branchParam && isBranchValid
+                ? branchParam
+                : defaultBranch && branchList.includes(defaultBranch)
+                  ? defaultBranch
+                  : branchList[0];
+
+        return {
+            branches: branchList,
+            selectedBranch
+        };
+    } catch (error) {
+        return {
+            type: 'load_failed',
+            message:
+                'Failed to load branches from repository. Please check the repository URL or try again.'
+        };
+    }
+}
