@@ -143,8 +143,8 @@
         {:else}
             <Card padding="xs" radius="s">
                 <Typography.Text>
-                    Body data is not captured by {resolvedProfile.platform} for your user's security
-                    and privacy. To display body data in the Logs tab, use <InlineCode
+                    Body data is not captured by {resolvedProfile.platform} for your user's security and
+                    privacy. To display body data in the Logs tab, use <InlineCode
                         code="context.log()"
                         size="s" />. <Link external {href} variant="muted">Learn more</Link>.
                 </Typography.Text>

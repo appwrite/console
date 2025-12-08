@@ -25,8 +25,8 @@
                     </Tag>
                     <p slot="tooltip">
                         User targets include emails, phone numbers, and devices with your app
-                        installed.<br /> These targets can subscribe to a topic and receive messages
-                        published to it.
+                        installed.<br /> These targets can subscribe to a topic and receive messages published
+                        to it.
                     </p>
                 </Popover>
             </div>

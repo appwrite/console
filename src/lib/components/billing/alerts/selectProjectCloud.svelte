@@ -92,8 +92,8 @@
 
 <Modal bind:show={showSelectProject} title="Manage projects" onSubmit={updateSelected}>
     <svelte:fragment slot="description">
-        Choose which {$currentPlan?.projects || 2} projects to keep. Projects over the limit will be
-        blocked after this date.
+        Choose which {$currentPlan?.projects || 2} projects to keep. Projects over the limit will be blocked
+        after this date.
     </svelte:fragment>
 
     {#if loading}

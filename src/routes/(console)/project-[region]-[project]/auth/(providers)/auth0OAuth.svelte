@@ -45,8 +45,8 @@
 
 <Modal {error} bind:show onSubmit={update} on:close title={`${provider.name} OAuth2 settings`}>
     <svelte:fragment slot="description">
-        To use {provider.name} authentication in your application, first fill in this form. For more
-        info you can
+        To use {provider.name} authentication in your application, first fill in this form. For more info
+        you can
         <Link.Anchor href={oAuthProvider?.docs} target="_blank" rel="noopener noreferrer"
             >visit the docs.</Link.Anchor>
     </svelte:fragment>

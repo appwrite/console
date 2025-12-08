@@ -171,8 +171,8 @@
             </Layout.Stack>
         {:else if isSelfHosted && !isVcsEnabled}
             <Alert.Inline status="info" title="Installing Git on a self-hosted instance">
-                Before installing Git in a locally hosted {resolvedProfile.platform} project, ensure
-                your environment variables are configured.
+                Before installing Git in a locally hosted {resolvedProfile.platform} project, ensure your
+                environment variables are configured.
                 <svelte:fragment slot="actions">
                     <FormButton
                         compact

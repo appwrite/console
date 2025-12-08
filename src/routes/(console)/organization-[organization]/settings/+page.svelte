@@ -81,8 +81,8 @@
 
         <CardGrid>
             <svelte:fragment slot="title">Delete organization</svelte:fragment>
-            The organization will be permanently deleted, including all projects and data associated
-            with this organization. This action is irreversible.
+            The organization will be permanently deleted, including all projects and data associated with
+            this organization. This action is irreversible.
             <svelte:fragment slot="aside">
                 <BoxAvatar>
                     <svelte:fragment slot="image">
