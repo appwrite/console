@@ -101,16 +101,18 @@
             </a>
             <div class="table-content" style:padding-bottom={tableContentPadding}>
                 {#if loading}
-                    <div class="u-margin-inline-start-8 u-margin-block-start-8">
-                        <Layout.Stack gap="s">
-                            {#each Array(3) as _}
-                                <Layout.Stack gap="s" direction="row" alignItems="center">
-                                    <Skeleton variant="line" width={16} height={16} />
-                                    <Skeleton variant="line" width="70%" height={16} />
-                                </Layout.Stack>
-                            {/each}
-                        </Layout.Stack>
-                    </div>
+                    <ul class="drop-list u-margin-inline-start-8 u-margin-block-start-4">
+                        {#each Array(2) as _}
+                            <Layout.Stack gap="s" direction="row" alignItems="center">
+                                <li>
+                                    <div
+                                        class="u-padding-block-8 u-padding-inline-end-4 u-padding-inline-start-8 u-flex u-cross-center u-gap-8">
+                                        <Skeleton variant="line" width="70%" height={19} />
+                                    </div>
+                                </li>
+                            </Layout.Stack>
+                        {/each}
+                    </ul>
                 {:else if tables?.total}
                     <ul class="drop-list u-margin-inline-start-8 u-margin-block-start-4">
                         {#each sortedTables as table, index}
