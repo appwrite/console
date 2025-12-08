@@ -162,7 +162,7 @@
             name: 'All projects',
             trailingIcon: IconList,
             href: resolve('/(console)/organization-[organization]', {
-                organization: selectedOrg.$id
+                organization: selectedOrg?.$id
             })
         };
 

@@ -1,8 +1,10 @@
 body {
     background: var(--bgcolor-neutral-primary);
 }
+
 a.primary,
 button.primary {
+    font-weight: 400 !important;
     --border-width-s: 0px;
     background:
         linear-gradient(
@@ -15,6 +17,10 @@ button.primary {
     --button-box-shadow:
         0 2px 0 0 rgba(255, 255, 255, 0.08) inset, 0 -2px 0 0 rgba(0, 0, 0, 0.24) inset,
         0 1px 1px 0 rgba(0, 0, 0, 0.08), 0 2px 5px 0 rgba(0, 0, 0, 0.16);
+}
+a.secondary,
+button.secondary {
+    font-weight: 400 !important;
 }
 
 a.primary:hover,
