@@ -262,8 +262,10 @@
 {#if showSelectProject}
     <Modal bind:show={showSelectProject} title="Manage projects" onSubmit={updateSelected}>
         <svelte:fragment slot="description">
-            Choose which {freePlanLimits.projects} projects to keep. Projects over the limit will be blocked
-            after your billing cycle ends on {toLocaleDate($organization.billingNextInvoiceDate)}.
+            Choose which {freePlanLimits.projects} projects to keep. Projects over the limit will be
+            blocked after your billing cycle ends on {toLocaleDate(
+                $organization.billingNextInvoiceDate
+            )}.
         </svelte:fragment>
 
         {#if error}

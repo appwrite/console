@@ -382,7 +382,8 @@
                                 {:else}
                                     After switching plans,
                                     <b
-                                        >you will be charged {price} monthly for {extraMembers} team members.</b>
+                                        >you will be charged {price} monthly for {extraMembers} team
+                                        members.</b>
                                     This will be reflected in your next invoice.
                                 {/if}
                             </Alert.Inline>
