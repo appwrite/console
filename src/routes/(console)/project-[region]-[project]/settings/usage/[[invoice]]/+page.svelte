@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Container } from '$lib/layout';
     import { CardGrid, Card, ProgressBarBig } from '$lib/components';
-    import { showUsageRatesModal, tierToPlan, upgradeURL } from '$lib/stores/billing';
+    import { plansInfo, showUsageRatesModal, upgradeURL } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { Button } from '$lib/elements/forms';
     import { bytesToSize, humanFileSize, mbSecondsToGBHours } from '$lib/helpers/sizeConvertion';
@@ -9,34 +9,40 @@
     import { formatNum } from '$lib/helpers/string';
     import { total } from '$lib/layout/usage.svelte';
     import { BillingPlan } from '$lib/constants.js';
-    import { base } from '$app/paths';
+    import { resolve } from '$app/paths';
     import { formatCurrency, formatNumberWithCommas, clampMin } from '$lib/helpers/numbers';
     import { getCountryName } from '$lib/helpers/diallingCodes.js';
     import { Accordion, Icon, Layout, Link, Table, Typography } from '@appwrite.io/pink-svelte';
     import { IconChartSquareBar } from '@appwrite.io/pink-icons-svelte';
-    import { page } from '$app/state';
     import { isFreePlan, isPaidPlan } from '$lib/helpers/billing.js';
-    import { resolvedProfile } from '$lib/profiles/index.svelte';
-    import { Platform } from '@appwrite.io/console';
+    import { ProfileMode, resolvedProfile } from '$lib/profiles/index.svelte';
+    import type { PageProps } from './$types';
 
-    export let data;
+    const { data, params }: PageProps = $props();
 
-    $: baseRoute = `${base}/project-${page.params.region}-${page.params.project}`;
-    $: network = data.usage.network;
-    $: users = data.usage.users;
-    $: usersTotal = data.usage.usersTotal;
-    $: executions = data.usage.executions;
-    $: executionsTotal = data.usage.executionsTotal;
-    $: storage =
+    const baseRoute = $derived(
+        resolve('/(console)/project-[region]-[project]', {
+            region: params.region,
+            project: params.project
+        })
+    );
+
+    const network = $derived(data.usage.network);
+    const users = $derived(data.usage.users);
+    const usersTotal = $derived(data.usage.usersTotal);
+    const executions = $derived(data.usage.executions);
+    const executionsTotal = $derived(data.usage.executionsTotal);
+    const storage = $derived(
         data.usage.filesStorageTotal +
-        data.usage.deploymentsStorageTotal +
-        data.usage.buildsStorageTotal;
-    $: imageTransformations = data.usage.imageTransformations;
-    $: imageTransformationsTotal = data.usage.imageTransformationsTotal;
-    $: dbReads = data.usage.databasesReads;
-    $: dbWrites = data.usage.databasesWrites;
+            data.usage.deploymentsStorageTotal +
+            data.usage.buildsStorageTotal
+    );
+    const imageTransformations = $derived(data.usage.imageTransformations);
+    const imageTransformationsTotal = $derived(data.usage.imageTransformationsTotal);
+    const dbReads = $derived(data.usage.databasesReads);
+    const dbWrites = $derived(data.usage.databasesWrites);
 
-    $: legendData = [
+    const legendData = $derived([
         {
             name: 'Reads',
             value: clampMin(data.usage.databasesReads.reduce((sum, item) => sum + item.value, 0))
@@ -45,10 +51,10 @@
             name: 'Writes',
             value: clampMin(data.usage.databasesWrites.reduce((sum, item) => sum + item.value, 0))
         }
-    ];
+    ]);
 
-    const tier = data?.currentInvoice?.plan ?? $organization?.billingPlan;
-    const plan = tierToPlan(tier).name;
+    const plan = $derived($plansInfo.get(data?.currentInvoice?.plan ?? $organization?.billingPlan));
+    const planName = $derived(plan.name);
 </script>
 
 <Container>
@@ -66,19 +72,19 @@
             <p class="text">
                 On the Scale plan, you'll be charged only for any usage that exceeds the thresholds
                 per resource listed below. <Link.Button
-                    on:click={() => ($showUsageRatesModal = true)}
+                    onclick={() => ($showUsageRatesModal = true)}
                     >Learn more about plan usage limits.</Link.Button>
             </p>
         {:else if isPaidPlan($organization.billingPlan)}
             <p class="text">
                 On the Pro plan, you'll be charged only for any usage that exceeds the thresholds
                 per resource listed below. <Link.Button
-                    on:click={() => ($showUsageRatesModal = true)}
+                    onclick={() => ($showUsageRatesModal = true)}
                     >Learn more about plan usage limits.</Link.Button>
             </p>
         {:else if isFreePlan($organization?.billingPlan)}
             <p class="text">
-                If you exceed the limits of the {plan} plan, services for your projects may be disrupted.
+                If you exceed the limits of the {planName} plan, services for your projects may be disrupted.
                 <Link.Anchor href={$upgradeURL} class="link"
                     >Upgrade for greater capacity</Link.Anchor
                 >.
@@ -86,40 +92,54 @@
         {/if}
     </div>
 
-    {#if resolvedProfile.platform === Platform.Imagine}
+    {#if resolvedProfile.id === ProfileMode.STUDIO}
         <CardGrid>
-            <svelte:fragment slot="title">Imagine Credits</svelte:fragment>
-            Total Imagine credits consumed across your project. Resets at the start of each billing cycle.
+            <svelte:fragment slot="title">Credits</svelte:fragment>
+            Current credit usage included in your plan.
             <svelte:fragment slot="aside">
                 {#if data.usage.imagineCredits}
                     {@const creditsTotal = data.usage.imagineCredits.reduce(
                         (sum, item) => sum + item.value,
                         0
                     )}
-                    <Layout.Stack gap="s" direction="row" alignItems="baseline">
-                        <Typography.Title>
-                            {formatNumberWithCommas(creditsTotal)}
-                        </Typography.Title>
-                        <Typography.Text>Credits</Typography.Text>
+                    {@const creditsLimit = plan.limits?.credits ?? plan.limits?.dailyCredits ?? 0}
+                    {@const percentageUsed =
+                        creditsLimit > 0 ? Math.round((creditsTotal / creditsLimit) * 100) : 0}
+
+                    <Layout.Stack direction="row" justifyContent="space-between">
+                        <Layout.Stack gap="s" direction="row" alignItems="baseline" inline>
+                            <Typography.Title>
+                                {formatNumberWithCommas(creditsTotal)}
+                            </Typography.Title>
+                            <Typography.Text>Credits used</Typography.Text>
+                        </Layout.Stack>
+
+                        <Layout.Stack direction="row" gap="xs" alignItems="center" inline>
+                            <Typography.Text>
+                                {percentageUsed}%
+                            </Typography.Text>
+                        </Layout.Stack>
                     </Layout.Stack>
-                    {#if data.usage.imagineCredits.length > 0}
-                        <BarChart
-                            options={{
-                                yAxis: {
-                                    axisLabel: {
-                                        formatter: formatNum
-                                    }
+
+                    <ProgressBarBig
+                        progressValue={creditsTotal}
+                        progressMax={creditsLimit}
+                        progressBarData={[
+                            {
+                                size: creditsTotal,
+                                color: 'var(--bgcolor-neutral-invert)',
+                                tooltip: {
+                                    title: 'Credits',
+                                    label: formatNumberWithCommas(creditsTotal)
                                 }
-                            }}
-                            series={[
-                                {
-                                    name: 'Credits',
-                                    data: [
-                                        ...data.usage.imagineCredits.map((e) => [e.date, e.value])
-                                    ]
-                                }
-                            ]} />
-                    {/if}
+                            }
+                        ]} />
+
+                    <Layout.Stack direction="row" justifyContent="space-between">
+                        <Typography.Text>{formatNumberWithCommas(creditsTotal)}</Typography.Text>
+
+                        <Typography.Text>{formatNumberWithCommas(creditsLimit)}</Typography.Text>
+                    </Layout.Stack>
                 {:else}
                     <Card isDashed>
                         <Layout.Stack gap="xs" alignItems="center" justifyContent="center">
