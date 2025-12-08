@@ -60,8 +60,6 @@ export const load: PageLoad = async ({ params, parent }) => {
 
     usage.users = accumulateUsage(usage.users, usage.usersTotal);
 
-    console.log(usage);
-
     return {
         usage,
         invoices,
