@@ -23,6 +23,48 @@
     inherits: false;
     initial-value: solid;
 }
+@property --tw-gradient-position {
+    syntax: '*';
+    inherits: false;
+}
+@property --tw-gradient-from {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: #0000;
+}
+@property --tw-gradient-via {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: #0000;
+}
+@property --tw-gradient-to {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: #0000;
+}
+@property --tw-gradient-stops {
+    syntax: '*';
+    inherits: false;
+}
+@property --tw-gradient-via-stops {
+    syntax: '*';
+    inherits: false;
+}
+@property --tw-gradient-from-position {
+    syntax: '<length-percentage>';
+    inherits: false;
+    initial-value: 0%;
+}
+@property --tw-gradient-via-position {
+    syntax: '<length-percentage>';
+    inherits: false;
+    initial-value: 50%;
+}
+@property --tw-gradient-to-position {
+    syntax: '<length-percentage>';
+    inherits: false;
+    initial-value: 100%;
+}
 @property --tw-leading {
     syntax: '*';
     inherits: false;
@@ -178,7 +220,47 @@
     syntax: '*';
     inherits: false;
 }
+@property --tw-backdrop-blur {
+    syntax: '*';
+    inherits: false;
+}
+@property --tw-backdrop-brightness {
+    syntax: '*';
+    inherits: false;
+}
+@property --tw-backdrop-contrast {
+    syntax: '*';
+    inherits: false;
+}
+@property --tw-backdrop-grayscale {
+    syntax: '*';
+    inherits: false;
+}
+@property --tw-backdrop-hue-rotate {
+    syntax: '*';
+    inherits: false;
+}
+@property --tw-backdrop-invert {
+    syntax: '*';
+    inherits: false;
+}
+@property --tw-backdrop-opacity {
+    syntax: '*';
+    inherits: false;
+}
+@property --tw-backdrop-saturate {
+    syntax: '*';
+    inherits: false;
+}
+@property --tw-backdrop-sepia {
+    syntax: '*';
+    inherits: false;
+}
 @property --tw-duration {
+    syntax: '*';
+    inherits: false;
+}
+@property --tw-ease {
     syntax: '*';
     inherits: false;
 }
