@@ -67,8 +67,8 @@
 
 <Modal {error} onSubmit={update} title="{provider.name} OAuth2 settings" bind:show on:close>
     <p slot="description">
-        To use {provider.name} authentication in your application, first fill in this form. For more
-        info you can
+        To use {provider.name} authentication in your application, first fill in this form. For more info
+        you can
         <a class="link" href={oAuthProvider?.docs} target="_blank" rel="noopener noreferrer"
             >visit the docs.</a>
     </p>

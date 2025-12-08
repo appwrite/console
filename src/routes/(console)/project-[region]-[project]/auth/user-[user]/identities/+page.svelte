@@ -43,8 +43,8 @@
                         More info
                     </Tag>
                     <p slot="tooltip">
-                        User identities are the user's connected OAuth accounts. <br /> The user can
-                        sign in using these identities.
+                        User identities are the user's connected OAuth accounts. <br /> The user can sign
+                        in using these identities.
                     </p>
                 </Popover>
             </div>
