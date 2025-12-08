@@ -60,15 +60,34 @@ export async function getDefaultBranch(owner: string, name: string): Promise<str
 
 export async function getBranches(owner: string, name: string): Promise<string[] | null> {
     try {
-        const branchesResponse = await fetch(
-            `https://api.github.com/repos/${owner}/${name}/branches`
-        );
-        if (!branchesResponse.ok) {
-            return null;
+        const branches: string[] = [];
+        const perPage = 100;
+        let page = 1;
+
+        while (true) {
+            const response = await fetch(
+                `https://api.github.com/repos/${owner}/${name}/branches?per_page=${perPage}&page=${page}`
+            );
+
+            if (!response.ok) {
+                return null;
+            }
+
+            const pageBranches = await response.json();
+            if (!Array.isArray(pageBranches) || pageBranches.length === 0) {
+                break;
+            }
+
+            branches.push(...pageBranches.map((branch) => branch.name));
+
+            if (pageBranches.length < perPage) {
+                break;
+            }
+
+            page += 1;
         }
 
-        const branches = await branchesResponse.json();
-        return branches.map((branch) => branch.name);
+        return Array.from(new Set(branches));
     } catch (error) {
         return null;
     }
