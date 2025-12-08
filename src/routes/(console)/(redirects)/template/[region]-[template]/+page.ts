@@ -3,7 +3,7 @@ import { resolve } from '$app/paths';
 import type { PageLoad } from './$types';
 import { resolvedProfile } from '$lib/profiles/index.svelte';
 
-export const load: PageLoad = async ({ parent }) => {
+export const load: PageLoad = async ({ parent, params }) => {
     const { organizations, account } = await parent();
 
     const teamId =
@@ -11,9 +11,14 @@ export const load: PageLoad = async ({ parent }) => {
     if (teamId) {
         redirect(
             303,
-            resolve('/(console)/organization-[organization]/members', {
-                organization: teamId
-            })
+            resolve(
+                '/(console)/organization-[organization]/(studio)/template-[region]-[template]',
+                {
+                    organization: teamId,
+                    template: params.template,
+                    region: params.region
+                }
+            )
         );
     }
     redirect(303, resolve('/'));
