@@ -326,8 +326,8 @@ APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.project).c
                                     <Icon icon={IconInfo} size="s" />
                                     <span slot="tooltip">
                                         The hostname that your website will use to interact with the
-                                        {resolvedProfile.platform} APIs in production or development
-                                        environments. No protocol or port number required.
+                                        {resolvedProfile.platform} APIs in production or development environments.
+                                        No protocol or port number required.
                                     </span>
                                 </Tooltip>
                             </InputText>
