@@ -15,7 +15,9 @@
     import { Accordion, Icon, Layout, Link, Table, Typography } from '@appwrite.io/pink-svelte';
     import { IconChartSquareBar } from '@appwrite.io/pink-icons-svelte';
     import { page } from '$app/state';
-    import { isFreePlan } from '$lib/helpers/billing.js';
+    import { isFreePlan, isPaidPlan } from '$lib/helpers/billing.js';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
+    import { Platform } from '@appwrite.io/console';
 
     export let data;
 
@@ -67,7 +69,7 @@
                     on:click={() => ($showUsageRatesModal = true)}
                     >Learn more about plan usage limits.</Link.Button>
             </p>
-        {:else if $organization.billingPlan === BillingPlan.PRO}
+        {:else if isPaidPlan($organization.billingPlan)}
             <p class="text">
                 On the Pro plan, you'll be charged only for any usage that exceeds the thresholds
                 per resource listed below. <Link.Button
@@ -83,6 +85,53 @@
             </p>
         {/if}
     </div>
+
+    {#if resolvedProfile.platform === Platform.Imagine}
+        <CardGrid>
+            <svelte:fragment slot="title">Imagine Credits</svelte:fragment>
+            Total Imagine credits consumed across your project. Resets at the start of each billing cycle.
+            <svelte:fragment slot="aside">
+                {#if data.usage.imagineCredits}
+                    {@const creditsTotal = data.usage.imagineCredits.reduce(
+                        (sum, item) => sum + item.value,
+                        0
+                    )}
+                    <Layout.Stack gap="s" direction="row" alignItems="baseline">
+                        <Typography.Title>
+                            {formatNumberWithCommas(creditsTotal)}
+                        </Typography.Title>
+                        <Typography.Text>Credits</Typography.Text>
+                    </Layout.Stack>
+                    {#if data.usage.imagineCredits.length > 0}
+                        <BarChart
+                            options={{
+                                yAxis: {
+                                    axisLabel: {
+                                        formatter: formatNum
+                                    }
+                                }
+                            }}
+                            series={[
+                                {
+                                    name: 'Credits',
+                                    data: [
+                                        ...data.usage.imagineCredits.map((e) => [e.date, e.value])
+                                    ]
+                                }
+                            ]} />
+                    {/if}
+                {:else}
+                    <Card isDashed>
+                        <Layout.Stack gap="xs" alignItems="center" justifyContent="center">
+                            <Icon icon={IconChartSquareBar} size="l" />
+                            <Typography.Text variant="m-600">No data to show</Typography.Text>
+                        </Layout.Stack>
+                    </Card>
+                {/if}
+            </svelte:fragment>
+        </CardGrid>
+    {/if}
+
     <CardGrid>
         <svelte:fragment slot="title">Bandwidth</svelte:fragment>
         Calculated for all bandwidth used across your project. Resets at the start of each billing cycle.

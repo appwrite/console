@@ -27,6 +27,7 @@
     import { getLatestTag } from '$lib/helpers/github';
     import Link from '$lib/elements/link.svelte';
     import { resolvedProfile } from '$lib/profiles/index.svelte';
+    import { getPageTitle } from '$routes/(console)/project-[region]-[project]/store';
 
     let {
         data
@@ -205,7 +206,12 @@
 </script>
 
 <svelte:head>
-    <title>Deploy {data.repository.name} - {resolvedProfile.platform}</title>
+    <title
+        >{getPageTitle(
+            page.data?.project?.name,
+            `Deploy ${data.repository.name}`,
+            resolvedProfile.platform
+        )}</title>
 </svelte:head>
 
 <Wizard

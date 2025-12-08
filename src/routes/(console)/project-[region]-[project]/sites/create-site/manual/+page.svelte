@@ -14,7 +14,7 @@
     import { BuildRuntime, Framework, ID } from '@appwrite.io/console';
     import type { Models } from '@appwrite.io/console';
     import Configuration from '../configuration.svelte';
-    import { regionalConsoleVariables } from '../../../store';
+    import { regionalConsoleVariables, getPageTitle } from '../../../store';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { InvalidFileType, removeFile } from '$lib/helpers/files';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
@@ -153,7 +153,7 @@
 </script>
 
 <svelte:head>
-    <title>Create site - {resolvedProfile.platform}</title>
+    <title>{getPageTitle(page.data?.project?.name, 'Create site', resolvedProfile.platform)}</title>
 </svelte:head>
 
 <Wizard

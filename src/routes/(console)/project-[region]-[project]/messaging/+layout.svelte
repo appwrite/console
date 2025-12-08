@@ -13,7 +13,7 @@
     import { providersSearcher } from '$lib/commandCenter/searchers/providers';
     import { topicsSearcher } from '$lib/commandCenter/searchers/topics';
     import { canWriteMessages } from '$lib/stores/roles';
-    import { project } from '../store';
+    import { getPageTitle, project } from '../store';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { resolvedProfile } from '$lib/profiles/index.svelte';
 
@@ -59,7 +59,7 @@
 </script>
 
 <svelte:head>
-    <title>Messaging - {resolvedProfile.platform}</title>
+    <title>{getPageTitle(page.data?.project?.name, 'Messaging', resolvedProfile.platform)}</title>
 </svelte:head>
 
 <slot />

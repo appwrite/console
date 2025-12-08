@@ -4,7 +4,7 @@
     import { page } from '$app/state';
     import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import { DatabasesPanel } from '$lib/commandCenter/panels';
-    import { project } from '../store';
+    import { getPageTitle, project } from '../store';
     import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     $: $registerCommands([
@@ -34,7 +34,8 @@
 <svelte:head>
     <!-- svelte bug, the table header just stays! -->
     {#key page.url.pathname}
-        <title>Databases - {resolvedProfile.platform}</title>
+        <title
+            >{getPageTitle(page.data?.project?.name, 'Databases', resolvedProfile.platform)}</title>
     {/key}
 </svelte:head>
 

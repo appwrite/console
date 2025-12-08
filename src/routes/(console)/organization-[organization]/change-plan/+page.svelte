@@ -305,6 +305,16 @@
     $: currentPlanGroup = $plansInfo?.get($organization?.billingPlan)?.group;
     $: isSameGroupDowngrade =
         currentPlanGroup && selectedPlanGroup && currentPlanGroup === selectedPlanGroup;
+
+    // check if the plan allows multiple members
+    $: planDetails = $plansInfo?.get(selectedPlan);
+    $: seatsAddon = planDetails?.addons?.seats;
+    $: canAddMembers =
+        !seatsAddon || (seatsAddon.supported ?? false) || (seatsAddon.limit ?? 0) > 1;
+
+    $: if (!canAddMembers && collaborators.length > 0) {
+        collaborators = [];
+    }
 </script>
 
 <svelte:head>
@@ -439,14 +449,17 @@
                     </Fieldset>
                 {/await}
 
-                <Fieldset legend="Invite members">
-                    <InputTags
-                        bind:tags={collaborators}
-                        label="Invite members by email"
-                        placeholder="Enter email address(es)"
-                        id="members" />
-                </Fieldset>
+                {#if canAddMembers}
+                    <Fieldset legend="Invite members">
+                        <InputTags
+                            bind:tags={collaborators}
+                            label="Invite members by email"
+                            placeholder="Enter email address(es)"
+                            id="members" />
+                    </Fieldset>
+                {/if}
             {/if}
+
             {#if isDowngrade && isFreePlan(selectedPlan) && !data.hasFreeOrgs}
                 <Fieldset legend="Feedback">
                     <Layout.Stack gap="xl">

@@ -18,6 +18,8 @@
     import { InteractiveText, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { getEffectiveScopes } from '../api-keys/scopes.svelte';
     import { resolvedProfile } from '$lib/profiles/index.svelte';
+    import { page } from '$app/state';
+    import { getPageTitle } from '../../store';
 
     export let key: Models.DevKey | Models.Key;
     export let keyType: 'api' | 'dev' = 'api';
@@ -112,7 +114,8 @@
 </script>
 
 <svelte:head>
-    <title>{label} key - {resolvedProfile.platform}</title>
+    <title
+        >{getPageTitle(page.data?.project?.name, `${label} key`, resolvedProfile.platform)}</title>
 </svelte:head>
 
 <Container>

@@ -6,6 +6,7 @@
     import { canWriteProjects } from '$lib/stores/roles';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { resolvedProfile } from '$lib/profiles/index.svelte';
+    import { getPageTitle } from '../store';
 
     $: $registerCommands([
         {
@@ -29,7 +30,7 @@
 </script>
 
 <svelte:head>
-    <title>Settings - {resolvedProfile.platform}</title>
+    <title>{getPageTitle(page.data?.project?.name, 'Settings', resolvedProfile.platform)}</title>
 </svelte:head>
 
 <slot />

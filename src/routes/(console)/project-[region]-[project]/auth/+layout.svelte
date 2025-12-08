@@ -7,7 +7,7 @@
     import { readOnly } from '$lib/stores/billing';
     import { canWriteTeams, canWriteUsers } from '$lib/stores/roles';
     import { GRACE_PERIOD_OVERRIDE } from '$lib/system';
-    import { project } from '../store';
+    import { getPageTitle, project } from '../store';
     import { showCreateUser } from './+page.svelte';
     import { showCreateTeam } from './teams/+page.svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
@@ -106,7 +106,7 @@
 </script>
 
 <svelte:head>
-    <title>Auth - {resolvedProfile.platform}</title>
+    <title>{getPageTitle(page.data?.project?.name, 'Auth', resolvedProfile.platform)}</title>
 </svelte:head>
 
 <slot />

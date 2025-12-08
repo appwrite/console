@@ -3,7 +3,7 @@
     import { base } from '$app/paths';
     import { page } from '$app/state';
     import { registerCommands } from '$lib/commandCenter';
-    import { project } from '$routes/(console)/project-[region]-[project]/store';
+    import { project, getPageTitle } from '$routes/(console)/project-[region]-[project]/store';
     import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     const topicId = page.params.topic;
@@ -49,7 +49,7 @@
 </script>
 
 <svelte:head>
-    <title>Topic - {resolvedProfile.platform}</title>
+    <title>{getPageTitle(page.data?.project?.name, 'Topic', resolvedProfile.platform)}</title>
 </svelte:head>
 
 <slot />

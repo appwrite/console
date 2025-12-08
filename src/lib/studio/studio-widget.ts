@@ -302,7 +302,8 @@ export async function initImagine(
                 {
                     AI_SERVICE_ENDPOINT: env.PUBLIC_AI_SERVICE_BASE_URL,
                     APPWRITE_ENDPOINT: env.PUBLIC_APPWRITE_ENDPOINT,
-                    APPWRITE_SITES_BASE_URL: ''
+                    APPWRITE_SITES_BASE_URL: env.PUBLIC_APPWRITE_SITES_BASE_URL,
+                    REALTIME_URI: env.PUBLIC_REALTIME_URI
                 },
                 {
                     initialTheme: get(app).themeInUse,

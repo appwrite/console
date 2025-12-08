@@ -26,7 +26,10 @@
     import { onMount } from 'svelte';
     import Configuration from '../../configuration.svelte';
     import Domain from '../../domain.svelte';
-    import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
+    import {
+        regionalConsoleVariables,
+        getPageTitle
+    } from '$routes/(console)/project-[region]-[project]/store';
     import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     export let data;
@@ -156,7 +159,7 @@
 </script>
 
 <svelte:head>
-    <title>Create site - {resolvedProfile.platform}</title>
+    <title>{getPageTitle(page.data?.project?.name, 'Create site', resolvedProfile.platform)}</title>
 </svelte:head>
 
 <Wizard

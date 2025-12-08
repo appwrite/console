@@ -9,7 +9,7 @@
     import { Button, Form, InputTags, InputText } from '$lib/elements/forms';
     import { Wizard } from '$lib/layout';
     import type { Coupon } from '$lib/sdk/billing';
-    import { isOrganization, tierToPlan } from '$lib/stores/billing';
+    import { isOrganization, plansInfo, tierToPlan } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import type { OrganizationError, Organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
@@ -41,6 +41,16 @@
 
     let billingBudget: number;
     let showCreditModal = false;
+
+    // check if the plan allows multiple members
+    $: planDetails = $plansInfo?.get(selectedPlan);
+    $: seatsAddon = planDetails?.addons?.seats;
+    $: canAddMembers =
+        !seatsAddon || (seatsAddon.supported ?? false) || (seatsAddon.limit ?? 0) > 1;
+
+    $: if (!canAddMembers && collaborators.length > 0) {
+        collaborators = [];
+    }
 
     afterNavigate(({ from }) => {
         previousPage = from?.url?.pathname || previousPage;
@@ -193,6 +203,7 @@
                     id="name"
                     required />
             </Fieldset>
+
             <Fieldset legend="Select plan">
                 <Layout.Stack>
                     <Typography.Text>
@@ -210,6 +221,7 @@
                         bind:billingPlan={selectedPlan} />
                 </Layout.Stack>
             </Fieldset>
+
             {#if !isFreePlan(selectedPlan)}
                 <Fieldset legend="Payment">
                     <Layout.Stack gap="s" alignItems="flex-start">
@@ -236,13 +248,16 @@
                         {/if}
                     </Layout.Stack>
                 </Fieldset>
-                <Fieldset legend="Invite members">
-                    <InputTags
-                        bind:tags={collaborators}
-                        label="Invite members by email"
-                        placeholder="Enter email address(es)"
-                        id="members" />
-                </Fieldset>
+
+                {#if canAddMembers}
+                    <Fieldset legend="Invite members">
+                        <InputTags
+                            bind:tags={collaborators}
+                            label="Invite members by email"
+                            placeholder="Enter email address(es)"
+                            id="members" />
+                    </Fieldset>
+                {/if}
             {/if}
         </Layout.Stack>
     </Form>

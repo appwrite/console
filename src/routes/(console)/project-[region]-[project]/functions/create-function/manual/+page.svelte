@@ -18,7 +18,7 @@
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import Configuration from './configuration.svelte';
     import { getIconFromRuntime } from '$lib/stores/runtimes';
-    import { regionalConsoleVariables } from '../../../store';
+    import { regionalConsoleVariables, getPageTitle } from '../../../store';
     import { InvalidFileType, removeFile } from '$lib/helpers/files';
     import { isCloud } from '$lib/system';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
@@ -161,7 +161,12 @@
 </script>
 
 <svelte:head>
-    <title>Create function - {resolvedProfile.platform}</title>
+    <title
+        >{getPageTitle(
+            page.data?.project?.name,
+            'Create function',
+            resolvedProfile.platform
+        )}</title>
 </svelte:head>
 
 <Wizard
