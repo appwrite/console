@@ -262,7 +262,7 @@
         max-width: calc(100vw - 76px);
         margin-top: 48px;
         margin-right: 10px;
-        margin-left: 64px;
+        margin-left: 48px;
         overflow: auto;
         @media (min-width: 1024px) {
             width: 100%;

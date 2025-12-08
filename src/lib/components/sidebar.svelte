@@ -455,7 +455,7 @@
 
         .link-icon {
             height: 16px;
-            color: var(--fgcolor-neutral-weak);
+            color: var(--fgcolor-neutral-tertiary);
             transition: color 0.2s ease-in-out;
         }
 
@@ -463,7 +463,7 @@
             background: var(--bgcolor-neutral-secondary);
 
             .link-icon {
-                color: var(--fgcolor-neutral-tertiary);
+                color: var(--fgcolor-neutral-primary);
             }
         }
 
@@ -485,7 +485,7 @@
             }
 
             .link-icon {
-                color: var(--fgcolor-neutral-tertiary);
+                color: var(--fgcolor-neutral-primary);
             }
         }
     }
@@ -495,7 +495,7 @@
             color: var(--fgcolor-neutral-primary);
         }
         .link-icon {
-            color: var(--fgcolor-neutral-tertiary);
+            color: var(--fgcolor-neutral-primary);
         }
     }
 
