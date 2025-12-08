@@ -100,8 +100,7 @@
 
         <CardGrid>
             <svelte:fragment slot="title">Delete database</svelte:fragment>
-            The database will be permanently deleted, including all tables within it. This action is
-            irreversible.
+            The database will be permanently deleted, including all tables within it. This action is irreversible.
             <svelte:fragment slot="aside">
                 <BoxAvatar>
                     <svelte:fragment slot="title">

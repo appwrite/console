@@ -49,7 +49,6 @@
     .studio-page {
         position: relative;
         width: 100%;
-        min-height: calc(100vh - 48px);
         background: var(--bgcolor-neutral-primary);
     }
 </style>
