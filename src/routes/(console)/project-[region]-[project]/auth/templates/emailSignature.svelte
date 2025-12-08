@@ -49,8 +49,7 @@
             </svelte:fragment>
             <svelte:fragment slot="title"
                 >Upgrade to remove {resolvedProfile.platform} branding</svelte:fragment>
-            Upgrade to a {nextTier} plan to remove the {resolvedProfile.platform} branding from your
-            emails.
+            Upgrade to a {nextTier} plan to remove the {resolvedProfile.platform} branding from your emails.
 
             <svelte:fragment let:source slot="cta">
                 <Button
