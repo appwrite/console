@@ -259,7 +259,7 @@
         border: 1px solid var(--border-neutral);
         overflow: hidden;
         height: calc(100vh - 60px);
-        max-width: calc(100vw - 76px);
+        max-width: calc(100vw - 56px);
         margin-top: 48px;
         margin-right: 10px;
         margin-left: 48px;
