@@ -16,7 +16,7 @@ export const load: PageLoad = async ({ parent, params }) => {
                 {
                     organization: teamId,
                     template: params.template,
-                    region: params.region
+                    region: 'fra'
                 }
             )
         );
