@@ -692,7 +692,7 @@
             transition: width 0.2s linear;
 
             &.icons {
-                width: 266px;
+                width: 248px;
                 transition: width 0.3s linear;
 
                 &.no-transitions {

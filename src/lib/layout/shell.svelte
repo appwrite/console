@@ -301,7 +301,7 @@
     :global(main:has(.sub-navigation)) {
         .main-content {
             @media (min-width: 1024px) {
-                padding-left: 255px;
+                padding-left: 238px;
             }
         }
     }
@@ -315,7 +315,7 @@
         @media (min-width: 1024px) {
             .main-content {
                 height: auto;
-                padding-left: 210px;
+                padding-left: 198px;
             }
         }
 

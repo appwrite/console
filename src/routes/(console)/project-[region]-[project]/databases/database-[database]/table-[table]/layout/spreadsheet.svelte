@@ -45,7 +45,7 @@
         if (!spreadsheetWrapper) return;
         const wrapperRect = spreadsheetWrapper.getBoundingClientRect();
         const wrapperTop = wrapperRect.top;
-        const viewportHeight = window.innerHeight;
+        const viewportHeight = window.innerHeight - 14;
         const availableHeight = viewportHeight - wrapperTop;
         const finalHeight = Math.max(100, availableHeight);
 
