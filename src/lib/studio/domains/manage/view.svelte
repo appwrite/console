@@ -10,13 +10,15 @@
         domain,
         siteId,
         region,
-        projectId
+        projectId,
+        onAddNewDomain = null
     }: {
         show: boolean;
         domain: string;
         siteId: string;
         region: string;
         projectId: string;
+        onAddNewDomain?: () => void;
     } = $props();
 </script>
 
@@ -40,6 +42,6 @@
             </Typography.Text>
         </Layout.Stack>
 
-        <DomainsTable {siteId} {region} {projectId} />
+        <DomainsTable {siteId} {region} {projectId} {onAddNewDomain} />
     </Layout.Stack>
 </SideSheet>

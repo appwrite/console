@@ -106,4 +106,8 @@
     {region}
     {projectId}
     domain={primaryDomainForSite}
-    bind:show={showManageDomainsSheet} />
+    bind:show={showManageDomainsSheet}
+    onAddNewDomain={() => {
+        showAddDomainsWizard = true;
+        showManageDomainsSheet = false;
+    }} />

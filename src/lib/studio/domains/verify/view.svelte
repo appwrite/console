@@ -107,7 +107,7 @@
 </script>
 
 {#if show}
-    <Wizard column columnSize="s" title="Add domain" showExitModal onExit={() => (show = false)}>
+    <Wizard column columnSize="s" title="Add domain" confirmExit onExit={() => (show = false)}>
         <Form onSubmit={verify} bind:isSubmitting>
             <Layout.Stack gap="xxl">
                 <Card.Base radius="s" padding="s">

@@ -22,8 +22,6 @@
         Skeleton,
         Divider
     } from '@appwrite.io/pink-svelte';
-    import { resolve } from '$app/paths';
-    import { goto } from '$app/navigation';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { regionalProtocol } from '$routes/(console)/project-[region]-[project]/store';
     import DeleteDomainModal from '$routes/(console)/project-[region]-[project]/sites/site-[site]/domains/deleteDomainModal.svelte';
@@ -32,11 +30,13 @@
     let {
         siteId,
         region,
-        projectId
+        projectId,
+        onAddNewDomain = null
     }: {
         siteId: string;
         region: string;
         projectId: string;
+        onAddNewDomain?: () => void;
     } = $props();
 
     let loading = $state(true);
@@ -81,18 +81,6 @@
         previousDeleteState = showDelete;
         previousDeleteState = showDelete;
         previousRetryState = showRetry;
-    });
-
-    const addDomainUrl = $derived.by(() => {
-        const baseUrl = resolve(
-            '/(console)/project-[region]-[project]/sites/site-[site]/domains/add-domain',
-            {
-                region,
-                project: projectId,
-                site: siteId
-            }
-        );
-        return `${baseUrl}?types=false`;
     });
 </script>
 
@@ -164,7 +152,7 @@
 </Table.Root>
 
 <Layout.Stack style="width: min-content;">
-    <Button compact on:onclick={async () => await goto(addDomainUrl)}>
+    <Button compact on:click={() => onAddNewDomain?.()}>
         <Icon icon={IconPlus} size="s" />
         Add domain
     </Button>
