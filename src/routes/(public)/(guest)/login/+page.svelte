@@ -20,6 +20,7 @@
 
     async function login() {
         try {
+            clearAuthToken();
             disabled = true;
             await sdk.forConsole.account.createEmailPasswordSession({
                 email: mail,
@@ -65,6 +66,7 @@
     }
 
     function onOauthLogin(config: { provider: OAuthProvider; scopes: string[] }) {
+        clearAuthToken();
         let url = window.location.origin;
 
         if (page.url.searchParams) {
@@ -82,6 +84,10 @@
             failure: window.location.origin,
             scopes: config.scopes
         });
+    }
+
+    function clearAuthToken() {
+        localStorage.removeItem('imagine-auth-token');
     }
 </script>
 
