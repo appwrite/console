@@ -38,6 +38,7 @@
 
 <main class="grid-1-1 is-full-page" id="main" style:background="#0f0f0f">
     <div
+        class="unicorn-scene"
         style:opacity={opacity.current}
         data-us-scale="1"
         data-us-dpi="1.5"
@@ -46,7 +47,9 @@
         data-us-alttext="Welcome to Imagine"
         data-us-project-src={UnicornScene}>
     </div>
-    <section class="grid-1-1-col-2 u-flex u-flex-vertical u-cross-center u-main-center">
+
+    <section
+        class="grid-1-1-col-2 form-section u-flex u-flex-vertical u-cross-center u-main-center">
         <slot name="top" />
         <div class="container u-flex u-flex-vertical u-cross-center u-main-center u-gap-32">
             <Typography.Title size="l">Welcome to Imagine</Typography.Title>
@@ -87,6 +90,11 @@
 
     .auth-container {
         max-inline-size: 27.5rem;
+
+        @media #{devices.$break1} {
+            margin-block-end: 5rem;
+            margin-block-start: 2rem;
+        }
     }
 
     // mobile logo positioned at bottom in mobile view
@@ -97,17 +105,37 @@
         transform: translate(-50%, -50%);
         max-width: 100%;
         margin-block-start: 0 !important;
+
+        @media #{devices.$break1} {
+            position: fixed;
+        }
     }
 
-    @media #{devices.$break1} {
-        .auth-container {
-            margin-block-end: 5rem;
-            margin-block-start: 2rem;
+    .unicorn-scene {
+        @media #{devices.$break1} {
+            display: none;
         }
+    }
 
-        .container {
+    .form-section {
+        @media #{devices.$break1} {
+            width: 100%;
+        }
+    }
+
+    .container {
+        @media #{devices.$break1} {
             min-height: 100%;
             position: relative;
+        }
+    }
+
+    main {
+        @media #{devices.$break1} {
+            display: flex;
+            position: relative;
+            align-items: center;
+            justify-content: center;
         }
     }
 </style>
