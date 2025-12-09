@@ -45,8 +45,8 @@
 
     const pageTitle = $derived.by(() => {
         const platform = resolvedProfile.platform;
-        return resolvedProfile.id === ProfileMode.STUDIO ? platform : `Organizations - ${platform}`
-    })
+        return resolvedProfile.id === ProfileMode.STUDIO ? platform : `Organizations - ${platform}`;
+    });
 </script>
 
 <svelte:head>
