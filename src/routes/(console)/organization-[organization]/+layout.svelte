@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { newOrgModal, newMemberModal } from '$lib/stores/organization';
+    import { newMemberModal, newOrgModal } from '$lib/stores/organization';
     import CreateMember from './createMember.svelte';
     import Create from '../createOrganization.svelte';
     import { goto } from '$app/navigation';
@@ -10,7 +10,7 @@
     import { base } from '$app/paths';
     import { isOwner } from '$lib/stores/roles';
     import type { LayoutProps } from './$types';
-    import { resolvedProfile } from '$lib/profiles/index.svelte';
+    import { ProfileMode, resolvedProfile } from '$lib/profiles/index.svelte';
 
     let { data, children }: LayoutProps = $props();
 
@@ -42,10 +42,15 @@
             }
         ])
     );
+
+    const pageTitle = $derived.by(() => {
+        const platform = resolvedProfile.platform;
+        return resolvedProfile.id === ProfileMode.STUDIO ? platform : `Organizations - ${platform}`
+    })
 </script>
 
 <svelte:head>
-    <title>Organizations - {resolvedProfile.platform}</title>
+    <title>{pageTitle}</title>
 </svelte:head>
 
 {@render children()}
