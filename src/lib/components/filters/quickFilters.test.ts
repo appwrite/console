@@ -56,7 +56,7 @@ describe('quickFilters', () => {
 
         it('should handle responseStatusCode column correctly', async () => {
             const { addFilter } = await import('./store');
-            
+
             addFilterAndApply(
                 'responseStatusCode',
                 'Status code',
@@ -86,7 +86,7 @@ describe('quickFilters', () => {
 
         it('should handle status code with different casing', async () => {
             const { addFilter } = await import('./store');
-            
+
             addFilterAndApply(
                 'ResponseStatusCode',
                 'Status code',
@@ -114,7 +114,7 @@ describe('quickFilters', () => {
 
         it('should handle statusCode column name', async () => {
             const { addFilter } = await import('./store');
-            
+
             addFilterAndApply(
                 'statusCode',
                 'Status code',
@@ -146,7 +146,7 @@ describe('quickFilters', () => {
 
         it('should create range filters for status code 299', async () => {
             const { addFilter } = await import('./store');
-            
+
             addStatusCodeFilter('299', 'responseStatusCode', mockColumns);
 
             expect(addFilter).toHaveBeenCalledTimes(2);
@@ -166,7 +166,7 @@ describe('quickFilters', () => {
 
         it('should create range filters for status code 499', async () => {
             const { addFilter } = await import('./store');
-            
+
             addStatusCodeFilter('499', 'responseStatusCode', mockColumns);
 
             expect(addFilter).toHaveBeenCalledTimes(2);
@@ -186,7 +186,7 @@ describe('quickFilters', () => {
 
         it('should create range filters for status code 599', async () => {
             const { addFilter } = await import('./store');
-            
+
             addStatusCodeFilter('599', 'responseStatusCode', mockColumns);
 
             expect(addFilter).toHaveBeenCalledTimes(2);
