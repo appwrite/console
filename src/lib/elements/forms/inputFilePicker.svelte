@@ -100,7 +100,7 @@
         selectedBucket={value?.bucketId}
         bind:show
         {onSelect}
-        showLocalFileBucket={true}
+        showLocalFileBucket
         {mimeTypeQuery}
         {allowedExtension} />
 {/if}
