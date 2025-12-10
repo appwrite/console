@@ -100,6 +100,12 @@ function injectStyles(node: HTMLElement, attempt = 0) {
             link.setAttribute(STYLE_ATTRIBUTE, 'true');
             shadow.prepend(link);
             ensureMonacoStyles(shadow);
+            // workaround for https://github.com/emilkowalski/sonner/issues/361
+            document.head.querySelectorAll('style').forEach((styleEl) => {
+                if (styleEl.textContent?.includes('[data-sonner-toaster]')) {
+                    shadow.append(styleEl);
+                }
+            });
         })
         .catch(() => {
             /* no-op */
