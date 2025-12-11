@@ -63,7 +63,6 @@
     import EditRowPermissions from './rows/editPermissions.svelte';
     import { Dialog, Layout, Typography, Selector, Icon } from '@appwrite.io/pink-svelte';
     import { Button, Seekbar } from '$lib/elements/forms';
-    import { generateFakeRecords, generateColumns } from '$lib/helpers/faker';
     import { addNotification } from '$lib/stores/notifications';
     import CreateIndex from './indexes/createIndex.svelte';
     import { hash } from '$lib/helpers/string';
@@ -286,6 +285,8 @@
 
         $spreadsheetLoading = true;
         $randomDataModalState.show = false;
+
+        const { generateFakeRecords, generateColumns } = await import('$lib/helpers/faker');
 
         let columns = page.data.table.columns as Columns[];
         const hasAnyRelationships = columns.some((column) => isRelationship(column));

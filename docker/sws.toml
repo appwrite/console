@@ -1,0 +1,66 @@
+[general]
+host = "::"
+port = 80
+
+root = "/public"
+log-level = "error"
+
+cache-control-headers = false
+security-headers = false
+
+compression = true
+compression-static = true
+
+directory-listing = false
+redirect-trailing-slash = false
+index-files = "index.html"
+page-fallback = "/console/index.html"
+
+[advanced]
+
+# base
+[[advanced.headers]]
+source = "/console/**"
+headers.Cache-Control = "no-cache, no-store, max-age=0"
+headers.Pragma = "no-cache"
+headers.Expires = "0"
+headers.X-UA-Compatible = "IE=Edge"
+headers.X-Frame-Options = "SAMEORIGIN"
+headers.X-XSS-Protection = "1; mode=block;"
+headers.X-Content-Type-Options = "nosniff"
+
+# js chunks
+[[advanced.headers]]
+source = "/console/_app/immutable/**"
+headers.Cache-Control = "public, max-age=31536000"
+headers.Pragma = "public"
+headers.Expires = "1y"
+
+# images
+[[advanced.headers]]
+source = "/console/images/**"
+headers.Cache-Control = "public, must-revalidate, max-age=86400"
+headers.Expires = "1d"
+
+# css, stylesheets
+[[advanced.headers]]
+source = "/console/css/**"
+headers.Cache-Control = "public, must-revalidate, max-age=86400"
+headers.Expires = "1d"
+
+# fonts
+[[advanced.headers]]
+source = "/console/fonts/**"
+headers.Cache-Control = "public, must-revalidate, max-age=86400"
+headers.Expires = "1d"
+
+# icons
+[[advanced.headers]]
+source = "/console/icons/**"
+headers.Cache-Control = "public, must-revalidate, max-age=86400"
+headers.Expires = "1d"
+
+[[advanced.redirects]]
+source = "/"
+destination = "/console"
+kind = 301

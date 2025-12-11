@@ -93,7 +93,10 @@
             "@sentry/cli",
             "esbuild",
             "svelte-preprocess"
-        ]
+        ],
+        "overrides": {
+            "vite": "npm:rolldown-vite@latest"
+        }
     },
     "packageManager": "pnpm@10.20.0"
 }
