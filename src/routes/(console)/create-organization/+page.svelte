@@ -1,6 +1,6 @@
 <script lang="ts">
     import { afterNavigate, goto, invalidate, preloadData } from '$app/navigation';
-    import { base } from '$app/paths';
+    import { base, resolve } from '$app/paths';
     import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { PlanComparisonBox, PlanSelection, SelectPaymentMethod } from '$lib/components/billing';
@@ -20,33 +20,35 @@
     import { writable } from 'svelte/store';
     import EstimatedTotalBox from '$lib/components/billing/estimatedTotalBox.svelte';
     import { onMount } from 'svelte';
-    import { resolvedProfile } from '$lib/profiles/index.svelte';
+    import type { PageProps } from './$types';
     import { isFreePlan } from '$lib/helpers/billing.js';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
-    export let data;
+    const { data }: PageProps = $props();
 
-    let selectedPlan: BillingPlan = data.plan as BillingPlan;
-    let selectedCoupon: Partial<Coupon> | null = data.coupon;
-    let previousPage: string = base;
-    let showExitModal = false;
+    let showExitModal = $state(false);
+    let previousPage: string = $state(resolve('/(console)'));
+    let selectedPlan: BillingPlan = $state(data.plan as BillingPlan);
+    let selectedCoupon: Partial<Coupon> | null = $state(data.coupon);
 
-    let formComponent: Form;
-    let isSubmitting = writable(false);
+    let isSubmitting = $state(writable(false));
+    let formComponent: Form | null = $state(null);
 
-    let name: string;
-    let billingPlan: BillingPlan = BillingPlan.FREE;
-    let paymentMethodId: string;
-    let collaborators: string[] = [];
-    let taxId: string;
+    let name: string | null = $state(null);
+    let taxId: string | null = $state(null);
+    let collaborators: string[] = $state([]);
+    let paymentMethodId: string | null = $state(null);
+    let billingPlan: BillingPlan = $state(BillingPlan.FREE);
 
-    let billingBudget: number;
-    let showCreditModal = false;
+    let showCreditModal = $state(false);
+    let billingBudget: number | undefined = $state(undefined);
 
     // check if the plan allows multiple members
-    $: planDetails = $plansInfo?.get(selectedPlan);
-    $: seatsAddon = planDetails?.addons?.seats;
-    $: canAddMembers =
-        !seatsAddon || (seatsAddon.supported ?? false) || (seatsAddon.limit ?? 0) > 1;
+    const planDetails = $derived($plansInfo?.get(selectedPlan));
+    const seatsAddon = $derived(planDetails?.addons?.seats);
+    const canAddMembers = $derived(
+        !seatsAddon || (seatsAddon.supported ?? false) || (seatsAddon.limit ?? 0) > 1
+    );
 
     $: if (!canAddMembers && collaborators.length > 0) {
         collaborators = [];
@@ -60,8 +62,7 @@
         if (page.url.searchParams.has('coupon')) {
             const coupon = page.url.searchParams.get('coupon');
             try {
-                const response = await sdk.forConsole.billing.getCouponAccount(coupon);
-                selectedCoupon = response;
+                selectedCoupon = await sdk.forConsole.billing.getCouponAccount(coupon);
             } catch (e) {
                 selectedCoupon = {
                     code: null,
@@ -218,7 +219,8 @@
                     <PlanSelection
                         isNewOrg
                         disabled={$isSubmitting}
-                        bind:billingPlan={selectedPlan} />
+                        bind:billingPlan={selectedPlan}
+                        anyOrgFree={data.hasFreeOrganizations} />
                 </Layout.Stack>
             </Fieldset>
 

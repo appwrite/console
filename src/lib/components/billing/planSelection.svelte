@@ -2,12 +2,13 @@
     import { BillingPlan } from '$lib/constants';
     import { formatCurrency } from '$lib/helpers/numbers';
     import { currentPlan, organization } from '$lib/stores/organization';
-    import { Badge, Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { Badge, Layout, Tooltip, Typography } from '@appwrite.io/pink-svelte';
     import { LabelCard } from '..';
     import type { Plan } from '$lib/sdk/billing';
     import { page } from '$app/state';
     import { ProfileMode, resolvedProfile } from '$lib/profiles/index.svelte';
     import { InputSelect } from '$lib/elements/forms';
+    import { isFreePlan, isPaidPlan } from '$lib/helpers/billing';
 
     export let disabled = false;
     export let isNewOrg = false;
@@ -113,52 +114,63 @@
     function handleTierChange(group: PlanGroup) {
         billingPlan = selectedTiers[group.key] as BillingPlan;
     }
+
+    function shouldShowTooltip(plan: Plan) {
+        if (isPaidPlan(plan.$id)) return true;
+        else return !anyOrgFree;
+    }
 </script>
 
 <Layout.Stack>
     {#each groupedPlans as group (group.key)}
         {@const basePlan = group.plans[0]}
-        <LabelCard
-            name="plan"
-            bind:group={billingPlan}
-            disabled={!selfService || (basePlan.$id === BillingPlan.FREE && anyOrgFree) || disabled}
-            tooltipShow={basePlan.$id === BillingPlan.FREE && anyOrgFree}
-            value={group.isGrouped ? selectedTiers[group.key] || basePlan.$id : basePlan.$id}
-            title={basePlan.name}>
-            <svelte:fragment slot="action">
-                {#if group.plans.some((plan) => $organization?.billingPlan === plan.$id) && !isNewOrg}
-                    <Badge variant="secondary" size="xs" content="Current plan" />
-                {/if}
-            </svelte:fragment>
+        <Tooltip disabled={shouldShowTooltip(basePlan)} maxWidth="fit-content">
+            <LabelCard
+                name="plan"
+                bind:group={billingPlan}
+                disabled={!selfService || (isFreePlan(basePlan.$id) && anyOrgFree) || disabled}
+                tooltipShow={isFreePlan(basePlan.$id) && anyOrgFree}
+                value={group.isGrouped ? selectedTiers[group.key] || basePlan.$id : basePlan.$id}
+                title={basePlan.name}>
+                <svelte:fragment slot="action">
+                    {#if group.plans.some((plan) => $organization?.billingPlan === plan.$id) && !isNewOrg}
+                        <Badge variant="secondary" size="xs" content="Current plan" />
+                    {/if}
+                </svelte:fragment>
 
-            <Layout.Stack direction="column" gap="m">
-                <Layout.Stack direction="column" gap="xxs">
-                    <Typography.Caption variant="400">
-                        {basePlan.desc}
-                    </Typography.Caption>
+                <Layout.Stack direction="column" gap="m">
+                    <Layout.Stack direction="column" gap="xxs">
+                        <Typography.Caption variant="400">
+                            {basePlan.desc}
+                        </Typography.Caption>
 
-                    {#if !group.isGrouped}
-                        <Typography.Text>
-                            {@const isZeroPrice = (basePlan.price ?? 0) <= 0}
-                            {@const price = formatCurrency(basePlan.price ?? 0)}
-                            {#if resolvedProfile.id === ProfileMode.STUDIO}
-                                {getPlanLabel(basePlan)}
-                            {:else}
-                                {isZeroPrice ? price : getPlanLabel(basePlan)}
-                            {/if}
-                        </Typography.Text>
+                        {#if !group.isGrouped}
+                            <Typography.Text>
+                                {@const isZeroPrice = (basePlan.price ?? 0) <= 0}
+                                {@const price = formatCurrency(basePlan.price ?? 0)}
+                                {#if resolvedProfile.id === ProfileMode.STUDIO}
+                                    {getPlanLabel(basePlan)}
+                                {:else}
+                                    {isZeroPrice ? price : getPlanLabel(basePlan)}
+                                {/if}
+                            </Typography.Text>
+                        {/if}
+                    </Layout.Stack>
+
+                    {#if group.isGrouped}
+                        <InputSelect
+                            id="tier-{group.key}"
+                            bind:value={selectedTiers[group.key]}
+                            on:change={() => handleTierChange(group)}
+                            options={group.tierOptions} />
                     {/if}
                 </Layout.Stack>
+            </LabelCard>
 
-                {#if group.isGrouped}
-                    <InputSelect
-                        id="tier-{group.key}"
-                        bind:value={selectedTiers[group.key]}
-                        on:change={() => handleTierChange(group)}
-                        options={group.tierOptions} />
-                {/if}
-            </Layout.Stack>
-        </LabelCard>
+            <svelte:fragment slot="tooltip">
+                Only 1 free organization is allowed per account.
+            </svelte:fragment>
+        </Tooltip>
     {/each}
 
     {#if $currentPlan && !currentPlanInList}

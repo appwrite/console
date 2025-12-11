@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/state';
     import { AvatarGroup, Tab, Tabs } from '$lib/components';
@@ -14,7 +15,12 @@
         readOnly,
         tierToPlan
     } from '$lib/stores/billing';
-    import { members, newMemberModal, type Organization } from '$lib/stores/organization';
+    import {
+        members,
+        newMemberModal,
+        newOrgModal,
+        type Organization
+    } from '$lib/stores/organization';
     import {
         canSeeBilling,
         canSeeProjects,
@@ -23,7 +29,7 @@
         isOwner
     } from '$lib/stores/roles';
     import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
-    import { IconGithub, IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { IconGithub, IconPlus, IconPlusSm } from '@appwrite.io/pink-icons-svelte';
     import { Badge, Icon, Layout, Tooltip, Typography } from '@appwrite.io/pink-svelte';
     import { resolvedProfile } from '$lib/profiles/index.svelte';
     import { isFreePlan } from '$lib/helpers/billing';
@@ -107,7 +113,7 @@
 {#if shouldShowCover}
     <Cover blocksize="152px">
         <svelte:fragment slot="header">
-            <span class="u-flex u-cross-center u-gap-8 u-min-width-0">
+            <Layout.Stack direction="row" alignItems="center" gap="m" class="u-min-width-0">
                 <Typography.Title color="--fgcolor-neutral-primary" size="xl" truncate>
                     {titleName}
                 </Typography.Title>
@@ -132,8 +138,15 @@
                         </Tooltip>
                     {/if}
                 {/if}
-            </span>
-
+                <Button
+                    secondary
+                    icon
+                    size="xs"
+                    on:click={() =>
+                        isCloud ? goto(`${base}/create-organization`) : newOrgModal.set(true)}>
+                    <Icon icon={IconPlusSm} size="m" />
+                </Button>
+            </Layout.Stack>
             <div class="u-margin-inline-start-auto">
                 <Layout.Stack direction="row" alignItems="center" gap="xl">
                     {#if $members.total > 1}
