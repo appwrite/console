@@ -50,10 +50,6 @@
         !seatsAddon || (seatsAddon.supported ?? false) || (seatsAddon.limit ?? 0) > 1
     );
 
-    $: if (!canAddMembers && collaborators.length > 0) {
-        collaborators = [];
-    }
-
     afterNavigate(({ from }) => {
         previousPage = from?.url?.pathname || previousPage;
     });
@@ -186,6 +182,12 @@
             trackError(e, Submit.OrganizationCreate);
         }
     }
+
+    $effect(() => {
+        if (!canAddMembers && collaborators.length > 0) {
+            collaborators = [];
+        }
+    });
 </script>
 
 <svelte:head>
