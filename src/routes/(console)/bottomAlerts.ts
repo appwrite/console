@@ -1,36 +1,58 @@
 import { isCloud } from '$lib/system';
 import { isSameDay } from '$lib/helpers/date';
-import { type BottomModalAlertItem, showBottomModalAlert } from '$lib/stores/bottom-alerts';
-import AiSuggestionsDark from '$lib/images/promos/ai-suggestions-dark.png';
-import AiSuggestionsLight from '$lib/images/promos/ai-suggestions-light.png';
+import Imagine from '$lib/components/promos/imagine.svelte';
+import {
+    type BottomModalAlertItem,
+    setMobileSingleAlertLayout,
+    showBottomModalAlert
+} from '$lib/stores/bottom-alerts';
+
+const SHOW_IMAGINE_PROMO = false;
 
 const listOfPromotions: BottomModalAlertItem[] = [];
 
-if (isCloud) {
-    const aiSuggestionsPromo: BottomModalAlertItem = {
-        id: 'modal:database_ai_suggestions_announcement',
-        src: {
-            dark: AiSuggestionsDark,
-            light: AiSuggestionsLight
-        },
-        title: 'Announcing Database AI suggestions',
-        message: 'From table name to schema in one click.',
-        plan: 'free',
+if (isCloud && SHOW_IMAGINE_PROMO) {
+    const imaginePromo: BottomModalAlertItem = {
+        id: 'modal:imagine.dev',
+        backgroundComponent: Imagine,
+        title: 'Introducing Imagine',
+        message: 'the most complete AI builder to date',
         importance: 8,
-        scope: 'project',
+        scope: 'everywhere',
+        plan: 'free',
         cta: {
-            text: 'Read announcement',
-            link: () => 'https://appwrite.io/blog/post/announcing-database-ai-suggestions',
+            text: 'Try it now',
+            color: {
+                light: '#FFFFFF',
+                dark: '#000000'
+            },
+            background: {
+                light: '#000000',
+                dark: '#FFFFFF'
+            },
+            backgroundHover: {
+                light: '#333333',
+                dark: '#CCCCCC'
+            },
+            link: () => 'https://studio.imagine.dev',
             external: true,
             hideOnClick: true
         },
         show: true
     };
-    listOfPromotions.push(aiSuggestionsPromo);
+
+    listOfPromotions.push(imaginePromo);
 }
 
 export function addBottomModalAlerts() {
     listOfPromotions.forEach((promotion) => showBottomModalAlert(promotion));
+
+    // only for imagine!
+    if (listOfPromotions.length > 0) {
+        const imaginePromo = listOfPromotions[0];
+        const { cta, title, message } = imaginePromo;
+        setMobileSingleAlertLayout({ enabled: true, cta, title, message });
+    }
 }
 
 // use this for time based promo handling
