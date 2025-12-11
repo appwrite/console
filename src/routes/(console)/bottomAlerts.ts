@@ -1,32 +1,40 @@
 import { isCloud } from '$lib/system';
 import { isSameDay } from '$lib/helpers/date';
+import Imagine from '$lib/components/promos/imagine.svelte';
 import { type BottomModalAlertItem, showBottomModalAlert } from '$lib/stores/bottom-alerts';
-import AiSuggestionsDark from '$lib/images/promos/ai-suggestions-dark.png';
-import AiSuggestionsLight from '$lib/images/promos/ai-suggestions-light.png';
 
 const listOfPromotions: BottomModalAlertItem[] = [];
 
 if (isCloud) {
-    const aiSuggestionsPromo: BottomModalAlertItem = {
-        id: 'modal:database_ai_suggestions_announcement',
-        src: {
-            dark: AiSuggestionsDark,
-            light: AiSuggestionsLight
-        },
-        title: 'Announcing Database AI suggestions',
-        message: 'From table name to schema in one click.',
-        plan: 'free',
+    const imaginePromo: BottomModalAlertItem = {
+        id: 'modal:imagine.dev',
+        backgroundComponent: Imagine,
+        title: 'Introducing Imagine',
+        message: 'the most complete AI builder to date',
         importance: 8,
-        scope: 'project',
+        scope: 'everywhere',
+        plan: 'free',
         cta: {
-            text: 'Read announcement',
-            link: () => 'https://appwrite.io/blog/post/announcing-database-ai-suggestions',
+            text: 'Try it now',
+            color: {
+                light: '#FFFFFF',
+                dark: '#000000'
+            },
+            background: {
+                light: '#000000',
+                dark: '#FFFFFF'
+            },
+            backgroundHover: {
+                light: '#333333',
+                dark: '#CCCCCC'
+            },
+            link: () => 'https://studio.imagine.dev',
             external: true,
             hideOnClick: true
         },
         show: true
     };
-    listOfPromotions.push(aiSuggestionsPromo);
+    listOfPromotions.push(imaginePromo);
 }
 
 export function addBottomModalAlerts() {

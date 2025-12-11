@@ -19,6 +19,14 @@
     import { goto } from '$app/navigation';
     import { Typography } from '@appwrite.io/pink-svelte';
 
+    function resolveThemeColor(
+        color: Record<'light' | 'dark', string> | string | undefined
+    ): string | undefined {
+        if (!color) return undefined;
+        if (typeof color === 'string') return color;
+        return color[$app.themeInUse];
+    }
+
     let currentIndex = $state(0);
     let openModalOnMobile = $state(false);
 
@@ -199,7 +207,10 @@
                     </button>
 
                     <div class="content-wrapper u-flex-vertical u-gap-16">
-                        {#if $app.themeInUse === 'dark'}
+                        {#if currentModalAlert.backgroundComponent}
+                            {@const BackgroundComponent = currentModalAlert.backgroundComponent}
+                            <BackgroundComponent />
+                        {:else if $app.themeInUse === 'dark'}
                             <img
                                 src={currentModalAlert.src.dark}
                                 alt={currentModalAlert.title}
@@ -261,8 +272,16 @@
                                 fullWidthMobile
                                 secondary={!hasOnlyPrimaryCta}
                                 class={`${hasOnlyPrimaryCta ? 'only-primary-cta' : ''}`}
+                                --bgcolor-accent={resolveThemeColor(
+                                    currentModalAlert.cta.background
+                                )}
+                                --bgcolor-accent-secondary={resolveThemeColor(
+                                    currentModalAlert.cta.backgroundHover
+                                )}
                                 on:click={() => triggerWindowLink(currentModalAlert)}>
-                                {currentModalAlert.cta.text}
+                                <span style:color={resolveThemeColor(currentModalAlert.cta.color)}>
+                                    {currentModalAlert.cta.text}
+                                </span>
                             </Button>
 
                             {#if currentModalAlert.learnMore}
@@ -310,7 +329,10 @@
                         </button>
 
                         <div class="content-wrapper u-flex-vertical u-gap-16">
-                            {#if $app.themeInUse === 'dark'}
+                            {#if currentModalAlert.backgroundComponent}
+                                {@const BackgroundComponent = currentModalAlert.backgroundComponent}
+                                <BackgroundComponent />
+                            {:else if $app.themeInUse === 'dark'}
                                 <img
                                     src={currentModalAlert.src.dark}
                                     alt={currentModalAlert.title}
@@ -375,13 +397,24 @@
                                     secondary={!hasOnlyPrimaryCta}
                                     class="button"
                                     fullWidthMobile
+                                    --bgcolor-accent={resolveThemeColor(
+                                        currentModalAlert.cta.background
+                                    )}
+                                    --bgcolor-accent-secondary={resolveThemeColor(
+                                        currentModalAlert.cta.backgroundHover
+                                    )}
                                     on:click={() => {
                                         openModalOnMobile = false;
                                         triggerWindowLink(currentModalAlert);
                                     }}>
-                                    {shouldShowUpgrade
-                                        ? 'Upgrade plan'
-                                        : currentModalAlert.cta.text}
+                                    <span
+                                        style:color={resolveThemeColor(
+                                            currentModalAlert.cta.color
+                                        )}>
+                                        {shouldShowUpgrade
+                                            ? 'Upgrade plan'
+                                            : currentModalAlert.cta.text}
+                                    </span>
                                 </Button>
 
                                 {#if currentModalAlert.learnMore}
@@ -466,6 +499,7 @@
 
     .icon-inline-tag {
         top: 1rem;
+        z-index: 1;
         right: 1rem;
 
         cursor: pointer;
