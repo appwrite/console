@@ -108,6 +108,12 @@
             message: 'Explore new features to enhance your projects and improve security.'
         };
 
+        // override
+        if (currentModalAlert?.sameContentOnMobileLayout) {
+            fallback.title = currentModalAlert?.title;
+            fallback.message = currentModalAlert?.message;
+        }
+
         const shouldApplyConfig = config?.enabled === true && visibleAlerts.length === 1;
 
         return {
@@ -269,6 +275,7 @@
                         <div
                             class="buttons u-flex u-flex-vertical-mobile u-gap-4 u-padding-inline-8 u-padding-block-8">
                             <Button
+                                size="xs"
                                 fullWidthMobile
                                 secondary={!hasOnlyPrimaryCta}
                                 class={`${hasOnlyPrimaryCta ? 'only-primary-cta' : ''}`}
@@ -288,6 +295,7 @@
                                 <!-- docs, learn-more, etc always external -->
                                 <Button
                                     text
+                                    size="xs"
                                     class="button"
                                     external
                                     fullWidthMobile
@@ -377,7 +385,7 @@
                                 </div>
                             {/if}
 
-                            <div class="u-flex-vertical u-gap-8 u-padding-inline-8">
+                            <div class="u-flex-vertical u-gap-4 u-padding-inline-8">
                                 <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
                                     {currentModalAlert.title}
                                 </Typography.Text>
@@ -394,6 +402,7 @@
                             <div
                                 class="buttons u-flex u-flex-vertical-mobile u-gap-4 u-padding-inline-8 u-padding-block-8">
                                 <Button
+                                    size="xs"
                                     secondary={!hasOnlyPrimaryCta}
                                     class="button"
                                     fullWidthMobile
@@ -421,6 +430,7 @@
                                     <!-- docs, learn-more, etc always external -->
                                     <Button
                                         text
+                                        size="xs"
                                         class="button"
                                         external
                                         fullWidthMobile
@@ -457,7 +467,7 @@
                 <div class="u-flex-vertical u-gap-4">
                     <div class="u-flex u-cross-center u-main-space-between">
                         <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
-                            {currentModalAlert.title}
+                            {mobileConfig.title}
                         </Typography.Text>
                         <button onclick={hideAllModalAlerts} aria-label="Close">
                             <span class="icon-x"></span>

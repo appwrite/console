@@ -32,8 +32,10 @@ if (isCloud) {
             external: true,
             hideOnClick: true
         },
-        show: true
+        show: true,
+        sameContentOnMobileLayout: true
     };
+
     listOfPromotions.push(imaginePromo);
 }
 

@@ -50,6 +50,12 @@ export type BottomModalAlertItem = {
     closed?: () => void;
     scope: 'organization' | 'project' | 'everywhere';
     notificationHideOptions?: NotificationCoolOffOptions;
+
+    /**
+     * if true,
+     * uses same title, message on mobile floating window.
+     */
+    sameContentOnMobileLayout?: boolean;
 };
 
 type BottomModalAlertState = {
