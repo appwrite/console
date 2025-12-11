@@ -1,7 +1,11 @@
 import { isCloud } from '$lib/system';
 import { isSameDay } from '$lib/helpers/date';
 import Imagine from '$lib/components/promos/imagine.svelte';
-import { type BottomModalAlertItem, showBottomModalAlert } from '$lib/stores/bottom-alerts';
+import {
+    type BottomModalAlertItem,
+    setMobileSingleAlertLayout,
+    showBottomModalAlert
+} from '$lib/stores/bottom-alerts';
 
 const listOfPromotions: BottomModalAlertItem[] = [];
 
@@ -32,8 +36,7 @@ if (isCloud) {
             external: true,
             hideOnClick: true
         },
-        show: true,
-        sameContentOnMobileLayout: true
+        show: true
     };
 
     listOfPromotions.push(imaginePromo);
@@ -41,6 +44,13 @@ if (isCloud) {
 
 export function addBottomModalAlerts() {
     listOfPromotions.forEach((promotion) => showBottomModalAlert(promotion));
+
+    // only for imagine!
+    if (listOfPromotions.length > 0) {
+        const imaginePromo = listOfPromotions[0];
+        const { cta, title, message } = imaginePromo;
+        setMobileSingleAlertLayout({ enabled: true, cta, title, message });
+    }
 }
 
 // use this for time based promo handling

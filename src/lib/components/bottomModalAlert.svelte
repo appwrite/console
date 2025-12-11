@@ -490,6 +490,9 @@
 <style>
     .card {
         padding: 0.5rem;
+        box-shadow:
+            0 8px 16px 0 rgba(0, 0, 0, 0.02),
+            0 20px 24px 0 rgba(0, 0, 0, 0.02);
     }
 
     .main-alert-wrapper {
