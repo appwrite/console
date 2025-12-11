@@ -82,6 +82,10 @@
     let editRelatedRow: EditRelatedRow;
     let editRowPermissions: EditRowPermissions;
 
+    let editRowDisabled = true;
+    let editRelatedRowDisabled = true;
+    let editRowPermissionsDisabled = true;
+
     let createIndex: CreateIndex;
     let createColumn: CreateColumn;
     let selectedOption: Option['name'] = 'String';
@@ -436,7 +440,7 @@
     bind:show={$databaseRowSheetOptions.show}
     submit={{
         text: 'Update',
-        disabled: editRow?.isDisabled(),
+        disabled: editRowDisabled,
         onClick: async () => await editRow?.update()
     }}
     topAction={{
@@ -501,6 +505,7 @@
             bind:this={editRow}
             bind:row={$databaseRowSheetOptions.row}
             bind:rowId={$databaseRowSheetOptions.rowId}
+            bind:disabled={editRowDisabled}
             autoFocus={$databaseRowSheetOptions.autoFocus} />
     {/key}
 </SideSheet>
@@ -511,13 +516,14 @@
     bind:show={$databaseRelatedRowSheetOptions.show}
     submit={{
         text: 'Update',
-        disabled: editRelatedRow?.isDisabled(),
+        disabled: editRelatedRowDisabled,
         onClick: async () => await editRelatedRow?.update()
     }}>
     <EditRelatedRow
         bind:this={editRelatedRow}
         rows={$databaseRelatedRowSheetOptions.rows}
-        tableId={$databaseRelatedRowSheetOptions.tableId} />
+        tableId={$databaseRelatedRowSheetOptions.tableId}
+        bind:disabledState={editRelatedRowDisabled} />
 </SideSheet>
 
 <SideSheet
@@ -542,10 +548,13 @@
     bind:show={$rowPermissionSheet.show}
     submit={{
         text: 'Update',
-        disabled: editRowPermissions?.disableSubmit(),
+        disabled: editRowPermissionsDisabled,
         onClick: async () => editRowPermissions?.updatePermissions()
     }}>
-    <EditRowPermissions bind:this={editRowPermissions} bind:row={$rowPermissionSheet.row} />
+    <EditRowPermissions
+        bind:this={editRowPermissions}
+        bind:row={$rowPermissionSheet.row}
+        bind:arePermsDisabled={editRowPermissionsDisabled} />
 </SideSheet>
 
 <SideSheet title="Row activity" bind:show={$rowActivitySheet.show} closeOnBlur>

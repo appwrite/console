@@ -19,6 +19,7 @@
     import { Layout, Skeleton } from '@appwrite.io/pink-svelte';
     import { deepClone } from '$lib/helpers/object';
     import deepEqual from 'deep-equal';
+    import { onMount } from 'svelte';
 
     const tableId = page.params.table;
     const databaseId = page.params.database;
@@ -26,17 +27,24 @@
     let {
         row = $bindable(),
         rowId = $bindable(null),
-        autoFocus = true
+        autoFocus = true,
+        disabled = $bindable(true)
     }: {
         row?: Models.Row | null;
         rowId?: string | null;
         autoFocus?: boolean;
+        disabled?: boolean;
     } = $props();
 
     let loading = $state(false);
 
     let work = $state<Writable<Models.Row> | null>(null);
     let columnFormWrapper = $state<HTMLElement | null>(null);
+
+    onMount(() => {
+        /* silences the not read error warning */
+        disabled;
+    });
 
     function initWork() {
         const filteredKeys = Object.keys(row).filter((key) => {
@@ -157,11 +165,14 @@
         }
     }
 
-    export function isDisabled(): boolean {
-        if (!work || !row || !$table?.columns?.length) return true;
+    $effect(() => {
+        if (!work || !row || !$table?.columns?.length) {
+            disabled = true;
+            return;
+        }
 
-        return $table.columns.every((column) => compareColumns(column, $work, row));
-    }
+        disabled = $table.columns.every((column) => compareColumns(column, $work, row));
+    });
 
     function focusFirstInput() {
         const firstInput = columnFormWrapper?.querySelector<HTMLInputElement | HTMLTextAreaElement>(
