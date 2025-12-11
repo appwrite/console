@@ -7,9 +7,11 @@ import {
     showBottomModalAlert
 } from '$lib/stores/bottom-alerts';
 
+const SHOW_IMAGINE_PROMO = false;
+
 const listOfPromotions: BottomModalAlertItem[] = [];
 
-if (isCloud) {
+if (isCloud && SHOW_IMAGINE_PROMO) {
     const imaginePromo: BottomModalAlertItem = {
         id: 'modal:imagine.dev',
         backgroundComponent: Imagine,
