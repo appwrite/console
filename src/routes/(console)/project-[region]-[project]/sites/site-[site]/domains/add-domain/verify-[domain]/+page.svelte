@@ -33,7 +33,7 @@
     let selectedTab = $state<'cname' | 'nameserver' | 'a' | 'aaaa'>('nameserver');
 
     $effect(() => {
-        if ($regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME && isSubDomain) {
+        if ($regionalConsoleVariables._APP_DOMAIN_SITES && isSubDomain) {
             selectedTab = 'cname';
         } else if (!isCloud && $regionalConsoleVariables._APP_DOMAIN_TARGET_A) {
             selectedTab = 'a';
@@ -58,9 +58,13 @@
                     .forProject(page.params.region, page.params.project)
                     .proxy.updateRuleVerification({ ruleId });
                 verified = ruleData.status === 'verified';
-                throw new Error(
-                    'Domain verification failed. Please check your domain settings or try again later'
-                );
+
+                // This means domain verification using DNS records hasn't succeeded and the rule is still in initial state.
+                if (ruleData.status === 'created') {
+                    throw new Error(
+                        'Domain verification failed. Please check your domain settings or try again later'
+                    );
+                }
             } else if (isNewDomain && isCloud) {
                 const domainData = await sdk.forConsole.domains.create({
                     teamId: $organization.$id,
@@ -72,10 +76,17 @@
                 );
             }
 
-            addNotification({
-                type: 'success',
-                message: 'Domain added successfully'
-            });
+            if (verified) {
+                addNotification({
+                    type: 'success',
+                    message: 'Domain added successfully'
+                });
+            } else {
+                addNotification({
+                    type: 'info',
+                    message: 'Verification in progress'
+                });
+            }
             await goto(routeBase);
             await invalidate(Dependencies.DOMAINS);
             await invalidate(Dependencies.SITES_DOMAINS);
@@ -95,7 +106,7 @@
                 .forProject(page.params.region, page.params.project)
                 .proxy.deleteRule({ ruleId });
         }
-        await goto(`${routeBase}/add-domain?domain=${page.params.domain}`);
+        await goto(`${routeBase}/add-domain?domain=${data.proxyRule.domain}`);
     }
 </script>
 
@@ -112,7 +123,7 @@
                         <Icon icon={IconGlobeAlt} color="--fgcolor-neutral-primary" />
 
                         <Typography.Text variation="m-500" color="--fgcolor-neutral-primary">
-                            {page.params.domain}
+                            {data.proxyRule.domain}
                         </Typography.Text>
                     </Layout.Stack>
                     <Button secondary on:click={back}>Change</Button>
@@ -123,7 +134,7 @@
                 <Layout.Stack gap="xl">
                     <div>
                         <Tabs.Root variant="secondary" let:root>
-                            {#if isSubDomain && !!$regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME && $regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME !== 'localhost'}
+                            {#if isSubDomain && !!$regionalConsoleVariables._APP_DOMAIN_SITES && $regionalConsoleVariables._APP_DOMAIN_SITES !== 'localhost'}
                                 <Tabs.Item.Button
                                     {root}
                                     on:click={() => (selectedTab = 'cname')}
@@ -159,13 +170,17 @@
                         <Divider />
                     </div>
                     {#if selectedTab === 'nameserver'}
-                        <NameserverTable domain={page.params.domain} {verified} />
+                        <NameserverTable domain={data.proxyRule.domain} {verified} />
                     {:else}
                         <RecordTable
                             {verified}
                             service="sites"
                             variant={selectedTab}
-                            domain={page.params.domain} />
+                            domain={data.proxyRule.domain}
+                            ruleStatus={data.proxyRule.status}
+                            onNavigateToNameservers={() => (selectedTab = 'nameserver')}
+                            onNavigateToA={() => (selectedTab = 'a')}
+                            onNavigateToAAAA={() => (selectedTab = 'aaaa')} />
                     {/if}
                     <Divider />
                     <Layout.Stack direction="row" justifyContent="flex-end">

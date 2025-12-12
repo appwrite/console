@@ -25,17 +25,15 @@
 
     const isSubDomain = $derived.by(() => isASubdomain(selectedProxyRule?.domain));
 
-    let selectedTab = $state<'cname' | 'nameserver' | 'a' | 'aaaa'>('nameserver');
-
-    $effect(() => {
-        if ($regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME && isSubDomain) {
-            selectedTab = 'cname';
+    let selectedTab = $derived.by<'cname' | 'nameserver' | 'a' | 'aaaa'>(() => {
+        if ($regionalConsoleVariables._APP_DOMAIN_SITES && isSubDomain) {
+            return 'cname';
         } else if (!isCloud && $regionalConsoleVariables._APP_DOMAIN_TARGET_A) {
-            selectedTab = 'a';
+            return 'a';
         } else if (!isCloud && $regionalConsoleVariables._APP_DOMAIN_TARGET_AAAA) {
-            selectedTab = 'aaaa';
+            return 'aaaa';
         } else {
-            selectedTab = 'nameserver';
+            return 'nameserver';
         }
     });
 
@@ -44,18 +42,33 @@
 
     async function retryDomain() {
         try {
-            const domain = await sdk
+            error = null;
+            const proxyRule = await sdk
                 .forProject(page.params.region, page.params.project)
                 .proxy.updateRuleVerification({ ruleId: selectedProxyRule.$id });
 
-            show = false;
-            verified = domain.status === 'verified';
+            verified = proxyRule.status === 'verified';
             await invalidate(Dependencies.SITES_DOMAINS);
 
-            addNotification({
-                type: 'success',
-                message: `${selectedProxyRule.domain} has been verified`
-            });
+            // This means domain verification using DNS records hasn't succeeded and the rule is still in initial state.
+            if (proxyRule.status === 'created') {
+                throw new Error(
+                    'Domain verification failed. Please check your domain settings or try again later'
+                );
+            }
+
+            if (verified) {
+                addNotification({
+                    type: 'success',
+                    message: `${selectedProxyRule.domain} has been verified`
+                });
+            } else {
+                addNotification({
+                    type: 'info',
+                    message: 'Verification in progress'
+                });
+            }
+            show = false;
             trackEvent(Submit.DomainUpdateVerification);
         } catch (e) {
             error =
@@ -75,7 +88,7 @@
 <Modal title="Retry verification" bind:show onSubmit={retryDomain} bind:error>
     <div>
         <Tabs.Root variant="secondary" let:root>
-            {#if isSubDomain && !!$regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME && $regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME !== 'localhost'}
+            {#if isSubDomain && !!$regionalConsoleVariables._APP_DOMAIN_SITES && $regionalConsoleVariables._APP_DOMAIN_SITES !== 'localhost'}
                 <Tabs.Item.Button
                     {root}
                     on:click={() => (selectedTab = 'cname')}
@@ -117,7 +130,11 @@
             {verified}
             service="sites"
             variant={selectedTab}
-            domain={selectedProxyRule.domain} />
+            domain={selectedProxyRule.domain}
+            ruleStatus={selectedProxyRule.status}
+            onNavigateToNameservers={() => (selectedTab = 'nameserver')}
+            onNavigateToA={() => (selectedTab = 'a')}
+            onNavigateToAAAA={() => (selectedTab = 'aaaa')} />
     {/if}
 
     <svelte:fragment slot="footer">
