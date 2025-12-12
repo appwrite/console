@@ -38,8 +38,32 @@
         }
     }
 
+    let restoringPrompt = false;
+
+    async function syncStudioPrompt() {
+        if (!browser || resolvedProfile.id !== ProfileMode.STUDIO) return;
+
+        const currentUrl = new URL(window.location.href);
+        const promptParam = currentUrl.searchParams.get('prompt');
+
+        if (promptParam) {
+            sessionStorage.setItem('studioPrompt', promptParam);
+            return;
+        }
+
+        const storedPrompt = sessionStorage.getItem('studioPrompt');
+        if (!storedPrompt || restoringPrompt) return;
+
+        restoringPrompt = true;
+        currentUrl.searchParams.set('prompt', storedPrompt);
+        await goto(currentUrl.toString(), { replaceState: true, noScroll: true });
+        sessionStorage.removeItem('studioPrompt');
+        restoringPrompt = false;
+    }
+
     onMount(async () => {
         updateViewport();
+        await syncStudioPrompt();
         // handle sources
         if (isCloud) {
             const urlParams = page.url.searchParams;
@@ -116,6 +140,7 @@
     });
 
     afterNavigate((navigation) => {
+        syncStudioPrompt();
         if (navigation.type !== 'enter' && navigation.from?.route?.id !== navigation.to.route.id) {
             trackPageView(navigation.to.route.id);
         }
