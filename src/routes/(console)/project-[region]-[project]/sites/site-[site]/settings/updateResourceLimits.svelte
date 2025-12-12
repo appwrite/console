@@ -39,7 +39,7 @@
                 providerBranch: site?.providerBranch || undefined,
                 providerSilentMode: site?.providerSilentMode || undefined,
                 providerRootDirectory: site?.providerRootDirectory || undefined,
-                specification: specification || undefined
+                specification: isCloud ? specification || undefined : undefined
             });
             await invalidate(Dependencies.SITE);
             originalSpecification = specification;
