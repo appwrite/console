@@ -7,16 +7,12 @@
     import { ProxyRuleDeploymentResourceType, type Models } from '@appwrite.io/console';
 
     onMount(() => {
-        return realtime.forProject(page.params.region, page.params.project, (response) => {
-            if (
-                response.events.includes('rules.*.update') ||
-                response.events.includes('rules.*.create') ||
-                response.events.includes('rules.*.delete')
-            ) {
+        return realtime.forProject(page.params.region, ['console', 'project'], (response) => {
+            if (response.events.includes('rules.*.update')) {
                 const proxyRule = response.payload as Models.ProxyRule;
                 if (
                     proxyRule.deploymentResourceType === ProxyRuleDeploymentResourceType.Site &&
-                    proxyRule.deploymentResourceId === page.params.function
+                    proxyRule.deploymentResourceId === page.params.site
                 ) {
                     invalidate(Dependencies.SITES_DOMAINS);
                 }

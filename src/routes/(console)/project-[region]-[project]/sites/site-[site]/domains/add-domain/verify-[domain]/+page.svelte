@@ -44,7 +44,7 @@
         }
     });
 
-    let verified = $state(false);
+    let verified: boolean | undefined = $state(undefined);
 
     let routeBase = `${base}/project-${page.params.region}-${page.params.project}/sites/site-${page.params.site}/domains`;
     let isSubmitting = $state(writable(false));
