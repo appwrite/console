@@ -34,7 +34,7 @@ if (isCloud && SHOW_IMAGINE_PROMO) {
                 light: '#333333',
                 dark: '#CCCCCC'
             },
-            link: () => 'https://studio.imagine.dev',
+            link: () => 'https://cloud.appwrite.io',
             external: true,
             hideOnClick: true
         },
