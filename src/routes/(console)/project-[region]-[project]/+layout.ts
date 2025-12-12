@@ -1,10 +1,9 @@
-import { Dependencies } from '$lib/constants';
+import { defaultRoles, defaultScopes, Dependencies } from '$lib/constants';
 import { sdk } from '$lib/stores/sdk';
 import type { LayoutLoad } from './$types';
 import { preferences } from '$lib/stores/preferences';
 import { failedInvoice } from '$lib/stores/billing';
 import { isCloud } from '$lib/system';
-import { defaultRoles, defaultScopes } from '$lib/constants';
 import { get } from 'svelte/store';
 import { headerAlert } from '$lib/stores/headerAlert';
 import PaymentFailed from '$lib/components/billing/alerts/paymentFailed.svelte';

@@ -19,8 +19,9 @@
     import { preferences } from '$lib/stores/preferences';
     import SpreadsheetContainer from '../table-[table]/layout/spreadsheet.svelte';
     import { onDestroy, onMount, tick } from 'svelte';
-    import { sdk } from '$lib/stores/sdk';
+    import { sdk, realtime, type RealtimeResponse } from '$lib/stores/sdk';
     import { page } from '$app/state';
+    import { setupColumnObserver } from '../(observer)/columnObserver';
     import {
         type ColumnInput,
         mapSuggestedColumns,
@@ -125,6 +126,7 @@
     // let tooltipTopPosition = $state(50);
     let triggerColumnId = $state<string | null>(null);
     let hoveredColumnId = $state<string | null>(null);
+    let columnCreationHandler: ((response: RealtimeResponse) => void) | null = null;
 
     // for deleting a column + undo
     let undoTimer: ReturnType<typeof setTimeout> | null = $state(null);
@@ -585,7 +587,7 @@
         ($isSmallViewport ? 14 : 17) + (!$expandTabs ? 2 : 0) - userDataRows.length
     );
 
-    onMount(async () => {
+    onMount(() => {
         columnsOrder.set(preferences.getColumnOrder(tableId));
         columnsWidth.set(preferences.getColumnWidths(tableId));
 
@@ -595,7 +597,13 @@
         }
 
         requestAnimationFrame(recalcAll);
-        await suggestColumns();
+        suggestColumns();
+
+        return realtime.forProject(page.params.region, ['project', 'console'], (response) => {
+            if (response.events.includes('databases.*.tables.*.columns.*')) {
+                columnCreationHandler?.(response);
+            }
+        });
     });
 
     function resetSuggestionsStore(fullReset: boolean = true) {
@@ -968,6 +976,14 @@
         }
 
         try {
+            const {
+                startWaiting,
+                waitPromise,
+                columnCreationHandler: handler
+            } = setupColumnObserver();
+
+            columnCreationHandler = handler;
+
             const results = [];
 
             for (const column of customColumns) {
@@ -1066,6 +1082,9 @@
                 results.push(columnResult);
             }
 
+            startWaiting(customColumns.length);
+            await waitPromise;
+
             await invalidate(Dependencies.TABLE);
 
             addNotification({
@@ -1087,6 +1106,8 @@
                 message: error.message
             });
             creatingColumns = false;
+        } finally {
+            columnCreationHandler = null;
         }
     }
 

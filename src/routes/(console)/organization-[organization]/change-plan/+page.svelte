@@ -344,6 +344,7 @@
 
                     <PlanSelection
                         disabled={$isSubmitting}
+                        anyOrgFree={data.hasFreeOrgs}
                         selfService={data.selfService}
                         bind:billingPlan={selectedPlan} />
 

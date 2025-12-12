@@ -390,6 +390,8 @@
         left: 1.25rem;
         position: absolute;
         padding-block-end: 1rem;
+        z-index: 1;
+        background: var(--bgcolor-neutral-primary);
     }
 
     .action-menu-divider {
