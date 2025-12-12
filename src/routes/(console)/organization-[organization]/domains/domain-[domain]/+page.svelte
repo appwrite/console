@@ -118,7 +118,7 @@
                             Navigate to your domain provider and update the nameservers to <InlineCode
                                 code="ns1.appwrite-dns.com"
                                 size="s" /> and <InlineCode code="ns2.appwrite-dns.com" size="s" />.
-                            Note that DNS changes may take time to propagate fully.
+                            Note that DNS changes may take up to 48 hours to propagate fully.
                         </span>
                         <svelte:fragment slot="actions">
                             <Button
