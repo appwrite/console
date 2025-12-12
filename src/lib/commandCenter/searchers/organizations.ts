@@ -3,12 +3,14 @@ import { base } from '$app/paths';
 import { sdk } from '$lib/stores/sdk';
 import type { Searcher } from '../commands';
 import { isCloud } from '$lib/system';
-import { Query } from '@appwrite.io/console';
+import { Platform, Query } from '@appwrite.io/console';
 
 export const orgSearcher = (async (query: string) => {
     const { teams } = !isCloud
         ? await sdk.forConsole.teams.list()
-        : await sdk.forConsole.billing.listOrganization([Query.equal('platform', 'appwrite')]);
+        : await sdk.forConsole.billing.listOrganization([
+              Query.equal('platform', Platform.Appwrite)
+          ]);
 
     return teams
         .filter((organization) => organization.name.toLowerCase().includes(query.toLowerCase()))

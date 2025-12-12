@@ -113,6 +113,8 @@ async function checkPlatformAndRedirect(
         }
     }
 
+    if (!isCloud) return requestedOrg;
+
     if (requestedOrg && requestedOrg.platform !== Platform.Appwrite) {
         const orgIdInPrefs = prefs.organization;
 
