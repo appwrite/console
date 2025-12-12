@@ -38,8 +38,6 @@
         }
     }
 
-    let restoringPrompt = false;
-
     async function syncStudioPrompt() {
         if (!browser || resolvedProfile.id !== ProfileMode.STUDIO) return;
 
@@ -52,13 +50,11 @@
         }
 
         const storedPrompt = sessionStorage.getItem('studioPrompt');
-        if (!storedPrompt || restoringPrompt) return;
+        if (!storedPrompt) return;
 
-        restoringPrompt = true;
         currentUrl.searchParams.set('prompt', storedPrompt);
         await goto(currentUrl.toString(), { replaceState: true, noScroll: true });
         sessionStorage.removeItem('studioPrompt');
-        restoringPrompt = false;
     }
 
     onMount(async () => {
