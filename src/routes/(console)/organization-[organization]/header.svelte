@@ -122,6 +122,7 @@
                 {/if}
                 <Button
                     secondary
+                    icon
                     size="xs"
                     on:click={() =>
                         isCloud ? goto(`${base}/create-organization`) : newOrgModal.set(true)}>
