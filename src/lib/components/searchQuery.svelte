@@ -23,7 +23,10 @@
         autofocus = false
     }: Props = $props();
 
-    let inputValue = $state(page.url.searchParams.get('search') ?? '');
+    const initialSearch = page.url.searchParams.get('search') ?? '';
+    let inputValue = $state(initialSearch);
+    let previousInputValue = $state(initialSearch);
+    let previousUrlSearch = $state(initialSearch);
 
     const runSearch = createDebounce((value: string) => {
         const trimmed = value.trim();
@@ -54,11 +57,31 @@
         runSearch.cancel?.();
     });
 
+    // Sync URL → input when URL changes externally (e.g., Clear Search button)
     $effect(() => {
         const urlSearch = page.url.searchParams.get('search') ?? '';
+        if (urlSearch !== previousUrlSearch) {
+            previousUrlSearch = urlSearch;
+            if (urlSearch !== inputValue) {
+                inputValue = urlSearch;
+                previousInputValue = urlSearch;
+            }
+        }
+    });
 
-        if (urlSearch !== inputValue) {
-            runSearch(inputValue);
+    // Sync input → URL when user types (only when inputValue changes from user input)
+    $effect(() => {
+        if (inputValue !== previousInputValue) {
+            // Input changed - check if it's from user typing (not from URL sync)
+            const urlSearch = page.url.searchParams.get('search') ?? '';
+            if (inputValue !== urlSearch) {
+                // Input is different from URL - user is typing
+                previousInputValue = inputValue;
+                runSearch(inputValue);
+            } else {
+                // Input matches URL - was synced from URL, don't update
+                previousInputValue = inputValue;
+            }
         }
     });
 </script>
