@@ -1,8 +1,13 @@
 <script lang="ts">
     import { FakeModal } from '$lib/components';
     import { InputText, Button } from '$lib/elements/forms';
-    import { createEventDispatcher, onMount } from 'svelte';
-    import { initializeStripe, setPaymentMethod, submitStripeCard } from '$lib/stores/stripe';
+    import { createEventDispatcher, onMount, onDestroy } from 'svelte';
+    import {
+        initializeStripe,
+        setPaymentMethod,
+        submitStripeCard,
+        unmountPaymentElement
+    } from '$lib/stores/stripe';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
@@ -88,6 +93,8 @@
             observer.disconnect();
         };
     });
+
+    onDestroy(unmountPaymentElement);
 
     $: if (element) {
         observer.observe(element, { childList: true });
