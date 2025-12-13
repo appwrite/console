@@ -21,10 +21,10 @@
     } from '@appwrite.io/pink-svelte';
     import DeleteDomainModal from './deleteDomainModal.svelte';
     import RetryDomainModal from './retryDomainModal.svelte';
-    import ViewLogsModal from './viewLogsModal.svelte';
     import { columns } from './store';
     import { regionalProtocol } from '$routes/(console)/project-[region]-[project]/store';
     import DnsRecordsAction from '$lib/components/domains/dnsRecordsAction.svelte';
+    import ViewLogsModal from '$lib/components/domains/viewLogsModal.svelte';
 
     let {
         proxyRules,
@@ -65,22 +65,37 @@
                         <Layout.Stack direction="row" gap="xs">
                             <Link
                                 external
-                                variant="quiet"
+                                variant="quiet-muted"
                                 href={`${$regionalProtocol}${rule.domain}`}>
                                 <Typography.Text truncate>
                                     {rule.domain}
                                 </Typography.Text>
                             </Link>
-
-                            {#if rule.status === 'verifying'}
-                                <Badge variant="secondary" content="Verifying" size="s" />
-                            {:else if rule.status !== 'verified'}
-                                <Badge
-                                    variant="secondary"
-                                    type="warning"
-                                    content="Verification failed"
-                                    size="s" />
-                            {/if}
+                            <Layout.Stack direction="row" gap="s" alignItems="center">
+                                {#if rule.status !== 'verified'}
+                                    <Badge
+                                        variant="secondary"
+                                        type={rule.status === 'verifying' ? undefined : 'error'}
+                                        content={rule.status === 'created'
+                                            ? 'Verification failed'
+                                            : rule.status === 'verifying'
+                                              ? 'Generating certificate'
+                                              : 'Certificate generation failed'}
+                                        size="xs" />
+                                {/if}
+                                {#if rule.status === 'created' || rule.status === 'unverified'}
+                                    <Link
+                                        size="s"
+                                        variant="muted"
+                                        on:click={(e) => {
+                                            e.preventDefault();
+                                            selectedProxyRule = rule;
+                                            showRetry = true;
+                                        }}>
+                                        Retry
+                                    </Link>
+                                {/if}
+                            </Layout.Stack>
                         </Layout.Stack>
                     {:else if column.id === 'target'}
                         {proxyTarget(rule)}

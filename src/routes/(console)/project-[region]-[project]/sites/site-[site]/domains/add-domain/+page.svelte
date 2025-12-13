@@ -57,9 +57,8 @@
 
     async function addDomain() {
         const apexDomain = getApexDomain(domainName);
-        let domain = data.domains?.domains.find((d: Models.Domain) => d.domain === apexDomain);
-
         const isSiteDomain = domainName.endsWith($regionalConsoleVariables._APP_DOMAIN_SITES);
+        let domain = data.domainsList?.domains.find((d) => d.domain === apexDomain);
 
         if (isCloud && apexDomain && !domain && !isSiteDomain) {
             try {
@@ -68,15 +67,7 @@
                     domain: apexDomain
                 });
             } catch (error) {
-                // apex might already be added on organization level, skip.
-                const alreadyAdded = error?.type === 'domain_already_exists';
-                if (!alreadyAdded) {
-                    addNotification({
-                        type: 'error',
-                        message: error.message
-                    });
-                    return;
-                }
+                // Domain creation error needs to be silent.
             }
         }
 
