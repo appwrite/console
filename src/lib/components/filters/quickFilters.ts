@@ -45,7 +45,7 @@ export function addFilterAndApply(
     if (value || arrayValues?.length) {
         if (colId === 'sourceSize' || colId === 'buildSize') {
             addSizeFilter(value, colId, columns);
-        } else if (colId === 'statusCode') {
+        } else if (colId.toLowerCase().includes('statuscode')) {
             addStatusCodeFilter(value, colId, columns);
         } else if (
             colId === '$createdAt' ||
