@@ -21,6 +21,7 @@
     import { isCloud } from '$lib/system';
     import { currentPlan } from '$lib/stores/organization';
     import Domain from '../domain.svelte';
+    import { uploader } from '$lib/stores/uploader';
 
     export let data;
     let showExitModal = false;
@@ -50,6 +51,8 @@
     $: readableMaxSize = humanFileSize(maxSize);
 
     async function create() {
+        let site: Models.Site | null = null;
+
         try {
             if (!domainIsValid) {
                 addNotification({
@@ -63,7 +66,7 @@
             const buildRuntime = Object.values(BuildRuntime).find(
                 (f) => f === framework.buildRuntime
             );
-            let site = await sdk.forProject(page.params.region, page.params.project).sites.create({
+            site = await sdk.forProject(page.params.region, page.params.project).sites.create({
                 siteId: id || ID.unique(),
                 name,
                 framework: fr,
@@ -90,26 +93,37 @@
             );
             await Promise.all(promises);
 
-            const deployment = await sdk
-                .forProject(page.params.region, page.params.project)
-                .sites.createDeployment({
-                    siteId: site.$id,
-                    code: files[0],
-                    activate: true,
-                    installCommand: installCommand || undefined,
-                    buildCommand: buildCommand || undefined,
-                    outputDirectory: outputDirectory || undefined
-                });
+            const promise = uploader.uploadSiteDeployment({
+                siteId: site.$id,
+                code: files[0],
+                buildCommand: buildCommand || undefined,
+                installCommand: installCommand || undefined,
+                outputDirectory: outputDirectory || undefined
+            });
 
+            addNotification({
+                message: 'Deployment upload started',
+                type: 'success'
+            });
             trackEvent(Submit.SiteCreate, {
                 source: 'manual',
                 framework: framework.key
             });
 
-            await goto(
-                `${base}/project-${page.params.region}-${page.params.project}/sites/create-site/deploying?site=${site.$id}&deployment=${deployment.$id}`
-            );
+            await promise;
+            const upload = $uploader.files.find((f) => f.resourceId === site.$id);
+
+            if (upload?.status === 'success') {
+                const deploymentId = upload.$id;
+                await goto(
+                    `${base}/project-${page.params.region}-${page.params.project}/sites/create-site/deploying?site=${site.$id}&deployment=${deploymentId}`
+                );
+            }
         } catch (e) {
+            const upload = $uploader.files.find((f) => f.resourceId === site?.$id);
+            if (upload) {
+                uploader.removeFromQueue(upload.$id);
+            }
             addNotification({
                 type: 'error',
                 message: e.message
