@@ -26,6 +26,10 @@ export const isStripeInitialized = writable(false);
 
 export async function initializeStripe(node: HTMLElement) {
     if (!get(stripe)) return;
+
+    // cleanup any existing state
+    await unmountPaymentElement();
+
     isStripeInitialized.set(true);
 
     const methods = await sdk.forConsole.billing.listPaymentMethods();
@@ -54,10 +58,20 @@ export async function initializeStripe(node: HTMLElement) {
 
 export async function unmountPaymentElement() {
     isStripeInitialized.set(false);
-    paymentElement?.unmount();
+
+    if (paymentElement) {
+        try {
+            paymentElement.unmount();
+            paymentElement.destroy();
+        } catch (e) {
+            console.debug('Payment element cleanup:', e.message);
+        }
+    }
+
+    elements = null;
     clientSecret = null;
     paymentMethod = null;
-    elements = null;
+    paymentElement = null;
 }
 
 export async function submitStripeCard(name: string, organizationId?: string) {
