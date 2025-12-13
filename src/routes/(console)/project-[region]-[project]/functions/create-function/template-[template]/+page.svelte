@@ -34,7 +34,7 @@
 
     export let data;
 
-    const specificationOptions = data.specificationsList.specifications.map((size) => ({
+    const specificationOptions = (data.specificationsList?.specifications ?? []).map((size) => ({
         label:
             `${size.cpus} CPU, ${size.memory} MB RAM` +
             (!size.enabled ? ` (Upgrade to use this)` : ''),
@@ -65,7 +65,7 @@
     let selectedScopes: string[] = [];
     let execute = true;
     let variables: Partial<Models.TemplateVariable>[] = [];
-    let specification = specificationOptions[0].value;
+    let specification = specificationOptions[0]?.value || '';
 
     onMount(async () => {
         if (!$installation?.$id) {

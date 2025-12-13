@@ -25,7 +25,7 @@
 
     export let data;
 
-    const specificationOptions = data.specificationsList.specifications.map((size) => ({
+    const specificationOptions = (data.specificationsList?.specifications ?? []).map((size) => ({
         label:
             `${size.cpus} CPU, ${size.memory} MB RAM` +
             (!size.enabled ? ` (Upgrade to use this)` : ''),
@@ -55,7 +55,7 @@
     let rootDir = './';
     let variables: Partial<Models.Variable>[] = [];
     let silentMode = false;
-    let specification = specificationOptions[0].value;
+    let specification = specificationOptions[0]?.value || '';
 
     let detectingRuntime = true;
 
