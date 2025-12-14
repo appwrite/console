@@ -30,6 +30,7 @@
     } from '@appwrite.io/pink-svelte';
     import { toggleCommandCenter } from '$lib/commandCenter/commandCenter.svelte';
     import {
+        IconChartSquareBar,
         IconChevronRight,
         IconCreditCard,
         IconGlobeAlt,
@@ -268,6 +269,13 @@
                                     href={`${baseOrgUrl}/domains`}
                                     on:click={() => toggle()}>
                                     Domains</ActionMenu.Item.Anchor>
+
+                                <ActionMenu.Item.Anchor
+                                    size="l"
+                                    trailingIcon={IconChartSquareBar}
+                                    href={`${baseOrgUrl}/usage`}
+                                    on:click={() => toggle()}>
+                                    Usage</ActionMenu.Item.Anchor>
 
                                 <Divider />
                             {/if}

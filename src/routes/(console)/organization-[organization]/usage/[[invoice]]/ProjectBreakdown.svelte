@@ -16,7 +16,9 @@
         | 'authPhoneTotal'
         | 'databasesReads'
         | 'databasesWrites'
-        | 'imageTransformations';
+        | 'imageTransformations'
+        | 'screenshotsGenerated'
+        | 'imagineCredits';
 
     type Estimate = 'authPhoneEstimate';
 
@@ -89,6 +91,8 @@
 
         switch (metric) {
             case 'imageTransformations':
+            case 'screenshotsGenerated':
+            case 'imagineCredits':
             case 'authPhoneTotal':
                 return formatNumberWithCommas(value);
             case 'executions':

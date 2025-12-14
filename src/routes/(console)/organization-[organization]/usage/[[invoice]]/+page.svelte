@@ -25,7 +25,8 @@
     import { onMount } from 'svelte';
     import type { UsageProjectInfo } from '../../store';
     import { isFreePlan } from '$lib/helpers/billing';
-    import { resolvedProfile } from '$lib/profiles/index.svelte';
+    import { ProfileMode, resolvedProfile } from '$lib/profiles/index.svelte';
+    import { page } from '$app/state';
 
     export let data;
 
@@ -112,6 +113,52 @@
             be disrupted.
             <Link.Anchor href={$upgradeURL}>Upgrade for greater capacity</Link.Anchor>.
         </p>
+    {/if}
+
+    {#if resolvedProfile.id === ProfileMode.STUDIO}
+        <CardGrid gap="none">
+            <svelte:fragment slot="title">Credits</svelte:fragment>
+            The total number of credits used across all projects in your organization.
+            <svelte:fragment slot="aside">
+                {#if data.organizationUsage.imagineCreditsTotal}
+                    {@const current = data.organizationUsage.imagineCreditsTotal}
+                    <ProgressBarBig
+                        currentUnit="Credits"
+                        currentValue={formatNum(current)}
+                        progressValue={current}
+                        showBar={false} />
+                    <BarChart
+                        options={{
+                            yAxis: {
+                                axisLabel: {
+                                    formatter: formatNum
+                                }
+                            }
+                        }}
+                        series={[
+                            {
+                                name: 'Credits',
+                                data: [
+                                    ...(data.organizationUsage.imagineCredits ?? []).map((e) => [
+                                        e.date,
+                                        e.value
+                                    ])
+                                ]
+                            }
+                        ]} />
+                    {#if projects?.length > 0}
+                        <ProjectBreakdown {projects} metric="imagineCredits" {usageProjects} />
+                    {/if}
+                {:else}
+                    <Card isDashed>
+                        <Layout.Stack gap="xs" alignItems="center" justifyContent="center">
+                            <Icon icon={IconChartSquareBar} size="l" />
+                            <Typography.Text variant="m-600">No data to show</Typography.Text>
+                        </Layout.Stack>
+                    </Card>
+                {/if}
+            </svelte:fragment>
+        </CardGrid>
     {/if}
 
     <CardGrid gap="none">
@@ -550,7 +597,9 @@
         </svelte:fragment>
     </CardGrid>
 
-    <TotalMembers members={data?.organizationMembers} />
+    {#if page.data.supportsMoreMembers}
+        <TotalMembers members={data?.organizationMembers} />
+    {/if}
 
     <p class="text common-section u-color-text-gray">
         Metrics are estimates updated every 24 hours and may not accurately reflect your invoice.

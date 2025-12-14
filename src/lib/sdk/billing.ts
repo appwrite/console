@@ -293,12 +293,16 @@ export type OrganizationUsage = {
     databasesReads: Array<Models.Metric>;
     databasesWrites: Array<Models.Metric>;
     imageTransformations: Array<Models.Metric>;
+    screenshotsGenerated: Array<Models.Metric>;
+    imagineCredits: Array<Models.Metric>;
     executionsTotal: number;
     filesStorageTotal: number;
     buildsStorageTotal: number;
     databasesReadsTotal: number;
     databasesWritesTotal: number;
     imageTransformationsTotal: number;
+    screenshotsGeneratedTotal: number;
+    imagineCreditsTotal: number;
     deploymentsStorageTotal: number;
     executionsMBSecondsTotal: number;
     buildsMBSecondsTotal: number;
@@ -317,6 +321,8 @@ export type OrganizationUsage = {
         authPhoneTotal: number;
         authPhoneEstimate: number;
         imageTransformations: number;
+        screenshotsGenerated: number;
+        imagineCredits: number;
     }>;
     authPhoneTotal: number;
     authPhoneEstimate: number;
