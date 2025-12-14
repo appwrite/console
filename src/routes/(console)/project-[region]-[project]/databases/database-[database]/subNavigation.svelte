@@ -12,7 +12,8 @@
         Layout,
         Link,
         Typography,
-        Divider
+        Divider,
+        Skeleton
     } from '@appwrite.io/pink-svelte';
     import {
         IconChevronDown,
@@ -37,6 +38,7 @@
     const databaseId = $derived(page.params.database);
 
     let openBottomSheet = $state(false);
+    let loading = $state(true);
 
     let tables = $state<Models.TableList>({
         total: 0,
@@ -62,10 +64,14 @@
     const tableContentPadding = $derived($headerAlert.top !== 0 ? '210px' : '140px');
 
     async function loadTables() {
-        tables = await sdk.forProject(region, project).tablesDB.listTables({
-            databaseId: databaseId,
-            queries: [Query.orderDesc(''), Query.limit(100)]
-        });
+        try {
+            tables = await sdk.forProject(region, project).tablesDB.listTables({
+                databaseId: databaseId,
+                queries: [Query.orderDesc(''), Query.limit(100)]
+            });
+        } finally {
+            loading = false;
+        }
     }
 
     onMount(() => {
@@ -94,7 +100,20 @@
                 {data.database?.name}
             </a>
             <div class="table-content" style:padding-bottom={tableContentPadding}>
-                {#if tables?.total}
+                {#if loading}
+                    <ul class="drop-list u-margin-inline-start-8 u-margin-block-start-4">
+                        {#each Array(2) as _}
+                            <Layout.Stack gap="s" direction="row" alignItems="center">
+                                <li>
+                                    <div
+                                        class="u-padding-block-8 u-padding-inline-end-4 u-padding-inline-start-8 u-flex u-cross-center u-gap-8">
+                                        <Skeleton variant="line" width="70%" height={19} />
+                                    </div>
+                                </li>
+                            </Layout.Stack>
+                        {/each}
+                    </ul>
+                {:else if tables?.total}
                     <ul class="drop-list u-margin-inline-start-8 u-margin-block-start-4">
                         {#each sortedTables as table, index}
                             {@const href = `${base}/project-${region}-${project}/databases/database-${databaseId}/table-${table.$id}`}

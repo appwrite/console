@@ -309,11 +309,11 @@
 {#if showPayment && isCloud && hasStripePublicKey}
     <PaymentModal
         bind:show={showPayment}
-        on:submit={(e) => {
+        onCardSubmit={(card) => {
             if (isSelectedBackup) {
-                addBackupPaymentMethod(e.detail.$id);
+                addBackupPaymentMethod(card.$id);
             } else {
-                addPaymentMethod(e.detail.$id);
+                addPaymentMethod(card.$id);
             }
         }} />
 {/if}

@@ -15,7 +15,7 @@ export const load: PageLoad = async ({ url, route }) => {
         Query.offset(offset),
         Query.limit(limit),
         Query.orderDesc(''),
-        Query.equal('platform', resolvedProfile.organizationPlatform)
+        ...(isCloud ? [Query.equal('platform', resolvedProfile.organizationPlatform)] : [])
     ];
 
     const organizations = !isCloud
