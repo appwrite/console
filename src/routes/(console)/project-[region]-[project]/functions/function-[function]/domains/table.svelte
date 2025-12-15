@@ -12,6 +12,7 @@
     import {
         ActionMenu,
         Badge,
+        Divider,
         Icon,
         Layout,
         Popover,
@@ -118,7 +119,7 @@
 
                         <svelte:fragment slot="tooltip" let:toggle>
                             <ActionMenu.Root>
-                                {#if proxyRule.logs && (proxyRule.status === 'unverified' || proxyRule.status === 'verifying')}
+                                {#if proxyRule.logs?.length > 0}
                                     <ActionMenu.Item.Button
                                         leadingIcon={IconTerminal}
                                         on:click={(e) => {
@@ -141,6 +142,11 @@
                                     </ActionMenu.Item.Button>
                                 {/if}
                                 <DnsRecordsAction rule={proxyRule} {organizationDomains} />
+                                {#if proxyRule.logs?.length > 0}
+                                    <div class="action-menu-divider">
+                                        <Divider />
+                                    </div>
+                                {/if}
                                 <ActionMenu.Item.Button
                                     status="danger"
                                     leadingIcon={IconTrash}
@@ -174,3 +180,9 @@
 {#if showLogs}
     <ViewLogsModal bind:show={showLogs} {selectedProxyRule} />
 {/if}
+
+<style>
+    .action-menu-divider {
+        margin-inline: -1rem;
+    }
+</style>

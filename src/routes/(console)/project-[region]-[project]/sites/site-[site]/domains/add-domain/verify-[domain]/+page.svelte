@@ -30,23 +30,22 @@
     const ruleId = page.url.searchParams.get('rule');
     const isSubDomain = $derived.by(() => isASubdomain(page.params.domain));
 
-    let selectedTab = $state<'cname' | 'nameserver' | 'a' | 'aaaa'>('nameserver');
-
-    $effect(() => {
-        if ($regionalConsoleVariables._APP_DOMAIN_SITES && isSubDomain) {
-            selectedTab = 'cname';
-        } else if (!isCloud && $regionalConsoleVariables._APP_DOMAIN_TARGET_A) {
-            selectedTab = 'a';
-        } else if (!isCloud && $regionalConsoleVariables._APP_DOMAIN_TARGET_AAAA) {
-            selectedTab = 'aaaa';
-        } else {
-            selectedTab = 'nameserver';
-        }
-    });
-
-    let verified: boolean | undefined = $state(undefined);
+    let selectedTab = $state<'cname' | 'nameserver' | 'a' | 'aaaa'>(
+        (() => {
+            if ($regionalConsoleVariables._APP_DOMAIN_SITES && isSubDomain) {
+                return 'cname';
+            } else if (!isCloud && $regionalConsoleVariables._APP_DOMAIN_TARGET_A) {
+                return 'a';
+            } else if (!isCloud && $regionalConsoleVariables._APP_DOMAIN_TARGET_AAAA) {
+                return 'aaaa';
+            } else {
+                return 'nameserver';
+            }
+        })()
+    );
 
     let routeBase = `${base}/project-${page.params.region}-${page.params.project}/sites/site-${page.params.site}/domains`;
+    let verified: boolean | undefined = $state(undefined);
     let isSubmitting = $state(writable(false));
 
     async function verify() {

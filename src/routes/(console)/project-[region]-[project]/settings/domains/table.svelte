@@ -3,10 +3,16 @@
     import { Link } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import type { Models } from '@appwrite.io/console';
-    import { IconDotsHorizontal, IconRefresh, IconTrash } from '@appwrite.io/pink-icons-svelte';
+    import {
+        IconDotsHorizontal,
+        IconRefresh,
+        IconTerminal,
+        IconTrash
+    } from '@appwrite.io/pink-icons-svelte';
     import {
         ActionMenu,
         Badge,
+        Divider,
         Icon,
         Layout,
         Popover,
@@ -17,6 +23,7 @@
     import RetryDomainModal from './retryDomainModal.svelte';
     import { regionalProtocol } from '../../store';
     import DnsRecordsAction from '$lib/components/domains/dnsRecordsAction.svelte';
+    import ViewLogsModal from '$lib/components/domains/viewLogsModal.svelte';
 
     let {
         domains,
@@ -28,7 +35,8 @@
 
     let showDelete = $state(false);
     let showRetry = $state(false);
-    let selectedDomain: Models.ProxyRule = $state(null);
+    let showLogs = $state(false);
+    let selectedProxyRule: Models.ProxyRule = $state(null);
 
     const columns = [
         {
@@ -36,7 +44,7 @@
             title: 'Domain',
             type: 'string',
             format: 'string',
-            width: { min: 200, max: 550 }
+            width: { min: 300, max: 550 }
         }
     ];
 </script>
@@ -50,7 +58,7 @@
         {/each}
         <Table.Header.Cell column="actions" {root} />
     </svelte:fragment>
-    {#each domains.rules as domain}
+    {#each domains.rules as proxyRule (proxyRule.$id)}
         <Table.Row.Base {root}>
             {#each columns as column}
                 <Table.Cell column={column.id} {root}>
@@ -58,21 +66,39 @@
                         <Layout.Stack direction="row" gap="xs">
                             <Link
                                 external
-                                variant="quiet"
-                                href={`${$regionalProtocol}${domain.domain}`}>
+                                variant="quiet-muted"
+                                href={`${$regionalProtocol}${proxyRule.domain}`}>
                                 <Typography.Text truncate>
-                                    {domain.domain}
+                                    {proxyRule.domain}
                                 </Typography.Text>
                             </Link>
-                            {#if domain.status === 'verifying'}
-                                <Badge variant="secondary" content="Verifying" size="s" />
-                            {:else if domain.status !== 'verified'}
-                                <Badge
-                                    variant="secondary"
-                                    type="warning"
-                                    content="Verification failed"
-                                    size="s" />
-                            {/if}
+                            <Layout.Stack direction="row" gap="s" alignItems="center">
+                                {#if proxyRule.status !== 'verified'}
+                                    <Badge
+                                        variant="secondary"
+                                        type={proxyRule.status === 'verifying'
+                                            ? undefined
+                                            : 'error'}
+                                        content={proxyRule.status === 'created'
+                                            ? 'Verification failed'
+                                            : proxyRule.status === 'verifying'
+                                              ? 'Generating certificate'
+                                              : 'Certificate generation failed'}
+                                        size="xs" />
+                                {/if}
+                                {#if proxyRule.status === 'created' || proxyRule.status === 'unverified'}
+                                    <Link
+                                        size="s"
+                                        variant="muted"
+                                        on:click={(e) => {
+                                            e.preventDefault();
+                                            selectedProxyRule = proxyRule;
+                                            showRetry = true;
+                                        }}>
+                                        Retry
+                                    </Link>
+                                {/if}
+                            </Layout.Stack>
                         </Layout.Stack>
                     {/if}
                 </Table.Cell>
@@ -92,23 +118,39 @@
 
                         <svelte:fragment slot="tooltip" let:toggle>
                             <ActionMenu.Root>
-                                {#if domain.status !== 'verified' && domain.status !== 'verifying'}
+                                {#if proxyRule.logs?.length > 0}
+                                    <ActionMenu.Item.Button
+                                        leadingIcon={IconTerminal}
+                                        on:click={(e) => {
+                                            selectedProxyRule = proxyRule;
+                                            showLogs = true;
+                                            toggle(e);
+                                        }}>
+                                        View logs
+                                    </ActionMenu.Item.Button>
+                                {/if}
+                                {#if proxyRule.status !== 'verified' && proxyRule.status !== 'verifying'}
                                     <ActionMenu.Item.Button
                                         leadingIcon={IconRefresh}
                                         on:click={(e) => {
-                                            selectedDomain = domain;
+                                            selectedProxyRule = proxyRule;
                                             showRetry = true;
                                             toggle(e);
                                         }}>
                                         Retry
                                     </ActionMenu.Item.Button>
                                 {/if}
-                                <DnsRecordsAction rule={domain} {organizationDomains} />
+                                <DnsRecordsAction rule={proxyRule} {organizationDomains} />
+                                {#if proxyRule.logs?.length > 0}
+                                    <div class="action-menu-divider">
+                                        <Divider />
+                                    </div>
+                                {/if}
                                 <ActionMenu.Item.Button
                                     status="danger"
                                     leadingIcon={IconTrash}
                                     on:click={(e) => {
-                                        selectedDomain = domain;
+                                        selectedProxyRule = proxyRule;
                                         showDelete = true;
                                         toggle(e);
                                         trackEvent(Click.DomainDeleteClick, {
@@ -127,9 +169,19 @@
 </Table.Root>
 
 {#if showDelete}
-    <DeleteDomainModal bind:show={showDelete} {selectedDomain} />
+    <DeleteDomainModal bind:show={showDelete} selectedDomain={selectedProxyRule} />
 {/if}
 
 {#if showRetry}
-    <RetryDomainModal bind:show={showRetry} {selectedDomain} />
+    <RetryDomainModal bind:show={showRetry} {selectedProxyRule} />
 {/if}
+
+{#if showLogs}
+    <ViewLogsModal bind:show={showLogs} {selectedProxyRule} />
+{/if}
+
+<style>
+    .action-menu-divider {
+        margin-inline: -1rem;
+    }
+</style>

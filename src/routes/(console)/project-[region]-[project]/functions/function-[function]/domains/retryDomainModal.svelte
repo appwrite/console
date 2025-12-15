@@ -25,17 +25,19 @@
 
     const isSubDomain = $derived.by(() => isASubdomain(selectedProxyRule?.domain));
 
-    let selectedTab = $derived.by<'cname' | 'nameserver' | 'a' | 'aaaa'>(() => {
-        if ($regionalConsoleVariables._APP_DOMAIN_FUNCTIONS && isSubDomain) {
-            return 'cname';
-        } else if (!isCloud && $regionalConsoleVariables._APP_DOMAIN_TARGET_A) {
-            return 'a';
-        } else if (!isCloud && $regionalConsoleVariables._APP_DOMAIN_TARGET_AAAA) {
-            return 'aaaa';
-        } else {
-            return 'nameserver';
-        }
-    });
+    let selectedTab = $state<'cname' | 'nameserver' | 'a' | 'aaaa'>(
+        (() => {
+            if ($regionalConsoleVariables._APP_DOMAIN_FUNCTIONS && isSubDomain) {
+                return 'cname';
+            } else if (!isCloud && $regionalConsoleVariables._APP_DOMAIN_TARGET_A) {
+                return 'a';
+            } else if (!isCloud && $regionalConsoleVariables._APP_DOMAIN_TARGET_AAAA) {
+                return 'aaaa';
+            } else {
+                return 'nameserver';
+            }
+        })()
+    );
 
     let error = $state(null);
     let verified = $state(false);
@@ -88,7 +90,7 @@
 <Modal title="Retry verification" bind:show onSubmit={retryProxyRule} bind:error>
     <div>
         <Tabs.Root variant="secondary" let:root>
-            {#if !!$regionalConsoleVariables._APP_DOMAIN_FUNCTIONS && $regionalConsoleVariables._APP_DOMAIN_FUNCTIONS !== 'localhost'}
+            {#if isSubDomain && !!$regionalConsoleVariables._APP_DOMAIN_FUNCTIONS && $regionalConsoleVariables._APP_DOMAIN_FUNCTIONS !== 'localhost'}
                 <Tabs.Item.Button
                     {root}
                     on:click={() => (selectedTab = 'cname')}

@@ -67,7 +67,7 @@
                     domain: apexDomain
                 });
             } catch (error) {
-                // Domain creation error needs to be silent.
+                // Apex domain creation error needs to be silent.
             }
         }
 

@@ -57,7 +57,7 @@
         {/each}
         <Table.Header.Cell column="actions" {root} />
     </svelte:fragment>
-    {#each proxyRules.rules as rule}
+    {#each proxyRules.rules as proxyRule (proxyRule.$id)}
         <Table.Row.Base {root}>
             {#each $columns as column}
                 <Table.Cell column={column.id} {root}>
@@ -66,30 +66,32 @@
                             <Link
                                 external
                                 variant="quiet-muted"
-                                href={`${$regionalProtocol}${rule.domain}`}>
+                                href={`${$regionalProtocol}${proxyRule.domain}`}>
                                 <Typography.Text truncate>
-                                    {rule.domain}
+                                    {proxyRule.domain}
                                 </Typography.Text>
                             </Link>
                             <Layout.Stack direction="row" gap="s" alignItems="center">
-                                {#if rule.status !== 'verified'}
+                                {#if proxyRule.status !== 'verified'}
                                     <Badge
                                         variant="secondary"
-                                        type={rule.status === 'verifying' ? undefined : 'error'}
-                                        content={rule.status === 'created'
+                                        type={proxyRule.status === 'verifying'
+                                            ? undefined
+                                            : 'error'}
+                                        content={proxyRule.status === 'created'
                                             ? 'Verification failed'
-                                            : rule.status === 'verifying'
+                                            : proxyRule.status === 'verifying'
                                               ? 'Generating certificate'
                                               : 'Certificate generation failed'}
                                         size="xs" />
                                 {/if}
-                                {#if rule.status === 'created' || rule.status === 'unverified'}
+                                {#if proxyRule.status === 'created' || proxyRule.status === 'unverified'}
                                     <Link
                                         size="s"
                                         variant="muted"
                                         on:click={(e) => {
                                             e.preventDefault();
-                                            selectedProxyRule = rule;
+                                            selectedProxyRule = proxyRule;
                                             showRetry = true;
                                         }}>
                                         Retry
@@ -98,7 +100,7 @@
                             </Layout.Stack>
                         </Layout.Stack>
                     {:else if column.id === 'target'}
-                        {proxyTarget(rule)}
+                        {proxyTarget(proxyRule)}
                     {/if}
                 </Table.Cell>
             {/each}
@@ -117,30 +119,30 @@
 
                         <svelte:fragment slot="tooltip" let:toggle>
                             <ActionMenu.Root>
-                                {#if rule.logs && (rule.status === 'unverified' || rule.status === 'verifying')}
+                                {#if proxyRule.logs?.length > 0}
                                     <ActionMenu.Item.Button
                                         leadingIcon={IconTerminal}
                                         on:click={(e) => {
-                                            selectedProxyRule = rule;
+                                            selectedProxyRule = proxyRule;
                                             showLogs = true;
                                             toggle(e);
                                         }}>
                                         View logs
                                     </ActionMenu.Item.Button>
                                 {/if}
-                                {#if rule.status !== 'verified' && rule.status !== 'verifying'}
+                                {#if proxyRule.status !== 'verified' && proxyRule.status !== 'verifying'}
                                     <ActionMenu.Item.Button
                                         leadingIcon={IconRefresh}
                                         on:click={(e) => {
-                                            selectedProxyRule = rule;
+                                            selectedProxyRule = proxyRule;
                                             showRetry = true;
                                             toggle(e);
                                         }}>
                                         Retry
                                     </ActionMenu.Item.Button>
                                 {/if}
-                                <DnsRecordsAction {rule} {organizationDomains} />
-                                {#if rule.logs && (rule.status === 'unverified' || rule.status === 'verifying')}
+                                <DnsRecordsAction rule={proxyRule} {organizationDomains} />
+                                {#if proxyRule.logs?.length > 0}
                                     <div class="action-menu-divider">
                                         <Divider />
                                     </div>
@@ -149,7 +151,7 @@
                                     status="danger"
                                     leadingIcon={IconTrash}
                                     on:click={(e) => {
-                                        selectedProxyRule = rule;
+                                        selectedProxyRule = proxyRule;
                                         showDelete = true;
                                         toggle(e);
                                         trackEvent(Click.DomainDeleteClick, {
@@ -182,7 +184,5 @@
 <style>
     .action-menu-divider {
         margin-inline: -1rem;
-        padding-block-start: 0.25rem;
-        padding-block-end: 0.25rem;
     }
 </style>
