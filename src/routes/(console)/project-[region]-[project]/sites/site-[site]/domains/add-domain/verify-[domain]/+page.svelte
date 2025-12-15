@@ -70,9 +70,6 @@
                     domain: page.params.domain
                 });
                 verified = domainData.nameservers.toLowerCase() === 'appwrite';
-                throw new Error(
-                    'Domain verification failed. Please check your domain settings or try again later'
-                );
             }
 
             if (verified) {

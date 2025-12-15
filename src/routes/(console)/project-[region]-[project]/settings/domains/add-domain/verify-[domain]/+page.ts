@@ -16,8 +16,8 @@ export const load = async ({ depends, parent, params, url }) => {
         sdk.forProject(params.region, params.project).proxy.getRule({ ruleId }),
         isCloud
             ? sdk.forConsole.domains.list({
-                queries: [Query.equal('teamId', organization.$id)]
-            })
+                  queries: [Query.equal('teamId', organization.$id)]
+              })
             : Promise.resolve<Models.DomainsList | null>(null)
     ]);
 

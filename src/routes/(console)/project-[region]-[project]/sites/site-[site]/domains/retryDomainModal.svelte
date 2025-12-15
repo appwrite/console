@@ -27,7 +27,7 @@
 
     let selectedTab = $state<'cname' | 'nameserver' | 'a' | 'aaaa'>(
         (() => {
-            if ($regionalConsoleVariables._APP_DOMAIN_FUNCTIONS && isSubDomain) {
+            if ($regionalConsoleVariables._APP_DOMAIN_SITES && isSubDomain) {
                 return 'cname';
             } else if (!isCloud && $regionalConsoleVariables._APP_DOMAIN_TARGET_A) {
                 return 'a';
