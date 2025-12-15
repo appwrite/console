@@ -64,7 +64,7 @@ export const load: LayoutLoad = async ({ params, route, depends, parent }) => {
 
     // not the right organization project based on platform,
     // redirect to organization, and it should handle the rest!
-    if (organization.platform !== resolvedProfile.organizationPlatform) {
+    if (isCloud && organization.platform !== resolvedProfile.organizationPlatform) {
         redirect(
             303,
             resolve('/(console)/organization-[organization]', {

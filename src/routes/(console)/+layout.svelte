@@ -336,7 +336,6 @@
 <CommandCenter />
 <Shell
     showSideNavigation={page.url.pathname !== '/' &&
-        !page?.params.organization &&
         !page.url.pathname.includes(base + '/account') &&
         !page.url.pathname.includes(base + '/card') &&
         !page.url.pathname.includes(base + '/onboarding')}

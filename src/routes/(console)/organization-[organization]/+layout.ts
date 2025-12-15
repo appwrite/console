@@ -80,6 +80,7 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
             ...prefs,
             [resolvedProfile.organizationPrefKey]: null
         };
+
         sdk.forConsole.account.updatePrefs({
             prefs: newPrefs
         });
@@ -107,7 +108,9 @@ async function checkPlatformAndRedirect(
     prefs: Record<string, string>
 ): Promise<Organization | null> {
     // check if preloaded
-    let requestedOrg = organizations.teams.find((team) => team.$id === params.organization);
+    let requestedOrg = organizations.teams.find((team) => team.$id === params.organization) as
+        | Organization
+        | undefined;
 
     // not found, load!
     if (!requestedOrg) {
@@ -119,6 +122,8 @@ async function checkPlatformAndRedirect(
             return null;
         }
     }
+
+    if (!isCloud) return requestedOrg;
 
     if (requestedOrg && requestedOrg.platform !== resolvedProfile.organizationPlatform) {
         const orgIdInPrefs = prefs[resolvedProfile.organizationPrefKey];
