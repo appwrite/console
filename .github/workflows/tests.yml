@@ -44,3 +44,5 @@ jobs:
 
             - name: Build Console
               run: pnpm run build
+              env:
+                  NODE_OPTIONS: --max-old-space-size=8192
