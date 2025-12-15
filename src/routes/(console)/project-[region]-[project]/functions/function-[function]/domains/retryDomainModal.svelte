@@ -25,19 +25,19 @@
 
     const isSubDomain = $derived.by(() => isASubdomain(selectedProxyRule?.domain));
 
-    let selectedTab = $state<'cname' | 'nameserver' | 'a' | 'aaaa'>(
-        (() => {
-            if ($regionalConsoleVariables._APP_DOMAIN_FUNCTIONS && isSubDomain) {
-                return 'cname';
-            } else if (!isCloud && $regionalConsoleVariables._APP_DOMAIN_TARGET_A) {
-                return 'a';
-            } else if (!isCloud && $regionalConsoleVariables._APP_DOMAIN_TARGET_AAAA) {
-                return 'aaaa';
-            } else {
-                return 'nameserver';
-            }
-        })()
-    );
+    let selectedTab = $state<'cname' | 'nameserver' | 'a' | 'aaaa'>(getDefaultTab());
+
+    function getDefaultTab() {
+        if (isSubDomain && $regionalConsoleVariables._APP_DOMAIN_FUNCTIONS) {
+            return 'cname';
+        } else if (!isCloud && $regionalConsoleVariables._APP_DOMAIN_TARGET_A) {
+            return 'a';
+        } else if (!isCloud && $regionalConsoleVariables._APP_DOMAIN_TARGET_AAAA) {
+            return 'aaaa';
+        } else {
+            return 'nameserver';
+        }
+    }
 
     let error = $state(null);
     let verified = $state(false);

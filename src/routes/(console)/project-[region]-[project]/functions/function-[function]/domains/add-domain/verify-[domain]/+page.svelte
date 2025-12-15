@@ -30,23 +30,23 @@
     const ruleId = page.url.searchParams.get('rule');
     const isSubDomain = $derived.by(() => isASubdomain(page.params.domain));
 
-    let selectedTab = $state<'cname' | 'nameserver' | 'a' | 'aaaa'>(
-        (() => {
-            if ($regionalConsoleVariables._APP_DOMAIN_FUNCTIONS && isSubDomain) {
-                return 'cname';
-            } else if (!isCloud && $regionalConsoleVariables._APP_DOMAIN_TARGET_A) {
-                return 'a';
-            } else if (!isCloud && $regionalConsoleVariables._APP_DOMAIN_TARGET_AAAA) {
-                return 'aaaa';
-            } else {
-                return 'nameserver';
-            }
-        })()
-    );
+    let selectedTab = $state<'cname' | 'nameserver' | 'a' | 'aaaa'>(getDefaultTab());
 
     let routeBase = `${base}/project-${page.params.region}-${page.params.project}/functions/function-${page.params.function}/domains`;
     let verified: boolean | undefined = $state(undefined);
     let isSubmitting = $state(writable(false));
+
+    function getDefaultTab() {
+        if (isSubDomain && $regionalConsoleVariables._APP_DOMAIN_FUNCTIONS) {
+            return 'cname';
+        } else if (!isCloud && $regionalConsoleVariables._APP_DOMAIN_TARGET_A) {
+            return 'a';
+        } else if (!isCloud && $regionalConsoleVariables._APP_DOMAIN_TARGET_AAAA) {
+            return 'aaaa';
+        } else {
+            return 'nameserver';
+        }
+    }
 
     async function verify() {
         const isNewDomain =
