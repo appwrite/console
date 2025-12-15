@@ -28,13 +28,13 @@
     let { data } = $props();
 
     const ruleId = page.url.searchParams.get('rule');
-    const isSubDomain = $derived.by(() => isASubdomain(page.params.domain));
+    const isSubDomain = $derived.by(() => isASubdomain(data.proxyRule.domain));
 
     let selectedTab = $state<'cname' | 'nameserver' | 'a' | 'aaaa'>(getDefaultTab());
 
     let routeBase = `${base}/project-${page.params.region}-${page.params.project}/functions/function-${page.params.function}/domains`;
     let verified: boolean | undefined = $state(undefined);
-    let isSubmitting = $state(writable(false));
+    const isSubmitting = writable(false);
 
     function getDefaultTab() {
         if (isSubDomain && $regionalConsoleVariables._APP_DOMAIN_FUNCTIONS) {
@@ -50,7 +50,7 @@
 
     async function verify() {
         const isNewDomain =
-            data.domainsList.domains.find((rule) => rule.domain === page.params.domain) ===
+            data.domainsList.domains.find((rule) => rule.domain === data.proxyRule.domain) ===
             undefined;
         try {
             if (selectedTab !== 'nameserver') {
@@ -68,7 +68,7 @@
             } else if (isNewDomain && isCloud) {
                 const domainData = await sdk.forConsole.domains.create({
                     teamId: $organization.$id,
-                    domain: page.params.domain
+                    domain: data.proxyRule.domain
                 });
                 verified = domainData.nameservers.toLowerCase() === 'appwrite';
             }
@@ -108,7 +108,7 @@
 </script>
 
 <Wizard title="Add domain" href={routeBase} column columnSize="s">
-    <Form onSubmit={verify} bind:isSubmitting>
+    <Form onSubmit={verify} {isSubmitting}>
         <Layout.Stack gap="xxl">
             <Card.Base radius="s" padding="s">
                 <Layout.Stack

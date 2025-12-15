@@ -28,7 +28,7 @@
     let { data } = $props();
 
     const ruleId = page.url.searchParams.get('rule');
-    const isSubDomain = $derived.by(() => isASubdomain(page.params.domain));
+    const isSubDomain = $derived.by(() => isASubdomain(data.proxyRule.domain));
 
     let selectedTab = $state<'cname' | 'nameserver' | 'a' | 'aaaa'>(getDefaultTab());
 
@@ -50,7 +50,7 @@
 
     async function verify() {
         const isNewDomain =
-            data.domainsList.domains.find((rule) => rule.domain === page.params.domain) ===
+            data.domainsList.domains.find((rule) => rule.domain === data.proxyRule.domain) ===
             undefined;
         try {
             if (selectedTab !== 'nameserver') {
@@ -68,7 +68,7 @@
             } else if (isNewDomain && isCloud) {
                 const domainData = await sdk.forConsole.domains.create({
                     teamId: $organization.$id,
-                    domain: page.params.domain
+                    domain: data.proxyRule.domain
                 });
                 verified = domainData.nameservers.toLowerCase() === 'appwrite';
             }
