@@ -58,6 +58,10 @@
         <Table.Header.Cell column="actions" {root} />
     </svelte:fragment>
     {#each proxyRules.rules as proxyRule (proxyRule.$id)}
+        {@const isRetryable = proxyRule.status === 'created' || proxyRule.status === 'unverified'}
+        {@const isLogsViewable =
+            proxyRule.logs?.length > 0 &&
+            (proxyRule.status === 'verifying' || proxyRule.status === 'unverified')}
         <Table.Row.Base {root}>
             {#each $columns as column}
                 <Table.Cell column={column.id} {root}>
@@ -85,7 +89,7 @@
                                               : 'Certificate generation failed'}
                                         size="xs" />
                                 {/if}
-                                {#if proxyRule.status === 'created' || proxyRule.status === 'unverified'}
+                                {#if isRetryable}
                                     <Link
                                         size="s"
                                         variant="muted"
@@ -95,6 +99,18 @@
                                             showRetry = true;
                                         }}>
                                         Retry
+                                    </Link>
+                                {/if}
+                                {#if isLogsViewable}
+                                    <Link
+                                        size="s"
+                                        variant="muted"
+                                        on:click={(e) => {
+                                            e.preventDefault();
+                                            selectedProxyRule = proxyRule;
+                                            showLogs = true;
+                                        }}>
+                                        View logs
                                     </Link>
                                 {/if}
                             </Layout.Stack>
@@ -119,7 +135,7 @@
 
                         <svelte:fragment slot="tooltip" let:toggle>
                             <ActionMenu.Root>
-                                {#if proxyRule.logs?.length > 0}
+                                {#if isLogsViewable}
                                     <ActionMenu.Item.Button
                                         leadingIcon={IconTerminal}
                                         on:click={(e) => {
@@ -130,7 +146,7 @@
                                         View logs
                                     </ActionMenu.Item.Button>
                                 {/if}
-                                {#if proxyRule.status !== 'verified' && proxyRule.status !== 'verifying'}
+                                {#if isRetryable}
                                     <ActionMenu.Item.Button
                                         leadingIcon={IconRefresh}
                                         on:click={(e) => {
@@ -142,7 +158,7 @@
                                     </ActionMenu.Item.Button>
                                 {/if}
                                 <DnsRecordsAction rule={proxyRule} {organizationDomains} />
-                                {#if proxyRule.logs?.length > 0}
+                                {#if isLogsViewable}
                                     <div class="action-menu-divider">
                                         <Divider />
                                     </div>
