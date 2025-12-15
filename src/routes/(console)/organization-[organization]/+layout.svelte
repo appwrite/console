@@ -57,4 +57,6 @@
 
 <Create bind:show={$newOrgModal} />
 
-<CreateMember bind:showCreate={$newMemberModal} />
+{#if page.data.supportsMoreMembers}
+    <CreateMember bind:showCreate={$newMemberModal} />
+{/if}

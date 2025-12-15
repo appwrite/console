@@ -64,6 +64,10 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
             loadAvailableRegions(params.organization)
         ]);
 
+        const seatsAddon = currentPlan?.addons?.seats;
+        const canAddMembers =
+            !seatsAddon || (seatsAddon.supported ?? false) || (seatsAddon.limit ?? 0) > 1;
+
         return {
             header: Header,
             breadcrumbs: Breadcrumbs,
@@ -73,7 +77,8 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
             roles,
             scopes,
             countryList,
-            locale
+            locale,
+            supportsMoreMembers: canAddMembers
         };
     } catch (e) {
         const newPrefs = {
