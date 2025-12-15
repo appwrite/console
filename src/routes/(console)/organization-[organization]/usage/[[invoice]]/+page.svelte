@@ -27,20 +27,19 @@
     import { isFreePlan } from '$lib/helpers/billing';
     import { ProfileMode, resolvedProfile } from '$lib/profiles/index.svelte';
     import { page } from '$app/state';
+    import type { PageProps } from './$types';
 
-    export let data;
+    let { data }: PageProps = $props();
+    let usageProjects: Record<string, UsageProjectInfo> = $state({});
 
-    const tier = data?.plan
-        ? (data.plan.$id as Tier)
-        : (data?.currentInvoice?.plan ?? $organization?.billingPlan);
-
-    const plan = data?.plan ?? undefined;
-
-    $: projects = (data.organizationUsage as OrganizationUsage).projects;
-
-    let usageProjects: Record<string, UsageProjectInfo> = {};
-
-    $: legendData = [
+    const tier = $derived(
+        data?.plan
+            ? (data.plan.$id as Tier)
+            : (data?.currentInvoice?.plan ?? $organization?.billingPlan)
+    );
+    const plan = $derived(data?.plan ?? undefined);
+    const projects = $derived((data.organizationUsage as OrganizationUsage).projects);
+    const legendData = $derived([
         {
             name: 'Reads',
             value: data.organizationUsage.databasesReads.reduce(
@@ -55,7 +54,7 @@
                 0
             )
         }
-    ];
+    ]);
 
     onMount(async () => (usageProjects = await data.projects));
 </script>

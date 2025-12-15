@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
     import type { HTMLAttributes } from 'svelte/elements';
 
     export type BaseNavbarProps = HTMLAttributes<HTMLHeadElement> & {
@@ -30,9 +30,9 @@
     } from '@appwrite.io/pink-svelte';
     import { toggleCommandCenter } from '$lib/commandCenter/commandCenter.svelte';
     import {
-        IconChartSquareBar,
         IconChevronRight,
         IconCreditCard,
+        IconCurrencyDollar,
         IconGlobeAlt,
         IconLogoutRight,
         IconMenuAlt4,
@@ -46,7 +46,6 @@
     import { Feedback } from '$lib/components/feedback';
     import { feedback } from '$lib/stores/feedback';
     import { isMac } from '$lib/helpers/platform';
-    import { base } from '$app/paths';
     import { logout } from '$lib/helpers/logout';
     import { app } from '$lib/stores/app';
     import { isTabletViewport, isSmallViewport } from '$lib/stores/viewport';
@@ -59,10 +58,12 @@
     import { organization } from '$lib/stores/organization';
     import { resolvedProfile } from '$lib/profiles/index.svelte';
     import { headerAlert } from '$lib/stores/headerAlert';
+    import ProgressBar from './progressbar/ProgressBar.svelte';
+    import { resolve } from '$app/paths';
+    import { sdk } from '$lib/stores/sdk';
+    import { onMount } from 'svelte';
 
-    let showSupport = false;
-
-    type $$Props = BaseNavbarProps & {
+    type Props = BaseNavbarProps & {
         links?: Array<{ label: string; href: string }>;
         organizations: Array<{
             name: string;
@@ -72,7 +73,19 @@
             tierName: string;
         }>;
         showAccountMenu: boolean;
+        currentProject?: Models.Project;
     };
+
+    let {
+        logo,
+        organizations,
+        avatar,
+        sideBarIsOpen = false,
+        showAccountMenu = false,
+        currentProject = undefined
+    }: Props = $props();
+
+    let showSupport = $state(false);
 
     function updateTheme(theme: 'light' | 'dark' | 'auto') {
         const themeInUse =
@@ -101,25 +114,36 @@
         }
     }
 
-    export let logo: $$Props['logo'];
-    export let organizations: $$Props['organizations'];
-    export let avatar: $$Props['avatar'];
-    export let sideBarIsOpen: $$Props['sideBarIsOpen'] = false;
-    export let showAccountMenu = false;
-    export let currentProject: Models.Project = undefined;
+    let activeTheme = $state($app.theme);
+    let shouldAnimateThemeToggle = $state(false);
 
-    let activeTheme = $app.theme;
-    let shouldAnimateThemeToggle = false;
-
-    $: {
+    $effect(() => {
         if (activeTheme) {
             updateTheme(activeTheme);
         }
+    });
+
+    const currentOrg = $derived(
+        organizations.find((org) => org.isSelected) as unknown as Models.Organization
+    );
+
+    const plan = page.data.currentPlan as Models.BillingPlan;
+
+    let credits = $state(0);
+
+    async function fetchImagineCredits(org: Models.Organization) {
+        const startDate: string = currentOrg.billingCurrentInvoiceDate;
+        const endDate: string = currentOrg.billingNextInvoiceDate;
+        const usage = await sdk.forConsole.billing.listUsage(org.$id, startDate, endDate);
+        credits = usage.imagineCreditsTotal;
     }
 
-    $: currentOrg = organizations.find((org) => org.isSelected);
-
     beforeNavigate(() => (showAccountMenu = false));
+    onMount(() => {
+        if (resolvedProfile.showExtendedAccountsMenu) {
+            fetchImagineCredits(currentOrg);
+        }
+    });
 </script>
 
 <Navbar.Base --border-width-s="none" style="top: {$headerAlert.top}px; z-index: 100;">
@@ -127,14 +151,18 @@
         <div class="only-mobile-tablet">
             <button
                 class="sideNavToggle"
-                on:click={() => {
+                onclick={() => {
                     sideBarIsOpen = !sideBarIsOpen;
                 }}>
                 <Icon icon={IconMenuAlt4} />
             </button>
         </div>
         <a
-            href={currentOrg?.$id ? `${base}/organization-${currentOrg?.$id}` : base}
+            href={currentOrg?.$id
+                ? resolve('/(console)/organization-[organization]', {
+                      organization: currentOrg?.$id
+                  })
+                : resolve('/')}
             class="only-desktop">
             <img src={$app.themeInUse === 'dark' ? logo.src.dark : logo.src.light} alt={logo.alt} />
         </a>
@@ -146,8 +174,10 @@
                 <Button.Anchor
                     size="xs"
                     variant="secondary"
-                    href={`${base}/project-${currentProject.region}-${currentProject.$id}/get-started`}
-                    >Connect</Button.Anchor>
+                    href={resolve('/(console)/project-[region]-[project]/get-started', {
+                        project: currentProject.$id,
+                        region: currentProject.region
+                    })}>Connect</Button.Anchor>
             </div>
         {/if}
     </div>
@@ -164,8 +194,9 @@
                                 source: 'top_nav'
                             });
                         }}
-                        href={`${base}/organization-${currentOrg.$id}/change-plan`}
-                        >Upgrade</Button.Anchor>
+                        href={resolve('/(console)/organization-[organization]/change-plan', {
+                            organization: currentOrg.$id
+                        })}>Upgrade</Button.Anchor>
                 {/if}
 
                 {#if !$isSmallViewport}
@@ -223,7 +254,11 @@
                 <button
                     type="button"
                     style:cursor="pointer"
-                    on:click|preventDefault={(e) => {
+                    onclick={(e) => {
+                        e.preventDefault();
+                        if (!showing && resolvedProfile.showExtendedAccountsMenu) {
+                            fetchImagineCredits(currentOrg);
+                        }
                         toggle(e);
                         shouldAnimateThemeToggle = false;
                         if (showing) {
@@ -248,17 +283,45 @@
                             <ActionMenu.Item.Anchor
                                 size="l"
                                 trailingIcon={IconUser}
-                                href={`${base}/account`}
+                                href={resolve('/(console)/account')}
                                 on:click={() => toggle()}>
                                 Account</ActionMenu.Item.Anchor>
 
                             {#if resolvedProfile.showExtendedAccountsMenu && $organization && $organization.$id}
                                 <Divider />
-
-                                {@const baseOrgUrl = `${base}/organization-${$organization.$id}`}
                                 <ActionMenu.Item.Anchor
                                     size="l"
-                                    href={`${baseOrgUrl}/billing`}
+                                    href={resolve('/(console)/organization-[organization]/usage', {
+                                        organization: $organization.$id
+                                    })}
+                                    on:click={() => toggle()}
+                                    trailingIcon={IconCurrencyDollar}>
+                                    <Layout.Stack
+                                        direction="row"
+                                        justifyContent="space-between"
+                                        alignItems="center"
+                                        >{credits} Credits left
+                                    </Layout.Stack>
+                                    <svelte:fragment slot="more">
+                                        <ProgressBar
+                                            maxSize={plan.limits.credits ?? 0}
+                                            data={[
+                                                {
+                                                    size: credits,
+                                                    color: 'hsl(var(--color-information-100))'
+                                                }
+                                            ]} />
+                                    </svelte:fragment>
+                                </ActionMenu.Item.Anchor>
+                                <Divider />
+                                <ActionMenu.Item.Anchor
+                                    size="l"
+                                    href={resolve(
+                                        '/(console)/organization-[organization]/billing',
+                                        {
+                                            organization: $organization.$id
+                                        }
+                                    )}
                                     trailingIcon={IconCreditCard}
                                     on:click={() => toggle()}>
                                     Billing</ActionMenu.Item.Anchor>
@@ -266,17 +329,14 @@
                                 <ActionMenu.Item.Anchor
                                     size="l"
                                     trailingIcon={IconGlobeAlt}
-                                    href={`${baseOrgUrl}/domains`}
+                                    href={resolve(
+                                        '/(console)/organization-[organization]/domains',
+                                        {
+                                            organization: $organization.$id
+                                        }
+                                    )}
                                     on:click={() => toggle()}>
                                     Domains</ActionMenu.Item.Anchor>
-
-                                <ActionMenu.Item.Anchor
-                                    size="l"
-                                    trailingIcon={IconChartSquareBar}
-                                    href={`${baseOrgUrl}/usage`}
-                                    on:click={() => toggle()}>
-                                    Usage</ActionMenu.Item.Anchor>
-
                                 <Divider />
                             {/if}
 
@@ -337,7 +397,7 @@
                     {
                         name: 'Account',
                         leadingIcon: IconUser,
-                        href: `${base}/account`
+                        href: resolve('/(console)/account')
                     },
                     {
                         name: 'Sign out',
