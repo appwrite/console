@@ -16,6 +16,7 @@
     import { resolve } from '$app/paths';
     import { get } from 'svelte/store';
     import { organization as organizationStore } from '$lib/stores/organization';
+    import { lastError } from '$lib/stores/support';
 
     const {
         region,
@@ -46,8 +47,11 @@
             onProjectNameChange: () => {
                 invalidate(Dependencies.PROJECT);
             },
-            onAddDomain: async () => {
+            onAddDomain: () => {
                 showAddDomainsWizard = true;
+            },
+            onError: (error) => {
+                lastError.set(error);
             },
             onManageDomains: (primaryDomain) => {
                 if (primaryDomain) {

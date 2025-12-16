@@ -280,7 +280,11 @@ export function hideStudio() {
     component.style.width = '';
     restoreBodyScroll();
 }
-
+export type ErrorParams = {
+    traceId?: string;
+    message: string;
+    isChatError: boolean;
+} | null;
 export async function initImagine(
     region: string,
     projectId: string,
@@ -289,6 +293,7 @@ export async function initImagine(
         onProjectNameChange: () => void;
         onAddDomain: () => void | Promise<void>;
         onManageDomains: (primaryDomain?: string) => void | Promise<void>;
+        onError: (params: ErrorParams) => void | Promise<void>;
         onUpgrade: () => void | Promise<void>;
     }
 ) {
