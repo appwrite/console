@@ -14,7 +14,7 @@ export const load: PageLoad = async ({ url, route }) => {
         Query.offset(offset),
         Query.limit(limit),
         Query.orderDesc(''),
-        Query.equal('platform', Platform.Appwrite)
+        ...(isCloud ? [Query.equal('platform', Platform.Appwrite)] : [])
     ];
 
     const organizations = !isCloud
