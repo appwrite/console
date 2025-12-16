@@ -70,6 +70,9 @@ export type Profile = {
         cookies: string;
         pricing: string;
     };
+    support: {
+        technical: string[];
+    };
 };
 
 export const base: Profile = {
@@ -130,6 +133,27 @@ export const base: Profile = {
         cookies: 'https://appwrite.io/cookies',
         privacy: 'https://appwrite.io/privacy',
         pricing: 'https://appwrite.io/pricing'
+    },
+    support: {
+        technical: [
+            'Auth',
+            'Databases',
+            'Storage',
+            'Functions',
+            'Realtime',
+            'Messaging',
+            'Migrations',
+            'Webhooks',
+            'SDKs',
+            'Console',
+            'Backups',
+            'Blocked project',
+            'Domains',
+            'Outage',
+            'Platforms',
+            'Sites',
+            'Other'
+        ]
     }
 };
 
@@ -195,6 +219,17 @@ export const studio: Profile = {
         cookies: 'https://imagine.dev/cookies',
         privacy: 'https://imagine.dev/privacy',
         pricing: 'https://imagine.dev/pricing'
+    },
+    support: {
+        technical: [
+            'AI issue',
+            'Generation error',
+            'Preview not working',
+            'Auth',
+            'Databases',
+            'Storage',
+            'Other'
+        ]
     }
 };
 

@@ -26,6 +26,7 @@
     import { VARS } from '$lib/system';
     import { IconCheckCircle, IconXCircle, IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { resolvedProfile } from '$lib/profiles/index.svelte';
+    import { lastError } from '$lib/stores/support';
 
     let projectOptions = $state<Array<{ value: string; label: string }>>([]);
 
@@ -48,25 +49,7 @@
             'Other'
         ],
         billing: ['Invoice', 'Plans', 'Payment methods', 'Downgrade', 'Refund', 'Usage', 'Other'],
-        technical: [
-            'Auth',
-            'Databases',
-            'Storage',
-            'Functions',
-            'Realtime',
-            'Messaging',
-            'Migrations',
-            'Webhooks',
-            'SDKs',
-            'Console',
-            'Backups',
-            'Blocked project',
-            'Domains',
-            'Outage',
-            'Platforms',
-            'Sites',
-            'Other'
-        ]
+        technical: resolvedProfile.support.technical
     };
 
     // Severity options
@@ -134,7 +117,10 @@
                     { id: '48491', value: $supportData?.project ?? '' },
                     { id: '56023', value: $supportData?.severity ?? '' },
                     { id: '56024', value: $organization?.billingPlan ?? '' }
-                ]
+                ],
+                metaFields: {
+                    error: $lastError
+                }
             })
         });
         trackEvent(Submit.SupportTicket);
