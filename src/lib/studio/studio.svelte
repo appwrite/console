@@ -57,7 +57,7 @@
             },
             onUpgrade: async () => {
                 const organization = get(organizationStore).$id;
-                goto(
+                await goto(
                     resolve('/(console)/organization-[organization]/change-plan', {
                         organization: organization
                     })

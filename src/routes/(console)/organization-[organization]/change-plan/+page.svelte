@@ -1,6 +1,6 @@
 <script lang="ts">
     import { afterNavigate, goto, invalidate } from '$app/navigation';
-    import { base } from '$app/paths';
+    import { base, resolve } from '$app/paths';
     import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { PlanComparisonBox, PlanSelection, SelectPaymentMethod } from '$lib/components/billing';
@@ -36,7 +36,7 @@
     import type { OrganizationUsage } from '$lib/sdk/billing';
     import type { Models } from '@appwrite.io/console';
     import { toLocaleDate } from '$lib/helpers/date';
-    import { resolvedProfile } from '$lib/profiles/index.svelte';
+    import { ProfileMode, resolvedProfile } from '$lib/profiles/index.svelte';
     import { isFreePlan, isPaidPlan } from '$lib/helpers/billing.js';
 
     export let data;
@@ -45,7 +45,7 @@
 
     let selectedPlan: BillingPlan = data.plan as BillingPlan;
 
-    let previousPage: string = base;
+    let previousPage: string = resolve('/');
     let showExitModal = false;
     let formComponent: Form;
     let usageLimitsComponent:
@@ -116,6 +116,18 @@
         }
     });
 
+    async function compatNavigation(url: string) {
+        if (resolvedProfile.id === ProfileMode.STUDIO) {
+            if (window) {
+                window.location.href = url;
+            } else {
+                await goto(url);
+            }
+        } else {
+            await goto(url);
+        }
+    }
+
     async function loadPaymentMethods() {
         paymentMethods = await sdk.forConsole.billing.listPaymentMethods();
         return paymentMethods;
@@ -178,7 +190,7 @@
 
             await Promise.all([trackDowngradeFeedback(), invalidate(Dependencies.ORGANIZATION)]);
 
-            await goto(previousPage);
+            await compatNavigation(previousPage);
 
             addNotification({
                 type: 'success',
@@ -204,7 +216,8 @@
                 await invalidate(Dependencies.ACCOUNT);
                 await invalidate(Dependencies.ORGANIZATION);
 
-                await goto(previousPage);
+                await compatNavigation(previousPage);
+
                 addNotification({
                     type: 'success',
                     message: 'Your organization has been upgraded'
@@ -275,7 +288,8 @@
                 await invalidate(Dependencies.ACCOUNT);
                 await invalidate(Dependencies.ORGANIZATION);
 
-                await goto(previousPage);
+                await compatNavigation(previousPage);
+
                 addNotification({
                     type: 'success',
                     message: 'Your organization has been upgraded'
