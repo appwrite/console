@@ -233,13 +233,4 @@ export const studio: Profile = {
     }
 };
 
-const resolver = $derived(() => {
-    switch (env.PUBLIC_CONSOLE_PROFILE) {
-        case 'studio':
-            return studio;
-        default:
-            return base;
-    }
-});
-
-export const resolvedProfile = resolver();
+export const resolvedProfile = env.PUBLIC_CONSOLE_PROFILE === 'studio' ? studio : base;
