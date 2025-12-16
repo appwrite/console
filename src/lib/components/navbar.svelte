@@ -80,8 +80,8 @@
         logo,
         organizations,
         avatar,
-        sideBarIsOpen = false,
-        showAccountMenu = false,
+        sideBarIsOpen = $bindable(false),
+        showAccountMenu = $bindable(false),
         currentProject = undefined
     }: Props = $props();
 

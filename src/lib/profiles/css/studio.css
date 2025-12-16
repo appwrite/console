@@ -265,3 +265,16 @@ button.danger {
 .theme-dark .main-content {
     background: var(--bgcolor-neutral-default);
 }
+
+.theme-light .sub-navigation > nav {
+    background: var(--bgcolor-neutral-primary) !important;
+}
+.theme-dark .sub-navigation > nav {
+    background: var(--bgcolor-neutral-default) !important;
+}
+.sub-navigation > nav {
+    border-top-left-radius: 16px !important;
+    border-bottom-left-radius: 16px !important;
+    border: 1px solid var(--border-neutral) !important;
+    height: calc(100vh - 60px) !important;
+}
