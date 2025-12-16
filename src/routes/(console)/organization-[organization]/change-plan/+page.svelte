@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { afterNavigate, beforeNavigate, goto, invalidate } from '$app/navigation';
+    import { afterNavigate, goto, invalidate } from '$app/navigation';
     import { base, resolve } from '$app/paths';
     import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
@@ -38,8 +38,6 @@
     import { toLocaleDate } from '$lib/helpers/date';
     import { ProfileMode, resolvedProfile } from '$lib/profiles/index.svelte';
     import { isFreePlan, isPaidPlan } from '$lib/helpers/billing.js';
-    import { studioRef } from '$lib/studio/studio-widget';
-    import { hash } from '$lib/helpers/string';
 
     export let data;
 

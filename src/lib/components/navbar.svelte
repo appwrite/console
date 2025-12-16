@@ -66,11 +66,13 @@
     type Props = BaseNavbarProps & {
         links?: Array<{ label: string; href: string }>;
         organizations: Array<{
-            name: string;
             $id: string;
+            name: string;
             isSelected: boolean;
             showUpgrade: boolean;
             tierName: string;
+            billingCurrentInvoiceDate?: string;
+            billingNextInvoiceDate?: string;
         }>;
         showAccountMenu: boolean;
         currentProject?: Models.Project;
@@ -80,12 +82,19 @@
         logo,
         organizations,
         avatar,
-        sideBarIsOpen = false,
-        showAccountMenu = false,
-        currentProject = undefined
+        currentProject = undefined,
+        sideBarIsOpen = $bindable(false),
+        showAccountMenu = $bindable(false)
     }: Props = $props();
 
+    let credits = $state(0);
+    let creditsUsed = $state(0);
     let showSupport = $state(false);
+    let activeTheme = $state($app.theme);
+    let shouldAnimateThemeToggle = $state(false);
+
+    const plan = $derived(page.data.currentPlan as Models.BillingPlan);
+    const currentOrg = $derived(organizations.find((org) => org.isSelected));
 
     function updateTheme(theme: 'light' | 'dark' | 'auto') {
         const themeInUse =
@@ -114,28 +123,15 @@
         }
     }
 
-    let activeTheme = $state($app.theme);
-    let shouldAnimateThemeToggle = $state(false);
+    async function fetchImagineCredits(org: (typeof organizations)[number]) {
+        const startDate = org.billingCurrentInvoiceDate;
+        const endDate = org.billingNextInvoiceDate;
 
-    $effect(() => {
-        if (activeTheme) {
-            updateTheme(activeTheme);
-        }
-    });
-
-    const currentOrg = $derived(
-        organizations.find((org) => org.isSelected) as unknown as Models.Organization
-    );
-
-    const plan = page.data.currentPlan as Models.BillingPlan;
-
-    let credits = $state(0);
-
-    async function fetchImagineCredits(org: Models.Organization) {
-        const startDate: string = currentOrg.billingCurrentInvoiceDate;
-        const endDate: string = currentOrg.billingNextInvoiceDate;
         const usage = await sdk.forConsole.billing.listUsage(org.$id, startDate, endDate);
-        credits = usage.imagineCreditsTotal;
+        creditsUsed = usage.imagineCreditsTotal;
+        const creditsLimit = plan?.limits?.credits ?? 0;
+
+        credits = Math.max(0, creditsLimit - creditsUsed);
     }
 
     beforeNavigate(() => (showAccountMenu = false));
@@ -143,6 +139,12 @@
     onMount(() => {
         if (resolvedProfile.showExtendedAccountsMenu) {
             fetchImagineCredits(currentOrg);
+        }
+    });
+
+    $effect(() => {
+        if (activeTheme) {
+            updateTheme(activeTheme);
         }
     });
 </script>
@@ -308,7 +310,7 @@
                                             maxSize={plan.limits.credits ?? 0}
                                             data={[
                                                 {
-                                                    size: credits,
+                                                    size: creditsUsed,
                                                     color: 'hsl(var(--color-information-100))'
                                                 }
                                             ]} />
