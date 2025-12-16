@@ -139,6 +139,7 @@
     }
 
     beforeNavigate(() => (showAccountMenu = false));
+
     onMount(() => {
         if (resolvedProfile.showExtendedAccountsMenu) {
             fetchImagineCredits(currentOrg);
@@ -300,7 +301,7 @@
                                         direction="row"
                                         justifyContent="space-between"
                                         alignItems="center"
-                                        >{credits} Credits left
+                                        >{credits} Credit(s) left
                                     </Layout.Stack>
                                     <svelte:fragment slot="more">
                                         <ProgressBar
