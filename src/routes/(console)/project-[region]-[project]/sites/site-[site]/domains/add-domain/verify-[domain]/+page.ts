@@ -18,7 +18,7 @@ export const load = async ({ parent, depends, params, url }) => {
             ? sdk.forConsole.domains.list({
                   queries: [Query.equal('teamId', organization.$id)]
               })
-            : Promise.resolve<Models.DomainsList | null>(null)
+            : Promise.resolve<Models.DomainsList>({ total: 0, domains: [] })
     ]);
 
     return {

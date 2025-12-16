@@ -48,7 +48,7 @@
 
     async function addDomain() {
         const apexDomain = getApexDomain(domainName);
-        let domain = data.domainsList?.domains.find((d: Models.Domain) => d.domain === apexDomain);
+        let domain = data.domainsList.domains.find((d: Models.Domain) => d.domain === apexDomain);
 
         if (apexDomain && !domain && isCloud) {
             try {

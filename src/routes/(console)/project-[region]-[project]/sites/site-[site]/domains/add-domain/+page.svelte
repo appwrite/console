@@ -58,7 +58,7 @@
     async function addDomain() {
         const apexDomain = getApexDomain(domainName);
         const isSiteDomain = domainName.endsWith($regionalConsoleVariables._APP_DOMAIN_SITES);
-        let domain = data.domainsList?.domains.find((d) => d.domain === apexDomain);
+        let domain = data.domainsList.domains.find((d) => d.domain === apexDomain);
 
         if (isCloud && apexDomain && !domain && !isSiteDomain) {
             try {
