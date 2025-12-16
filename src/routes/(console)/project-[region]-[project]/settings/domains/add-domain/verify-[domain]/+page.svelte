@@ -20,7 +20,6 @@
     import Wizard from '$lib/layout/wizard.svelte';
     import { base } from '$app/paths';
     import { writable } from 'svelte/store';
-    import { isASubdomain } from '$lib/helpers/tlds';
     import NameserverTable from '$lib/components/domains/nameserverTable.svelte';
     import RecordTable from '$lib/components/domains/recordTable.svelte';
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
@@ -28,7 +27,22 @@
     let { data } = $props();
 
     const ruleId = page.url.searchParams.get('rule');
-    const isSubDomain = $derived.by(() => isASubdomain(data.proxyRule.domain));
+
+    const showCNAMETab = $derived(
+        Boolean($regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME) &&
+            $regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME !== 'localhost'
+    );
+    const showATab = $derived(
+        !isCloud &&
+            Boolean($regionalConsoleVariables._APP_DOMAIN_TARGET_A) &&
+            $regionalConsoleVariables._APP_DOMAIN_TARGET_A !== '127.0.0.1'
+    );
+    const showAAAATab = $derived(
+        !isCloud &&
+            Boolean($regionalConsoleVariables._APP_DOMAIN_TARGET_AAAA) &&
+            $regionalConsoleVariables._APP_DOMAIN_TARGET_AAAA !== '::1'
+    );
+    const showNSTab = isCloud;
 
     let selectedTab = $state<'cname' | 'nameserver' | 'a' | 'aaaa'>(getDefaultTab());
 
@@ -37,15 +51,7 @@
     const isSubmitting = writable(false);
 
     function getDefaultTab() {
-        if (isSubDomain && $regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME) {
-            return 'cname';
-        } else if (!isCloud && $regionalConsoleVariables._APP_DOMAIN_TARGET_A) {
-            return 'a';
-        } else if (!isCloud && $regionalConsoleVariables._APP_DOMAIN_TARGET_AAAA) {
-            return 'aaaa';
-        } else {
-            return 'nameserver';
-        }
+        return showCNAMETab ? 'cname' : showATab ? 'a' : showAAAATab ? 'aaaa' : 'nameserver';
     }
 
     async function verify() {
@@ -130,7 +136,7 @@
                 <Layout.Stack gap="xl">
                     <div>
                         <Tabs.Root variant="secondary" let:root>
-                            {#if isSubDomain && !!$regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME && $regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME !== 'localhost'}
+                            {#if showCNAMETab}
                                 <Tabs.Item.Button
                                     {root}
                                     on:click={() => (selectedTab = 'cname')}
@@ -138,7 +144,7 @@
                                     CNAME
                                 </Tabs.Item.Button>
                             {/if}
-                            {#if isCloud}
+                            {#if showNSTab}
                                 <Tabs.Item.Button
                                     {root}
                                     on:click={() => (selectedTab = 'nameserver')}
@@ -146,7 +152,7 @@
                                     Nameservers
                                 </Tabs.Item.Button>
                             {/if}
-                            {#if !isCloud && !!$regionalConsoleVariables._APP_DOMAIN_TARGET_A && $regionalConsoleVariables._APP_DOMAIN_TARGET_A !== '127.0.0.1'}
+                            {#if showATab}
                                 <Tabs.Item.Button
                                     {root}
                                     on:click={() => (selectedTab = 'a')}
@@ -154,7 +160,7 @@
                                     A
                                 </Tabs.Item.Button>
                             {/if}
-                            {#if !isCloud && !!$regionalConsoleVariables._APP_DOMAIN_TARGET_AAAA && $regionalConsoleVariables._APP_DOMAIN_TARGET_AAAA !== '::1'}
+                            {#if showAAAATab}
                                 <Tabs.Item.Button
                                     {root}
                                     on:click={() => (selectedTab = 'aaaa')}
