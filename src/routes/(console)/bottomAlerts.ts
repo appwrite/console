@@ -7,7 +7,7 @@ import {
     showBottomModalAlert
 } from '$lib/stores/bottom-alerts';
 
-const SHOW_IMAGINE_PROMO = false;
+const SHOW_IMAGINE_PROMO = true;
 
 const listOfPromotions: BottomModalAlertItem[] = [];
 
@@ -34,7 +34,7 @@ if (isCloud && SHOW_IMAGINE_PROMO) {
                 light: '#333333',
                 dark: '#CCCCCC'
             },
-            link: () => 'https://cloud.appwrite.io',
+            link: () => 'https://imagine.dev',
             external: true,
             hideOnClick: true
         },
