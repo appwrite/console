@@ -311,7 +311,7 @@
                                             data={[
                                                 {
                                                     size: creditsUsed,
-                                                    color: 'hsl(var(--color-information-100))'
+                                                    color: 'var(--bgcolor-neutral-invert)',
                                                 }
                                             ]} />
                                     </svelte:fragment>
