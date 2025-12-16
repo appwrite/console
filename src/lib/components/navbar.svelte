@@ -310,7 +310,7 @@
                                             maxSize={plan.limits.credits ?? 0}
                                             data={[
                                                 {
-                                                    size: creditsUsed,
+                                                    size: credits,
                                                     color: 'var(--bgcolor-neutral-invert)'
                                                 }
                                             ]} />
