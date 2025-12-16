@@ -10,6 +10,7 @@ import StudioCss from './css/studio.css?url';
 import ConsoleCss from './css/console.css?url';
 import { isCloud } from '$lib/system';
 import { dev } from '$app/environment';
+import { PUBLIC_APPWRITE_ENDPOINT } from '$env/static/public';
 
 export const enum ProfileMode {
     STUDIO = 'studio',
@@ -170,7 +171,11 @@ export const studio: Profile = {
         },
         alt: 'Imagine Appwrite'
     },
-    logins: [dev && Logins.EMAIL, Logins.GITHUB, Logins.GOOGLE].filter(Boolean),
+    logins: [
+        (dev || PUBLIC_APPWRITE_ENDPOINT.includes('staging')) && Logins.EMAIL,
+        Logins.GITHUB,
+        Logins.GOOGLE
+    ].filter(Boolean),
     oauthProviders: {
         github: {
             provider: OAuthProvider.GithubImagine,
