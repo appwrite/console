@@ -109,7 +109,7 @@
         backupPaymentMethod?.expired;
 </script>
 
-<CardGrid>
+<CardGrid overflow={false}>
     <svelte:fragment slot="title">Payment methods</svelte:fragment>
     View or update your organization payment methods here.
     <svelte:fragment slot="aside">
