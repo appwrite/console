@@ -163,11 +163,13 @@
         organizations: $organizationList.teams.map((org) => {
             const billingPlan = org['billingPlan'];
             return {
-                name: org.name,
                 $id: org.$id,
-                showUpgrade: isFreePlan(billingPlan),
+                name: org.name,
+                isSelected: $organization?.$id === org.$id,
+                showUpgrade: isCloud ? isFreePlan(billingPlan) : false,
                 tierName: isCloud ? tierToPlan(billingPlan).name : null,
-                isSelected: $organization?.$id === org.$id
+                billingNextInvoiceDate: isCloud ? org['billingNextInvoiceDate'] : undefined,
+                billingCurrentInvoiceDate: isCloud ? org['billingCurrentInvoiceDate'] : undefined
             };
         }),
 
