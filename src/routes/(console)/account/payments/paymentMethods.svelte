@@ -59,7 +59,7 @@
             <Table.Root
                 let:root
                 columns={[
-                    { id: 'cc', width: 140 },
+                    { id: 'cc', width: { min: 225 } },
                     { id: 'name', width: { min: 140 } },
                     { id: 'expiry', width: 100 },
                     { id: 'status', width: 110, hide: !hasPaymentError },
