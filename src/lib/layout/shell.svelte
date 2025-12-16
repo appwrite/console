@@ -107,11 +107,6 @@
      * The sidebar is **always closed** on mobile and tablet devices!
      */
     afterNavigate((navigation) => {
-        if (resolvedProfile.id === ProfileMode.STUDIO) {
-            state = 'icons';
-            return;
-        }
-
         if ($isTabletViewport) {
             state = 'closed';
             return;
@@ -176,8 +171,19 @@
         currentProject: selectedProject
     };
 
-    $: state = $isSidebarOpen ? 'open' : 'closed';
-
+    $: {
+        if ($isSidebarOpen) {
+            state = 'open';
+        } else if ($isTabletViewport) {
+            state = 'closed';
+        } else if (resolvedProfile.id === ProfileMode.STUDIO) {
+            state = 'icons';
+        } else if (isInDatabasesRoute($page.route)) {
+            state = 'icons';
+        } else {
+            state = 'closed';
+        }
+    }
     $: subNavigation = $page.data.subNavigation;
 
     $: shouldRenderSidebar = !$isNewWizardStatusOpen && showSideNavigation;

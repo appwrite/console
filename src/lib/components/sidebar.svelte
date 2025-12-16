@@ -34,7 +34,7 @@
     import { showSupportModal } from '$routes/(console)/wizard/support/store';
     import MobileSupportModal from '$routes/(console)/wizard/support/mobileSupportModal.svelte';
     import MobileFeedbackModal from '$routes/(console)/wizard/feedback/mobileFeedbackModal.svelte';
-    import { getSidebarState, isInDatabasesRoute, updateSidebarState } from '$lib/helpers/sidebar';
+    import { updateSidebarState } from '$lib/helpers/sidebar';
     import { isSmallViewport, isTabletViewport } from '$lib/stores/viewport';
     import { Click, trackEvent } from '$lib/actions/analytics';
 
@@ -59,7 +59,7 @@
     };
 
     let {
-        state = $bindable('icons'),
+        state = $bindable(),
         project,
         avatar,
         progressCard = undefined,
@@ -102,17 +102,6 @@
     };
 
     const studio = $derived(resolvedProfile.id === ProfileMode.STUDIO);
-
-    $effect(() => {
-        state = studio
-            ? 'icons'
-            : $isTabletViewport
-              ? 'closed'
-              : // example: manual resize
-                isInDatabasesRoute(page.route)
-                ? 'icons'
-                : getSidebarState();
-    });
 </script>
 
 <div
