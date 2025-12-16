@@ -109,7 +109,7 @@
         backupPaymentMethod?.expired;
 </script>
 
-<CardGrid>
+<CardGrid overflow={false}>
     <svelte:fragment slot="title">Payment methods</svelte:fragment>
     View or update your organization payment methods here.
     <svelte:fragment slot="aside">
@@ -117,7 +117,7 @@
             <Table.Root
                 let:root
                 columns={[
-                    { id: 'cc', width: { min: 155 } },
+                    { id: 'cc', width: { min: 225 } },
                     { id: 'name', width: { min: 140 } },
                     { id: 'expiry', width: { min: 75 } },
                     { id: 'status', width: { min: 110 }, hide: !hasPaymentError },
