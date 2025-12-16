@@ -68,7 +68,6 @@
         organizations: Array<{
             name: string;
             $id: string;
-            name: string;
             isSelected: boolean;
             showUpgrade: boolean;
             tierName: string;
