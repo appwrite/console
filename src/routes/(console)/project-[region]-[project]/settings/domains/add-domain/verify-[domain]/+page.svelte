@@ -28,30 +28,29 @@
     let { data } = $props();
 
     const ruleId = page.url.searchParams.get('rule');
-    const domainId = page.url.searchParams.get('domain');
-    const isSubDomain = $derived.by(() => isASubdomain(page.params.domain));
+    const isSubDomain = $derived.by(() => isASubdomain(data.proxyRule.domain));
 
-    let selectedTab = $state<'cname' | 'nameserver' | 'a' | 'aaaa'>('nameserver');
-
-    $effect(() => {
-        if ($regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME && isSubDomain) {
-            selectedTab = 'cname';
-        } else if (!isCloud && $regionalConsoleVariables._APP_DOMAIN_TARGET_A) {
-            selectedTab = 'a';
-        } else if (!isCloud && $regionalConsoleVariables._APP_DOMAIN_TARGET_AAAA) {
-            selectedTab = 'aaaa';
-        } else {
-            selectedTab = 'nameserver';
-        }
-    });
-    let verified = $state(false);
+    let selectedTab = $state<'cname' | 'nameserver' | 'a' | 'aaaa'>(getDefaultTab());
 
     const routeBase = `${base}/project-${page.params.region}-${page.params.project}/settings/domains`;
+    let verified: boolean | undefined = $state(undefined);
     const isSubmitting = writable(false);
+
+    function getDefaultTab() {
+        if (isSubDomain && $regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME) {
+            return 'cname';
+        } else if (!isCloud && $regionalConsoleVariables._APP_DOMAIN_TARGET_A) {
+            return 'a';
+        } else if (!isCloud && $regionalConsoleVariables._APP_DOMAIN_TARGET_AAAA) {
+            return 'aaaa';
+        } else {
+            return 'nameserver';
+        }
+    }
 
     async function verify() {
         const isNewDomain =
-            data.domainsList.domains.find((rule) => rule.domain === page.params.domain) ===
+            data.domainsList.domains.find((rule) => rule.domain === data.proxyRule.domain) ===
             undefined;
         try {
             if (selectedTab !== 'nameserver') {
@@ -59,27 +58,32 @@
                     .forProject(page.params.region, page.params.project)
                     .proxy.updateRuleVerification({ ruleId });
                 verified = ruleData.status === 'verified';
-            } else if (isNewDomain && isCloud) {
-                const domainData = await sdk.forConsole.domains.create({
-                    teamId: $organization.$id,
-                    domain: page.params.domain
-                });
-                verified = domainData.nameservers.toLowerCase() === 'appwrite';
-            } else if (!isNewDomain && isCloud) {
-                const domain = await sdk.forConsole.domains.updateNameservers({
-                    domainId
-                });
-                verified = domain.nameservers.toLowerCase() === 'appwrite';
-                if (!verified)
+
+                // This means domain verification using DNS records hasn't succeeded and the rule is still in initial state.
+                if (ruleData.status === 'created') {
                     throw new Error(
                         'Domain verification failed. Please check your domain settings or try again later'
                     );
+                }
+            } else if (isNewDomain && isCloud) {
+                const domainData = await sdk.forConsole.domains.create({
+                    teamId: $organization.$id,
+                    domain: data.proxyRule.domain
+                });
+                verified = domainData.nameservers.toLowerCase() === 'appwrite';
             }
 
-            addNotification({
-                type: 'success',
-                message: 'Domain added successfully'
-            });
+            if (verified) {
+                addNotification({
+                    type: 'success',
+                    message: 'Domain added successfully'
+                });
+            } else {
+                addNotification({
+                    type: 'info',
+                    message: 'Verification in progress'
+                });
+            }
             await goto(routeBase);
             await invalidate(Dependencies.DOMAINS);
         } catch (error) {
@@ -98,7 +102,7 @@
                 .forProject(page.params.region, page.params.project)
                 .proxy.deleteRule({ ruleId });
         }
-        await goto(`${routeBase}/add-domain?domain=${page.params.domain}`);
+        await goto(`${routeBase}/add-domain?domain=${data.proxyRule.domain}`);
     }
 </script>
 
@@ -115,7 +119,7 @@
                         <Icon icon={IconGlobeAlt} color="--fgcolor-neutral-primary" />
 
                         <Typography.Text variation="m-500" color="--fgcolor-neutral-primary">
-                            {page.params.domain}
+                            {data.proxyRule.domain}
                         </Typography.Text>
                     </Layout.Stack>
                     <Button secondary on:click={back}>Change</Button>
@@ -162,9 +166,17 @@
                         <Divider />
                     </div>
                     {#if selectedTab === 'nameserver'}
-                        <NameserverTable domain={page.params.domain} {verified} />
+                        <NameserverTable domain={data.proxyRule.domain} {verified} />
                     {:else}
-                        <RecordTable domain={page.params.domain} {verified} variant={selectedTab} />
+                        <RecordTable
+                            {verified}
+                            service="general"
+                            variant={selectedTab}
+                            domain={data.proxyRule.domain}
+                            ruleStatus={data.proxyRule.status}
+                            onNavigateToNameservers={() => (selectedTab = 'nameserver')}
+                            onNavigateToA={() => (selectedTab = 'a')}
+                            onNavigateToAAAA={() => (selectedTab = 'aaaa')} />
                     {/if}
                     <Divider />
                     <Layout.Stack direction="row" justifyContent="flex-end">
