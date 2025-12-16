@@ -4,7 +4,7 @@
     import { Typography, Card } from '@appwrite.io/pink-svelte';
     import { resolvedProfile } from '$lib/profiles/index.svelte';
     import UnicornScene from './studio.json?url';
-    import { onMount } from 'svelte';
+    import { onDestroy, onMount } from 'svelte';
     import { Tween } from 'svelte/motion';
 
     async function isUnicornAvailable() {
@@ -21,11 +21,17 @@
     const opacity = new Tween(0);
 
     onMount(async () => {
+        if ('UnicornStudio' in window) delete window.UnicornStudio;
         await isUnicornAvailable();
         // @ts-expect-error the typings are trash
         // eslint-disable-next-line no-undef
         await UnicornStudio.init();
         opacity.target = 1;
+    });
+
+    onDestroy(() => {
+        // @ts-expect-error the typings are trash
+        delete window.UnicornStudio;
     });
 </script>
 
