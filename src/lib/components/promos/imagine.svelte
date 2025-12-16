@@ -22,10 +22,12 @@
         position: relative;
         background-color: #000000;
         border: 0.795px solid var(--border-neutral-strong);
+        overflow: hidden;
     }
 
     .imagine-canvas {
         position: absolute;
+        inset: 0;
     }
 
     .imagine-logo {
