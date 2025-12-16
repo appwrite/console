@@ -16,7 +16,7 @@ if (isCloud && SHOW_IMAGINE_PROMO) {
         id: 'modal:imagine.dev',
         backgroundComponent: Imagine,
         title: 'Introducing Imagine',
-        message: 'the most complete AI builder to date',
+        message: 'The most complete AI builder to date',
         importance: 8,
         scope: 'everywhere',
         plan: 'free',
