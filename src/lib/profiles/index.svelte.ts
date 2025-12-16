@@ -9,6 +9,7 @@ import UnauthenticatedStudio from './(unauthenticated)/studio.svelte';
 import StudioCss from './css/studio.css?url';
 import ConsoleCss from './css/console.css?url';
 import { isCloud } from '$lib/system';
+import { dev } from '$app/environment';
 
 export const enum ProfileMode {
     STUDIO = 'studio',
@@ -145,7 +146,7 @@ export const studio: Profile = {
         },
         alt: 'Imagine Appwrite'
     },
-    logins: [/** temporary */ Logins.EMAIL, Logins.GITHUB, Logins.GOOGLE].filter(Boolean),
+    logins: [dev && Logins.EMAIL, Logins.GITHUB, Logins.GOOGLE].filter(Boolean),
     oauthProviders: {
         github: {
             provider: OAuthProvider.GithubImagine,
