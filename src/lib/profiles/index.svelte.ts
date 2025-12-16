@@ -1,7 +1,7 @@
 import { asset, resolve } from '$app/paths';
 import type { ResolvedPathname } from '$app/types';
 import { OAuthProvider, Platform } from '@appwrite.io/console';
-import { env } from '$env/dynamic/public';
+// import { env } from '$env/dynamic/public';
 import { BillingPlan } from '@appwrite.io/console';
 import type { Component } from 'svelte';
 import UnauthenticatedConsole from './(unauthenticated)/console.svelte';
@@ -238,4 +238,5 @@ export const studio: Profile = {
     }
 };
 
-export const resolvedProfile = env.PUBLIC_CONSOLE_PROFILE === 'studio' ? studio : base;
+// export const resolvedProfile = env.PUBLIC_CONSOLE_PROFILE === 'studio' ? studio : base;
+export const resolvedProfile = studio;
