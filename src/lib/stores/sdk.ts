@@ -43,6 +43,7 @@ import {
     SUBDOMAIN_TOR
 } from '$lib/constants';
 import { building } from '$app/environment';
+import { resolvedProfile } from '$lib/profiles/index.svelte';
 
 export function getApiEndpoint(region?: string): string {
     if (building) return '';
@@ -112,6 +113,10 @@ const clientRealtime = new Client();
 if (!building) {
     scopedConsoleClient.setProject('console');
     clientConsole.setEndpoint(endpoint).setProject('console');
+
+    // set profile type!
+    clientConsole.setProfile(resolvedProfile.platform);
+    scopedConsoleClient.setProfile(resolvedProfile.platform);
 
     clientProject.setEndpoint(endpoint).setMode('admin');
     clientRealtime.setEndpoint(endpoint).setProject('console');
