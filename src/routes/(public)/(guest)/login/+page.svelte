@@ -94,6 +94,8 @@
     function clearAuthToken() {
         localStorage.removeItem('imagine-auth-token');
     }
+
+    const emailEnabled = $derived(data.enableEmail || profile.logins.includes(Logins.EMAIL));
 </script>
 
 <svelte:head>
@@ -105,7 +107,7 @@
     <svelte:fragment>
         <Form onSubmit={login}>
             <Layout.Stack>
-                {#if profile.logins.includes(Logins.EMAIL)}
+                {#if emailEnabled}
                     <InputEmail
                         id="email"
                         label="Email"
@@ -146,7 +148,7 @@
         </Form>
     </svelte:fragment>
     <svelte:fragment slot="links">
-        {#if profile.logins.includes(Logins.EMAIL)}
+        {#if emailEnabled}
             <li class="inline-links-item">
                 <a href={`${base}/recover`}><span class="text">Forgot password?</span></a>
             </li>
