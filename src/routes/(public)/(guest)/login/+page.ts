@@ -5,6 +5,7 @@ import { redirect } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ url }) => {
+    const enableEmail = url.searchParams.has('email_enabled');
     if (url.searchParams.has('code')) {
         const code = url.searchParams.get('code');
         let campaign: Campaign;
@@ -13,6 +14,7 @@ export const load: PageLoad = async ({ url }) => {
             if (couponData.campaign) {
                 campaign = await sdk.forConsole.billing.getCampaign(couponData.campaign);
                 return {
+                    enableEmail,
                     couponData,
                     campaign
                 };
@@ -26,10 +28,10 @@ export const load: PageLoad = async ({ url }) => {
         let campaign: Campaign;
         try {
             campaign = await sdk.forConsole.billing.getCampaign(campaignId);
-            return { campaign };
+            return { campaign, enableEmail };
         } catch (e) {
             redirect(303, `${base}/login`);
         }
     }
-    return;
+    return { enableEmail };
 };
