@@ -70,6 +70,7 @@ export type Profile = {
         privacy: string;
         cookies: string;
         pricing: string;
+        github?: string;
     };
     support: {
         technical: string[];
@@ -133,7 +134,8 @@ export const base: Profile = {
         discord: 'https://appwrite.io/discord',
         cookies: 'https://appwrite.io/cookies',
         privacy: 'https://appwrite.io/privacy',
-        pricing: 'https://appwrite.io/pricing'
+        pricing: 'https://appwrite.io/pricing',
+        github: 'https://github.com/appwrite/appwrite'
     },
     support: {
         technical: [

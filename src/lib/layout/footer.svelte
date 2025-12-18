@@ -39,22 +39,23 @@
                 <Divider vertical />
             </span>
             <Layout.Stack direction="row" gap="xxs" inline>
-                <!-- TODO: hide on studio mode. -->
+                {#if resolvedProfile.links.github}
+                    <Button.Anchor
+                        icon
+                        size="xs"
+                        variant="ghost"
+                        href={resolvedProfile.links.github}
+                        target="_blank"
+                        rel="noreferrer"
+                        aria-label="{resolvedProfile.platform} on Github">
+                        <Icon size="s" icon={IconGithub} />
+                    </Button.Anchor>
+                {/if}
                 <Button.Anchor
                     icon
                     size="xs"
                     variant="ghost"
-                    href="https://github.com/appwrite/appwrite"
-                    target="_blank"
-                    rel="noreferrer"
-                    aria-label="{resolvedProfile.platform} on Github">
-                    <Icon size="s" icon={IconGithub} />
-                </Button.Anchor>
-                <Button.Anchor
-                    icon
-                    size="xs"
-                    variant="ghost"
-                    href="https://appwrite.io/discord"
+                    href={resolvedProfile.links.discord}
                     target="_blank"
                     rel="noreferrer"
                     aria-label="{resolvedProfile.platform} on Discord">
