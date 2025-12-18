@@ -1,44 +1,7 @@
-import type { Tier } from '$lib/stores/billing';
 import type { Campaign } from '$lib/stores/campaigns';
 import type { Client, Models } from '@appwrite.io/console';
-import type { PaymentMethod } from '@stripe/stripe-js';
+import type { PaymentMethod as StripePaymentMethod } from '@stripe/stripe-js';
 import type { Organization, OrganizationError, OrganizationList } from '../stores/organization';
-
-export type Invoice = {
-    $id: string;
-    $createdAt: Date;
-    $updatedAt: Date;
-    permissions: string[];
-    teamId: string;
-    aggregationId: string;
-    plan: Tier;
-    amount: number;
-    tax: number;
-    taxAmount: number;
-    vat: number;
-    vatAmount: number;
-    grossAmount: number;
-    creditsUsed: number;
-    currency: string;
-    from: string;
-    to: string;
-    status: string;
-    dueAt: string;
-    clientSecret: string;
-    usage: {
-        name: string;
-        value: number /* service over the limit*/;
-        amount: number /* price of service over the limit*/;
-        rate: number;
-        desc: string;
-    }[];
-    lastError?: string;
-};
-
-export type InvoiceList = {
-    invoices: Invoice[];
-    total: number;
-};
 
 export type Estimation = {
     amount: number;
@@ -55,15 +18,6 @@ export type Estimation = {
 export type EstimationItem = {
     label: string;
     value: number;
-};
-
-export type EstimationDeleteOrganization = {
-    amount: number;
-    grossAmount: number;
-    credits: number;
-    discount: number;
-    items: EstimationItem[];
-    unpaidInvoices: Invoice[];
 };
 
 export type Coupon = {
@@ -401,7 +355,7 @@ export class Billing {
 
     async estimationDeleteOrganization(
         organizationId: string
-    ): Promise<EstimationDeleteOrganization> {
+    ): Promise<Models.EstimationDeleteOrganization> {
         const path = `/organizations/${organizationId}/estimations/delete-organization`;
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call('patch', uri, {
@@ -624,7 +578,10 @@ export class Billing {
         );
     }
 
-    async listInvoices(organizationId: string, queries: string[] = []): Promise<InvoiceList> {
+    async listInvoices(
+        organizationId: string,
+        queries: string[] = []
+    ): Promise<Models.InvoiceList> {
         const path = `/organizations/${organizationId}/invoices`;
         const params = {
             organizationId,
@@ -642,7 +599,7 @@ export class Billing {
         );
     }
 
-    async getInvoice(organizationId: string, invoiceId: string): Promise<Invoice> {
+    async getInvoice(organizationId: string, invoiceId: string): Promise<Models.Invoice> {
         const path = `/organizations/${organizationId}/invoices/${invoiceId}`;
         const params = {
             organizationId,
@@ -699,7 +656,7 @@ export class Billing {
         );
     }
 
-    async updateInvoiceStatus(organizationId: string, invoiceId: string): Promise<Invoice> {
+    async updateInvoiceStatus(organizationId: string, invoiceId: string): Promise<Models.Invoice> {
         const path = `/organizations/${organizationId}/invoices/${invoiceId}/status`;
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call('PATCH', uri, {
@@ -711,7 +668,7 @@ export class Billing {
         organizationId: string,
         invoiceId: string,
         paymentMethodId: string
-    ): Promise<Invoice> {
+    ): Promise<Models.Invoice> {
         const path = `/organizations/${organizationId}/invoices/${invoiceId}/payments`;
         const params = {
             organizationId,
@@ -1064,7 +1021,7 @@ export class Billing {
 
     async setPaymentMethod(
         paymentMethodId: string,
-        providerMethodId: string | PaymentMethod,
+        providerMethodId: string | StripePaymentMethod,
         name: string,
         state: string | undefined = undefined
     ): Promise<Models.PaymentMethod> {

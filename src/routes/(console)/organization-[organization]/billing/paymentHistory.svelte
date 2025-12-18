@@ -5,9 +5,8 @@
     import { Button } from '$lib/elements/forms';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
     import { formatCurrency } from '$lib/helpers/numbers';
-    import type { Invoice, InvoiceList } from '$lib/sdk/billing';
     import { getApiEndpoint, sdk } from '$lib/stores/sdk';
-    import { Query } from '@appwrite.io/console';
+    import { type Models, Query } from '@appwrite.io/console';
     import { trackEvent } from '$lib/actions/analytics';
     import { selectedInvoice, showRetryModal } from './store';
     import {
@@ -32,7 +31,7 @@
     let limit = $state(5);
     let offset = $state(0);
     let isLoadingInvoices = $state(false);
-    let invoiceList: InvoiceList = $state({
+    let invoiceList: Models.InvoiceList = $state({
         invoices: [],
         total: 0
     });
@@ -65,7 +64,7 @@
         isLoadingInvoices = false;
     }
 
-    function retryPayment(invoice: Invoice) {
+    function retryPayment(invoice: Models.Invoice) {
         $selectedInvoice = invoice;
         $showRetryModal = true;
     }

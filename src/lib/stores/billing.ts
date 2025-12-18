@@ -12,13 +12,7 @@ import PaymentMandate from '$lib/components/billing/alerts/paymentMandate.svelte
 import { BillingPlan, NEW_DEV_PRO_UPGRADE_COUPON } from '$lib/constants';
 import { cachedStore } from '$lib/helpers/cache';
 import { type Size, sizeToBytes } from '$lib/helpers/sizeConvertion';
-import type {
-    AddressesList,
-    AggregationTeam,
-    Invoice,
-    InvoiceList,
-    BillingPlansMap
-} from '$lib/sdk/billing';
+import type { AddressesList, AggregationTeam, BillingPlansMap } from '$lib/sdk/billing';
 import { isCloud } from '$lib/system';
 import { activeHeaderAlert, orgMissingPaymentMethod } from '$routes/(console)/store';
 import { AppwriteException, Query, Platform, type Models } from '@appwrite.io/console';
@@ -85,7 +79,7 @@ export function getRoleLabel(role: string) {
     return roles.find((r) => r.value === role)?.label ?? role;
 }
 
-export function tierToPlan(tier: Tier) {
+export function tierToPlan(tier: Tier | string) {
     switch (tier) {
         case BillingPlan.FREE:
             return tierFree;
@@ -154,7 +148,7 @@ export type PlanServices =
 
 export function getServiceLimit(
     serviceId: PlanServices,
-    tier: Tier = null,
+    tier: Tier | string = null,
     plan?: Models.BillingPlan
 ): number {
     if (!isCloud) return 0;
@@ -182,7 +176,7 @@ export function getServiceLimit(
 }
 
 export const failedInvoice = cachedStore<
-    Invoice,
+    Models.Invoice,
     {
         load: (orgId: string) => Promise<void>;
     }
@@ -208,7 +202,7 @@ export const failedInvoice = cachedStore<
     };
 });
 
-export const actionRequiredInvoices = writable<InvoiceList>(null);
+export const actionRequiredInvoices = writable<Models.InvoiceList>(null);
 
 export type TierData = {
     name: string;

@@ -3,7 +3,6 @@
     import { FakeModal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { Dependencies } from '$lib/constants';
-    import type { Invoice } from '$lib/sdk/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { page } from '$app/state';
@@ -25,7 +24,7 @@
     import type { Models } from '@appwrite.io/console';
 
     export let show = false;
-    export let invoice: Invoice;
+    export let invoice: Models.Invoice;
 
     let name: string;
     let state: string = '';

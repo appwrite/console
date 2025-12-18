@@ -1,8 +1,8 @@
-import type { AggregationTeam, Invoice, InvoiceUsage } from '$lib/sdk/billing';
-import { accumulateUsage } from '$lib/sdk/usage';
 import { sdk } from '$lib/stores/sdk';
-import { Query } from '@appwrite.io/console';
 import type { PageLoad } from './$types';
+import { accumulateUsage } from '$lib/sdk/usage';
+import { type Models, Query } from '@appwrite.io/console';
+import type { AggregationTeam, InvoiceUsage } from '$lib/sdk/billing';
 
 export const load: PageLoad = async ({ params, parent }) => {
     const { invoice, project, region } = params;
@@ -10,7 +10,7 @@ export const load: PageLoad = async ({ params, parent }) => {
 
     let startDate: string = organization.billingCurrentInvoiceDate;
     let endDate: string = organization.billingNextInvoiceDate;
-    let currentInvoice: Invoice = undefined;
+    let currentInvoice: Models.Invoice = undefined;
     let currentAggregation: AggregationTeam = undefined;
 
     if (invoice) {

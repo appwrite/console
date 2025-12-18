@@ -1,7 +1,8 @@
 import { page } from '$app/stores';
 import { derived, writable } from 'svelte/store';
+import type { Models } from '@appwrite.io/console';
+import type { AggregationList, InvoiceUsage } from '$lib/sdk/billing';
 import type { WizardStepsType } from '$lib/layout/wizardWithSteps.svelte';
-import type { AggregationList, Invoice, InvoiceUsage } from '$lib/sdk/billing';
 
 export const aggregationList = derived(
     page,
@@ -14,7 +15,7 @@ export const addCreditWizardStore = writable<{ coupon: string; paymentMethodId: 
     paymentMethodId: null
 });
 
-export const selectedInvoice = writable<Invoice>(null);
+export const selectedInvoice = writable<Models.Invoice>(null);
 export const showRetryModal = writable(false);
 
 export type RowFactoryOptions = {

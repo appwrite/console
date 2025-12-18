@@ -5,7 +5,7 @@
     import { toLocaleDate } from '$lib/helpers/date';
     import { upgradeURL } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
-    import type { Aggregation, Invoice } from '$lib/sdk/billing';
+    import type { Aggregation } from '$lib/sdk/billing';
     import { abbreviateNumber, formatCurrency, formatNumberWithCommas } from '$lib/helpers/numbers';
     import { BillingPlan } from '$lib/constants';
     import { Click, trackEvent } from '$lib/actions/analytics';
@@ -23,8 +23,8 @@
     import type { Models } from '@appwrite.io/console';
 
     export let currentPlan: Models.BillingPlan;
-    export let currentInvoice: Invoice | undefined = undefined;
     export let availableCredit: number | undefined = undefined;
+    export let currentInvoice: Models.Invoice | undefined = undefined;
     export let currentAggregation: Aggregation | undefined = undefined;
 
     let showCancel: boolean = false;
