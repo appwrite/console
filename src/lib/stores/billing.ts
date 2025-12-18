@@ -1,6 +1,6 @@
 import { browser } from '$app/environment';
 import { goto } from '$app/navigation';
-import { base } from '$app/paths';
+import { resolve } from '$app/paths';
 import { Click, trackEvent } from '$lib/actions/analytics';
 import { page } from '$app/stores';
 import LimitReached from '$lib/components/billing/alerts/limitReached.svelte';
@@ -12,7 +12,7 @@ import PaymentMandate from '$lib/components/billing/alerts/paymentMandate.svelte
 import { BillingPlan, NEW_DEV_PRO_UPGRADE_COUPON } from '$lib/constants';
 import { cachedStore } from '$lib/helpers/cache';
 import { type Size, sizeToBytes } from '$lib/helpers/sizeConvertion';
-import type { AddressesList, AggregationTeam, BillingPlansMap } from '$lib/sdk/billing';
+import type { AddressesList, BillingPlansMap } from '$lib/sdk/billing';
 import { isCloud } from '$lib/system';
 import { activeHeaderAlert, orgMissingPaymentMethod } from '$routes/(console)/store';
 import {
@@ -413,13 +413,21 @@ export async function checkForUsageLimit(org: Organization) {
                 {
                     name: 'View usage',
                     method: () => {
-                        goto(`${base}/organization-${org.$id}/usage`);
+                        goto(
+                            resolve('/(console)/organization-[organization]/usage', {
+                                organization: org.$id
+                            })
+                        );
                     }
                 },
                 {
                     name: 'Upgrade plan',
                     method: () => {
-                        goto(`${base}/organization-${org.$id}/change-plan`);
+                        goto(
+                            resolve('/(console)/organization-[organization]/change-plan', {
+                                organization: org.$id
+                            })
+                        );
                         trackEvent(Click.OrganizationClickUpgrade, {
                             from: 'button',
                             source: 'limit_reached_notification'
@@ -482,7 +490,7 @@ export async function paymentExpired(org: Organization) {
                 {
                     name: 'Update payment details',
                     method: () => {
-                        goto(`${base}/account/payments`);
+                        goto(resolve('/account/payments'));
                     }
                 }
             ]
@@ -496,7 +504,7 @@ export async function paymentExpired(org: Organization) {
                 {
                     name: 'Update payment details',
                     method: () => {
-                        goto(`${base}/account/payments`);
+                        goto(resolve('/account/payments'));
                     }
                 }
             ]
@@ -596,18 +604,21 @@ export async function checkForNewDevUpgradePro(org: Organization) {
         importance: 1
     });
 }
-export const upgradeURL = derived(
-    page,
-    ($page) => `${base}/organization-${$page.data?.organization?.$id}/change-plan`
-);
-export const billingURL = derived(
-    page,
-    ($page) => `${base}/organization-${$page.data?.organization?.$id}/billing`
-);
+export const upgradeURL = derived(page, ($page) => {
+    return resolve('/(console)/organization-[organization]/change-plan', {
+        organization: $page.data?.organization?.$id
+    });
+});
 
-export const hideBillingHeaderRoutes = [base + '/create-organization', base + '/account'];
+export const billingURL = derived(page, ($page) => {
+    return resolve('/(console)/organization-[organization]/billing', {
+        organization: $page.data?.organization?.$id
+    });
+});
 
-export function calculateExcess(addon: AggregationTeam, plan: Models.BillingPlan) {
+export const hideBillingHeaderRoutes = [resolve('/account'), resolve('/create-organization')];
+
+export function calculateExcess(addon: Models.AggregationTeam, plan: Models.BillingPlan) {
     return {
         bandwidth: calculateResourceSurplus(addon.usageBandwidth, plan.bandwidth),
         storage: calculateResourceSurplus(addon.usageStorage, plan.storage, 'GB'),

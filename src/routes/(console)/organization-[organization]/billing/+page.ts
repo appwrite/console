@@ -1,19 +1,25 @@
-import { BillingPlan, DEFAULT_BILLING_PROJECTS_LIMIT, Dependencies } from '$lib/constants';
-import type { Address } from '$lib/sdk/billing';
-import { type Organization } from '$lib/stores/organization';
+import { resolve } from '$app/paths';
+import { isCloud } from '$lib/system';
 import { sdk } from '$lib/stores/sdk';
 import { redirect } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
-import { isCloud } from '$lib/system';
-import { base } from '$app/paths';
+import type { Address } from '$lib/sdk/billing';
+import { type Organization } from '$lib/stores/organization';
+import { BillingPlan, DEFAULT_BILLING_PROJECTS_LIMIT, Dependencies } from '$lib/constants';
 
+import type { Models } from '@appwrite.io/console';
 import { getLimit, getPage, pageToOffset } from '$lib/helpers/load';
 
 export const load: PageLoad = async ({ parent, depends, url, route }) => {
     const { organization, scopes, currentPlan, countryList, locale } = await parent();
 
     if (!scopes.includes('billing.read')) {
-        return redirect(301, `${base}/organization-${organization.$id}`);
+        return redirect(
+            301,
+            resolve('/(console)/organization-[organization]', {
+                organization: organization.$id
+            })
+        );
     }
 
     depends(Dependencies.PAYMENT_METHODS);
@@ -36,7 +42,7 @@ export const load: PageLoad = async ({ parent, depends, url, route }) => {
      * initially created, these might return 404
      * - can be removed later once that is fixed in back-end
      */
-    let billingAggregation = null;
+    let billingAggregation: Models.AggregationTeam | null = null;
     try {
         const currentPage = getPage(url) || 1;
         const limit = getLimit(url, route, DEFAULT_BILLING_PROJECTS_LIMIT);

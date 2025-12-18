@@ -2,65 +2,6 @@ import type { Client, Models } from '@appwrite.io/console';
 import type { PaymentMethod as StripePaymentMethod } from '@stripe/stripe-js';
 import type { Organization, OrganizationError, OrganizationList } from '../stores/organization';
 
-export type AggregationTeam = {
-    $id: string;
-    /**
-     * Aggregation creation time in ISO 8601 format.
-     */
-    $createdAt: string;
-    /**
-     * Aggregation update date in ISO 8601 format.
-     */
-    $updatedAt: string;
-    /**
-     * Beginning date of the invoice.
-     */
-    from: string;
-    /**
-     * End date of the invoice.
-     */
-    to: string;
-    /**
-     * Total amount of the invoice.
-     */
-    amount: number;
-    additionalMembers: number;
-
-    /**
-     * Price for additional members
-     */
-    additionalMemberAmount: number;
-    /**
-     * Total storage usage.
-     */
-    usageStorage: number;
-    /**
-     * Total active users for the billing period.
-     */
-    usageUsers: number;
-    /**
-     * Total number of executions for the billing period.
-     */
-    usageExecutions: number;
-    /**
-     * Total bandwidth usage for the billing period.
-     */
-    usageBandwidth: number;
-    /**
-     * Total realtime usage for the billing period.
-     */
-    usageRealtime: number;
-    /**
-     * Usage logs for the billing period.
-     */
-    resources: InvoiceUsage[];
-    /**
-     * Aggregation billing plan
-     */
-    plan: string;
-    breakdown: AggregationBreakdown[];
-};
-
 export type AggregationBreakdown = {
     $id: string;
     name: string;
@@ -710,7 +651,7 @@ export class Billing {
         aggregationId: string,
         limit?: number,
         offset?: number
-    ): Promise<AggregationTeam> {
+    ): Promise<Models.AggregationTeam> {
         const path = `/organizations/${organizationId}/aggregations/${aggregationId}`;
         const params: {
             organizationId: string;

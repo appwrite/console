@@ -38,7 +38,7 @@
         currentPlan: Models.BillingPlan;
         nextPlan?: Models.BillingPlan | null;
         availableCredit?: number | undefined;
-        currentAggregation?: AggregationTeam | undefined;
+        currentAggregation?: Models.AggregationTeam | undefined;
         limit?: number | undefined;
         offset?: number | undefined;
     } = $props();
@@ -231,7 +231,7 @@
 
     function getBillingData(
         currentPlan: Models.BillingPlan,
-        currentAggregation: AggregationTeam | undefined,
+        currentAggregation: Models.AggregationTeam | undefined,
         isSmallViewport: boolean
     ) {
         // base plan row
