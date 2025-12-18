@@ -1,11 +1,11 @@
 <script lang="ts">
     import { InputChoice, InputNumber } from '$lib/elements/forms';
     import { formatCurrency } from '$lib/helpers/numbers';
-    import type { Coupon, Estimation } from '$lib/sdk/billing';
+    import type { Coupon } from '$lib/sdk/billing';
     import { Card, Divider, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { CreditsApplied } from '.';
     import { sdk } from '$lib/stores/sdk';
-    import { AppwriteException } from '@appwrite.io/console';
+    import { AppwriteException, type Models } from '@appwrite.io/console';
     import DiscountsApplied from './discountsApplied.svelte';
 
     export let billingPlan: string;
@@ -17,7 +17,7 @@
     export let organizationId: string | undefined = undefined;
 
     let budgetEnabled = false;
-    let estimation: Estimation;
+    let estimation: Models.Estimation;
 
     async function getEstimate(
         billingPlan: string,

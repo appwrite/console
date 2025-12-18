@@ -3,23 +3,6 @@ import type { Client, Models } from '@appwrite.io/console';
 import type { PaymentMethod as StripePaymentMethod } from '@stripe/stripe-js';
 import type { Organization, OrganizationError, OrganizationList } from '../stores/organization';
 
-export type Estimation = {
-    amount: number;
-    grossAmount: number;
-    credits: number;
-    discount: number;
-    items: EstimationItem[];
-    discounts: EstimationItem[];
-    trialDays: number;
-    trialEndDate: string | undefined;
-    error: string | undefined;
-};
-
-export type EstimationItem = {
-    label: string;
-    value: number;
-};
-
 export type Coupon = {
     $id: string;
     code: string;
@@ -319,7 +302,7 @@ export class Billing {
         billingPlan: string,
         couponId: string = null,
         invites: Array<string> = []
-    ): Promise<Estimation> {
+    ): Promise<Models.Estimation> {
         const path = `/organizations/estimations/create-organization`;
         const params = {
             billingPlan,
@@ -441,7 +424,7 @@ export class Billing {
         billingPlan: string,
         couponId: string = null,
         invites: Array<string> = []
-    ): Promise<Estimation> {
+    ): Promise<Models.Estimation> {
         const path = `/organizations/${organizationId}/estimations/update-plan`;
         const params = {
             billingPlan,
