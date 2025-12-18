@@ -8,7 +8,6 @@
     import { type Organization } from '$lib/stores/organization';
     import { Button } from '$lib/elements/forms';
     import { hasStripePublicKey, isCloud } from '$lib/system';
-    import type { PaymentList, PaymentMethodData } from '$lib/sdk/billing';
     import DeleteOrgPayment from './deleteOrgPayment.svelte';
     import ReplaceCard from './replaceCard.svelte';
     import EditPaymentModal from '$routes/(console)/account/payments/editPaymentModal.svelte';
@@ -33,17 +32,18 @@
         IconSwitchHorizontal,
         IconTrash
     } from '@appwrite.io/pink-icons-svelte';
+    import type { Models } from '@appwrite.io/console';
 
     export let organization: Organization;
-    export let methods: PaymentList;
+    export let methods: Models.PaymentMethodList;
 
-    let showPayment = false;
     let showEdit = false;
     let showDelete = false;
+    let showPayment = false;
     let showReplace = false;
     let isSelectedBackup = false;
-    let backupPaymentMethod: PaymentMethodData;
-    let defaultPaymentMethod: PaymentMethodData;
+    let backupPaymentMethod: Models.PaymentMethod;
+    let defaultPaymentMethod: Models.PaymentMethod;
 
     async function addPaymentMethod(paymentMethodId: string) {
         try {

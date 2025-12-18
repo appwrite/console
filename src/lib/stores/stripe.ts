@@ -1,6 +1,6 @@
 import type {
     Appearance,
-    PaymentMethod,
+    PaymentMethod as StripePaymentMethod,
     Stripe,
     StripeElement,
     StripeElements
@@ -8,21 +8,21 @@ import type {
 import { sdk } from './sdk';
 import { app } from './app';
 import { get, writable } from 'svelte/store';
-import type { PaymentMethodData } from '$lib/sdk/billing';
 import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
 import { addNotification } from './notifications';
 import { organization } from './organization';
 import { base } from '$app/paths';
 import { ThemeDarkCloud, ThemeLightCloud } from '$themes';
 import Color from 'color';
+import type { Models } from '@appwrite.io/console';
 
 export const stripe = writable<Stripe>();
-let paymentMethod: PaymentMethodData;
+export const isStripeInitialized = writable(false);
+
 let clientSecret: string;
 let elements: StripeElements;
 let paymentElement: StripeElement;
-
-export const isStripeInitialized = writable(false);
+let paymentMethod: Models.PaymentMethod;
 
 export async function initializeStripe(node: HTMLElement) {
     if (!get(stripe)) return;
@@ -116,12 +116,12 @@ export async function submitStripeCard(name: string, organizationId?: string) {
         }
 
         if (setupIntent && setupIntent.status === 'succeeded') {
-            const pm = setupIntent.payment_method as PaymentMethod | string | undefined;
+            const pm = setupIntent.payment_method as StripePaymentMethod | string | undefined;
             // If Stripe returned an expanded PaymentMethod object, check the card country.
             // If it returned a string id (common), `typeof pm === 'string'` and we skip this.
             if (typeof pm !== 'string' && pm?.card?.country === 'US') {
                 // need to get state
-                return pm as PaymentMethod;
+                return pm as StripePaymentMethod;
             }
 
             // The backend expects a provider method ID (string). Extract the id
@@ -130,7 +130,7 @@ export async function submitStripeCard(name: string, organizationId?: string) {
             if (typeof pm === 'string') {
                 providerId = pm;
             } else {
-                providerId = (pm as PaymentMethod)?.id;
+                providerId = (pm as StripePaymentMethod)?.id;
             }
 
             if (!providerId) {

@@ -4,31 +4,6 @@ import type { Client, Models } from '@appwrite.io/console';
 import type { PaymentMethod } from '@stripe/stripe-js';
 import type { Organization, OrganizationError, OrganizationList } from '../stores/organization';
 
-export type PaymentMethodData = {
-    $id: string;
-    $createdAt: string;
-    $updatedAt: string;
-    providerMethodId: string;
-    providerUserId: string;
-    userId: string;
-    expiryMonth: number;
-    expiryYear: number;
-    expired: boolean;
-    last4: string;
-    country: string;
-    brand: string;
-    clientSecret: string;
-    failed: boolean;
-    name: string;
-    mandateId?: string;
-    lastError?: string;
-};
-
-export type PaymentList = {
-    paymentMethods: PaymentMethodData[];
-    total: number;
-};
-
 export type Invoice = {
     $id: string;
     $createdAt: Date;
@@ -1002,7 +977,7 @@ export class Billing {
     async getOrganizationPaymentMethod(
         organizationId: string,
         paymentMethodId: string
-    ): Promise<PaymentMethodData> {
+    ): Promise<Models.PaymentMethod> {
         const path = `/organizations/${organizationId}/payment-methods/${paymentMethodId}`;
         const params = {
             organizationId,
@@ -1041,7 +1016,7 @@ export class Billing {
 
     //ACCOUNT
 
-    async listPaymentMethods(queries: [] = []): Promise<PaymentList> {
+    async listPaymentMethods(queries: [] = []): Promise<Models.PaymentMethodList> {
         const path = `/account/payment-methods`;
         const params = {
             queries
@@ -1057,7 +1032,7 @@ export class Billing {
         );
     }
 
-    async getPaymentMethod(paymentMethodId: string): Promise<PaymentMethodData> {
+    async getPaymentMethod(paymentMethodId: string): Promise<Models.PaymentMethod> {
         const path = `/account/payment-methods/${paymentMethodId}`;
         const params = {
             paymentMethodId
@@ -1073,7 +1048,7 @@ export class Billing {
         );
     }
 
-    async createPaymentMethod(): Promise<PaymentMethodData> {
+    async createPaymentMethod(): Promise<Models.PaymentMethod> {
         const path = `/account/payment-methods`;
         const params = {};
         const uri = new URL(this.client.config.endpoint + path);
@@ -1092,7 +1067,7 @@ export class Billing {
         providerMethodId: string | PaymentMethod,
         name: string,
         state: string | undefined = undefined
-    ): Promise<PaymentMethodData> {
+    ): Promise<Models.PaymentMethod> {
         const path = `/account/payment-methods/${paymentMethodId}/provider`;
         const params = {
             paymentMethodId,
@@ -1118,7 +1093,7 @@ export class Billing {
         paymentMethodId: string,
         expiryMonth: string,
         expiryYear: string
-    ): Promise<PaymentMethodData> {
+    ): Promise<Models.PaymentMethod> {
         const path = `/account/payment-methods/${paymentMethodId}`;
         const params = {
             paymentMethodId,
@@ -1136,7 +1111,7 @@ export class Billing {
         );
     }
 
-    async deletePaymentMethod(paymentMethodId: string): Promise<PaymentMethodData> {
+    async deletePaymentMethod(paymentMethodId: string): Promise<Models.PaymentMethod> {
         const path = `/account/payment-methods/${paymentMethodId}`;
         const params = {
             paymentMethodId
@@ -1151,7 +1126,7 @@ export class Billing {
             params
         );
     }
-    async setDefaultPaymentMethod(paymentMethodId: string): Promise<PaymentMethodData> {
+    async setDefaultPaymentMethod(paymentMethodId: string): Promise<Models.PaymentMethod> {
         const path = `/account/payment-methods/${paymentMethodId}/default`;
         const params = {
             paymentMethodId
@@ -1170,7 +1145,7 @@ export class Billing {
     async setupPaymentMandate(
         organizationId: string,
         paymentMethodId: string
-    ): Promise<PaymentMethodData> {
+    ): Promise<Models.PaymentMethod> {
         const path = `/account/payment-methods/${paymentMethodId}/setup`;
         const params = {
             organizationId,

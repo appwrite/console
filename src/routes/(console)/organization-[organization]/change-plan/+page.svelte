@@ -9,7 +9,7 @@
     import { Button, Form, InputSelect, InputTags, InputTextarea } from '$lib/elements/forms';
     import { formatCurrency } from '$lib/helpers/numbers.js';
     import { Wizard } from '$lib/layout';
-    import { type Coupon, type PaymentMethodData } from '$lib/sdk/billing';
+    import { type Coupon } from '$lib/sdk/billing';
     import { isOrganization, plansInfo, tierToPlan } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { currentPlan, organization } from '$lib/stores/organization';
@@ -67,7 +67,8 @@
 
     $: paymentMethodId =
         data.organization.paymentMethodId ??
-        paymentMethods?.paymentMethods?.find((method: PaymentMethodData) => !!method?.last4)?.$id;
+        paymentMethods?.paymentMethods?.find((method: Models.PaymentMethod) => !!method?.last4)
+            ?.$id;
 
     afterNavigate(({ from }) => {
         previousPage = from?.url?.pathname || previousPage;

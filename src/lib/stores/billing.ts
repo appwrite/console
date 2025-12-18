@@ -17,8 +17,6 @@ import type {
     AggregationTeam,
     Invoice,
     InvoiceList,
-    PaymentList,
-    PaymentMethodData,
     BillingPlansMap
 } from '$lib/sdk/billing';
 import { isCloud } from '$lib/system';
@@ -69,7 +67,10 @@ export const roles = [
 export const teamStatusReadonly = 'readonly';
 export const billingLimitOutstandingInvoice = 'outstanding_invoice';
 
-export const paymentMethods = derived(page, ($page) => $page.data.paymentMethods as PaymentList);
+export const paymentMethods = derived(
+    page,
+    ($page) => $page.data.paymentMethods as Models.PaymentMethodList
+);
 export const addressList = derived(page, ($page) => $page.data.addressList as AddressesList);
 export const plansInfo = derived(page, ($page) => $page.data.plansInfo as BillingPlansMap);
 export const daysLeftInTrial = writable<number>(0);
@@ -538,7 +539,7 @@ export function checkForMarkedForDeletion(org: Organization) {
     }
 }
 
-export const paymentMissingMandate = writable<PaymentMethodData>(null);
+export const paymentMissingMandate = writable<Models.PaymentMethod>(null);
 
 export async function checkForMandate(org: Organization) {
     const paymentId = org.paymentMethodId ?? org.backupPaymentMethodId;

@@ -9,7 +9,6 @@
     import PaymentHistory from './paymentHistory.svelte';
     import TaxId from './taxId.svelte';
     import { failedInvoice, tierToPlan, upgradeURL, useNewPricingModal } from '$lib/stores/billing';
-    import type { PaymentMethodData } from '$lib/sdk/billing';
     import { onMount } from 'svelte';
     import { page } from '$app/state';
     import { confirmPayment } from '$lib/stores/stripe';
@@ -31,11 +30,11 @@
 
     // why are these reactive?
     $: defaultPaymentMethod = data?.paymentMethods?.paymentMethods?.find(
-        (method: PaymentMethodData) => method.$id === organization?.paymentMethodId
+        (method) => method.$id === organization?.paymentMethodId
     );
 
     $: backupPaymentMethod = data?.paymentMethods?.paymentMethods?.find(
-        (method: PaymentMethodData) => method.$id === organization?.backupPaymentMethodId
+        (method) => method.$id === organization?.backupPaymentMethodId
     );
 
     onMount(async () => {

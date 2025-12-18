@@ -5,12 +5,12 @@
     import { Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import type { PaymentMethodData } from '$lib/sdk/billing';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Alert } from '@appwrite.io/pink-svelte';
+    import type { Models } from '@appwrite.io/console';
 
     export let show = false;
-    export let selectedPaymentMethod: PaymentMethodData;
+    export let selectedPaymentMethod: Models.PaymentMethod;
     export let isLinked = false;
     const currentYear = new Date().getFullYear();
     let error: string;
