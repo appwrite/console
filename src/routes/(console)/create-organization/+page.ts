@@ -1,8 +1,8 @@
-import { BillingPlan, Dependencies } from '$lib/constants';
 import { sdk } from '$lib/stores/sdk';
 import type { PageLoad } from './$types';
-import type { Coupon } from '$lib/sdk/billing';
+import type { Models } from '@appwrite.io/console';
 import type { Organization } from '$lib/stores/organization';
+import { BillingPlan, Dependencies } from '$lib/constants';
 
 export const load: PageLoad = async ({ url, parent, depends }) => {
     const { organizations } = await parent();
@@ -41,7 +41,7 @@ function getPlanFromUrl(url: URL): BillingPlan | null {
     return BillingPlan.FREE;
 }
 
-async function getCoupon(url: URL): Promise<Coupon | null> {
+async function getCoupon(url: URL): Promise<Models.Coupon | null> {
     if (url.searchParams.has('code')) {
         const coupon = url.searchParams.get('code');
         try {

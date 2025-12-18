@@ -8,13 +8,12 @@
     import { BillingPlan, Dependencies } from '$lib/constants';
     import { Button, Form, InputTags, InputText } from '$lib/elements/forms';
     import { Wizard } from '$lib/layout';
-    import type { Coupon } from '$lib/sdk/billing';
     import { isOrganization, billingIdToPlan } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import type { OrganizationError, Organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import { confirmPayment } from '$lib/stores/stripe';
-    import { ID } from '@appwrite.io/console';
+    import { ID, type Models } from '@appwrite.io/console';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { Divider, Fieldset, Icon, Layout, Link, Typography } from '@appwrite.io/pink-svelte';
     import { writable } from 'svelte/store';
@@ -27,7 +26,7 @@
     let showExitModal = $state(false);
     let previousPage: string = $state(resolve('/(console)'));
     let selectedPlan: BillingPlan = $state(data.plan as BillingPlan);
-    let selectedCoupon: Partial<Coupon> | null = $state(data.coupon);
+    let selectedCoupon: Partial<Models.Coupon> | null = $state(data.coupon);
 
     let isSubmitting = $state(writable(false));
     let formComponent: Form | null = $state(null);

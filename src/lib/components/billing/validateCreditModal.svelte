@@ -1,14 +1,14 @@
 <script lang="ts">
     import { Modal } from '$lib/components';
     import { Button, InputText } from '$lib/elements/forms';
-    import type { Coupon } from '$lib/sdk/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
+    import type { Models } from '@appwrite.io/console';
 
     export let show = false;
     export let isNewOrg = false;
-    export let couponData: Partial<Coupon> = {
+    export let couponData: Partial<Models.Coupon> = {
         code: null,
         status: null,
         credits: null

@@ -9,7 +9,6 @@
     import { Button, Form, InputSelect, InputTags, InputTextarea } from '$lib/elements/forms';
     import { formatCurrency } from '$lib/helpers/numbers.js';
     import { Wizard } from '$lib/layout';
-    import { type Coupon } from '$lib/sdk/billing';
     import { isOrganization, plansInfo, billingIdToPlan } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { currentPlan, organization } from '$lib/stores/organization';
@@ -39,7 +38,7 @@
 
     export let data;
 
-    let selectedCoupon: Partial<Coupon> = null;
+    let selectedCoupon: Partial<Models.Coupon> = null;
 
     let selectedPlan: BillingPlan = data.plan as BillingPlan;
     let previousPage: string = base;

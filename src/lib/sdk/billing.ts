@@ -3,17 +3,6 @@ import type { Client, Models } from '@appwrite.io/console';
 import type { PaymentMethod as StripePaymentMethod } from '@stripe/stripe-js';
 import type { Organization, OrganizationError, OrganizationList } from '../stores/organization';
 
-export type Coupon = {
-    $id: string;
-    code: string;
-    credits: number;
-    expiration: string;
-    status: string; // 'active' | 'disabled' | 'expired'
-    validity: number;
-    campaign?: string;
-    onlyNewOrgs?: boolean;
-};
-
 export type AggregationTeam = {
     $id: string;
     /**
@@ -829,7 +818,7 @@ export class Billing {
         }
     }
 
-    async getCouponAccount(couponId: string): Promise<Coupon> {
+    async getCouponAccount(couponId: string): Promise<Models.Coupon> {
         const path = `/account/coupons/${couponId}`;
         const params = {
             couponId
@@ -845,7 +834,7 @@ export class Billing {
         );
     }
 
-    async getCoupon(couponId: string): Promise<Coupon> {
+    async getCoupon(couponId: string): Promise<Models.Coupon> {
         const path = `/console/coupons/${couponId}`;
         const params = {
             couponId

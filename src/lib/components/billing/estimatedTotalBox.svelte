@@ -1,7 +1,6 @@
 <script lang="ts">
     import { InputChoice, InputNumber } from '$lib/elements/forms';
     import { formatCurrency } from '$lib/helpers/numbers';
-    import type { Coupon } from '$lib/sdk/billing';
     import { Card, Divider, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { CreditsApplied } from '.';
     import { sdk } from '$lib/stores/sdk';
@@ -10,7 +9,7 @@
 
     export let billingPlan: string;
     export let collaborators: string[];
-    export let couponData: Partial<Coupon>;
+    export let couponData: Partial<Models.Coupon>;
     export let billingBudget: number;
     export let fixedCoupon = false; // If true, the coupon cannot be removed
     export let isDowngrade = false;
