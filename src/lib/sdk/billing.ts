@@ -16,11 +16,6 @@ export type AllowedRegions =
 
 export type BillingPlansMap = Map<string, Models.BillingPlan>;
 
-export type Roles = {
-    scopes: string[];
-    roles: string[];
-};
-
 export class Billing {
     client: Client;
 
@@ -175,7 +170,7 @@ export class Billing {
         });
     }
 
-    async getRoles(organizationId: string): Promise<Roles> {
+    async getRoles(organizationId: string): Promise<Models.Roles> {
         const path = `/organizations/${organizationId}/roles`;
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call('get', uri, {
