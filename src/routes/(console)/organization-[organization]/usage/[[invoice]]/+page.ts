@@ -2,7 +2,6 @@ import { sdk } from '$lib/stores/sdk';
 import type { PageLoad } from './$types';
 import { type Models, Query } from '@appwrite.io/console';
 import type { UsageProjectInfo } from '../../store';
-import type { OrganizationUsage } from '$lib/sdk/billing';
 
 export const load: PageLoad = async ({ params, parent }) => {
     const { invoice } = params;
@@ -68,7 +67,7 @@ export const load: PageLoad = async ({ params, parent }) => {
 };
 
 // all this to get the project's name and region!
-function getUsageProjects(usage: OrganizationUsage) {
+function getUsageProjects(usage: Models.UsageOrganization) {
     return (async () => {
         const projects: Record<string, UsageProjectInfo> = {};
         const limit = 100;

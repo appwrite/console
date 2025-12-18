@@ -1,6 +1,6 @@
 <script lang="ts">
     import { afterNavigate, goto, invalidate } from '$app/navigation';
-    import { base } from '$app/paths';
+    import { base, resolve } from '$app/paths';
     import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { PlanComparisonBox, PlanSelection, SelectPaymentMethod } from '$lib/components/billing';
@@ -32,7 +32,6 @@
     import EstimatedTotalBox from '$lib/components/billing/estimatedTotalBox.svelte';
     import OrganizationUsageLimits from '$lib/components/organizationUsageLimits.svelte';
     import { Query } from '@appwrite.io/console';
-    import type { OrganizationUsage } from '$lib/sdk/billing';
     import type { Models } from '@appwrite.io/console';
     import { toLocaleDate } from '$lib/helpers/date';
 
@@ -41,7 +40,7 @@
     let selectedCoupon: Partial<Models.Coupon> = null;
 
     let selectedPlan: BillingPlan = data.plan as BillingPlan;
-    let previousPage: string = base;
+    let previousPage: string = resolve('/');
     let showExitModal = false;
     let formComponent: Form;
     let usageLimitsComponent:
@@ -59,7 +58,7 @@
     let showCreditModal = false;
     let feedbackDowngradeReason: string;
     let feedbackMessage: string;
-    let orgUsage: OrganizationUsage;
+    let orgUsage: Models.UsageOrganization;
     let allProjects: { projects: Models.Project[] } | undefined;
 
     $: paymentMethods = null;

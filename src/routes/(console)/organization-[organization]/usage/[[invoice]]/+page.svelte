@@ -14,7 +14,6 @@
     import ProjectBreakdown from './ProjectBreakdown.svelte';
     import { formatNum } from '$lib/helpers/string';
     import { accumulateFromEndingTotal, total } from '$lib/layout/usage.svelte';
-    import type { OrganizationUsage } from '$lib/sdk/billing';
     import { BillingPlan } from '$lib/constants';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import TotalMembers from './totalMembers.svelte';
@@ -32,7 +31,7 @@
 
     const plan = data?.plan ?? undefined;
 
-    $: projects = (data.organizationUsage as OrganizationUsage).projects;
+    $: projects = data.organizationUsage.projects;
 
     let usageProjects: Record<string, UsageProjectInfo> = {};
 

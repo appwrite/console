@@ -2,45 +2,6 @@ import type { Client, Models } from '@appwrite.io/console';
 import type { PaymentMethod as StripePaymentMethod } from '@stripe/stripe-js';
 import type { Organization, OrganizationError, OrganizationList } from '../stores/organization';
 
-export type AvailableCredit = {
-    available: number;
-};
-
-export type OrganizationUsage = {
-    bandwidth: Array<Models.Metric>;
-    executions: Array<Models.Metric>;
-    databasesReads: Array<Models.Metric>;
-    databasesWrites: Array<Models.Metric>;
-    imageTransformations: Array<Models.Metric>;
-    executionsTotal: number;
-    filesStorageTotal: number;
-    buildsStorageTotal: number;
-    databasesReadsTotal: number;
-    databasesWritesTotal: number;
-    imageTransformationsTotal: number;
-    deploymentsStorageTotal: number;
-    executionsMBSecondsTotal: number;
-    buildsMBSecondsTotal: number;
-    backupsStorageTotal: number;
-    storageTotal: number;
-    users: Array<Models.Metric>;
-    usersTotal: number;
-    projects: Array<{
-        projectId: string;
-        storage: number;
-        executions: number;
-        bandwidth: number;
-        databasesReads: number;
-        databasesWrites: number;
-        users: number;
-        authPhoneTotal: number;
-        authPhoneEstimate: number;
-        imageTransformations: number;
-    }>;
-    authPhoneTotal: number;
-    authPhoneEstimate: number;
-};
-
 export type AllowedRegions =
     | 'fra'
     | 'nyc'
@@ -525,7 +486,7 @@ export class Billing {
         organizationId: string,
         startDate: string = undefined,
         endDate: string = undefined
-    ): Promise<OrganizationUsage> {
+    ): Promise<Models.UsageOrganization> {
         const path = `/organizations/${organizationId}/usage`;
         const params = {
             organizationId
@@ -629,7 +590,7 @@ export class Billing {
         );
     }
 
-    async getAvailableCredit(organizationId: string): Promise<AvailableCredit> {
+    async getAvailableCredit(organizationId: string): Promise<Models.CreditAvailable> {
         const path = `/organizations/${organizationId}/credits/available`;
         const params = {};
         const uri = new URL(this.client.config.endpoint + path);
