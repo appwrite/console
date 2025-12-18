@@ -1,4 +1,3 @@
-import type { Campaign } from '$lib/stores/campaigns';
 import type { Client, Models } from '@appwrite.io/console';
 import type { PaymentMethod as StripePaymentMethod } from '@stripe/stripe-js';
 import type { Organization, OrganizationError, OrganizationList } from '../stores/organization';
@@ -796,7 +795,7 @@ export class Billing {
         );
     }
 
-    async getCampaign(campaignId: string): Promise<Campaign> {
+    async getCampaign(campaignId: string): Promise<Models.Campaign> {
         const path = `/console/campaigns/${campaignId}`;
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call('GET', uri, {
