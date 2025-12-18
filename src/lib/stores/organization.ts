@@ -13,16 +13,6 @@ export type OrganizationError = {
     type: string;
 };
 
-// TODO: @itznotabug - check with @abnegate, what do we do here? this is billing!
-export type BillingLimits = {
-    bandwidth: number;
-    documents: number;
-    executions: number;
-    storage: number;
-    users: number;
-    budgetLimit: number;
-};
-
 export const newOrgModal = writable<boolean>(false);
 export const newMemberModal = writable<boolean>(false);
 export const organizationList = derived(
@@ -40,7 +30,7 @@ export const regions = writable<Models.ConsoleRegionList>({ total: 0, regions: [
 
 export async function getTeamOrOrganizationList(
     queries: string[] = []
-): Models.TeamList | Models.OrganizationList {
+): Promise<Models.TeamList | Models.OrganizationList> {
     let organizations: Models.TeamList | Models.OrganizationList;
 
     if (isCloud) {

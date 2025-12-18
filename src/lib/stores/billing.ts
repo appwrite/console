@@ -370,10 +370,9 @@ export async function checkForUsageLimit(org: Models.Organization) {
     }
 
     // TODO: @itznotabug - check with @abnegate, what do we do here? this is billing!
-    const { bandwidth, documents, executions, storage, users } = org?.billingLimits ?? {};
+    const { bandwidth, executions, storage, users } = org?.billingLimits ?? {};
     const resources = [
         { value: bandwidth, name: 'bandwidth' },
-        { value: documents, name: 'documents' },
         { value: executions, name: 'executions' },
         { value: storage, name: 'storage' },
         { value: users, name: 'users' }

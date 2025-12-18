@@ -1,6 +1,6 @@
 import { isCloud } from '$lib/system';
 import { redirect } from '@sveltejs/kit';
-import { base, resolve } from '$app/paths';
+import { resolve } from '$app/paths';
 import { Dependencies } from '$lib/constants';
 import type { Models } from '@appwrite.io/console';
 import { getTeamOrOrganizationList } from '$lib/stores/organization';

@@ -28,9 +28,9 @@ export const load: PageLoad = async ({ depends, parent }) => {
 
     // TODO: why not just use the current id as is?
     if (currentPlan?.$id === scale.$id) {
-        plan = scale.$id;
+        plan = scale.$id as BillingPlan /* temp */;
     } else {
-        plan = pro.$id;
+        plan = pro.$id as BillingPlan /* temp */;
     }
 
     const selfService = currentPlan?.selfService ?? true;
