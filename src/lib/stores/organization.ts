@@ -1,5 +1,4 @@
 import { page } from '$app/stores';
-import type { Tier } from './billing';
 import { derived, writable } from 'svelte/store';
 import { type Models, Platform } from '@appwrite.io/console';
 
@@ -14,7 +13,7 @@ export type OrganizationError = {
 
 export type Organization = Models.Team<Record<string, unknown>> & {
     billingBudget: number;
-    billingPlan: Tier;
+    billingPlan: string;
     budgetAlerts: number[];
     paymentMethodId: string;
     backupPaymentMethodId: string;
@@ -28,7 +27,7 @@ export type Organization = Models.Team<Record<string, unknown>> & {
     billingAddressId?: string;
     amount: number;
     billingTaxId?: string;
-    billingPlanDowngrade?: Tier;
+    billingPlanDowngrade?: string;
     billingAggregationId: string;
     billingInvoiceId: string;
     status: string;

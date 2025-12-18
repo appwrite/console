@@ -8,7 +8,12 @@
     import { toLocaleDate } from '$lib/helpers/date';
     import { isTabSelected } from '$lib/helpers/load';
     import { Cover } from '$lib/layout';
-    import { daysLeftInTrial, getServiceLimit, readOnly, tierToPlan } from '$lib/stores/billing';
+    import {
+        daysLeftInTrial,
+        getServiceLimit,
+        readOnly,
+        billingIdToPlan
+    } from '$lib/stores/billing';
     import {
         members,
         newMemberModal,
@@ -147,7 +152,7 @@
                                 {organization?.billingPlan === BillingPlan.FREE
                                     ? 'Upgrade to add more members'
                                     : `You've reached the members limit for the ${
-                                          tierToPlan(organization?.billingPlan)?.name
+                                          billingIdToPlan(organization?.billingPlan)?.name
                                       } plan`}
                             </div>
                         </Tooltip>

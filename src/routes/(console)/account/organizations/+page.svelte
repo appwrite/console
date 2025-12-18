@@ -16,7 +16,7 @@
     import { Badge, Skeleton } from '@appwrite.io/pink-svelte';
     import type { Models } from '@appwrite.io/console';
     import type { Organization } from '$lib/stores/organization';
-    import { daysLeftInTrial, tierToPlan, type Tier } from '$lib/stores/billing';
+    import { daysLeftInTrial, billingIdToPlan } from '$lib/stores/billing';
     import { toLocaleDate } from '$lib/helpers/date';
     import { BillingPlan } from '$lib/constants';
     import { goto } from '$app/navigation';
@@ -40,9 +40,9 @@
         if (!billingPlan) return 'Unknown';
 
         // For known plans, use tierToPlan
-        const tierData = tierToPlan(billingPlan as Tier);
+        const tierData = billingIdToPlan(billingPlan);
 
-        // If it's not a custom plan or we got a non-custom result, return the name
+        // If it's not a custom plan, or we got a non-custom result, return the name
         if (tierData.name !== 'Custom') {
             return tierData.name;
         }

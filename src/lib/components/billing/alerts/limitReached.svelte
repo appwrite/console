@@ -5,16 +5,21 @@
     import { BillingPlan } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { HeaderAlert } from '$lib/layout';
-    import { hideBillingHeaderRoutes, readOnly, tierToPlan, upgradeURL } from '$lib/stores/billing';
+    import {
+        hideBillingHeaderRoutes,
+        readOnly,
+        billingIdToPlan,
+        upgradeURL
+    } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
 </script>
 
 {#if $organization?.$id && $organization?.billingPlan === BillingPlan.FREE && $readOnly && !hideBillingHeaderRoutes.includes(page.url.pathname)}
     <HeaderAlert
         type="error"
-        title={`${$organization.name} usage has reached the ${tierToPlan($organization.billingPlan).name} plan limit`}>
+        title={`${$organization.name} usage has reached the ${billingIdToPlan($organization.billingPlan).name} plan limit`}>
         <svelte:fragment>
-            Usage for the <b>{$organization.name}</b> organization has reached the limits of the {tierToPlan(
+            Usage for the <b>{$organization.name}</b> organization has reached the limits of the {billingIdToPlan(
                 $organization.billingPlan
             ).name}
             plan. Consider upgrading to increase your resource usage.

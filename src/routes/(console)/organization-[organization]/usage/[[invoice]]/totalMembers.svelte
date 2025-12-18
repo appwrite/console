@@ -4,7 +4,7 @@
     import { BillingPlan } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { formatCurrency } from '$lib/helpers/numbers';
-    import { plansInfo, tierToPlan } from '$lib/stores/billing';
+    import { plansInfo, billingIdToPlan } from '$lib/stores/billing';
     import { newMemberModal, organization } from '$lib/stores/organization';
     import type { Models } from '@appwrite.io/console';
     import { IconInfo, IconPlus } from '@appwrite.io/pink-icons-svelte';
@@ -37,7 +37,7 @@
                             <Tooltip maxWidth="200px">
                                 <Icon icon={IconInfo} size="s" />
                                 <svelte:fragment slot="tooltip">
-                                    You can add unlimited organization members on the {tierToPlan(
+                                    You can add unlimited organization members on the {billingIdToPlan(
                                         $organization.billingPlan
                                     ).name} plan {$organization.billingPlan === BillingPlan.PRO
                                         ? `for ${formatCurrency(plan.addons.seats.price)} each per billing period.`
@@ -53,6 +53,7 @@
                 </Layout.Stack>
             </div>
             <Paginator items={members?.memberships} hideFooter={members?.total <= 5}>
+                <!-- TODO: @itznotabug, some odd type issue here -->
                 {#snippet children(paginatedItems: typeof members.memberships)}
                     <Table.Root columns={2} let:root>
                         <svelte:fragment slot="header" let:root>

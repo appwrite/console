@@ -3,7 +3,7 @@
     import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid } from '$lib/components';
     import { BillingPlan, Dependencies } from '$lib/constants';
-    import { tierToPlan, upgradeURL } from '$lib/stores/billing';
+    import { billingIdToPlan, upgradeURL } from '$lib/stores/billing';
     import { Button, Form } from '$lib/elements/forms';
     import { symmetricDifference } from '$lib/helpers/array';
     import { addNotification } from '$lib/stores/notifications';
@@ -81,7 +81,7 @@
     <svelte:fragment slot="title">Billing alerts</svelte:fragment>
     {#if !currentPlan.budgeting}
         Get notified by email when your organization meets a percentage of your budget cap. <b
-            >{tierToPlan(organization.billingPlan).name} organizations will receive one notification
+            >{billingIdToPlan(organization.billingPlan).name} organizations will receive one notification
             at 75% resource usage.</b>
     {:else}
         Get notified by email when your organization meets or exceeds a percentage of your specified

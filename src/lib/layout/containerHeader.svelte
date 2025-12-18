@@ -11,7 +11,7 @@
         getServiceLimit,
         readOnly,
         showUsageRatesModal,
-        tierToPlan,
+        billingIdToPlan,
         upgradeURL,
         type PlanServices
     } from '$lib/stores/billing';
@@ -64,7 +64,7 @@
     };
     const dispatch = createEventDispatcher();
 
-    $: tier = tierToPlan($organization?.billingPlan)?.name;
+    $: tier = billingIdToPlan($organization?.billingPlan)?.name;
     // these can be organization level limitations as well.
     // we need to migrate this sometime later, but soon!
     $: hasProjectLimitation =

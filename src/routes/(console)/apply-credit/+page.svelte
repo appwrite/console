@@ -10,16 +10,16 @@
     import { Wizard } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import {
-        organizationList,
         type Organization,
-        type OrganizationError
+        type OrganizationError,
+        organizationList
     } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import { confirmPayment } from '$lib/stores/stripe.js';
-    import { ID, type Models } from '@appwrite.io/console';
+    import { BillingPlanGroup, ID, type Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { writable } from 'svelte/store';
-    import { isOrganization, plansInfo, type Tier } from '$lib/stores/billing';
+    import { getBasePlanFromGroup, isOrganization, plansInfo } from '$lib/stores/billing';
     import { Fieldset, Icon, Layout, Tooltip } from '@appwrite.io/pink-svelte';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import EstimatedTotalBox from '$lib/components/billing/estimatedTotalBox.svelte';
@@ -67,8 +67,10 @@
     let coupon: string;
     let couponData = data?.couponData;
     let campaign = data?.campaign;
-    let billingPlan: Tier = BillingPlan.PRO;
     let tempOrgId = null;
+
+    let billingPlan = getBasePlanFromGroup(BillingPlanGroup.Pro).$id;
+
     let currentPlan: Models.BillingPlan;
 
     $: onlyNewOrgs = campaign?.onlyNewOrgs || couponData?.onlyNewOrgs;
@@ -223,19 +225,19 @@
         (team) => team.$id === selectedOrgId
     ) as Organization;
 
-    function getBillingPlan(): Tier | undefined {
+    function getBillingPlan(): string | undefined {
         const campaignPlan =
             campaign?.plan && $plansInfo.get(campaign.plan) ? $plansInfo.get(campaign.plan) : null;
         const newPlan = $plansInfo.get(billingPlan);
 
-        // if campaign has a plan and it's higher than the selected new plan
+        // if campaign has a plan, and it's higher than the selected new plan
         if (campaignPlan?.order > newPlan?.order) {
-            return campaignPlan.$id as Tier;
+            return campaignPlan.$id;
         }
 
         // if current plan's order is higher than the selected new plan
         if (currentPlan?.order > newPlan?.order) {
-            return currentPlan.$id as Tier;
+            return currentPlan.$id;
         }
 
         return billingPlan;

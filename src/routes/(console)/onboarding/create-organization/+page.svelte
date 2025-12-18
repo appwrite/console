@@ -1,9 +1,8 @@
 <script lang="ts">
     import { isCloud } from '$lib/system';
     import { sdk } from '$lib/stores/sdk';
-    import { ID } from '@appwrite.io/console';
+    import { BillingPlanGroup, ID } from '@appwrite.io/console';
     import { BillingPlan, Dependencies } from '$lib/constants';
-    import { tierToPlan } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { loadAvailableRegions } from '$routes/(console)/regions';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
@@ -11,6 +10,7 @@
     import { Form } from '$lib/elements/forms/index.js';
     import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
+    import { getBasePlanFromGroup } from '$lib/stores/billing';
 
     let isLoading = false;
     let organizationName = 'Personal Projects';
@@ -29,7 +29,7 @@
                 );
 
                 trackEvent(Submit.OrganizationCreate, {
-                    plan: tierToPlan(BillingPlan.FREE)?.name,
+                    plan: getBasePlanFromGroup(BillingPlanGroup.Starter)?.name,
                     budget_cap_enabled: false,
                     members_invited: 0
                 });

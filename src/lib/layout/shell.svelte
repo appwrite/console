@@ -9,7 +9,7 @@
     import { organization, organizationList } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import { user } from '$lib/stores/user';
-    import { tierToPlan } from '$lib/stores/billing';
+    import { billingIdToPlan } from '$lib/stores/billing';
     import { isCloud } from '$lib/system';
     import SideNavigation from '$lib/layout/navigation.svelte';
     import { hasOnboardingDismissed } from '$lib/helpers/onboarding';
@@ -161,7 +161,7 @@
                 name: org.name,
                 $id: org.$id,
                 showUpgrade: billingPlan === BillingPlan.FREE,
-                tierName: isCloud ? tierToPlan(billingPlan).name : null,
+                tierName: isCloud ? billingIdToPlan(billingPlan).name : null,
                 isSelected: $organization?.$id === org.$id
             };
         }),

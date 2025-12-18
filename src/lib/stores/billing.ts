@@ -15,7 +15,13 @@ import { type Size, sizeToBytes } from '$lib/helpers/sizeConvertion';
 import type { AddressesList, AggregationTeam, BillingPlansMap } from '$lib/sdk/billing';
 import { isCloud } from '$lib/system';
 import { activeHeaderAlert, orgMissingPaymentMethod } from '$routes/(console)/store';
-import { AppwriteException, Query, Platform, type Models } from '@appwrite.io/console';
+import {
+    AppwriteException,
+    BillingPlanGroup,
+    type Models,
+    Platform,
+    Query
+} from '@appwrite.io/console';
 import { derived, get, writable } from 'svelte/store';
 import { headerAlert } from './headerAlert';
 import { addNotification, notifications } from './notifications';
@@ -32,8 +38,6 @@ import BudgetLimitAlert from '$routes/(console)/organization-[organization]/budg
 import TeamReadonlyAlert from '$routes/(console)/organization-[organization]/teamReadonlyAlert.svelte';
 import ProjectsLimit from '$lib/components/billing/alerts/projectsLimit.svelte';
 import EnterpriseTrial from '$routes/(console)/organization-[organization]/enterpriseTrial.svelte';
-
-export type Tier = 'tier-0' | 'tier-1' | 'tier-2' | 'auto-1' | 'cont-1' | 'ent-1';
 
 export const roles = [
     {
@@ -79,45 +83,60 @@ export function getRoleLabel(role: string) {
     return roles.find((r) => r.value === role)?.label ?? role;
 }
 
-export function tierToPlan(tier: Tier | string) {
-    switch (tier) {
-        case BillingPlan.FREE:
-            return tierFree;
-        case BillingPlan.PRO:
-            return tierPro;
-        case BillingPlan.SCALE:
-            return tierScale;
-        case BillingPlan.GITHUB_EDUCATION:
-            return tierGitHubEducation;
-        case BillingPlan.CUSTOM:
-            return tierCustom;
-        case BillingPlan.ENTERPRISE:
-            return tierEnterprise;
-        default:
-            return tierCustom;
+export function planHasGroup(billingPlanId: string, group: BillingPlanGroup) {
+    const plansInfoStore = get(plansInfo);
+    return plansInfoStore.get(billingPlanId)?.group === group;
+}
+
+export function getBasePlanFromGroup(billingPlanGroup: BillingPlanGroup): Models.BillingPlan {
+    const plansInfoStore = get(plansInfo);
+
+    const proPlans = Array.from(plansInfoStore.values()).filter(
+        (plan) => plan.group === billingPlanGroup
+    );
+
+    return proPlans.sort((a, b) => a.order - b.order)[0];
+}
+
+export function billingIdToPlan(billingId: string): Models.BillingPlan {
+    const plansInfoStore = get(plansInfo);
+    if (plansInfoStore.has(billingId)) {
+        return plansInfoStore.get(billingId);
+    } else {
+        // fallback to PRO group's 1st item.
+        // TODO: @itznotabug, @dlohani - but should we fallback to PRO?.
+        return getBasePlanFromGroup(BillingPlanGroup.Pro);
     }
 }
 
-export function getNextTier(tier: Tier) {
-    switch (tier) {
-        case BillingPlan.FREE:
-            return BillingPlan.PRO;
-        case BillingPlan.PRO:
-            return BillingPlan.SCALE;
-        default:
-            return BillingPlan.PRO;
+// TODO: @itznotabug - just return the BillingPlan object!
+export function getNextTierBillingPlan(tier: string): string {
+    const currentPlanData = billingIdToPlan(tier);
+    const currentOrder = currentPlanData.order;
+    const plans = get(plansInfo);
+
+    for (const [, plan] of plans) {
+        if (plan.order === currentOrder + 1) {
+            return plan.$id;
+        }
     }
+
+    return getBasePlanFromGroup(BillingPlanGroup.Pro).$id;
 }
 
-export function getPreviousTier(tier: Tier) {
-    switch (tier) {
-        case BillingPlan.PRO:
-            return BillingPlan.FREE;
-        case BillingPlan.SCALE:
-            return BillingPlan.PRO;
-        default:
-            return BillingPlan.FREE;
+// TODO: @itznotabug - just return the BillingPlan object!
+export function getPreviousTierBillingPlan(tier: string): string {
+    const currentPlanData = billingIdToPlan(tier);
+    const currentOrder = currentPlanData.order;
+    const plans = get(plansInfo);
+
+    for (const [, plan] of plans) {
+        if (plan.order === currentOrder - 1) {
+            return plan.$id;
+        }
     }
+
+    return getBasePlanFromGroup(BillingPlanGroup.Starter).$id;
 }
 
 export type PlanServices =
@@ -148,7 +167,7 @@ export type PlanServices =
 
 export function getServiceLimit(
     serviceId: PlanServices,
-    tier: Tier | string = null,
+    tier: string = null,
     plan?: Models.BillingPlan
 ): number {
     if (!isCloud) return 0;
@@ -204,46 +223,10 @@ export const failedInvoice = cachedStore<
 
 export const actionRequiredInvoices = writable<Models.InvoiceList>(null);
 
-export type TierData = {
-    name: string;
-    description: string;
-};
-
-export const tierFree: TierData = {
-    name: 'Free',
-    description: 'A great fit for passion projects and small applications.'
-};
-
-export const tierGitHubEducation: TierData = {
-    name: 'GitHub Education',
-    description: 'For members of GitHub student developers program.'
-};
-
-export const tierPro: TierData = {
-    name: 'Pro',
-    description:
-        'For production applications that need powerful functionality and resources to scale.'
-};
-export const tierScale: TierData = {
-    name: 'Scale',
-    description:
-        'For teams that handle more complex and large projects and need more control and support.'
-};
-
-export const tierCustom: TierData = {
-    name: 'Custom',
-    description: 'Team on a custom contract'
-};
-
-export const tierEnterprise: TierData = {
-    name: 'Enterprise',
-    description: 'For enterprises that need more power and premium support.'
-};
-
 export const showUsageRatesModal = writable<boolean>(false);
 export const useNewPricingModal = derived(currentPlan, ($plan) => $plan?.usagePerProject === true);
 
-export function checkForUsageFees(plan: Tier, id: PlanServices) {
+export function checkForUsageFees(plan: string, id: PlanServices) {
     if (plan === BillingPlan.PRO || plan === BillingPlan.SCALE) {
         switch (id) {
             case 'bandwidth':
@@ -283,7 +266,7 @@ export function checkForProjectLimitation(id: PlanServices) {
     }
 }
 
-export function isServiceLimited(serviceId: PlanServices, plan: Tier, total: number) {
+export function isServiceLimited(serviceId: PlanServices, plan: string, total: number) {
     if (!total) return false;
     const limit = getServiceLimit(serviceId) || Infinity;
     const isLimited = limit !== 0 && limit < Infinity;
@@ -417,9 +400,9 @@ export async function checkForUsageLimit(org: Organization) {
         if (now - lastNotification < 1000 * 60 * 60 * 24) return;
 
         localStorage.setItem('limitReachedNotification', now.toString());
-        let message = `<b>${org.name}</b> has reached <b>75%</b> of the ${tierToPlan(BillingPlan.FREE).name} plan's ${resources.find((r) => r.value >= 75).name} limit. Upgrade to ensure there are no service disruptions.`;
+        let message = `<b>${org.name}</b> has reached <b>75%</b> of the ${billingIdToPlan(BillingPlan.FREE).name} plan's ${resources.find((r) => r.value >= 75).name} limit. Upgrade to ensure there are no service disruptions.`;
         if (resources.filter((r) => r.value >= 75)?.length > 1) {
-            message = `Usage for <b>${org.name}</b> has reached 75% of the ${tierToPlan(BillingPlan.FREE).name} plan limit. Upgrade to ensure there are no service disruptions.`;
+            message = `Usage for <b>${org.name}</b> has reached 75% of the ${billingIdToPlan(BillingPlan.FREE).name} plan limit. Upgrade to ensure there are no service disruptions.`;
         }
         addNotification({
             type: 'warning',

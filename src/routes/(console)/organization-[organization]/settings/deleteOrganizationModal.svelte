@@ -12,7 +12,7 @@
     import { toLocaleDate } from '$lib/helpers/date';
     import { isCloud } from '$lib/system';
     import { formatCurrency } from '$lib/helpers/numbers';
-    import { tierToPlan } from '$lib/stores/billing';
+    import { billingIdToPlan } from '$lib/stores/billing';
     import { Table, Tabs, Alert } from '@appwrite.io/pink-svelte';
     import DeleteOrganizationEstimation from './deleteOrganizationEstimation.svelte';
     import type { Models } from '@appwrite.io/console';
@@ -97,7 +97,7 @@
         <Alert.Inline
             status="warning"
             title={`You have a pending ${formatCurrency(upcomingInvoice.grossAmount)} invoice for your
-        ${tierToPlan(upcomingInvoice.plan).name} plan`}>
+        ${billingIdToPlan(upcomingInvoice.plan).name} plan`}>
             By proceeding, your invoice will be processed within the hour. Upon successful payment,
             your organization will be deleted.
         </Alert.Inline>

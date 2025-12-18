@@ -2,8 +2,8 @@ import type { PageLoad } from './$types';
 import { isCloud } from '$lib/system';
 import { sdk } from '$lib/stores/sdk';
 import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-import { isOrganization, tierToPlan } from '$lib/stores/billing';
-import { ID, Query, type Models } from '@appwrite.io/console';
+import { isOrganization, getBasePlanFromGroup } from '$lib/stores/billing';
+import { ID, Query, type Models, BillingPlanGroup } from '@appwrite.io/console';
 import { BillingPlan } from '$lib/constants';
 import { redirect } from '@sveltejs/kit';
 import { base } from '$app/paths';
@@ -32,7 +32,7 @@ export const load: PageLoad = async ({ parent }) => {
                     null
                 );
                 trackEvent(Submit.OrganizationCreate, {
-                    plan: tierToPlan(BillingPlan.FREE)?.name,
+                    plan: getBasePlanFromGroup(BillingPlanGroup.Starter)?.name,
                     budget_cap_enabled: false,
                     members_invited: 0
                 });

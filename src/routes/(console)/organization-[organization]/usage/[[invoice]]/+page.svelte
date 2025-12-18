@@ -7,7 +7,6 @@
     import {
         getServiceLimit,
         showUsageRatesModal,
-        type Tier,
         upgradeURL,
         useNewPricingModal
     } from '$lib/stores/billing';
@@ -28,7 +27,7 @@
     export let data;
 
     const tier = data?.plan
-        ? (data.plan.$id as Tier)
+        ? data.plan.$id
         : (data?.currentInvoice?.plan ?? $organization?.billingPlan);
 
     const plan = data?.plan ?? undefined;

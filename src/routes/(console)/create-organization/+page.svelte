@@ -9,7 +9,7 @@
     import { Button, Form, InputTags, InputText } from '$lib/elements/forms';
     import { Wizard } from '$lib/layout';
     import type { Coupon } from '$lib/sdk/billing';
-    import { isOrganization, tierToPlan } from '$lib/stores/billing';
+    import { isOrganization, billingIdToPlan } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import type { OrganizationError, Organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
@@ -149,7 +149,7 @@
             }
 
             trackEvent(Submit.OrganizationCreate, {
-                plan: tierToPlan(billingPlan)?.name,
+                plan: billingIdToPlan(billingPlan)?.name,
                 budget_cap_enabled: billingBudget !== null,
                 members_invited: collaborators?.length
             });

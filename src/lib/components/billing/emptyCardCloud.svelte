@@ -1,21 +1,33 @@
 <script lang="ts">
-    import { Click, trackEvent } from '$lib/actions/analytics';
-    import { BillingPlan } from '$lib/constants';
-    import { Button } from '$lib/elements/forms';
-    import { tierToPlan, upgradeURL } from '$lib/stores/billing';
-    import { Layout, Typography } from '@appwrite.io/pink-svelte';
     import { Card } from '..';
+    import type { Snippet } from 'svelte';
+    import { Button } from '$lib/elements/forms';
+    import { BillingPlanGroup } from '@appwrite.io/console';
+    import { Click, trackEvent } from '$lib/actions/analytics';
+    import { Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { getBasePlanFromGroup, upgradeURL } from '$lib/stores/billing';
 
-    export let service: string;
-    export let eventSource: string;
+    let {
+        service,
+        eventSource,
+        children = null
+    }: {
+        service: string;
+        eventSource: string;
+        children?: Snippet;
+    } = $props();
+
+    const proPlanName = getBasePlanFromGroup(BillingPlanGroup.Pro).name;
 </script>
 
 <Card>
-    <slot>
+    {#if children}
+        {@render children()}
+    {:else}
         <Layout.Stack alignItems="center">
             <Typography.Text variant="m-600">Upgrade to add {service}</Typography.Text>
             <Typography.Text>
-                Upgrade to a {tierToPlan(BillingPlan.PRO).name} plan to add {service} to your organization
+                Upgrade to a {proPlanName} plan to add {service} to your organization
             </Typography.Text>
 
             <Button
@@ -31,5 +43,5 @@
                 Upgrade
             </Button>
         </Layout.Stack>
-    </slot>
+    {/if}
 </Card>

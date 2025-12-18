@@ -10,7 +10,7 @@
     import { formatCurrency } from '$lib/helpers/numbers.js';
     import { Wizard } from '$lib/layout';
     import { type Coupon } from '$lib/sdk/billing';
-    import { isOrganization, plansInfo, tierToPlan } from '$lib/stores/billing';
+    import { isOrganization, plansInfo, billingIdToPlan } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { currentPlan, organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
@@ -186,7 +186,7 @@
             });
 
             trackEvent(Submit.OrganizationDowngrade, {
-                plan: tierToPlan(selectedPlan)?.name
+                plan: billingIdToPlan(selectedPlan)?.name
             });
         } catch (e) {
             addNotification({
@@ -211,7 +211,7 @@
                 });
 
                 trackEvent(Submit.OrganizationUpgrade, {
-                    plan: tierToPlan(selectedPlan)?.name
+                    plan: billingIdToPlan(selectedPlan)?.name
                 });
             }
         } catch (e) {
@@ -281,7 +281,7 @@
                 });
 
                 trackEvent(Submit.OrganizationUpgrade, {
-                    plan: tierToPlan(selectedPlan)?.name
+                    plan: billingIdToPlan(selectedPlan)?.name
                 });
             }
         } catch (e) {
@@ -365,11 +365,12 @@
                         {:else if selectedPlan === BillingPlan.FREE}
                             <Alert.Inline
                                 status="error"
-                                title={`Your organization will switch to ${tierToPlan(selectedPlan).name} plan on ${toLocaleDate(
+                                title={`Your organization will switch to ${billingIdToPlan(selectedPlan).name} plan on ${toLocaleDate(
                                     $organization.billingNextInvoiceDate
                                 )}`}>
-                                You will retain access to {tierToPlan($organization.billingPlan)
-                                    .name} plan features until your billing period ends. After that,
+                                You will retain access to {billingIdToPlan(
+                                    $organization.billingPlan
+                                ).name} plan features until your billing period ends. After that,
                                 <span class="u-bold"
                                     >all team members except the owner will be removed,</span>
                                 and service disruptions may occur if usage exceeds Free plan limits.

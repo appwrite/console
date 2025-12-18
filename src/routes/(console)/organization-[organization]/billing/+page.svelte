@@ -8,7 +8,12 @@
     import AvailableCredit from './availableCredit.svelte';
     import PaymentHistory from './paymentHistory.svelte';
     import TaxId from './taxId.svelte';
-    import { failedInvoice, tierToPlan, upgradeURL, useNewPricingModal } from '$lib/stores/billing';
+    import {
+        failedInvoice,
+        billingIdToPlan,
+        upgradeURL,
+        useNewPricingModal
+    } from '$lib/stores/billing';
     import { onMount } from 'svelte';
     import { page } from '$app/state';
     import { confirmPayment } from '$lib/stores/stripe';
@@ -124,9 +129,12 @@
     {/if}
     {#if organization?.billingPlanDowngrade}
         <Alert.Inline status="info">
-            Your organization has changed to {tierToPlan(organization?.billingPlanDowngrade).name} plan.
-            You will continue to have access to {tierToPlan(organization?.billingPlan).name} plan features
-            until your billing period ends on {toLocaleDate(organization.billingNextInvoiceDate)}.
+            Your organization has changed to {billingIdToPlan(organization?.billingPlanDowngrade)
+                .name} plan. You will continue to have access to {billingIdToPlan(
+                organization?.billingPlan
+            ).name} plan features until your billing period ends on {toLocaleDate(
+                organization.billingNextInvoiceDate
+            )}.
         </Alert.Inline>
     {/if}
     {#if $useNewPricingModal}

@@ -1,8 +1,7 @@
-import { Dependencies } from '$lib/constants';
 import { sdk } from '$lib/stores/sdk';
 import { isCloud } from '$lib/system';
 import type { LayoutLoad } from './$types';
-import type { Tier } from '$lib/stores/billing';
+import { Dependencies } from '$lib/constants';
 import { type Models, Query } from '@appwrite.io/console';
 
 export const load: LayoutLoad = async ({ depends, parent }) => {
@@ -55,14 +54,14 @@ export const load: LayoutLoad = async ({ depends, parent }) => {
     };
 };
 
-function toPlanMap(plansArray: Models.BillingPlanList | null): Map<Tier, Models.BillingPlan> {
-    const map = new Map<Tier, Models.BillingPlan>();
+function toPlanMap(plansArray: Models.BillingPlanList | null): Map<string, Models.BillingPlan> {
+    const map = new Map<string, Models.BillingPlan>();
     if (!plansArray?.plans.length) return map;
 
     const plans = plansArray.plans;
     for (let i = 0; i < plans.length; i++) {
         const plan = plans[i];
-        map.set(plan.$id as Tier, plan);
+        map.set(plan.$id, plan);
     }
 
     return map;

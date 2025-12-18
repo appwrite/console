@@ -2,14 +2,13 @@
     import { InputChoice, InputNumber } from '$lib/elements/forms';
     import { formatCurrency } from '$lib/helpers/numbers';
     import type { Coupon, Estimation } from '$lib/sdk/billing';
-    import { type Tier } from '$lib/stores/billing';
     import { Card, Divider, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { CreditsApplied } from '.';
     import { sdk } from '$lib/stores/sdk';
     import { AppwriteException } from '@appwrite.io/console';
     import DiscountsApplied from './discountsApplied.svelte';
 
-    export let billingPlan: Tier;
+    export let billingPlan: string;
     export let collaborators: string[];
     export let couponData: Partial<Coupon>;
     export let billingBudget: number;
