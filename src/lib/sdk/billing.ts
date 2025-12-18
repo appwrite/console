@@ -354,91 +354,7 @@ export type AddressesList = {
     total: number;
 };
 
-export type AdditionalResource = {
-    name: string;
-    currency: string;
-    invoiceDesc: string;
-    price: number;
-    unit: string;
-    value: number;
-    multiplier?: number;
-};
-
-export type PlanAddon = {
-    supported: boolean;
-    currency: string;
-    invoiceDesc: string;
-    price: number;
-    limit: number;
-    value: number;
-    type: string;
-    planIncluded: number;
-};
-
-export type Plan = {
-    $id: string;
-    name: string;
-    desc: string;
-    price: number;
-    order: number;
-    bandwidth: number;
-    storage: number;
-    imageTransformations: number;
-    webhooks: number;
-    users: number;
-    teams: number;
-    projects: number;
-    databases: number;
-    databasesAllowEncrypt: boolean;
-    databasesReads: number;
-    databasesWrites: number;
-    buckets: number;
-    fileSize: number;
-    functions: number;
-    executions: number;
-    GBHours: number;
-    realtime: number;
-    logs: number;
-    authPhone: number;
-    usage: {
-        bandwidth: AdditionalResource;
-        executions: AdditionalResource;
-        member: AdditionalResource;
-        realtime: AdditionalResource;
-        storage: AdditionalResource;
-        users: AdditionalResource;
-        databasesReads: AdditionalResource;
-        databasesWrites: AdditionalResource;
-        GBHours: AdditionalResource;
-        imageTransformations: AdditionalResource;
-    };
-    addons: {
-        seats: PlanAddon;
-        projects: PlanAddon;
-    };
-    trialDays: number;
-    budgetCapEnabled: boolean;
-    isAvailable: boolean;
-    selfService: boolean;
-    premiumSupport: boolean;
-    budgeting: boolean;
-    supportsMockNumbers: boolean;
-    backupsEnabled: boolean;
-    backupPolicies: number;
-    emailBranding: boolean;
-    supportsCredits: boolean;
-    supportsOrganizationRoles: boolean;
-    buildSize: number; // in MB
-    deploymentSize: number; // in MB
-    usagePerProject: boolean;
-};
-
-export type PlanList = {
-    plans: Plan[];
-    total: number;
-};
-
-export type PlansMap = Map<string, Plan>;
+export type BillingPlansMap = Map<string, Models.BillingPlan>;
 
 export type Roles = {
     scopes: string[];
@@ -567,7 +483,7 @@ export class Billing {
         });
     }
 
-    async getOrganizationPlan(organizationId: string): Promise<Plan> {
+    async getOrganizationPlan(organizationId: string): Promise<Models.BillingPlan> {
         const path = `/organizations/${organizationId}/plan`;
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call('get', uri, {
@@ -575,7 +491,7 @@ export class Billing {
         });
     }
 
-    async listPlans(queries: string[] = []): Promise<PlanList> {
+    async listPlans(queries: string[] = []): Promise<Models.BillingPlanList> {
         const path = `/console/plans`;
         const uri = new URL(this.client.config.endpoint + path);
         const params = {
@@ -591,7 +507,7 @@ export class Billing {
         );
     }
 
-    async getPlan(planId: string): Promise<Plan> {
+    async getPlan(planId: string): Promise<Models.BillingPlan> {
         const path = `/console/plans/${planId}`;
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call('get', uri, {
@@ -1440,7 +1356,7 @@ export class Billing {
         );
     }
 
-    async getPlansInfo(): Promise<PlanList> {
+    async getPlansInfo(): Promise<Models.BillingPlanList> {
         const path = `/console/plans`;
         const params = {};
         const uri = new URL(this.client.config.endpoint + path);

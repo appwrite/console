@@ -4,21 +4,21 @@
     import { currentPlan, organization } from '$lib/stores/organization';
     import { Badge, Layout, Tooltip, Typography } from '@appwrite.io/pink-svelte';
     import { LabelCard } from '..';
-    import type { Plan } from '$lib/sdk/billing';
     import { page } from '$app/state';
+    import type { Models } from '@appwrite.io/console';
 
     export let billingPlan: BillingPlan;
     export let isNewOrg = false;
     export let selfService = true;
     export let anyOrgFree = false;
 
-    $: plans = Object.values(page.data.plans.plans) as Plan[];
+    $: plans = Object.values(page.data.plans.plans) as Models.BillingPlan[];
     $: currentPlanInList = plans.some((plan) => plan.$id === $currentPlan?.$id);
 
     // experiment to remove scale plan temporarily
     $: plansWithoutScale = plans.filter((plan) => plan.$id != BillingPlan.SCALE);
 
-    function shouldShowTooltip(plan: Plan) {
+    function shouldShowTooltip(plan: Models.BillingPlan) {
         if (plan.$id !== BillingPlan.FREE) return true;
         else return !anyOrgFree;
     }

@@ -3,9 +3,9 @@
     import { CardGrid } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
-    import { plansInfo, upgradeURL } from '$lib/stores/billing';
+    import { upgradeURL } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
-    import type { Aggregation, Invoice, Plan } from '$lib/sdk/billing';
+    import type { Aggregation, Invoice } from '$lib/sdk/billing';
     import { abbreviateNumber, formatCurrency, formatNumberWithCommas } from '$lib/helpers/numbers';
     import { BillingPlan } from '$lib/constants';
     import { Click, trackEvent } from '$lib/actions/analytics';
@@ -20,8 +20,9 @@
     } from '@appwrite.io/pink-svelte';
     import { IconInfo, IconTag } from '@appwrite.io/pink-icons-svelte';
     import CancelDowngradeModel from './cancelDowngradeModal.svelte';
+    import type { Models } from '@appwrite.io/console';
 
-    export let currentPlan: Plan;
+    export let currentPlan: Models.BillingPlan;
     export let currentInvoice: Invoice | undefined = undefined;
     export let availableCredit: number | undefined = undefined;
     export let currentAggregation: Aggregation | undefined = undefined;
@@ -31,7 +32,8 @@
     const today = new Date();
     const isTrial =
         new Date($organization?.billingStartDate).getTime() - today.getTime() > 0 &&
-        $plansInfo.get($organization.billingPlan)?.trialDays;
+        $organization?.billingTrialDays; /* number of trial days. */
+
     const extraUsage = currentInvoice ? currentInvoice.amount - currentPlan?.price : 0;
 </script>
 

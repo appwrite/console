@@ -5,7 +5,7 @@
     import { toLocaleDate } from '$lib/helpers/date';
     import { upgradeURL } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
-    import type { AggregationTeam, InvoiceUsage, Plan } from '$lib/sdk/billing';
+    import type { AggregationTeam, InvoiceUsage } from '$lib/sdk/billing';
     import { formatCurrency } from '$lib/helpers/numbers';
     import { BillingPlan, DEFAULT_BILLING_PROJECTS_LIMIT } from '$lib/constants';
     import { Click, trackEvent } from '$lib/actions/analytics';
@@ -25,6 +25,7 @@
     import { IconTag } from '@appwrite.io/pink-icons-svelte';
     import { page } from '$app/state';
     import type { RowFactoryOptions } from '$routes/(console)/organization-[organization]/billing/store';
+    import type { Models } from '@appwrite.io/console';
 
     let {
         currentPlan,
@@ -34,8 +35,8 @@
         limit = undefined,
         offset = undefined
     }: {
-        currentPlan: Plan;
-        nextPlan?: Plan | null;
+        currentPlan: Models.BillingPlan;
+        nextPlan?: Models.BillingPlan | null;
         availableCredit?: number | undefined;
         currentAggregation?: AggregationTeam | undefined;
         limit?: number | undefined;
@@ -229,7 +230,7 @@
     }
 
     function getBillingData(
-        currentPlan: Plan,
+        currentPlan: Models.BillingPlan,
         currentAggregation: AggregationTeam | undefined,
         isSmallViewport: boolean
     ) {

@@ -1,6 +1,5 @@
 import { page } from '$app/stores';
 import type { Tier } from './billing';
-import type { Plan } from '$lib/sdk/billing';
 import { derived, writable } from 'svelte/store';
 import { type Models, Platform } from '@appwrite.io/console';
 
@@ -61,6 +60,6 @@ export const organizationList = derived(
 );
 
 export const organization = derived(page, ($page) => $page.data?.organization as Organization);
-export const currentPlan = derived(page, ($page) => $page.data?.currentPlan as Plan);
+export const currentPlan = derived(page, ($page) => $page.data?.currentPlan as Models.BillingPlan);
 export const members = derived(page, ($page) => $page.data.members as Models.MembershipList);
 export const regions = writable<Models.ConsoleRegionList>({ total: 0, regions: [] });

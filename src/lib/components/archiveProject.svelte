@@ -38,13 +38,12 @@
     import { isCloud } from '$lib/system';
     import { regions as regionsStore } from '$lib/stores/organization';
     import type { Organization } from '$lib/stores/organization';
-    import type { Plan } from '$lib/sdk/billing';
 
     // props
     interface Props {
         projectsToArchive: Models.Project[];
         organization: Organization;
-        currentPlan: Plan;
+        currentPlan: Models.BillingPlan;
     }
 
     let { projectsToArchive, organization, currentPlan }: Props = $props();

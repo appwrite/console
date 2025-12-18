@@ -8,7 +8,7 @@
     import { Button, Form, InputSelect, InputTags, InputText } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
     import { Wizard } from '$lib/layout';
-    import type { PaymentList, Plan } from '$lib/sdk/billing';
+    import type { PaymentList } from '$lib/sdk/billing';
     import { addNotification } from '$lib/stores/notifications';
     import {
         organizationList,
@@ -17,7 +17,7 @@
     } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import { confirmPayment } from '$lib/stores/stripe.js';
-    import { ID } from '@appwrite.io/console';
+    import { ID, type Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { writable } from 'svelte/store';
     import { isOrganization, plansInfo, type Tier } from '$lib/stores/billing';
@@ -70,7 +70,7 @@
     let campaign = data?.campaign;
     let billingPlan: Tier = BillingPlan.PRO;
     let tempOrgId = null;
-    let currentPlan: Plan;
+    let currentPlan: Models.BillingPlan;
 
     $: onlyNewOrgs = campaign?.onlyNewOrgs || couponData?.onlyNewOrgs;
 

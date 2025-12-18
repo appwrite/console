@@ -10,12 +10,13 @@
     import { sdk } from '$lib/stores/sdk';
     import { Alert, Link } from '@appwrite.io/pink-svelte';
     import BudgetAlert from './budgetAlert.svelte';
-    import type { Plan } from '$lib/sdk/billing';
+    import type { Models } from '@appwrite.io/console';
 
-    export let currentPlan: Plan;
     export let organization: Organization;
-    let capActive = organization?.billingBudget !== null;
+    export let currentPlan: Models.BillingPlan;
+
     let budget = organization.billingBudget;
+    let capActive = organization?.billingBudget !== null;
 
     async function updateBudget() {
         try {

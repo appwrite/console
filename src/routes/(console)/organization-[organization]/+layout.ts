@@ -11,10 +11,9 @@ import ProjectsAtRisk from '$lib/components/billing/alerts/projectsAtRisk.svelte
 import { get } from 'svelte/store';
 import { preferences } from '$lib/stores/preferences';
 import { defaultRoles, defaultScopes } from '$lib/constants';
-import type { Plan } from '$lib/sdk/billing';
 import { loadAvailableRegions } from '$routes/(console)/regions';
 import type { Organization } from '$lib/stores/organization';
-import { Platform } from '@appwrite.io/console';
+import { type Models, Platform } from '@appwrite.io/console';
 import { resolve } from '$app/paths';
 
 export const load: LayoutLoad = async ({ params, depends, parent }) => {
@@ -28,7 +27,7 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
 
     let roles = isCloud ? [] : defaultRoles;
     let scopes = isCloud ? [] : defaultScopes;
-    let currentPlan: Plan = null;
+    let currentPlan: Models.BillingPlan | null = null;
 
     try {
         if (isCloud) {

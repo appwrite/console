@@ -16,7 +16,7 @@
     import { Badge, Skeleton } from '@appwrite.io/pink-svelte';
     import type { Models } from '@appwrite.io/console';
     import type { Organization } from '$lib/stores/organization';
-    import { daysLeftInTrial, plansInfo, tierToPlan, type Tier } from '$lib/stores/billing';
+    import { daysLeftInTrial, tierToPlan, type Tier } from '$lib/stores/billing';
     import { toLocaleDate } from '$lib/helpers/date';
     import { BillingPlan } from '$lib/constants';
     import { goto } from '$app/navigation';
@@ -62,7 +62,7 @@
         if ($daysLeftInTrial <= 0) return false;
         if (organization.billingPlan === BillingPlan.FREE) return false;
 
-        return !!$plansInfo.get(organization.billingPlan)?.trialDays;
+        return !!organization?.billingTrialDays;
     }
 
     function isNonPayingOrganization(organization: Organization): boolean {

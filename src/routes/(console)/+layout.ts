@@ -3,8 +3,7 @@ import { sdk } from '$lib/stores/sdk';
 import { isCloud } from '$lib/system';
 import type { LayoutLoad } from './$types';
 import type { Tier } from '$lib/stores/billing';
-import type { Plan, PlanList } from '$lib/sdk/billing';
-import { Query } from '@appwrite.io/console';
+import { type Models, Query } from '@appwrite.io/console';
 
 export const load: LayoutLoad = async ({ depends, parent }) => {
     const { organizations } = await parent();
@@ -56,8 +55,8 @@ export const load: LayoutLoad = async ({ depends, parent }) => {
     };
 };
 
-function toPlanMap(plansArray: PlanList | null): Map<Tier, Plan> {
-    const map = new Map<Tier, Plan>();
+function toPlanMap(plansArray: Models.BillingPlanList | null): Map<Tier, Models.BillingPlan> {
+    const map = new Map<Tier, Models.BillingPlan>();
     if (!plansArray?.plans.length) return map;
 
     const plans = plansArray.plans;

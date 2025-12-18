@@ -8,13 +8,7 @@
     import { toLocaleDate } from '$lib/helpers/date';
     import { isTabSelected } from '$lib/helpers/load';
     import { Cover } from '$lib/layout';
-    import {
-        daysLeftInTrial,
-        getServiceLimit,
-        plansInfo,
-        readOnly,
-        tierToPlan
-    } from '$lib/stores/billing';
+    import { daysLeftInTrial, getServiceLimit, readOnly, tierToPlan } from '$lib/stores/billing';
     import {
         members,
         newMemberModal,
@@ -110,7 +104,7 @@
                 {:else if isCloud && organization?.billingPlan === BillingPlan.FREE}
                     <Badge variant="secondary" content="Free"></Badge>
                 {/if}
-                {#if isCloud && organization?.billingTrialStartDate && $daysLeftInTrial > 0 && organization.billingPlan !== BillingPlan.FREE && $plansInfo.get(organization.billingPlan)?.trialDays}
+                {#if isCloud && organization?.billingTrialStartDate && $daysLeftInTrial > 0 && organization.billingPlan !== BillingPlan.FREE && organization?.billingTrialDays}
                     <Tooltip>
                         <Badge variant="secondary" content="Trial" />
                         <svelte:fragment slot="tooltip">

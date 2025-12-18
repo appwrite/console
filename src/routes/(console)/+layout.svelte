@@ -23,7 +23,6 @@
         checkForUsageLimit,
         checkPaymentAuthorizationRequired,
         paymentExpired,
-        plansInfo,
         showUsageRatesModal
     } from '$lib/stores/billing';
     import { goto } from '$app/navigation';
@@ -310,7 +309,7 @@
                 await checkPaymentAuthorizationRequired(org);
                 await checkForMandate(org);
 
-                if ($plansInfo.get(org.billingPlan)?.trialDays) {
+                if (org?.billingTrialDays) {
                     calculateTrialDay(org);
                 }
             }

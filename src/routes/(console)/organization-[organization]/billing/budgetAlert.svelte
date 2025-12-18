@@ -12,11 +12,11 @@
     import { Alert, Icon, Table } from '@appwrite.io/pink-svelte';
     import { IconTrash } from '@appwrite.io/pink-icons-svelte';
     import InputSelect from '$lib/elements/forms/inputSelect.svelte';
-    import type { Plan } from '$lib/sdk/billing';
+    import type { Models } from '@appwrite.io/console';
 
-    export let organization: Organization;
-    export let currentPlan: Plan;
     export let alertsEnabled = false;
+    export let organization: Organization;
+    export let currentPlan: Models.BillingPlan;
 
     let search: string;
     let selectedAlert: number;
@@ -53,13 +53,14 @@
                 alerts
             );
 
-            invalidate(Dependencies.ORGANIZATION);
+            await invalidate(Dependencies.ORGANIZATION);
 
             addNotification({
                 type: 'success',
                 isHtml: true,
                 message: `<span> ${alerts.length === 0 ? 'Budget alerts removed from' : alerts.length > 1 ? `Budget alerts added to` : 'A budget alert has been added to'} <b>${organization.name}</b> </span>`
             });
+
             trackEvent(Submit.BudgetAlertsUpdate, {
                 alerts
             });

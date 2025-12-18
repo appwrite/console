@@ -19,12 +19,11 @@ import type {
     InvoiceList,
     PaymentList,
     PaymentMethodData,
-    Plan,
-    PlansMap
+    BillingPlansMap
 } from '$lib/sdk/billing';
 import { isCloud } from '$lib/system';
 import { activeHeaderAlert, orgMissingPaymentMethod } from '$routes/(console)/store';
-import { AppwriteException, Query, Platform } from '@appwrite.io/console';
+import { AppwriteException, Query, Platform, type Models } from '@appwrite.io/console';
 import { derived, get, writable } from 'svelte/store';
 import { headerAlert } from './headerAlert';
 import { addNotification, notifications } from './notifications';
@@ -72,7 +71,7 @@ export const billingLimitOutstandingInvoice = 'outstanding_invoice';
 
 export const paymentMethods = derived(page, ($page) => $page.data.paymentMethods as PaymentList);
 export const addressList = derived(page, ($page) => $page.data.addressList as AddressesList);
-export const plansInfo = derived(page, ($page) => $page.data.plansInfo as PlansMap);
+export const plansInfo = derived(page, ($page) => $page.data.plansInfo as BillingPlansMap);
 export const daysLeftInTrial = writable<number>(0);
 export const readOnly = writable<boolean>(false);
 
@@ -152,7 +151,11 @@ export type PlanServices =
     | 'authPhone'
     | 'imageTransformations';
 
-export function getServiceLimit(serviceId: PlanServices, tier: Tier = null, plan?: Plan): number {
+export function getServiceLimit(
+    serviceId: PlanServices,
+    tier: Tier = null,
+    plan?: Models.BillingPlan
+): number {
     if (!isCloud) return 0;
     if (!serviceId) return 0;
 
@@ -626,7 +629,7 @@ export const billingURL = derived(
 
 export const hideBillingHeaderRoutes = [base + '/create-organization', base + '/account'];
 
-export function calculateExcess(addon: AggregationTeam, plan: Plan) {
+export function calculateExcess(addon: AggregationTeam, plan: Models.BillingPlan) {
     return {
         bandwidth: calculateResourceSurplus(addon.usageBandwidth, plan.bandwidth),
         storage: calculateResourceSurplus(addon.usageStorage, plan.storage, 'GB'),
