@@ -118,6 +118,7 @@
     }
 
     .unicorn-scene {
+        max-width: 50vw;
         @media #{devices.$break1} {
             display: none;
         }
