@@ -1,31 +1,43 @@
 import type { PageLoad } from './$types';
-import type { Organization } from '$lib/stores/organization';
 import { BillingPlan, Dependencies } from '$lib/constants';
 import { sdk } from '$lib/stores/sdk';
+import { BillingPlanGroup, type Models } from '@appwrite.io/console';
+import { getBasePlanFromGroup } from '$lib/stores/billing';
 
 export const load: PageLoad = async ({ depends, parent }) => {
     const { members, currentPlan, organizations } = await parent();
+
     depends(Dependencies.UPGRADE_PLAN);
 
-    let plans;
+    let plans: Models.BillingPlanList;
+
     try {
         plans = await sdk.forConsole.billing.listPlans();
     } catch (error) {
         console.error('Failed to load billing plans:', error);
-        plans = { plans: {} };
+        plans = {
+            total: 0,
+            plans: []
+        };
     }
 
     let plan: BillingPlan;
 
-    if (currentPlan?.$id === BillingPlan.SCALE) {
-        plan = BillingPlan.SCALE;
+    const pro = getBasePlanFromGroup(BillingPlanGroup.Pro);
+    const scale = getBasePlanFromGroup(BillingPlanGroup.Scale);
+
+    // TODO: why not just use the current id as is?
+    if (currentPlan?.$id === scale.$id) {
+        plan = scale.$id;
     } else {
-        plan = BillingPlan.PRO;
+        plan = pro.$id;
     }
 
     const selfService = currentPlan?.selfService ?? true;
     const hasFreeOrgs = organizations.teams?.some(
-        (org) => (org as Organization)?.billingPlan === BillingPlan.FREE
+        (org) =>
+            (org as Models.Organization)?.billingPlan ===
+            getBasePlanFromGroup(BillingPlanGroup.Starter).$id
     );
 
     return {

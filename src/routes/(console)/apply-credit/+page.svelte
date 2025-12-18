@@ -9,11 +9,7 @@
     import { toLocaleDate } from '$lib/helpers/date';
     import { Wizard } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
-    import {
-        type Organization,
-        type OrganizationError,
-        organizationList
-    } from '$lib/stores/organization';
+    import { type OrganizationError, organizationList } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import { confirmPayment } from '$lib/stores/stripe.js';
     import { BillingPlanGroup, ID, type Models } from '@appwrite.io/console';
@@ -127,7 +123,7 @@
         if (couponForm && !couponForm.checkValidity()) return;
         isSubmitting.set(true);
         try {
-            let org: Organization | OrganizationError;
+            let org: Models.Organization | OrganizationError;
             // Create new org
             if (selectedOrgId === newOrgId) {
                 org = await sdk.forConsole.billing.createOrganization(
@@ -223,7 +219,7 @@
 
     $: selectedOrg = $organizationList?.teams?.find(
         (team) => team.$id === selectedOrgId
-    ) as Organization;
+    ) as Models.Organization;
 
     function getBillingPlan(): string | undefined {
         const campaignPlan =

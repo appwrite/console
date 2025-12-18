@@ -8,8 +8,7 @@ import { get } from 'svelte/store';
 import { headerAlert } from '$lib/stores/headerAlert';
 import PaymentFailed from '$lib/components/billing/alerts/paymentFailed.svelte';
 import { loadAvailableRegions } from '$routes/(console)/regions';
-import type { Organization, OrganizationList } from '$lib/stores/organization';
-import { Platform } from '@appwrite.io/console';
+import { type Models, Platform } from '@appwrite.io/console';
 import { redirect } from '@sveltejs/kit';
 import { resolve } from '$app/paths';
 
@@ -21,7 +20,7 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
     project.region ??= 'default';
 
     // fast path without a network call!
-    let organization = (organizations as OrganizationList)?.teams?.find(
+    let organization = (organizations as Models.OrganizationList)?.teams?.find(
         (org) => org.$id === project.teamId
     );
 
@@ -30,7 +29,8 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
 
     const [org, regionalConsoleVariables, rolesResult] = await Promise.all([
         !organization
-            ? (sdk.forConsole.teams.get({ teamId: project.teamId }) as Promise<Organization>)
+            ? // TODO: @itznotabug - teams.get with Models.Organization?
+              (sdk.forConsole.teams.get({ teamId: project.teamId }) as Promise<Models.Organization>)
             : organization,
         sdk.forConsoleIn(project.region).console.variables(),
         isCloud ? sdk.forConsole.billing.getRoles(project.teamId) : null,

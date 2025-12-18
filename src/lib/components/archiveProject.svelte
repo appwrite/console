@@ -37,13 +37,12 @@
     import { isSmallViewport } from '$lib/stores/viewport';
     import { isCloud } from '$lib/system';
     import { regions as regionsStore } from '$lib/stores/organization';
-    import type { Organization } from '$lib/stores/organization';
 
     // props
     interface Props {
-        projectsToArchive: Models.Project[];
-        organization: Organization;
         currentPlan: Models.BillingPlan;
+        organization: Models.Organization;
+        projectsToArchive: Models.Project[];
     }
 
     let { projectsToArchive, organization, currentPlan }: Props = $props();

@@ -14,12 +14,7 @@
         readOnly,
         billingIdToPlan
     } from '$lib/stores/billing';
-    import {
-        members,
-        newMemberModal,
-        newOrgModal,
-        type Organization
-    } from '$lib/stores/organization';
+    import { members, newMemberModal, newOrgModal } from '$lib/stores/organization';
     import {
         canSeeBilling,
         canSeeProjects,
@@ -30,6 +25,7 @@
     import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
     import { IconGithub, IconPlus, IconPlusSm } from '@appwrite.io/pink-icons-svelte';
     import { Badge, Icon, Layout, Tooltip, Typography } from '@appwrite.io/pink-svelte';
+    import type { Models } from '@appwrite.io/console';
 
     let areMembersLimited: boolean = $state(false);
 
@@ -41,7 +37,7 @@
             (($readOnly && !GRACE_PERIOD_OVERRIDE) || (isLimited && $members?.total >= limit));
     });
 
-    const organization = $derived(page.data.organization as Organization);
+    const organization = $derived(page.data.organization as Models.Organization);
     const path = $derived(`${base}/organization-${organization.$id}`);
 
     const tabs = $derived(

@@ -6,7 +6,6 @@
     import { Button } from '$lib/elements/forms';
     import { addressList } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
-    import { type Organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import RemoveAddress from './removeAddress.svelte';
     import { user } from '$lib/stores/user';
@@ -24,8 +23,8 @@
     import type { Models } from '@appwrite.io/console';
 
     export let locale: Models.Locale;
-    export let organization: Organization;
     export let countryList: Models.CountryList;
+    export let organization: Models.Organization;
     export let billingAddress: Models.BillingAddress;
 
     let showCreate = false;

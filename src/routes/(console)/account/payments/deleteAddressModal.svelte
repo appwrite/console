@@ -5,13 +5,12 @@
     import Confirm from '$lib/components/confirm.svelte';
     import { Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
-    import type { Organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import { Layout, Link } from '@appwrite.io/pink-svelte';
     import type { Models } from '@appwrite.io/console';
 
     export let showDelete = false;
-    export let linkedOrgs: Organization[] = [];
+    export let linkedOrgs: Array<Models.Organization> = [];
     export let selectedAddress: Models.BillingAddress;
 
     let error: string = null;

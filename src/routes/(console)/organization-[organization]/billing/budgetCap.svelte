@@ -6,14 +6,13 @@
     import { Button, Form, InputNumber, InputSwitch } from '$lib/elements/forms';
     import { showUsageRatesModal, upgradeURL } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
-    import { type Organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import { Alert, Link } from '@appwrite.io/pink-svelte';
     import BudgetAlert from './budgetAlert.svelte';
     import type { Models } from '@appwrite.io/console';
 
-    export let organization: Organization;
     export let currentPlan: Models.BillingPlan;
+    export let organization: Models.Organization;
 
     let budget = organization.billingBudget;
     let capActive = organization?.billingBudget !== null;

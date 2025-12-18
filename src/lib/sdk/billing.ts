@@ -1,6 +1,6 @@
 import type { Client, Models } from '@appwrite.io/console';
+import type { OrganizationError } from '../stores/organization';
 import type { PaymentMethod as StripePaymentMethod } from '@stripe/stripe-js';
-import type { Organization, OrganizationError, OrganizationList } from '../stores/organization';
 
 export type AllowedRegions =
     | 'fra'
@@ -23,23 +23,10 @@ export class Billing {
         this.client = client;
     }
 
-    async listOrganization(queries: string[] = []): Promise<OrganizationList> {
-        const path = `/organizations`;
-        const params = {
-            queries
-        };
-        const uri = new URL(this.client.config.endpoint + path);
-        return await this.client.call(
-            'GET',
-            uri,
-            {
-                'content-type': 'application/json'
-            },
-            params
-        );
-    }
-
-    async validateOrganization(organizationId: string, invites: string[]): Promise<Organization> {
+    async validateOrganization(
+        organizationId: string,
+        invites: string[]
+    ): Promise<Models.Organization> {
         const path = `/organizations/${organizationId}/validate`;
         const params = {
             organizationId,
@@ -66,7 +53,7 @@ export class Billing {
         invites: Array<string> = [],
         budget: number = undefined,
         taxId: string = null
-    ): Promise<Organization | OrganizationError> {
+    ): Promise<Models.Organization | OrganizationError> {
         const path = `/organizations`;
         const params = {
             organizationId,
@@ -112,7 +99,7 @@ export class Billing {
         );
     }
 
-    async deleteOrganization(organizationId: string): Promise<Organization> {
+    async deleteOrganization(organizationId: string): Promise<Models.Organization> {
         const path = `/organizations/${organizationId}`;
         const params = {
             organizationId
@@ -187,7 +174,7 @@ export class Billing {
         invites: Array<string> = [],
         budget: number = undefined,
         taxId: string = null
-    ): Promise<Organization | OrganizationError> {
+    ): Promise<Models.Organization | OrganizationError> {
         const path = `/organizations/${organizationId}/plan`;
         const params = {
             organizationId,
@@ -234,7 +221,9 @@ export class Billing {
         );
     }
 
-    async cancelDowngrade(organizationId: string): Promise<Organization | OrganizationError> {
+    async cancelDowngrade(
+        organizationId: string
+    ): Promise<Models.Organization | OrganizationError> {
         const path = `/organizations/${organizationId}/plan/cancel`;
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call('patch', uri, {
@@ -246,7 +235,7 @@ export class Billing {
         organizationId: string,
         budget: number,
         alerts: number[]
-    ): Promise<Organization> {
+    ): Promise<Models.Organization> {
         const path = `/organizations/${organizationId}/budget`;
         const params = {
             organizationId,
@@ -267,7 +256,7 @@ export class Billing {
     async updateSelectedProjects(
         organizationId: string,
         projects: string[]
-    ): Promise<Organization> {
+    ): Promise<Models.Organization> {
         const path = `/organizations/${organizationId}/projects`;
         const params = {
             projects
@@ -286,7 +275,7 @@ export class Billing {
     async setOrganizationPaymentMethod(
         organizationId: string,
         paymentMethodId: string
-    ): Promise<Organization> {
+    ): Promise<Models.Organization> {
         const path = `/organizations/${organizationId}/payment-method`;
         const params = {
             organizationId,
@@ -306,7 +295,7 @@ export class Billing {
     async setOrganizationPaymentMethodBackup(
         organizationId: string,
         paymentMethodId: string
-    ): Promise<Organization> {
+    ): Promise<Models.Organization> {
         const path = `/organizations/${organizationId}/payment-method/backup`;
         const params = {
             organizationId,
@@ -322,7 +311,7 @@ export class Billing {
             params
         );
     }
-    async removeOrganizationPaymentMethod(organizationId: string): Promise<Organization> {
+    async removeOrganizationPaymentMethod(organizationId: string): Promise<Models.Organization> {
         const path = `/organizations/${organizationId}/payment-method`;
         const params = {
             organizationId
@@ -337,7 +326,9 @@ export class Billing {
             params
         );
     }
-    async removeOrganizationPaymentMethodBackup(organizationId: string): Promise<Organization> {
+    async removeOrganizationPaymentMethodBackup(
+        organizationId: string
+    ): Promise<Models.Organization> {
         const path = `/organizations/${organizationId}/payment-method/backup`;
         const params = {
             organizationId
@@ -656,7 +647,7 @@ export class Billing {
     async setBillingAddress(
         organizationId: string,
         billingAddressId: string
-    ): Promise<Organization> {
+    ): Promise<Models.Organization> {
         const path = `/organizations/${organizationId}/billing-address`;
         const params = {
             organizationId,
@@ -689,7 +680,7 @@ export class Billing {
         );
     }
 
-    async updateTaxId(organizationId: string, taxId: string): Promise<Organization> {
+    async updateTaxId(organizationId: string, taxId: string): Promise<Models.Organization> {
         const path = `/organizations/${organizationId}/taxId`;
         const params = {
             organizationId,

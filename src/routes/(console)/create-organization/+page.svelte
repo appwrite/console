@@ -10,7 +10,7 @@
     import { Wizard } from '$lib/layout';
     import { isOrganization, billingIdToPlan } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
-    import type { OrganizationError, Organization } from '$lib/stores/organization';
+    import type { OrganizationError } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import { confirmPayment } from '$lib/stores/stripe';
     import { ID, type Models } from '@appwrite.io/console';
@@ -104,7 +104,7 @@
 
     async function create() {
         try {
-            let org: Organization | OrganizationError;
+            let org: Models.Organization | OrganizationError;
 
             if (selectedPlan === BillingPlan.FREE) {
                 org = await sdk.forConsole.billing.createOrganization(

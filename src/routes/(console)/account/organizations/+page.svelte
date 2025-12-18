@@ -15,7 +15,6 @@
     import { isCloud } from '$lib/system';
     import { Badge, Skeleton } from '@appwrite.io/pink-svelte';
     import type { Models } from '@appwrite.io/console';
-    import type { Organization } from '$lib/stores/organization';
     import { daysLeftInTrial, billingIdToPlan } from '$lib/stores/billing';
     import { toLocaleDate } from '$lib/helpers/date';
     import { BillingPlan } from '$lib/constants';
@@ -57,7 +56,7 @@
         }
     }
 
-    function isOrganizationOnTrial(organization: Organization): boolean {
+    function isOrganizationOnTrial(organization: Models.Organization): boolean {
         if (!organization?.billingTrialStartDate) return false;
         if ($daysLeftInTrial <= 0) return false;
         if (organization.billingPlan === BillingPlan.FREE) return false;
@@ -65,24 +64,26 @@
         return !!organization?.billingTrialDays;
     }
 
-    function isNonPayingOrganization(organization: Organization): boolean {
+    function isNonPayingOrganization(organization: Models.Organization): boolean {
         return (
             organization?.billingPlan === BillingPlan.FREE ||
             organization?.billingPlan === BillingPlan.GITHUB_EDUCATION
         );
     }
 
-    function isPayingOrganization(team: Models.Preferences | Organization): Organization | null {
+    function isPayingOrganization(
+        team: Models.Preferences | Models.Organization
+    ): Models.Organization | null {
         const isPayingOrganization =
             isCloudOrg(team) && !isOrganizationOnTrial(team) && !isNonPayingOrganization(team);
 
-        if (isPayingOrganization) return team as Organization;
+        if (isPayingOrganization) return team as Models.Organization;
         else return null;
     }
 
     function isCloudOrg(
-        data: Partial<Models.TeamList<Models.Preferences>> | Organization
-    ): data is Organization {
+        data: Partial<Models.TeamList<Models.Preferences>> | Models.Organization
+    ): data is Models.Organization {
         return isCloud && 'billingPlan' in data;
     }
 

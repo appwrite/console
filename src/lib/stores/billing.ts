@@ -25,12 +25,7 @@ import {
 import { derived, get, writable } from 'svelte/store';
 import { headerAlert } from './headerAlert';
 import { addNotification, notifications } from './notifications';
-import {
-    currentPlan,
-    organization,
-    type Organization,
-    type OrganizationError
-} from './organization';
+import { currentPlan, organization, type OrganizationError } from './organization';
 import { canSeeBilling } from './roles';
 import { sdk } from './sdk';
 import { user } from './user';
@@ -277,7 +272,7 @@ export function isServiceLimited(serviceId: PlanServices, plan: string, total: n
     return isLimited && total >= limit && !hasUsageFees;
 }
 
-export function checkForEnterpriseTrial(org: Organization) {
+export function checkForEnterpriseTrial(org: Models.Organization) {
     if (!org || !org.billingNextInvoiceDate) return;
     if (calculateEnterpriseTrial(org) > 0) {
         headerAlert.add({
@@ -289,7 +284,7 @@ export function checkForEnterpriseTrial(org: Organization) {
     }
 }
 
-export function calculateEnterpriseTrial(org: Organization) {
+export function calculateEnterpriseTrial(org: Models.Organization) {
     if (!org || !org.billingNextInvoiceDate) return 0;
     const endDate = new Date(org.billingNextInvoiceDate);
     const startDate = new Date(org.billingCurrentInvoiceDate);
@@ -304,7 +299,7 @@ export function calculateEnterpriseTrial(org: Organization) {
     return 0;
 }
 
-export function calculateTrialDay(org: Organization) {
+export function calculateTrialDay(org: Models.Organization) {
     if (org?.billingPlan === BillingPlan.FREE) return false;
     const endDate = new Date(org?.billingStartDate);
     const today = new Date();
@@ -318,7 +313,7 @@ export function calculateTrialDay(org: Organization) {
     return days;
 }
 
-export async function checkForProjectsLimit(org: Organization, orgProjectCount?: number) {
+export async function checkForProjectsLimit(org: Models.Organization, orgProjectCount?: number) {
     if (!isCloud) return;
     if (!org) return;
 
@@ -342,7 +337,7 @@ export async function checkForProjectsLimit(org: Organization, orgProjectCount?:
     }
 }
 
-export async function checkForUsageLimit(org: Organization) {
+export async function checkForUsageLimit(org: Models.Organization) {
     if (org?.status === teamStatusReadonly && org?.remarks === billingLimitOutstandingInvoice) {
         headerAlert.add({
             id: 'teamReadOnlyFailedInvoices',
@@ -444,7 +439,7 @@ export async function checkForUsageLimit(org: Organization) {
     }
 }
 
-export async function checkPaymentAuthorizationRequired(org: Organization) {
+export async function checkPaymentAuthorizationRequired(org: Models.Organization) {
     if (org.billingPlan === BillingPlan.FREE) return;
 
     const invoices = await sdk.forConsole.billing.listInvoices(org.$id, [
@@ -464,7 +459,7 @@ export async function checkPaymentAuthorizationRequired(org: Organization) {
     actionRequiredInvoices.set(invoices);
 }
 
-export async function paymentExpired(org: Organization) {
+export async function paymentExpired(org: Models.Organization) {
     if (!org?.paymentMethodId) return;
     const payment = await sdk.forConsole.billing.getOrganizationPaymentMethod(
         org.$id,
@@ -516,7 +511,7 @@ export async function paymentExpired(org: Organization) {
     sessionStorage.setItem('expiredPaymentNotification', 'true');
 }
 
-export function checkForMarkedForDeletion(org: Organization) {
+export function checkForMarkedForDeletion(org: Models.Organization) {
     if (org?.markedForDeletion) {
         headerAlert.add({
             id: 'markedForDeletion',
@@ -529,7 +524,7 @@ export function checkForMarkedForDeletion(org: Organization) {
 
 export const paymentMissingMandate = writable<Models.PaymentMethod>(null);
 
-export async function checkForMandate(org: Organization) {
+export async function checkForMandate(org: Models.Organization) {
     const paymentId = org.paymentMethodId ?? org.backupPaymentMethodId;
     if (!paymentId) return;
     const paymentMethod = await sdk.forConsole.billing.getPaymentMethod(paymentId);
@@ -546,12 +541,15 @@ export async function checkForMandate(org: Organization) {
 }
 
 export async function checkForMissingPaymentMethod() {
-    const orgs = await sdk.forConsole.billing.listOrganization([
-        Query.notEqual('billingPlan', BillingPlan.FREE),
-        Query.isNull('paymentMethodId'),
-        Query.isNull('backupPaymentMethodId'),
-        Query.equal('platform', Platform.Appwrite)
-    ]);
+    const orgs = await sdk.forConsole.organizations.list({
+        queries: [
+            Query.notEqual('billingPlan', getBasePlanFromGroup(BillingPlanGroup.Starter).$id),
+            Query.isNull('paymentMethodId'),
+            Query.isNull('backupPaymentMethodId'),
+            Query.equal('platform', Platform.Appwrite)
+        ]
+    });
+
     if (orgs?.total) {
         orgMissingPaymentMethod.set(orgs.teams[0]);
         headerAlert.add({
@@ -564,7 +562,7 @@ export async function checkForMissingPaymentMethod() {
 }
 
 // Display upgrade banner for new users after 1 week for 30 days
-export async function checkForNewDevUpgradePro(org: Organization) {
+export async function checkForNewDevUpgradePro(org: Models.Organization) {
     // browser or plan check.
     if (!browser || org?.billingPlan !== BillingPlan.FREE) return;
 
@@ -580,9 +578,9 @@ export async function checkForNewDevUpgradePro(org: Organization) {
     const accountCreated = new Date(account.$createdAt).getTime();
     if (now - accountCreated < 1000 * 60 * 60 * 24 * 7) return;
 
-    const organizations = await sdk.forConsole.billing.listOrganization([
-        Query.notEqual('billingPlan', BillingPlan.FREE)
-    ]);
+    const organizations = await sdk.forConsole.organizations.list({
+        queries: [Query.notEqual('billingPlan', getBasePlanFromGroup(BillingPlanGroup.Starter).$id)]
+    });
 
     if (organizations?.total) return;
 
@@ -636,6 +634,8 @@ export function calculateResourceSurplus(total: number, limit: number, limitUnit
     return total > realLimit ? total - realLimit : 0;
 }
 
-export function isOrganization(org: Organization | OrganizationError): org is Organization {
-    return (org as Organization).$id !== undefined;
+export function isOrganization(
+    org: Models.Organization | OrganizationError
+): org is Models.Organization {
+    return (org as Models.Organization).$id !== undefined;
 }

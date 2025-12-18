@@ -3,7 +3,6 @@ import { isCloud } from '$lib/system';
 import { sdk } from '$lib/stores/sdk';
 import { redirect } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
-import { type Organization } from '$lib/stores/organization';
 import { BillingPlan, DEFAULT_BILLING_PROJECTS_LIMIT, Dependencies } from '$lib/constants';
 
 import type { Models } from '@appwrite.io/console';
@@ -29,7 +28,7 @@ export const load: PageLoad = async ({ parent, depends, url, route }) => {
     //aggregation reloads on page param changes
     depends(Dependencies.BILLING_AGGREGATION);
 
-    const billingAddressId = (organization as Organization)?.billingAddressId;
+    const billingAddressId = (organization as Models.Organization)?.billingAddressId;
     const billingAddressPromise: Promise<Models.BillingAddress> = billingAddressId
         ? sdk.forConsole.billing
               .getOrganizationBillingAddress(organization.$id, billingAddressId)
@@ -48,7 +47,7 @@ export const load: PageLoad = async ({ parent, depends, url, route }) => {
         const offset = pageToOffset(currentPage, limit);
         billingAggregation = await sdk.forConsole.billing.getAggregation(
             organization.$id,
-            (organization as Organization)?.billingAggregationId,
+            (organization as Models.Organization)?.billingAggregationId,
             limit,
             offset
         );
@@ -60,7 +59,7 @@ export const load: PageLoad = async ({ parent, depends, url, route }) => {
     try {
         billingInvoice = await sdk.forConsole.billing.getInvoice(
             organization.$id,
-            (organization as Organization)?.billingInvoiceId
+            (organization as Models.Organization)?.billingInvoiceId
         );
     } catch (e) {
         // ignore error

@@ -3,7 +3,6 @@
     import { FakeModal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
-    import type { Organization } from '$lib/stores/organization';
     import { Dependencies } from '$lib/constants';
     import { setPaymentMethod, submitStripeCard } from '$lib/stores/stripe';
     import { onMount } from 'svelte';
@@ -13,9 +12,9 @@
     import type { PaymentMethod as StripePaymentMethod } from '@stripe/stripe-js';
     import type { Models } from '@appwrite.io/console';
 
-    export let organization: Organization;
     export let show = false;
     export let isBackup = false;
+    export let organization: Models.Organization;
     export let methods: Models.PaymentMethodList;
 
     let name: string;

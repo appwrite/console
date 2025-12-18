@@ -5,7 +5,6 @@
     import { CardGrid, CreditCardBrandImage, CreditCardInfo } from '$lib/components';
     import { BillingPlan, Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
-    import { type Organization } from '$lib/stores/organization';
     import { Button } from '$lib/elements/forms';
     import { hasStripePublicKey, isCloud } from '$lib/system';
     import DeleteOrgPayment from './deleteOrgPayment.svelte';
@@ -34,7 +33,7 @@
     } from '@appwrite.io/pink-icons-svelte';
     import type { Models } from '@appwrite.io/console';
 
-    export let organization: Organization;
+    export let organization: Models.Organization;
     export let methods: Models.PaymentMethodList;
 
     let showEdit = false;

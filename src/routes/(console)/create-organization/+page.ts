@@ -1,7 +1,6 @@
 import { sdk } from '$lib/stores/sdk';
 import type { PageLoad } from './$types';
 import type { Models } from '@appwrite.io/console';
-import type { Organization } from '$lib/stores/organization';
 import { BillingPlan, Dependencies } from '$lib/constants';
 
 export const load: PageLoad = async ({ url, parent, depends }) => {
@@ -14,7 +13,7 @@ export const load: PageLoad = async ({ url, parent, depends }) => {
     ]);
     let plan = getPlanFromUrl(url);
     const hasFreeOrganizations = organizations.teams?.some(
-        (org) => (org as Organization)?.billingPlan === BillingPlan.FREE
+        (org) => (org as Models.Organization)?.billingPlan === BillingPlan.FREE
     );
 
     if (plan === BillingPlan.FREE && hasFreeOrganizations) {

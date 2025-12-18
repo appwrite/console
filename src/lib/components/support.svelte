@@ -8,10 +8,11 @@
     import { plansInfo } from '$lib/stores/billing';
     import { Card } from '$lib/components/index';
     import { app } from '$lib/stores/app';
-    import { currentPlan, type Organization, organizationList } from '$lib/stores/organization';
+    import { currentPlan, organizationList } from '$lib/stores/organization';
     import { isCloud } from '$lib/system';
     import { Typography } from '@appwrite.io/pink-svelte';
     import { base } from '$app/paths';
+    import type { Models } from '@appwrite.io/console';
 
     export let show = false;
 
@@ -20,12 +21,12 @@
     $: hasPremiumSupport = $currentPlan?.premiumSupport ?? allOrgsHavePremiumSupport ?? false;
 
     $: allOrgsHavePremiumSupport = $organizationList.teams.every(
-        (team) => $plansInfo.get((team as Organization).billingPlan)?.premiumSupport
+        (team) => $plansInfo.get((team as Models.Organization).billingPlan)?.premiumSupport
     );
 
     // there can only be one free organization
     $: freeOrganization = $organizationList.teams.find(
-        (team) => !$plansInfo.get((team as Organization).billingPlan)?.premiumSupport
+        (team) => !$plansInfo.get((team as Models.Organization).billingPlan)?.premiumSupport
     );
 
     $: upgradeURL = `${base}/organization-${freeOrganization?.$id}/change-plan`;

@@ -7,7 +7,6 @@
     import { Button, Form } from '$lib/elements/forms';
     import { symmetricDifference } from '$lib/helpers/array';
     import { addNotification } from '$lib/stores/notifications';
-    import { type Organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import { Alert, Icon, Table } from '@appwrite.io/pink-svelte';
     import { IconTrash } from '@appwrite.io/pink-icons-svelte';
@@ -15,8 +14,8 @@
     import type { Models } from '@appwrite.io/console';
 
     export let alertsEnabled = false;
-    export let organization: Organization;
     export let currentPlan: Models.BillingPlan;
+    export let organization: Models.Organization;
 
     let search: string;
     let selectedAlert: number;
