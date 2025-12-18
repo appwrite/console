@@ -5,7 +5,6 @@
     import { toLocaleDate } from '$lib/helpers/date';
     import { upgradeURL } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
-    import type { AggregationTeam, InvoiceUsage } from '$lib/sdk/billing';
     import { formatCurrency } from '$lib/helpers/numbers';
     import { BillingPlan, DEFAULT_BILLING_PROJECTS_LIMIT } from '$lib/constants';
     import { Click, trackEvent } from '$lib/actions/analytics';
@@ -147,8 +146,8 @@
         ];
     }
 
-    function getResource(resources: InvoiceUsage[] | undefined, resourceId: string) {
-        return resources?.find((r) => r.resourceId === resourceId);
+    function getResource(resources: Array<Models.UsageResources> | undefined, resourceId: string) {
+        return resources?.find((resource) => resource.resourceId === resourceId);
     }
 
     function createRow({
@@ -222,7 +221,7 @@
     function createResourceRow(
         id: string,
         label: string,
-        resource: InvoiceUsage | undefined,
+        resource: Models.UsageResources | undefined,
         planLimit: number | null | undefined,
         formatValue = formatNum
     ) {

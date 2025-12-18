@@ -1,7 +1,6 @@
 import { sdk } from '$lib/stores/sdk';
 import type { PageLoad } from './$types';
 import { accumulateUsage } from '$lib/sdk/usage';
-import type { InvoiceUsage } from '$lib/sdk/billing';
 import { type Models, Query } from '@appwrite.io/console';
 
 export const load: PageLoad = async ({ params, parent }) => {
@@ -39,15 +38,16 @@ export const load: PageLoad = async ({ params, parent }) => {
     ]);
 
     if (currentAggregation) {
-        let projectSpecificData = null;
+        let projectSpecificData: Models.AggregationBreakdown | null = null;
         if (currentAggregation.breakdown) {
             projectSpecificData = currentAggregation.breakdown.find((p) => p.$id === project);
         }
 
         if (projectSpecificData) {
             const executionsResource = projectSpecificData.resources?.find?.(
-                (r: InvoiceUsage) => r.resourceId === 'executions'
+                (resource) => resource.resourceId === 'executions'
             );
+
             if (executionsResource) {
                 usage.executionsTotal = executionsResource.value || usage.executionsTotal;
             }

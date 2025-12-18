@@ -5,7 +5,6 @@
     import { toLocaleDate } from '$lib/helpers/date';
     import { upgradeURL } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
-    import type { Aggregation } from '$lib/sdk/billing';
     import { abbreviateNumber, formatCurrency, formatNumberWithCommas } from '$lib/helpers/numbers';
     import { BillingPlan } from '$lib/constants';
     import { Click, trackEvent } from '$lib/actions/analytics';
@@ -25,7 +24,7 @@
     export let currentPlan: Models.BillingPlan;
     export let availableCredit: number | undefined = undefined;
     export let currentInvoice: Models.Invoice | undefined = undefined;
-    export let currentAggregation: Aggregation | undefined = undefined;
+    export let currentAggregation: Models.AggregationTeam | undefined = undefined;
 
     let showCancel: boolean = false;
 

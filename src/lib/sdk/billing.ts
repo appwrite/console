@@ -2,80 +2,8 @@ import type { Client, Models } from '@appwrite.io/console';
 import type { PaymentMethod as StripePaymentMethod } from '@stripe/stripe-js';
 import type { Organization, OrganizationError, OrganizationList } from '../stores/organization';
 
-export type AggregationBreakdown = {
-    $id: string;
-    name: string;
-    amount: number;
-    region: string;
-    resources: InvoiceUsage[];
-};
-
-export type InvoiceUsage = {
-    resourceId: string;
-    value: number;
-    amount: number;
-};
-
 export type AvailableCredit = {
     available: number;
-};
-
-export type Aggregation = {
-    $id: string;
-    /**
-     * Aggregation creation time in ISO 8601 format.
-     */
-    $createdAt: string;
-    /**
-     * Aggregation update date in ISO 8601 format.
-     */
-    $updatedAt: string;
-    /**
-     * Beginning date of the invoice.
-     */
-    from: string;
-    /**
-     * End date of the invoice.
-     */
-    to: string;
-    /**
-     * Total amount of the invoice.
-     */
-    amount: number;
-    additionalMembers: number;
-
-    /**
-     * Price for additional members
-     */
-    additionalMemberAmount: number;
-    /**
-     * Total storage usage.
-     */
-    usageStorage: number;
-    /**
-     * Total active users for the billing period.
-     */
-    usageUsers: number;
-    /**
-     * Total number of executions for the billing period.
-     */
-    usageExecutions: number;
-    /**
-     * Total bandwidth usage for the billing period.
-     */
-    usageBandwidth: number;
-    /**
-     * Total realtime usage for the billing period.
-     */
-    usageRealtime: number;
-    /**
-     * Usage logs for the billing period.
-     */
-    resources: OrganizationUsage;
-    /**
-     * Aggregation billing plan
-     */
-    plan: string;
 };
 
 export type OrganizationUsage = {
@@ -111,11 +39,6 @@ export type OrganizationUsage = {
     }>;
     authPhoneTotal: number;
     authPhoneEstimate: number;
-};
-
-export type AggregationList = {
-    aggregations: Aggregation[];
-    total: number;
 };
 
 export type AllowedRegions =
@@ -629,7 +552,7 @@ export class Billing {
     async listAggregation(
         organizationId: string,
         queries: string[] = []
-    ): Promise<AggregationList> {
+    ): Promise<Models.AggregationTeamList> {
         const path = `/organizations/${organizationId}/aggregations`;
         const params = {
             organizationId,
