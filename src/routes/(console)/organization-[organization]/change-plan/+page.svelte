@@ -197,7 +197,11 @@
 
     async function validate(organizationId: string, invites: string[]) {
         try {
-            let org = await sdk.forConsole.billing.validateOrganization(organizationId, invites);
+            let org = await sdk.forConsole.organizations.validatePayment({
+                organizationId,
+                invites
+            });
+
             if (isOrganization(org)) {
                 await invalidate(Dependencies.ACCOUNT);
                 await invalidate(Dependencies.ORGANIZATION);

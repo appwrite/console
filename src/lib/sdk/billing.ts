@@ -23,26 +23,6 @@ export class Billing {
         this.client = client;
     }
 
-    async validateOrganization(
-        organizationId: string,
-        invites: string[]
-    ): Promise<Models.Organization> {
-        const path = `/organizations/${organizationId}/validate`;
-        const params = {
-            organizationId,
-            invites
-        };
-        const uri = new URL(this.client.config.endpoint + path);
-        return await this.client.call(
-            'PATCH',
-            uri,
-            {
-                'content-type': 'application/json'
-            },
-            params
-        );
-    }
-
     async createOrganization(
         organizationId: string,
         name: string,

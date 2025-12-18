@@ -100,7 +100,10 @@
                 const organizationId = page.url.searchParams.get('id');
                 collaborators = page.url.searchParams.get('invites').split(',');
 
-                await sdk.forConsole.billing.validateOrganization(organizationId, collaborators);
+                await sdk.forConsole.organizations.validatePayment({
+                    organizationId,
+                    invites: collaborators
+                });
             }
         }
 
@@ -173,7 +176,11 @@
                     paymentMethodId,
                     `${base}/apply-credit?${params}`
                 );
-                org = await sdk.forConsole.billing.validateOrganization(org.teamId, collaborators);
+
+                org = await sdk.forConsole.organizations.validatePayment({
+                    organizationId: org.teamId,
+                    invites: collaborators
+                });
             }
 
             if (isOrganization(org)) {
