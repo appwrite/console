@@ -4,15 +4,16 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import Confirm from '$lib/components/confirm.svelte';
     import { Dependencies } from '$lib/constants';
-    import type { Address } from '$lib/sdk/billing';
     import { addNotification } from '$lib/stores/notifications';
     import type { Organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import { Layout, Link } from '@appwrite.io/pink-svelte';
+    import type { Models } from '@appwrite.io/console';
 
     export let showDelete = false;
-    export let selectedAddress: Address;
     export let linkedOrgs: Organization[] = [];
+    export let selectedAddress: Models.BillingAddress;
+
     let error: string = null;
 
     async function handleDelete() {

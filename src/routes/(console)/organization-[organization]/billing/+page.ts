@@ -3,7 +3,6 @@ import { isCloud } from '$lib/system';
 import { sdk } from '$lib/stores/sdk';
 import { redirect } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
-import type { Address } from '$lib/sdk/billing';
 import { type Organization } from '$lib/stores/organization';
 import { BillingPlan, DEFAULT_BILLING_PROJECTS_LIMIT, Dependencies } from '$lib/constants';
 
@@ -31,7 +30,7 @@ export const load: PageLoad = async ({ parent, depends, url, route }) => {
     depends(Dependencies.BILLING_AGGREGATION);
 
     const billingAddressId = (organization as Organization)?.billingAddressId;
-    const billingAddressPromise: Promise<Address> = billingAddressId
+    const billingAddressPromise: Promise<Models.BillingAddress> = billingAddressId
         ? sdk.forConsole.billing
               .getOrganizationBillingAddress(organization.$id, billingAddressId)
               .catch(() => null)

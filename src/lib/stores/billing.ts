@@ -12,7 +12,7 @@ import PaymentMandate from '$lib/components/billing/alerts/paymentMandate.svelte
 import { BillingPlan, NEW_DEV_PRO_UPGRADE_COUPON } from '$lib/constants';
 import { cachedStore } from '$lib/helpers/cache';
 import { type Size, sizeToBytes } from '$lib/helpers/sizeConvertion';
-import type { AddressesList, BillingPlansMap } from '$lib/sdk/billing';
+import type { BillingPlansMap } from '$lib/sdk/billing';
 import { isCloud } from '$lib/system';
 import { activeHeaderAlert, orgMissingPaymentMethod } from '$routes/(console)/store';
 import {
@@ -69,7 +69,10 @@ export const paymentMethods = derived(
     page,
     ($page) => $page.data.paymentMethods as Models.PaymentMethodList
 );
-export const addressList = derived(page, ($page) => $page.data.addressList as AddressesList);
+export const addressList = derived(
+    page,
+    ($page) => $page.data.addressList as Models.BillingAddressList
+);
 export const plansInfo = derived(page, ($page) => $page.data.plansInfo as BillingPlansMap);
 export const daysLeftInTrial = writable<number>(0);
 export const readOnly = writable<boolean>(false);

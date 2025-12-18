@@ -6,7 +6,6 @@
     import { organization } from '$lib/stores/organization';
     import { Dependencies } from '$lib/constants';
     import { onMount } from 'svelte';
-    import type { AddressesList } from '$lib/sdk/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { base } from '$app/paths';
@@ -16,8 +15,9 @@
     export let show = false;
     export let locale: Models.Locale;
     export let countryList: Models.CountryList;
+
     let loading = true;
-    let addresses: AddressesList;
+    let addresses: Models.BillingAddressList;
     let selectedAddress: string;
     let error: string;
     let country: string;

@@ -14,22 +14,6 @@ export type AllowedRegions =
     | 'syd'
     | 'default'; //TODO: remove after migration
 
-export type Address = {
-    $id: string;
-    streetAddress: string;
-    addressLine2?: string;
-    country: string;
-    city: string;
-    state?: string;
-    postalCode: string;
-    userId: string;
-};
-
-export type AddressesList = {
-    billingAddresses: Address[];
-    total: number;
-};
-
 export type BillingPlansMap = Map<string, Models.BillingPlan>;
 
 export type Roles = {
@@ -750,7 +734,7 @@ export class Billing {
     async getOrganizationBillingAddress(
         organizationId: string,
         billingAddressId: string
-    ): Promise<Address> {
+    ): Promise<Models.BillingAddress> {
         const path = `/organizations/${organizationId}/billing-addresses/${billingAddressId}`;
         const params = {
             organizationId,
@@ -915,7 +899,7 @@ export class Billing {
         );
     }
 
-    async listAddresses(queries: string[] = []): Promise<AddressesList> {
+    async listAddresses(queries: string[] = []): Promise<Models.BillingAddressList> {
         const path = `/account/billing-addresses`;
         const params = {
             queries
@@ -931,7 +915,7 @@ export class Billing {
         );
     }
 
-    async getAddress(billingAddressId: string): Promise<Address> {
+    async getAddress(billingAddressId: string): Promise<Models.BillingAddress> {
         const path = `/account/billing-addresses/${billingAddressId}`;
         const params = {
             billingAddressId
@@ -954,7 +938,7 @@ export class Billing {
         state: string,
         postalCode: string,
         addressLine2?: string
-    ): Promise<Address> {
+    ): Promise<Models.BillingAddress> {
         const path = `/account/billing-addresses`;
         const params = {
             country,
@@ -982,7 +966,7 @@ export class Billing {
         state: string,
         postalCode: string,
         addressLine2?: string
-    ): Promise<Address> {
+    ): Promise<Models.BillingAddress> {
         const path = `/account/billing-addresses/${billingAddressId}`;
         const params = {
             billingAddressId,

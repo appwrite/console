@@ -4,7 +4,6 @@
     import { CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
-    import type { Address } from '$lib/sdk/billing';
     import { addressList } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { type Organization } from '$lib/stores/organization';
@@ -24,10 +23,10 @@
     } from '@appwrite.io/pink-icons-svelte';
     import type { Models } from '@appwrite.io/console';
 
-    export let organization: Organization;
     export let locale: Models.Locale;
+    export let organization: Organization;
     export let countryList: Models.CountryList;
-    export let billingAddress: Address;
+    export let billingAddress: Models.BillingAddress;
 
     let showCreate = false;
     let showEdit = false;

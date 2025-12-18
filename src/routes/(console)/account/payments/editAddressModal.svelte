@@ -4,16 +4,15 @@
     import { Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, InputSelect, InputText } from '$lib/elements/forms';
-    import type { Address } from '$lib/sdk/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import type { Models } from '@appwrite.io/console';
 
     export let show = false;
-    export let selectedAddress: Address;
     export let locale: Models.Locale;
     export let countryList: Models.CountryList;
+    export let selectedAddress: Models.BillingAddress;
 
     let error: string = null;
     let options = [

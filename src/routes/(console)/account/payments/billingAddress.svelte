@@ -6,7 +6,6 @@
     import type { Models } from '@appwrite.io/console';
     import DeleteAddress from './deleteAddressModal.svelte';
     import EditAddressModal from './editAddressModal.svelte';
-    import type { Address } from '$lib/sdk/billing';
     import { organizationList, type Organization } from '$lib/stores/organization';
     import { base } from '$app/paths';
     import {
@@ -35,7 +34,7 @@
 
     let show = false;
     let showEdit = false;
-    let selectedAddress: Address;
+    let selectedAddress: Models.BillingAddress;
     let selectedLinkedOrgs: Organization[] = [];
     let showDelete = false;
 
