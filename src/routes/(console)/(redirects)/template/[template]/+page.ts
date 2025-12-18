@@ -11,14 +11,10 @@ export const load: PageLoad = async ({ parent, params }) => {
     if (teamId) {
         redirect(
             303,
-            resolve(
-                '/(console)/organization-[organization]/(studio)/template-[region]-[template]',
-                {
-                    organization: teamId,
-                    template: params.template,
-                    region: 'fra'
-                }
-            )
+            resolve('/(console)/(studio)/template-[region]-[template]', {
+                template: params.template,
+                region: 'fra'
+            })
         );
     }
     redirect(303, resolve('/'));
