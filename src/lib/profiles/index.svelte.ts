@@ -218,7 +218,7 @@ export const studio: Profile = {
     },
     links: {
         website: 'https://imagine.dev',
-        docs: 'https://imagine.dev/docs',
+        docs: 'https://imagine.dev',
         terms: 'https://imagine.dev/terms',
         discord: 'https://imagine.dev/discord',
         cookies: 'https://imagine.dev/cookies',
