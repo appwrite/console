@@ -1,11 +1,10 @@
 <script lang="ts">
     import { CardGrid, Empty, PaginationInline } from '$lib/components';
     import { toLocaleDate } from '$lib/helpers/date';
-    import type { CreditList } from '$lib/sdk/billing';
     import { organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import { wizard } from '$lib/stores/wizard';
-    import { Query } from '@appwrite.io/console';
+    import { type Models, Query } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { Button } from '$lib/elements/forms';
     import AddCreditModal from './addCreditModal.svelte';
@@ -20,13 +19,15 @@
     export let areCreditsSupported: boolean;
 
     let offset = 0;
-    let creditList: CreditList = {
-        available: 0,
-        credits: [],
-        total: 0
-    };
     let show = false;
     let reloadOnWizardClose = false;
+
+    /* default credits until loaded */
+    let creditList: Models.CreditList = {
+        total: 0,
+        credits: [],
+        available: 0
+    };
 
     onMount(request);
 

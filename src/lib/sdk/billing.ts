@@ -102,55 +102,6 @@ export type Coupon = {
     onlyNewOrgs?: boolean;
 };
 
-export type Credit = {
-    /**
-     * Credit ID.
-     */
-    $id: string;
-    /**
-     * Credit creation time in ISO 8601 format.
-     */
-    $createdAt: string;
-    /**
-     * Credit update date in ISO 8601 format.
-     */
-    $updatedAt: string;
-    /**
-     * coupon ID
-     */
-    couponId: string;
-    /**
-     * ID of the User.
-     */
-    userId: string;
-    /**
-     * ID of the Team.
-     */
-    teamId: string;
-    /**
-     * Provided credit amount
-     */
-    total: number;
-    /**
-     * Remaining credit amount
-     */
-    credits: number;
-    /**
-     * Credit expiration time in ISO 8601 format.
-     */
-    expiration: string;
-    /**
-     * Status of the credit. Can be one of `disabled`, `active` or `expired`.
-     */
-    status: string;
-};
-
-export type CreditList = {
-    available: number;
-    credits: Credit[];
-    total: number;
-};
-
 export type AggregationTeam = {
     $id: string;
     /**
@@ -880,7 +831,7 @@ export class Billing {
         );
     }
 
-    async addCredit(organizationId: string, couponId: string): Promise<Credit> {
+    async addCredit(organizationId: string, couponId: string): Promise<Models.Credit> {
         const path = `/organizations/${organizationId}/credits`;
         const params = {
             couponId
@@ -895,7 +846,7 @@ export class Billing {
             params
         );
     }
-    async listCredits(organizationId: string, queries = []): Promise<CreditList> {
+    async listCredits(organizationId: string, queries = []): Promise<Models.CreditList> {
         const path = `/organizations/${organizationId}/credits`;
         const params = {
             queries
@@ -925,7 +876,7 @@ export class Billing {
         );
     }
 
-    async getCredit(organizationId: string, creditId: string): Promise<Credit> {
+    async getCredit(organizationId: string, creditId: string): Promise<Models.Credit> {
         const path = `/organizations/${organizationId}/credits/${creditId}`;
         const params = {
             creditId
