@@ -317,7 +317,9 @@ export async function checkForProjectsLimit(org: Models.Organization, orgProject
     if (!isCloud) return;
     if (!org) return;
 
-    const plan = await sdk.forConsole.billing.getOrganizationPlan(org.$id);
+    const plan = await sdk.forConsole.organizations.getPlan({
+        organizationId: org.$id
+    });
     if (!plan) return;
 
     if (plan.$id !== BillingPlan.FREE) return;

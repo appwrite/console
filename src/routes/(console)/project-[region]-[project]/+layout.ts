@@ -33,7 +33,11 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
               (sdk.forConsole.teams.get({ teamId: project.teamId }) as Promise<Models.Organization>)
             : organization,
         sdk.forConsoleIn(project.region).console.variables(),
-        isCloud ? sdk.forConsole.billing.getRoles(project.teamId) : null,
+        isCloud
+            ? sdk.forConsole.organizations.getScopes({
+                  organizationId: project.teamId
+              })
+            : null,
 
         loadAvailableRegions(project.teamId)
     ]);
@@ -56,7 +60,9 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
     const organizationPlan = includedInBasePlans
         ? plansInfo.get(organization?.billingPlan)
         : isCloud
-          ? await sdk.forConsole.billing.getOrganizationPlan(organization?.$id)
+          ? await sdk.forConsole.organizations.getPlan({
+                organizationId: organization?.$id
+            })
           : null;
 
     const roles = rolesResult?.roles ?? defaultRoles;

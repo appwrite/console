@@ -31,8 +31,13 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
     try {
         if (isCloud) {
             [{ roles, scopes }, currentPlan] = await Promise.all([
-                sdk.forConsole.billing.getRoles(params.organization),
-                sdk.forConsole.billing.getOrganizationPlan(params.organization)
+                sdk.forConsole.organizations.getScopes({
+                    organizationId: params.organization
+                }),
+
+                sdk.forConsole.organizations.getPlan({
+                    organizationId: params.organization
+                })
             ]);
 
             if (scopes.includes('billing.read')) {

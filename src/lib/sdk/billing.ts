@@ -57,62 +57,6 @@ export class Billing {
         );
     }
 
-    async estimationCreateOrganization(
-        billingPlan: string,
-        couponId: string = null,
-        invites: Array<string> = []
-    ): Promise<Models.Estimation> {
-        const path = `/organizations/estimations/create-organization`;
-        const params = {
-            billingPlan,
-            couponId,
-            invites
-        };
-        const uri = new URL(this.client.config.endpoint + path);
-        return await this.client.call(
-            'patch',
-            uri,
-            {
-                'content-type': 'application/json'
-            },
-            params
-        );
-    }
-
-    async deleteOrganization(organizationId: string): Promise<Models.Organization> {
-        const path = `/organizations/${organizationId}`;
-        const params = {
-            organizationId
-        };
-        const uri = new URL(this.client.config.endpoint + path);
-        return await this.client.call(
-            'DELETE',
-            uri,
-            {
-                'content-type': 'application/json'
-            },
-            params
-        );
-    }
-
-    async estimationDeleteOrganization(
-        organizationId: string
-    ): Promise<Models.EstimationDeleteOrganization> {
-        const path = `/organizations/${organizationId}/estimations/delete-organization`;
-        const uri = new URL(this.client.config.endpoint + path);
-        return await this.client.call('patch', uri, {
-            'content-type': 'application/json'
-        });
-    }
-
-    async getOrganizationPlan(organizationId: string): Promise<Models.BillingPlan> {
-        const path = `/organizations/${organizationId}/plan`;
-        const uri = new URL(this.client.config.endpoint + path);
-        return await this.client.call('get', uri, {
-            'content-type': 'application/json'
-        });
-    }
-
     async listPlans(queries: string[] = []): Promise<Models.BillingPlanList> {
         const path = `/console/plans`;
         const uri = new URL(this.client.config.endpoint + path);
@@ -131,14 +75,6 @@ export class Billing {
 
     async getPlan(planId: string): Promise<Models.BillingPlan> {
         const path = `/console/plans/${planId}`;
-        const uri = new URL(this.client.config.endpoint + path);
-        return await this.client.call('get', uri, {
-            'content-type': 'application/json'
-        });
-    }
-
-    async getRoles(organizationId: string): Promise<Models.Roles> {
-        const path = `/organizations/${organizationId}/roles`;
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call('get', uri, {
             'content-type': 'application/json'
