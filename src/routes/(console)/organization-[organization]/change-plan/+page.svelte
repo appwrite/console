@@ -99,16 +99,17 @@
             $currentPlan?.$id === BillingPlan.SCALE ? BillingPlan.SCALE : BillingPlan.PRO;
 
         try {
-            orgUsage = await sdk.forConsole.billing.listUsage(data.organization.$id);
+            orgUsage = await sdk.forConsole.organizations.getUsage({
+                organizationId: data.organization.$id
+            });
         } catch {
             orgUsage = undefined;
         }
 
         try {
-            allProjects = await sdk.forConsole.projects.list([
-                Query.equal('teamId', data.organization.$id),
-                Query.limit(1000)
-            ]);
+            allProjects = await sdk.forConsole.projects.list({
+                queries: [Query.equal('teamId', data.organization.$id), Query.limit(1000)]
+            });
         } catch {
             allProjects = { projects: [] };
         }

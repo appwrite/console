@@ -4,7 +4,7 @@ import { type Models, Query } from '@appwrite.io/console';
 import type { UsageProjectInfo } from '../../store';
 
 export const load: PageLoad = async ({ params, parent }) => {
-    const { invoice } = params;
+    const { invoice: invoiceId } = params;
     const { organization: org, currentPlan: plan } = await parent();
 
     /**
@@ -42,14 +42,22 @@ export const load: PageLoad = async ({ params, parent }) => {
     let endDate: string = org.billingNextInvoiceDate;
     let currentInvoice: Models.Invoice = undefined;
 
-    if (invoice) {
-        currentInvoice = await sdk.forConsole.billing.getInvoice(org.$id, invoice);
+    if (invoiceId) {
+        currentInvoice = await sdk.forConsole.organizations.getInvoice({
+            organizationId: org.$id,
+            invoiceId
+        });
         startDate = currentInvoice.from;
         endDate = currentInvoice.to;
     }
 
     const [usage, organizationMembers] = await Promise.all([
-        sdk.forConsole.billing.listUsage(org.$id, startDate, endDate),
+        sdk.forConsole.organizations.getUsage({
+            organizationId: org.$id,
+            startDate,
+            endDate
+        }),
+
         // this section is cloud only,
         // so it is fine to use this check and fetch memberships conditionally!
         !plan?.addons?.seats?.supported

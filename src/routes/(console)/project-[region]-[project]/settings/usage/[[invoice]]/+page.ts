@@ -4,7 +4,7 @@ import { accumulateUsage } from '$lib/sdk/usage';
 import { type Models, Query } from '@appwrite.io/console';
 
 export const load: PageLoad = async ({ params, parent }) => {
-    const { invoice, project, region } = params;
+    const { invoice: invoiceId, project, region } = params;
     const { organization } = await parent();
 
     let startDate: string = organization.billingCurrentInvoiceDate;
@@ -12,28 +12,34 @@ export const load: PageLoad = async ({ params, parent }) => {
     let currentInvoice: Models.Invoice = undefined;
     let currentAggregation: Models.AggregationTeam = undefined;
 
-    if (invoice) {
-        currentInvoice = await sdk.forConsole.billing.getInvoice(organization.$id, invoice);
-        currentAggregation = await sdk.forConsole.billing.getAggregation(
-            organization.$id,
-            currentInvoice.aggregationId
-        );
+    if (invoiceId) {
+        currentInvoice = await sdk.forConsole.organizations.getInvoice({
+            organizationId: organization.$id,
+            invoiceId
+        });
+        currentAggregation = await sdk.forConsole.organizations.getAggregation({
+            organizationId: organization.$id,
+            aggregationId: currentInvoice.aggregationId
+        });
 
         startDate = currentInvoice.from;
         endDate = currentInvoice.to;
     } else {
         try {
-            currentAggregation = await sdk.forConsole.billing.getAggregation(
-                organization.$id,
-                organization.billingAggregationId
-            );
+            currentAggregation = await sdk.forConsole.organizations.getAggregation({
+                organizationId: organization.$id,
+                aggregationId: organization.billingAggregationId
+            });
         } catch (e) {
             // ignore error if no aggregation found
         }
     }
 
     const [invoices, usage] = await Promise.all([
-        sdk.forConsole.billing.listInvoices(organization.$id, [Query.orderDesc('from')]),
+        sdk.forConsole.organizations.listInvoices({
+            organizationId: organization.$id,
+            queries: [Query.orderDesc('from')]
+        }),
         sdk.forProject(region, project).project.getUsage({ startDate, endDate })
     ]);
 

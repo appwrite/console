@@ -202,9 +202,10 @@ export const failedInvoice = cachedStore<
         load: async (orgId) => {
             if (!isCloud) set(null);
             if (!get(canSeeBilling)) set(null);
-            const failedInvoices = await sdk.forConsole.billing.listInvoices(orgId, [
-                Query.equal('status', 'failed')
-            ]);
+            const failedInvoices = await sdk.forConsole.organizations.listInvoices({
+                organizationId: orgId,
+                queries: [Query.equal('status', 'failed')]
+            });
             // const failedInvoices = invoices.invoices;
             if (failedInvoices?.invoices?.length > 0) {
                 const firstFailed = failedInvoices.invoices[0];
@@ -443,9 +444,10 @@ export async function checkForUsageLimit(org: Models.Organization) {
 export async function checkPaymentAuthorizationRequired(org: Models.Organization) {
     if (org.billingPlan === BillingPlan.FREE) return;
 
-    const invoices = await sdk.forConsole.billing.listInvoices(org.$id, [
-        Query.equal('status', 'requires_authentication')
-    ]);
+    const invoices = await sdk.forConsole.organizations.listInvoices({
+        organizationId: org.$id,
+        queries: [Query.equal('status', 'requires_authentication')]
+    });
 
     if (invoices?.invoices?.length > 0) {
         headerAlert.add({

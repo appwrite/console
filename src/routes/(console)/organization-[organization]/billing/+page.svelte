@@ -53,10 +53,10 @@
                 page.url.searchParams.get('type') === 'confirmation'
             ) {
                 const invoiceId = page.url.searchParams.get('invoice');
-                const invoice = await sdk.forConsole.billing.getInvoice(
-                    page.params.organization,
+                const invoice = await sdk.forConsole.organizations.getInvoice({
+                    organizationId: page.params.organization,
                     invoiceId
-                );
+                });
 
                 await confirmPayment(
                     organization.$id,
@@ -71,7 +71,10 @@
                 page.url.searchParams.get('type') === 'validate-invoice'
             ) {
                 const invoiceId = page.url.searchParams.get('invoice');
-                await sdk.forConsole.billing.updateInvoiceStatus(organization.$id, invoiceId);
+                await sdk.forConsole.organizations.validateInvoice({
+                    organizationId: organization.$id,
+                    invoiceId
+                });
                 invalidate(Dependencies.INVOICES);
                 invalidate(Dependencies.ORGANIZATION);
             }
@@ -81,10 +84,10 @@
                 page.url.searchParams.get('type') === 'retry'
             ) {
                 const invoiceId = page.url.searchParams.get('invoice');
-                const invoice = await sdk.forConsole.billing.getInvoice(
-                    page.params.organization,
+                const invoice = await sdk.forConsole.organizations.getInvoice({
+                    organizationId: page.params.organization,
                     invoiceId
-                );
+                });
                 selectedInvoice.set(invoice);
                 showRetryModal.set(true);
             }

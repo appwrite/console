@@ -45,22 +45,22 @@ export const load: PageLoad = async ({ parent, depends, url, route }) => {
         const currentPage = getPage(url) || 1;
         const limit = getLimit(url, route, DEFAULT_BILLING_PROJECTS_LIMIT);
         const offset = pageToOffset(currentPage, limit);
-        billingAggregation = await sdk.forConsole.billing.getAggregation(
-            organization.$id,
-            (organization as Models.Organization)?.billingAggregationId,
+        billingAggregation = await sdk.forConsole.organizations.getAggregation({
+            organizationId: organization.$id,
+            aggregationId: (organization as Models.Organization)?.billingAggregationId,
             limit,
             offset
-        );
+        });
     } catch (e) {
         // ignore error
     }
 
     let billingInvoice = null;
     try {
-        billingInvoice = await sdk.forConsole.billing.getInvoice(
-            organization.$id,
-            (organization as Models.Organization)?.billingInvoiceId
-        );
+        billingInvoice = await sdk.forConsole.organizations.getInvoice({
+            organizationId: organization.$id,
+            invoiceId: (organization as Models.Organization)?.billingInvoiceId
+        });
     } catch (e) {
         // ignore error
     }

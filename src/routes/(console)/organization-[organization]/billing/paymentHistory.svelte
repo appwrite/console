@@ -51,15 +51,18 @@
 
     async function request(patchQuery: boolean = false) {
         isLoadingInvoices = true;
-        invoiceList = await sdk.forConsole.billing.listInvoices(page.params.organization, [
-            Query.orderDesc('$createdAt'),
+        invoiceList = await sdk.forConsole.organizations.listInvoices({
+            organizationId: page.params.organization,
+            queries: [
+                Query.orderDesc('$createdAt'),
 
-            // first page extra must have an extra limit!
-            Query.limit(patchQuery ? limit + 1 : limit),
+                // first page extra must have an extra limit!
+                Query.limit(patchQuery ? limit + 1 : limit),
 
-            // so an invoice isn't repeated on 2nd page!
-            Query.offset(patchQuery ? offset : offset + 1)
-        ]);
+                // so an invoice isn't repeated on 2nd page!
+                Query.offset(patchQuery ? offset : offset + 1)
+            ]
+        });
 
         isLoadingInvoices = false;
     }
