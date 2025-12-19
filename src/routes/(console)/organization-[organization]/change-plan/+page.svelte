@@ -164,10 +164,10 @@
                 const selected = usageLimitsComponent.getSelectedProjects();
                 if (selected?.length) {
                     try {
-                        await sdk.forConsole.billing.updateSelectedProjects(
-                            data.organization.$id,
-                            selected
-                        );
+                        await sdk.forConsole.organizations.updateProjects({
+                            organizationId: data.organization.$id,
+                            projects: selected
+                        });
                     } catch (projectError) {
                         console.warn('Project selection failed after plan update:', projectError);
                     }

@@ -88,10 +88,10 @@
 
     async function addPaymentMethod(paymentMethodId: string) {
         try {
-            await sdk.forConsole.billing.setOrganizationPaymentMethod(
-                organization.$id,
+            await sdk.forConsole.organizations.setDefaultPaymentMethod({
+                organizationId: organization.$id,
                 paymentMethodId
-            );
+            });
         } catch (e) {
             error = e.message;
         }
@@ -99,10 +99,10 @@
 
     async function addBackupPaymentMethod(paymentMethodId: string) {
         try {
-            await sdk.forConsole.billing.setOrganizationPaymentMethodBackup(
-                organization.$id,
+            await sdk.forConsole.organizations.setBackupPaymentMethod({
+                organizationId: organization.$id,
                 paymentMethodId
-            );
+            });
         } catch (e) {
             error = e.message;
         }

@@ -19,11 +19,11 @@
 
     async function updateBudget() {
         try {
-            await sdk.forConsole.billing.updateBudget(
-                organization.$id,
+            await sdk.forConsole.organizations.updateBudget({
+                organizationId: organization.$id,
                 budget,
-                organization.budgetAlerts
-            );
+                alerts: organization.budgetAlerts
+            });
             await invalidate(Dependencies.ORGANIZATION);
             addNotification({
                 type: 'success',

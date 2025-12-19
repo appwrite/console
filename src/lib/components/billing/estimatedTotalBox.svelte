@@ -57,12 +57,12 @@
         couponId: string | undefined
     ) {
         try {
-            estimation = await sdk.forConsole.billing.estimationUpdatePlan(
+            estimation = await sdk.forConsole.organizations.estimationUpdatePlan({
                 organizationId,
-                billingPlan,
-                couponId && couponId.length > 0 ? couponId : null,
-                collaborators ?? []
-            );
+                billingPlan: billingPlan as BillingPlan,
+                invites: collaborators ?? [],
+                couponId: couponId && couponId.length > 0 ? couponId : null
+            });
         } catch (e) {
             if (e instanceof AppwriteException) {
                 if (

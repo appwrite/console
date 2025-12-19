@@ -12,8 +12,8 @@ export const load: PageLoad = async ({ depends, parent }) => {
     let plans: Models.BillingPlanList;
 
     try {
-        plans = await sdk.forConsole.console.plans({
-            platform: Platform.Appwrite,
+        plans = await sdk.forConsole.console.getPlans({
+            platform: Platform.Appwrite
         });
     } catch (error) {
         console.error('Failed to load billing plans:', error);

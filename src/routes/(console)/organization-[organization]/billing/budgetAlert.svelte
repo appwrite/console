@@ -46,11 +46,11 @@
 
     async function updateBudget() {
         try {
-            await sdk.forConsole.billing.updateBudget(
-                organization.$id,
-                organization.billingBudget,
+            await sdk.forConsole.organizations.updateBudget({
+                organizationId: organization.$id,
+                budget: organization.billingBudget,
                 alerts
-            );
+            });
 
             await invalidate(Dependencies.ORGANIZATION);
 

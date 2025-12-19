@@ -46,10 +46,10 @@
 
     async function addPaymentMethod(paymentMethodId: string) {
         try {
-            await sdk.forConsole.billing.setOrganizationPaymentMethod(
-                organization.$id,
+            await sdk.forConsole.organizations.setDefaultPaymentMethod({
+                organizationId: organization.$id,
                 paymentMethodId
-            );
+            });
             addNotification({
                 type: 'success',
                 message: `A new payment method has been added to ${organization.name}`
@@ -67,10 +67,10 @@
 
     async function addBackupPaymentMethod(paymentMethodId: string) {
         try {
-            await sdk.forConsole.billing.setOrganizationPaymentMethodBackup(
-                organization.$id,
+            await sdk.forConsole.organizations.setBackupPaymentMethod({
+                organizationId: organization.$id,
                 paymentMethodId
-            );
+            });
             addNotification({
                 type: 'success',
                 message: `A new payment method has been added to ${organization.name}`
