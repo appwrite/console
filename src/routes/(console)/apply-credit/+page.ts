@@ -12,7 +12,9 @@ export const load = async ({ url }) => {
         try {
             couponData = await sdk.forConsole.billing.getCouponAccount(code);
             if (couponData.campaign) {
-                campaign = await sdk.forConsole.billing.getCampaign(couponData.campaign);
+                campaign = await sdk.forConsole.console.getCampaign({
+                    campaignId: couponData.campaign
+                });
             }
             return { couponData, campaign };
         } catch (e) {
@@ -24,7 +26,7 @@ export const load = async ({ url }) => {
         const campaignId = url.searchParams.get('campaign');
         let campaign: Models.Campaign;
         try {
-            campaign = await sdk.forConsole.billing.getCampaign(campaignId);
+            campaign = await sdk.forConsole.console.getCampaign({ campaignId });
             return { campaign };
         } catch (e) {
             redirect(303, resolve('/'));

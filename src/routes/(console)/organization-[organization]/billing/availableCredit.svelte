@@ -47,10 +47,7 @@
          */
         creditList = await sdk.forConsole.organizations.listCredits({
             organizationId: $organization.$id,
-            queries: [
-                Query.limit(limit),
-                Query.offset(offset)
-            ]
+            queries: [Query.limit(limit), Query.offset(offset)]
         });
 
         creditList = {

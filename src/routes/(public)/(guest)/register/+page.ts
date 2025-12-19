@@ -9,9 +9,14 @@ export const load: PageLoad = async ({ url }) => {
         const code = url.searchParams.get('code');
         let campaign: Models.Campaign;
         try {
-            const couponData = await sdk.forConsole.billing.getCoupon(code);
+            const couponData = await sdk.forConsole.console.getCoupon({
+                couponId: code
+            });
+
             if (couponData.campaign) {
-                campaign = await sdk.forConsole.billing.getCampaign(couponData.campaign);
+                campaign = await sdk.forConsole.console.getCampaign({
+                    campaignId: couponData.campaign
+                });
                 return {
                     couponData,
                     campaign
@@ -21,11 +26,12 @@ export const load: PageLoad = async ({ url }) => {
             redirect(303, resolve('/register'));
         }
     }
+
     if (url.searchParams.has('campaign')) {
         const campaignId = url.searchParams.get('campaign');
         let campaign: Models.Campaign;
         try {
-            campaign = await sdk.forConsole.billing.getCampaign(campaignId);
+            campaign = await sdk.forConsole.console.getCampaign({ campaignId });
             return { campaign };
         } catch (e) {
             redirect(303, resolve('/register'));

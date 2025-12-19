@@ -100,14 +100,6 @@ export class Billing {
         });
     }
 
-    async getCampaign(campaignId: string): Promise<Models.Campaign> {
-        const path = `/console/campaigns/${campaignId}`;
-        const uri = new URL(this.client.config.endpoint + path);
-        return await this.client.call('GET', uri, {
-            'content-type': 'application/json'
-        });
-    }
-
     async setMembership(
         programId: string
     ): Promise<{ $createdAt: string } | { error: { code: number; message: string } }> {
