@@ -58,7 +58,7 @@
         }
     }
 
-    const options = specs.specifications.map((spec) => ({
+    const options = (specs?.specifications ?? []).map((spec) => ({
         label: `${spec.cpus} CPU, ${spec.memory} MB RAM`,
         value: spec.slug,
         disabled: !spec.enabled
