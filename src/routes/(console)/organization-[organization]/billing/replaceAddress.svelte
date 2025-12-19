@@ -71,7 +71,11 @@
                     postalCode ? postalCode : undefined,
                     addressLine2 ? postalCode : undefined
                 );
-                await sdk.forConsole.billing.setBillingAddress($organization.$id, address.$id);
+
+                await sdk.forConsole.organizations.setBillingAddress({
+                    organizationId: $organization.$id,
+                    billingAddressId: address.$id
+                });
 
                 invalidate(Dependencies.ORGANIZATION);
                 invalidate(Dependencies.ADDRESS);
@@ -86,7 +90,10 @@
                     message: `Your billing address has been updated`
                 });
             } else {
-                await sdk.forConsole.billing.setBillingAddress($organization.$id, selectedAddress);
+                await sdk.forConsole.organizations.setBillingAddress({
+                    organizationId: $organization.$id,
+                    billingAddressId: selectedAddress
+                });
 
                 invalidate(Dependencies.ORGANIZATION);
                 invalidate(Dependencies.ADDRESS);

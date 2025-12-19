@@ -50,10 +50,14 @@
                 zip ? zip : undefined,
                 address2 ? address2 : undefined
             );
+
             trackEvent(Submit.BillingAddressCreate);
             let org: Models.Organization = null;
             if (organization) {
-                org = await sdk.forConsole.billing.setBillingAddress(organization, response.$id);
+                org = await sdk.forConsole.organizations.setBillingAddress({
+                    organizationId: organization,
+                    billingAddressId: response.$id
+                });
                 trackEvent(Submit.OrganizationBillingAddressUpdate);
                 await invalidate(Dependencies.ORGANIZATIONS);
             }

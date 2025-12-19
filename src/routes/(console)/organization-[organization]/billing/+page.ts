@@ -30,8 +30,11 @@ export const load: PageLoad = async ({ parent, depends, url, route }) => {
 
     const billingAddressId = (organization as Models.Organization)?.billingAddressId;
     const billingAddressPromise: Promise<Models.BillingAddress> = billingAddressId
-        ? sdk.forConsole.billing
-              .getOrganizationBillingAddress(organization.$id, billingAddressId)
+        ? sdk.forConsole.organizations
+              .getBillingAddress({
+                  organizationId: organization.$id,
+                  billingAddressId
+              })
               .catch(() => null)
         : null;
 

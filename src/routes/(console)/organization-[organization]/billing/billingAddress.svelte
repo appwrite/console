@@ -34,7 +34,10 @@
 
     async function addAddress(addressId: string) {
         try {
-            await sdk.forConsole.billing.setBillingAddress(organization.$id, addressId);
+            await sdk.forConsole.organizations.setBillingAddress({
+                organizationId: organization.$id,
+                billingAddressId: addressId
+            });
 
             addNotification({
                 type: 'success',

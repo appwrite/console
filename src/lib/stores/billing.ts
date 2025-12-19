@@ -464,10 +464,11 @@ export async function checkPaymentAuthorizationRequired(org: Models.Organization
 
 export async function paymentExpired(org: Models.Organization) {
     if (!org?.paymentMethodId) return;
-    const payment = await sdk.forConsole.billing.getOrganizationPaymentMethod(
-        org.$id,
-        org.paymentMethodId
-    );
+    const payment = await sdk.forConsole.organizations.getPaymentMethod({
+        organizationId: org.$id,
+        paymentMethodId: org.paymentMethodId
+    });
+
     if (!payment?.expiryYear) return;
     const sessionStorageNotification = sessionStorage.getItem('expiredPaymentNotification');
     if (sessionStorageNotification === 'true') return;
