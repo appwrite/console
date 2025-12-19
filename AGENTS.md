@@ -101,4 +101,23 @@ src/
 5. Before commit: `pnpm run check && pnpm run format && pnpm run lint && pnpm run test && pnpm run build`
 6. **Take screenshots**: For any UI changes, capture screenshots and include them in the PR description or comments before finalizing
 
+## Required Pre-Completion Checklist
+
+**CRITICAL**: Before finishing any work or marking a task complete, agents MUST run the following commands in order and ensure all pass:
+
+1. **`pnpm run format`** - Auto-fix all formatting issues
+2. **`pnpm run check`** - Verify TypeScript/Svelte types (must show 0 errors, 0 warnings)
+3. **`pnpm run lint`** - Check code style (ignore pre-existing issues in files you didn't modify)
+4. **`pnpm run test`** - Run all unit tests (all tests must pass)
+5. **`pnpm run build`** - Ensure production build succeeds
+
+If any command fails:
+
+- **Format/Lint**: Run `pnpm run format` to auto-fix, then re-check
+- **Type errors**: Fix all TypeScript errors in files you modified
+- **Test failures**: Fix failing tests or ensure failures are unrelated to your changes
+- **Build failures**: Debug and resolve build issues before proceeding
+
+**Never skip these checks** - they are mandatory quality gates before any work is considered complete.
+
 **Trust these instructions** - only search if incomplete/incorrect. See CONTRIBUTING.md for PR conventions. Use `--frozen-lockfile` always. Docker builds: multi-stage, final image is nginx serving static files from `/console` path.

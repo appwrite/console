@@ -25,7 +25,6 @@
                     ID.unique(),
                     organizationName,
                     BillingPlan.FREE,
-                    null,
                     null
                 );
 

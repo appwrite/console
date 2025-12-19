@@ -1,4 +1,4 @@
-import { Query } from '@appwrite.io/console';
+import { Query, type Models } from '@appwrite.io/console';
 import { sdk } from '$lib/stores/sdk';
 import { getLimit, getPage, getQuery, pageToOffset } from '$lib/helpers/load';
 import { Dependencies, PAGE_LIMIT } from '$lib/constants';
@@ -29,7 +29,15 @@ export const load = async ({ params, depends, url, route, parent }) => {
                     'buildDuration',
                     'status',
                     'type',
-                    'resourceId'
+                    'resourceId',
+                    'providerRepositoryUrl',
+                    'providerRepositoryOwner',
+                    'providerRepositoryName',
+                    'providerBranchUrl',
+                    'providerBranch',
+                    'providerCommitMessage',
+                    'providerCommitHash',
+                    'providerCommitUrl'
                 ]),
                 ...parsedQueries.values()
             ]
@@ -37,17 +45,24 @@ export const load = async ({ params, depends, url, route, parent }) => {
         sdk.forProject(params.region, params.project).vcs.listInstallations()
     ]);
 
+    let activeDeployment: Models.Deployment | null = null;
+    if (site.deploymentId && deploymentList?.total) {
+        try {
+            activeDeployment = await sdk
+                .forProject(params.region, params.project)
+                .sites.getDeployment({ siteId: params.site, deploymentId: site.deploymentId });
+        } catch (error) {
+            // active deployment with the requested ID could not be found
+            activeDeployment = null;
+        }
+    }
+
     return {
         offset,
         limit,
         query,
         deploymentList,
-        activeDeployment:
-            site.deploymentId && deploymentList?.total
-                ? await sdk
-                      .forProject(params.region, params.project)
-                      .sites.getDeployment({ siteId: params.site, deploymentId: site.deploymentId })
-                : null,
+        activeDeployment,
         installations
     };
 };

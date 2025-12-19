@@ -19,7 +19,7 @@
         BuildRuntime,
         Framework,
         ID,
-        VCSDeploymentType,
+        VCSReferenceType,
         VCSDetectionType
     } from '@appwrite.io/console';
     import type { Models } from '@appwrite.io/console';
@@ -131,7 +131,7 @@
                 .forProject(page.params.region, page.params.project)
                 .sites.createVcsDeployment({
                     siteId: site.$id,
-                    type: VCSDeploymentType.Branch,
+                    type: VCSReferenceType.Branch,
                     reference: branch,
                     activate: true
                 });
