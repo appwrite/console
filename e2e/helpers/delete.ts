@@ -2,17 +2,14 @@ import { test, type Page } from '@playwright/test';
 
 export async function deleteProject(page: Page, region: string, projectId: string) {
     return test.step('delete project', async () => {
-        await page.goto(`./project-${region}-${projectId}/settings`, { waitUntil: 'networkidle' });
-
-        // Wait for page to be fully loaded
-        await page.waitForLoadState('domcontentloaded');
+        await page.goto(`./project-${region}-${projectId}/settings`, { timeout: 10000 });
 
         // Get the project name from the data attribute
         const projectName = await page.locator('[data-project-name]').textContent();
 
         // Click the Delete button in the CardGrid actions section
         const deleteButton = page.getByRole('button', { name: 'Delete', exact: true });
-        await deleteButton.waitFor({ state: 'visible', timeout: 15000 });
+        await deleteButton.waitFor({ state: 'visible', timeout: 10000 });
         await deleteButton.click();
 
         // Wait for modal to open
@@ -33,17 +30,14 @@ export async function deleteProject(page: Page, region: string, projectId: strin
 
 export async function deleteOrganization(page: Page, organizationId: string) {
     return test.step('delete organization', async () => {
-        await page.goto(`./organization-${organizationId}/settings`, { waitUntil: 'networkidle' });
-
-        // Wait for page to be fully loaded
-        await page.waitForLoadState('domcontentloaded');
+        await page.goto(`./organization-${organizationId}/settings`, { timeout: 10000 });
 
         // Get the organization name from the data attribute
         const organizationName = await page.locator('[data-organization-name]').textContent();
 
         // Click the Delete button in the CardGrid actions section
         const deleteButton = page.getByRole('button', { name: 'Delete', exact: true });
-        await deleteButton.waitFor({ state: 'visible', timeout: 15000 });
+        await deleteButton.waitFor({ state: 'visible', timeout: 10000 });
         await deleteButton.click();
 
         // Wait for modal to open
@@ -65,14 +59,11 @@ export async function deleteOrganization(page: Page, organizationId: string) {
 export async function deleteAccount(page: Page, maxRetries = 3) {
     return test.step('delete account', async () => {
         for (let attempt = 0; attempt < maxRetries; attempt++) {
-            await page.goto('./account', { waitUntil: 'networkidle' });
-
-            // Wait for page to be fully loaded
-            await page.waitForLoadState('domcontentloaded');
+            await page.goto('./account', { timeout: 10000 });
 
             // click the Delete button in the CardGrid actions section
             const trigger = page.getByRole('button', { name: 'Delete', exact: true });
-            await trigger.waitFor({ state: 'visible', timeout: 15000 });
+            await trigger.waitFor({ state: 'visible', timeout: 10000 });
             await trigger.click();
 
             // wait for confirm modal to open
