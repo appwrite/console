@@ -80,7 +80,9 @@
     onMount(async () => {
         // Filter projects by organization ID using server-side queries
         const projectList = await sdk.forConsole.projects.list({
-            queries: $organization?.$id ? [Query.equal('teamId', $organization.$id)] : []
+            queries: $organization?.$id
+                ? [Query.equal('teamId', $organization.$id), Query.select(['$id', 'name'])]
+                : []
         });
         projectOptions = projectList.projects.map((project) => ({
             value: project.$id,

@@ -24,7 +24,8 @@ export const load: PageLoad = async ({ params, url, route, depends, parent }) =>
             Query.offset(offset),
             Query.equal('teamId', params.organization),
             Query.limit(limit),
-            Query.orderDesc('')
+            Query.orderDesc(''),
+            Query.select(['$id', 'name', 'region', 'status'])
         ],
         search: search || undefined
     });
