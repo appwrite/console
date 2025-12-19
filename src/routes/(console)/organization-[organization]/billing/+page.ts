@@ -80,7 +80,9 @@ export const load: PageLoad = async ({ parent, depends, url, route }) => {
                 ? sdk.forConsole.billing.getAvailableCredit(organization.$id)
                 : null,
             organization.billingPlanDowngrade
-                ? sdk.forConsole.billing.getPlan(organization.billingPlanDowngrade)
+                ? sdk.forConsole.console.getPlan({
+                      planId: organization.billingPlanDowngrade
+                  })
                 : null
         ]);
 

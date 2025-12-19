@@ -57,14 +57,6 @@ export class Billing {
         );
     }
 
-    async getPlan(planId: string): Promise<Models.BillingPlan> {
-        const path = `/console/plans/${planId}`;
-        const uri = new URL(this.client.config.endpoint + path);
-        return await this.client.call('get', uri, {
-            'content-type': 'application/json'
-        });
-    }
-
     async updatePlan(
         organizationId: string,
         billingPlan: string,

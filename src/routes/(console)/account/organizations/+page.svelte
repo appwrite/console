@@ -48,7 +48,9 @@
 
         // For custom plans, fetch from API
         try {
-            const plan = await sdk.forConsole.billing.getPlan(billingPlan);
+            const plan = await sdk.forConsole.console.getPlan({
+                planId: billingPlan
+            });
             return plan.name;
         } catch (error) {
             // Fallback to 'Custom' if fetch fails
