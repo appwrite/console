@@ -11,6 +11,7 @@
     import InputSelect from '$lib/elements/forms/inputSelect.svelte';
     import { isValueOfStringEnum } from '$lib/helpers/types';
     import { Runtime, type Models } from '@appwrite.io/console';
+    import { isCloud } from '$lib/system';
     import { Layout, Typography } from '@appwrite.io/pink-svelte';
     import Link from '$lib/elements/link.svelte';
 
@@ -46,7 +47,7 @@
                 providerBranch: $func.providerBranch || undefined,
                 providerSilentMode: $func.providerSilentMode || undefined,
                 providerRootDirectory: $func.providerRootDirectory || undefined,
-                specification: $func.specification || undefined
+                specification: isCloud ? $func.specification || undefined : undefined
             });
             await invalidate(Dependencies.FUNCTION);
             addNotification({
