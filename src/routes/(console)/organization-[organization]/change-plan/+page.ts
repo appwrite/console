@@ -1,7 +1,7 @@
 import type { PageLoad } from './$types';
 import { BillingPlan, Dependencies } from '$lib/constants';
 import { sdk } from '$lib/stores/sdk';
-import { BillingPlanGroup, type Models } from '@appwrite.io/console';
+import { BillingPlanGroup, type Models, Platform } from '@appwrite.io/console';
 import { getBasePlanFromGroup } from '$lib/stores/billing';
 
 export const load: PageLoad = async ({ depends, parent }) => {
@@ -12,7 +12,9 @@ export const load: PageLoad = async ({ depends, parent }) => {
     let plans: Models.BillingPlanList;
 
     try {
-        plans = await sdk.forConsole.billing.listPlans();
+        plans = await sdk.forConsole.console.plans({
+            platform: Platform.Appwrite,
+        });
     } catch (error) {
         console.error('Failed to load billing plans:', error);
         plans = {

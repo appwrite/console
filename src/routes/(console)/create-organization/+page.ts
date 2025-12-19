@@ -1,6 +1,6 @@
 import { sdk } from '$lib/stores/sdk';
 import type { PageLoad } from './$types';
-import type { Models } from '@appwrite.io/console';
+import { type Models, Platform } from '@appwrite.io/console';
 import { BillingPlan, Dependencies } from '$lib/constants';
 
 export const load: PageLoad = async ({ url, parent, depends }) => {
@@ -9,7 +9,9 @@ export const load: PageLoad = async ({ url, parent, depends }) => {
     const [coupon, paymentMethods, plans] = await Promise.all([
         getCoupon(url),
         sdk.forConsole.billing.listPaymentMethods(),
-        sdk.forConsole.billing.listPlans()
+        sdk.forConsole.console.plans({
+            platform: Platform.Appwrite
+        })
     ]);
     let plan = getPlanFromUrl(url);
     const hasFreeOrganizations = organizations.teams?.some(
