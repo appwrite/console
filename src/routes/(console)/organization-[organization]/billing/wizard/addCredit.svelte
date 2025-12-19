@@ -7,18 +7,20 @@
     import { addCreditWizardStore } from '../store';
     import type { Models } from '@appwrite.io/console';
 
-    let coupon: string;
     export let couponData: Partial<Models.Coupon> = {
         code: null,
         status: null,
         credits: null
     };
 
+    let coupon: string;
+
     async function validateCoupon() {
         if (couponData?.status === 'active') return;
         try {
-            const response = await sdk.forConsole.billing.getCouponAccount(coupon);
-            couponData = response;
+            couponData = await sdk.forConsole.account.getCoupon({
+                couponId: coupon
+            });
             $addCreditWizardStore.coupon = coupon;
             coupon = null;
         } catch (error) {

@@ -10,7 +10,9 @@ export const load = async ({ url }) => {
         let campaign: Models.Campaign;
         const code = url.searchParams.get('code');
         try {
-            couponData = await sdk.forConsole.billing.getCouponAccount(code);
+            couponData = await sdk.forConsole.console.getCoupon({
+                couponId: code
+            });
             if (couponData.campaign) {
                 campaign = await sdk.forConsole.console.getCampaign({
                     campaignId: couponData.campaign

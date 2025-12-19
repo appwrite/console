@@ -78,7 +78,9 @@
         const couponCode = params.get('code');
         if (couponCode) {
             try {
-                selectedCoupon = await sdk.forConsole.billing.getCouponAccount(couponCode);
+                selectedCoupon = await sdk.forConsole.account.getCoupon({
+                    couponId: couponCode
+                });
             } catch {
                 selectedCoupon = { code: null, status: null, credits: null };
             }

@@ -13,14 +13,16 @@
         status: null,
         credits: null
     };
+
     let error: string = null;
     let coupon: string = '';
     const dispatch = createEventDispatcher();
 
     async function addCoupon() {
         try {
-            // const response = await sdk.forConsole.billing.getCoupon(coupon);
-            const response = await sdk.forConsole.billing.getCouponAccount(coupon); //TODO: double check that this is the correct method
+            const response = await sdk.forConsole.account.getCoupon({
+                couponId: coupon
+            });
 
             if (response.onlyNewOrgs && !isNewOrg) {
                 show = false;

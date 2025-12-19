@@ -46,7 +46,9 @@ async function getCoupon(url: URL): Promise<Models.Coupon | null> {
     if (url.searchParams.has('code')) {
         const coupon = url.searchParams.get('code');
         try {
-            return sdk.forConsole.billing.getCouponAccount(coupon);
+            return sdk.forConsole.account.getCoupon({
+                couponId: coupon
+            });
         } catch (e) {
             return null;
         }

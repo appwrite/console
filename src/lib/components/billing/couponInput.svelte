@@ -18,7 +18,10 @@
 
     async function addCoupon() {
         try {
-            couponData = await sdk.forConsole.billing.getCouponAccount(coupon);
+            couponData = await sdk.forConsole.account.getCoupon({
+                couponId: coupon
+            });
+
             dispatch('validation', couponData);
             coupon = null;
         } catch (error) {

@@ -588,7 +588,9 @@ export async function checkForNewDevUpgradePro(org: Models.Organization) {
     if (organizations?.total) return;
 
     try {
-        await sdk.forConsole.billing.getCouponAccount(NEW_DEV_PRO_UPGRADE_COUPON);
+        await sdk.forConsole.console.getCoupon({
+            couponId: NEW_DEV_PRO_UPGRADE_COUPON
+        });
     } catch (error) {
         if (
             // already utilized if error is 409
