@@ -10,9 +10,17 @@ export async function selectRandomRegion(page: Page, dialog: Locator): Promise<s
         const allOptions = await page.getByRole('option').all();
         const options = [];
 
+        // Stage has issues with these atm!
+        const excludedRegions = ['sgp', 'tor'];
+
         for (const option of allOptions) {
             const isDisabled = await option.getAttribute('aria-disabled');
-            if (isDisabled !== 'true') {
+            const regionCode =
+                (await option.getAttribute('data-value')) || (await option.getAttribute('value'));
+
+            const cleanedRegionCode = regionCode?.replace(/^["']|["']$/g, '');
+
+            if (isDisabled !== 'true' && !excludedRegions.includes(cleanedRegionCode || '')) {
                 options.push(option);
             }
         }
