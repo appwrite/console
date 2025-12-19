@@ -100,20 +100,6 @@ export class Billing {
         });
     }
 
-    async setMembership(
-        programId: string
-    ): Promise<{ $createdAt: string } | { error: { code: number; message: string } }> {
-        const path = `/console/programs/${programId}/memberships`;
-        const uri = new URL(this.client.config.endpoint + path);
-        try {
-            return await this.client.call('POST', uri, {
-                'content-type': 'application/json'
-            });
-        } catch (e) {
-            return { error: { code: e.code, message: e.message } };
-        }
-    }
-
     async getCouponAccount(couponId: string): Promise<Models.Coupon> {
         const path = `/account/coupons/${couponId}`;
         const params = {
