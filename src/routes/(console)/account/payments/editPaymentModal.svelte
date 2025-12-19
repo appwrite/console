@@ -10,20 +10,23 @@
     import type { Models } from '@appwrite.io/console';
 
     export let show = false;
-    export let selectedPaymentMethod: Models.PaymentMethod;
     export let isLinked = false;
+    export let selectedPaymentMethod: Models.PaymentMethod;
+
     const currentYear = new Date().getFullYear();
+
     let error: string;
     let month: string;
     let year: number;
 
     async function handleSubmit() {
         try {
-            await sdk.forConsole.billing.updatePaymentMethod(
-                selectedPaymentMethod.$id,
-                month,
-                year?.toString()
-            );
+            await sdk.forConsole.account.updatePaymentMethod({
+                paymentMethodId: selectedPaymentMethod.$id,
+                expiryMonth: parseInt(month),
+                expiryYear: year
+            });
+
             trackEvent(Submit.PaymentMethodUpdate);
             invalidate(Dependencies.PAYMENT_METHODS);
             show = false;

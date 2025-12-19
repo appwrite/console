@@ -76,8 +76,8 @@ export const load: PageLoad = async ({ parent, depends, url, route }) => {
 
     const [paymentMethods, addressList, billingAddress, availableCredit, billingPlanDowngrade] =
         await Promise.all([
-            sdk.forConsole.billing.listPaymentMethods(),
-            sdk.forConsole.billing.listAddresses(),
+            sdk.forConsole.account.listPaymentMethods(),
+            sdk.forConsole.account.listBillingAddresses(),
             billingAddressPromise,
             areCreditsSupported
                 ? sdk.forConsole.organizations.getAvailableCredits({

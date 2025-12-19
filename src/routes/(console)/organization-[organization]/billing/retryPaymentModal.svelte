@@ -81,7 +81,11 @@
                             method = card as Models.PaymentMethod;
                         }
                     }
-                    const card = await sdk.forConsole.billing.getPaymentMethod(method.$id);
+
+                    const card = await sdk.forConsole.account.getPaymentMethod({
+                        paymentMethodId: method.$id
+                    });
+
                     if (card?.last4) {
                         paymentMethodId = card.$id;
                     } else {
@@ -89,15 +93,21 @@
                             'The payment method you selected is not valid. Please select a different one.'
                         );
                     }
-                    invalidate(Dependencies.PAYMENT_METHODS);
+
+                    await invalidate(Dependencies.PAYMENT_METHODS);
                 } catch (e) {
                     paymentMethodId = $organization.paymentMethodId;
                     error = e.message;
                 }
             }
+
             if (setAsDefault) {
-                await sdk.forConsole.billing.setDefaultPaymentMethod(paymentMethodId);
+                await sdk.forConsole.organizations.setDefaultPaymentMethod({
+                    organizationId: $organization.$id,
+                    paymentMethodId
+                });
             }
+
             const { clientSecret, status } =
                 await sdk.forConsole.organizations.createInvoicePayment({
                     organizationId: $organization.$id,

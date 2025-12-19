@@ -531,7 +531,11 @@ export const paymentMissingMandate = writable<Models.PaymentMethod>(null);
 export async function checkForMandate(org: Models.Organization) {
     const paymentId = org.paymentMethodId ?? org.backupPaymentMethodId;
     if (!paymentId) return;
-    const paymentMethod = await sdk.forConsole.billing.getPaymentMethod(paymentId);
+
+    const paymentMethod = await sdk.forConsole.account.getPaymentMethod({
+        paymentMethodId: paymentId
+    });
+
     if (paymentMethod?.mandateId === null && paymentMethod?.country.toLowerCase() === 'in') {
         headerAlert.add({
             id: 'paymentMandate',

@@ -35,7 +35,7 @@
 
     onMount(async () => {
         loading = true;
-        addresses = await sdk.forConsole.billing.listAddresses();
+        addresses = await sdk.forConsole.account.listBillingAddresses();
 
         const firstNonCurrentAddress = addresses?.billingAddresses?.find(
             (address) => address.$id !== $organization?.billingAddressId
@@ -63,14 +63,14 @@
             if (selectedAddress === $organization.billingAddressId) {
                 show = false;
             } else if (selectedAddress === '$new') {
-                const address = await sdk.forConsole.billing.createAddress(
+                const address = await sdk.forConsole.account.createBillingAddress({
                     country,
                     streetAddress,
                     city,
                     state,
-                    postalCode ? postalCode : undefined,
-                    addressLine2 ? postalCode : undefined
-                );
+                    postalCode: postalCode ? postalCode : undefined,
+                    addressLine2: addressLine2 ? postalCode : undefined
+                });
 
                 await sdk.forConsole.organizations.setBillingAddress({
                     organizationId: $organization.$id,

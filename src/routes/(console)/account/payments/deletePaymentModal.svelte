@@ -17,7 +17,9 @@
 
     async function handleDelete() {
         try {
-            await sdk.forConsole.billing.deletePaymentMethod(method);
+            await sdk.forConsole.account.deletePaymentMethod({
+                paymentMethodId: method
+            });
             await invalidate(Dependencies.PAYMENT_METHODS);
             showDelete = false;
             addNotification({

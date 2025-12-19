@@ -17,7 +17,10 @@
 
     async function handleDelete() {
         try {
-            await sdk.forConsole.billing.deleteAddress(selectedAddress.$id);
+            await sdk.forConsole.account.deleteBillingAddress({
+                billingAddressId: selectedAddress.$id
+            });
+
             await invalidate(Dependencies.PAYMENT_METHODS);
             showDelete = false;
             addNotification({

@@ -33,15 +33,17 @@
 
     async function handleSubmit() {
         try {
-            await sdk.forConsole.billing.updateAddress(
-                selectedAddress.$id,
-                selectedAddress.country,
-                selectedAddress.streetAddress,
-                selectedAddress.city,
-                selectedAddress.state,
-                selectedAddress.postalCode ? selectedAddress.postalCode : undefined,
-                selectedAddress.addressLine2 ? selectedAddress.addressLine2 : undefined
-            );
+            await sdk.forConsole.account.updateBillingAddress({
+                billingAddressId: selectedAddress.$id,
+                country: selectedAddress.country,
+                streetAddress: selectedAddress.streetAddress,
+                city: selectedAddress.city,
+                state: selectedAddress.state,
+                postalCode: selectedAddress.postalCode ? selectedAddress.postalCode : undefined,
+                addressLine2: selectedAddress.addressLine2
+                    ? selectedAddress.addressLine2
+                    : undefined
+            });
             await invalidate(Dependencies.ADDRESS);
             show = false;
             addNotification({

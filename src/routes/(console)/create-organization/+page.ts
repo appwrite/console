@@ -8,7 +8,7 @@ export const load: PageLoad = async ({ url, parent, depends }) => {
     depends(Dependencies.ORGANIZATIONS);
     const [coupon, paymentMethods, plans] = await Promise.all([
         getCoupon(url),
-        sdk.forConsole.billing.listPaymentMethods(),
+        sdk.forConsole.account.listPaymentMethods(),
         sdk.forConsole.console.getPlans({
             platform: Platform.Appwrite
         })

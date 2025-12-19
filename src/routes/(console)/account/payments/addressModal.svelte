@@ -42,14 +42,14 @@
 
     async function handleSubmit() {
         try {
-            const response = await sdk.forConsole.billing.createAddress(
+            const response = await sdk.forConsole.account.createBillingAddress({
                 country,
-                address,
+                streetAddress: address,
                 city,
                 state,
-                zip ? zip : undefined,
-                address2 ? address2 : undefined
-            );
+                postalCode: zip ? zip : undefined,
+                addressLine2: address2 ? address2 : undefined
+            });
 
             trackEvent(Submit.BillingAddressCreate);
             let org: Models.Organization = null;

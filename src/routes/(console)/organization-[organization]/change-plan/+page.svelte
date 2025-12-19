@@ -118,7 +118,7 @@
     });
 
     async function loadPaymentMethods() {
-        paymentMethods = await sdk.forConsole.billing.listPaymentMethods();
+        paymentMethods = await sdk.forConsole.account.listPaymentMethods();
         return paymentMethods;
     }
 
