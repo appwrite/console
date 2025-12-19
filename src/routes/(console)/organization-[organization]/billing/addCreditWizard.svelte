@@ -23,7 +23,10 @@
                 paymentMethodId: $addCreditWizardStore.paymentMethodId
             });
 
-            await sdk.forConsole.billing.addCredit($organization.$id, $addCreditWizardStore.coupon);
+            await sdk.forConsole.organizations.addCredit({
+                organizationId: $organization.$id,
+                couponId: $addCreditWizardStore.coupon
+            });
             addNotification({
                 type: 'success',
                 message: `Credit has been added to ${$organization.name}`

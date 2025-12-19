@@ -77,7 +77,9 @@ export const load: PageLoad = async ({ parent, depends, url, route }) => {
             sdk.forConsole.billing.listAddresses(),
             billingAddressPromise,
             areCreditsSupported
-                ? sdk.forConsole.billing.getAvailableCredit(organization.$id)
+                ? sdk.forConsole.organizations.getAvailableCredits({
+                      organizationId: organization.$id
+                  })
                 : null,
             organization.billingPlanDowngrade
                 ? sdk.forConsole.console.getPlan({

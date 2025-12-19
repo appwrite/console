@@ -156,7 +156,10 @@
             // Existing pro org, apply credits
             else {
                 org = selectedOrg;
-                await sdk.forConsole.billing.addCredit(org.$id, couponData.code);
+                await sdk.forConsole.organizations.addCredit({
+                    organizationId: org.$id,
+                    couponId: couponData.code
+                });
             }
 
             if (!isOrganization(org) && org.status === 402) {

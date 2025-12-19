@@ -45,10 +45,13 @@
          * Technically, we could reuse that for offsets < 25 (i.e., the first 5 pages with limit = 5)
          * to avoid an extra request. But for now, we always fetch fresh data.
          */
-        creditList = await sdk.forConsole.billing.listCredits($organization.$id, [
-            Query.limit(limit),
-            Query.offset(offset)
-        ]);
+        creditList = await sdk.forConsole.organizations.listCredits({
+            organizationId: $organization.$id,
+            queries: [
+                Query.limit(limit),
+                Query.offset(offset)
+            ]
+        });
 
         creditList = {
             ...creditList,
