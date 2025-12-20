@@ -5,7 +5,7 @@ import { get, writable } from 'svelte/store';
 import { Submit, trackEvent } from '$lib/actions/analytics';
 import FeedbackNps from '$lib/components/feedback/feedbackNPS.svelte';
 import FeedbackGeneral from '$lib/components/feedback/feedbackGeneral.svelte';
-import { resolvedProfile, ProfileMode, type Profile } from '$lib/profiles/index.svelte';
+import { resolvedProfile, type Profile } from '$lib/profiles/index.svelte';
 
 export type Feedback = {
     elapsed: number;
@@ -135,7 +135,7 @@ function createFeedbackStore() {
                 customFields.push({ id: '56109', value: billingPlan });
             }
 
-            const platform = resolvedProfile.id === ProfileMode.STUDIO ? 'imagine' : 'appwrite';
+            const platform = resolvedProfile.organizationPlatform.toLowerCase();
 
             const response = await fetch(`${VARS.GROWTH_ENDPOINT}/feedback`, {
                 method: 'POST',
