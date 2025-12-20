@@ -135,6 +135,8 @@ function createFeedbackStore() {
                 customFields.push({ id: '56109', value: billingPlan });
             }
 
+            const platform = resolvedProfile.organizationPlatform;
+
             const response = await fetch(`${VARS.GROWTH_ENDPOINT}/feedback`, {
                 method: 'POST',
                 headers: {
@@ -144,6 +146,7 @@ function createFeedbackStore() {
                     subject,
                     message,
                     email,
+                    platform,
                     customFields,
                     firstname: (name || 'Unknown').slice(0, 40),
                     metaFields: {
