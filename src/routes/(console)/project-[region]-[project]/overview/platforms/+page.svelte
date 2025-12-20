@@ -162,7 +162,7 @@
         resource="platform"
         columns={$columns}
         onDelete={handlePlatformDelete}
-        allowSelection={false /*$canWritePlatforms*/}>
+        allowSelection={false}>
         {#snippet header(root)}
             {#each $columns as column}
                 <Table.Header.Cell {root} column={column.id}>
