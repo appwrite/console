@@ -110,7 +110,7 @@
                 queries: [
                     Query.equal('teamId', data.organization.$id),
                     Query.limit(1000),
-                    Query.select(['$id', 'name']) // TODO: @itznotabug, check if we need to add `$createdAt`
+                    Query.select(['$id', 'name'])
                 ]
             });
         } catch {
