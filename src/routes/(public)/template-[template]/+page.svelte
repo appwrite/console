@@ -58,7 +58,7 @@
             queries: [
                 Query.equal('teamId', selectedOrg),
                 Query.orderDesc(''),
-                Query.select(['$id', 'name'])
+                Query.select(['$id', 'name', 'region'])
             ]
         });
         selectedProject = projects?.total ? projects.projects[0].$id : null;
