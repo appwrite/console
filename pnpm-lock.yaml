@@ -12,8 +12,8 @@ importers:
         specifier: ^1.1.24
         version: 1.1.24(svelte@5.45.6)(zod@3.25.76)
       '@appwrite.io/console':
-        specifier: https://pkg.vc/-/@appwrite/@appwrite.io/console@0293ded
-        version: https://pkg.vc/-/@appwrite/@appwrite.io/console@0293ded
+        specifier: https://pkg.vc/-/@appwrite/@appwrite.io/console@237b3cc
+        version: https://pkg.vc/-/@appwrite/@appwrite.io/console@237b3cc
       '@appwrite.io/pink-icons':
         specifier: 0.25.0
         version: 0.25.0
@@ -283,8 +283,8 @@ packages:
   '@apm-js-collab/tracing-hooks@0.3.1':
     resolution: {integrity: sha512-Vu1CbmPURlN5fTboVuKMoJjbO5qcq9fA5YXpskx3dXe/zTBvjODFoerw+69rVBlRLrJpwPqSDqEuJDEKIrTldw==}
 
-  '@appwrite.io/console@https://pkg.vc/-/@appwrite/@appwrite.io/console@0293ded':
-    resolution: {tarball: https://pkg.vc/-/@appwrite/@appwrite.io/console@0293ded}
+  '@appwrite.io/console@https://pkg.vc/-/@appwrite/@appwrite.io/console@237b3cc':
+    resolution: {tarball: https://pkg.vc/-/@appwrite/@appwrite.io/console@237b3cc}
     version: 1.10.0
 
   '@appwrite.io/pink-icons-svelte@2.0.0-RC.1':
@@ -3716,7 +3716,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@appwrite.io/console@https://pkg.vc/-/@appwrite/@appwrite.io/console@0293ded': {}
+  '@appwrite.io/console@https://pkg.vc/-/@appwrite/@appwrite.io/console@237b3cc': {}
 
   '@appwrite.io/pink-icons-svelte@2.0.0-RC.1(svelte@5.45.6)':
     dependencies:

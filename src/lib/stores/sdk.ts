@@ -114,9 +114,9 @@ if (!building) {
     scopedConsoleClient.setProject('console');
     clientConsole.setEndpoint(endpoint).setProject('console');
 
-    // set profile type!
-    clientConsole.setProfile(resolvedProfile.platform);
-    scopedConsoleClient.setProfile(resolvedProfile.platform);
+    // set platform type!
+    clientConsole.setPlatform(resolvedProfile.platform);
+    scopedConsoleClient.setPlatform(resolvedProfile.platform);
 
     clientProject.setEndpoint(endpoint).setMode('admin');
     clientRealtime.setEndpoint(endpoint).setProject('console');
