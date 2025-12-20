@@ -5,6 +5,7 @@ import { CARD_LIMIT, Dependencies } from '$lib/constants';
 import type { PageLoad } from './$types';
 import { redirect } from '@sveltejs/kit';
 import { base } from '$app/paths';
+import { isCloud } from '$lib/system';
 
 export const load: PageLoad = async ({ params, url, route, depends, parent }) => {
     const { scopes } = await parent();
@@ -25,7 +26,7 @@ export const load: PageLoad = async ({ params, url, route, depends, parent }) =>
             Query.equal('teamId', params.organization),
             Query.limit(limit),
             Query.orderDesc(''),
-            Query.select(['$id', 'name', 'region', 'status']) /* NOTE: @itznotabug - status is cloud only */
+            Query.select(['$id', 'name', 'platforms', 'region', ...(isCloud ? ['status'] : [])])
         ],
         search: search || undefined
     });
