@@ -135,7 +135,7 @@ function createFeedbackStore() {
                 customFields.push({ id: '56109', value: billingPlan });
             }
 
-            const platform = resolvedProfile.organizationPlatform.toLowerCase();
+            const platform = resolvedProfile.organizationPlatform;
 
             const response = await fetch(`${VARS.GROWTH_ENDPOINT}/feedback`, {
                 method: 'POST',
