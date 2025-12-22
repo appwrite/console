@@ -65,7 +65,7 @@ export const load: PageLoad = async ({ parent }) => {
         let projects: Models.ProjectList = null;
         try {
             projects = await sdk.forConsole.projects.list({
-                queries: [Query.equal('teamId', org.$id), Query.limit(1)]
+                queries: [Query.equal('teamId', org.$id), Query.limit(1), Query.select(['$id'])]
             });
         } catch (e) {
             redirect(303, `${base}/organization-${org.$id}`);
