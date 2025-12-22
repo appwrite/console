@@ -130,7 +130,7 @@
                         secondary
                         fullWidth
                         on:click={onGithubLogin}
-                        disabled={disabled || !terms}>
+                        {disabled}>
                         <span class="icon-github" aria-hidden="true"></span>
                         <span class="text">Sign up with GitHub</span>
                     </Button>
