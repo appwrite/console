@@ -77,6 +77,10 @@
             : [];
     });
 
+    const activeProjects = $derived.by(() => {
+        return data.projects.projects.filter((project) => project.status !== 'archived');
+    });
+
     function filterPlatforms(platforms: { name: string; icon: string }[]) {
         return platforms.filter(
             (value, index, self) => index === self.findIndex((t) => t.name === value.name)
@@ -241,7 +245,7 @@
             total={data.projects.total}
             offset={data.offset}
             on:click={handleCreateProject}>
-            {#each data.projects.projects as project}
+            {#each activeProjects as project}
                 {@const platforms = filterPlatforms(
                     project.platforms.map((platform) => getPlatformInfo(platform.type))
                 )}
