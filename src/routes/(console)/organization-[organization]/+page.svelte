@@ -72,16 +72,12 @@
     });
 
     const projectsToArchive = $derived.by(() => {
-        return isCloud
-            ? data.projects.projects.filter((project) => project.status === 'archived')
-            : [];
+        return isCloud && data.archivedProjectsPage ? data.archivedProjectsPage : [];
     });
 
-    const activeProjects = $derived.by(() => {
-        return data.projects.projects.filter((project) => project.status !== 'archived');
-    });
+    const activeProjects = $derived(data.projects.projects);
 
-    const activeProjectsCount = $derived(activeProjects.length);
+    const activeProjectsCount = $derived(data.projects.total);
 
     function filterPlatforms(platforms: { name: string; icon: string }[]) {
         return platforms.filter(
