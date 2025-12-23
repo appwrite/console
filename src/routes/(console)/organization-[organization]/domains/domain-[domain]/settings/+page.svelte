@@ -1,15 +1,15 @@
 <script lang="ts">
     import { Container } from '$lib/layout';
-    import ChangeOrganization from './changeOrganization.svelte';
     import DeleteDomain from './deleteDomain.svelte';
-    import type { OrganizationList } from '$lib/stores/organization';
+    import ChangeOrganization from './changeOrganization.svelte';
 
-    export let data;
-    // cloud only, so OrganizationList is returned!
-    let organizations: OrganizationList = data.organizations as OrganizationList;
+    import type { PageProps } from './$types';
+
+    let { data }: PageProps = $props();
 </script>
 
 <Container>
-    <ChangeOrganization domain={data.domain} {organizations} />
+    <ChangeOrganization domain={data.domain} organizations={data.organizations} />
+
     <DeleteDomain domain={data.domain} />
 </Container>

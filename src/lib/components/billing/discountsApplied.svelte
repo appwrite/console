@@ -1,12 +1,12 @@
 <script lang="ts">
-    import type { Coupon } from '$lib/sdk/billing';
+    import type { Models } from '@appwrite.io/console';
     import { formatCurrency } from '$lib/helpers/numbers';
     import { IconTag } from '@appwrite.io/pink-icons-svelte';
     import { Badge, Icon, Layout, Typography } from '@appwrite.io/pink-svelte';
 
     export let label: string;
     export let value: number;
-    export let couponData: Partial<Coupon> = {
+    export let couponData: Partial<Models.Coupon> = {
         code: null,
         status: null,
         credits: null

@@ -1,53 +1,59 @@
-import type { AggregationTeam, Invoice, InvoiceUsage } from '$lib/sdk/billing';
-import { accumulateUsage } from '$lib/sdk/usage';
 import { sdk } from '$lib/stores/sdk';
-import { Query } from '@appwrite.io/console';
 import type { PageLoad } from './$types';
+import { accumulateUsage } from '$lib/sdk/usage';
+import { type Models, Query } from '@appwrite.io/console';
 
 export const load: PageLoad = async ({ params, parent }) => {
-    const { invoice, project, region } = params;
+    const { invoice: invoiceId, project, region } = params;
     const { organization } = await parent();
 
     let startDate: string = organization.billingCurrentInvoiceDate;
     let endDate: string = organization.billingNextInvoiceDate;
-    let currentInvoice: Invoice = undefined;
-    let currentAggregation: AggregationTeam = undefined;
+    let currentInvoice: Models.Invoice = undefined;
+    let currentAggregation: Models.AggregationTeam = undefined;
 
-    if (invoice) {
-        currentInvoice = await sdk.forConsole.billing.getInvoice(organization.$id, invoice);
-        currentAggregation = await sdk.forConsole.billing.getAggregation(
-            organization.$id,
-            currentInvoice.aggregationId
-        );
+    if (invoiceId) {
+        currentInvoice = await sdk.forConsole.organizations.getInvoice({
+            organizationId: organization.$id,
+            invoiceId
+        });
+        currentAggregation = await sdk.forConsole.organizations.getAggregation({
+            organizationId: organization.$id,
+            aggregationId: currentInvoice.aggregationId
+        });
 
         startDate = currentInvoice.from;
         endDate = currentInvoice.to;
     } else {
         try {
-            currentAggregation = await sdk.forConsole.billing.getAggregation(
-                organization.$id,
-                organization.billingAggregationId
-            );
+            currentAggregation = await sdk.forConsole.organizations.getAggregation({
+                organizationId: organization.$id,
+                aggregationId: organization.billingAggregationId
+            });
         } catch (e) {
             // ignore error if no aggregation found
         }
     }
 
     const [invoices, usage] = await Promise.all([
-        sdk.forConsole.billing.listInvoices(organization.$id, [Query.orderDesc('from')]),
+        sdk.forConsole.organizations.listInvoices({
+            organizationId: organization.$id,
+            queries: [Query.orderDesc('from')]
+        }),
         sdk.forProject(region, project).project.getUsage({ startDate, endDate })
     ]);
 
     if (currentAggregation) {
-        let projectSpecificData = null;
+        let projectSpecificData: Models.AggregationBreakdown | null = null;
         if (currentAggregation.breakdown) {
             projectSpecificData = currentAggregation.breakdown.find((p) => p.$id === project);
         }
 
         if (projectSpecificData) {
             const executionsResource = projectSpecificData.resources?.find?.(
-                (r: InvoiceUsage) => r.resourceId === 'executions'
+                (resource) => resource.resourceId === 'executions'
             );
+
             if (executionsResource) {
                 usage.executionsTotal = executionsResource.value || usage.executionsTotal;
             }

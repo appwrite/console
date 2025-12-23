@@ -11,15 +11,15 @@
     import { Alert } from '@appwrite.io/pink-svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { toLocaleDate, toLocaleDateTime } from '$lib/helpers/date';
-    import { organization, type Organization } from '$lib/stores/organization';
+    import { organization } from '$lib/stores/organization';
     import type { Models } from '@appwrite.io/console';
 
     // Props
     type Props = {
-        organization: Organization;
+        storageUsage?: number;
         projects?: Models.Project[];
         members?: Models.Membership[];
-        storageUsage?: number;
+        organization: Models.Organization;
     };
 
     const { projects = [], members = [], storageUsage = 0 }: Props = $props();

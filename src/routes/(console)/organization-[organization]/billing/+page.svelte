@@ -8,8 +8,12 @@
     import AvailableCredit from './availableCredit.svelte';
     import PaymentHistory from './paymentHistory.svelte';
     import TaxId from './taxId.svelte';
-    import { failedInvoice, tierToPlan, upgradeURL, useNewPricingModal } from '$lib/stores/billing';
-    import type { PaymentMethodData } from '$lib/sdk/billing';
+    import {
+        failedInvoice,
+        billingIdToPlan,
+        upgradeURL,
+        useNewPricingModal
+    } from '$lib/stores/billing';
     import { onMount } from 'svelte';
     import { page } from '$app/state';
     import { confirmPayment } from '$lib/stores/stripe';
@@ -31,11 +35,11 @@
 
     // why are these reactive?
     $: defaultPaymentMethod = data?.paymentMethods?.paymentMethods?.find(
-        (method: PaymentMethodData) => method.$id === organization?.paymentMethodId
+        (method) => method.$id === organization?.paymentMethodId
     );
 
     $: backupPaymentMethod = data?.paymentMethods?.paymentMethods?.find(
-        (method: PaymentMethodData) => method.$id === organization?.backupPaymentMethodId
+        (method) => method.$id === organization?.backupPaymentMethodId
     );
 
     onMount(async () => {
@@ -49,10 +53,10 @@
                 page.url.searchParams.get('type') === 'confirmation'
             ) {
                 const invoiceId = page.url.searchParams.get('invoice');
-                const invoice = await sdk.forConsole.billing.getInvoice(
-                    page.params.organization,
+                const invoice = await sdk.forConsole.organizations.getInvoice({
+                    organizationId: page.params.organization,
                     invoiceId
-                );
+                });
 
                 await confirmPayment(
                     organization.$id,
@@ -67,7 +71,10 @@
                 page.url.searchParams.get('type') === 'validate-invoice'
             ) {
                 const invoiceId = page.url.searchParams.get('invoice');
-                await sdk.forConsole.billing.updateInvoiceStatus(organization.$id, invoiceId);
+                await sdk.forConsole.organizations.validateInvoice({
+                    organizationId: organization.$id,
+                    invoiceId
+                });
                 invalidate(Dependencies.INVOICES);
                 invalidate(Dependencies.ORGANIZATION);
             }
@@ -77,10 +84,10 @@
                 page.url.searchParams.get('type') === 'retry'
             ) {
                 const invoiceId = page.url.searchParams.get('invoice');
-                const invoice = await sdk.forConsole.billing.getInvoice(
-                    page.params.organization,
+                const invoice = await sdk.forConsole.organizations.getInvoice({
+                    organizationId: page.params.organization,
                     invoiceId
-                );
+                });
                 selectedInvoice.set(invoice);
                 showRetryModal.set(true);
             }
@@ -125,9 +132,12 @@
     {/if}
     {#if organization?.billingPlanDowngrade}
         <Alert.Inline status="info">
-            Your organization has changed to {tierToPlan(organization?.billingPlanDowngrade).name} plan.
-            You will continue to have access to {tierToPlan(organization?.billingPlan).name} plan features
-            until your billing period ends on {toLocaleDate(organization.billingNextInvoiceDate)}.
+            Your organization has changed to {billingIdToPlan(organization?.billingPlanDowngrade)
+                .name} plan. You will continue to have access to {billingIdToPlan(
+                organization?.billingPlan
+            ).name} plan features until your billing period ends on {toLocaleDate(
+                organization.billingNextInvoiceDate
+            )}.
         </Alert.Inline>
     {/if}
     {#if $useNewPricingModal}

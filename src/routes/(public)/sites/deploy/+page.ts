@@ -3,8 +3,8 @@ import { redirect, error } from '@sveltejs/kit';
 import { base } from '$app/paths';
 import { isCloud } from '$lib/system';
 import { BillingPlan } from '$lib/constants';
-import { ID, type Models, Query, Platform } from '@appwrite.io/console';
-import type { OrganizationList } from '$lib/stores/organization';
+import { ID, type Models } from '@appwrite.io/console';
+import { getTeamOrOrganizationList } from '$lib/stores/organization';
 import { redirectTo } from '$routes/store';
 import type { PageLoad } from './$types';
 import { getRepositoryInfo } from '$lib/helpers/github';
@@ -80,15 +80,7 @@ export const load: PageLoad = async ({ parent, url }) => {
         };
     }
 
-    let organizations: Models.TeamList<Record<string, unknown>> | OrganizationList | undefined;
-
-    if (isCloud) {
-        organizations = await sdk.forConsole.billing.listOrganization([
-            Query.equal('platform', Platform.Appwrite)
-        ]);
-    } else {
-        organizations = await sdk.forConsole.teams.list();
-    }
+    let organizations = await getTeamOrOrganizationList();
 
     if (!organizations?.total) {
         try {
@@ -107,13 +99,7 @@ export const load: PageLoad = async ({ parent, url }) => {
             }
 
             // Refetch organizations after creation
-            if (isCloud) {
-                organizations = await sdk.forConsole.billing.listOrganization([
-                    Query.equal('platform', Platform.Appwrite)
-                ]);
-            } else {
-                organizations = await sdk.forConsole.teams.list();
-            }
+            organizations = await getTeamOrOrganizationList();
         } catch (e) {
             console.error('Failed to create default organization:', e);
         }

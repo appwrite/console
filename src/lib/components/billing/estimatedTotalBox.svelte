@@ -1,36 +1,37 @@
 <script lang="ts">
     import { InputChoice, InputNumber } from '$lib/elements/forms';
     import { formatCurrency } from '$lib/helpers/numbers';
-    import type { Coupon, Estimation } from '$lib/sdk/billing';
-    import { type Tier } from '$lib/stores/billing';
     import { Card, Divider, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { CreditsApplied } from '.';
     import { sdk } from '$lib/stores/sdk';
-    import { AppwriteException } from '@appwrite.io/console';
+    import { AppwriteException, BillingPlan, type Models } from '@appwrite.io/console';
     import DiscountsApplied from './discountsApplied.svelte';
 
-    export let billingPlan: Tier;
+    export let billingPlan: string;
     export let collaborators: string[];
-    export let couponData: Partial<Coupon>;
+    export let couponData: Partial<Models.Coupon>;
     export let billingBudget: number;
     export let fixedCoupon = false; // If true, the coupon cannot be removed
     export let isDowngrade = false;
     export let organizationId: string | undefined = undefined;
 
     let budgetEnabled = false;
-    let estimation: Estimation;
+    let estimation: Models.Estimation;
 
     async function getEstimate(
         billingPlan: string,
         collaborators: string[],
         couponId: string | undefined
     ) {
+        /* TODO: @itznotabug - temporary fix */
+        const billingPlanTyped = billingPlan as BillingPlan;
+
         try {
-            estimation = await sdk.forConsole.billing.estimationCreateOrganization(
-                billingPlan,
-                couponId === '' ? null : couponId,
-                collaborators ?? []
-            );
+            estimation = await sdk.forConsole.organizations.estimationCreateOrganization({
+                billingPlan: billingPlanTyped,
+                invites: collaborators ?? [],
+                couponId: couponId === '' ? null : couponId
+            });
         } catch (e) {
             if (e instanceof AppwriteException) {
                 if (
@@ -56,12 +57,12 @@
         couponId: string | undefined
     ) {
         try {
-            estimation = await sdk.forConsole.billing.estimationUpdatePlan(
+            estimation = await sdk.forConsole.organizations.estimationUpdatePlan({
                 organizationId,
-                billingPlan,
-                couponId && couponId.length > 0 ? couponId : null,
-                collaborators ?? []
-            );
+                billingPlan: billingPlan as BillingPlan,
+                invites: collaborators ?? [],
+                couponId: couponId && couponId.length > 0 ? couponId : null
+            });
         } catch (e) {
             if (e instanceof AppwriteException) {
                 if (

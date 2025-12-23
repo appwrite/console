@@ -8,13 +8,12 @@
     import { BillingPlan, Dependencies } from '$lib/constants';
     import { Button, Form, InputTags, InputText } from '$lib/elements/forms';
     import { Wizard } from '$lib/layout';
-    import type { Coupon } from '$lib/sdk/billing';
-    import { isOrganization, tierToPlan } from '$lib/stores/billing';
+    import { isOrganization, billingIdToPlan } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
-    import type { OrganizationError, Organization } from '$lib/stores/organization';
+    import type { OrganizationError } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import { confirmPayment } from '$lib/stores/stripe';
-    import { ID } from '@appwrite.io/console';
+    import { ID, type Models } from '@appwrite.io/console';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { Divider, Fieldset, Icon, Layout, Link, Typography } from '@appwrite.io/pink-svelte';
     import { writable } from 'svelte/store';
@@ -27,7 +26,7 @@
     let showExitModal = $state(false);
     let previousPage: string = $state(resolve('/(console)'));
     let selectedPlan: BillingPlan = $state(data.plan as BillingPlan);
-    let selectedCoupon: Partial<Coupon> | null = $state(data.coupon);
+    let selectedCoupon: Partial<Models.Coupon> | null = $state(data.coupon);
 
     let isSubmitting = $state(writable(false));
     let formComponent: Form | null = $state(null);
@@ -49,7 +48,9 @@
         if (page.url.searchParams.has('coupon')) {
             const coupon = page.url.searchParams.get('coupon');
             try {
-                selectedCoupon = await sdk.forConsole.billing.getCouponAccount(coupon);
+                selectedCoupon = await sdk.forConsole.console.getCoupon({
+                    couponId: coupon
+                });
             } catch (e) {
                 selectedCoupon = {
                     code: null,
@@ -85,7 +86,11 @@
 
     async function validate(organizationId: string, invites: string[]) {
         try {
-            const org = await sdk.forConsole.billing.validateOrganization(organizationId, invites);
+            const org = await sdk.forConsole.organizations.validatePayment({
+                organizationId,
+                invites
+            });
+
             if (isOrganization(org)) {
                 await preloadData(`${base}/console/organization-${org.$id}`);
                 await goto(`${base}/console/organization-${org.$id}`);
@@ -105,7 +110,7 @@
 
     async function create() {
         try {
-            let org: Organization | OrganizationError;
+            let org: Models.Organization | OrganizationError;
 
             if (selectedPlan === BillingPlan.FREE) {
                 org = await sdk.forConsole.billing.createOrganization(
@@ -149,7 +154,7 @@
             }
 
             trackEvent(Submit.OrganizationCreate, {
-                plan: tierToPlan(billingPlan)?.name,
+                plan: billingIdToPlan(billingPlan)?.name,
                 budget_cap_enabled: billingBudget !== null,
                 members_invited: collaborators?.length
             });

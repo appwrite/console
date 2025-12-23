@@ -1,6 +1,6 @@
 import { browser } from '$app/environment';
 import { goto } from '$app/navigation';
-import { base } from '$app/paths';
+import { resolve } from '$app/paths';
 import { Click, trackEvent } from '$lib/actions/analytics';
 import { page } from '$app/stores';
 import LimitReached from '$lib/components/billing/alerts/limitReached.svelte';
@@ -12,28 +12,20 @@ import PaymentMandate from '$lib/components/billing/alerts/paymentMandate.svelte
 import { BillingPlan, NEW_DEV_PRO_UPGRADE_COUPON } from '$lib/constants';
 import { cachedStore } from '$lib/helpers/cache';
 import { type Size, sizeToBytes } from '$lib/helpers/sizeConvertion';
-import type {
-    AddressesList,
-    AggregationTeam,
-    Invoice,
-    InvoiceList,
-    PaymentList,
-    PaymentMethodData,
-    Plan,
-    PlansMap
-} from '$lib/sdk/billing';
+import type { BillingPlansMap } from '$lib/sdk/billing';
 import { isCloud } from '$lib/system';
 import { activeHeaderAlert, orgMissingPaymentMethod } from '$routes/(console)/store';
-import { AppwriteException, Query, Platform } from '@appwrite.io/console';
+import {
+    AppwriteException,
+    BillingPlanGroup,
+    type Models,
+    Platform,
+    Query
+} from '@appwrite.io/console';
 import { derived, get, writable } from 'svelte/store';
 import { headerAlert } from './headerAlert';
 import { addNotification, notifications } from './notifications';
-import {
-    currentPlan,
-    organization,
-    type Organization,
-    type OrganizationError
-} from './organization';
+import { currentPlan, organization, type OrganizationError } from './organization';
 import { canSeeBilling } from './roles';
 import { sdk } from './sdk';
 import { user } from './user';
@@ -41,8 +33,6 @@ import BudgetLimitAlert from '$routes/(console)/organization-[organization]/budg
 import TeamReadonlyAlert from '$routes/(console)/organization-[organization]/teamReadonlyAlert.svelte';
 import ProjectsLimit from '$lib/components/billing/alerts/projectsLimit.svelte';
 import EnterpriseTrial from '$routes/(console)/organization-[organization]/enterpriseTrial.svelte';
-
-export type Tier = 'tier-0' | 'tier-1' | 'tier-2' | 'auto-1' | 'cont-1' | 'ent-1';
 
 export const roles = [
     {
@@ -70,9 +60,15 @@ export const roles = [
 export const teamStatusReadonly = 'readonly';
 export const billingLimitOutstandingInvoice = 'outstanding_invoice';
 
-export const paymentMethods = derived(page, ($page) => $page.data.paymentMethods as PaymentList);
-export const addressList = derived(page, ($page) => $page.data.addressList as AddressesList);
-export const plansInfo = derived(page, ($page) => $page.data.plansInfo as PlansMap);
+export const paymentMethods = derived(
+    page,
+    ($page) => $page.data.paymentMethods as Models.PaymentMethodList
+);
+export const addressList = derived(
+    page,
+    ($page) => $page.data.addressList as Models.BillingAddressList
+);
+export const plansInfo = derived(page, ($page) => $page.data.plansInfo as BillingPlansMap);
 export const daysLeftInTrial = writable<number>(0);
 export const readOnly = writable<boolean>(false);
 
@@ -85,45 +81,64 @@ export function getRoleLabel(role: string) {
     return roles.find((r) => r.value === role)?.label ?? role;
 }
 
-export function tierToPlan(tier: Tier) {
-    switch (tier) {
-        case BillingPlan.FREE:
-            return tierFree;
-        case BillingPlan.PRO:
-            return tierPro;
-        case BillingPlan.SCALE:
-            return tierScale;
-        case BillingPlan.GITHUB_EDUCATION:
-            return tierGitHubEducation;
-        case BillingPlan.CUSTOM:
-            return tierCustom;
-        case BillingPlan.ENTERPRISE:
-            return tierEnterprise;
-        default:
-            return tierCustom;
+export function planHasGroup(billingPlanId: string, group: BillingPlanGroup) {
+    const plansInfoStore = get(plansInfo);
+    return plansInfoStore.get(billingPlanId)?.group === group;
+}
+
+export function getBasePlanFromGroup(billingPlanGroup: BillingPlanGroup): Models.BillingPlan {
+    const plansInfoStore = get(plansInfo);
+
+    // hot fix for now, starter doesn't have a group atm.
+    const correctBillingPlanGroup =
+        billingPlanGroup === BillingPlanGroup.Starter ? null : billingPlanGroup;
+
+    const proPlans = Array.from(plansInfoStore.values()).filter(
+        (plan) => plan.group === correctBillingPlanGroup
+    );
+
+    return proPlans.sort((a, b) => a.order - b.order)[0];
+}
+
+export function billingIdToPlan(billingId: string): Models.BillingPlan {
+    const plansInfoStore = get(plansInfo);
+    if (plansInfoStore.has(billingId)) {
+        return plansInfoStore.get(billingId);
+    } else {
+        // fallback to PRO group's 1st item.
+        // TODO: @itznotabug, @dlohani - but should we fallback to PRO?.
+        return getBasePlanFromGroup(BillingPlanGroup.Pro);
     }
 }
 
-export function getNextTier(tier: Tier) {
-    switch (tier) {
-        case BillingPlan.FREE:
-            return BillingPlan.PRO;
-        case BillingPlan.PRO:
-            return BillingPlan.SCALE;
-        default:
-            return BillingPlan.PRO;
+// TODO: @itznotabug - just return the BillingPlan object!
+export function getNextTierBillingPlan(tier: string): string {
+    const currentPlanData = billingIdToPlan(tier);
+    const currentOrder = currentPlanData.order;
+    const plans = get(plansInfo);
+
+    for (const [, plan] of plans) {
+        if (plan.order === currentOrder + 1) {
+            return plan.$id;
+        }
     }
+
+    return getBasePlanFromGroup(BillingPlanGroup.Pro).$id;
 }
 
-export function getPreviousTier(tier: Tier) {
-    switch (tier) {
-        case BillingPlan.PRO:
-            return BillingPlan.FREE;
-        case BillingPlan.SCALE:
-            return BillingPlan.PRO;
-        default:
-            return BillingPlan.FREE;
+// TODO: @itznotabug - just return the BillingPlan object!
+export function getPreviousTierBillingPlan(tier: string): string {
+    const currentPlanData = billingIdToPlan(tier);
+    const currentOrder = currentPlanData.order;
+    const plans = get(plansInfo);
+
+    for (const [, plan] of plans) {
+        if (plan.order === currentOrder - 1) {
+            return plan.$id;
+        }
     }
+
+    return getBasePlanFromGroup(BillingPlanGroup.Starter).$id;
 }
 
 export type PlanServices =
@@ -152,7 +167,11 @@ export type PlanServices =
     | 'authPhone'
     | 'imageTransformations';
 
-export function getServiceLimit(serviceId: PlanServices, tier: Tier = null, plan?: Plan): number {
+export function getServiceLimit(
+    serviceId: PlanServices,
+    tier: string = null,
+    plan?: Models.BillingPlan
+): number {
     if (!isCloud) return 0;
     if (!serviceId) return 0;
 
@@ -178,7 +197,7 @@ export function getServiceLimit(serviceId: PlanServices, tier: Tier = null, plan
 }
 
 export const failedInvoice = cachedStore<
-    Invoice,
+    Models.Invoice,
     {
         load: (orgId: string) => Promise<void>;
     }
@@ -187,9 +206,10 @@ export const failedInvoice = cachedStore<
         load: async (orgId) => {
             if (!isCloud) set(null);
             if (!get(canSeeBilling)) set(null);
-            const failedInvoices = await sdk.forConsole.billing.listInvoices(orgId, [
-                Query.equal('status', 'failed')
-            ]);
+            const failedInvoices = await sdk.forConsole.organizations.listInvoices({
+                organizationId: orgId,
+                queries: [Query.equal('status', 'failed')]
+            });
             // const failedInvoices = invoices.invoices;
             if (failedInvoices?.invoices?.length > 0) {
                 const firstFailed = failedInvoices.invoices[0];
@@ -204,48 +224,12 @@ export const failedInvoice = cachedStore<
     };
 });
 
-export const actionRequiredInvoices = writable<InvoiceList>(null);
-
-export type TierData = {
-    name: string;
-    description: string;
-};
-
-export const tierFree: TierData = {
-    name: 'Free',
-    description: 'A great fit for passion projects and small applications.'
-};
-
-export const tierGitHubEducation: TierData = {
-    name: 'GitHub Education',
-    description: 'For members of GitHub student developers program.'
-};
-
-export const tierPro: TierData = {
-    name: 'Pro',
-    description:
-        'For production applications that need powerful functionality and resources to scale.'
-};
-export const tierScale: TierData = {
-    name: 'Scale',
-    description:
-        'For teams that handle more complex and large projects and need more control and support.'
-};
-
-export const tierCustom: TierData = {
-    name: 'Custom',
-    description: 'Team on a custom contract'
-};
-
-export const tierEnterprise: TierData = {
-    name: 'Enterprise',
-    description: 'For enterprises that need more power and premium support.'
-};
+export const actionRequiredInvoices = writable<Models.InvoiceList>(null);
 
 export const showUsageRatesModal = writable<boolean>(false);
 export const useNewPricingModal = derived(currentPlan, ($plan) => $plan?.usagePerProject === true);
 
-export function checkForUsageFees(plan: Tier, id: PlanServices) {
+export function checkForUsageFees(plan: string, id: PlanServices) {
     if (plan === BillingPlan.PRO || plan === BillingPlan.SCALE) {
         switch (id) {
             case 'bandwidth':
@@ -285,7 +269,7 @@ export function checkForProjectLimitation(id: PlanServices) {
     }
 }
 
-export function isServiceLimited(serviceId: PlanServices, plan: Tier, total: number) {
+export function isServiceLimited(serviceId: PlanServices, plan: string, total: number) {
     if (!total) return false;
     const limit = getServiceLimit(serviceId) || Infinity;
     const isLimited = limit !== 0 && limit < Infinity;
@@ -293,7 +277,7 @@ export function isServiceLimited(serviceId: PlanServices, plan: Tier, total: num
     return isLimited && total >= limit && !hasUsageFees;
 }
 
-export function checkForEnterpriseTrial(org: Organization) {
+export function checkForEnterpriseTrial(org: Models.Organization) {
     if (!org || !org.billingNextInvoiceDate) return;
     if (calculateEnterpriseTrial(org) > 0) {
         headerAlert.add({
@@ -305,7 +289,7 @@ export function checkForEnterpriseTrial(org: Organization) {
     }
 }
 
-export function calculateEnterpriseTrial(org: Organization) {
+export function calculateEnterpriseTrial(org: Models.Organization) {
     if (!org || !org.billingNextInvoiceDate) return 0;
     const endDate = new Date(org.billingNextInvoiceDate);
     const startDate = new Date(org.billingCurrentInvoiceDate);
@@ -320,7 +304,7 @@ export function calculateEnterpriseTrial(org: Organization) {
     return 0;
 }
 
-export function calculateTrialDay(org: Organization) {
+export function calculateTrialDay(org: Models.Organization) {
     if (org?.billingPlan === BillingPlan.FREE) return false;
     const endDate = new Date(org?.billingStartDate);
     const today = new Date();
@@ -334,11 +318,13 @@ export function calculateTrialDay(org: Organization) {
     return days;
 }
 
-export async function checkForProjectsLimit(org: Organization, orgProjectCount?: number) {
+export async function checkForProjectsLimit(org: Models.Organization, orgProjectCount?: number) {
     if (!isCloud) return;
     if (!org) return;
 
-    const plan = await sdk.forConsole.billing.getOrganizationPlan(org.$id);
+    const plan = await sdk.forConsole.organizations.getPlan({
+        organizationId: org.$id
+    });
     if (!plan) return;
 
     if (plan.$id !== BillingPlan.FREE) return;
@@ -358,7 +344,7 @@ export async function checkForProjectsLimit(org: Organization, orgProjectCount?:
     }
 }
 
-export async function checkForUsageLimit(org: Organization) {
+export async function checkForUsageLimit(org: Models.Organization) {
     if (org?.status === teamStatusReadonly && org?.remarks === billingLimitOutstandingInvoice) {
         headerAlert.add({
             id: 'teamReadOnlyFailedInvoices',
@@ -391,10 +377,9 @@ export async function checkForUsageLimit(org: Organization) {
     }
 
     // TODO: @itznotabug - check with @abnegate, what do we do here? this is billing!
-    const { bandwidth, documents, executions, storage, users } = org?.billingLimits ?? {};
+    const { bandwidth, executions, storage, users } = org?.billingLimits ?? {};
     const resources = [
         { value: bandwidth, name: 'bandwidth' },
-        { value: documents, name: 'documents' },
         { value: executions, name: 'executions' },
         { value: storage, name: 'storage' },
         { value: users, name: 'users' }
@@ -419,9 +404,9 @@ export async function checkForUsageLimit(org: Organization) {
         if (now - lastNotification < 1000 * 60 * 60 * 24) return;
 
         localStorage.setItem('limitReachedNotification', now.toString());
-        let message = `<b>${org.name}</b> has reached <b>75%</b> of the ${tierToPlan(BillingPlan.FREE).name} plan's ${resources.find((r) => r.value >= 75).name} limit. Upgrade to ensure there are no service disruptions.`;
+        let message = `<b>${org.name}</b> has reached <b>75%</b> of the ${billingIdToPlan(BillingPlan.FREE).name} plan's ${resources.find((r) => r.value >= 75).name} limit. Upgrade to ensure there are no service disruptions.`;
         if (resources.filter((r) => r.value >= 75)?.length > 1) {
-            message = `Usage for <b>${org.name}</b> has reached 75% of the ${tierToPlan(BillingPlan.FREE).name} plan limit. Upgrade to ensure there are no service disruptions.`;
+            message = `Usage for <b>${org.name}</b> has reached 75% of the ${billingIdToPlan(BillingPlan.FREE).name} plan limit. Upgrade to ensure there are no service disruptions.`;
         }
         addNotification({
             type: 'warning',
@@ -432,13 +417,21 @@ export async function checkForUsageLimit(org: Organization) {
                 {
                     name: 'View usage',
                     method: () => {
-                        goto(`${base}/organization-${org.$id}/usage`);
+                        goto(
+                            resolve('/(console)/organization-[organization]/usage', {
+                                organization: org.$id
+                            })
+                        );
                     }
                 },
                 {
                     name: 'Upgrade plan',
                     method: () => {
-                        goto(`${base}/organization-${org.$id}/change-plan`);
+                        goto(
+                            resolve('/(console)/organization-[organization]/change-plan', {
+                                organization: org.$id
+                            })
+                        );
                         trackEvent(Click.OrganizationClickUpgrade, {
                             from: 'button',
                             source: 'limit_reached_notification'
@@ -452,12 +445,13 @@ export async function checkForUsageLimit(org: Organization) {
     }
 }
 
-export async function checkPaymentAuthorizationRequired(org: Organization) {
+export async function checkPaymentAuthorizationRequired(org: Models.Organization) {
     if (org.billingPlan === BillingPlan.FREE) return;
 
-    const invoices = await sdk.forConsole.billing.listInvoices(org.$id, [
-        Query.equal('status', 'requires_authentication')
-    ]);
+    const invoices = await sdk.forConsole.organizations.listInvoices({
+        organizationId: org.$id,
+        queries: [Query.equal('status', 'requires_authentication')]
+    });
 
     if (invoices?.invoices?.length > 0) {
         headerAlert.add({
@@ -472,12 +466,13 @@ export async function checkPaymentAuthorizationRequired(org: Organization) {
     actionRequiredInvoices.set(invoices);
 }
 
-export async function paymentExpired(org: Organization) {
+export async function paymentExpired(org: Models.Organization) {
     if (!org?.paymentMethodId) return;
-    const payment = await sdk.forConsole.billing.getOrganizationPaymentMethod(
-        org.$id,
-        org.paymentMethodId
-    );
+    const payment = await sdk.forConsole.organizations.getPaymentMethod({
+        organizationId: org.$id,
+        paymentMethodId: org.paymentMethodId
+    });
+
     if (!payment?.expiryYear) return;
     const sessionStorageNotification = sessionStorage.getItem('expiredPaymentNotification');
     if (sessionStorageNotification === 'true') return;
@@ -501,7 +496,7 @@ export async function paymentExpired(org: Organization) {
                 {
                     name: 'Update payment details',
                     method: () => {
-                        goto(`${base}/account/payments`);
+                        goto(resolve('/account/payments'));
                     }
                 }
             ]
@@ -515,7 +510,7 @@ export async function paymentExpired(org: Organization) {
                 {
                     name: 'Update payment details',
                     method: () => {
-                        goto(`${base}/account/payments`);
+                        goto(resolve('/account/payments'));
                     }
                 }
             ]
@@ -524,7 +519,7 @@ export async function paymentExpired(org: Organization) {
     sessionStorage.setItem('expiredPaymentNotification', 'true');
 }
 
-export function checkForMarkedForDeletion(org: Organization) {
+export function checkForMarkedForDeletion(org: Models.Organization) {
     if (org?.markedForDeletion) {
         headerAlert.add({
             id: 'markedForDeletion',
@@ -535,12 +530,16 @@ export function checkForMarkedForDeletion(org: Organization) {
     }
 }
 
-export const paymentMissingMandate = writable<PaymentMethodData>(null);
+export const paymentMissingMandate = writable<Models.PaymentMethod>(null);
 
-export async function checkForMandate(org: Organization) {
+export async function checkForMandate(org: Models.Organization) {
     const paymentId = org.paymentMethodId ?? org.backupPaymentMethodId;
     if (!paymentId) return;
-    const paymentMethod = await sdk.forConsole.billing.getPaymentMethod(paymentId);
+
+    const paymentMethod = await sdk.forConsole.account.getPaymentMethod({
+        paymentMethodId: paymentId
+    });
+
     if (paymentMethod?.mandateId === null && paymentMethod?.country.toLowerCase() === 'in') {
         headerAlert.add({
             id: 'paymentMandate',
@@ -554,12 +553,15 @@ export async function checkForMandate(org: Organization) {
 }
 
 export async function checkForMissingPaymentMethod() {
-    const orgs = await sdk.forConsole.billing.listOrganization([
-        Query.notEqual('billingPlan', BillingPlan.FREE),
-        Query.isNull('paymentMethodId'),
-        Query.isNull('backupPaymentMethodId'),
-        Query.equal('platform', Platform.Appwrite)
-    ]);
+    const orgs = await sdk.forConsole.organizations.list({
+        queries: [
+            Query.notEqual('billingPlan', getBasePlanFromGroup(BillingPlanGroup.Starter).$id),
+            Query.isNull('paymentMethodId'),
+            Query.isNull('backupPaymentMethodId'),
+            Query.equal('platform', Platform.Appwrite)
+        ]
+    });
+
     if (orgs?.total) {
         orgMissingPaymentMethod.set(orgs.teams[0]);
         headerAlert.add({
@@ -572,7 +574,7 @@ export async function checkForMissingPaymentMethod() {
 }
 
 // Display upgrade banner for new users after 1 week for 30 days
-export async function checkForNewDevUpgradePro(org: Organization) {
+export async function checkForNewDevUpgradePro(org: Models.Organization) {
     // browser or plan check.
     if (!browser || org?.billingPlan !== BillingPlan.FREE) return;
 
@@ -588,14 +590,16 @@ export async function checkForNewDevUpgradePro(org: Organization) {
     const accountCreated = new Date(account.$createdAt).getTime();
     if (now - accountCreated < 1000 * 60 * 60 * 24 * 7) return;
 
-    const organizations = await sdk.forConsole.billing.listOrganization([
-        Query.notEqual('billingPlan', BillingPlan.FREE)
-    ]);
+    const organizations = await sdk.forConsole.organizations.list({
+        queries: [Query.notEqual('billingPlan', getBasePlanFromGroup(BillingPlanGroup.Starter).$id)]
+    });
 
     if (organizations?.total) return;
 
     try {
-        await sdk.forConsole.billing.getCouponAccount(NEW_DEV_PRO_UPGRADE_COUPON);
+        await sdk.forConsole.console.getCoupon({
+            couponId: NEW_DEV_PRO_UPGRADE_COUPON
+        });
     } catch (error) {
         if (
             // already utilized if error is 409
@@ -615,18 +619,21 @@ export async function checkForNewDevUpgradePro(org: Organization) {
         importance: 1
     });
 }
-export const upgradeURL = derived(
-    page,
-    ($page) => `${base}/organization-${$page.data?.organization?.$id}/change-plan`
-);
-export const billingURL = derived(
-    page,
-    ($page) => `${base}/organization-${$page.data?.organization?.$id}/billing`
-);
+export const upgradeURL = derived(page, ($page) => {
+    return resolve('/(console)/organization-[organization]/change-plan', {
+        organization: $page.data?.organization?.$id
+    });
+});
 
-export const hideBillingHeaderRoutes = [base + '/create-organization', base + '/account'];
+export const billingURL = derived(page, ($page) => {
+    return resolve('/(console)/organization-[organization]/billing', {
+        organization: $page.data?.organization?.$id
+    });
+});
 
-export function calculateExcess(addon: AggregationTeam, plan: Plan) {
+export const hideBillingHeaderRoutes = [resolve('/account'), resolve('/create-organization')];
+
+export function calculateExcess(addon: Models.AggregationTeam, plan: Models.BillingPlan) {
     return {
         bandwidth: calculateResourceSurplus(addon.usageBandwidth, plan.bandwidth),
         storage: calculateResourceSurplus(addon.usageStorage, plan.storage, 'GB'),
@@ -641,6 +648,8 @@ export function calculateResourceSurplus(total: number, limit: number, limitUnit
     return total > realLimit ? total - realLimit : 0;
 }
 
-export function isOrganization(org: Organization | OrganizationError): org is Organization {
-    return (org as Organization).$id !== undefined;
+export function isOrganization(
+    org: Models.Organization | OrganizationError
+): org is Models.Organization {
+    return (org as Models.Organization).$id !== undefined;
 }

@@ -11,16 +11,10 @@
     import {
         daysLeftInTrial,
         getServiceLimit,
-        plansInfo,
         readOnly,
-        tierToPlan
+        billingIdToPlan
     } from '$lib/stores/billing';
-    import {
-        members,
-        newMemberModal,
-        newOrgModal,
-        type Organization
-    } from '$lib/stores/organization';
+    import { members, newMemberModal, newOrgModal } from '$lib/stores/organization';
     import {
         canSeeBilling,
         canSeeProjects,
@@ -31,6 +25,7 @@
     import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
     import { IconGithub, IconPlus, IconPlusSm } from '@appwrite.io/pink-icons-svelte';
     import { Badge, Icon, Layout, Tooltip, Typography } from '@appwrite.io/pink-svelte';
+    import type { Models } from '@appwrite.io/console';
 
     let areMembersLimited: boolean = $state(false);
 
@@ -42,7 +37,7 @@
             (($readOnly && !GRACE_PERIOD_OVERRIDE) || (isLimited && $members?.total >= limit));
     });
 
-    const organization = $derived(page.data.organization as Organization);
+    const organization = $derived(page.data.organization as Models.Organization);
     const path = $derived(`${base}/organization-${organization.$id}`);
 
     const tabs = $derived(
@@ -110,7 +105,7 @@
                 {:else if isCloud && organization?.billingPlan === BillingPlan.FREE}
                     <Badge variant="secondary" content="Free"></Badge>
                 {/if}
-                {#if isCloud && organization?.billingTrialStartDate && $daysLeftInTrial > 0 && organization.billingPlan !== BillingPlan.FREE && $plansInfo.get(organization.billingPlan)?.trialDays}
+                {#if isCloud && organization?.billingTrialStartDate && $daysLeftInTrial > 0 && organization.billingPlan !== BillingPlan.FREE && organization?.billingTrialDays}
                     <Tooltip>
                         <Badge variant="secondary" content="Trial" />
                         <svelte:fragment slot="tooltip">
@@ -153,7 +148,7 @@
                                 {organization?.billingPlan === BillingPlan.FREE
                                     ? 'Upgrade to add more members'
                                     : `You've reached the members limit for the ${
-                                          tierToPlan(organization?.billingPlan)?.name
+                                          billingIdToPlan(organization?.billingPlan)?.name
                                       } plan`}
                             </div>
                         </Tooltip>

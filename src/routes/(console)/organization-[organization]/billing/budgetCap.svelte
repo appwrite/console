@@ -6,24 +6,24 @@
     import { Button, Form, InputNumber, InputSwitch } from '$lib/elements/forms';
     import { showUsageRatesModal, upgradeURL } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
-    import { type Organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import { Alert, Link } from '@appwrite.io/pink-svelte';
     import BudgetAlert from './budgetAlert.svelte';
-    import type { Plan } from '$lib/sdk/billing';
+    import type { Models } from '@appwrite.io/console';
 
-    export let currentPlan: Plan;
-    export let organization: Organization;
-    let capActive = organization?.billingBudget !== null;
+    export let currentPlan: Models.BillingPlan;
+    export let organization: Models.Organization;
+
     let budget = organization.billingBudget;
+    let capActive = organization?.billingBudget !== null;
 
     async function updateBudget() {
         try {
-            await sdk.forConsole.billing.updateBudget(
-                organization.$id,
+            await sdk.forConsole.organizations.updateBudget({
+                organizationId: organization.$id,
                 budget,
-                organization.budgetAlerts
-            );
+                alerts: organization.budgetAlerts
+            });
             await invalidate(Dependencies.ORGANIZATION);
             addNotification({
                 type: 'success',

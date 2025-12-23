@@ -2,14 +2,14 @@
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
-    import { type Organization } from '$lib/stores/organization';
     import { plansInfo } from '$lib/stores/billing';
     import { abbreviateNumber, formatCurrency, isWithinSafeRange } from '$lib/helpers/numbers';
     import { BillingPlan } from '$lib/constants';
     import { Table, Typography } from '@appwrite.io/pink-svelte';
+    import type { Models } from '@appwrite.io/console';
 
     export let show = false;
-    export let org: Organization;
+    export let org: Models.Organization;
 
     $: plan = $plansInfo?.get(org.billingPlan);
 

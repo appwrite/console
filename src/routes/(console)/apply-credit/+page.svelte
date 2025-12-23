@@ -8,19 +8,14 @@
     import { Button, Form, InputSelect, InputTags, InputText } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
     import { Wizard } from '$lib/layout';
-    import type { PaymentList, Plan } from '$lib/sdk/billing';
     import { addNotification } from '$lib/stores/notifications';
-    import {
-        organizationList,
-        type Organization,
-        type OrganizationError
-    } from '$lib/stores/organization';
+    import { type OrganizationError, organizationList } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import { confirmPayment } from '$lib/stores/stripe.js';
-    import { ID } from '@appwrite.io/console';
+    import { BillingPlanGroup, ID, type Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { writable } from 'svelte/store';
-    import { isOrganization, plansInfo, type Tier } from '$lib/stores/billing';
+    import { getBasePlanFromGroup, isOrganization, plansInfo } from '$lib/stores/billing';
     import { Fieldset, Icon, Layout, Tooltip } from '@appwrite.io/pink-svelte';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import EstimatedTotalBox from '$lib/components/billing/estimatedTotalBox.svelte';
@@ -48,7 +43,7 @@
     let formComponent: Form;
     let couponForm: Form;
     let isSubmitting = writable(false);
-    let methods: PaymentList;
+    let methods: Models.PaymentMethodList;
     let paymentMethodId: string;
     let collaborators: string[];
     let taxId: string;
@@ -68,9 +63,11 @@
     let coupon: string;
     let couponData = data?.couponData;
     let campaign = data?.campaign;
-    let billingPlan: Tier = BillingPlan.PRO;
     let tempOrgId = null;
-    let currentPlan: Plan;
+
+    let billingPlan = getBasePlanFromGroup(BillingPlanGroup.Pro).$id;
+
+    let currentPlan: Models.BillingPlan;
 
     $: onlyNewOrgs = campaign?.onlyNewOrgs || couponData?.onlyNewOrgs;
 
@@ -103,7 +100,10 @@
                 const organizationId = page.url.searchParams.get('id');
                 collaborators = page.url.searchParams.get('invites').split(',');
 
-                await sdk.forConsole.billing.validateOrganization(organizationId, collaborators);
+                await sdk.forConsole.organizations.validatePayment({
+                    organizationId,
+                    invites: collaborators
+                });
             }
         }
 
@@ -113,7 +113,7 @@
     });
 
     async function loadPaymentMethods() {
-        const methodList = await sdk.forConsole.billing.listPaymentMethods();
+        const methodList = await sdk.forConsole.account.listPaymentMethods();
         const filteredMethods = methodList.paymentMethods.filter((method) => !!method?.last4);
         methods = { paymentMethods: filteredMethods, total: filteredMethods.length };
         paymentMethodId =
@@ -126,7 +126,7 @@
         if (couponForm && !couponForm.checkValidity()) return;
         isSubmitting.set(true);
         try {
-            let org: Organization | OrganizationError;
+            let org: Models.Organization | OrganizationError;
             // Create new org
             if (selectedOrgId === newOrgId) {
                 org = await sdk.forConsole.billing.createOrganization(
@@ -156,7 +156,10 @@
             // Existing pro org, apply credits
             else {
                 org = selectedOrg;
-                await sdk.forConsole.billing.addCredit(org.$id, couponData.code);
+                await sdk.forConsole.organizations.addCredit({
+                    organizationId: org.$id,
+                    couponId: couponData.code
+                });
             }
 
             if (!isOrganization(org) && org.status === 402) {
@@ -176,7 +179,11 @@
                     paymentMethodId,
                     `${base}/apply-credit?${params}`
                 );
-                org = await sdk.forConsole.billing.validateOrganization(org.teamId, collaborators);
+
+                org = await sdk.forConsole.organizations.validatePayment({
+                    organizationId: org.teamId,
+                    invites: collaborators
+                });
             }
 
             if (isOrganization(org)) {
@@ -205,8 +212,10 @@
 
     async function addCoupon() {
         try {
-            const response = await sdk.forConsole.billing.getCouponAccount(coupon);
-            couponData = response;
+            couponData = await sdk.forConsole.console.getCoupon({
+                couponId: coupon
+            });
+
             coupon = null;
             addNotification({
                 type: 'success',
@@ -222,21 +231,21 @@
 
     $: selectedOrg = $organizationList?.teams?.find(
         (team) => team.$id === selectedOrgId
-    ) as Organization;
+    ) as Models.Organization;
 
-    function getBillingPlan(): Tier | undefined {
+    function getBillingPlan(): string | undefined {
         const campaignPlan =
             campaign?.plan && $plansInfo.get(campaign.plan) ? $plansInfo.get(campaign.plan) : null;
         const newPlan = $plansInfo.get(billingPlan);
 
-        // if campaign has a plan and it's higher than the selected new plan
+        // if campaign has a plan, and it's higher than the selected new plan
         if (campaignPlan?.order > newPlan?.order) {
-            return campaignPlan.$id as Tier;
+            return campaignPlan.$id;
         }
 
         // if current plan's order is higher than the selected new plan
         if (currentPlan?.order > newPlan?.order) {
-            return currentPlan.$id as Tier;
+            return currentPlan.$id;
         }
 
         return billingPlan;
@@ -250,7 +259,9 @@
 
     $: if (!isNewOrg) {
         (async () => {
-            currentPlan = await sdk.forConsole.billing.getOrganizationPlan(selectedOrgId);
+            currentPlan = await sdk.forConsole.organizations.getPlan({
+                organizationId: selectedOrgId
+            });
         })();
         loadPaymentMethods();
     }
