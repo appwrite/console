@@ -35,7 +35,7 @@
                 value={plan.$id}
                 title={plan.name}>
                 <svelte:fragment slot="action">
-                    {#if $organization?.billingPlanId === plan.$id && !isNewOrg}
+                    {#if $organization?.billingPlan === plan.$id && !isNewOrg}
                         <Badge variant="secondary" size="xs" content="Current plan" />
                     {/if}
                 </svelte:fragment>
@@ -61,7 +61,7 @@
             value={$currentPlan.$id}
             title={$currentPlan.name}>
             <svelte:fragment slot="action">
-                {#if $organization?.billingPlanId === $currentPlan.$id && !isNewOrg}
+                {#if $organization?.billingPlan === $currentPlan.$id && !isNewOrg}
                     <Badge variant="secondary" size="xs" content="Current plan" />
                 {/if}
             </svelte:fragment>

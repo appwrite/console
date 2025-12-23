@@ -11,7 +11,7 @@
 <Base>
     <Layout.Stack gap="s">
         {#if isCloud}
-            {#if $organization?.billingPlanId !== BillingPlan.FREE}
+            {#if $organization?.billingPlan !== BillingPlan.FREE}
                 <Typography.Text variant="m-600">Roles</Typography.Text>
                 <Typography.Text>Owner, Developer, Editor, Analyst and Billing.</Typography.Text>
                 <Typography.Text>

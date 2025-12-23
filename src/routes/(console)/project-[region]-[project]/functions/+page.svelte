@@ -70,7 +70,7 @@
                 $wizard.show ||
                 isServiceLimited(
                     'functions',
-                    $organization?.billingPlanId,
+                    $organization?.billingPlan,
                     data.functions?.total
                 ) ||
                 !$canWriteFunctions,

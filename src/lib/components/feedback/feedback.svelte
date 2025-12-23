@@ -25,7 +25,7 @@
                 page.url.href,
                 $user.name,
                 $user.email,
-                $organization?.billingPlanId,
+                $organization?.billingPlan,
                 $feedbackData.value,
                 $organization?.$id,
                 $project?.$id,

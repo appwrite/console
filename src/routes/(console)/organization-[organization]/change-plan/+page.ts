@@ -25,7 +25,7 @@ export const load: PageLoad = async ({ depends, parent }) => {
 
     const selfService = currentPlan?.selfService ?? true;
     const hasFreeOrgs = organizations.teams?.some(
-        (org) => (org as Organization)?.billingPlanId === BillingPlan.FREE
+        (org) => (org as Organization)?.billingPlan === BillingPlan.FREE
     );
 
     return {

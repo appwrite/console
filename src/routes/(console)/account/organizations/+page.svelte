@@ -42,7 +42,7 @@
         // For known plans, use tierToPlan
         const tierData = tierToPlan(billingPlan as Tier);
 
-        // If it's not a custom plan or we got a non-custom result, return the name
+        // If it's not a custom plan, or we got a non-custom result, return the name
         if (tierData.name !== 'Custom') {
             return tierData.name;
         }
@@ -60,15 +60,15 @@
     function isOrganizationOnTrial(organization: Organization): boolean {
         if (!organization?.billingTrialStartDate) return false;
         if ($daysLeftInTrial <= 0) return false;
-        if (organization.billingPlanId === BillingPlan.FREE) return false;
+        if (organization.billingPlan === BillingPlan.FREE) return false;
 
-        return !!$plansInfo.get(organization.billingPlanId)?.trialDays;
+        return !!$plansInfo.get(organization.billingPlan)?.trialDays;
     }
 
     function isNonPayingOrganization(organization: Organization): boolean {
         return (
-            organization?.billingPlanId === BillingPlan.FREE ||
-            organization?.billingPlanId === BillingPlan.GITHUB_EDUCATION
+            organization?.billingPlan === BillingPlan.FREE ||
+            organization?.billingPlan === BillingPlan.GITHUB_EDUCATION
         );
     }
 
@@ -114,7 +114,7 @@
                 {@const avatarList = getMemberships(organization.$id)}
                 {@const payingOrg = isPayingOrganization(organization)}
                 {@const planName = isCloudOrg(organization)
-                    ? getPlanName(organization.billingPlanId)
+                    ? getPlanName(organization.billingPlan)
                     : null}
 
                 <GridItem1 href={`${base}/organization-${organization.$id}`}>

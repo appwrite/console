@@ -582,7 +582,7 @@
 
             <!-- Actions -->
             <div class="actions-container">
-                {#if $organization?.billingPlanId === BillingPlan.FREE || $organization?.billingPlanId === BillingPlan.GITHUB_EDUCATION}
+                {#if $organization?.billingPlan === BillingPlan.FREE || $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION}
                     <Layout.Stack
                         direction="row"
                         alignItems="center"

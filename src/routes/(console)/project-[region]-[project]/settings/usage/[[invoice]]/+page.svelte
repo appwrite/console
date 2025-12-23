@@ -44,7 +44,7 @@
         }
     ];
 
-    const tier = data?.currentInvoice?.plan ?? $organization?.billingPlanId;
+    const tier = data?.currentInvoice?.plan ?? $organization?.billingPlan;
     const plan = tierToPlan(tier).name;
 </script>
 
@@ -52,28 +52,28 @@
     <div class="u-flex u-cross-center u-main-space-between">
         <Typography.Title>Usage</Typography.Title>
 
-        {#if $organization?.billingPlanId === BillingPlan.FREE}
+        {#if $organization?.billingPlan === BillingPlan.FREE}
             <Button href={$upgradeURL}>
                 <span class="text">Upgrade</span>
             </Button>
         {/if}
     </div>
     <div class="u-flex u-main-space-between common-section u-cross-center">
-        {#if $organization.billingPlanId === BillingPlan.SCALE}
+        {#if $organization.billingPlan === BillingPlan.SCALE}
             <p class="text">
                 On the Scale plan, you'll be charged only for any usage that exceeds the thresholds
                 per resource listed below. <Link.Button
                     on:click={() => ($showUsageRatesModal = true)}
                     >Learn more about plan usage limits.</Link.Button>
             </p>
-        {:else if $organization.billingPlanId === BillingPlan.PRO}
+        {:else if $organization.billingPlan === BillingPlan.PRO}
             <p class="text">
                 On the Pro plan, you'll be charged only for any usage that exceeds the thresholds
                 per resource listed below. <Link.Button
                     on:click={() => ($showUsageRatesModal = true)}
                     >Learn more about plan usage limits.</Link.Button>
             </p>
-        {:else if $organization.billingPlanId === BillingPlan.FREE}
+        {:else if $organization.billingPlan === BillingPlan.FREE}
             <p class="text">
                 If you exceed the limits of the {plan} plan, services for your projects may be disrupted.
                 <Link.Anchor href={$upgradeURL} class="link"

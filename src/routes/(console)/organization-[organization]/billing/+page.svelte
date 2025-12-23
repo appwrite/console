@@ -126,7 +126,7 @@
     {#if organization?.billingPlanDowngrade}
         <Alert.Inline status="info">
             Your organization has changed to {tierToPlan(organization?.billingPlanDowngrade).name}
-            plan. You will continue to have access to {tierToPlan(organization?.billingPlanId).name}
+            plan. You will continue to have access to {tierToPlan(organization?.billingPlan).name}
             plan features until your billing period ends on {toLocaleDate(
                 organization.billingNextInvoiceDate
             )}.

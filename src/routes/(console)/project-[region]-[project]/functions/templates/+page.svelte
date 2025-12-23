@@ -81,7 +81,7 @@
 
     $: buttonDisabled = isServiceLimited(
         'functions',
-        $organization?.billingPlanId,
+        $organization?.billingPlan,
         $functionsList?.total ?? 0
     );
 </script>

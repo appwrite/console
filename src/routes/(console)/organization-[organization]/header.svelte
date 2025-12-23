@@ -103,14 +103,14 @@
                 <Typography.Title color="--fgcolor-neutral-primary" size="xl" truncate>
                     {organization.name}
                 </Typography.Title>
-                {#if isCloud && organization?.billingPlanId === BillingPlan.GITHUB_EDUCATION}
+                {#if isCloud && organization?.billingPlan === BillingPlan.GITHUB_EDUCATION}
                     <Badge variant="secondary" content="Education">
                         <Icon icon={IconGithub} size="s" slot="start" />
                     </Badge>
-                {:else if isCloud && organization?.billingPlanId === BillingPlan.FREE}
+                {:else if isCloud && organization?.billingPlan === BillingPlan.FREE}
                     <Badge variant="secondary" content="Free"></Badge>
                 {/if}
-                {#if isCloud && organization?.billingTrialStartDate && $daysLeftInTrial > 0 && organization.billingPlanId !== BillingPlan.FREE && $plansInfo.get(organization.billingPlanId)?.trialDays}
+                {#if isCloud && organization?.billingTrialStartDate && $daysLeftInTrial > 0 && organization.billingPlan !== BillingPlan.FREE && $plansInfo.get(organization.billingPlan)?.trialDays}
                     <Tooltip>
                         <Badge variant="secondary" content="Trial" />
                         <svelte:fragment slot="tooltip">
@@ -150,10 +150,10 @@
                                 </Button>
                             </div>
                             <div slot="tooltip">
-                                {organization?.billingPlanId === BillingPlan.FREE
+                                {organization?.billingPlan === BillingPlan.FREE
                                     ? 'Upgrade to add more members'
                                     : `You've reached the members limit for the ${
-                                          tierToPlan(organization?.billingPlanId)?.name
+                                          tierToPlan(organization?.billingPlan)?.name
                                       } plan`}
                             </div>
                         </Tooltip>

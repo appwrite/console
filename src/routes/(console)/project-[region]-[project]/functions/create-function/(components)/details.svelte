@@ -78,7 +78,7 @@
                     disabled={specificationOptions.length < 1}
                     options={specificationOptions}
                     bind:value={specification} />
-                {#if $organization?.billingPlanId === BillingPlan.FREE}
+                {#if $organization?.billingPlan === BillingPlan.FREE}
                     <Input.Helper state="default">
                         <Link href={$upgradeURL} variant="muted">Upgrade</Link> to Pro or Scale to adjust
                         your CPU and RAM beyond the default.

@@ -46,7 +46,7 @@
         <svelte:fragment slot="aside">
             {#if isCloud}
                 {@const size = humanFileSize(sizeToBytes(service, 'MB', 1000))}
-                {#if $organization?.billingPlanId === BillingPlan.FREE}
+                {#if $organization?.billingPlan === BillingPlan.FREE}
                     <Alert.Inline status="info">
                         The {currentPlan.name} plan has a maximum upload file size limit of {Math.floor(
                             parseInt(size.value)

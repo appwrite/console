@@ -35,7 +35,7 @@
     } = $props();
 
     let showCustomId = $state(false);
-    let isProPlan = $derived((billingPlan ?? $organization?.billingPlanId) === BillingPlan.PRO);
+    let isProPlan = $derived((billingPlan ?? $organization?.billingPlan) === BillingPlan.PRO);
     let projectsLimited = $derived(
         $currentPlan?.projects > 0 && projects && projects >= $currentPlan?.projects
     );

@@ -64,13 +64,13 @@
     };
     const dispatch = createEventDispatcher();
 
-    $: tier = tierToPlan($organization?.billingPlanId)?.name;
+    $: tier = tierToPlan($organization?.billingPlan)?.name;
     // these can be organization level limitations as well.
     // we need to migrate this sometime later, but soon!
     $: hasProjectLimitation =
-        checkForProjectLimitation(serviceId) && $organization?.billingPlanId === BillingPlan.FREE;
+        checkForProjectLimitation(serviceId) && $organization?.billingPlan === BillingPlan.FREE;
     $: hasUsageFees = hasProjectLimitation
-        ? checkForUsageFees($organization?.billingPlanId, serviceId)
+        ? checkForUsageFees($organization?.billingPlan, serviceId)
         : false;
     $: isLimited = limit !== 0 && limit < Infinity;
     $: overflowingServices = limitedServices.filter((service) => service.value > 0);
@@ -99,7 +99,7 @@
 
     {#if services.length}
         <slot name="alert" {limit} {tier} {title} {upgradeMethod} {hasUsageFees} {services}>
-            {#if $organization?.billingPlanId !== BillingPlan.FREE && hasUsageFees}
+            {#if $organization?.billingPlan !== BillingPlan.FREE && hasUsageFees}
                 <Alert.Inline status="info">
                     <span class="text">
                         You've reached the {services} limit for the {tier} plan.
@@ -135,7 +135,7 @@
                         on:click={() => (showDropdown = !showDropdown)}>
                         <Icon icon={IconInfo} size="s" slot="start" />
                     </Badge>
-                {:else if $organization?.billingPlanId !== BillingPlan.SCALE}
+                {:else if $organization?.billingPlan !== BillingPlan.SCALE}
                     <Badge
                         variant="secondary"
                         content="Limits applied"
@@ -149,7 +149,7 @@
                             <p class="text">
                                 You are limited to {limit}
                                 {title.toLocaleLowerCase()} per project on the {tier} plan.
-                                {#if $organization?.billingPlanId === BillingPlan.FREE}<Link
+                                {#if $organization?.billingPlan === BillingPlan.FREE}<Link
                                         href={$upgradeURL}
                                         event="organization_upgrade"
                                         eventData={{ from: 'button', source: 'resource_limit_tag' }}
@@ -169,7 +169,7 @@
                             <p class="text">
                                 You are limited to {limit}
                                 {title.toLocaleLowerCase()} per organization on the {tier} plan.
-                                {#if $organization?.billingPlanId === BillingPlan.FREE}
+                                {#if $organization?.billingPlan === BillingPlan.FREE}
                                     <Link href={$upgradeURL}>Upgrade</Link>
                                     for additional {title.toLocaleLowerCase()}.
                                 {/if}

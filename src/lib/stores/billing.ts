@@ -264,7 +264,7 @@ export function checkForUsageFees(plan: Tier, id: PlanServices) {
 export function checkForProjectLimitation(id: PlanServices) {
     // Members are no longer limited on Pro and Scale plans (unlimited seats)
     if (id === 'members') {
-        const currentTier = get(organization)?.billingPlanId;
+        const currentTier = get(organization)?.billingPlan;
         if (currentTier === BillingPlan.PRO || currentTier === BillingPlan.SCALE) {
             return false; // No project limitation for members on Pro/Scale plans
         }
@@ -321,7 +321,7 @@ export function calculateEnterpriseTrial(org: Organization) {
 }
 
 export function calculateTrialDay(org: Organization) {
-    if (org?.billingPlanId === BillingPlan.FREE) return false;
+    if (org?.billingPlan === BillingPlan.FREE) return false;
     const endDate = new Date(org?.billingStartDate);
     const today = new Date();
 
@@ -373,7 +373,7 @@ export async function checkForUsageLimit(org: Organization) {
         readOnly.set(false);
         return;
     }
-    if (org?.billingPlanId !== BillingPlan.FREE) {
+    if (org?.billingPlan !== BillingPlan.FREE) {
         const { budgetLimit } = org?.billingLimits ?? {};
 
         if (budgetLimit && budgetLimit >= 100) {
@@ -453,7 +453,7 @@ export async function checkForUsageLimit(org: Organization) {
 }
 
 export async function checkPaymentAuthorizationRequired(org: Organization) {
-    if (org.billingPlanId === BillingPlan.FREE) return;
+    if (org.billingPlan === BillingPlan.FREE) return;
 
     const invoices = await sdk.forConsole.billing.listInvoices(org.$id, [
         Query.equal('status', 'requires_authentication')
@@ -560,6 +560,7 @@ export async function checkForMissingPaymentMethod() {
         Query.isNull('backupPaymentMethodId'),
         Query.equal('platform', Platform.Appwrite)
     ]);
+
     if (orgs?.total) {
         orgMissingPaymentMethod.set(orgs.teams[0]);
         headerAlert.add({
@@ -574,7 +575,7 @@ export async function checkForMissingPaymentMethod() {
 // Display upgrade banner for new users after 1 week for 30 days
 export async function checkForNewDevUpgradePro(org: Organization) {
     // browser or plan check.
-    if (!browser || org?.billingPlanId !== BillingPlan.FREE) return;
+    if (!browser || org?.billingPlan !== BillingPlan.FREE) return;
 
     // already dismissed by user!
     if (localStorage.getItem('newDevUpgradePro')) return;

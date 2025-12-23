@@ -8,7 +8,7 @@
     import { orgMissingPaymentMethod } from '$routes/(console)/store';
 </script>
 
-{#if ($orgMissingPaymentMethod.billingPlanId === BillingPlan.PRO || $orgMissingPaymentMethod.billingPlanId === BillingPlan.SCALE) && !$orgMissingPaymentMethod.paymentMethodId && !$orgMissingPaymentMethod.backupPaymentMethodId && !hideBillingHeaderRoutes.includes(page.url.pathname)}
+{#if ($orgMissingPaymentMethod.billingPlan === BillingPlan.PRO || $orgMissingPaymentMethod.billingPlan === BillingPlan.SCALE) && !$orgMissingPaymentMethod.paymentMethodId && !$orgMissingPaymentMethod.backupPaymentMethodId && !hideBillingHeaderRoutes.includes(page.url.pathname)}
     <HeaderAlert
         type="error"
         title={`Payment method required for ${$orgMissingPaymentMethod.name}`}>

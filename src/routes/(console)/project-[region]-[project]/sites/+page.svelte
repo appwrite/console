@@ -40,7 +40,7 @@
             },
             keys: ['c'],
             disabled:
-                isServiceLimited('sites', $organization?.billingPlanId, data.siteList?.total) ||
+                isServiceLimited('sites', $organization?.billingPlan, data.siteList?.total) ||
                 !$canWriteSites,
             icon: IconPlus,
             group: 'sites'

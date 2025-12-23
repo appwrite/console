@@ -27,7 +27,7 @@
 
     $: buttonDisabled =
         isCloud &&
-        isServiceLimited('functions', $organization?.billingPlanId, $functionsList?.total);
+        isServiceLimited('functions', $organization?.billingPlan, $functionsList?.total);
 </script>
 
 <Container>

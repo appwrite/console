@@ -89,7 +89,7 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            {#if organization?.billingPlanId === BillingPlan.FREE}
+            {#if organization?.billingPlan === BillingPlan.FREE}
                 <Button
                     secondary
                     href={$upgradeURL}

@@ -143,7 +143,7 @@
             }
 
             // Upgrade existing org
-            else if (selectedOrg?.billingPlanId !== billingPlan && isUpgrade()) {
+            else if (selectedOrg?.billingPlan !== billingPlan && isUpgrade()) {
                 org = await sdk.forConsole.billing.updatePlan(
                     selectedOrg.$id,
                     billingPlan,
@@ -229,7 +229,7 @@
             campaign?.plan && $plansInfo.get(campaign.plan) ? $plansInfo.get(campaign.plan) : null;
         const newPlan = $plansInfo.get(billingPlan);
 
-        // if campaign has a plan and it's higher than the selected new plan
+        // if campaign has a plan, and it's higher than the selected new plan
         if (campaignPlan?.order > newPlan?.order) {
             return campaignPlan.$id as Tier;
         }
@@ -283,7 +283,7 @@
                                 placeholder="Select organization"
                                 id="organization" />
                         {/if}
-                        {#if selectedOrgId && (selectedOrg?.billingPlanId !== BillingPlan.PRO || !selectedOrg?.paymentMethodId)}
+                        {#if selectedOrgId && (selectedOrg?.billingPlan !== BillingPlan.PRO || !selectedOrg?.paymentMethodId)}
                             {#if selectedOrgId === newOrgId}
                                 <InputText
                                     label="Organization name"
@@ -309,10 +309,10 @@
                         {/if}
                     </Layout.Stack>
                 </Fieldset>
-                {#if (selectedOrgId && (selectedOrg?.billingPlanId !== BillingPlan.PRO || !selectedOrg?.paymentMethodId)) || (!data?.couponData?.code && selectedOrgId)}
+                {#if (selectedOrgId && (selectedOrg?.billingPlan !== BillingPlan.PRO || !selectedOrg?.paymentMethodId)) || (!data?.couponData?.code && selectedOrgId)}
                     <Fieldset legend="Payment">
                         <Layout.Stack gap="xl">
-                            {#if selectedOrgId && (selectedOrg?.billingPlanId !== BillingPlan.PRO || !selectedOrg?.paymentMethodId)}
+                            {#if selectedOrgId && (selectedOrg?.billingPlan !== BillingPlan.PRO || !selectedOrg?.paymentMethodId)}
                                 <SelectPaymentMethod
                                     bind:methods
                                     bind:value={paymentMethodId}
@@ -347,7 +347,7 @@
         </Form>
     </Layout.Stack>
     <svelte:fragment slot="aside">
-        {#if selectedOrg?.$id && selectedOrg?.billingPlanId === billingPlan}
+        {#if selectedOrg?.$id && selectedOrg?.billingPlan === billingPlan}
             <section
                 class="card"
                 style:--p-card-padding="1.5rem"

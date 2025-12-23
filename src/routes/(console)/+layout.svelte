@@ -305,12 +305,12 @@
             checkForMarkedForDeletion(org);
             await checkForNewDevUpgradePro(org);
 
-            if (org?.billingPlanId !== BillingPlan.FREE) {
+            if (org?.billingPlan !== BillingPlan.FREE) {
                 await paymentExpired(org);
                 await checkPaymentAuthorizationRequired(org);
                 await checkForMandate(org);
 
-                if ($plansInfo.get(org.billingPlanId)?.trialDays) {
+                if ($plansInfo.get(org.billingPlan)?.trialDays) {
                     calculateTrialDay(org);
                 }
             }

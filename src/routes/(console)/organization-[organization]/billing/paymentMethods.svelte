@@ -332,5 +332,5 @@
         bind:showDelete
         {hasOtherMethod}
         isBackup={isSelectedBackup}
-        disabled={organization?.billingPlanId !== BillingPlan.FREE && !hasOtherMethod} />
+        disabled={organization?.billingPlan !== BillingPlan.FREE && !hasOtherMethod} />
 {/if}

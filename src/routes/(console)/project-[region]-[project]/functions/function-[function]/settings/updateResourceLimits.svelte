@@ -89,7 +89,7 @@
                 disabled={options.length < 1}
                 bind:value={specification}
                 {options} />
-            {#if isCloud && $organization.billingPlanId === BillingPlan.FREE}
+            {#if isCloud && $organization.billingPlan === BillingPlan.FREE}
                 <Alert.Inline title="Customizing specs available with Pro or Scale plans">
                     Upgrade to Pro or Scale to adjust your CPU and RAM beyond the default.
                     <svelte:fragment slot="actions">

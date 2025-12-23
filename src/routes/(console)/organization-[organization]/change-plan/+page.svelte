@@ -148,7 +148,7 @@
                 (option) => option.value === feedbackDowngradeReason
             )?.label,
             message: feedbackMessage ?? '',
-            fromPlanId: data.organization.billingPlanId,
+            fromPlanId: data.organization.billingPlan,
             toPlanId: selectedPlan
         });
     }
@@ -298,7 +298,7 @@
     $: isUpgrade = $plansInfo.get(selectedPlan).order > $currentPlan?.order;
     $: isDowngrade = $plansInfo.get(selectedPlan).order < $currentPlan?.order;
     $: isButtonDisabled =
-        $organization?.billingPlanId === selectedPlan ||
+        $organization?.billingPlan === selectedPlan ||
         (isDowngrade && selectedPlan === BillingPlan.FREE && data.hasFreeOrgs);
 </script>
 
@@ -370,7 +370,7 @@
                                 title={`Your organization will switch to ${tierToPlan(selectedPlan).name} plan on ${toLocaleDate(
                                     $organization.billingNextInvoiceDate
                                 )}`}>
-                                You will retain access to {tierToPlan($organization.billingPlanId)
+                                You will retain access to {tierToPlan($organization.billingPlan)
                                     .name} plan features until your billing period ends. After that,
                                 <span class="u-bold"
                                     >all team members except the owner will be removed,</span>
@@ -454,7 +454,7 @@
         </Layout.Stack>
     </Form>
     <svelte:fragment slot="aside">
-        {#if selectedPlan !== BillingPlan.FREE && data.organization.billingPlanId !== selectedPlan && data.organization.billingPlanId !== BillingPlan.CUSTOM}
+        {#if selectedPlan !== BillingPlan.FREE && data.organization.billingPlan !== selectedPlan && data.organization.billingPlan !== BillingPlan.CUSTOM}
             <EstimatedTotalBox
                 {collaborators}
                 {isDowngrade}
@@ -462,7 +462,7 @@
                 bind:couponData={selectedCoupon}
                 bind:billingBudget
                 organizationId={data.organization.$id} />
-        {:else if data.organization.billingPlanId !== BillingPlan.CUSTOM}
+        {:else if data.organization.billingPlan !== BillingPlan.CUSTOM}
             <PlanComparisonBox downgrade={data.hasFreeOrgs ? false : isDowngrade} />
         {/if}
     </svelte:fragment>

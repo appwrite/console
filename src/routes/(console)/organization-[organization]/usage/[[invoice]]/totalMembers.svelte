@@ -14,14 +14,14 @@
     export let members: Models.MembershipList;
 
     $: total = members?.total ?? 0;
-    $: plan = $plansInfo?.get($organization?.billingPlanId);
+    $: plan = $plansInfo?.get($organization?.billingPlan);
 </script>
 
 <CardGrid>
     <svelte:fragment slot="title">Members</svelte:fragment>
     The number of members in your organization.
     <svelte:fragment slot="aside">
-        {#if $organization.billingPlanId !== BillingPlan.FREE}
+        {#if $organization.billingPlan !== BillingPlan.FREE}
             <div class="u-flex u-flex-vertical">
                 <Layout.Stack direction="row" justifyContent="space-between">
                     <Layout.Stack gap="s" direction="row" alignItems="center">
@@ -38,8 +38,8 @@
                                 <Icon icon={IconInfo} size="s" />
                                 <svelte:fragment slot="tooltip">
                                     You can add unlimited organization members on the {tierToPlan(
-                                        $organization.billingPlanId
-                                    ).name} plan {$organization.billingPlanId === BillingPlan.PRO
+                                        $organization.billingPlan
+                                    ).name} plan {$organization.billingPlan === BillingPlan.PRO
                                         ? `for ${formatCurrency(plan.addons.seats.price)} each per billing period.`
                                         : '.'}
                                 </svelte:fragment>
