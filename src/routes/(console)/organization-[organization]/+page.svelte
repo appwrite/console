@@ -81,6 +81,8 @@
         return data.projects.projects.filter((project) => project.status !== 'archived');
     });
 
+    const activeProjectsCount = $derived(activeProjects.length);
+
     function filterPlatforms(platforms: { name: string; icon: string }[]) {
         return platforms.filter(
             (value, index, self) => index === self.findIndex((t) => t.name === value.name)
@@ -239,10 +241,10 @@
         </Alert.Inline>
     {/if}
 
-    {#if data.projects.total > 0}
+    {#if activeProjectsCount > 0}
         <CardContainer
             disableEmpty={!$canWriteProjects}
-            total={data.projects.total}
+            total={activeProjectsCount}
             offset={data.offset}
             on:click={handleCreateProject}>
             {#each activeProjects as project}
@@ -327,7 +329,7 @@
         name="Projects"
         limit={data.limit}
         offset={data.offset}
-        total={data.projects.total} />
+        total={activeProjectsCount} />
 
     <!-- Archived Projects Section -->
     <ArchiveProject
