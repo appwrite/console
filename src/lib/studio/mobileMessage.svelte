@@ -12,12 +12,11 @@
                     <Icon icon={IconDesktopComputer} size="l" color="--fgcolor-neutral-primary" />
                     <Layout.Stack gap="m" alignItems="center">
                         <Typography.Title size="l" align="center">
-                            This experience needs a larger screen
+                            This experience works best on a larger screen.
                         </Typography.Title>
                         <Typography.Text align="center" color="--fgcolor-neutral-secondary">
-                            We're working on making Imagine Studio fully responsive for mobile
-                            devices. For the best experience, please use Imagine Studio on a desktop
-                            or tablet with a larger screen.
+                            We’re working on making Imagine Studio fully responsive for mobile.
+For now, please use a tablet or desktop.
                         </Typography.Text>
                     </Layout.Stack>
                     <div class="studio-alert-wrapper">
@@ -25,7 +24,7 @@
                             <svelte:fragment slot="icon">
                                 <Icon icon={IconDeviceMobile} size="m" />
                             </svelte:fragment>
-                            You can use desktop mode in your mobile's browser to access Studio
+                            You can enable desktop mode in your mobile browser.
                         </Alert.Inline>
                     </div>
                 </Layout.Stack>
