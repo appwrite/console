@@ -11,13 +11,13 @@
     export let show = false;
     export let org: Organization;
 
-    $: plan = $plansInfo?.get(org.billingPlan);
+    $: plan = $plansInfo?.get(org.billingPlanId);
 
     $: nextDate = org?.name
         ? new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1).toString()
         : org?.billingNextInvoiceDate;
 
-    $: isFree = org.billingPlan === BillingPlan.FREE;
+    $: isFree = org.billingPlanId === BillingPlan.FREE;
 
     // equal or above means unlimited!
     const getCorrectSeatsCountValue = (count: number): string | number => {
@@ -37,12 +37,12 @@
             Usage on the {$plansInfo?.get(BillingPlan.FREE).name} plan is limited for the following resources.
             Next billing period: {toLocaleDate(nextDate)}.
         </Typography.Text>
-    {:else if org.billingPlan === BillingPlan.PRO}
+    {:else if org.billingPlanId === BillingPlan.PRO}
         <Typography.Text>
             Usage on the Pro plan will be charged at the end of each billing period at the following
             rates. Next billing period: {toLocaleDate(nextDate)}.
         </Typography.Text>
-    {:else if org.billingPlan === BillingPlan.SCALE}
+    {:else if org.billingPlanId === BillingPlan.SCALE}
         <Typography.Text>
             Usage on the Scale plan will be charged at the end of each billing period at the
             following rates. Next billing period: {toLocaleDate(nextDate)}.

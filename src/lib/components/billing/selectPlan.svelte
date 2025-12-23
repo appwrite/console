@@ -31,7 +31,7 @@
                             class:u-opacity-50={disabled}>
                             <h4 class="body-text-2 u-bold">
                                 {plan.name}
-                                {#if $organization?.billingPlan === plan.$id && !isNewOrg}
+                                {#if $organization?.billingPlanId === plan.$id && !isNewOrg}
                                     <span class="inline-tag">Current plan</span>
                                 {/if}
                             </h4>

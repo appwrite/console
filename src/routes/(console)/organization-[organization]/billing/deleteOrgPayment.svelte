@@ -16,7 +16,7 @@
     let error: string;
 
     async function removeDefaultMethod() {
-        if ($organization?.billingPlan !== BillingPlan.FREE && !hasOtherMethod) return;
+        if ($organization?.billingPlanId !== BillingPlan.FREE && !hasOtherMethod) return;
 
         try {
             await sdk.forConsole.billing.removeOrganizationPaymentMethod($organization.$id);
@@ -35,7 +35,7 @@
         }
     }
     async function removeBackuptMethod() {
-        if ($organization?.billingPlan !== BillingPlan.FREE && !hasOtherMethod) return;
+        if ($organization?.billingPlanId !== BillingPlan.FREE && !hasOtherMethod) return;
         showDelete = false;
 
         try {

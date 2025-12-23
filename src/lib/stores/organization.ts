@@ -15,7 +15,8 @@ export type OrganizationError = {
 
 export type Organization = Models.Team<Record<string, unknown>> & {
     billingBudget: number;
-    billingPlan: Tier;
+    billingPlanId: Tier;
+    billingPlan: Plan;
     budgetAlerts: number[];
     paymentMethodId: string;
     backupPaymentMethodId: string;

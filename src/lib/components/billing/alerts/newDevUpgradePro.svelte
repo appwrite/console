@@ -23,7 +23,7 @@
     }
 </script>
 
-{#if show && $organization?.$id && $organization?.billingPlan === BillingPlan.FREE && !page.url.pathname.includes(base + '/account')}
+{#if show && $organization?.$id && $organization?.billingPlanId === BillingPlan.FREE && !page.url.pathname.includes(base + '/account')}
     <GradientBanner on:close={handleClose}>
         <Layout.Stack
             gap="m"

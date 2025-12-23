@@ -20,12 +20,12 @@
     $: hasPremiumSupport = $currentPlan?.premiumSupport ?? allOrgsHavePremiumSupport ?? false;
 
     $: allOrgsHavePremiumSupport = $organizationList.teams.every(
-        (team) => $plansInfo.get((team as Organization).billingPlan)?.premiumSupport
+        (team) => $plansInfo.get((team as Organization).billingPlanId)?.premiumSupport
     );
 
     // there can only be one free organization
     $: freeOrganization = $organizationList.teams.find(
-        (team) => !$plansInfo.get((team as Organization).billingPlan)?.premiumSupport
+        (team) => !$plansInfo.get((team as Organization).billingPlanId)?.premiumSupport
     );
 
     $: upgradeURL = `${base}/organization-${freeOrganization?.$id}/change-plan`;

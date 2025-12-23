@@ -29,7 +29,7 @@
 
     const tier = data?.plan
         ? (data.plan.$id as Tier)
-        : (data?.currentInvoice?.plan ?? $organization?.billingPlan);
+        : (data?.currentInvoice?.plan ?? $organization?.billingPlanId);
 
     const plan = data?.plan ?? undefined;
 
@@ -61,7 +61,7 @@
     <div class="u-flex u-cross-center u-main-space-between">
         <Typography.Title>Usage</Typography.Title>
 
-        {#if $organization?.billingPlan === BillingPlan.FREE}
+        {#if $organization?.billingPlanId === BillingPlan.FREE}
             <Button
                 href={$upgradeURL}
                 on:click={() => {
@@ -74,7 +74,7 @@
             </Button>
         {/if}
     </div>
-    {#if $organization.billingPlan === BillingPlan.SCALE}
+    {#if $organization.billingPlanId === BillingPlan.SCALE}
         <p class="text">
             On the Scale plan, you'll be charged only for any usage that exceeds the thresholds per
             resource listed below.
@@ -89,7 +89,7 @@
                 </Link.Anchor>
             {/if}
         </p>
-    {:else if $organization.billingPlan === BillingPlan.PRO}
+    {:else if $organization.billingPlanId === BillingPlan.PRO}
         <p class="text">
             On the Pro plan, you'll be charged only for any usage that exceeds the thresholds per
             resource listed below.
@@ -104,7 +104,7 @@
                 </Link.Anchor>
             {/if}
         </p>
-    {:else if $organization.billingPlan === BillingPlan.FREE}
+    {:else if $organization.billingPlanId === BillingPlan.FREE}
         <p class="text">
             If you exceed the limits of the Free plan, services for your organization's projects may
             be disrupted.

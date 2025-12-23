@@ -46,7 +46,7 @@
 
     // Calculate if button should be disabled and tooltip should show
     $: memberCount = data.organizationMembers?.total ?? 0;
-    $: isFreeWithMembers = $organization?.billingPlan === BillingPlan.FREE && memberCount >= 1;
+    $: isFreeWithMembers = $organization?.billingPlanId === BillingPlan.FREE && memberCount >= 1;
     $: isButtonDisabled = isCloud ? isFreeWithMembers : false;
 
     const resend = async (member: Models.Membership) => {
@@ -89,10 +89,10 @@
                 </ConsoleButton>
             </div>
             <div slot="tooltip">
-                {$organization?.billingPlan === BillingPlan.FREE
+                {$organization?.billingPlanId === BillingPlan.FREE
                     ? 'Upgrade to add more members'
                     : `You've reached the members limit for the ${
-                          tierToPlan($organization?.billingPlan)?.name
+                          tierToPlan($organization?.billingPlanId)?.name
                       } plan`}
             </div>
         </Tooltip>

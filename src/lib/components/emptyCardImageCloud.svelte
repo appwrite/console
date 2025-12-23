@@ -24,7 +24,7 @@
             <Layout.Stack gap="xxs">
                 <Typography.Text variant="m-600"><slot name="title" /></Typography.Text>
                 <Typography.Text>
-                    <slot nextTier={tierToPlan(getNextTier($organization.billingPlan)).name} />
+                    <slot nextTier={tierToPlan(getNextTier($organization.billingPlanId)).name} />
                 </Typography.Text>
             </Layout.Stack>
             <slot name="cta" {source} />

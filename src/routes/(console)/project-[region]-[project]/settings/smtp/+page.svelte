@@ -123,7 +123,7 @@
             <Link.Anchor href={`${base}/project-${$project.region}-${$project.$id}/auth/templates`}
                 >here</Link.Anchor>
             <svelte:fragment slot="aside">
-                {#if $organization.billingPlan === BillingPlan.FREE}
+                {#if $organization.billingPlanId === BillingPlan.FREE}
                     <Alert.Inline
                         status="info"
                         title="Custom SMTP is a Pro plan feature. Upgrade to enable custom SMTP sever.">
@@ -198,7 +198,7 @@
             <svelte:fragment slot="actions">
                 <Button
                     submit
-                    disabled={isButtonDisabled || $organization.billingPlan === BillingPlan.FREE}>
+                    disabled={isButtonDisabled || $organization.billingPlanId === BillingPlan.FREE}>
                     Update
                 </Button>
             </svelte:fragment>

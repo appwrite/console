@@ -172,7 +172,7 @@
 
     function showUpgrade() {
         const plan = currentModalAlert.plan;
-        const organizationPlan = $organization?.billingPlan;
+        const organizationPlan = $organization?.billingPlanId;
         switch (plan) {
             case 'free':
                 return false;

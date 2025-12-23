@@ -213,7 +213,7 @@
         </Alert.Inline>
     {/if}
 
-    {#if isCloud && data.organization.billingPlan === BillingPlan.FREE && projectsToArchive.length === 0 && !freePlanAlertDismissed}
+    {#if isCloud && data.organization.billingPlanId === BillingPlan.FREE && projectsToArchive.length === 0 && !freePlanAlertDismissed}
         <Alert.Inline dismissible on:dismiss={dismissFreePlanAlert}>
             <Typography.Text
                 >Your Free plan includes up to 2 projects and limited resources. Upgrade to unlock

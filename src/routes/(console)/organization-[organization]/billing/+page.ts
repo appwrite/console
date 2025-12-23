@@ -63,8 +63,8 @@ export const load: PageLoad = async ({ parent, depends, url, route }) => {
 
     const areCreditsSupported = isCloud
         ? (currentPlan?.supportsCredits ??
-          (organization.billingPlan !== BillingPlan.FREE &&
-              organization?.billingPlan !== BillingPlan.GITHUB_EDUCATION))
+          (organization.billingPlanId !== BillingPlan.FREE &&
+              organization?.billingPlanId !== BillingPlan.GITHUB_EDUCATION))
         : false;
 
     const [paymentMethods, addressList, billingAddress, availableCredit, billingPlanDowngrade] =

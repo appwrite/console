@@ -31,7 +31,7 @@
     const today = new Date();
     const isTrial =
         new Date($organization?.billingStartDate).getTime() - today.getTime() > 0 &&
-        $plansInfo.get($organization.billingPlan)?.trialDays;
+        $plansInfo.get($organization.billingPlanId)?.trialDays;
     const extraUsage = currentInvoice ? currentInvoice.amount - currentPlan?.price : 0;
 </script>
 
@@ -51,7 +51,8 @@
                             {currentPlan.name} plan
                         </Typography.Text>
                         <Typography.Text>
-                            {isTrial || $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION
+                            {isTrial ||
+                            $organization?.billingPlanId === BillingPlan.GITHUB_EDUCATION
                                 ? formatCurrency(0)
                                 : currentPlan
                                   ? formatCurrency(currentPlan?.price)
@@ -139,7 +140,7 @@
                         </Layout.Stack>
                     {/if}
 
-                    {#if $organization?.billingPlan !== BillingPlan.FREE && $organization?.billingPlan !== BillingPlan.GITHUB_EDUCATION}
+                    {#if $organization?.billingPlanId !== BillingPlan.FREE && $organization?.billingPlanId !== BillingPlan.GITHUB_EDUCATION}
                         <Divider />
                         <Layout.Stack direction="row" justifyContent="space-between">
                             <Typography.Text color="--fgcolor-neutral-primary" variant="m-500">
@@ -169,7 +170,7 @@
             </Card.Base>
         </svelte:fragment>
         <svelte:fragment slot="actions">
-            {#if $organization?.billingPlan === BillingPlan.FREE || $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION}
+            {#if $organization?.billingPlanId === BillingPlan.FREE || $organization?.billingPlanId === BillingPlan.GITHUB_EDUCATION}
                 <div
                     class="u-flex u-flex-vertical-mobile u-cross-center u-gap-16 u-flex-wrap u-width-full-line u-main-end">
                     {#if !currentPlan?.usagePerProject}

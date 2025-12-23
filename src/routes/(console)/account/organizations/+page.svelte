@@ -60,15 +60,15 @@
     function isOrganizationOnTrial(organization: Organization): boolean {
         if (!organization?.billingTrialStartDate) return false;
         if ($daysLeftInTrial <= 0) return false;
-        if (organization.billingPlan === BillingPlan.FREE) return false;
+        if (organization.billingPlanId === BillingPlan.FREE) return false;
 
-        return !!$plansInfo.get(organization.billingPlan)?.trialDays;
+        return !!$plansInfo.get(organization.billingPlanId)?.trialDays;
     }
 
     function isNonPayingOrganization(organization: Organization): boolean {
         return (
-            organization?.billingPlan === BillingPlan.FREE ||
-            organization?.billingPlan === BillingPlan.GITHUB_EDUCATION
+            organization?.billingPlanId === BillingPlan.FREE ||
+            organization?.billingPlanId === BillingPlan.GITHUB_EDUCATION
         );
     }
 
@@ -114,7 +114,7 @@
                 {@const avatarList = getMemberships(organization.$id)}
                 {@const payingOrg = isPayingOrganization(organization)}
                 {@const planName = isCloudOrg(organization)
-                    ? getPlanName(organization.billingPlan)
+                    ? getPlanName(organization.billingPlanId)
                     : null}
 
                 <GridItem1 href={`${base}/organization-${organization.$id}`}>

@@ -7,10 +7,10 @@
 
     export let title: string;
     export let tooltipContent =
-        $organization?.billingPlan === BillingPlan.FREE
+        $organization?.billingPlanId === BillingPlan.FREE
             ? `Upgrade to add more ${title.toLocaleLowerCase()}`
             : `You've reached the ${title.toLocaleLowerCase()} limit for the ${
-                  tierToPlan($organization?.billingPlan)?.name
+                  tierToPlan($organization?.billingPlanId)?.name
               } plan`;
     export let disabled: boolean;
     export let buttonText: string;

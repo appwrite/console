@@ -81,7 +81,7 @@
     }
 </script>
 
-<CardGrid hideFooter={$organization?.billingPlan !== BillingPlan.FREE}>
+<CardGrid hideFooter={$organization?.billingPlanId !== BillingPlan.FREE}>
     <svelte:fragment slot="title">
         {!areCreditsSupported ? 'Credits' : 'Available credit'}
     </svelte:fragment>
@@ -171,7 +171,7 @@
         {/if}
     </svelte:fragment>
     <svelte:fragment slot="actions">
-        {#if $organization?.billingPlan === BillingPlan.FREE}
+        {#if $organization?.billingPlanId === BillingPlan.FREE}
             <Button
                 secondary
                 href={$upgradeURL}

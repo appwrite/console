@@ -254,7 +254,7 @@
 
     let badgeType: 'success' | undefined;
     $: badgeType =
-        $organization && $organization.billingPlan !== BillingPlan.FREE ? 'success' : undefined;
+        $organization && $organization.billingPlanId !== BillingPlan.FREE ? 'success' : undefined;
 </script>
 
 <svelte:window on:resize={onResize} />

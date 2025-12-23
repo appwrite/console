@@ -14,7 +14,7 @@ export const load: PageLoad = async ({ url, parent, depends }) => {
     ]);
     let plan = getPlanFromUrl(url);
     const hasFreeOrganizations = organizations.teams?.some(
-        (org) => (org as Organization)?.billingPlan === BillingPlan.FREE
+        (org) => (org as Organization)?.billingPlanId === BillingPlan.FREE
     );
 
     if (plan === BillingPlan.FREE && hasFreeOrganizations) {

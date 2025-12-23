@@ -18,7 +18,7 @@
 </script>
 
 {#if $showPolicyAlert && isCloud && $organization?.$id && page.url.pathname.match(/\/databases\/database-[^/]+$/)}
-    {@const isFreePlan = $organization?.billingPlan === BillingPlan.FREE}
+    {@const isFreePlan = $organization?.billingPlanId === BillingPlan.FREE}
 
     {@const subtitle = isFreePlan
         ? 'Upgrade your plan to ensure your data stays safe and backed up'
