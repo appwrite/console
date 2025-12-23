@@ -110,7 +110,11 @@
 
         try {
             allProjects = await sdk.forConsole.projects.list({
-                queries: [Query.equal('teamId', data.organization.$id), Query.limit(1000)]
+                queries: [
+                    Query.equal('teamId', data.organization.$id),
+                    Query.limit(1000),
+                    Query.select(['$id', 'name'])
+                ]
             });
         } catch {
             allProjects = { projects: [] };

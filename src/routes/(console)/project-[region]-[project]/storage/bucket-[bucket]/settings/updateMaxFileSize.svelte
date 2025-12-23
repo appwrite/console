@@ -45,15 +45,12 @@
         <svelte:fragment slot="aside">
             {#if isCloud}
                 {@const size = humanFileSize(sizeToBytes(service, 'MB', 1000))}
-                <Alert.Inline status="info">
-                    The {currentPlan.name} plan has a maximum upload file size limit of {Math.floor(
-                        parseInt(size.value)
-                    )}{size.unit}.
-                    {#if $organization?.billingPlan === BillingPlan.FREE}
-                        Upgrade to allow files of a larger size.
-                    {/if}
-                    <svelte:fragment slot="actions">
-                        {#if $organization?.billingPlan === BillingPlan.FREE}
+                {#if $organization?.billingPlan === BillingPlan.FREE}
+                    <Alert.Inline status="info">
+                        The {currentPlan.name} plan has a maximum upload file size limit of {Math.floor(
+                            parseInt(size.value)
+                        )}{size.unit}. Upgrade to allow files of a larger size.
+                        <svelte:fragment slot="actions">
                             <div class="alert-buttons u-flex">
                                 <Button
                                     text
@@ -64,10 +61,17 @@
                                         });
                                     }}>Upgrade plan</Button>
                             </div>
-                        {/if}
-                    </svelte:fragment>
-                </Alert.Inline>
+                        </svelte:fragment>
+                    </Alert.Inline>
+                {:else}
+                    <Alert.Inline status="info">
+                        The {currentPlan.name} plan has a maximum upload file size limit of {Math.floor(
+                            parseInt(size.value)
+                        )}{size.unit}.
+                    </Alert.Inline>
+                {/if}
             {/if}
+
             <InputNumber
                 required
                 id="size"
