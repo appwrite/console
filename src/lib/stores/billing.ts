@@ -89,8 +89,12 @@ export function planHasGroup(billingPlanId: string, group: BillingPlanGroup) {
 export function getBasePlanFromGroup(billingPlanGroup: BillingPlanGroup): Models.BillingPlan {
     const plansInfoStore = get(plansInfo);
 
+    // hot fix for now, starter doesn't have a group atm.
+    const correctBillingPlanGroup =
+        billingPlanGroup === BillingPlanGroup.Starter ? null : billingPlanGroup;
+
     const proPlans = Array.from(plansInfoStore.values()).filter(
-        (plan) => plan.group === billingPlanGroup
+        (plan) => plan.group === correctBillingPlanGroup
     );
 
     return proPlans.sort((a, b) => a.order - b.order)[0];
