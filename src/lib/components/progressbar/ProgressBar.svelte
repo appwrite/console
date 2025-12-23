@@ -22,7 +22,7 @@
 
 <section class="progressbar__container">
     {#each $$props.data as item}
-        <Tooltip disabled={!item.tooltip}>
+        <Tooltip disabled={!item.tooltip} maxWidth="20rem">
             <div
                 class="progressbar__content"
                 style:background-color={item.color}
