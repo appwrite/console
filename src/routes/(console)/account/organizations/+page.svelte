@@ -42,7 +42,7 @@
         // For known plans, use tierToPlan
         const tierData = tierToPlan(billingPlan as Tier);
 
-        // If it's not a custom plan, or we got a non-custom result, return the name
+        // If it's not a custom plan or we got a non-custom result, return the name
         if (tierData.name !== 'Custom') {
             return tierData.name;
         }

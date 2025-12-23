@@ -560,7 +560,6 @@ export async function checkForMissingPaymentMethod() {
         Query.isNull('backupPaymentMethodId'),
         Query.equal('platform', Platform.Appwrite)
     ]);
-
     if (orgs?.total) {
         orgMissingPaymentMethod.set(orgs.teams[0]);
         headerAlert.add({

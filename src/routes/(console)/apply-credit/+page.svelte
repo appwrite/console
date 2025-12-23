@@ -229,7 +229,7 @@
             campaign?.plan && $plansInfo.get(campaign.plan) ? $plansInfo.get(campaign.plan) : null;
         const newPlan = $plansInfo.get(billingPlan);
 
-        // if campaign has a plan, and it's higher than the selected new plan
+        // if campaign has a plan and it's higher than the selected new plan
         if (campaignPlan?.order > newPlan?.order) {
             return campaignPlan.$id as Tier;
         }
