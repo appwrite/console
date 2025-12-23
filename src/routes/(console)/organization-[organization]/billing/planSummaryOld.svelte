@@ -51,8 +51,7 @@
                             {currentPlan.name} plan
                         </Typography.Text>
                         <Typography.Text>
-                            {isTrial ||
-                            $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION
+                            {isTrial || $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION
                                 ? formatCurrency(0)
                                 : currentPlan
                                   ? formatCurrency(currentPlan?.price)

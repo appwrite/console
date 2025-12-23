@@ -47,8 +47,8 @@
         title={`  Your organization will switch to ${tierToPlan(BillingPlan.FREE).name} plan on ${toLocaleDate(
             $organization.billingNextInvoiceDate
         )}`}>
-        You will retain access to {tierToPlan($organization.billingPlan).name} plan features until
-        your billing period ends. After that,
+        You will retain access to {tierToPlan($organization.billingPlan).name} plan features until your
+        billing period ends. After that,
         {#if excess?.members > 0}<span class="u-bold">
                 all team members except the owner will be removed,</span>
         {:else}
