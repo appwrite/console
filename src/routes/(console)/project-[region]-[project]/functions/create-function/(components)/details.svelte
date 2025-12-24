@@ -1,9 +1,8 @@
 <script lang="ts">
     import { CustomId } from '$lib/components';
-    import { BillingPlan } from '$lib/constants';
     import { InputSelect, InputText } from '$lib/elements/forms';
     import Link from '$lib/elements/link.svelte';
-    import { upgradeURL } from '$lib/stores/billing';
+    import { isStarterPlan, upgradeURL } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { isCloud } from '$lib/system';
     import { IconPencil } from '@appwrite.io/pink-icons-svelte';
@@ -78,14 +77,18 @@
                     disabled={specificationOptions.length < 1}
                     options={specificationOptions}
                     bind:value={specification} />
-                {#if $organization?.billingPlan === BillingPlan.FREE}
+
+                <!-- always show upgrade on starters -->
+                {@const isStarter = isStarterPlan($organization.billingPlan)}
+                {#if isStarter}
                     <Input.Helper state="default">
-                        <Link href={$upgradeURL} variant="muted">Upgrade</Link> to Pro or Scale to adjust
-                        your CPU and RAM beyond the default.
+                        <Link href={$upgradeURL} variant="muted">Upgrade</Link> your plan to adjust your
+                        CPU and RAM beyond the default.
                     </Input.Helper>
                 {/if}
             </Layout.Stack>
         {/if}
+
         {#if showEntrypoint}
             {#if loading}
                 <Layout.Stack gap="xs">

@@ -2,9 +2,8 @@ import type { PageLoad } from './$types';
 import { isCloud } from '$lib/system';
 import { sdk } from '$lib/stores/sdk';
 import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-import { isOrganization, getBasePlanFromGroup } from '$lib/stores/billing';
-import { ID, Query, type Models, BillingPlanGroup } from '@appwrite.io/console';
-import { BillingPlan } from '$lib/constants';
+import { getBasePlanFromGroup, isOrganization } from '$lib/stores/billing';
+import { BillingPlanGroup, ID, type Models, Query } from '@appwrite.io/console';
 import { redirect } from '@sveltejs/kit';
 import { base } from '$app/paths';
 
@@ -25,14 +24,15 @@ export const load: PageLoad = async ({ parent }) => {
     if (!organizations?.total) {
         try {
             if (isCloud) {
+                const starterPlan = getBasePlanFromGroup(BillingPlanGroup.Starter);
                 const org = await sdk.forConsole.billing.createOrganization(
                     ID.unique(),
                     'Personal projects',
-                    BillingPlan.FREE,
+                    starterPlan.$id,
                     null
                 );
                 trackEvent(Submit.OrganizationCreate, {
-                    plan: getBasePlanFromGroup(BillingPlanGroup.Starter)?.name,
+                    plan: starterPlan?.name,
                     budget_cap_enabled: false,
                     members_invited: 0
                 });

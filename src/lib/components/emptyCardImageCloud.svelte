@@ -2,7 +2,7 @@
     import { isSmallViewport } from '$lib/stores/viewport';
     import { organization } from '$lib/stores/organization';
     import { Card, Layout, Typography } from '@appwrite.io/pink-svelte';
-    import { getNextTierBillingPlan, billingIdToPlan } from '$lib/stores/billing';
+    import { getNextTierBillingPlan } from '$lib/stores/billing';
 
     export let source = 'empty_state_card';
     export let responsive = false;
@@ -26,7 +26,7 @@
             <Layout.Stack gap="xxs">
                 <Typography.Text variant="m-600"><slot name="title" /></Typography.Text>
                 <Typography.Text>
-                    <slot nextTier={billingIdToPlan(nextTierBillingPlan)?.name} />
+                    <slot nextTier={nextTierBillingPlan?.name} />
                 </Typography.Text>
             </Layout.Stack>
             <slot name="cta" {source} />

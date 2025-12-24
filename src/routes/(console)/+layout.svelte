@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from '$app/state';
-    import { BillingPlan, INTERVAL } from '$lib/constants';
+    import { INTERVAL } from '$lib/constants';
     import Footer from '$lib/layout/footer.svelte';
     import Shell from '$lib/layout/shell.svelte';
 
@@ -305,7 +305,7 @@
             checkForMarkedForDeletion(org);
             await checkForNewDevUpgradePro(org);
 
-            if (org?.billingPlan !== BillingPlan.FREE) {
+            if (org?.billingPlanDetails.requiresPaymentMethod) {
                 await paymentExpired(org);
                 await checkPaymentAuthorizationRequired(org);
                 await checkForMandate(org);

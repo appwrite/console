@@ -6,7 +6,7 @@
     import { upgradeURL } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { formatCurrency } from '$lib/helpers/numbers';
-    import { BillingPlan, DEFAULT_BILLING_PROJECTS_LIMIT } from '$lib/constants';
+    import { DEFAULT_BILLING_PROJECTS_LIMIT } from '$lib/constants';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import {
         Typography,
@@ -582,7 +582,7 @@
 
             <!-- Actions -->
             <div class="actions-container">
-                {#if $organization?.billingPlan === BillingPlan.FREE || $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION}
+                {#if currentPlan.price === 0}
                     <Layout.Stack
                         direction="row"
                         alignItems="center"

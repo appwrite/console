@@ -17,7 +17,6 @@
     import type { Models } from '@appwrite.io/console';
     import { daysLeftInTrial, billingIdToPlan } from '$lib/stores/billing';
     import { toLocaleDate } from '$lib/helpers/date';
-    import { BillingPlan } from '$lib/constants';
     import { goto } from '$app/navigation';
     import { Icon, Tooltip, Typography } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
@@ -61,16 +60,14 @@
     function isOrganizationOnTrial(organization: Models.Organization): boolean {
         if (!organization?.billingTrialStartDate) return false;
         if ($daysLeftInTrial <= 0) return false;
-        if (organization.billingPlan === BillingPlan.FREE) return false;
+        if (!organization.billingPlanDetails.trial) return false;
 
         return !!organization?.billingTrialDays;
     }
 
     function isNonPayingOrganization(organization: Models.Organization): boolean {
-        return (
-            organization?.billingPlan === BillingPlan.FREE ||
-            organization?.billingPlan === BillingPlan.GITHUB_EDUCATION
-        );
+        // 0 priced plans don't need payment methods!
+        return !organization?.billingPlanDetails.requiresPaymentMethod;
     }
 
     function isPayingOrganization(

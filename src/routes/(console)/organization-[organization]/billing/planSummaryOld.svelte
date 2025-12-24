@@ -6,7 +6,6 @@
     import { upgradeURL } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { abbreviateNumber, formatCurrency, formatNumberWithCommas } from '$lib/helpers/numbers';
-    import { BillingPlan } from '$lib/constants';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import {
         Accordion,
@@ -52,11 +51,7 @@
                             {currentPlan.name} plan
                         </Typography.Text>
                         <Typography.Text>
-                            {isTrial || $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION
-                                ? formatCurrency(0)
-                                : currentPlan
-                                  ? formatCurrency(currentPlan?.price)
-                                  : ''}
+                            {isTrial || currentPlan ? formatCurrency(currentPlan?.price) : ''}
                         </Typography.Text>
                     </Layout.Stack>
 
@@ -140,7 +135,7 @@
                         </Layout.Stack>
                     {/if}
 
-                    {#if $organization?.billingPlan !== BillingPlan.FREE && $organization?.billingPlan !== BillingPlan.GITHUB_EDUCATION}
+                    {#if currentPlan.price > 0}
                         <Divider />
                         <Layout.Stack direction="row" justifyContent="space-between">
                             <Typography.Text color="--fgcolor-neutral-primary" variant="m-500">
@@ -170,7 +165,7 @@
             </Card.Base>
         </svelte:fragment>
         <svelte:fragment slot="actions">
-            {#if $organization?.billingPlan === BillingPlan.FREE || $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION}
+            {#if currentPlan.price === 0}
                 <div
                     class="u-flex u-flex-vertical-mobile u-cross-center u-gap-16 u-flex-wrap u-width-full-line u-main-end">
                     {#if !currentPlan?.usagePerProject}

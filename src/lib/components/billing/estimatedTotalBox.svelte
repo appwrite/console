@@ -7,7 +7,7 @@
     import { AppwriteException, BillingPlan, type Models } from '@appwrite.io/console';
     import DiscountsApplied from './discountsApplied.svelte';
 
-    export let billingPlan: string;
+    export let billingPlan: Models.BillingPlan;
     export let collaborators: string[];
     export let couponData: Partial<Models.Coupon>;
     export let billingBudget: number;
@@ -82,8 +82,8 @@
     }
 
     $: organizationId
-        ? getUpdatePlanEstimate(organizationId, billingPlan, collaborators, couponData?.code)
-        : getEstimate(billingPlan, collaborators, couponData?.code);
+        ? getUpdatePlanEstimate(organizationId, billingPlan.$id, collaborators, couponData?.code)
+        : getEstimate(billingPlan.$id, collaborators, couponData?.code);
 </script>
 
 {#if estimation}
@@ -106,6 +106,7 @@
             {#if couponData?.status === 'active'}
                 <CreditsApplied bind:couponData {fixedCoupon} />
             {/if}
+
             <Divider />
             <Layout.Stack direction="row" justifyContent="space-between">
                 <Typography.Text>Total due</Typography.Text>

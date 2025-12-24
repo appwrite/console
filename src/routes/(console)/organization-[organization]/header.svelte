@@ -3,7 +3,6 @@
     import { base } from '$app/paths';
     import { page } from '$app/state';
     import { AvatarGroup, Tab, Tabs } from '$lib/components';
-    import { BillingPlan } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
     import { isTabSelected } from '$lib/helpers/load';
@@ -11,8 +10,8 @@
     import {
         daysLeftInTrial,
         getServiceLimit,
-        readOnly,
-        billingIdToPlan
+        isGitHubEducationPlan,
+        readOnly
     } from '$lib/stores/billing';
     import { members, newMemberModal, newOrgModal } from '$lib/stores/organization';
     import {
@@ -25,7 +24,7 @@
     import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
     import { IconGithub, IconPlus, IconPlusSm } from '@appwrite.io/pink-icons-svelte';
     import { Badge, Icon, Layout, Tooltip, Typography } from '@appwrite.io/pink-svelte';
-    import type { Models } from '@appwrite.io/console';
+    import { BillingPlanGroup, type Models } from '@appwrite.io/console';
 
     let areMembersLimited: boolean = $state(false);
 
@@ -98,14 +97,15 @@
                 <Typography.Title color="--fgcolor-neutral-primary" size="xl" truncate>
                     {organization.name}
                 </Typography.Title>
-                {#if isCloud && organization?.billingPlan === BillingPlan.GITHUB_EDUCATION}
+                <!-- TODO: @itznotabug, @dlohani - add a better identifier here -->
+                {#if isCloud && isGitHubEducationPlan(organization.billingPlanDetails)}
                     <Badge variant="secondary" content="Education">
                         <Icon icon={IconGithub} size="s" slot="start" />
                     </Badge>
-                {:else if isCloud && organization?.billingPlan === BillingPlan.FREE}
+                {:else if isCloud && organization?.billingPlanDetails.group === BillingPlanGroup.Starter}
                     <Badge variant="secondary" content="Free"></Badge>
                 {/if}
-                {#if isCloud && organization?.billingTrialStartDate && $daysLeftInTrial > 0 && organization.billingPlan !== BillingPlan.FREE && organization?.billingTrialDays}
+                {#if isCloud && organization?.billingTrialStartDate && $daysLeftInTrial > 0 && organization.billingPlanDetails.trial && organization?.billingTrialDays}
                     <Tooltip>
                         <Badge variant="secondary" content="Trial" />
                         <svelte:fragment slot="tooltip">
@@ -145,10 +145,11 @@
                                 </Button>
                             </div>
                             <div slot="tooltip">
-                                {organization?.billingPlan === BillingPlan.FREE
+                                <!-- TODO: @itznotabug - should be updated since members are unlimited on paid plans now -->
+                                {!organization?.billingPlanDetails.addons.seats.supported
                                     ? 'Upgrade to add more members'
                                     : `You've reached the members limit for the ${
-                                          billingIdToPlan(organization?.billingPlan)?.name
+                                          organization?.billingPlanDetails?.name
                                       } plan`}
                             </div>
                         </Tooltip>

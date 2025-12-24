@@ -133,9 +133,8 @@
     {#if organization?.billingPlanDowngrade}
         <Alert.Inline status="info">
             Your organization has changed to {billingIdToPlan(organization?.billingPlanDowngrade)
-                .name} plan. You will continue to have access to {billingIdToPlan(
-                organization?.billingPlan
-            ).name} plan features until your billing period ends on {toLocaleDate(
+                .name} plan. You will continue to have access to {organization?.billingPlanDetails
+                ?.name} plan features until your billing period ends on {toLocaleDate(
                 organization.billingNextInvoiceDate
             )}.
         </Alert.Inline>

@@ -1,5 +1,5 @@
 import type { PageLoad } from './$types';
-import { BillingPlan, Dependencies } from '$lib/constants';
+import { Dependencies } from '$lib/constants';
 import { sdk } from '$lib/stores/sdk';
 import { BillingPlanGroup, type Models, Platform } from '@appwrite.io/console';
 import { getBasePlanFromGroup } from '$lib/stores/billing';
@@ -23,16 +23,15 @@ export const load: PageLoad = async ({ depends, parent }) => {
         };
     }
 
-    let plan: BillingPlan;
+    let plan: Models.BillingPlan;
 
     const pro = getBasePlanFromGroup(BillingPlanGroup.Pro);
     const scale = getBasePlanFromGroup(BillingPlanGroup.Scale);
 
-    // TODO: why not just use the current id as is?
-    if (currentPlan?.$id === scale.$id) {
-        plan = scale.$id as BillingPlan /* temp */;
+    if (currentPlan?.group === BillingPlanGroup.Scale) {
+        plan = scale;
     } else {
-        plan = pro.$id as BillingPlan /* temp */;
+        plan = pro;
     }
 
     const selfService = currentPlan?.selfService ?? true;

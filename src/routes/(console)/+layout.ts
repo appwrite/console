@@ -2,6 +2,7 @@ import { sdk } from '$lib/stores/sdk';
 import { isCloud } from '$lib/system';
 import type { LayoutLoad } from './$types';
 import { Dependencies } from '$lib/constants';
+import { plansInfo as plansInfoStore } from '$lib/stores/billing';
 import { type Models, Platform, Query } from '@appwrite.io/console';
 
 export const load: LayoutLoad = async ({ depends, parent }) => {
@@ -48,6 +49,8 @@ export const load: LayoutLoad = async ({ depends, parent }) => {
             projectsCount = 0;
         }
     }
+
+    plansInfoStore.set(plansInfo);
 
     return {
         plansInfo,
