@@ -85,6 +85,12 @@
                 disabled: !(isCloud && $canSeeBilling)
             },
             {
+                href: `${path}/integrations`,
+                event: 'integrations',
+                title: 'Integrations',
+                disabled: !$isOwner || !isCloud
+            },
+            {
                 href: `${path}/settings`,
                 event: 'settings',
                 title: 'Settings',

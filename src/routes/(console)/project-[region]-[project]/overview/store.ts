@@ -37,3 +37,7 @@ export const keyColumns = readable<Column[]>([
     ...get(devKeyColumns),
     { id: 'scopes', title: 'Scopes', type: 'string', width: { min: 120 } }
 ]);
+
+export const organizationKeyColumns = readable<Column[]>([...get(keyColumns)]);
+
+export const accountKeyColumns = readable<Column[]>([...get(keyColumns)]);

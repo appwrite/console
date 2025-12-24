@@ -160,309 +160,455 @@ export const scopes: {
     description: string;
     category: string;
     icon: string;
+    type: 'api' | 'organization' | 'account';
 }[] = [
+    // Project keys
     {
         scope: 'sessions.write',
         description: "Access to create, update and delete your project's sessions",
         category: 'Auth',
-        icon: 'user-group'
+        icon: 'user-group',
+        type: 'api'
     },
     {
         scope: 'users.read',
         description: "Access to read your project's users",
         category: 'Auth',
-        icon: 'user-group'
+        icon: 'user-group',
+        type: 'api'
     },
     {
         scope: 'users.write',
         description: "Access to create, update, and delete your project's users",
         category: 'Auth',
-        icon: 'user-group'
+        icon: 'user-group',
+        type: 'api'
     },
     {
         scope: 'teams.read',
         description: "Access to read your project's teams",
         category: 'Auth',
-        icon: 'user-group'
+        icon: 'user-group',
+        type: 'api'
     },
     {
         scope: 'teams.write',
         description: "Access to create, update, and delete your project's teams",
         category: 'Auth',
-        icon: 'user-group'
+        icon: 'user-group',
+        type: 'api'
     },
     {
         scope: 'databases.read',
         description: "Access to read your project's databases",
         category: 'Database',
-        icon: 'database'
+        icon: 'database',
+        type: 'api'
     },
     {
         scope: 'databases.write',
         description: "Access to create, update, and delete your project's databases",
         category: 'Database',
-        icon: 'database'
+        icon: 'database',
+        type: 'api'
     },
     {
         scope: 'collections.read',
         description: "Access to read your project's database collections",
         category: 'Database',
-        icon: 'database'
+        icon: 'database',
+        type: 'api'
     },
     {
         scope: 'collections.write',
         description: "Access to create, update, and delete your project's database collections",
         category: 'Database',
-        icon: 'database'
+        icon: 'database',
+        type: 'api'
     },
     {
         scope: 'tables.read',
         description: "Access to read your project's database tables",
         category: 'Database',
-        icon: 'database'
+        icon: 'database',
+        type: 'api'
     },
     {
         scope: 'tables.write',
         description: "Access to create, update, and delete your project's database tables",
         category: 'Database',
-        icon: 'database'
+        icon: 'database',
+        type: 'api'
     },
     {
         scope: 'attributes.read',
         description: "Access to read your project's database collection's attributes",
         category: 'Database',
-        icon: 'database'
+        icon: 'database',
+        type: 'api'
     },
     {
         scope: 'attributes.write',
         description:
             "Access to create, update, and delete your project's database collection's attributes",
         category: 'Database',
-        icon: 'database'
+        icon: 'database',
+        type: 'api'
     },
     {
         scope: 'columns.read',
         description: "Access to read your project's database table's columns",
         category: 'Database',
-        icon: 'database'
+        icon: 'database',
+        type: 'api'
     },
     {
         scope: 'columns.write',
         description: "Access to create, update, and delete your project's database table's columns",
         category: 'Database',
-        icon: 'database'
+        icon: 'database',
+        type: 'api'
     },
     {
         scope: 'indexes.read',
         description: "Access to read your project's database table's indexes",
         category: 'Database',
-        icon: 'database'
+        icon: 'database',
+        type: 'api'
     },
     {
         scope: 'indexes.write',
         description: "Access to create, update, and delete your project's database table's indexes",
         category: 'Database',
-        icon: 'database'
+        icon: 'database',
+        type: 'api'
     },
     {
         scope: 'documents.read',
         description: "Access to read your project's database documents",
         category: 'Database',
-        icon: 'database'
+        icon: 'database',
+        type: 'api'
     },
     {
         scope: 'documents.write',
         description: "Access to create, update, and delete your project's database documents",
         category: 'Database',
-        icon: 'database'
+        icon: 'database',
+        type: 'api'
     },
     {
         scope: 'rows.read',
         description: "Access to read your project's database rows",
         category: 'Database',
-        icon: 'database'
+        icon: 'database',
+        type: 'api'
     },
     {
         scope: 'rows.write',
         description: "Access to create, update, and delete your project's database rows",
         category: 'Database',
-        icon: 'database'
+        icon: 'database',
+        type: 'api'
     },
     {
         scope: 'files.read',
         description: "Access to read your project's storage files and preview images",
         category: 'Storage',
-        icon: 'folder'
+        icon: 'folder',
+        type: 'api'
     },
     {
         scope: 'files.write',
         description: "Access to create, update, and delete your project's storage files",
         category: 'Storage',
-        icon: 'folder'
+        icon: 'folder',
+        type: 'api'
     },
     {
         scope: 'buckets.read',
         description: "Access to read your project's storage buckets",
         category: 'Storage',
-        icon: 'folder'
+        icon: 'folder',
+        type: 'api'
     },
     {
         scope: 'buckets.write',
         description: "Access to create, update, and delete your project's storage buckets",
         category: 'Storage',
-        icon: 'folder'
+        icon: 'folder',
+        type: 'api'
     },
     {
         scope: 'functions.read',
         description: "Access to read your project's functions and code deployments",
         category: 'Functions',
-        icon: 'lightning-bolt'
+        icon: 'lightning-bolt',
+        type: 'api'
     },
     {
         scope: 'functions.write',
         description:
             "Access to create, update, and delete your project's functions and code deployments",
         category: 'Functions',
-        icon: 'lightning-bolt'
+        icon: 'lightning-bolt',
+        type: 'api'
     },
     {
         scope: 'execution.read',
         description: "Access to read your project's execution logs",
         category: 'Functions',
-        icon: 'lightning-bolt'
+        icon: 'lightning-bolt',
+        type: 'api'
     },
     {
         scope: 'execution.write',
         description: "Access to execute your project's functions",
         category: 'Functions',
-        icon: 'lightning-bolt'
+        icon: 'lightning-bolt',
+        type: 'api'
     },
     {
         scope: 'targets.read',
         description: "Access to read your project's messaging targets",
         category: 'Messaging',
-        icon: 'send'
+        icon: 'send',
+        type: 'api'
     },
     {
         scope: 'targets.write',
         description: "Access to create, update, and delete your project's messaging targets",
         category: 'Messaging',
-        icon: 'send'
+        icon: 'send',
+        type: 'api'
     },
     {
         scope: 'providers.read',
         description: "Access to read your project's messaging providers",
         category: 'Messaging',
-        icon: 'send'
+        icon: 'send',
+        type: 'api'
     },
     {
         scope: 'providers.write',
         description: "Access to create, update, and delete your project's messaging providers",
         category: 'Messaging',
-        icon: 'send'
+        icon: 'send',
+        type: 'api'
     },
     {
         scope: 'messages.read',
         description: "Access to read your project's messages",
         category: 'Messaging',
-        icon: 'send'
+        icon: 'send',
+        type: 'api'
     },
     {
         scope: 'messages.write',
         description: "Access to create, update, and delete your project's messages",
         category: 'Messaging',
-        icon: 'send'
+        icon: 'send',
+        type: 'api'
     },
     {
         scope: 'topics.read',
         description: "Access to read your project's messaging topics",
         category: 'Messaging',
-        icon: 'send'
+        icon: 'send',
+        type: 'api'
     },
     {
         scope: 'topics.write',
         description: "Access to create, update, and delete your project's messaging topics",
         category: 'Messaging',
-        icon: 'send'
+        icon: 'send',
+        type: 'api'
     },
     {
         scope: 'subscribers.read',
         description: "Access to read your project's messaging topic subscribers",
         category: 'Messaging',
-        icon: 'send'
+        icon: 'send',
+        type: 'api'
     },
     {
         scope: 'subscribers.write',
         description:
             "Access to create, update, and delete your project's messaging topic subscribers",
         category: 'Messaging',
-        icon: 'send'
+        icon: 'send',
+        type: 'api'
     },
     {
         scope: 'locale.read',
         description: "Access to access your project's Locale service",
         category: 'Other',
-        icon: 'globe'
+        icon: 'globe',
+        type: 'api'
     },
     {
         scope: 'avatars.read',
         description: "Access to access your project's Avatars service",
         category: 'Other',
-        icon: 'globe'
+        icon: 'globe',
+        type: 'api'
     },
     {
         scope: 'health.read',
         description: "Access to read your project's health status",
         category: 'Other',
-        icon: 'globe'
+        icon: 'globe',
+        type: 'api'
     },
     {
         scope: 'migrations.read',
         description: "Access to read your project's migration status",
         category: 'Other',
-        icon: 'globe'
+        icon: 'globe',
+        type: 'api'
     },
     {
         scope: 'migrations.write',
         description: 'Access to create migrations',
         category: 'Other',
-        icon: 'globe'
+        icon: 'globe',
+        type: 'api'
     },
     {
         scope: 'tokens.read',
         description: "Access to read your project's file tokens",
         category: 'Other',
-        icon: 'globe'
+        icon: 'globe',
+        type: 'api'
     },
     {
         scope: 'tokens.write',
         description: 'Access to create file tokens',
         category: 'Other',
-        icon: 'globe'
+        icon: 'globe',
+        type: 'api'
     },
     {
         scope: 'sites.read',
         description: "Access to read your project's sites and deployments",
         category: 'Sites',
-        icon: 'globe'
+        icon: 'globe',
+        type: 'api'
     },
     {
         scope: 'sites.write',
         description: "Access to create, update, and delete your project's sites and deployments",
         category: 'Sites',
-        icon: 'globe'
+        icon: 'globe',
+        type: 'api'
     },
     {
         scope: 'log.read',
         description: "Access to read your sites's logs",
         category: 'Sites',
-        icon: 'globe'
+        icon: 'globe',
+        type: 'api'
     },
     {
         scope: 'log.write',
         description: "Access to delete your site's logs",
         category: 'Sites',
-        icon: 'globe'
+        icon: 'globe',
+        type: 'api'
+    },
+    // Organization keys
+    {
+        scope: 'platforms.read',
+        description: 'Access to read platforms of projects in organization.',
+        category: 'Projects',
+        icon: 'globe',
+        type: 'organization'
+    },
+    {
+        scope: 'platforms.write',
+        description: 'Access to create, update, and delete platforms of projects in organization.',
+        category: 'Projects',
+        icon: 'globe',
+        type: 'organization'
+    },
+    {
+        scope: 'keys.read',
+        description: 'Access to read API keys of projects in organization.',
+        category: 'Projects',
+        icon: 'globe',
+        type: 'organization'
+    },
+    {
+        scope: 'keys.write',
+        description: 'Access to create, update, and delete API keys of projects in organization.',
+        category: 'Projects',
+        icon: 'globe',
+        type: 'organization'
+    },
+    {
+        scope: 'devKeys.read',
+        description: 'Access to read dev keys of projects in organization.',
+        category: 'Projects',
+        icon: 'globe',
+        type: 'organization'
+    },
+    {
+        scope: 'devKeys.write',
+        description: 'Access to create, update, and delete dev keys of projects in organization.',
+        category: 'Projects',
+        icon: 'globe',
+        type: 'organization'
+    },
+    {
+        scope: 'webhooks.read',
+        description: 'Access to read webhooks of projects in organization.',
+        category: 'Projects',
+        icon: 'globe',
+        type: 'organization'
+    },
+    {
+        scope: 'webhooks.write',
+        description: 'Access to create, update, and delete webhooks of projects in organization.',
+        category: 'Projects',
+        icon: 'globe',
+        type: 'organization'
+    },
+    {
+        scope: 'projects.read',
+        description: 'Access to read projects in organization.',
+        category: 'Organization',
+        icon: 'globe',
+        type: 'organization'
+    },
+    {
+        scope: 'projects.write',
+        description: 'Access to create, update, and delete projects in organization.',
+        category: 'Organization',
+        icon: 'globe',
+        type: 'organization'
+    },
+    // Account keys
+    {
+        scope: 'account',
+        description: "Access to manage account, it's organizations, sessions, tokens, and billing.",
+        category: 'Other',
+        icon: 'globe',
+        type: 'account'
+    },
+    {
+        scope: 'teams.read',
+        description: 'Access to read organization detail.',
+        category: 'Organizations',
+        icon: 'globe',
+        type: 'account'
+    },
+    {
+        scope: 'teams.write',
+        description:
+            "Access to update organization detail, delete it, and manage it's memberships.",
+        category: 'Organizations',
+        icon: 'globe',
+        type: 'account'
     }
 ];
 
@@ -471,37 +617,43 @@ export const cloudOnlyBackupScopes = [
         scope: 'policies.read',
         description: 'Access to read your database backup policies',
         category: 'Database',
-        icon: 'database'
+        icon: 'database',
+        type: 'api'
     },
     {
         scope: 'policies.write',
         description: 'Access to create, update and delete your backup policies',
         category: 'Database',
-        icon: 'database'
+        icon: 'database',
+        type: 'api'
     },
     {
         scope: 'archives.read',
         description: 'Access to read your database backup archives',
         category: 'Database',
-        icon: 'database'
+        icon: 'database',
+        type: 'api'
     },
     {
         scope: 'archives.write',
         description: 'Access to create and delete your backup archives',
         category: 'Database',
-        icon: 'database'
+        icon: 'database',
+        type: 'api'
     },
     {
         scope: 'restorations.read',
         description: 'Access to read your backup restorations',
         category: 'Database',
-        icon: 'database'
+        icon: 'database',
+        type: 'api'
     },
     {
         scope: 'restorations.write',
         description: 'Access to create backup restorations',
         category: 'Database',
-        icon: 'database'
+        icon: 'database',
+        type: 'api'
     }
 ];
 
