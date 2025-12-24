@@ -72,6 +72,7 @@ export type Profile = {
         cookies: string;
         pricing: string;
         github?: string;
+        status: string;
     };
     support: {
         technical: string[];
@@ -137,7 +138,8 @@ export const base: Profile = {
         cookies: 'https://appwrite.io/cookies',
         privacy: 'https://appwrite.io/privacy',
         pricing: 'https://appwrite.io/pricing',
-        github: 'https://github.com/appwrite/appwrite'
+        github: 'https://github.com/appwrite/appwrite',
+        status: 'https://status.appwrite.online'
     },
     support: {
         technical: [
@@ -228,7 +230,8 @@ export const studio: Profile = {
         discord: 'https://imagine.dev/discord',
         cookies: 'https://imagine.dev/cookies',
         privacy: 'https://imagine.dev/privacy',
-        pricing: 'https://imagine.dev/pricing'
+        pricing: 'https://imagine.dev/pricing',
+        status: 'https://status.imagine.dev'
     },
     support: {
         technical: [

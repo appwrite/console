@@ -154,7 +154,7 @@
                 <iframe
                     style="color-scheme: none"
                     title="{resolvedProfile.platform} Status"
-                    src={`https://status.appwrite.online/badge?theme=${
+                    src={`${resolvedProfile.links.status}/badge?theme=${
                         $app.themeInUse === 'dark' ? 'dark' : 'light'
                     }`}
                     width="250"
