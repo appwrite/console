@@ -35,7 +35,6 @@
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { goto } from '$app/navigation';
     import { page } from '$app/state';
-    import { onMount } from 'svelte';
 
     let {
         pingCount = 0,
