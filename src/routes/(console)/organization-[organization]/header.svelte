@@ -138,14 +138,16 @@
                         </Tooltip>
                     {/if}
                 {/if}
-                <Button
-                    secondary
-                    icon
-                    size="xs"
-                    on:click={() =>
-                        isCloud ? goto(`${base}/create-organization`) : newOrgModal.set(true)}>
-                    <Icon icon={IconPlusSm} size="m" />
-                </Button>
+                {#if resolvedProfile.showCreateOrganization}
+                    <Button
+                        secondary
+                        icon
+                        size="xs"
+                        on:click={() =>
+                            isCloud ? goto(`${base}/create-organization`) : newOrgModal.set(true)}>
+                        <Icon icon={IconPlusSm} size="m" />
+                    </Button>
+                {/if}
             </Layout.Stack>
             <div class="u-margin-inline-start-auto">
                 <Layout.Stack direction="row" alignItems="center" gap="xl">
