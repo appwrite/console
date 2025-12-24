@@ -27,25 +27,20 @@
         });
     }
 
-    export async function continuePlatform(
-        platform: Platform,
-        name: string,
-        key: string,
-        type: PlatformType
-    ) {
+    export async function continuePlatform(platform: Platform, name: string, type: PlatformType) {
         createPlatform.set({
             name: name,
-            key: key,
             type: type
         });
+
         trackEvent(Click.PlatformCreateClick, {
             platform: platforms[platform],
             state: 'continue'
         });
+
         wizard.start(platforms[platform], null, 1, {
             isConnectPlatform: true,
-            platform: type,
-            key: key
+            platform: type
         });
     }
 

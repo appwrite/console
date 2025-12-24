@@ -28,47 +28,52 @@
     import PlatformFlutterImgSourceDark from './assets/platform-flutter-dark.svg';
     import PlatformSdkImgSource from './assets/platform-sdk.jpg';
     import PlatformSdkImgSourceDark from './assets/platform-sdk-dark.png';
-    import { base } from '$app/paths';
+    import { resolve } from '$app/paths';
     import { isSmallViewport } from '$lib/stores/viewport';
     import type { Models } from '@appwrite.io/console';
     import { getPlatformInfo } from '$lib/helpers/platform';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { goto } from '$app/navigation';
     import { page } from '$app/state';
+    import { onMount } from 'svelte';
 
-    export let pingCount = 0;
-    export let platforms: Models.Platform[] = [];
+    let {
+        pingCount = 0,
+        platforms = []
+    }: {
+        pingCount: number;
+        platforms: Array<Models.Platform>;
+    } = $props();
+
+    let platformMap = $state(new Map<string, Models.Platform>());
+
+    const projectRoute = $derived.by(() => {
+        return resolve('/(console)/project-[region]-[project]', {
+            region: page.params.region,
+            project: page.params.project
+        });
+    });
+
+    onMount(() => {
+        platforms.forEach((platform) => {
+            const platformInfo = getPlatformInfo(platform.type);
+            platformMap.set(platformInfo.name, platform);
+        });
+    });
 
     function createKey() {
-        trackEvent(Click.KeyCreateClick, {
-            source: 'onboarding'
-        });
-        goto(
-            `${base}/project-${page.params.region}-${page.params.project}/overview/api-keys/create`,
-            {
-                replaceState: true
-            }
-        );
+        trackEvent(Click.KeyCreateClick, { source: 'onboarding' });
+
+        goto(`${projectRoute}/overview/api-keys/create`, { replaceState: true });
     }
 
     function openPlatformWizard(type: number, platform?: Models.Platform) {
         if (platform) {
-            continuePlatform(type, platform.name, platform.key, platform.type);
+            continuePlatform(type, platform.name, platform.type);
         } else {
             trackEvent(Click.PlatformCreateClick, { source: 'onboarding' });
             addPlatform(type);
         }
-    }
-
-    let platformMap = new Map();
-
-    $: {
-        let updatedMap = new Map();
-        platforms.forEach((platform) => {
-            const platformInfo = getPlatformInfo(platform.type);
-            updatedMap.set(platformInfo.name, platform);
-        });
-        platformMap = updatedMap;
     }
 </script>
 
@@ -410,9 +415,7 @@
                                     <Card.Button
                                         on:click={() => {
                                             trackEvent(Click.OnboardingSetupDatabaseClick);
-                                            goto(
-                                                `${base}/project-${page.params.region}-${page.params.project}/databases`
-                                            );
+                                            goto(`${projectRoute}/databases`);
                                         }}
                                         padding="s"
                                         ><Layout.Stack gap="xl"
@@ -507,7 +510,7 @@
                                                             justifyContent="flex-end">
                                                             <Link.Anchor
                                                                 variant="quiet-muted"
-                                                                href={`${base}/project-${page.params.region}-${page.params.project}/auth/settings`}
+                                                                href={`${projectRoute}/auth/settings`}
                                                                 on:click={() => {
                                                                     trackEvent(
                                                                         Click.OnboardingAuthEmailPasswordClick
@@ -517,7 +520,7 @@
                                                             </Link.Anchor>
                                                             <Link.Anchor
                                                                 variant="quiet-muted"
-                                                                href={`${base}/project-${page.params.region}-${page.params.project}/auth/settings`}
+                                                                href={`${projectRoute}/auth/settings`}
                                                                 on:click={() => {
                                                                     trackEvent(
                                                                         Click.OnboardingAuthOauth2Click
@@ -525,7 +528,7 @@
                                                                 }}>OAuth 2</Link.Anchor>
                                                             <Link.Anchor
                                                                 variant="quiet-muted"
-                                                                href={`${base}/project-${page.params.region}-${page.params.project}/auth/settings`}
+                                                                href={`${projectRoute}/auth/settings`}
                                                                 on:click={() => {
                                                                     trackEvent(
                                                                         Click.OnboardingAuthAllMethodsClick
