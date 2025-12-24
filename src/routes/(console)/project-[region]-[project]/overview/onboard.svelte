@@ -45,19 +45,20 @@
         platforms: Array<Models.Platform>;
     } = $props();
 
-    let platformMap = $state(new Map<string, Models.Platform>());
+    const platformMap = $derived.by(() => {
+        const map = new Map<string, Models.Platform>();
+        platforms.forEach((platform) => {
+            const platformInfo = getPlatformInfo(platform.type);
+            map.set(platformInfo.name, platform);
+        });
+
+        return map;
+    });
 
     const projectRoute = $derived.by(() => {
         return resolve('/(console)/project-[region]-[project]', {
             region: page.params.region,
             project: page.params.project
-        });
-    });
-
-    onMount(() => {
-        platforms.forEach((platform) => {
-            const platformInfo = getPlatformInfo(platform.type);
-            platformMap.set(platformInfo.name, platform);
         });
     });
 
