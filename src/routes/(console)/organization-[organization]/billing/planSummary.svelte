@@ -582,7 +582,7 @@
 
             <!-- Actions -->
             <div class="actions-container">
-                {#if currentPlan.price === 0}
+                {#if !currentPlan.requiresPaymentMethod}
                     <Layout.Stack
                         direction="row"
                         alignItems="center"

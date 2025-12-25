@@ -1,18 +1,13 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
-    import { base } from '$app/paths';
+    import { base, resolve } from '$app/paths';
     import { page } from '$app/state';
     import { AvatarGroup, Tab, Tabs } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
     import { isTabSelected } from '$lib/helpers/load';
     import { Cover } from '$lib/layout';
-    import {
-        daysLeftInTrial,
-        getServiceLimit,
-        isGitHubEducationPlan,
-        readOnly
-    } from '$lib/stores/billing';
+    import { daysLeftInTrial, getServiceLimit, readOnly } from '$lib/stores/billing';
     import { members, newMemberModal, newOrgModal } from '$lib/stores/organization';
     import {
         canSeeBilling,
@@ -22,9 +17,10 @@
         isOwner
     } from '$lib/stores/roles';
     import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
-    import { IconGithub, IconPlus, IconPlusSm } from '@appwrite.io/pink-icons-svelte';
+    import { IconPlus, IconPlusSm } from '@appwrite.io/pink-icons-svelte';
     import { Badge, Icon, Layout, Tooltip, Typography } from '@appwrite.io/pink-svelte';
     import { BillingPlanGroup, type Models } from '@appwrite.io/console';
+    import { IconsMap } from '$lib/helpers/program';
 
     let areMembersLimited: boolean = $state(false);
 
@@ -36,8 +32,14 @@
             (($readOnly && !GRACE_PERIOD_OVERRIDE) || (isLimited && $members?.total >= limit));
     });
 
+    const program: Models.Program | null = $derived(page.data.program as Models.Program);
+
     const organization = $derived(page.data.organization as Models.Organization);
-    const path = $derived(`${base}/organization-${organization.$id}`);
+    const path = $derived.by(() => {
+        return resolve('/(console)/organization-[organization]', {
+            organization: organization.$id
+        });
+    });
 
     const tabs = $derived(
         [
@@ -97,24 +99,28 @@
                 <Typography.Title color="--fgcolor-neutral-primary" size="xl" truncate>
                     {organization.name}
                 </Typography.Title>
-                <!-- TODO: @itznotabug, @dlohani - add a better identifier here -->
-                {#if isCloud && isGitHubEducationPlan(organization.billingPlanDetails)}
-                    <Badge variant="secondary" content="Education">
-                        <Icon icon={IconGithub} size="s" slot="start" />
-                    </Badge>
-                {:else if isCloud && organization?.billingPlanDetails.group === BillingPlanGroup.Starter}
-                    <Badge variant="secondary" content="Free"></Badge>
+
+                {#if isCloud}
+                    {#if program && program.tag}
+                        <Badge variant="secondary" content={program.tag}>
+                            <Icon icon={IconsMap[program.icon]} size="s" slot="start" />
+                        </Badge>
+                    {:else if organization?.billingPlanDetails.group === BillingPlanGroup.Starter}
+                        <Badge variant="secondary" content="Free"></Badge>
+                    {/if}
+
+                    {#if organization?.billingTrialStartDate && $daysLeftInTrial > 0 && organization.billingPlanDetails.trial && organization?.billingTrialDays}
+                        <Tooltip>
+                            <Badge variant="secondary" content="Trial" />
+                            <svelte:fragment slot="tooltip">
+                                {`Your trial ends on ${toLocaleDate(
+                                    organization.billingStartDate
+                                )}. ${$daysLeftInTrial} days remaining.`}
+                            </svelte:fragment>
+                        </Tooltip>
+                    {/if}
                 {/if}
-                {#if isCloud && organization?.billingTrialStartDate && $daysLeftInTrial > 0 && organization.billingPlanDetails.trial && organization?.billingTrialDays}
-                    <Tooltip>
-                        <Badge variant="secondary" content="Trial" />
-                        <svelte:fragment slot="tooltip">
-                            {`Your trial ends on ${toLocaleDate(
-                                organization.billingStartDate
-                            )}. ${$daysLeftInTrial} days remaining.`}
-                        </svelte:fragment>
-                    </Tooltip>
-                {/if}
+
                 <Button
                     secondary
                     icon

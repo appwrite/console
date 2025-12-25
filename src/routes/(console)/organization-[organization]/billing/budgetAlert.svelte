@@ -148,7 +148,7 @@
 
     <svelte:fragment slot="actions">
         <Form onSubmit={updateBudget}>
-            {#if !!currentPlan.budgeting}
+            {#if !currentPlan.budgeting}
                 <Button
                     secondary
                     href={$upgradeURL}

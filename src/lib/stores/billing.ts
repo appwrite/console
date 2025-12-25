@@ -87,11 +87,6 @@ export function getRoleLabel(role: string) {
     return roles.find((r) => r.value === role)?.label ?? role;
 }
 
-export function isGitHubEducationPlan(billingPlanOrId: string | Models.BillingPlan): boolean {
-    const billingPlan = makeBillingPlan(billingPlanOrId);
-    return !isStarterPlan(billingPlan) && billingPlan.price === 0;
-}
-
 export function isStarterPlan(billingPlanOrId: string | Models.BillingPlan): boolean {
     const billingPlan = makeBillingPlan(billingPlanOrId);
     return planHasGroup(billingPlan, BillingPlanGroup.Starter);

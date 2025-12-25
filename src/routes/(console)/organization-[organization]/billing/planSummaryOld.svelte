@@ -135,7 +135,7 @@
                         </Layout.Stack>
                     {/if}
 
-                    {#if currentPlan.price > 0}
+                    {#if currentPlan.requiresPaymentMethod}
                         <Divider />
                         <Layout.Stack direction="row" justifyContent="space-between">
                             <Typography.Text color="--fgcolor-neutral-primary" variant="m-500">
@@ -165,7 +165,7 @@
             </Card.Base>
         </svelte:fragment>
         <svelte:fragment slot="actions">
-            {#if currentPlan.price === 0}
+            {#if !currentPlan.requiresPaymentMethod}
                 <div
                     class="u-flex u-flex-vertical-mobile u-cross-center u-gap-16 u-flex-wrap u-width-full-line u-main-end">
                     {#if !currentPlan?.usagePerProject}
