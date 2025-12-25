@@ -9,7 +9,6 @@
     import { Button } from '$lib/elements/forms';
     import AddCreditModal from './addCreditModal.svelte';
     import { formatCurrency } from '$lib/helpers/numbers';
-    import { BillingPlan } from '$lib/constants';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { upgradeURL } from '$lib/stores/billing';
 
@@ -82,7 +81,7 @@
     }
 </script>
 
-<CardGrid hideFooter={$organization?.billingPlan !== BillingPlan.FREE}>
+<CardGrid hideFooter={areCreditsSupported}>
     <svelte:fragment slot="title">
         {!areCreditsSupported ? 'Credits' : 'Available credit'}
     </svelte:fragment>
@@ -172,7 +171,7 @@
         {/if}
     </svelte:fragment>
     <svelte:fragment slot="actions">
-        {#if $organization?.billingPlan === BillingPlan.FREE}
+        {#if !areCreditsSupported}
             <Button
                 secondary
                 href={$upgradeURL}

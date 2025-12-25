@@ -1,6 +1,5 @@
 <script lang="ts">
     import { page } from '$app/state';
-    import { BillingPlan } from '$lib/constants';
     import { formatNum } from '$lib/helpers/string';
     import { BillingPlanGroup, type Models } from '@appwrite.io/console';
     import { Card, Layout, Tabs, Typography } from '@appwrite.io/pink-svelte';
@@ -17,7 +16,7 @@
     const currentPlan: Models.BillingPlan = $derived($plansInfo.get(selectedTab));
     const visiblePlans: Array<Models.BillingPlan> = $derived.by(() => {
         return page.data.plans.plans.filter(
-            (plan: Models.BillingPlan) => plan.$id !== BillingPlan.SCALE
+            (plan: Models.BillingPlan) => plan.group !== BillingPlanGroup.Scale
         );
     });
 

@@ -25,7 +25,6 @@
     import { ID, type Models, Query } from '@appwrite.io/console';
     import { sdk } from '$lib/stores/sdk';
     import { page } from '$app/state';
-    import { BillingPlan } from '$lib/constants';
     import { onDestroy } from 'svelte';
 
     type Organization = {
@@ -254,7 +253,7 @@
 
     let badgeType: 'success' | undefined;
     $: badgeType =
-        $organization && $organization.billingPlan !== BillingPlan.FREE ? 'success' : undefined;
+        $organization && $organization.billingPlanDetails.price > 0 ? 'success' : undefined;
 </script>
 
 <svelte:window on:resize={onResize} />

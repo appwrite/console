@@ -1,27 +1,46 @@
 <script lang="ts">
-    import { BillingPlan } from '$lib/constants';
-    import { formatCurrency } from '$lib/helpers/numbers';
-    import { currentPlan, organization } from '$lib/stores/organization';
-    import { Badge, Layout, Tooltip, Typography } from '@appwrite.io/pink-svelte';
     import { LabelCard } from '..';
     import { page } from '$app/state';
-    import type { Models } from '@appwrite.io/console';
+    import { formatCurrency } from '$lib/helpers/numbers';
+    import { currentPlan, organization } from '$lib/stores/organization';
+    import { BillingPlanGroup, type Models } from '@appwrite.io/console';
+    import { Badge, Layout, Tooltip, Typography } from '@appwrite.io/pink-svelte';
+    import { billingIdToPlan } from '$lib/stores/billing';
 
-    export let billingPlan: BillingPlan;
-    export let isNewOrg = false;
-    export let selfService = true;
-    export let anyOrgFree = false;
+    let {
+        isNewOrg = false,
+        selfService = true,
+        anyOrgFree = false,
+        selectedBillingPlan = $bindable()
+    }: {
+        isNewOrg?: boolean;
+        selfService?: boolean;
+        anyOrgFree?: boolean;
+        selectedBillingPlan: Models.BillingPlan;
+    } = $props();
 
-    $: plans = Object.values(page.data.plans.plans) as Models.BillingPlan[];
-    $: currentPlanInList = plans.some((plan) => plan.$id === $currentPlan?.$id);
+    let selectedPlan = $state(selectedBillingPlan.$id);
+
+    const plans = $derived(Object.values(page.data.plans.plans) as Models.BillingPlan[]);
+    const currentPlanInList = $derived(plans.some((plan) => plan.$id === $currentPlan?.$id));
 
     // experiment to remove scale plan temporarily
-    $: plansWithoutScale = plans.filter((plan) => plan.$id != BillingPlan.SCALE);
+    const plansWithoutScale = $derived(
+        plans.filter((plan) => plan.group != BillingPlanGroup.Scale)
+    );
 
     function shouldShowTooltip(plan: Models.BillingPlan) {
-        if (plan.$id !== BillingPlan.FREE) return true;
+        if (plan.group !== BillingPlanGroup.Starter) return true;
         else return !anyOrgFree;
     }
+
+    function shouldDisable(plan: Models.BillingPlan) {
+        return plan.group === BillingPlanGroup.Starter && anyOrgFree;
+    }
+
+    $effect(() => {
+        selectedBillingPlan = billingIdToPlan(selectedPlan);
+    });
 </script>
 
 <Layout.Stack>
@@ -29,9 +48,9 @@
         <Tooltip disabled={shouldShowTooltip(plan)} maxWidth="fit-content">
             <LabelCard
                 name="plan"
-                bind:group={billingPlan}
-                disabled={!selfService || (plan.$id === BillingPlan.FREE && anyOrgFree)}
-                tooltipShow={plan.$id === BillingPlan.FREE && anyOrgFree}
+                bind:group={selectedPlan}
+                disabled={!selfService || shouldDisable(plan)}
+                tooltipShow={shouldDisable(plan)}
                 value={plan.$id}
                 title={plan.name}>
                 <svelte:fragment slot="action">
@@ -57,7 +76,7 @@
     {#if $currentPlan && !currentPlanInList}
         <LabelCard
             name="plan"
-            bind:group={billingPlan}
+            bind:group={selectedPlan}
             value={$currentPlan.$id}
             title={$currentPlan.name}>
             <svelte:fragment slot="action">

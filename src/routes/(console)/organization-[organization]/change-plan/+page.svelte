@@ -5,11 +5,11 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { PlanComparisonBox, PlanSelection, SelectPaymentMethod } from '$lib/components/billing';
     import ValidateCreditModal from '$lib/components/billing/validateCreditModal.svelte';
-    import { BillingPlan, Dependencies, feedbackDowngradeOptions } from '$lib/constants';
+    import { Dependencies, feedbackDowngradeOptions } from '$lib/constants';
     import { Button, Form, InputSelect, InputTags, InputTextarea } from '$lib/elements/forms';
     import { formatCurrency } from '$lib/helpers/numbers.js';
     import { Wizard } from '$lib/layout';
-    import { isOrganization, plansInfo, billingIdToPlan } from '$lib/stores/billing';
+    import { billingIdToPlan, getBasePlanFromGroup, isOrganization } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { currentPlan, organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
@@ -31,15 +31,14 @@
     import { loadAvailableRegions } from '$routes/(console)/regions';
     import EstimatedTotalBox from '$lib/components/billing/estimatedTotalBox.svelte';
     import OrganizationUsageLimits from '$lib/components/organizationUsageLimits.svelte';
-    import { Query } from '@appwrite.io/console';
-    import type { Models } from '@appwrite.io/console';
+    import { BillingPlanGroup, type Models, Query } from '@appwrite.io/console';
     import { toLocaleDate } from '$lib/helpers/date';
 
     export let data;
 
+    let selectedPlan: Models.BillingPlan = data.plan;
     let selectedCoupon: Partial<Models.Coupon> = null;
 
-    let selectedPlan: BillingPlan = data.plan as BillingPlan;
     let previousPage: string = resolve('/');
     let showExitModal = false;
     let formComponent: Form;
@@ -87,8 +86,10 @@
         }
 
         const plan = params.get('plan');
-        if (plan && plan in BillingPlan) {
-            selectedPlan = plan as BillingPlan;
+        if (plan) {
+            // if the org has access,
+            // the plan should be available!
+            selectedPlan = billingIdToPlan(plan);
         }
 
         if (params.get('type') === 'payment_confirmed') {
@@ -97,8 +98,9 @@
             await validate(organizationId, invites);
         }
 
-        selectedPlan =
-            $currentPlan?.$id === BillingPlan.SCALE ? BillingPlan.SCALE : BillingPlan.PRO;
+        const pro = getBasePlanFromGroup(BillingPlanGroup.Pro);
+        const scale = getBasePlanFromGroup(BillingPlanGroup.Scale);
+        selectedPlan = $currentPlan?.group === BillingPlanGroup.Scale ? scale : pro;
 
         try {
             orgUsage = await sdk.forConsole.organizations.getUsage({
@@ -129,7 +131,7 @@
     async function handleSubmit() {
         if (isDowngrade) {
             // If target plan has a non-zero project limit, ensure selection made
-            const targetProjectsLimit = $plansInfo?.get(selectedPlan)?.projects ?? 0;
+            const targetProjectsLimit = selectedPlan?.projects ?? 0;
             const shouldShowProjectSelector =
                 targetProjectsLimit > 0 && allProjects.projects.length > targetProjectsLimit;
 
@@ -152,7 +154,7 @@
             )?.label,
             message: feedbackMessage ?? '',
             fromPlanId: data.organization.billingPlan,
-            toPlanId: selectedPlan
+            toPlanId: selectedPlan.$id
         });
     }
 
@@ -161,12 +163,12 @@
             // 1) update the plan first
             await sdk.forConsole.billing.updatePlan(
                 data.organization.$id,
-                selectedPlan,
+                selectedPlan.$id,
                 paymentMethodId
             );
 
             // 2) If the target plan has a project limit, apply selected projects now
-            const targetProjectsLimit = $plansInfo?.get(selectedPlan)?.projects ?? 0;
+            const targetProjectsLimit = selectedPlan?.projects ?? 0;
             if (targetProjectsLimit > 0 && usageLimitsComponent) {
                 const selected = usageLimitsComponent.getSelectedProjects();
                 if (selected?.length) {
@@ -191,7 +193,7 @@
             });
 
             trackEvent(Submit.OrganizationDowngrade, {
-                plan: billingIdToPlan(selectedPlan)?.name
+                plan: selectedPlan?.name
             });
         } catch (e) {
             addNotification({
@@ -220,7 +222,7 @@
                 });
 
                 trackEvent(Submit.OrganizationUpgrade, {
-                    plan: billingIdToPlan(selectedPlan)?.name
+                    plan: selectedPlan?.name
                 });
             }
         } catch (e) {
@@ -244,7 +246,7 @@
             }
             const org = await sdk.forConsole.billing.updatePlan(
                 data.organization.$id,
-                selectedPlan,
+                selectedPlan.$id,
                 paymentMethodId,
                 undefined,
                 selectedCoupon?.code,
@@ -264,7 +266,7 @@
                 params.append('type', 'payment_confirmed');
                 params.append('id', org.teamId);
                 params.append('invites', collaborators.join(','));
-                params.append('plan', selectedPlan);
+                params.append('plan', selectedPlan.$id);
                 await confirmPayment(
                     '',
                     clientSecret,
@@ -290,7 +292,7 @@
                 });
 
                 trackEvent(Submit.OrganizationUpgrade, {
-                    plan: billingIdToPlan(selectedPlan)?.name
+                    plan: selectedPlan?.name
                 });
             }
         } catch (e) {
@@ -302,11 +304,11 @@
         }
     }
 
-    $: isUpgrade = $plansInfo.get(selectedPlan).order > $currentPlan?.order;
-    $: isDowngrade = $plansInfo.get(selectedPlan).order < $currentPlan?.order;
+    $: isUpgrade = selectedPlan.order > $currentPlan?.order;
+    $: isDowngrade = selectedPlan.order < $currentPlan?.order;
     $: isButtonDisabled =
-        $organization?.billingPlan === selectedPlan ||
-        (isDowngrade && selectedPlan === BillingPlan.FREE && data.hasFreeOrgs);
+        $organization?.billingPlan === selectedPlan.$id ||
+        (isDowngrade && selectedPlan.group === BillingPlanGroup.Starter && data.hasFreeOrgs);
 </script>
 
 <svelte:head>
@@ -337,9 +339,9 @@
                     <PlanSelection
                         anyOrgFree={data.hasFreeOrgs}
                         selfService={data.selfService}
-                        bind:billingPlan={selectedPlan} />
+                        bind:selectedBillingPlan={selectedPlan} />
 
-                    {#if isDowngrade && selectedPlan === BillingPlan.FREE && data.hasFreeOrgs}
+                    {#if isDowngrade && selectedPlan.group === BillingPlanGroup.Starter && data.hasFreeOrgs}
                         <Alert.Inline
                             status="warning"
                             title="You can only have one free organization per account">
@@ -358,10 +360,10 @@
                     {#if isDowngrade}
                         {@const extraMembers = collaborators?.length ?? 0}
                         {@const price = formatCurrency(
-                            extraMembers *
-                                ($plansInfo?.get(selectedPlan)?.addons?.seats?.price ?? 0)
+                            extraMembers * (selectedPlan?.addons?.seats?.price ?? 0)
                         )}
-                        {#if selectedPlan === BillingPlan.PRO}
+
+                        {#if selectedPlan.price > 0}
                             <Alert.Inline status="error">
                                 <svelte:fragment slot="title">
                                     Your monthly payments will be adjusted for the Pro plan
@@ -371,15 +373,14 @@
                                     >you will be charged {price} monthly for {extraMembers} team members.</b>
                                 This will be reflected in your next invoice.
                             </Alert.Inline>
-                        {:else if selectedPlan === BillingPlan.FREE}
+                        {:else}
                             <Alert.Inline
                                 status="error"
-                                title={`Your organization will switch to ${billingIdToPlan(selectedPlan).name} plan on ${toLocaleDate(
+                                title={`Your organization will switch to ${selectedPlan.name} plan on ${toLocaleDate(
                                     $organization.billingNextInvoiceDate
                                 )}`}>
-                                You will retain access to {billingIdToPlan(
-                                    $organization.billingPlan
-                                ).name} plan features until your billing period ends. After that,
+                                You will retain access to {$organization.billingPlanDetails.name} plan
+                                features until your billing period ends. After that,
                                 <span class="u-bold"
                                     >all team members except the owner will be removed,</span>
                                 and service disruptions may occur if usage exceeds Free plan limits.
@@ -440,7 +441,7 @@
                         id="members" />
                 </Fieldset>
             {/if}
-            {#if isDowngrade && selectedPlan === BillingPlan.FREE && !data.hasFreeOrgs}
+            {#if isDowngrade && selectedPlan.group === BillingPlanGroup.Starter && !data.hasFreeOrgs}
                 <Fieldset legend="Feedback">
                     <Layout.Stack gap="xl">
                         <InputSelect
@@ -462,7 +463,7 @@
         </Layout.Stack>
     </Form>
     <svelte:fragment slot="aside">
-        {#if selectedPlan !== BillingPlan.FREE && data.organization.billingPlan !== selectedPlan && data.organization.billingPlan !== BillingPlan.CUSTOM}
+        {#if selectedPlan.group !== BillingPlanGroup.Starter && data.organization.billingPlan !== selectedPlan.group && !data.organization.billingPlanDetails.selfService}
             <EstimatedTotalBox
                 {collaborators}
                 {isDowngrade}
@@ -470,7 +471,7 @@
                 bind:couponData={selectedCoupon}
                 bind:billingBudget
                 organizationId={data.organization.$id} />
-        {:else if data.organization.billingPlan !== BillingPlan.CUSTOM}
+        {:else if !data.organization.billingPlanDetails.selfService}
             <PlanComparisonBox downgrade={data.hasFreeOrgs ? false : isDowngrade} />
         {/if}
     </svelte:fragment>

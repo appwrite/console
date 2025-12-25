@@ -186,7 +186,7 @@
                                 items={variables}
                                 limit={6}
                                 hideFooter={variables.length <= 6}>
-                                {#snippet children(paginatedItems: typeof variables)}
+                                {#snippet children(paginatedItems)}
                                     <Table.Root
                                         let:root
                                         columns={[

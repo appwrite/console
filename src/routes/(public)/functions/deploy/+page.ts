@@ -2,12 +2,12 @@ import { sdk } from '$lib/stores/sdk.js';
 import { redirect } from '@sveltejs/kit';
 import { base } from '$app/paths';
 import { isCloud } from '$lib/system';
-import { BillingPlan } from '$lib/constants';
-import { ID } from '@appwrite.io/console';
+import { BillingPlanGroup, ID } from '@appwrite.io/console';
 import { getTeamOrOrganizationList } from '$lib/stores/organization';
 import { redirectTo } from '$routes/store';
 import type { PageLoad } from './$types';
 import { getRepositoryInfo } from '$lib/helpers/github';
+import { getBasePlanFromGroup } from '$lib/stores/billing';
 
 export const load: PageLoad = async ({ parent, url }) => {
     const { account } = await parent();
@@ -72,7 +72,7 @@ export const load: PageLoad = async ({ parent, url }) => {
                 await sdk.forConsole.billing.createOrganization(
                     ID.unique(),
                     'Personal Projects',
-                    BillingPlan.FREE,
+                    getBasePlanFromGroup(BillingPlanGroup.Starter).$id,
                     null
                 );
             } else {

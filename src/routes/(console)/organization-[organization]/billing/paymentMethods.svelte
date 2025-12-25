@@ -3,7 +3,7 @@
     import { invalidate } from '$app/navigation';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid, CreditCardBrandImage, CreditCardInfo } from '$lib/components';
-    import { BillingPlan, Dependencies } from '$lib/constants';
+    import { Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
     import { Button } from '$lib/elements/forms';
     import { hasStripePublicKey, isCloud } from '$lib/system';
@@ -32,6 +32,7 @@
         IconTrash
     } from '@appwrite.io/pink-icons-svelte';
     import type { Models } from '@appwrite.io/console';
+    import { currentPlan } from '$lib/stores/organization';
 
     export let organization: Models.Organization;
     export let methods: Models.PaymentMethodList;
@@ -333,9 +334,10 @@
     {@const hasOtherMethod = isSelectedBackup
         ? !!organization?.paymentMethodId
         : !!organization?.backupPaymentMethodId}
+
     <DeleteOrgPayment
         bind:showDelete
         {hasOtherMethod}
         isBackup={isSelectedBackup}
-        disabled={organization?.billingPlan !== BillingPlan.FREE && !hasOtherMethod} />
+        disabled={$currentPlan.requiresPaymentMethod && !hasOtherMethod} />
 {/if}
