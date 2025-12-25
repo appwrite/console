@@ -72,10 +72,12 @@
     });
 
     const projectsToArchive = $derived.by(() => {
-        return isCloud
-            ? data.projects.projects.filter((project) => project.status === 'archived')
-            : [];
+        return isCloud && data.archivedProjectsPage ? data.archivedProjectsPage : [];
     });
+
+    const activeProjects = $derived(data.projects.projects);
+
+    const activeProjectsCount = $derived(data.projects.total);
 
     function filterPlatforms(platforms: { name: string; icon: string }[]) {
         return platforms.filter(
@@ -235,13 +237,13 @@
         </Alert.Inline>
     {/if}
 
-    {#if data.projects.total > 0}
+    {#if activeProjectsCount > 0}
         <CardContainer
             disableEmpty={!$canWriteProjects}
-            total={data.projects.total}
+            total={activeProjectsCount}
             offset={data.offset}
             on:click={handleCreateProject}>
-            {#each data.projects.projects as project}
+            {#each activeProjects as project}
                 {@const platforms = filterPlatforms(
                     project.platforms.map((platform) => getPlatformInfo(platform.type))
                 )}
@@ -323,7 +325,7 @@
         name="Projects"
         limit={data.limit}
         offset={data.offset}
-        total={data.projects.total} />
+        total={activeProjectsCount} />
 
     <!-- Archived Projects Section -->
     <ArchiveProject
