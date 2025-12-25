@@ -334,7 +334,7 @@ APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.project).c
                     {/if}
                 </Layout.Stack>
             </Form>
-        {:else}
+        {:else if selectedFramework}
             <Card.Base padding="s"
                 ><Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
                     <Layout.Stack gap="xxs" direction="row">
