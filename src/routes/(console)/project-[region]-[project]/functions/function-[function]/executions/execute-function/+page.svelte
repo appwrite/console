@@ -179,6 +179,7 @@
                             <InputTextarea
                                 placeholder="Enter request body here..."
                                 id="body"
+                                spellcheck={false}
                                 bind:value={body} />
                         </Layout.Stack>
                     </Accordion>
@@ -292,6 +293,7 @@
                                     <InputTextarea
                                         placeholder="Enter request body here..."
                                         id="body"
+                                        spellcheck={false}
                                         bind:value={body} />
                                 </Layout.Stack>
                             </Accordion>
