@@ -630,7 +630,13 @@
                 permissions: row.$permissions
             });
 
-            invalidate(Dependencies.ROW);
+            const rowIndex = rowIndexMap.get(row.$id);
+            if (rowIndex !== undefined) {
+                paginatedRows.update(
+                    rowIndex,
+                    row as Models.DefaultRow
+                );
+            }
             trackEvent(Submit.RowUpdate);
             addNotification({
                 message: 'Row has been updated',
