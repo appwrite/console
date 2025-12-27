@@ -38,7 +38,7 @@
         return { value, label, leadingHtml };
     });
 
-    const specificationOptions = data.specificationsList.specifications.map((size) => ({
+    const specificationOptions = (data.specificationsList?.specifications ?? []).map((size) => ({
         label:
             `${size.cpus} CPU, ${size.memory} MB RAM` +
             (!size.enabled ? ` (Upgrade to use this)` : ''),
@@ -58,7 +58,7 @@
     let roles: string[] = [];
     let variables: Partial<Models.Variable>[] = [];
     let files: FileList;
-    let specification = specificationOptions[0].value;
+    let specification = specificationOptions[0]?.value || '';
 
     async function create() {
         try {

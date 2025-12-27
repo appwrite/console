@@ -1,6 +1,15 @@
 <script lang="ts">
     import { Wizard } from '$lib/layout';
-    import { Icon, Input, Layout, Popover, Tag, Typography, Card } from '@appwrite.io/pink-svelte';
+    import {
+        Icon,
+        Input,
+        Layout,
+        Popover,
+        Tag,
+        Typography,
+        Card,
+        Upload
+    } from '@appwrite.io/pink-svelte';
     import { supportData, isSupportOnline } from './wizard/support/store';
     import { onMount, onDestroy } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
@@ -25,8 +34,10 @@
     import { wizard } from '$lib/stores/wizard';
     import { VARS } from '$lib/system';
     import { IconCheckCircle, IconXCircle, IconInfo } from '@appwrite.io/pink-icons-svelte';
+    import { removeFile } from '$lib/helpers/files';
 
     let projectOptions = $state<Array<{ value: string; label: string }>>([]);
+    let files = $state<FileList | null>(null);
 
     // Category options with display names
     const categories = [
@@ -80,7 +91,9 @@
     onMount(async () => {
         // Filter projects by organization ID using server-side queries
         const projectList = await sdk.forConsole.projects.list({
-            queries: $organization?.$id ? [Query.equal('teamId', $organization.$id)] : []
+            queries: $organization?.$id
+                ? [Query.equal('teamId', $organization.$id), Query.select(['$id', 'name'])]
+                : []
         });
         projectOptions = projectList.projects.map((project) => ({
             value: project.$id,
@@ -116,25 +129,29 @@
             ? `${$supportData.category}-${$supportData.topic}`.toLowerCase()
             : $supportData.category.toLowerCase();
 
+        const formData = new FormData();
+        formData.append('email', $user.email);
+        formData.append('subject', $supportData.subject);
+        formData.append('firstName', ($user?.name || 'Unknown').slice(0, 40));
+        formData.append('message', $supportData.message);
+        formData.append('tags[]', categoryTopicTag);
+        formData.append(
+            'customFields',
+            JSON.stringify([
+                { id: '41612', value: $supportData.category },
+                { id: '48492', value: $organization?.$id ?? '' },
+                { id: '48491', value: $supportData?.project ?? '' },
+                { id: '56023', value: $supportData?.severity ?? '' },
+                { id: '56024', value: $organization?.billingPlan ?? '' }
+            ])
+        );
+        if (files && files.length > 0) {
+            formData.append('attachment', files[0]);
+        }
+
         const response = await fetch(`${VARS.GROWTH_ENDPOINT}/support`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                email: $user.email,
-                subject: $supportData.subject,
-                firstName: ($user?.name || 'Unknown').slice(0, 40),
-                message: $supportData.message,
-                tags: [categoryTopicTag],
-                customFields: [
-                    { id: '41612', value: $supportData.category },
-                    { id: '48492', value: $organization?.$id ?? '' },
-                    { id: '48491', value: $supportData?.project ?? '' },
-                    { id: '56023', value: $supportData?.severity ?? '' },
-                    { id: '56024', value: $organization?.billingPlan ?? '' }
-                ]
-            })
+            body: formData
         });
         trackEvent(Submit.SupportTicket);
         if (response.status !== 200) {
@@ -168,6 +185,13 @@
     }
 
     $wizard.finalAction = handleSubmit;
+
+    function handleInvalid(_e: CustomEvent) {
+        addNotification({
+            type: 'error',
+            message: 'Invalid file'
+        });
+    }
 
     const workTimings = {
         start: '16:00',
@@ -279,6 +303,26 @@
                 label="Tell us a bit more"
                 required
                 maxlength={4096} />
+            <Upload.Dropzone bind:files on:invalid={handleInvalid} maxSize={5 * 1024 * 1024}>
+                <Layout.Stack alignItems="center" gap="s">
+                    <Typography.Text variant="l-500"
+                        >Drag and drop a file here or click to upload</Typography.Text>
+                    <Typography.Caption variant="400">Max file size: 5MB</Typography.Caption>
+                </Layout.Stack>
+            </Upload.Dropzone>
+            {#if files}
+                <Upload.List
+                    files={Array.from(files).map((f) => {
+                        return {
+                            ...f,
+                            name: f.name,
+                            size: f.size,
+                            extension: f.type,
+                            removable: true
+                        };
+                    })}
+                    on:remove={(e) => (files = removeFile(e.detail, files))} />
+            {/if}
             <Layout.Stack direction="row" justifyContent="flex-end" gap="s">
                 <Button
                     size="s"

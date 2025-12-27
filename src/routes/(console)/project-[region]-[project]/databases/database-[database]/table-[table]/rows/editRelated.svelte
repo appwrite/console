@@ -14,25 +14,31 @@
     import { Accordion, Layout, Skeleton } from '@appwrite.io/pink-svelte';
     import { deepClone } from '$lib/helpers/object';
     import { preferences } from '$lib/stores/preferences';
+    import { onMount } from 'svelte';
 
     const databaseId = page.params.database;
 
     let {
         rows,
-        tableId
+        tableId,
+        disabledState = $bindable(true)
     }: {
         rows: string | Models.Row[];
         tableId: string;
+        disabledState?: boolean;
     } = $props();
 
     let loading = $state(false);
     let fetchedRows = $state<Models.Row[]>([]);
     let relatedTable = $state<Models.Table | null>(null);
 
-    let disabledState = $state(calculateAndCompareDisabledState());
-
     let workData = $state<Map<string, Writable<Models.Row>>>(new Map());
     let columnFormWrapper = $state<HTMLElement | null>(null);
+
+    onMount(() => {
+        /* silences the not read error warning */
+        disabledState;
+    });
 
     function isSingleStore() {
         return typeof rows === 'string';
@@ -287,10 +293,6 @@
         }
     }
 
-    export function isDisabled(): boolean {
-        return disabledState;
-    }
-
     function focusFirstInput() {
         const firstInput = columnFormWrapper?.querySelector<HTMLInputElement | HTMLTextAreaElement>(
             'input:not([disabled]):not([readonly]), textarea:not([disabled]):not([readonly])'
@@ -334,6 +336,10 @@
                 focusFirstInput();
             });
         }
+    });
+
+    $effect(() => {
+        disabledState = calculateAndCompareDisabledState();
     });
 </script>
 

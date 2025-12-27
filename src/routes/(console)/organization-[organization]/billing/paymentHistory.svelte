@@ -85,7 +85,7 @@
     ]);
 </script>
 
-<CardGrid>
+<CardGrid overflow={false}>
     <svelte:fragment slot="title">Payment history</svelte:fragment>
     Transaction history for this organization. Download invoices for more details about your payments.
     <svelte:fragment slot="aside">

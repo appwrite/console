@@ -901,9 +901,9 @@
                         hoverEffect
                         showSelectOnHover
                         valueWithoutHover={row.$sequence}>
-                        {#each $tableColumns as { id: columnId, isEditable } (columnId)}
+                        {#each $tableColumns as { id: columnId, isEditable, hide } (columnId)}
                             {@const rowColumn = $columns.find((col) => col.key === columnId)}
-                            {#if columnId === '$id'}
+                            {#if columnId === '$id' && !hide}
                                 <button
                                     on:mouseenter={() => {
                                         showExpandIconForId = index;

@@ -106,10 +106,13 @@
         }
 
         try {
-            allProjects = await sdk.forConsole.projects.list([
-                Query.equal('teamId', data.organization.$id),
-                Query.limit(1000)
-            ]);
+            allProjects = await sdk.forConsole.projects.list({
+                queries: [
+                    Query.equal('teamId', data.organization.$id),
+                    Query.limit(1000),
+                    Query.select(['$id', 'name'])
+                ]
+            });
         } catch {
             allProjects = { projects: [] };
         }
@@ -324,7 +327,10 @@
                         </Alert.Inline>
                     {/if}
 
-                    <PlanSelection bind:billingPlan={selectedPlan} selfService={data.selfService} />
+                    <PlanSelection
+                        anyOrgFree={data.hasFreeOrgs}
+                        selfService={data.selfService}
+                        bind:billingPlan={selectedPlan} />
 
                     {#if isDowngrade && selectedPlan === BillingPlan.FREE && data.hasFreeOrgs}
                         <Alert.Inline

@@ -1424,10 +1424,10 @@ export class Billing {
         );
     }
 
-    async listRegions(teamId: string): Promise<Models.ConsoleRegionList> {
+    async listRegions(organizationId: string): Promise<Models.ConsoleRegionList> {
         const path = `/console/regions`;
         const params = {
-            teamId
+            organizationId
         };
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(

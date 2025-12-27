@@ -1,10 +1,10 @@
 <script lang="ts">
     import { Alert } from '@appwrite.io/pink-svelte';
-    import { onMount } from 'svelte';
+    import { clickOnEnter } from '$lib/helpers/a11y';
     import Form from '$lib/elements/forms/form.svelte';
     import { Click, trackEvent } from '$lib/actions/analytics';
-    import { clickOnEnter } from '$lib/helpers/a11y';
 
+    export let title = '';
     export let show = false;
     export let size: 'small' | 'big' = 'big';
     export let icon: string = null;
@@ -15,11 +15,13 @@
     export let onSubmit: (e: SubmitEvent) => Promise<void> | void = function () {
         return;
     };
-    export let title = '';
+
+    /**
+     * needed when using `StatePicker`
+     */
+    export let skipEnterOnBackdrop = false;
 
     let backdrop: HTMLDivElement;
-
-    onMount(async () => {});
 
     function handleBLur(event: MouseEvent) {
         if (event.target === backdrop) {
@@ -60,12 +62,12 @@
 <svelte:window on:keydown={handleKeydown} />
 
 {#if show}
-    <!-- svelte-ignore a11y-no-static-element-interactions -->
+    <!-- svelte-ignore a11y_no_static_element_interactions -->
     <div
+        bind:this={backdrop}
+        onclick={handleBLur}
         class="payment-modal-backdrop"
-        on:keyup={clickOnEnter}
-        on:click={handleBLur}
-        bind:this={backdrop}>
+        onkeyup={skipEnterOnBackdrop ? undefined : clickOnEnter}>
         <div
             class="modal"
             class:is-small={size === 'small'}
@@ -99,11 +101,12 @@
                                 style="--button-size:1.5rem;"
                                 aria-label="Close Modal"
                                 title="Close Modal"
-                                on:click={() =>
+                                onclick={() => {
+                                    closeModal();
                                     trackEvent(Click.ModalCloseClick, {
                                         from: 'button'
-                                    })}
-                                on:click={closeModal}>
+                                    });
+                                }}>
                                 <span class="icon-x" aria-hidden="true"></span>
                             </button>
                         {/if}
