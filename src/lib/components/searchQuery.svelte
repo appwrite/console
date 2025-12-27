@@ -65,7 +65,7 @@
             if (urlSearch !== currentInput) {
                 inputValue = urlSearch;
                 previousInputValue = urlSearch;
-            } 
+            }
         }
     });
 
