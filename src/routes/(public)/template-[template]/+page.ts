@@ -40,12 +40,11 @@ export const load = async ({ parent, url, params }) => {
     const organizations = account?.$id ? await getTeamOrOrganizationList() : undefined;
 
     if (!organizations?.total && account?.$id) {
-        await sdk.forConsole.billing.createOrganization(
-            ID.unique(),
-            'Personal project',
-            getBasePlanFromGroup(BillingPlanGroup.Starter).$id,
-            null
-        );
+        await sdk.forConsole.organizations.create({
+            organizationId: ID.unique(),
+            name: 'Personal project',
+            billingPlan: getBasePlanFromGroup(BillingPlanGroup.Starter).$id
+        });
     }
 
     return {

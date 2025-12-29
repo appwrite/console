@@ -11,6 +11,7 @@
     export let show = false;
     export let org: Models.Organization;
 
+    let plan: Models.BillingPlan;
     $: plan = $plansInfo?.get(org.billingPlan);
 
     $: nextDate = org?.name

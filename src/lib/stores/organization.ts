@@ -4,15 +4,6 @@ import { isCloud } from '$lib/system';
 import { derived, writable } from 'svelte/store';
 import { type Models, Platform, Query } from '@appwrite.io/console';
 
-export type OrganizationError = {
-    status: number;
-    message: string;
-    teamId: string;
-    invoiceId: string;
-    clientSecret: string;
-    type: string;
-};
-
 export const newOrgModal = writable<boolean>(false);
 export const newMemberModal = writable<boolean>(false);
 export const organizationList = derived(

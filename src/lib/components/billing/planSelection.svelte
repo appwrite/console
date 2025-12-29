@@ -7,7 +7,7 @@
     import { page } from '$app/state';
     import type { Models } from '@appwrite.io/console';
 
-    export let billingPlan: BillingPlan;
+    export let billingPlan: string;
     export let isNewOrg = false;
     export let selfService = true;
     export let anyOrgFree = false;

@@ -69,7 +69,7 @@ export const load: PageLoad = async ({ parent, url }) => {
     if (!organizations?.total) {
         try {
             if (isCloud) {
-                await sdk.forConsole.billing.createOrganization(
+                await sdk.forConsole.organizations.create(
                     ID.unique(),
                     'Personal Projects',
                     BillingPlan.FREE,

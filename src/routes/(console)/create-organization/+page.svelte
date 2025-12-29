@@ -8,9 +8,8 @@
     import { BillingPlan, Dependencies } from '$lib/constants';
     import { Button, Form, InputTags, InputText } from '$lib/elements/forms';
     import { Wizard } from '$lib/layout';
-    import { isOrganization, billingIdToPlan } from '$lib/stores/billing';
+    import { billingIdToPlan, isPaymentAuthenticationRequired } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
-    import type { OrganizationError } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import { confirmPayment } from '$lib/stores/stripe';
     import { ID, type Models } from '@appwrite.io/console';
@@ -24,8 +23,8 @@
     const { data }: PageProps = $props();
 
     let showExitModal = $state(false);
+    let selectedPlan = $state(data.plan);
     let previousPage: string = $state(resolve('/(console)'));
-    let selectedPlan: BillingPlan = $state(data.plan as BillingPlan);
     let selectedCoupon: Partial<Models.Coupon> | null = $state(data.coupon);
 
     let isSubmitting = $state(writable(false));
@@ -35,7 +34,7 @@
     let taxId: string | null = $state(null);
     let collaborators: string[] = $state([]);
     let paymentMethodId: string | null = $state(null);
-    let billingPlan: BillingPlan = $state(BillingPlan.FREE);
+    let billingPlan: string = $state(BillingPlan.FREE);
 
     let showCreditModal = $state(false);
     let billingBudget: number | undefined = $state(undefined);
@@ -64,8 +63,8 @@
         }
         if (page.url.searchParams.has('plan')) {
             const plan = page.url.searchParams.get('plan');
-            if (plan && Object.values(BillingPlan).includes(plan as BillingPlan)) {
-                billingPlan = plan as BillingPlan;
+            if (plan) {
+                billingPlan = plan;
             }
         }
         if (
@@ -91,7 +90,7 @@
                 invites
             });
 
-            if (isOrganization(org)) {
+            if (!isPaymentAuthenticationRequired(org)) {
                 await preloadData(`${base}/console/organization-${org.$id}`);
                 await goto(`${base}/console/organization-${org.$id}`);
                 addNotification({
@@ -110,33 +109,31 @@
 
     async function create() {
         try {
-            let org: Models.Organization | OrganizationError;
+            let org: Models.Organization | Models.PaymentAuthentication;
 
             if (selectedPlan === BillingPlan.FREE) {
-                org = await sdk.forConsole.billing.createOrganization(
-                    ID.unique(),
-                    name,
-                    BillingPlan.FREE,
-                    null
-                );
+                org = await sdk.forConsole.organizations.create({
+                    organizationId: ID.unique(),
+                    name: name,
+                    billingPlan: BillingPlan.FREE
+                });
             } else {
-                org = await sdk.forConsole.billing.createOrganization(
-                    ID.unique(),
+                org = await sdk.forConsole.organizations.create({
+                    organizationId: ID.unique(),
                     name,
-                    selectedPlan,
+                    billingPlan: selectedPlan,
                     paymentMethodId,
-                    undefined,
-                    selectedCoupon?.code,
-                    collaborators,
-                    billingBudget,
+                    couponId: selectedCoupon?.code,
+                    invites: collaborators,
+                    budget: billingBudget,
                     taxId
-                );
+                });
 
-                if (!isOrganization(org) && org.status === 402) {
+                if (isPaymentAuthenticationRequired(org)) {
                     let clientSecret = org.clientSecret;
                     let params = new URLSearchParams();
                     params.append('type', 'payment_confirmed');
-                    params.append('id', org.teamId);
+                    params.append('id', org.organizationId);
                     for (const [key, value] of page.url.searchParams.entries()) {
                         if (key !== 'type' && key !== 'id') {
                             params.append(key, value);
@@ -149,7 +146,7 @@
                         paymentMethodId,
                         `${base}/create-organization?${params}`
                     );
-                    await validate(org.teamId, collaborators);
+                    await validate(org.organizationId, collaborators);
                 }
             }
 
@@ -159,7 +156,7 @@
                 members_invited: collaborators?.length
             });
 
-            if (isOrganization(org)) {
+            if (!isPaymentAuthenticationRequired(org)) {
                 await invalidate(Dependencies.ACCOUNT);
                 await preloadData(`${base}/organization-${org.$id}`);
                 await goto(`${base}/organization-${org.$id}`);

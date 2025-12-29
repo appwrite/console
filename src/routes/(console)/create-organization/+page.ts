@@ -32,11 +32,11 @@ export const load: PageLoad = async ({ url, parent, depends }) => {
     };
 };
 
-function getPlanFromUrl(url: URL): BillingPlan | null {
+function getPlanFromUrl(url: URL): string | null {
     if (url.searchParams.has('plan')) {
         const plan = url.searchParams.get('plan');
-        if (plan && plan in BillingPlan) {
-            return plan as BillingPlan;
+        if (plan) {
+            return plan;
         }
     }
     return BillingPlan.FREE;

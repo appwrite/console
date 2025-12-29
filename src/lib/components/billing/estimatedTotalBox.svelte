@@ -4,7 +4,7 @@
     import { Card, Divider, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { CreditsApplied } from '.';
     import { sdk } from '$lib/stores/sdk';
-    import { AppwriteException, BillingPlan, type Models } from '@appwrite.io/console';
+    import { AppwriteException, type Models } from '@appwrite.io/console';
     import DiscountsApplied from './discountsApplied.svelte';
 
     export let billingPlan: string;
@@ -23,12 +23,9 @@
         collaborators: string[],
         couponId: string | undefined
     ) {
-        /* TODO: @itznotabug - temporary fix */
-        const billingPlanTyped = billingPlan as BillingPlan;
-
         try {
             estimation = await sdk.forConsole.organizations.estimationCreateOrganization({
-                billingPlan: billingPlanTyped,
+                billingPlan,
                 invites: collaborators ?? [],
                 couponId: couponId === '' ? null : couponId
             });
@@ -59,7 +56,7 @@
         try {
             estimation = await sdk.forConsole.organizations.estimationUpdatePlan({
                 organizationId,
-                billingPlan: billingPlan as BillingPlan,
+                billingPlan: billingPlan,
                 invites: collaborators ?? [],
                 couponId: couponId && couponId.length > 0 ? couponId : null
             });

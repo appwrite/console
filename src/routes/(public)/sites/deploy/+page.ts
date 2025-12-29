@@ -85,12 +85,11 @@ export const load: PageLoad = async ({ parent, url }) => {
     if (!organizations?.total) {
         try {
             if (isCloud) {
-                await sdk.forConsole.billing.createOrganization(
-                    ID.unique(),
-                    'Personal Projects',
-                    BillingPlan.FREE,
-                    null
-                );
+                await sdk.forConsole.organizations.create({
+                    organizationId: ID.unique(),
+                    name: 'Personal Projects',
+                    billingPlan: BillingPlan.FREE
+                });
             } else {
                 await sdk.forConsole.teams.create({
                     teamId: ID.unique(),
