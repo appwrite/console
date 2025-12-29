@@ -1,7 +1,7 @@
 <script lang="ts">
     import { AvatarInitials, PaginationWithLimit, Trim } from '$lib/components';
     import { Container } from '$lib/layout';
-    import { toLocaleDateTime } from '$lib/helpers/date';
+    import DualTimeView from '$lib/components/dualTimeView.svelte';
     import type { Models } from '@appwrite.io/console';
     import { Layout, Table, Card, Empty } from '@appwrite.io/pink-svelte';
     import Button from '$lib/elements/forms/button.svelte';
@@ -72,7 +72,7 @@
                             {log.ip}
                         </Table.Cell>
                         <Table.Cell column="date" {root}>
-                            {toLocaleDateTime(log.time)}
+                            <DualTimeView time={log.time} showDatetime={true} />
                         </Table.Cell>
                     </Table.Row.Base>
                 {/each}

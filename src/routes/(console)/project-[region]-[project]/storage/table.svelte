@@ -2,7 +2,7 @@
     import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Id } from '$lib/components';
-    import { toLocaleDateTime } from '$lib/helpers/date';
+    import DualTimeView from '$lib/components/dualTimeView.svelte';
     import type { PageData } from './$types';
     import { columns } from './store';
     import { Table } from '@appwrite.io/pink-svelte';
@@ -30,8 +30,10 @@
                         {/key}
                     {:else if column.id === 'name'}
                         {bucket.name}
+                    {:else if column.type === 'datetime'}
+                        <DualTimeView time={bucket[column.id]} showDatetime={true} />
                     {:else}
-                        {toLocaleDateTime(bucket[column.id])}
+                        {bucket[column.id]}
                     {/if}
                 </Table.Cell>
             {/each}

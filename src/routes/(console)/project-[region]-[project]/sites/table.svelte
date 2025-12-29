@@ -1,7 +1,7 @@
 <script lang="ts">
     import { base } from '$app/paths';
     import { page } from '$app/state';
-    import { timeFromNow, toLocaleDateTime } from '$lib/helpers/date';
+    import { timeFromNow } from '$lib/helpers/date';
     import { Avatar, Icon, Layout, Popover, Table, Typography } from '@appwrite.io/pink-svelte';
     import { columns } from './store';
     import type { Models } from '@appwrite.io/console';
@@ -80,7 +80,7 @@
                                 time={site?.latestDeploymentCreatedAt ?? site.$createdAt} />
                         {/if}
                     {:else if column.id === '$createdAt'}
-                        {toLocaleDateTime(site[column.id])}
+                        <DualTimeView time={site[column.id]} showDatetime={true} />
                     {/if}
                 </Table.Cell>
             {/each}
