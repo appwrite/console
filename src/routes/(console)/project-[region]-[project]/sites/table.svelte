@@ -80,7 +80,7 @@
                                 time={site?.latestDeploymentCreatedAt ?? site.$createdAt} />
                         {/if}
                     {:else if column.id === '$createdAt'}
-                        <DualTimeView time={site[column.id]} showDatetime={true} />
+                        <DualTimeView time={site[column.id]} showDatetime />
                     {/if}
                 </Table.Cell>
             {/each}

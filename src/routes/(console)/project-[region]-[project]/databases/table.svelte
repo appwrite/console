@@ -73,7 +73,7 @@
                             </span>
                         </Tooltip>
                     {:else if column.type === 'datetime'}
-                        <DualTimeView time={database[column.id]} showDatetime={true} />
+                        <DualTimeView time={database[column.id]} showDatetime />
                     {:else}
                         {database[column.id]}
                     {/if}

@@ -31,7 +31,7 @@
                     {:else if column.id === 'name'}
                         {bucket.name}
                     {:else if column.type === 'datetime'}
-                        <DualTimeView time={bucket[column.id]} showDatetime={true} />
+                        <DualTimeView time={bucket[column.id]} showDatetime />
                     {:else}
                         {bucket[column.id]}
                     {/if}

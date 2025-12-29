@@ -59,7 +59,7 @@
                                 {webhook.events.length}
                             {:else if column.type === 'datetime'}
                                 {#if webhook[column.id]}
-                                    <DualTimeView time={webhook[column.id]} showDatetime={true} />
+                                    <DualTimeView time={webhook[column.id]} showDatetime />
                                 {:else}
                                     -
                                 {/if}

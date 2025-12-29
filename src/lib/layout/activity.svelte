@@ -72,7 +72,7 @@
                             {log.ip}
                         </Table.Cell>
                         <Table.Cell column="date" {root}>
-                            <DualTimeView time={log.time} showDatetime={true} />
+                            <DualTimeView time={log.time} showDatetime />
                         </Table.Cell>
                     </Table.Row.Base>
                 {/each}
