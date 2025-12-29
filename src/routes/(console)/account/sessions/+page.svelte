@@ -13,7 +13,14 @@
     import type { PageData } from './$types';
     import { addNotification } from '$lib/stores/notifications';
     import { onMount } from 'svelte';
-    import { Badge, Layout, Table, Typography, Icon } from '@appwrite.io/pink-svelte';
+    import {
+        Badge,
+        Layout,
+        Table,
+        Typography,
+        Icon,
+        InteractiveText
+    } from '@appwrite.io/pink-svelte';
     import { IconGlobeAlt } from '@appwrite.io/pink-icons-svelte';
 
     export let data: PageData;
@@ -146,7 +153,7 @@
                     {/if}
                 </Table.Cell>
                 <Table.Cell column="ip" {root}>
-                    {session.ip}
+                    <InteractiveText variant="copy" text={session.ip} isVisible />
                 </Table.Cell>
                 <Table.Cell column="actions" {root}>
                     <Button size="xs" secondary on:click={() => logout(session)}>Sign out</Button>

@@ -3,7 +3,7 @@
     import { Container } from '$lib/layout';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import type { Models } from '@appwrite.io/console';
-    import { Layout, Table, Card, Empty } from '@appwrite.io/pink-svelte';
+    import { Layout, Table, Card, Empty, InteractiveText } from '@appwrite.io/pink-svelte';
     import Button from '$lib/elements/forms/button.svelte';
     import type { PinkColumn } from '$lib/helpers/types';
 
@@ -15,11 +15,26 @@
     export let useCreateLinkForPagination = true;
 
     const columns: PinkColumn[] = [
-        { id: 'user', ...(insideSideSheet ? { width: 140 } : {}) },
-        { id: 'event', ...(insideSideSheet ? { width: 125 } : {}) },
-        { id: 'location', ...(insideSideSheet ? { width: 100 } : {}) },
-        { id: 'ip', ...(insideSideSheet ? { width: { min: 150 } } : {}) },
-        { id: 'date', ...(insideSideSheet ? { width: { min: 200 } } : {}) }
+        {
+            id: 'user',
+            ...(insideSideSheet ? { width: 140 } : { width: { min: 100 } })
+        },
+        {
+            id: 'event',
+            ...(insideSideSheet ? { width: 125 } : { width: { min: 160 } })
+        },
+        {
+            id: 'location',
+            ...(insideSideSheet ? { width: 100 } : { width: { min: 120 } })
+        },
+        {
+            id: 'ip',
+            ...(insideSideSheet ? { width: { min: 150 } } : { width: { min: 250 } })
+        },
+        {
+            id: 'date',
+            ...(insideSideSheet ? { width: { min: 200 } } : { width: { min: 180 } })
+        }
     ];
 </script>
 
@@ -69,7 +84,7 @@
                             {/if}
                         </Table.Cell>
                         <Table.Cell column="ip" {root}>
-                            {log.ip}
+                            <InteractiveText variant="copy" text={log.ip} isVisible />
                         </Table.Cell>
                         <Table.Cell column="date" {root}>
                             {toLocaleDateTime(log.time)}
