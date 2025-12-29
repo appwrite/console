@@ -25,7 +25,6 @@ import {
     Realtime,
     Organizations
 } from '@appwrite.io/console';
-import { Billing } from '../sdk/billing';
 import { Backups } from '../sdk/backups';
 import { Sources } from '$lib/sdk/sources';
 import {
@@ -91,7 +90,6 @@ function createConsoleSdk(client: Client) {
         migrations: new Migrations(client),
         console: new Console(client),
         assistant: new Assistant(client),
-        billing: new Billing(client),
         sources: new Sources(client),
         sites: new Sites(client),
         domains: new Domains(client),

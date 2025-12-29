@@ -9,7 +9,11 @@
     import { Button, Form, InputSelect, InputTags, InputTextarea } from '$lib/elements/forms';
     import { formatCurrency } from '$lib/helpers/numbers.js';
     import { Wizard } from '$lib/layout';
-    import { billingIdToPlan, getBasePlanFromGroup, isOrganization } from '$lib/stores/billing';
+    import {
+        billingIdToPlan,
+        getBasePlanFromGroup,
+        isPaymentAuthenticationRequired
+    } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { currentPlan, organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
@@ -161,11 +165,11 @@
     async function downgrade() {
         try {
             // 1) update the plan first
-            await sdk.forConsole.billing.updatePlan(
-                data.organization.$id,
-                selectedPlan.$id,
+            await sdk.forConsole.organizations.updatePlan({
+                organizationId: data.organization.$id,
+                billingPlan: selectedPlan.$id,
                 paymentMethodId
-            );
+            });
 
             // 2) If the target plan has a project limit, apply selected projects now
             const targetProjectsLimit = selectedPlan?.projects ?? 0;
@@ -211,7 +215,7 @@
                 invites
             });
 
-            if (isOrganization(org)) {
+            if (!isPaymentAuthenticationRequired(org)) {
                 await invalidate(Dependencies.ACCOUNT);
                 await invalidate(Dependencies.ORGANIZATION);
 
@@ -244,18 +248,17 @@
                         !data?.members?.memberships?.find((m) => m.userEmail === collaborator)
                 );
             }
-            const org = await sdk.forConsole.billing.updatePlan(
-                data.organization.$id,
-                selectedPlan.$id,
+            const org = await sdk.forConsole.organizations.updatePlan({
+                organizationId: data.organization.$id,
+                billingPlan: selectedPlan.$id,
                 paymentMethodId,
-                undefined,
-                selectedCoupon?.code,
-                newCollaborators,
-                billingBudget,
-                taxId ? taxId : null
-            );
+                couponId: selectedCoupon?.code,
+                invites: newCollaborators,
+                budget: billingBudget,
+                taxId: taxId ? taxId : null
+            });
 
-            if (!isOrganization(org) && org.status == 402) {
+            if (isPaymentAuthenticationRequired(org)) {
                 let clientSecret = org.clientSecret;
                 let params = new URLSearchParams();
                 for (const [key, value] of page.url.searchParams.entries()) {
@@ -264,7 +267,7 @@
                     }
                 }
                 params.append('type', 'payment_confirmed');
-                params.append('id', org.teamId);
+                params.append('id', org.organizationId);
                 params.append('invites', collaborators.join(','));
                 params.append('plan', selectedPlan.$id);
                 await confirmPayment(
@@ -273,10 +276,10 @@
                     paymentMethodId,
                     base + '/change-plan?' + params.toString()
                 );
-                await validate(org.teamId, collaborators);
+                await validate(org.organizationId, collaborators);
             }
 
-            if (isOrganization(org)) {
+            if (!isPaymentAuthenticationRequired(org)) {
                 /**
                  * Reload on upgrade (e.g. Free → Paid)
                  */

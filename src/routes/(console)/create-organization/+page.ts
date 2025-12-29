@@ -1,6 +1,6 @@
 import { sdk } from '$lib/stores/sdk';
 import type { PageLoad } from './$types';
-import { BillingPlan, BillingPlanGroup, type Models, Platform } from '@appwrite.io/console';
+import { BillingPlanGroup, type Models, Platform } from '@appwrite.io/console';
 import { Dependencies } from '$lib/constants';
 import { billingIdToPlan, getNextTierBillingPlan } from '$lib/stores/billing';
 
@@ -44,7 +44,8 @@ async function getPlanFromUrl(url: URL): Promise<Models.BillingPlan | null> {
     }
 
     // fallback
-    return await sdk.forConsole.console.getPlan({ planId: BillingPlan.Tier0 });
+    // @todo: avoid hardcoded maybe
+    return await sdk.forConsole.console.getPlan({ planId: 'tier-0' });
 }
 
 function getPlanFromCache(plan: string): Models.BillingPlan | null {

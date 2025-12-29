@@ -9,7 +9,7 @@
     import { toLocaleDate } from '$lib/helpers/date';
     import { Wizard } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
-    import { type OrganizationError, organizationList } from '$lib/stores/organization';
+    import { organizationList } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import { confirmPayment } from '$lib/stores/stripe.js';
     import { BillingPlanGroup, ID, type Models } from '@appwrite.io/console';
@@ -18,7 +18,7 @@
     import {
         billingIdToPlan,
         getBasePlanFromGroup,
-        isOrganization,
+        isPaymentAuthenticationRequired,
         plansInfo
     } from '$lib/stores/billing';
     import { Fieldset, Icon, Layout, Tooltip } from '@appwrite.io/pink-svelte';
@@ -133,32 +133,30 @@
         if (couponForm && !couponForm.checkValidity()) return;
         isSubmitting.set(true);
         try {
-            let org: Models.Organization | OrganizationError;
+            let org: Models.Organization | Models.PaymentAuthentication;
             // Create new org
             if (selectedOrgId === newOrgId) {
-                org = await sdk.forConsole.billing.createOrganization(
-                    newOrgId,
+                org = await sdk.forConsole.organizations.create({
+                    organizationId: newOrgId,
                     name,
-                    billingPlan.$id,
+                    billingPlan: billingPlan.$id,
                     paymentMethodId,
-                    undefined,
-                    couponData.code ? couponData.code : null,
-                    collaborators,
-                    billingBudget,
-                    taxId
-                );
+                    invites: collaborators,
+                    couponId: couponData.code ? couponData.code : null,
+                    taxId,
+                    budget: billingBudget
+                });
             }
 
             // Upgrade existing org
             else if (selectedOrg?.billingPlan !== billingPlan.$id && isUpgrade()) {
-                org = await sdk.forConsole.billing.updatePlan(
-                    selectedOrg.$id,
-                    billingPlan.$id,
+                org = await sdk.forConsole.organizations.updatePlan({
+                    organizationId: selectedOrg.$id,
+                    billingPlan: billingPlan.$id,
                     paymentMethodId,
-                    undefined,
-                    couponData.code ? couponData.code : null,
-                    collaborators
-                );
+                    invites: collaborators,
+                    couponId: couponData.code ? couponData.code : null
+                });
             }
             // Existing pro org, apply credits
             else {
@@ -169,11 +167,11 @@
                 });
             }
 
-            if (!isOrganization(org) && org.status === 402) {
+            if (isPaymentAuthenticationRequired(org)) {
                 let clientSecret = org.clientSecret;
                 let params = new URLSearchParams();
                 params.append('type', 'payment_confirmed');
-                params.append('org', org.teamId);
+                params.append('org', org.organizationId);
                 for (const [key, value] of page.url.searchParams.entries()) {
                     if (key !== 'type' && key !== 'id') {
                         params.append(key, value);
@@ -188,12 +186,12 @@
                 );
 
                 org = await sdk.forConsole.organizations.validatePayment({
-                    organizationId: org.teamId,
+                    organizationId: org.organizationId,
                     invites: collaborators
                 });
             }
 
-            if (isOrganization(org)) {
+            if (!isPaymentAuthenticationRequired(org)) {
                 trackEvent(Submit.CreditRedeem, {
                     coupon: couponData.code,
                     campaign: couponData?.campaign

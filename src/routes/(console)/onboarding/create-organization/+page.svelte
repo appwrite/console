@@ -22,12 +22,11 @@
         try {
             if (isCloud) {
                 const starter = getBasePlanFromGroup(BillingPlanGroup.Starter);
-                organization = await sdk.forConsole.billing.createOrganization(
-                    ID.unique(),
-                    organizationName,
-                    starter.$id,
-                    null
-                );
+                organization = await sdk.forConsole.organizations.create({
+                    organizationId: ID.unique(),
+                    name: organizationName,
+                    billingPlan: starter.$id
+                });
 
                 trackEvent(Submit.OrganizationCreate, {
                     plan: starter?.name,

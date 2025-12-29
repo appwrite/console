@@ -2,7 +2,7 @@ import type { PageLoad } from './$types';
 import { isCloud } from '$lib/system';
 import { sdk } from '$lib/stores/sdk';
 import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-import { getBasePlanFromGroup, isOrganization } from '$lib/stores/billing';
+import { getBasePlanFromGroup, isPaymentAuthenticationRequired } from '$lib/stores/billing';
 import { BillingPlanGroup, ID, type Models, Query } from '@appwrite.io/console';
 import { redirect } from '@sveltejs/kit';
 import { base } from '$app/paths';
@@ -25,19 +25,18 @@ export const load: PageLoad = async ({ parent }) => {
         try {
             if (isCloud) {
                 const starterPlan = getBasePlanFromGroup(BillingPlanGroup.Starter);
-                const org = await sdk.forConsole.billing.createOrganization(
-                    ID.unique(),
-                    'Personal projects',
-                    starterPlan.$id,
-                    null
-                );
+                const org = await sdk.forConsole.organizations.create({
+                    organizationId: ID.unique(),
+                    name: 'Personal projects',
+                    billingPlan: starterPlan.$id
+                });
                 trackEvent(Submit.OrganizationCreate, {
                     plan: starterPlan?.name,
                     budget_cap_enabled: false,
                     members_invited: 0
                 });
 
-                if (isOrganization(org)) {
+                if (!isPaymentAuthenticationRequired(org)) {
                     return {
                         accountPrefs,
                         organization: org

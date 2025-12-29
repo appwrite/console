@@ -11,7 +11,6 @@ import PaymentAuthRequired from '$lib/components/billing/alerts/paymentAuthRequi
 import PaymentMandate from '$lib/components/billing/alerts/paymentMandate.svelte';
 import { NEW_DEV_PRO_UPGRADE_COUPON } from '$lib/constants';
 import { cachedStore } from '$lib/helpers/cache';
-import { type Size, sizeToBytes } from '$lib/helpers/sizeConvertion';
 import type { BillingPlansMap } from '$lib/sdk/billing';
 import { isCloud } from '$lib/system';
 import { activeHeaderAlert, orgMissingPaymentMethod } from '$routes/(console)/store';
@@ -25,7 +24,7 @@ import {
 import { derived, get, writable } from 'svelte/store';
 import { headerAlert } from './headerAlert';
 import { addNotification, notifications } from './notifications';
-import { currentPlan, type OrganizationError } from './organization';
+import { currentPlan } from './organization';
 import { canSeeBilling } from './roles';
 import { sdk } from './sdk';
 import { user } from './user';
@@ -667,31 +666,10 @@ export const upgradeURL = derived(page, ($page) => {
     });
 });
 
-export const billingURL = derived(page, ($page) => {
-    return resolve('/(console)/organization-[organization]/billing', {
-        organization: $page.data?.organization?.$id
-    });
-});
-
 export const hideBillingHeaderRoutes = [resolve('/account'), resolve('/create-organization')];
 
-export function calculateExcess(addon: Models.AggregationTeam, plan: Models.BillingPlan) {
-    return {
-        bandwidth: calculateResourceSurplus(addon.usageBandwidth, plan.bandwidth),
-        storage: calculateResourceSurplus(addon.usageStorage, plan.storage, 'GB'),
-        executions: calculateResourceSurplus(addon.usageExecutions, plan.executions, 'GB'),
-        members: addon.additionalMembers
-    };
-}
-
-export function calculateResourceSurplus(total: number, limit: number, limitUnit: Size = null) {
-    if (total === undefined || limit === undefined) return 0;
-    const realLimit = (limitUnit ? sizeToBytes(limit, limitUnit) : limit) || Infinity;
-    return total > realLimit ? total - realLimit : 0;
-}
-
-export function isOrganization(
-    org: Models.Organization | OrganizationError
-): org is Models.Organization {
-    return (org as Models.Organization).$id !== undefined;
+export function isPaymentAuthenticationRequired(
+    org: Models.Organization | Models.PaymentAuthentication
+): org is Models.PaymentAuthentication {
+    return 'clientSecret' in org;
 }

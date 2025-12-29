@@ -15,7 +15,10 @@
 
     async function cancelDowngrade() {
         try {
-            await sdk.forConsole.billing.cancelDowngrade($organization.$id);
+            await sdk.forConsole.organizations.cancelDowngrade({
+                organizationId: $organization.$id
+            });
+
             await invalidate(Dependencies.ORGANIZATION);
             showCancel = false;
             addNotification({
