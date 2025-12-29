@@ -106,9 +106,17 @@
     }
 
     function onGithubLogin() {
+        let successUrl = window.location.origin;
+
+        if (page.url.searchParams.has('code')) {
+            successUrl += `?code=${page.url.searchParams.get('code')}`;
+        } else if (page.url.searchParams.has('campaign')) {
+            successUrl += `?campaign=${page.url.searchParams.get('campaign')}`;
+        }
+
         sdk.forConsole.account.createOAuth2Session({
             provider: OAuthProvider.Github,
-            success: window.location.origin,
+            success: successUrl,
             failure: window.location.origin,
             scopes: ['read:user', 'user:email']
         });
