@@ -92,9 +92,9 @@
     <Table.Root
         let:root
         columns={[
-            { id: 'client' },
-            { id: 'location', width: 200 },
-            { id: 'ip', width: 200 },
+            { id: 'client', width: { min: 450 } },
+            { id: 'location', width: { min: 200 } },
+            { id: 'ip', width: { min: 330 } },
             { id: 'actions', width: 100 }
         ]}>
         <svelte:fragment slot="header" let:root>
