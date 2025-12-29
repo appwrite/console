@@ -95,15 +95,12 @@
         <Form onSubmit={login}>
             <Layout.Stack>
                 {#if isCloud}
-                    <Button
-                        class="auth-provider-button"
-                        secondary
-                        fullWidth
-                        on:click={onGithubLogin}
-                        {disabled}>
-                        <span class="icon-github" aria-hidden="true"></span>
-                        <span class="text">Sign in with GitHub</span>
-                    </Button>
+                    <div class="auth-provider-wrapper">
+                        <Button secondary fullWidth on:click={onGithubLogin} {disabled}>
+                            <span class="icon-github" aria-hidden="true"></span>
+                            <span class="text">Sign in with GitHub</span>
+                        </Button>
+                    </div>
                     <span class="with-separators eyebrow-heading-3">or</span>
                 {/if}
                 <InputEmail
@@ -136,7 +133,7 @@
 </Unauthenticated>
 
 <style>
-    :global(.auth-provider-button) {
+    .auth-provider-wrapper {
         margin-bottom: var(--gap-s, 8px);
     }
 </style>
