@@ -133,7 +133,7 @@
         <Form onSubmit={register}>
             <Layout.Stack>
                 {#if isCloud}
-                    <div style="margin-bottom: var(--gap-s, 8px);">
+                    <div style:margin-bottom="var(--gap-s, 8px)">
                         <Button secondary fullWidth on:click={onGithubLogin} {disabled}>
                             <span class="icon-github" aria-hidden="true"></span>
                             <span class="text">Sign up with GitHub</span>
