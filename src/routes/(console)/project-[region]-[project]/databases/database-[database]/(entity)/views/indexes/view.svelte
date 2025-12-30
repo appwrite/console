@@ -32,12 +32,15 @@
         type CreateIndexesCallbackType,
         SpreadsheetContainer,
         SideSheet,
-        type Index
+        type Index,
+        getTerminologies
     } from '$database/(entity)';
     import { preferences } from '$lib/stores/preferences';
     import { debounce } from '$lib/helpers/debounce';
     import { page } from '$app/state';
+    import { realtime } from '$lib/stores/sdk';
     import type { ColumnsWidth } from '$database/table-[table]/store';
+    import { invalidate } from '$app/navigation';
 
     let {
         entity,
@@ -107,8 +110,21 @@
         entity.indexes.length >= emptyCellsLimit ? 0 : emptyCellsLimit - entity.indexes.length
     );
 
+    const { dependencies, terminology } = getTerminologies();
+
     onMount(() => {
         columnsWidth = preferences.getColumnWidths(entity.$id + '#indexes');
+
+        // example: databases.*.tables.*.indexes.*
+        // example: documentsdb.*.collections.indexes.*
+        // this is needed because `documentsdb` doesn't use `database` prefix don't exist
+        const derivedEventsForIndex = `${terminology.type}.*.${terminology.entity.lower.plural}.*.indexes.*`;
+
+        return realtime.forProject(page.params.region, ['project', 'console'], (response) => {
+            if (response.events.includes(derivedEventsForIndex)) {
+                invalidate(dependencies.entity.singular);
+            }
+        });
     });
 
     function getEntityStatusBadge(status: string): ComponentProps<Badge>['type'] {
