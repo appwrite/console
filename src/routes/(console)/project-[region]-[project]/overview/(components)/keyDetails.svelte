@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { base } from '$app/paths';
     import { invalidate } from '$app/navigation';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Box, CardGrid } from '$lib/components';
@@ -23,6 +24,7 @@
 
     export let key: Models.DevKey | Models.Key;
     export let keyType: 'api' | 'dev' = 'api';
+    export let basePath: string = `${base}/project-${page.params.region}-${page.params.project}/overview`;
 
     let name: string = null;
     let scopes: string[] = null;
@@ -190,7 +192,7 @@
         </Form>
     {/if}
 
-    <UpdateExpirationDate {keyType} {key} />
+    <UpdateExpirationDate {keyType} {key} {basePath} />
 
     <CardGrid>
         <svelte:fragment slot="title">Delete {label} key</svelte:fragment>
@@ -212,4 +214,4 @@
     </CardGrid>
 </Container>
 
-<Delete {keyType} {key} bind:showDelete />
+<Delete {keyType} {key} {basePath} bind:showDelete />

@@ -17,6 +17,8 @@
     import { page } from '$app/state';
     import { copy } from '$lib/helpers/copy';
 
+    export let basePath: string = `${base}/project-${page.params.region}-${page.params.project}/overview`;
+
     const projectId = page.params.project;
 
     let showExitModal = false;
@@ -41,9 +43,7 @@
             }
 
             trackEvent(Submit.KeyCreate);
-            await goto(
-                `${base}/project-${page.params.region}-${page.params.project}/overview/api-keys/${$id}`
-            );
+            await goto(`${basePath}/api-keys/${$id}`);
             addNotification({
                 message: `API key has been created`,
                 type: 'success',
@@ -74,7 +74,7 @@
 
 <Wizard
     title="Create API key"
-    href={`${base}/project-${page.params.region}-${page.params.project}/overview/api-keys/`}
+    href={`${basePath}/api-keys/`}
     bind:showExitModal
     column
     columnSize="s"
