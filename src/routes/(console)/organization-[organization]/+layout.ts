@@ -57,14 +57,11 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
                   teamId: params.organization
               }) as Promise<Models.Organization>);
 
-        const programPromise: Promise<Models.Program> | null =
-            currentPlan && currentPlan?.program
-                ? sdk.forConsole.console.getProgram({ programId: currentPlan.program })
-                : null;
+        const program: Models.Program | null =
+            currentPlan && currentPlan?.program ? currentPlan.program : null;
 
-        const [org, program, members, countryList, locale] = await Promise.all([
+        const [org, members, countryList, locale] = await Promise.all([
             orgPromise,
-            programPromise,
             sdk.forConsole.teams.listMemberships({ teamId: params.organization }),
             sdk.forConsole.locale.listCountries(),
             sdk.forConsole.locale.get(),
