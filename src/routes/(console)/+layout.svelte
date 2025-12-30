@@ -334,7 +334,6 @@
 <CommandCenter />
 <Shell
     showSideNavigation={page.url.pathname !== '/' &&
-        !page.url.pathname.includes(base + '/account') &&
         !page.url.pathname.includes(base + '/card') &&
         !page.url.pathname.includes(base + '/onboarding')}
     showHeader={!page.url.pathname.includes(base + '/onboarding/create-project')}
