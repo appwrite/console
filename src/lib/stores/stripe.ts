@@ -26,6 +26,10 @@ export const isStripeInitialized = writable(false);
 
 export async function initializeStripe(node: HTMLElement) {
     if (!get(stripe)) return;
+
+    // cleanup any existing state
+    await unmountPaymentElement();
+
     isStripeInitialized.set(true);
 
     const methods = await sdk.forConsole.billing.listPaymentMethods();
@@ -54,10 +58,20 @@ export async function initializeStripe(node: HTMLElement) {
 
 export async function unmountPaymentElement() {
     isStripeInitialized.set(false);
-    paymentElement?.unmount();
+
+    if (paymentElement) {
+        try {
+            paymentElement.unmount();
+            paymentElement.destroy();
+        } catch (e) {
+            console.debug('Payment element cleanup:', e.message);
+        }
+    }
+
+    elements = null;
     clientSecret = null;
     paymentMethod = null;
-    elements = null;
+    paymentElement = null;
 }
 
 export async function submitStripeCard(name: string, organizationId?: string) {
@@ -102,13 +116,32 @@ export async function submitStripeCard(name: string, organizationId?: string) {
         }
 
         if (setupIntent && setupIntent.status === 'succeeded') {
-            if ((setupIntent.payment_method as PaymentMethod).card?.country === 'US') {
+            const pm = setupIntent.payment_method as PaymentMethod | string | undefined;
+            // If Stripe returned an expanded PaymentMethod object, check the card country.
+            // If it returned a string id (common), `typeof pm === 'string'` and we skip this.
+            if (typeof pm !== 'string' && pm?.card?.country === 'US') {
                 // need to get state
-                return setupIntent.payment_method as PaymentMethod;
+                return pm as PaymentMethod;
             }
+
+            // The backend expects a provider method ID (string). Extract the id
+            // whether Stripe returned the id string or an expanded object.
+            let providerId: string | undefined;
+            if (typeof pm === 'string') {
+                providerId = pm;
+            } else {
+                providerId = (pm as PaymentMethod)?.id;
+            }
+
+            if (!providerId) {
+                const e = new Error('Unable to verify payment method.');
+                trackError(e, Submit.PaymentMethodCreate);
+                throw e;
+            }
+
             const method = await sdk.forConsole.billing.setPaymentMethod(
                 paymentMethod.$id,
-                (setupIntent.payment_method as PaymentMethod).id,
+                providerId,
                 name
             );
             paymentElement.destroy();

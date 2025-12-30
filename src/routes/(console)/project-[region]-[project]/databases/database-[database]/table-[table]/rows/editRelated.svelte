@@ -14,25 +14,45 @@
     import { Accordion, Layout, Skeleton } from '@appwrite.io/pink-svelte';
     import { deepClone } from '$lib/helpers/object';
     import { preferences } from '$lib/stores/preferences';
+    import {
+        type Entity,
+        type Field,
+        getTerminologies,
+        toRelationalField
+    } from '$database/(entity)';
+    import { onMount } from 'svelte';
 
     const databaseId = page.params.database;
 
     let {
         rows,
-        tableId
+        tableId,
+        disabledState = $bindable(true)
     }: {
         rows: string | Models.Row[];
         tableId: string;
+        disabledState?: boolean;
     } = $props();
 
     let loading = $state(false);
     let fetchedRows = $state<Models.Row[]>([]);
-    let relatedTable = $state<Models.Table | null>(null);
-
-    let disabledState = $state(calculateAndCompareDisabledState());
+    let relatedTable = $state<Entity | null>(null);
 
     let workData = $state<Map<string, Writable<Models.Row>>>(new Map());
     let columnFormWrapper = $state<HTMLElement | null>(null);
+
+    const { databaseSdk } = getTerminologies();
+
+    onMount(() => {
+        if (rows && tableId) {
+            loadRelatedRow().then(() => {
+                focusFirstInput();
+            });
+        }
+
+        /* silences the not read error warning */
+        disabledState;
+    });
 
     function isSingleStore() {
         return typeof rows === 'string';
@@ -43,15 +63,6 @@
 
         try {
             if (isSingleStore()) {
-                relatedTable =
-                    page.data.tables?.[tableId] ??
-                    (await sdk
-                        .forProject(page.params.region, page.params.project)
-                        .tablesDB.getTable({
-                            databaseId,
-                            tableId: tableId
-                        }));
-
                 const fetchedRow = await sdk
                     .forProject(page.params.region, page.params.project)
                     .tablesDB.getRow({
@@ -60,6 +71,12 @@
                         rowId: rows as string,
                         queries: buildWildcardColumnsQuery(relatedTable)
                     });
+
+                // cannot use page.data.entities!
+                relatedTable = await databaseSdk.getEntity({
+                    databaseId,
+                    entityId: tableId
+                });
 
                 fetchedRows = [fetchedRow];
             } else {
@@ -75,19 +92,18 @@
                 });
 
                 if (missingTableIds.length > 0) {
-                    const tablesResponse = await sdk
-                        .forProject(page.params.region, page.params.project)
-                        .tablesDB.listTables({
-                            databaseId,
-                            queries: [
-                                Query.equal('$id', missingTableIds),
-                                Query.limit(missingTableIds.length)
-                            ]
-                        });
-                    fetchedTables = tablesResponse.tables;
+                    const tablesResponse = await databaseSdk.listEntities({
+                        databaseId,
+                        queries: [
+                            Query.equal('$id', missingTableIds),
+                            Query.limit(missingTableIds.length)
+                        ]
+                    });
+
+                    fetchedTables = tablesResponse.entities;
                 }
 
-                const allTables = [...(page.data.tables || []), ...fetchedTables];
+                const allTables = [...(page.data.entities || []), ...fetchedTables];
                 relatedTable = allTables.find((table) => table.$id === firstTableId) || null;
 
                 let rowsMissingData = [];
@@ -153,7 +169,8 @@
                     return obj;
                 }, {});
 
-                newWorkData.set(row.$id, writable(deepClone(workingData as Models.Row)));
+                const clonedObject = deepClone(workingData as Models.Row);
+                newWorkData.set(row.$id, writable(clonedObject));
             });
 
             workData = newWorkData;
@@ -168,20 +185,20 @@
         }
     }
 
-    function compareColumns(column: Columns, $work: Models.Row, originalRow: Models.Row) {
-        if (!column) {
+    function compareColumns(field: Field, $work: Models.Row, originalRow: Models.Row) {
+        if (!field) {
             return false;
         }
 
-        const workColumn = $work?.[column.key];
-        const currentColumn = originalRow?.[column.key];
+        const workColumn = $work?.[field.key];
+        const currentColumn = originalRow?.[field.key];
 
-        if (column.array) {
+        if (field.array) {
             return !symmetricDifference(Array.from(workColumn), Array.from(currentColumn)).length;
         }
 
-        if (isRelationship(column)) {
-            if (isRelationshipToMany(column as Models.ColumnRelationship)) {
+        if (isRelationship(field)) {
+            if (isRelationshipToMany(field as Models.ColumnRelationship)) {
                 if (!Array.isArray(workColumn) || !Array.isArray(currentColumn)) {
                     return workColumn === currentColumn;
                 }
@@ -208,7 +225,7 @@
     }
 
     function calculateAndCompareDisabledState() {
-        if (!relatedTable?.columns?.length || !fetchedRows.length) return true;
+        if (!relatedTable?.fields?.length || !fetchedRows.length) return true;
 
         if (isSingleStore()) {
             const rowId = fetchedRows[0].$id;
@@ -218,7 +235,9 @@
             if (!row || !work) return true;
 
             const workValue = get(work);
-            return relatedTable.columns.every((column) => compareColumns(column, workValue, row));
+            return relatedTable.fields.every((field: Field) =>
+                compareColumns(field, workValue, row)
+            );
         } else {
             return fetchedRows.every((row) => {
                 const work = workData.get(row.$id);
@@ -226,8 +245,8 @@
 
                 const workValue = get(work);
 
-                return relatedTable.columns.every((column) =>
-                    compareColumns(column, workValue, row)
+                return relatedTable.fields.every((field: Field) =>
+                    compareColumns(field, workValue, row)
                 );
             });
         }
@@ -287,10 +306,6 @@
         }
     }
 
-    export function isDisabled(): boolean {
-        return disabledState;
-    }
-
     function focusFirstInput() {
         const firstInput = columnFormWrapper?.querySelector<HTMLInputElement | HTMLTextAreaElement>(
             'input:not([disabled]):not([readonly]), textarea:not([disabled]):not([readonly])'
@@ -335,22 +350,28 @@
             });
         }
     });
+
+    $effect(() => {
+        disabledState = calculateAndCompareDisabledState();
+    });
 </script>
 
 {#if loading}
     <div style:margin-inline-end="2.25rem">
         <Skeleton variant="line" height={40} width="auto" />
     </div>
-{:else if relatedTable?.columns?.length && fetchedRows.length}
+{:else if relatedTable?.fields?.length && fetchedRows.length}
     <!-- we should not show current table column items in this view -->
     {@const twoWayKeys = new Set(
-        relatedTable.columns
+        relatedTable.fields
             .filter((column: Models.ColumnRelationship) => column.twoWay)
             .map((c) => c.key)
     )}
 
     <!-- render the filtered ones -->
-    {@const columnsToRender = relatedTable.columns.filter((c) => !twoWayKeys.has(c.key))}
+    {@const columnsToRender = relatedTable.fields.filter(
+        (field: Field) => !twoWayKeys.has(field.key)
+    )}
 
     <div bind:this={columnFormWrapper}>
         {#if fetchedRows.length === 1}
@@ -360,10 +381,10 @@
                     {#each columnsToRender as column}
                         {@const label = column.key}
                         <ColumnItem
-                            {column}
                             {label}
                             editing
                             formValues={workStore}
+                            column={toRelationalField(column)}
                             onUpdateFormValues={handleFormUpdate(fetchedRows[0].$id)} />
                     {/each}
                 </Layout.Stack>
@@ -381,10 +402,10 @@
                                     {#each columnsToRender as column}
                                         {@const label = column.key}
                                         <ColumnItem
-                                            {column}
                                             {label}
                                             editing
                                             formValues={workStore}
+                                            column={toRelationalField(column)}
                                             onUpdateFormValues={handleFormUpdate(row.$id)} />
                                     {/each}
                                 </Layout.Stack>

@@ -1,4 +1,4 @@
-import { Query } from '@appwrite.io/console';
+import { Query, type Models } from '@appwrite.io/console';
 import { sdk } from '$lib/stores/sdk';
 import { RuleTrigger, RuleType } from '$lib/stores/sdk';
 import { Dependencies } from '$lib/constants.js';
@@ -8,7 +8,7 @@ export const load = async ({ parent, depends, params }) => {
     const { site, organization } = await parent();
     depends(Dependencies.DOMAINS, Dependencies.SITES_DOMAINS);
 
-    const [rules, installations, domains] = await Promise.all([
+    const [rules, installations, domainsList] = await Promise.all([
         sdk.forProject(params.region, params.project).proxy.listRules({
             queries: [
                 Query.equal('type', RuleType.DEPLOYMENT),
@@ -20,13 +20,13 @@ export const load = async ({ parent, depends, params }) => {
             ? sdk.forConsole.domains.list({
                   queries: [Query.equal('teamId', organization.$id)]
               })
-            : Promise.resolve(null)
+            : Promise.resolve<Models.DomainsList>({ total: 0, domains: [] })
     ]);
 
     return {
         site,
         rules,
-        domains,
+        domainsList,
         installations,
         branches:
             site?.installationId && site?.providerRepositoryId

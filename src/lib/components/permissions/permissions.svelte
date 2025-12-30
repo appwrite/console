@@ -20,6 +20,7 @@
     import { IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
     import type { PinkColumn } from '$lib/helpers/types';
     import { Card } from '$lib/components';
+    import { TableScroll } from '$lib/elements/table';
 
     export let withCreate = false;
     export let permissions: string[] = [];
@@ -113,32 +114,18 @@
         }, []);
     }
 
-    function sortRoles([a]: [string, Permission], [b]: [string, Permission]) {
-        if ((a === 'any') !== (b === 'any')) {
-            return a === 'any' ? -1 : 1;
-        }
-        if ((a === 'users') !== (b === 'users')) {
-            return a === 'users' ? -1 : 1;
-        }
-        if ((a === 'guests') !== (b === 'guests')) {
-            return a === 'guests' ? -1 : 1;
-        }
-
-        return a.localeCompare(b);
-    }
-
     const columns: PinkColumn[] = [
-        { id: 'role', width: { min: 80 } },
-        { id: 'create', width: { min: 80 }, hide: !withCreate },
-        { id: 'read', width: { min: 80 } },
-        { id: 'update', width: { min: 80 } },
-        { id: 'delete', width: { min: 80 } },
+        { id: 'role', width: { min: 220 } },
+        { id: 'create', width: { min: 64 }, hide: !withCreate },
+        { id: 'read', width: { min: 64 } },
+        { id: 'update', width: { min: 64 } },
+        { id: 'delete', width: { min: 64 } },
         { id: 'action', width: 40 }
     ];
 </script>
 
 {#if [...$groups]?.length}
-    <div class="table-wrapper">
+    <TableScroll>
         <Table.Root {columns} let:root>
             <svelte:fragment slot="header" let:root>
                 <Table.Header.Cell column="role" {root}>Role</Table.Header.Cell>
@@ -150,13 +137,14 @@
                 <Table.Header.Cell column="delete" {root}>Delete</Table.Header.Cell>
                 <Table.Header.Cell column="action" {root} />
             </svelte:fragment>
-            {#each [...$groups].sort(sortRoles) as [role, permission] (role)}
+            {#each [...$groups] as [role, permission] (role)}
                 <Table.Row.Base {root}>
                     <Table.Cell column="role" {root}>
                         <Row {role} />
                     </Table.Cell>
                     <Table.Cell column="create" {root}>
                         <Selector.Checkbox
+                            size="s"
                             checked={permission.create}
                             on:change={() => togglePermission(role, 'create')} />
                     </Table.Cell>
@@ -187,7 +175,7 @@
                 </Table.Row.Base>
             {/each}
         </Table.Root>
-    </div>
+    </TableScroll>
 
     <div>
         <Actions
@@ -223,14 +211,3 @@
         </Layout.Stack>
     </Card>
 {/if}
-
-<style lang="scss">
-    .table-wrapper {
-        scrollbar-width: none;
-        -ms-overflow-style: none;
-
-        &::-webkit-scrollbar {
-            display: none;
-        }
-    }
-</style>

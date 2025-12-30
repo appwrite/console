@@ -57,6 +57,7 @@
 
     let newProjName = '';
     let projectType: 'existing' | 'new' = 'existing';
+    let newlyCreatedProject: Models.Project | null = null;
 
     async function getProjects(orgId: string | null) {
         if (!orgId) {
@@ -125,8 +126,9 @@
             });
             onExit();
             await invalidate(Dependencies.PROJECTS);
+            const targetProject = newlyCreatedProject ?? currentSelectedProject;
             await goto(
-                `${base}/project-${currentSelectedProject.region}-${currentSelectedProject.$id}/settings/migrations`
+                `${base}/project-${targetProject.region ?? 'default'}-${targetProject.$id}/settings/migrations`
             );
         } catch (error) {
             addNotification({
@@ -257,6 +259,7 @@
                                         } else {
                                             const project = await createNewProject();
                                             if (project !== null) {
+                                                newlyCreatedProject = project;
                                                 projectSdkInstance = sdk.forProject(
                                                     project.region,
                                                     project.$id

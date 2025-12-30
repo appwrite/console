@@ -99,6 +99,18 @@
                 replyToName: $providerData.options['replyToName']
             };
             break;
+        case Providers.Resend:
+            params = {
+                providerId: $providerData.$id,
+                name: $providerData.name,
+                enabled: $providerData.enabled,
+                apiKey: $providerData.credentials['apiKey'],
+                fromEmail: $providerData.options['fromEmail'],
+                fromName: $providerData.options['fromName'],
+                replyToEmail: $providerData.options['replyToEmail'],
+                replyToName: $providerData.options['replyToName']
+            };
+            break;
         case Providers.SMTP:
             params = {
                 providerId: $providerData.$id,

@@ -5,7 +5,7 @@
     import BackupPolicy from './policy.svelte';
     import LockedCard from './locked.svelte';
     import Table from './table.svelte';
-    import type { PageData } from './$types';
+    import type { PageProps } from './$types';
     import CreatePolicy from './createPolicy.svelte';
     import { Button } from '$lib/elements/forms';
     import { addNotification, dismissAllNotifications } from '$lib/stores/notifications';
@@ -25,11 +25,12 @@
     import { page } from '$app/state';
     import IconQuestionMarkCircle from './components/questionIcon.svelte';
 
-    let policyCreateError: string;
-    let totalPolicies: UserBackupPolicy[] = [];
-    let isDisabled = isSelfHosted || (isCloud && !$currentPlan.backupsEnabled);
+    const { data }: PageProps = $props();
 
-    export let data: PageData;
+    let policyCreateError: string | null = $state(null);
+    let totalPolicies: UserBackupPolicy[] = $state([]);
+
+    const isDisabled = $derived(isSelfHosted || (isCloud && !$currentPlan.backupsEnabled));
 
     const showFeedbackNotification = () => {
         let counter = localStorage.getItem('createBackupsCounter');
@@ -69,11 +70,11 @@
             await sdk
                 .forProject(page.params.region, page.params.project)
                 .backups.createArchive(['databases'], data.database.$id);
+            await invalidate(Dependencies.BACKUPS);
             addNotification({
                 type: 'success',
                 message: 'Database backup has started'
             });
-            invalidate(Dependencies.BACKUPS);
             trackEvent('click_manual_submit');
             showFeedbackNotification();
         } catch (error) {
@@ -86,7 +87,7 @@
         }
     };
 
-    const trackEvents = (policies) => {
+    const trackEvents = (policies: UserBackupPolicy[]) => {
         policies.forEach((policy) => {
             let actualDay = null;
             const monthlyBackupFrequency = policy.monthlyBackupFrequency;
@@ -139,7 +140,6 @@
                     ? `Backup policies have been created`
                     : `<b>${totalPolicies[0].label}</b> policy has been created`;
 
-            // TODO: html isn't yet supported on Toast.
             addNotification({
                 isHtml: true,
                 type: 'success',
@@ -148,7 +148,7 @@
 
             trackEvents(totalPolicies);
 
-            invalidate(Dependencies.BACKUPS);
+            await invalidate(Dependencies.BACKUPS);
             showFeedbackNotification();
         } catch (err) {
             addNotification({
@@ -162,19 +162,14 @@
     };
 
     onMount(() => {
-        return realtime
-            .forProject(page.params.region, page.params.project)
-            .subscribe(['project', 'console'], (response) => {
-                // fast path return.
-                if (!response.channels.includes(`projects.${getProjectId()}`)) return;
+        return realtime.forProject(page.params.region, ['project', 'console'], (response) => {
+            // fast path return.
+            if (!response.channels.includes(`projects.${getProjectId()}`)) return;
 
-                if (
-                    response.events.includes('archives.*') ||
-                    response.events.includes('policies.*')
-                ) {
-                    invalidate(Dependencies.BACKUPS);
-                }
-            });
+            if (response.events.includes('archives.*') || response.events.includes('policies.*')) {
+                invalidate(Dependencies.BACKUPS);
+            }
+        });
     });
 </script>
 

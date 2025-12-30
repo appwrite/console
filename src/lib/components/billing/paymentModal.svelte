@@ -1,8 +1,13 @@
 <script lang="ts">
     import { FakeModal } from '$lib/components';
     import { InputText, Button } from '$lib/elements/forms';
-    import { createEventDispatcher, onMount } from 'svelte';
-    import { initializeStripe, setPaymentMethod, submitStripeCard } from '$lib/stores/stripe';
+    import { onMount, onDestroy } from 'svelte';
+    import {
+        initializeStripe,
+        setPaymentMethod,
+        submitStripeCard,
+        unmountPaymentElement
+    } from '$lib/stores/stripe';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
@@ -10,16 +15,16 @@
     import { Spinner } from '@appwrite.io/pink-svelte';
     import type { PaymentMethod } from '@stripe/stripe-js';
     import StatePicker from './statePicker.svelte';
+    import type { PaymentMethodData } from '$lib/sdk/billing';
 
     export let show = false;
+    export let onCardSubmit: ((card: PaymentMethodData) => void) | null = null;
 
-    const dispatch = createEventDispatcher();
-
-    let name: string;
-    let error: string;
     let modal: FakeModal;
-    let showState: boolean = false;
+    let name: string;
     let state: string = '';
+    let error: string = null;
+    let showState: boolean = false;
     let paymentMethod: PaymentMethod | null = null;
 
     async function handleSubmit() {
@@ -32,7 +37,7 @@
                 const card = await setPaymentMethod(paymentMethod.id, name, state);
                 modal.closeModal();
                 await invalidate(Dependencies.PAYMENT_METHODS);
-                dispatch('submit', card);
+                onCardSubmit?.(card);
                 addNotification({
                     type: 'success',
                     message: 'A new payment method has been added to your account'
@@ -50,7 +55,7 @@
             }
             modal.closeModal();
             await invalidate(Dependencies.PAYMENT_METHODS);
-            dispatch('submit', card);
+            onCardSubmit?.(card as PaymentMethodData);
             addNotification({
                 type: 'success',
                 message: 'A new payment method has been added to your account'
@@ -89,6 +94,8 @@
         };
     });
 
+    onDestroy(unmountPaymentElement);
+
     $: if (element) {
         observer.observe(element, { childList: true });
     }
@@ -99,7 +106,8 @@
     bind:show
     title="Add payment method"
     bind:error
-    onSubmit={handleSubmit}>
+    onSubmit={handleSubmit}
+    skipEnterOnBackdrop={showState}>
     <slot />
     {#if showState}
         <StatePicker card={paymentMethod} bind:state />

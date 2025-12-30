@@ -8,12 +8,12 @@
         mockSuggestions,
         type SuggestedIndexSchema
     } from './store';
-    import { Modal, Confirm } from '$lib/components';
-    import SideSheet from '../table-[table]/layout/sidesheet.svelte';
+    import { Modal } from '$lib/components';
+    import { type Entity, SideSheet } from '$database/(entity)';
     import { isSmallViewport } from '$lib/stores/viewport';
-    import { IndexType, type Models } from '@appwrite.io/console';
+    import { IndexType } from '@appwrite.io/console';
     import { capitalize } from '$lib/helpers/string';
-    import { type Columns, table } from '../table-[table]/store';
+    import { type Columns } from '../table-[table]/store';
     import { isRelationship } from '../table-[table]/rows/store';
     import { VARS } from '$lib/system';
     import { sleep } from '$lib/helpers/promises';
@@ -26,21 +26,23 @@
     import { type ComponentType, onDestroy, onMount } from 'svelte';
     import { columnOptions as baseColumnOptions } from '../table-[table]/columns/store';
 
+    const {
+        table
+    }: {
+        table: Entity;
+    } = $props();
+
     const MAX_INDEXES = 5;
 
     let modalError = $state(null);
     let creatingIndexes = $state(false);
     let loadingSuggestions = $state(false);
     let indexes = $state<SuggestedIndexSchema[]>([]);
-    let confirmDismiss = $state(false);
     let columnOptions: Array<{
         value: string;
         label: string;
         leadingIcon?: ComponentType;
     }> = $state();
-
-    const tableId = page.params.table;
-    const databaseId = page.params.database;
 
     function makeColumnOptions() {
         if (VARS.MOCK_AI_SUGGESTIONS) {
@@ -50,8 +52,8 @@
                 leadingIcon: baseColumnOptions.find((option) => option.type === column.type)?.icon
             }));
         } else {
-            columnOptions = $table.columns
-                .filter((column) => !isRelationship(column))
+            columnOptions = table.fields
+                .filter((column: Columns) => !isRelationship(column))
                 .map((column) => ({
                     value: column.key,
                     label: column.key,
@@ -71,7 +73,7 @@
             indexes = mockSuggestions.columns.slice(0, 3).map((column, index) => ({
                 key: column.name,
                 type: IndexType.Key,
-                columns: [column.name],
+                fields: [column.name],
                 orders: index === 2 ? IndexOrder.DESC : IndexOrder.ASC,
                 lengths: []
             }));
@@ -80,8 +82,8 @@
                 const suggestions = await sdk
                     .forProject(page.params.region, page.params.project)
                     .console.suggestIndexes({
-                        databaseId,
-                        tableId: $table.$id
+                        databaseId: table.databaseId,
+                        tableId: table.$id
                     });
 
                 indexes = suggestions.indexes.map((index) => {
@@ -89,7 +91,7 @@
                         key: index.columns[0],
                         type: index.type as IndexType,
                         orders: (index.orders?.[0] as IndexOrder) || IndexOrder.ASC,
-                        columns: index.columns,
+                        fields: index.columns,
                         lengths: index.lengths ?? []
                     };
                 });
@@ -117,7 +119,7 @@
                 key: '',
                 type: IndexType.Key,
                 orders: IndexOrder.ASC,
-                columns: [],
+                fields: [],
                 lengths: null
             });
         }
@@ -130,9 +132,9 @@
     function syncIndexState(event: CustomEvent, index: SuggestedIndexSchema) {
         const selected = event.detail;
         index.key = selected;
-        index.columns = selected ? [selected] : [];
+        index.fields = selected ? [selected] : [];
         if (index.lengths) {
-            index.lengths = index.lengths.slice(0, index.columns.length);
+            index.lengths = index.lengths.slice(0, index.fields.length);
         }
     }
 
@@ -147,8 +149,8 @@
     }
 
     function generateUniqueIndexKey(index: SuggestedIndexSchema, usedKeys: Set<string>): string {
-        const existingKeys = $table.indexes.map((idx) => idx.key);
-        let suggestedKey = `${index.key || index.columns[0]}_${index.type.toLowerCase()}`;
+        const existingKeys = table.indexes.map((idx) => idx.key);
+        let suggestedKey = `${index.key || index.fields[0]}_${index.type.toLowerCase()}`;
         let uniqueKey = suggestedKey;
         let counter = 1;
 
@@ -161,25 +163,20 @@
         return uniqueKey;
     }
 
-    function prepareIndexForCreation(index: SuggestedIndexSchema, columnMap: Map<string, Columns>) {
+    function prepareIndexForCreation(index: SuggestedIndexSchema, columnMap: Map<string, number>) {
         // prepare orders array
-        const orders = index.orders !== null ? index.columns.map(() => String(index.orders)) : [];
+        const orders = index.orders !== null ? index.fields.map(() => String(index.orders)) : [];
 
         // prepare lengths array
         let lengths: (number | null)[];
         if (index.type === IndexType.Key) {
             // only validate if it's a key index
-            lengths = index.columns.map((columnKey, i) => {
-                const column = columnMap.get(columnKey);
-                if (column?.type === 'string') {
-                    const stringColumn = column as Models.ColumnString;
+            lengths = index.fields.map((columnKey, i) => {
+                const maxSize = columnMap.get(columnKey);
+                if (maxSize) {
                     const requestedLength = index.lengths?.[i];
-                    if (
-                        requestedLength &&
-                        stringColumn.size &&
-                        requestedLength > stringColumn.size
-                    ) {
-                        return stringColumn.size;
+                    if (requestedLength && requestedLength > maxSize) {
+                        return maxSize;
                     }
                     return requestedLength || null;
                 }
@@ -187,7 +184,7 @@
             });
         } else {
             // non-key indexes, lengths are null!
-            lengths = Array(index.columns.length).fill(null);
+            lengths = Array(index.fields.length).fill(null);
         }
 
         return { orders, lengths };
@@ -195,7 +192,6 @@
 
     function dismissIndexes() {
         indexes = [];
-        confirmDismiss = false;
         $showIndexesSuggestions = false;
     }
 
@@ -215,7 +211,7 @@
         creatingIndexes = true;
 
         for (const [i, index] of indexes.entries()) {
-            if (!index.key || !index.type || !index.columns || index.columns.length === 0) {
+            if (!index.key || !index.type || !index.fields || index.fields.length === 0) {
                 modalError = `Index ${i + 1}: Selected column or type invalid`;
                 creatingIndexes = false;
                 return true; // keep sheet open!
@@ -224,7 +220,12 @@
 
         let successCount = 0;
         const usedKeys = new Set<string>();
-        const columnMap = new Map($table.columns.map((col) => [col.key, col]));
+        const columnMap: Map<string, number> = new Map(
+            table.fields
+                .filter((field) => field.type === 'string' && 'size' in field)
+                .map((field) => [field.key, field['size']])
+        );
+
         const sdkClient = sdk.forProject(page.params.region, page.params.project);
 
         for (const [_, index] of indexes.entries()) {
@@ -236,11 +237,11 @@
                 const uniqueIndexKey = generateUniqueIndexKey(index, usedKeys);
 
                 await sdkClient.tablesDB.createIndex({
-                    databaseId,
-                    tableId,
+                    databaseId: table.databaseId,
+                    tableId: table.$id,
                     key: uniqueIndexKey,
                     type: index.type,
-                    columns: index.columns,
+                    columns: index.fields,
                     lengths,
                     ...(orders.length ? { orders } : {})
                 });
@@ -354,13 +355,7 @@
                         text
                         size="s"
                         disabled={loadingSuggestions || creatingIndexes}
-                        on:click={() => {
-                            if (indexes.length > 0 && !creatingIndexes) {
-                                confirmDismiss = true;
-                            } else {
-                                $showIndexesSuggestions = false;
-                            }
-                        }}>Cancel</Button>
+                        on:click={() => dismissIndexes()}>Cancel</Button>
 
                     <Button
                         size="s"
@@ -389,13 +384,7 @@
         }}
         cancel={{
             disabled: loadingSuggestions || creatingIndexes,
-            onClick: () => {
-                if (indexes.length > 0 && !creatingIndexes) {
-                    confirmDismiss = true;
-                } else {
-                    $showIndexesSuggestions = false;
-                }
-            }
+            onClick: () => dismissIndexes()
         }}>
         {#if modalError}
             <Alert.Inline status="error" title={modalError} />
@@ -539,15 +528,6 @@
         </Layout.Stack>
     {/if}
 {/snippet}
-
-<Confirm
-    confirmDeletion
-    action="Dismiss"
-    title="Dismiss indexes"
-    bind:open={confirmDismiss}
-    onSubmit={dismissIndexes}>
-    Are you sure you want to dismiss these suggested indexes? This action cannot be undone.
-</Confirm>
 
 <style lang="scss">
     // Custom logic to hide the Sheet's

@@ -1,7 +1,7 @@
 <script lang="ts">
     import { onMount } from 'svelte';
     import { page } from '$app/state';
-    import { sdk } from '$lib/stores/sdk';
+    import { realtime } from '$lib/stores/sdk';
     import { Dependencies } from '$lib/constants';
     import { invalidate, goto } from '$app/navigation';
     import { registerCommands } from '$lib/commandCenter';
@@ -13,11 +13,14 @@
 
     onMount(() => {
         let previousStatus: string = null;
-        return sdk.forConsole.client.subscribe<Models.Deployment>('console', (message) => {
-            if (message.payload.status !== 'ready' && previousStatus === message.payload.status) {
+        return realtime.forConsole(page.params.region, 'console', (message) => {
+            const payload = message.payload as Models.Deployment;
+            if (payload.status !== 'ready' && previousStatus === payload.status) {
                 return;
             }
-            previousStatus = message.payload.status;
+
+            previousStatus = payload.status;
+
             if (message.events.includes('sites.*.deployments.*.create')) {
                 invalidate(Dependencies.DEPLOYMENTS);
 

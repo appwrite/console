@@ -21,6 +21,7 @@
         hideColumns?: boolean;
         allowNoColumns?: boolean;
         showAnyway?: boolean;
+        disableButton?: boolean;
     }
 
     let {
@@ -32,7 +33,8 @@
         hideView = false,
         hideColumns = false,
         allowNoColumns = false,
-        showAnyway = false
+        showAnyway = false,
+        disableButton = false
     }: Props = $props();
 
     let showCountBadge = $state(false);
@@ -70,7 +72,7 @@
                 icon={onlyIcon}
                 onclick={toggle}
                 variant="secondary"
-                disabled={!$columns.length && showAnyway}
+                disabled={(!$columns.length && showAnyway) || disableButton}
                 class={onlyIcon && !$isSmallViewport ? 'width-fix' : undefined}
                 badge={showCountBadge ? selectedColumnsNumber.toString() : undefined}>
                 <Icon slot="start" icon={IconViewBoards} />

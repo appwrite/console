@@ -176,10 +176,10 @@
         </div>
     {:else}
         <Card.Base padding="none">
-            <Empty title="You have no users. Create a user to see them here." type="secondary">
+            <Empty title="No users yet. Create a user to see it here." type="secondary">
                 <Typography.Text slot="description">
                     Need a hand? Learn more in our <Link.Anchor
-                        href="https://appwrite.io/docs/products/auth/quick-start"
+                        href="https://appwrite.io/docs/products/auth/users"
                         target="_blank"
                         rel="noopener noreferrer">
                         documentation</Link.Anchor

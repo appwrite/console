@@ -1,4 +1,4 @@
-import { BillingPlan, Dependencies } from '$lib/constants';
+import { BillingPlan, DEFAULT_BILLING_PROJECTS_LIMIT, Dependencies } from '$lib/constants';
 import type { Address } from '$lib/sdk/billing';
 import { type Organization } from '$lib/stores/organization';
 import { sdk } from '$lib/stores/sdk';
@@ -7,7 +7,9 @@ import type { PageLoad } from './$types';
 import { isCloud } from '$lib/system';
 import { base } from '$app/paths';
 
-export const load: PageLoad = async ({ parent, depends }) => {
+import { getLimit, getPage, pageToOffset } from '$lib/helpers/load';
+
+export const load: PageLoad = async ({ parent, depends, url, route }) => {
     const { organization, scopes, currentPlan, countryList, locale } = await parent();
 
     if (!scopes.includes('billing.read')) {
@@ -19,6 +21,8 @@ export const load: PageLoad = async ({ parent, depends }) => {
     depends(Dependencies.CREDIT);
     depends(Dependencies.INVOICES);
     depends(Dependencies.ADDRESS);
+    //aggregation reloads on page param changes
+    depends(Dependencies.BILLING_AGGREGATION);
 
     const billingAddressId = (organization as Organization)?.billingAddressId;
     const billingAddressPromise: Promise<Address> = billingAddressId
@@ -34,9 +38,14 @@ export const load: PageLoad = async ({ parent, depends }) => {
      */
     let billingAggregation = null;
     try {
+        const currentPage = getPage(url) || 1;
+        const limit = getLimit(url, route, DEFAULT_BILLING_PROJECTS_LIMIT);
+        const offset = pageToOffset(currentPage, limit);
         billingAggregation = await sdk.forConsole.billing.getAggregation(
             organization.$id,
-            (organization as Organization)?.billingAggregationId
+            (organization as Organization)?.billingAggregationId,
+            limit,
+            offset
         );
     } catch (e) {
         // ignore error
@@ -84,6 +93,11 @@ export const load: PageLoad = async ({ parent, depends }) => {
         areCreditsSupported,
         countryList,
         locale,
-        nextPlan: billingPlanDowngrade
+        nextPlan: billingPlanDowngrade,
+        limit: getLimit(url, route, DEFAULT_BILLING_PROJECTS_LIMIT),
+        offset: pageToOffset(
+            getPage(url) || 1,
+            getLimit(url, route, DEFAULT_BILLING_PROJECTS_LIMIT)
+        )
     };
 };

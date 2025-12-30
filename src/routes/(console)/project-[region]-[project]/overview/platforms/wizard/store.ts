@@ -6,7 +6,6 @@ function createPlatformStore() {
         $id: null,
         name: null,
         hostname: null,
-        key: null,
         store: null,
         type: null
     });
@@ -20,7 +19,6 @@ function createPlatformStore() {
                 $id: null,
                 name: null,
                 hostname: null,
-                key: null,
                 store: null,
                 type: null
             });

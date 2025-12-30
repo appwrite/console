@@ -113,7 +113,7 @@
                                                 placement={'bottom'}>
                                                 <div>
                                                     <ActionMenu.Item.Button
-                                                        trailingIcon={IconRefresh}
+                                                        leadingIcon={IconRefresh}
                                                         disabled={activeDeployment.sourceSize === 0}
                                                         on:click={() => {
                                                             selectedDeployment = activeDeployment;
@@ -134,7 +134,7 @@
                                             deployment={activeDeployment}
                                             {toggle} />
                                         <ActionMenu.Item.Anchor
-                                            trailingIcon={IconTerminal}
+                                            leadingIcon={IconTerminal}
                                             href={`${base}/project-${page.params.region}-${page.params.project}/functions/function-${page.params.function}/deployment-${activeDeployment.$id}`}>
                                             Build logs
                                         </ActionMenu.Item.Anchor>

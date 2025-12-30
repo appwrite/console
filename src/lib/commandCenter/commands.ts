@@ -100,8 +100,11 @@ const commandsEnabled = derived(disabledMap, ($disabledMap) => {
     return Array.from($disabledMap.values()).every((disabled) => !disabled);
 });
 
-function isInputEvent(event: KeyboardEvent) {
-    return ['INPUT', 'TEXTAREA', 'SELECT'].includes((event.target as HTMLElement).tagName);
+export function isTargetInputLike(element: EventTarget | null) {
+    if (!(element instanceof HTMLElement)) return false;
+    return !!element.closest(
+        'input,textarea,select,[contenteditable],[role="combobox"],[role="textbox"],[role="searchbox"],[data-command-center-ignore]'
+    );
 }
 
 function getCommandRank(command: KeyedCommand) {
@@ -204,7 +207,12 @@ export const commandCenterKeyDownHandler = derived(
             for (const command of commandsArr) {
                 if (!isKeyedCommand(command)) continue;
                 if (!command.forceEnable) {
-                    if (command.disabled || !enabled || isInputEvent(event) || $wizard.show) {
+                    if (
+                        command.disabled ||
+                        !enabled ||
+                        isTargetInputLike(event.target) ||
+                        $wizard.show
+                    ) {
                         continue;
                     }
                 }

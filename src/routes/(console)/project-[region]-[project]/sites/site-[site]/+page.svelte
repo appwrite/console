@@ -7,19 +7,21 @@
     import { Button } from '$lib/elements/forms';
     import InstantRollbackDomain from './instantRollbackModal.svelte';
     import { app } from '$lib/stores/app';
-    import { sdk } from '$lib/stores/sdk';
+    import { realtime } from '$lib/stores/sdk';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { onMount } from 'svelte';
     import { page } from '$app/state';
     import { base } from '$app/paths';
+    import type { PageProps } from './$types';
     import { regionalProtocol } from '$routes/(console)/project-[region]-[project]/store';
 
-    export let data;
-    let showRollback = false;
+    let { data }: PageProps = $props();
+
+    let showRollback = $state(false);
 
     onMount(() => {
-        return sdk.forConsole.client.subscribe('console', (response) => {
+        return realtime.forConsole(page.params.region, 'console', (response) => {
             if (response.events.includes(`sites.${page.params.site}.deployments.*`)) {
                 invalidate(Dependencies.SITE);
             }
@@ -31,7 +33,7 @@
     <Layout.Stack gap="xxxl">
         {#if data?.deployment && data.deployment.status === 'ready'}
             <SiteCard deployment={data.deployment} proxyRuleList={data.proxyRuleList}>
-                <svelte:fragment slot="footer">
+                {#snippet footer()}
                     {#if data.proxyRuleList.total}
                         <Button
                             external
@@ -53,7 +55,7 @@
                             active.
                         </span>
                     </Tooltip>
-                </svelte:fragment>
+                {/snippet}
             </SiteCard>
         {:else if data.deployment?.status === 'building'}
             <Card.Base padding="none">

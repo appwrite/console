@@ -2,19 +2,24 @@
     import { page } from '$app/state';
     import { Id, RegionEndpoint } from '$lib/components';
     import { Cover } from '$lib/layout';
-    import { project, projectRegion } from '../store';
+    import { projectRegion } from '../store';
     import { hasOnboardingDismissed, setHasOnboardingDismissed } from '$lib/helpers/onboarding';
     import { goto } from '$app/navigation';
-    import { base } from '$app/paths';
+    import { resolve } from '$app/paths';
     import { Layout, Button, Typography } from '@appwrite.io/pink-svelte';
     import { user } from '$lib/stores/user';
     import { isSmallViewport } from '$lib/stores/viewport';
     import { trackEvent } from '$lib/actions/analytics';
 
     function dismissOnboarding() {
-        setHasOnboardingDismissed($project.$id, $user);
+        setHasOnboardingDismissed(page.params.project, $user);
         trackEvent('onboarding_hub_platform_dismiss');
-        goto(`${base}/project-${$project.region}-${$project.$id}/overview/platforms`);
+        goto(
+            resolve('/(console)/project-[region]-[project]/overview/platforms', {
+                region: page.params.region,
+                project: page.params.project
+            })
+        );
     }
 </script>
 
@@ -24,12 +29,15 @@
             <Layout.Stack alignItems="baseline" direction={$isSmallViewport ? 'column' : 'row'}>
                 <Typography.Title color="--fgcolor-neutral-primary" size="xl" truncate>
                     <span class="project-title">
-                        {$project?.name}
+                        {page.data.project?.name}
                     </span>
                 </Typography.Title>
                 <Layout.Stack direction="row" inline>
-                    <Id value={$project.$id}>{$project.$id}</Id>
-                    <RegionEndpoint region={$projectRegion} />
+                    <Id value={page.params.project} copyText="Copy project ID"
+                        >{page.params.project}</Id>
+                    {#if $projectRegion}
+                        <RegionEndpoint region={$projectRegion} />
+                    {/if}
                 </Layout.Stack>
             </Layout.Stack>
         </svelte:fragment>
@@ -53,7 +61,7 @@
                         >Follow a few quick steps to get started with Appwrite</Typography.Text>
                 </Layout.Stack>
                 <div class="dashboard-header-button">
-                    {#if !hasOnboardingDismissed($project.$id, $user)}
+                    {#if !hasOnboardingDismissed(page.params.project, $user)}
                         <Button.Button size="s" variant="secondary" on:click={dismissOnboarding}>
                             Dismiss this page
                         </Button.Button>

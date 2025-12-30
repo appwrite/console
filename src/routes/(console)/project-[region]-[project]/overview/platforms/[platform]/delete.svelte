@@ -17,7 +17,7 @@
                 projectId: $project.$id,
                 platformId: $platform.$id
             });
-            await invalidate(Dependencies.PLATFORMS);
+            await invalidate(Dependencies.PROJECT);
             showDelete = false;
             addNotification({
                 type: 'success',

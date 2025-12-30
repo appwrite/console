@@ -150,7 +150,7 @@
         bind:selectedAddress={billingAddress} />
 {/if}
 {#if showReplace}
-    <ReplaceAddress bind:show={showReplace} />
+    <ReplaceAddress bind:show={showReplace} {locale} {countryList} />
 {/if}
 {#if showRemove}
     <RemoveAddress bind:show={showRemove} />

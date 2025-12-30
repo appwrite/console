@@ -57,21 +57,22 @@
     }
 
     function updateOrAddItem(payload: Payload) {
-        // todo: @itznotabug - might need a change to $table?
-        const { $id, status, $collection, policyId } = payload;
-        if ($collection === 'archives' && policyId !== null) {
+        // the internal structure still uses `$collection`,
+        // and is basically an identifier of the op. type here!
+        const { $id, status, $collection: type, policyId } = payload;
+        if (type === 'archives' && policyId !== null) {
             return;
         }
 
-        if ($collection in backupRestoreItems) {
-            const collectionMap = backupRestoreItems[$collection];
+        if (type in backupRestoreItems) {
+            const collectionMap = backupRestoreItems[type];
 
             if (collectionMap.has($id)) {
                 collectionMap.get($id).status = status;
                 if (status === 'completed') {
                     invalidate(Dependencies.BACKUPS);
 
-                    if ($collection === 'restorations') {
+                    if (type === 'restorations') {
                         const { newId, newName } =
                             collectionMap.get($id).options?.['databases']?.['database'][0] || {};
 
@@ -81,7 +82,7 @@
             } else if (status === 'pending' || status === 'processing' || status === 'uploading') {
                 collectionMap.set($id, payload);
             }
-            backupRestoreItems[$collection] = collectionMap;
+            backupRestoreItems[type] = collectionMap;
         }
     }
 
@@ -125,20 +126,18 @@
 
     onMount(() => {
         // fast path: don't subscribe if org is on a free plan or is self-hosted.
-        if (isSelfHosted || (isCloud && $organization.billingPlan === BillingPlan.FREE)) return;
+        if (isSelfHosted || (isCloud && $organization?.billingPlan === BillingPlan.FREE)) return;
 
-        return realtime
-            .forProject(page.params.region, page.params.project)
-            .subscribe('console', (response) => {
-                if (!response.channels.includes(`projects.${getProjectId()}`)) return;
+        return realtime.forProject(page.params.region, 'console', (response) => {
+            if (!response.channels.includes(`projects.${getProjectId()}`)) return;
 
-                if (
-                    response.events.includes('archives.*') ||
-                    response.events.includes('restorations.*')
-                ) {
-                    updateOrAddItem(response.payload);
-                }
-            });
+            if (
+                response.events.includes('archives.*') ||
+                response.events.includes('restorations.*')
+            ) {
+                updateOrAddItem(response.payload);
+            }
+        });
     });
 </script>
 

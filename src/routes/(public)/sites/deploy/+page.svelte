@@ -48,7 +48,11 @@
     async function fetchProjects() {
         loadingProjects = true;
         projects = await sdk.forConsole.projects.list({
-            queries: [Query.equal('teamId', selectedOrg), Query.orderDesc('')]
+            queries: [
+                Query.equal('teamId', selectedOrg),
+                Query.orderDesc(''),
+                Query.select(['$id', 'name'])
+            ]
         });
 
         selectedProject = projects?.total ? projects.projects[0].$id : null;
@@ -87,7 +91,7 @@
                 loadingProjects = false;
             }
         } else {
-            const project = projects.projects.find((p) => p.$id === selectedProject);
+            const project = projects.projects.find((project) => project.$id === selectedProject);
             if (!project) {
                 addNotification({ type: 'error', message: 'Selected project not found' });
                 return;
@@ -371,9 +375,9 @@
                                         : undefined}
                                     disabled={loadingProjects}
                                     options={[
-                                        ...(projects?.projects?.map((p) => ({
-                                            label: p.name,
-                                            value: p.$id
+                                        ...(projects?.projects?.map((project) => ({
+                                            label: project.name,
+                                            value: project.$id
                                         })) ?? []),
                                         {
                                             label: 'Create project',

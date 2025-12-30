@@ -124,7 +124,12 @@
     }
 
     function updateRelatedList() {
+        /**
+         * don't be alarmed here.
+         * reassigning to trigger reactivity!
+         */
         relatedList = relatedList;
+
         value = relatedList;
     }
 

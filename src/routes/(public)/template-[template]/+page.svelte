@@ -55,7 +55,11 @@
 
     async function fetchProjects() {
         projects = await sdk.forConsole.projects.list({
-            queries: [Query.equal('teamId', selectedOrg), Query.orderDesc('')]
+            queries: [
+                Query.equal('teamId', selectedOrg),
+                Query.orderDesc(''),
+                Query.select(['$id', 'name', 'region'])
+            ]
         });
         selectedProject = projects?.total ? projects.projects[0].$id : null;
     }
@@ -180,9 +184,9 @@
                                         label="Project"
                                         required
                                         options={[
-                                            ...projects.projects.map((p) => ({
-                                                label: p.name,
-                                                value: p.$id
+                                            ...projects.projects.map((project) => ({
+                                                label: project.name,
+                                                value: project.$id
                                             })),
                                             {
                                                 label: 'Create project',

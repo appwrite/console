@@ -19,8 +19,8 @@
 
     export let showDelete = false;
     export let invoices: InvoiceList;
-    let error: string = null;
 
+    let error: string = null;
     let selectedTab = 'projects';
     let organizationName: string = null;
     let estimation: EstimationDeleteOrganization;

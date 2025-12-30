@@ -1,60 +1,69 @@
 <script lang="ts">
-    import { base } from '$app/paths';
     import { page } from '$app/state';
+    import { Cover, CoverTitle } from '$lib/layout';
     import { Id, Tab, Tabs } from '$lib/components';
     import { isTabSelected } from '$lib/helpers/load';
-    import { Cover, CoverTitle } from '$lib/layout';
     import { canWriteDatabases } from '$lib/stores/roles';
-    import { database } from './store';
+    import { resolveRoute, withPath } from '$lib/stores/navigation';
+    import { useTerminology } from '$database/(entity)';
 
-    const projectId = page.params.project;
-    const databaseId = page.params.database;
-    const path = `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}`;
-    const tabs = [
-        {
-            href: path,
-            title: 'Tables',
-            event: 'tables',
-            hasChildren: true
-        },
-        {
-            href: `${path}/backups`,
-            title: 'Backups',
-            event: 'backups',
-            hasChildren: true
-        },
-        {
-            href: `${path}/usage`,
-            title: 'Usage',
-            event: 'usage',
-            hasChildren: true
-        },
-        {
-            href: `${path}/settings`,
-            event: 'settings',
-            title: 'Settings',
-            disabled: !$canWriteDatabases
-        }
-    ].filter((tab) => !tab.disabled);
+    const terminology = useTerminology(page);
+    const baseDatabasePath = resolveRoute(
+        '/(console)/project-[region]-[project]/databases/database-[database]',
+        page.params
+    );
+
+    const database = $derived(page.data.database);
+    const baseDatabasesPath = resolveRoute(
+        '/(console)/project-[region]-[project]/databases',
+        page.params
+    );
+
+    const tabs = $derived(
+        [
+            {
+                href: baseDatabasePath,
+                title: terminology.entity.title.plural,
+                event: terminology.entity.lower.plural,
+                hasChildren: true
+            },
+            {
+                href: withPath(baseDatabasePath, '/backups'),
+                title: 'Backups',
+                event: 'backups',
+                hasChildren: true
+            },
+            {
+                href: withPath(baseDatabasePath, '/usage'),
+                title: 'Usage',
+                event: 'usage',
+                hasChildren: true
+            },
+            {
+                href: withPath(baseDatabasePath, '/settings'),
+                event: 'settings',
+                title: 'Settings',
+                disabled: !$canWriteDatabases
+            }
+        ].filter((tab) => !tab.disabled)
+    );
 </script>
 
 <Cover databasesMainScreen>
     <svelte:fragment slot="header">
-        <CoverTitle
-            style="margin-inline-start: -2.5rem;"
-            href={`${base}/project-${page.params.region}-${projectId}/databases`}>
-            {$database.name}
+        <CoverTitle href={baseDatabasesPath} style="margin-inline-start: -2.5rem;">
+            {database?.name}
         </CoverTitle>
 
-        <Id value={$database.$id}>{$database.$id}</Id>
+        <Id value={database?.$id}>{database?.$id}</Id>
     </svelte:fragment>
 
     <Tabs>
         {#each tabs as tab}
             <Tab
                 href={tab.href}
-                selected={isTabSelected(tab, page.url.pathname, path, tabs)}
-                event={tab.event}>
+                event={tab.event}
+                selected={isTabSelected(tab, page.url.pathname, baseDatabasePath, tabs)}>
                 {tab.title}
             </Tab>
         {/each}

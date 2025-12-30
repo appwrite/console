@@ -24,7 +24,14 @@
     import Details from '../../details.svelte';
     import Configuration from './configuration.svelte';
     import Aside from '../../aside.svelte';
-    import { Adapter, BuildRuntime, Framework, ID, type Models } from '@appwrite.io/console';
+    import {
+        Adapter,
+        BuildRuntime,
+        Framework,
+        ID,
+        TemplateReferenceType,
+        type Models
+    } from '@appwrite.io/console';
     import {
         ConnectBehaviour,
         NewRepository,
@@ -159,7 +166,8 @@
                         repository: data.template.providerRepositoryId,
                         owner: data.template.providerOwner,
                         rootDirectory: framework.providerRootDirectory,
-                        version: data.template.providerVersion,
+                        type: TemplateReferenceType.Tag,
+                        reference: data.template.providerVersion,
                         activate: true
                     });
 

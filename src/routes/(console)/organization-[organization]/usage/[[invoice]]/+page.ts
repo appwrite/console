@@ -1,7 +1,7 @@
 import { sdk } from '$lib/stores/sdk';
 import type { PageLoad } from './$types';
-import { Query } from '@appwrite.io/console';
 import type { UsageProjectInfo } from '../../store';
+import { type Models, Query } from '@appwrite.io/console';
 import type { Invoice, OrganizationUsage } from '$lib/sdk/billing';
 
 export const load: PageLoad = async ({ params, parent }) => {
@@ -70,14 +70,18 @@ export const load: PageLoad = async ({ params, parent }) => {
 // all this to get the project's name and region!
 function getUsageProjects(usage: OrganizationUsage) {
     return (async () => {
-        const projects: Record<string, UsageProjectInfo> = {};
         const limit = 100;
-        const requests = [];
+        const requests: Array<Promise<Models.ProjectList>> = [];
+        const projects: Record<string, UsageProjectInfo> = {};
         for (let index = 0; index < usage.projects.length; index += limit) {
             const chunkIds = usage.projects.slice(index, index + limit).map((p) => p.projectId);
             requests.push(
                 sdk.forConsole.projects.list({
-                    queries: [Query.limit(limit), Query.equal('$id', chunkIds)]
+                    queries: [
+                        Query.limit(limit),
+                        Query.equal('$id', chunkIds),
+                        Query.select(['$id', 'name', 'region'])
+                    ]
                 })
             );
         }

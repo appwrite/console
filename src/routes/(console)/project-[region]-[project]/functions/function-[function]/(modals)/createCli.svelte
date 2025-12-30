@@ -54,26 +54,26 @@
     function setCodeSnippets() {
         return {
             Unix: {
-                code: `appwrite client --projectId="${page.params.project}" && \\
-appwrite functions createDeployment \\
-    --functionId=${functionId} \\
+                code: `appwrite client --project-id="${page.params.project}" && \\
+appwrite functions create-deployment \\
+    --function-id=${functionId} \\
     --code="." \\
     --activate=true`,
                 language: 'bash'
             },
 
             CMD: {
-                code: `appwrite client --projectId="${page.params.project}" && ^
-appwrite functions createDeployment ^
-    --functionId=${functionId} ^
+                code: `appwrite client --project-id="${page.params.project}" && ^
+appwrite functions create-deployment ^
+    --function-id=${functionId} ^
     --code="." ^
     --activate`,
                 language: 'CMD'
             },
             PowerShell: {
-                code: `appwrite client --projectId="${page.params.project}" && ,
-appwrite functions createDeployment ,
-    --functionId=${functionId} ,
+                code: `appwrite client --project-id="${page.params.project}" && ,
+appwrite functions create-deployment ,
+    --function-id=${functionId} ,
     --code="." ,
     --activate`,
                 language: 'PowerShell'

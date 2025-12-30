@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { base } from '$app/paths';
+    import { resolve } from '$app/paths';
     import { page } from '$app/state';
     import { Wizard } from '$lib/layout';
     import { Layout, Typography, Icon, Lights, Step, Card } from '@appwrite.io/pink-svelte';
@@ -18,13 +18,23 @@
     import { ConnectRepoModal } from '$lib/components/git';
     import { regionalProtocol } from '$routes/(console)/project-[region]-[project]/store';
 
-    export let data;
+    import type { PageProps } from './$types';
 
-    let showOpenOnMobile = false;
-    let showConnectRepository = false;
-    let showInviteCollaborator = false;
+    const { data }: PageProps = $props();
 
-    const siteURL = data.proxyRuleList.rules[0].domain;
+    let showOpenOnMobile = $state(false);
+    let showConnectRepository = $state(false);
+    let showInviteCollaborator = $state(false);
+
+    const siteURL = $derived(data.proxyRuleList.rules[0].domain);
+
+    const siteRedirectHref = $derived.by(() => {
+        return resolve('/(console)/project-[region]-[project]/sites/site-[site]', {
+            region: page.params.region,
+            project: page.params.project,
+            site: data.site.$id
+        });
+    });
 
     onMount(() => {
         if (
@@ -54,16 +64,15 @@
                 providerRepositoryId: selectedRepository,
                 providerBranch: 'main'
             });
-            invalidate(Dependencies.SITE);
+
+            await invalidate(Dependencies.SITE);
         } catch {
             return;
         }
     }
 </script>
 
-<Wizard
-    column
-    href={`${base}/project-${page.params.region}-${page.params.project}/sites/site-${data.site.$id}`}>
+<Wizard column href={siteRedirectHref}>
     <!-- Creating a new stack -->
     <Layout.Stack gap="xxxl">
         <div style:position="relative" style="z-index: 6;">
@@ -83,9 +92,9 @@
                     deployment={data.deployment}
                     proxyRuleList={data.proxyRuleList}
                     hideQRCode>
-                    <svelte:fragment slot="footer">
+                    {#snippet footer()}
                         <Button href={`${$regionalProtocol}${siteURL}`} external>Visit site</Button>
-                    </svelte:fragment>
+                    {/snippet}
                 </SiteCard>
             </Layout.Stack>
         </div>
@@ -127,7 +136,7 @@
                                     source: 'sites_create_finish'
                                 });
                             }}
-                            href={`${base}/project-${page.params.region}-${page.params.project}/sites/site-${data.site.$id}/domains`}>
+                            href={`${siteRedirectHref}/domains`}>
                             <Layout.Stack gap="s" style="height: 100%">
                                 <Layout.Stack
                                     direction="row"
@@ -191,13 +200,7 @@
     </Layout.Stack>
 
     <svelte:fragment slot="footer">
-        <Button
-            size="s"
-            fullWidthMobile
-            secondary
-            href={`${base}/project-${page.params.region}-${page.params.project}/sites/site-${data.site.$id}`}>
-            Go to dashboard
-        </Button>
+        <Button size="s" fullWidthMobile secondary href={siteRedirectHref}>Go to dashboard</Button>
     </svelte:fragment>
 </Wizard>
 

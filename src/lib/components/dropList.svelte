@@ -18,6 +18,7 @@
     export let paddingInline: string = undefined;
     export let resetListPadding: boolean = false;
     export let gap: string = undefined;
+    export let portal = false;
     let classes: string = '';
     export { classes as class };
 </script>
@@ -31,6 +32,7 @@
     {fullWidth}
     {wrapperFullWidth}
     {fixed}
+    {portal}
     on:blur>
     <slot />
     <svelte:fragment slot="list">

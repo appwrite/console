@@ -32,6 +32,7 @@ export const load = async ({ url, params }) => {
         'React',
         'Vue.js',
         'Svelte',
+        'TanStack Start',
         'Lynx',
         'Angular',
         'Analog',

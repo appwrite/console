@@ -18,7 +18,7 @@
     import { Card } from '$lib/components';
     import { page } from '$app/state';
     import { onMount } from 'svelte';
-    import { sdk } from '$lib/stores/sdk';
+    import { getApiEndpoint, realtime, sdk } from '$lib/stores/sdk';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { addNotification } from '$lib/stores/notifications';
     import { fade } from 'svelte/transition';
@@ -27,6 +27,7 @@
     import { PlatformType } from '@appwrite.io/console';
     import { project } from '../../store';
     import { getCorrectTitle, type PlatformProps } from './store';
+    import LlmBanner from './llmBanner.svelte';
 
     let { isConnectPlatform = false, platform = PlatformType.Flutterandroid }: PlatformProps =
         $props();
@@ -37,6 +38,38 @@
     let isPlatformCreated = $state(isConnectPlatform);
 
     const projectId = page.params.project;
+    const VERSIONS_ENDPOINT = (() => {
+        const endpoint = getApiEndpoint(page.params.region);
+        const url = new URL('/versions', endpoint);
+        return url.toString();
+    })();
+    let flutterSdkVersion = $state('20.3.0');
+
+    function buildFlutterInstructions(version: string) {
+        return `
+Install the Appwrite Flutter SDK using the following command:
+
+\`\`\`
+flutter pub add appwrite:${version}
+\`\`\`
+
+From a suitable lib directory, export the Appwrite client as a global variable, hardcode the project details too:
+
+\`\`\`
+final Client client = Client()
+  .setProject("${projectId}")
+  .setEndpoint("${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}");
+\`\`\`
+
+On the homepage of the app, create a button that says "Send a ping" and when clicked, it should call the following function:
+
+\`\`\`
+client.ping();
+\`\`\`
+        `;
+    }
+
+    const alreadyExistsInstructions = $derived(buildFlutterInstructions(flutterSdkVersion));
 
     const gitCloneCode =
         '\ngit clone https://github.com/appwrite/starter-for-flutter\ncd starter-for-flutter\n';
@@ -111,6 +144,22 @@
         [PlatformType.Flutterwindows]: 'Package name'
     };
 
+    async function fetchFlutterSdkVersion() {
+        try {
+            const response = await fetch(VERSIONS_ENDPOINT);
+            if (!response.ok) {
+                throw new Error(`Failed to fetch versions: ${response.status}`);
+            }
+            const data = await response.json();
+            const latestVersion = data?.['client-flutter'];
+            if (typeof latestVersion === 'string' && latestVersion.trim()) {
+                flutterSdkVersion = latestVersion.trim();
+            }
+        } catch (error) {
+            console.error('Unable to fetch latest Flutter SDK version', error);
+        }
+    }
+
     async function createFlutterPlatform() {
         try {
             isCreatingPlatform = true;
@@ -138,8 +187,7 @@
                 message: 'Platform created.'
             });
 
-            invalidate(Dependencies.PROJECT);
-            invalidate(Dependencies.PLATFORMS);
+            await invalidate(Dependencies.PROJECT);
         } catch (error) {
             trackError(error, Submit.PlatformCreate);
             addNotification({
@@ -156,7 +204,8 @@
     }
 
     onMount(() => {
-        const unsubscribe = sdk.forConsole.client.subscribe('console', (response) => {
+        fetchFlutterSdkVersion();
+        const unsubscribe = realtime.forConsole(page.params.region, 'console', (response) => {
             if (response.events.includes(`projects.${projectId}.ping`)) {
                 connectionSuccessful = true;
                 invalidate(Dependencies.ORGANIZATION);
@@ -279,6 +328,11 @@
         {#if isPlatformCreated}
             <Fieldset legend="Clone starter" badge="Optional">
                 <Layout.Stack gap="l">
+                    <LlmBanner
+                        platform="flutter"
+                        {configCode}
+                        {alreadyExistsInstructions}
+                        openers={['cursor']} />
                     <Typography.Text variant="m-500">
                         1. If you're starting a new project, you can clone our starter kit from
                         GitHub using the terminal, VSCode or Android Studio.

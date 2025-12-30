@@ -6,6 +6,7 @@ import type {
     FCMProviderParams,
     MailgunProviderParams,
     Msg91ProviderParams,
+    ResendProviderParams,
     SMTPProviderParams,
     SendgridProviderParams,
     TelesignProviderParams,
@@ -24,6 +25,7 @@ export const providerParams = writable<{
     vonage: Partial<VonageProviderParams>;
     mailgun: Partial<MailgunProviderParams>;
     sendgrid: Partial<SendgridProviderParams>;
+    resend: Partial<ResendProviderParams>;
     smtp: Partial<SMTPProviderParams>;
     fcm: Partial<FCMProviderParams>;
     apns: Partial<APNSProviderParams>;
@@ -35,6 +37,7 @@ export const providerParams = writable<{
     vonage: null,
     mailgun: null,
     sendgrid: null,
+    resend: null,
     smtp: null,
     fcm: null,
     apns: null

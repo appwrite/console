@@ -1,21 +1,21 @@
 <script lang="ts">
-    import { invalidate } from '$app/navigation';
     import { page } from '$app/state';
     import { addNotification } from '$lib/stores/notifications';
-    import { table } from '../store';
     import type { Columns } from '../store';
     import { sdk } from '$lib/stores/sdk';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { isRelationship } from '../rows/store';
     import Confirm from '$lib/components/confirm.svelte';
     import { Layout } from '@appwrite.io/pink-svelte';
-    import { Dependencies } from '$lib/constants';
     import type { Models } from '@appwrite.io/console';
+    import type { Entity } from '$database/(entity)';
 
     let {
+        table,
         showDelete = $bindable(false),
         selectedColumn = $bindable(null)
     }: {
+        table: Entity;
         showDelete: boolean;
         selectedColumn: Columns | string[];
     } = $props();
@@ -59,7 +59,6 @@
                         : `${selectedColumns.length} columns have been deleted`
             });
 
-            await invalidate(Dependencies.TABLE);
             showDelete = false;
             selectedColumn = Array.isArray(selectedColumn) ? [] : null;
         } catch (e) {
@@ -93,12 +92,12 @@
     {#if selectedColumns.length === 1}
         <p>
             Are you sure you want to delete <b data-private>{selectedKeys[0]}</b> from
-            <b data-private>{$table?.name}</b>?
+            <b data-private>{table.name}</b>?
         </p>
     {:else}
         <p>
             Are you sure you want to delete <b data-private>{selectedKeys.join(', ')}</b> from
-            <b data-private>{$table?.name}</b>?
+            <b data-private>{table.name}</b>?
         </p>
     {/if}
 

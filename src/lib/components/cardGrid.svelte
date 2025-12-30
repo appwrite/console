@@ -1,6 +1,7 @@
 <script lang="ts">
     import { Divider, Layout, Card, Typography } from '@appwrite.io/pink-svelte';
 
+    export let overflow = true;
     export let hideFooter = false;
     export let gap: 'none' | 'xxxs' | 'xxs' | 'xs' | 's' | 'm' | 'l' | 'xl' | 'xxl' | 'xxxl' = 'l';
 </script>
@@ -16,7 +17,7 @@
                     </Typography.Text>
                 {/if}
             </Layout.Stack>
-            <div style:overflow="visible">
+            <div style:overflow={overflow ? 'visible' : 'hidden'}>
                 <Layout.Stack {gap}>
                     <slot name="aside" />
                 </Layout.Stack>

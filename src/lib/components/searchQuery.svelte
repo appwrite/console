@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from '$app/state';
-    import { onDestroy } from 'svelte';
+    import { onDestroy, untrack } from 'svelte';
     import { goto } from '$app/navigation';
     import { trackEvent } from '$lib/actions/analytics';
     import { Icon, Input } from '@appwrite.io/pink-svelte';
@@ -23,7 +23,10 @@
         autofocus = false
     }: Props = $props();
 
-    let inputValue = $state(page.url.searchParams.get('search') ?? '');
+    const initialSearch = page.url.searchParams.get('search') ?? '';
+    let inputValue = $state(initialSearch);
+    let previousInputValue = initialSearch;
+    let previousUrlSearch = initialSearch;
 
     const runSearch = createDebounce((value: string) => {
         const trimmed = value.trim();
@@ -56,9 +59,25 @@
 
     $effect(() => {
         const urlSearch = page.url.searchParams.get('search') ?? '';
+        if (urlSearch !== previousUrlSearch) {
+            previousUrlSearch = urlSearch;
+            const currentInput = untrack(() => inputValue);
+            if (urlSearch !== currentInput) {
+                inputValue = urlSearch;
+                previousInputValue = urlSearch;
+            }
+        }
+    });
 
-        if (urlSearch !== inputValue) {
-            runSearch(inputValue);
+    $effect(() => {
+        if (inputValue !== previousInputValue) {
+            const urlSearch = untrack(() => page.url.searchParams.get('search') ?? '');
+            if (inputValue !== urlSearch) {
+                previousInputValue = inputValue;
+                runSearch(inputValue);
+            } else {
+                previousInputValue = inputValue;
+            }
         }
     });
 </script>

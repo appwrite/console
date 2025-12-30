@@ -77,7 +77,7 @@
                         .filter((p) => p.name !== 'Mock')
                         .sort( (a, b) => (a.enabled === b.enabled ? 0 : a.enabled ? -1 : 1) ) as provider}
                         {@const oAuthProvider = oAuthProviders[provider.key]}
-                        {#if oAuthProvider}
+                        {#if oAuthProvider && !oAuthProvider.internal}
                             <Card.Button
                                 padding="s"
                                 on:click={() => {

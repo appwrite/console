@@ -19,7 +19,7 @@
     export let methods: PaymentList;
 
     let name: string;
-    let error: string;
+    let error: string = null;
     let selectedPaymentMethodId: string;
     let showState: boolean = false;
     let state: string = '';

@@ -4,8 +4,15 @@
     import IconAI from './icon/ai.svelte';
     import { slide } from 'svelte/transition';
     import { tableColumnSuggestions } from './store';
+    import { getTerminologies } from '$database/(entity)';
     import { Button, InputTextarea } from '$lib/elements/forms';
     import { Card, Layout, Selector, Typography } from '@appwrite.io/pink-svelte';
+
+    const {
+        isModal = false
+    }: {
+        isModal?: boolean;
+    } = $props();
 
     onMount(() => {
         if (featureActive) {
@@ -14,17 +21,22 @@
     });
 
     const featureActive = $derived(isCloud);
+    const { terminology } = getTerminologies();
+    const field = terminology.field.lower;
+    const entity = terminology.entity.lower.singular;
 
     const title = $derived.by(() => {
         return featureActive
-            ? 'Smart column suggestions'
-            : 'Smart column suggestions available on Cloud';
+            ? `Smart ${field.singular} suggestions`
+            : `Smart ${field.singular} suggestions available on Cloud`;
     });
 
     const subtitle = $derived.by(() => {
         return featureActive
-            ? 'Enable AI to suggest useful columns based on your table name'
-            : 'Sign up for Cloud to generate columns based on your table name';
+            ? isModal
+                ? `Use AI to suggest useful ${field.plural}`
+                : `Enable AI to suggest useful ${field.plural} based on your ${entity} name`
+            : `Sign up for Cloud to generate ${field.plural} based on your ${entity} name`;
     });
 </script>
 
@@ -42,7 +54,7 @@
                 </Typography.Text>
             </Layout.Stack>
 
-            {#if featureActive}
+            {#if featureActive && !isModal}
                 <div class="suggestions-switch">
                     <Selector.Switch
                         id="suggestions"
@@ -62,7 +74,7 @@
 
         <!-- just being safe with extra guard! -->
         {#if $tableColumnSuggestions.enabled && featureActive}
-            <div transition:slide={{ duration: 200 }}>
+            <div class="context-input" transition:slide={{ duration: 200 }}>
                 <InputTextarea
                     id="context"
                     rows={3}
@@ -77,5 +89,9 @@
 <style lang="scss">
     .suggestions-switch :global(button):not(:disabled) {
         cursor: pointer;
+    }
+
+    .context-input :global(.input) {
+        background: var(--bgcolor-neutral-primary);
     }
 </style>

@@ -6,9 +6,9 @@ import { redirect } from '@sveltejs/kit';
 import { Dependencies } from '$lib/constants';
 import type { LayoutLoad } from './$types';
 import { redirectTo } from './store';
-import { base, resolve } from '$app/paths';
+import { resolve } from '$app/paths';
 import type { Account } from '$lib/stores/user';
-import type { AppwriteException } from '@appwrite.io/console';
+import { type AppwriteException, Query, Platform } from '@appwrite.io/console';
 import { isCloud, VARS } from '$lib/system';
 import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
 
@@ -42,7 +42,9 @@ export const load: LayoutLoad = async ({ depends, url, route }) => {
             account: account,
             organizations: !isCloud
                 ? await sdk.forConsole.teams.list()
-                : await sdk.forConsole.billing.listOrganization()
+                : await sdk.forConsole.billing.listOrganization([
+                      Query.equal('platform', Platform.Appwrite)
+                  ])
         };
     }
 
@@ -52,11 +54,11 @@ export const load: LayoutLoad = async ({ depends, url, route }) => {
     }
 
     if (error.type === 'user_more_factors_required') {
-        if (url.pathname === `${base}/mfa`)
+        if (url.pathname === resolve('/mfa'))
             return {
                 mfaRequired: true
             };
-        redirect(303, withParams(`${base}/mfa`, url.searchParams));
+        redirect(303, withParams(resolve('/mfa'), url.searchParams));
     }
 
     if (!isPublicRoute) {
@@ -64,7 +66,7 @@ export const load: LayoutLoad = async ({ depends, url, route }) => {
             checkPricingRefAndRedirect(url.searchParams, true);
         }
 
-        redirect(303, withParams(`${base}/login`, url.searchParams));
+        redirect(303, withParams(resolve('/login'), url.searchParams));
     }
 };
 

@@ -173,7 +173,8 @@
 
     $: subNavigation = $page.data.subNavigation;
 
-    $: isProjectPage = $page.route?.id?.includes('project-');
+    $: shouldRenderSidebar = !$isNewWizardStatusOpen && showSideNavigation;
+    $: hasSidebarSpace = shouldRenderSidebar && !$isTabletViewport && !!selectedProject;
 
     $: {
         if ($isSidebarOpen) {
@@ -205,7 +206,7 @@
         <Navbar {...navbarProps} bind:sideBarIsOpen={$isSidebarOpen} bind:showAccountMenu />
     {/if}
 
-    {#if !$isNewWizardStatusOpen && isProjectPage}
+    {#if shouldRenderSidebar}
         <Sidebar
             project={selectedProject}
             progressCard={getProgressCard()}
@@ -221,8 +222,8 @@
     <div
         class="content"
         class:has-transition={showContentTransition}
-        class:icons-content={state === 'icons' && isProjectPage}
-        class:no-sidebar={!showSideNavigation}>
+        class:icons-content={state === 'icons' && selectedProject}
+        class:no-sidebar={!hasSidebarSpace}>
         <section class="main-content" data-test={showSideNavigation}>
             {#if $page.data?.header}
                 <div class="layout-header">
