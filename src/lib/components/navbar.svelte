@@ -34,6 +34,7 @@
         IconCreditCard,
         IconCurrencyDollar,
         IconGlobeAlt,
+        IconKey,
         IconLogoutRight,
         IconMenuAlt4,
         IconMode,
@@ -340,6 +341,21 @@
                                     )}
                                     on:click={() => toggle()}>
                                     Domains</ActionMenu.Item.Anchor>
+
+                                {#if currentProject}
+                                    <ActionMenu.Item.Anchor
+                                        size="l"
+                                        trailingIcon={IconKey}
+                                        href={resolve(
+                                            '/(console)/project-[region]-[project]/(studio)/api-keys',
+                                            {
+                                                region: currentProject.region,
+                                                project: currentProject.$id
+                                            }
+                                        )}
+                                        on:click={() => toggle()}>
+                                        API keys</ActionMenu.Item.Anchor>
+                                {/if}
                                 <Divider />
                             {/if}
 
@@ -402,6 +418,21 @@
                         leadingIcon: IconUser,
                         href: resolve('/(console)/account')
                     },
+                    ...(resolvedProfile.showExtendedAccountsMenu && currentProject
+                        ? [
+                              {
+                                  name: 'API keys',
+                                  leadingIcon: IconKey,
+                                  href: resolve(
+                                      '/(console)/project-[region]-[project]/(studio)/api-keys',
+                                      {
+                                          region: currentProject.region,
+                                          project: currentProject.$id
+                                      }
+                                  )
+                              }
+                          ]
+                        : []),
                     {
                         name: 'Sign out',
                         leadingIcon: IconLogoutRight,

@@ -12,6 +12,7 @@
     export let showDelete = false;
     export let keyType: 'api' | 'dev' = 'api';
     export let key: Models.DevKey | Models.Key;
+    export let basePath: string = `${base}/project-${page.params.region}-${page.params.project}/overview`;
 
     const projectId = page.params.project;
 
@@ -42,9 +43,7 @@
                 message: `${key.name} has been deleted`
             });
             trackEvent(event);
-            await goto(
-                `${base}/project-${page.params.region}-${page.params.project}/overview/${slug}`
-            );
+            await goto(`${basePath}/${slug}`);
         } catch (e) {
             error = e.message;
             trackError(e, event);

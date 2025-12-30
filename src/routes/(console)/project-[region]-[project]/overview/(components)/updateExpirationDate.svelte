@@ -14,6 +14,8 @@
 
     export let keyType: 'api' | 'dev' = 'api';
     export let key: Models.DevKey | Models.Key;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    export let basePath: string = undefined;
 
     const projectId = page.params.project;
 
