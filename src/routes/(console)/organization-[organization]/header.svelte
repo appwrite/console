@@ -88,6 +88,7 @@
                 href: `${path}/integrations`,
                 event: 'integrations',
                 title: 'Integrations',
+                hasChildren: true,
                 disabled: !$isOwner || !isCloud
             },
             {

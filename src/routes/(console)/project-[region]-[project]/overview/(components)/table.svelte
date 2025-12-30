@@ -68,9 +68,9 @@
             case 'dev':
                 return 'dev-keys';
             case 'organization':
-                return 'organization-keys';
+                return 'integrations/keys';
             case 'account':
-                return 'account-keys';
+                return 'integrations/tokens';
         }
     }
 

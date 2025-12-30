@@ -338,6 +338,15 @@ export enum Submit {
     PlatformDelete = 'submit_platform_delete',
     PlatformUpdate = 'submit_platform_update',
 
+    OrganizationKeyUpdateName = 'submit_organization_key_update_name',
+    OrganizationKeyDelete = 'submit_organization_key_delete',
+    AccountTokenUpdateName = 'submit_account_token_update_name',
+    AccountTokenDelete = 'submit_account_token_delete',
+    OrganizationKeyUpdateExpire = 'submit_organization_key_update_expire',
+    AccountTokenUpdateExpire = 'submit_account_token_update_expire',
+    OrganizationKeyUpdateScopes = 'submit_organization_key_update_scopes',
+    AccountTokenUpdateScopes = 'submit_account_token_update_scopes',
+
     DomainCreate = 'submit_domain_create',
     DomainDelete = 'submit_domain_delete',
     DomainUpdateVerification = 'submit_domain_update_verification',
