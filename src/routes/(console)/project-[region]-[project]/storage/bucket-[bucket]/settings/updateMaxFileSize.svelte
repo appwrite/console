@@ -2,15 +2,14 @@
     import { Click, Submit, trackEvent } from '$lib/actions/analytics';
     import { CardGrid } from '$lib/components';
     import { Alert } from '@appwrite.io/pink-svelte';
-    import { BillingPlan } from '$lib/constants';
     import { Button, Form, InputNumber, InputSelect } from '$lib/elements/forms';
     import { humanFileSize, sizeToBytes } from '$lib/helpers/sizeConvertion';
     import { createByteUnitPair } from '$lib/helpers/unit';
-    import { readOnly, upgradeURL } from '$lib/stores/billing';
+    import { isStarterPlan, readOnly, upgradeURL } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
     import { updateBucket } from './+page.svelte';
-    import type { Models } from '@appwrite.io/console';
+    import { type Models } from '@appwrite.io/console';
 
     export let bucket: Models.Bucket;
     export let currentPlan: Models.BillingPlan | null;
@@ -45,7 +44,9 @@
         <svelte:fragment slot="aside">
             {#if isCloud}
                 {@const size = humanFileSize(sizeToBytes(service, 'MB', 1000))}
-                {#if $organization?.billingPlan === BillingPlan.FREE}
+                <!-- always show upgrade on starters -->
+                {@const isStarter = isStarterPlan($organization.billingPlan)}
+                {#if isStarter}
                     <Alert.Inline status="info">
                         The {currentPlan.name} plan has a maximum upload file size limit of {Math.floor(
                             parseInt(size.value)

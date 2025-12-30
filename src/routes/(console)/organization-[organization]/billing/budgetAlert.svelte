@@ -2,8 +2,8 @@
     import { invalidate } from '$app/navigation';
     import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid } from '$lib/components';
-    import { BillingPlan, Dependencies } from '$lib/constants';
-    import { billingIdToPlan, upgradeURL } from '$lib/stores/billing';
+    import { Dependencies } from '$lib/constants';
+    import { upgradeURL } from '$lib/stores/billing';
     import { Button, Form } from '$lib/elements/forms';
     import { symmetricDifference } from '$lib/helpers/array';
     import { addNotification } from '$lib/stores/notifications';
@@ -80,8 +80,8 @@
     <svelte:fragment slot="title">Billing alerts</svelte:fragment>
     {#if !currentPlan.budgeting}
         Get notified by email when your organization meets a percentage of your budget cap. <b
-            >{billingIdToPlan(organization.billingPlan).name} organizations will receive one notification
-            at 75% resource usage.</b>
+            >{organization.billingPlanDetails.name} organizations will receive one notification at 75%
+            resource usage.</b>
     {:else}
         Get notified by email when your organization meets or exceeds a percentage of your specified
         billing alert(s).
@@ -148,7 +148,7 @@
 
     <svelte:fragment slot="actions">
         <Form onSubmit={updateBudget}>
-            {#if organization?.billingPlan === BillingPlan.FREE || organization?.billingPlan === BillingPlan.GITHUB_EDUCATION}
+            {#if !currentPlan.budgeting}
                 <Button
                     secondary
                     href={$upgradeURL}

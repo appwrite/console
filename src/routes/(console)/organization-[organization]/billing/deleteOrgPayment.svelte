@@ -3,8 +3,8 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { organization } from '$lib/stores/organization';
-    import { BillingPlan, Dependencies } from '$lib/constants';
+    import { currentPlan, organization } from '$lib/stores/organization';
+    import { Dependencies } from '$lib/constants';
     import Confirm from '$lib/components/confirm.svelte';
     import { Typography } from '@appwrite.io/pink-svelte';
 
@@ -16,7 +16,7 @@
     let error: string;
 
     async function removeDefaultMethod() {
-        if ($organization?.billingPlan !== BillingPlan.FREE && !hasOtherMethod) return;
+        if ($currentPlan.requiresPaymentMethod && !hasOtherMethod) return;
 
         try {
             await sdk.forConsole.organizations.deleteDefaultPaymentMethod({
@@ -38,7 +38,7 @@
     }
 
     async function removeBackupMethod() {
-        if ($organization?.billingPlan !== BillingPlan.FREE && !hasOtherMethod) return;
+        if ($currentPlan.requiresPaymentMethod && !hasOtherMethod) return;
         showDelete = false;
 
         try {

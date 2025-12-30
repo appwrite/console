@@ -5,14 +5,18 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { PlanComparisonBox, PlanSelection, SelectPaymentMethod } from '$lib/components/billing';
     import ValidateCreditModal from '$lib/components/billing/validateCreditModal.svelte';
-    import { BillingPlan, Dependencies } from '$lib/constants';
+    import { Dependencies } from '$lib/constants';
     import { Button, Form, InputTags, InputText } from '$lib/elements/forms';
     import { Wizard } from '$lib/layout';
-    import { billingIdToPlan, isPaymentAuthenticationRequired } from '$lib/stores/billing';
+    import {
+        billingIdToPlan,
+        getBasePlanFromGroup,
+        isPaymentAuthenticationRequired
+    } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { confirmPayment } from '$lib/stores/stripe';
-    import { ID, type Models } from '@appwrite.io/console';
+    import { BillingPlanGroup, ID, type Models } from '@appwrite.io/console';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { Divider, Fieldset, Icon, Layout, Link, Typography } from '@appwrite.io/pink-svelte';
     import { writable } from 'svelte/store';
@@ -34,7 +38,7 @@
     let taxId: string | null = $state(null);
     let collaborators: string[] = $state([]);
     let paymentMethodId: string | null = $state(null);
-    let billingPlan: string = $state(BillingPlan.FREE);
+    let billingPlan = $state(getBasePlanFromGroup(BillingPlanGroup.Starter).$id);
 
     let showCreditModal = $state(false);
     let billingBudget: number | undefined = $state(undefined);
@@ -61,18 +65,21 @@
         if (page.url.searchParams.has('name')) {
             name = page.url.searchParams.get('name');
         }
+
         if (page.url.searchParams.has('plan')) {
             const plan = page.url.searchParams.get('plan');
             if (plan) {
                 billingPlan = plan;
             }
         }
+
         if (
             data?.hasFreeOrganizations ||
             (page.url.searchParams.has('type') && page.url.searchParams.get('type') === 'createPro')
         ) {
-            billingPlan = BillingPlan.PRO;
+            billingPlan = getBasePlanFromGroup(BillingPlanGroup.Pro).$id;
         }
+
         if (page.url.searchParams.has('type')) {
             const type = page.url.searchParams.get('type');
             if (type === 'payment_confirmed') {
@@ -111,17 +118,17 @@
         try {
             let org: Models.Organization | Models.PaymentAuthentication;
 
-            if (selectedPlan === BillingPlan.FREE) {
+            if (selectedPlan.group === BillingPlanGroup.Starter) {
                 org = await sdk.forConsole.organizations.create({
                     organizationId: ID.unique(),
                     name: name,
-                    billingPlan: BillingPlan.FREE
+                    billingPlan: getBasePlanFromGroup(BillingPlanGroup.Starter).$id
                 });
             } else {
                 org = await sdk.forConsole.organizations.create({
                     organizationId: ID.unique(),
                     name,
-                    billingPlan: selectedPlan,
+                    billingPlan: selectedPlan.$id,
                     paymentMethodId,
                     couponId: selectedCoupon?.code,
                     invites: collaborators,
@@ -204,11 +211,12 @@
 
                     <PlanSelection
                         isNewOrg
-                        bind:billingPlan={selectedPlan}
+                        bind:selectedBillingPlan={selectedPlan}
                         anyOrgFree={data.hasFreeOrganizations} />
                 </Layout.Stack>
             </Fieldset>
-            {#if selectedPlan !== BillingPlan.FREE}
+
+            {#if selectedPlan.supportsCredits}
                 <Fieldset legend="Payment">
                     <Layout.Stack gap="s" alignItems="flex-start">
                         <SelectPaymentMethod
@@ -245,7 +253,7 @@
         </Layout.Stack>
     </Form>
     <svelte:fragment slot="aside">
-        {#if selectedPlan !== BillingPlan.FREE}
+        {#if selectedPlan.supportsCredits}
             <EstimatedTotalBox
                 billingPlan={selectedPlan}
                 {collaborators}

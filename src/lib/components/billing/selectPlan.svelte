@@ -1,15 +1,24 @@
 <script lang="ts">
-    import { BillingPlan } from '$lib/constants';
     import { formatCurrency } from '$lib/helpers/numbers';
     import { plansInfo } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { LabelCard } from '..';
+    import { BillingPlanGroup, type Models } from '@appwrite.io/console';
 
     export let billingPlan: string;
     export let anyOrgFree = false;
     export let isNewOrg = false;
     let classes: string = '';
     export { classes as class };
+
+    function shouldDisable(plan: Models.BillingPlan) {
+        return plan.group === BillingPlanGroup.Starter && anyOrgFree;
+    }
+
+    function shouldShowTooltip(plan: Models.BillingPlan) {
+        if (plan.group !== BillingPlanGroup.Starter) return true;
+        else return !anyOrgFree;
+    }
 </script>
 
 {#if billingPlan}
@@ -19,10 +28,10 @@
                 <LabelCard
                     name="plan"
                     bind:group={billingPlan}
-                    disabled={(plan.$id === BillingPlan.FREE && anyOrgFree) || !plan.selfService}
+                    disabled={!plan.selfService || shouldDisable(plan)}
                     value={plan.$id}
-                    tooltipShow={plan.$id === BillingPlan.FREE && anyOrgFree}
-                    tooltipText={plan.$id === BillingPlan.FREE
+                    tooltipShow={shouldShowTooltip(plan)}
+                    tooltipText={plan.group === BillingPlanGroup.Starter
                         ? 'You are limited to 1 Free organization per account.'
                         : ''}>
                     <svelte:fragment slot="custom" let:disabled>

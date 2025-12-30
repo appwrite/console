@@ -1,29 +1,37 @@
 <script lang="ts">
-    import { sdk } from '$lib/stores/sdk';
+    import { resolve } from '$app/paths';
     import { onDestroy } from 'svelte';
-    import { goto, invalidate } from '$app/navigation';
-    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { ID, type Models, Region } from '@appwrite.io/console';
-    import { base } from '$app/paths';
-    import CreateProject from '$lib/layout/createProject.svelte';
+    import { sdk } from '$lib/stores/sdk';
     import { Modal } from '$lib/components';
-    import { currentPlan } from '$lib/stores/organization';
     import { Button } from '$lib/elements/forms';
     import { Dependencies } from '$lib/constants';
+    import { goto, invalidate } from '$app/navigation';
+    import CreateProject from '$lib/layout/createProject.svelte';
+    import { ID, type Models, Region } from '@appwrite.io/console';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
 
-    export let teamId: string;
-    export let projects: number;
-    export let showCreateProjectCloud: boolean;
-    export let regions: Array<Models.ConsoleRegion> = [];
+    let {
+        teamId,
+        projects,
+        showCreateProjectCloud = $bindable(),
+        regions = [],
+        currentPlan = undefined
+    }: {
+        teamId: string;
+        projects: number;
+        showCreateProjectCloud: boolean;
+        regions: Array<Models.ConsoleRegion>;
+        currentPlan?: Models.BillingPlan;
+    } = $props();
 
-    let error: string = null;
-    let projectId = ID.unique();
-    let projectRegion = Region.Fra;
-    let projectName = 'New project';
+    let error = $state(null);
+    let projectId = $state(ID.unique());
+    let projectRegion = $state(Region.Fra);
+    let projectName = $state('New project');
 
-    let projectIdForLog = projectId;
+    let showSubmissionLoader = $state(false);
 
-    let showSubmissionLoader = false;
+    const projectIdForLog = $derived(projectId);
 
     async function create() {
         let project: Models.Project;
@@ -38,7 +46,13 @@
                 region: projectRegion
             });
 
-            await goto(`${base}/project-${project.region}-${project.$id}`);
+            await goto(
+                resolve('/(console)/project-[region]-[project]', {
+                    region: project.region,
+                    project: project.$id
+                })
+            );
+
             trackEvent(Submit.ProjectCreate, {
                 teamId,
                 region: projectRegion,
@@ -63,29 +77,29 @@
         projectName = 'New project';
         projectRegion = Region.Fra;
         showCreateProjectCloud = false;
-
-        projectIdForLog = projectId;
     });
 </script>
 
 <Modal
-    bind:show={showCreateProjectCloud}
+    bind:error
     autoClose={false}
-    title={'Create project'}
     onSubmit={create}
-    bind:error>
+    title="Create project"
+    bind:show={showCreateProjectCloud}>
     <CreateProject
         {regions}
         {projects}
+        {currentPlan}
         showTitle={false}
         bind:projectName
         bind:id={projectId}
         bind:region={projectRegion} />
+
     <svelte:fragment slot="footer">
         <Button
             submit
             size="s"
-            disabled={$currentPlan.projects > 0 && projects && projects >= $currentPlan?.projects}
+            disabled={currentPlan.projects > 0 && projects && projects >= currentPlan?.projects}
             forceShowLoader={showSubmissionLoader}
             submissionLoader={showSubmissionLoader}>Create</Button>
     </svelte:fragment>

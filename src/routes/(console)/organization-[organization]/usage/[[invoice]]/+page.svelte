@@ -6,6 +6,8 @@
     import { bytesToSize, humanFileSize, mbSecondsToGBHours } from '$lib/helpers/sizeConvertion';
     import {
         getServiceLimit,
+        isStarterPlan,
+        planHasGroup,
         showUsageRatesModal,
         upgradeURL,
         useNewPricingModal
@@ -14,7 +16,6 @@
     import ProjectBreakdown from './ProjectBreakdown.svelte';
     import { formatNum } from '$lib/helpers/string';
     import { accumulateFromEndingTotal, total } from '$lib/layout/usage.svelte';
-    import { BillingPlan } from '$lib/constants';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import TotalMembers from './totalMembers.svelte';
     import { formatCurrency, formatNumberWithCommas } from '$lib/helpers/numbers';
@@ -22,6 +23,7 @@
     import { IconChartSquareBar, IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { onMount } from 'svelte';
     import type { UsageProjectInfo } from '../../store';
+    import { BillingPlanGroup } from '@appwrite.io/console';
 
     export let data;
 
@@ -53,13 +55,15 @@
     ];
 
     onMount(async () => (usageProjects = await data.projects));
+
+    const currentBillingPlan = $organization.billingPlanDetails;
 </script>
 
 <Container>
     <div class="u-flex u-cross-center u-main-space-between">
         <Typography.Title>Usage</Typography.Title>
 
-        {#if $organization?.billingPlan === BillingPlan.FREE}
+        {#if isStarterPlan(currentBillingPlan)}
             <Button
                 href={$upgradeURL}
                 on:click={() => {
@@ -72,7 +76,7 @@
             </Button>
         {/if}
     </div>
-    {#if $organization.billingPlan === BillingPlan.SCALE}
+    {#if planHasGroup(currentBillingPlan, BillingPlanGroup.Scale)}
         <p class="text">
             On the Scale plan, you'll be charged only for any usage that exceeds the thresholds per
             resource listed below.
@@ -87,7 +91,7 @@
                 </Link.Anchor>
             {/if}
         </p>
-    {:else if $organization.billingPlan === BillingPlan.PRO}
+    {:else if planHasGroup(currentBillingPlan, BillingPlanGroup.Pro)}
         <p class="text">
             On the Pro plan, you'll be charged only for any usage that exceeds the thresholds per
             resource listed below.
@@ -102,7 +106,7 @@
                 </Link.Anchor>
             {/if}
         </p>
-    {:else if $organization.billingPlan === BillingPlan.FREE}
+    {:else if isStarterPlan(currentBillingPlan)}
         <p class="text">
             If you exceed the limits of the Free plan, services for your organization's projects may
             be disrupted.
