@@ -14,7 +14,7 @@
     export let databasesScreen = false;
     export let useCreateLinkForPagination = true;
 
-    function getColumnWidth(columnId: string): { width?: number | { min: number } } {
+    function getColumnWidth(columnId: string): Pick<PinkColumn, 'width'> {
         const widthConfig: Record<
             string,
             { insideSheet: number | { min: number }; default: number | { min: number } }
