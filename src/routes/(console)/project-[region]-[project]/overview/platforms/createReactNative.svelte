@@ -128,10 +128,7 @@ EXPO_PUBLIC_APPWRITE_ENDPOINT=${sdk.forProject(page.params.region, page.params.p
                 message: 'Platform created.'
             });
 
-            await Promise.all([
-                invalidate(Dependencies.PROJECT),
-                invalidate(Dependencies.PLATFORMS)
-            ]);
+            await invalidate(Dependencies.PROJECT);
         } catch (error) {
             trackError(error, Submit.PlatformCreate);
             addNotification({

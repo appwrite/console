@@ -63,7 +63,6 @@ export enum Dependencies {
     DEPLOYMENTS = 'dependency:deployments',
     EXECUTIONS = 'dependency:executions',
     PLATFORM = 'dependency:platform',
-    PLATFORMS = 'dependency:platforms',
     KEY = 'dependency:key',
     KEYS = 'dependency:keys',
     DEV_KEY = 'dependency:dev_key',

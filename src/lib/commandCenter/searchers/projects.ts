@@ -38,7 +38,11 @@ export const projectsSearcher = (async (query: string) => {
     }
 
     const { projects } = await sdk.forConsole.projects.list({
-        queries: [Query.equal('teamId', get(organization).$id), Query.orderDesc('')]
+        queries: [
+            Query.equal('teamId', get(organization).$id),
+            Query.orderDesc(''),
+            Query.select(['$id', 'name', 'region'])
+        ]
     });
 
     return projects
