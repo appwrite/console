@@ -117,7 +117,7 @@
                 label="Password dictionary">
                 <svelte:fragment slot="description">
                     <Typography.Text>
-                        Enabling this option prevent users from setting insecure passwords by
+                        Enabling this option prevents users from setting insecure passwords by
                         comparing the user's password with the <Link.Anchor
                             target="_blank"
                             rel="noopener noreferrer"
