@@ -1,6 +1,5 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { resolve } from '$app/paths';
     import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Id, MultiSelectionTable, type DeleteOperationState } from '$lib/components';
@@ -8,8 +7,8 @@
     import DualTimeView from '$lib/components/dualTimeView.svelte';
     import { canWriteTables } from '$lib/stores/roles';
     import { sdk } from '$lib/stores/sdk';
-    import { Table } from '@appwrite.io/pink-svelte';
     import type { PageData } from './$types';
+    import { Table } from '@appwrite.io/pink-svelte';
     import { tableViewColumns, buildEntityRoute } from './store';
     import { subNavigation } from '$lib/stores/database';
     import { type TerminologyResult } from '$database/(entity)';
@@ -22,11 +21,6 @@
         terminology: TerminologyResult;
     } = $props();
 
-    let deleting = $state(false);
-    let showDelete = $state(false);
-    let selectedTables: string[] = $state([]);
-
-    const entityPlural = terminology.entity.lower.plural;
     const entitySingular = terminology.entity.lower.singular;
 
     async function onDelete(selectedTables: string[]): Promise<DeleteOperationState> {
@@ -50,7 +44,7 @@
 </script>
 
 <MultiSelectionTable
-    resource="table"
+    resource={entitySingular}
     columns={$tableViewColumns}
     allowSelection={$canWriteTables}
     {onDelete}>

@@ -166,12 +166,12 @@
     }
 
     $effect(() => {
-        if (!work || !row || !$table?.columns?.length) {
+        if (!work || !row || !table?.fields?.length) {
             disabled = true;
             return;
         }
 
-        disabled = $table.columns.every((column) => compareColumns(column, $work, row));
+        disabled = table.fields.every((column: Columns) => compareColumns(column, $work, row));
     });
 
     function focusFirstInput() {

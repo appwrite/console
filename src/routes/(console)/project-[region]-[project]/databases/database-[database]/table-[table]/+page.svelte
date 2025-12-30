@@ -14,8 +14,7 @@
         showRowCreateSheet,
         showCreateColumnSheet,
         randomDataModalState,
-        expandTabs,
-        columnsOrder
+        expandTabs
     } from './store';
     import SpreadSheet from './spreadsheet.svelte';
     import { writable } from 'svelte/store';
@@ -38,7 +37,7 @@
     import { onDestroy } from 'svelte';
     import { isCloud } from '$lib/system';
     import { columnOptions } from './columns/store';
-    import { EmptySheet, type Field } from '$database/(entity)';
+    import { EmptySheet, EmptySheetCards, type Field } from '$database/(entity)';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import {
@@ -46,7 +45,6 @@
         tableColumnSuggestions,
         showColumnsSuggestionsModal
     } from '../(suggestions)';
-    import EmptySheetCards from './layout/emptySheetCards.svelte';
     import IconAI from '../(suggestions)/icon/aiForButton.svelte';
 
     export let data: PageData;
@@ -279,9 +277,8 @@
             {:else}
                 <EmptySheet
                     mode="rows"
-                    customColumns={createTableColumns(table.fields, selected)}
                     showActions={$canWriteRows}
-                    customColumns={createTableColumns($table.columns, selected)}>
+                    customColumns={createTableColumns(table.fields, selected)}>
                     {#snippet actions()}
                         <EmptySheetCards
                             icon={IconPlus}

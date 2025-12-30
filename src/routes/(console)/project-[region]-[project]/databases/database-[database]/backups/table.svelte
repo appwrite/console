@@ -56,7 +56,6 @@
     let selectedBackup: BackupArchive | null = $state(null);
 
     let showDropdown = $state([]);
-    let selectedBackups: string[] = $state([]);
 
     let showRestore = $state(false);
     let showCustomId = $state(false);

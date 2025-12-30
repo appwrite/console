@@ -25,7 +25,7 @@
         subtitle,
         showActions = true,
         customColumns = [],
-        onOpenCreateColumn,
+        onOpenCreateColumn
     } = $props<{
         mode: Mode;
         customColumns?: Column[];

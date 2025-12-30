@@ -22,9 +22,9 @@ import {
     Tokens,
     TablesDB,
     Domains,
-    DocumentsDB
+    DocumentsDB,
     Realtime,
-    Organizations,
+    Organizations
 } from '@appwrite.io/console';
 import { Billing } from '../sdk/billing';
 import { Backups } from '../sdk/backups';

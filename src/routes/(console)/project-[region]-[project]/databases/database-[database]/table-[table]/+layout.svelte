@@ -36,7 +36,7 @@
         databaseRelatedRowSheetOptions,
         rowPermissionSheet,
         type Columns,
-        isWaterfallFromFaker,
+        isWaterfallFromFaker
     } from './store';
     import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import CreateColumn from './createColumn.svelte';
@@ -63,7 +63,6 @@
     import { Button, Seekbar } from '$lib/elements/forms';
     import { generateFakeRecords, generateColumns } from '$lib/helpers/faker';
     import { addNotification } from '$lib/stores/notifications';
-    import { sleep } from '$lib/helpers/promises';
     import { hash } from '$lib/helpers/string';
     import { preferences } from '$lib/stores/preferences';
     import { buildRowUrl, isRelationship } from './rows/store';
@@ -498,9 +497,10 @@
     {#key currentRowId}
         <EditRow
             {table}
-        bind:this={editRow}
-        bind:row={$databaseRowSheetOptions.row}
-        bind:rowId={$databaseRowSheetOptions.rowId} bind:disabled={editRowDisabled}
+            bind:this={editRow}
+            bind:row={$databaseRowSheetOptions.row}
+            bind:rowId={$databaseRowSheetOptions.rowId}
+            bind:disabled={editRowDisabled}
             autoFocus={$databaseRowSheetOptions.autoFocus} />
     {/key}
 </SideSheet>
@@ -560,7 +560,9 @@
         disabled: editRowPermissionsDisabled,
         onClick: async () => editRowPermissions?.updatePermissions()
     }}>
-    <EditRowPermissions {table} bind:this={editRowPermissions}
+    <EditRowPermissions
+        {table}
+        bind:this={editRowPermissions}
         bind:row={$rowPermissionSheet.row}
         bind:arePermsDisabled={editRowPermissionsDisabled} />
 </SideSheet>
