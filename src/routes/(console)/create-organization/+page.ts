@@ -2,7 +2,7 @@ import { sdk } from '$lib/stores/sdk';
 import type { PageLoad } from './$types';
 import { BillingPlanGroup, type Models, Platform } from '@appwrite.io/console';
 import { Dependencies } from '$lib/constants';
-import { billingIdToPlan, getNextTierBillingPlan } from '$lib/stores/billing';
+import { billingIdToPlan, getBasePlanFromGroup, getNextTierBillingPlan } from '$lib/stores/billing';
 
 export const load: PageLoad = async ({ url, parent, depends }) => {
     const { organizations } = await parent();
@@ -44,8 +44,8 @@ async function getPlanFromUrl(url: URL): Promise<Models.BillingPlan | null> {
     }
 
     // fallback
-    // @todo: avoid hardcoded maybe
-    return await sdk.forConsole.console.getPlan({ planId: 'tier-0' });
+    const baseStarter = getBasePlanFromGroup(BillingPlanGroup.Starter);
+    return await sdk.forConsole.console.getPlan({ planId: baseStarter.$id });
 }
 
 function getPlanFromCache(plan: string): Models.BillingPlan | null {
