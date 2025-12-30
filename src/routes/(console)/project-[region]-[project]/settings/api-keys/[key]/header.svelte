@@ -13,7 +13,7 @@
 
 <Cover>
     <svelte:fragment slot="header">
-        <CoverTitle href={`${base}/project-${page.params.region}-${projectId}/api-keys`}>
+        <CoverTitle href={`${base}/project-${page.params.region}-${projectId}/settings/api-keys`}>
             {$key?.name}
         </CoverTitle>
         <Layout.Stack direction="row" inline>

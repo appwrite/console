@@ -347,7 +347,7 @@
                                         size="l"
                                         trailingIcon={IconKey}
                                         href={resolve(
-                                            '/(console)/project-[region]-[project]/(studio)/api-keys',
+                                            '/(console)/project-[region]-[project]/settings/api-keys',
                                             {
                                                 region: currentProject.region,
                                                 project: currentProject.$id
@@ -424,7 +424,7 @@
                                   name: 'API keys',
                                   leadingIcon: IconKey,
                                   href: resolve(
-                                      '/(console)/project-[region]-[project]/(studio)/api-keys',
+                                      '/(console)/project-[region]-[project]/settings/api-keys',
                                       {
                                           region: currentProject.region,
                                           project: currentProject.$id

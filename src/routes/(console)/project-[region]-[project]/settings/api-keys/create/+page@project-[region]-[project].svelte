@@ -3,7 +3,7 @@
     import { page } from '$app/state';
     import CreateKey from '../../../overview/(components)/create.svelte';
 
-    const basePath = `${base}/project-${page.params.region}-${page.params.project}`;
+    const basePath = `${base}/project-${page.params.region}-${page.params.project}/settings`;
 </script>
 
 <CreateKey {basePath} />

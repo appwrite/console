@@ -4,7 +4,7 @@
     import { key } from './store';
     import KeyDetails from '../../../overview/(components)/keyDetails.svelte';
 
-    const basePath = `${base}/project-${page.params.region}-${page.params.project}`;
+    const basePath = `${base}/project-${page.params.region}-${page.params.project}/settings`;
 </script>
 
 <KeyDetails key={$key} {basePath} />

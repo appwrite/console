@@ -16,11 +16,11 @@
             title: $project?.name
         },
         {
-            href: `${base}/project-${page.params.region}-${page.params.project}/api-keys`,
+            href: `${base}/project-${page.params.region}-${page.params.project}/settings/api-keys`,
             title: 'API keys'
         },
         {
-            href: `${base}/project-${page.params.region}-${page.params.project}/api-keys/${$key?.$id}`,
+            href: `${base}/project-${page.params.region}-${page.params.project}/settings/api-keys/${$key?.$id}`,
             title: $key?.name
         }
     ];
