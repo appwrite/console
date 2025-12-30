@@ -50,15 +50,14 @@
     })();
 
     onMount(() => {
-        return realtime
-            .forProject(page.params.region, page.params.project)
-            .subscribe<Models.Migration>(['console'], async (response) => {
-                if (!response.channels.includes(`projects.${getProjectId()}`)) return;
-                if (response.events.includes('migrations.*')) {
-                    if (response.payload.source === 'Backup') return;
-                    migration = response.payload;
-                }
-            });
+        return realtime.forProject(page.params.region, ['console'], async (response) => {
+            if (!response.channels.includes(`projects.${getProjectId()}`)) return;
+            if (response.events.includes('migrations.*')) {
+                const payload = response.payload as Models.Migration;
+                if (payload.source === 'Backup') return;
+                migration = payload;
+            }
+        });
     });
 </script>
 

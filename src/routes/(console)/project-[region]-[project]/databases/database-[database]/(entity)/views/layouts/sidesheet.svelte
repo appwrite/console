@@ -18,6 +18,7 @@
         footer = null,
         titleBadge = null,
         topAction = null,
+        topEndActions = null,
         ...restProps
     }: {
         show: boolean;
@@ -48,7 +49,8 @@
               }
             | undefined;
         children?: Snippet;
-        footer?: Snippet | null;
+        footer?: Snippet;
+        topEndActions?: Snippet;
     } & HTMLAttributes<HTMLDivElement> = $props();
 
     let form: Form;
@@ -88,6 +90,12 @@
                         {/if}
                     {/if}
                 </Layout.Stack>
+
+                {#if topEndActions}
+                    <Layout.Stack direction="row" gap="xs" alignItems="center" inline>
+                        {@render topEndActions()}
+                    </Layout.Stack>
+                {/if}
             </Layout.Stack>
         </div>
 

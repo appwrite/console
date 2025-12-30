@@ -10,22 +10,25 @@
     import { symmetricDifference } from '$lib/helpers/array';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import type { Entity } from '$database/(entity)';
+    import { onMount } from 'svelte';
 
     let {
         table,
-        row = $bindable(null)
+        row = $bindable(null),
+        arePermsDisabled = $bindable(true)
     }: {
         table: Entity;
         row: Models.DefaultRow | Models.Row;
+        arePermsDisabled?: boolean;
     } = $props();
 
-    let permissions = $state(row.$permissions);
-    let arePermsDisabled = $state(true);
     let showPermissionAlert = $state(true);
+    let permissions = $state(row.$permissions);
 
-    export function disableSubmit() {
-        return arePermsDisabled;
-    }
+    onMount(() => {
+        /* silences the not read error warning */
+        arePermsDisabled;
+    });
 
     export async function updatePermissions() {
         try {

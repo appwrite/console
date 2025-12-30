@@ -18,3 +18,12 @@ export function isASubdomain(domain: string | null): boolean {
 
     return !!subdomain;
 }
+
+/**
+ * Returns the subdomain part from a full domain string.
+ */
+export function getSubdomain(domain: string): string {
+    if (!domain) return '';
+
+    return parse(domain, { allowPrivateDomains: true }).subdomain || '';
+}

@@ -13,6 +13,15 @@
         tableId: page.params.table
     });
 
+    // todo: move to Indexes component.
+    /*onMount(() => {
+        return realtime.forProject(page.params.region, ['project', 'console'], (response) => {
+            if (response.events.includes('databases.*.tables.*.indexes.*')) {
+                invalidate(Dependencies.TABLE);
+            }
+        });
+    });*/
+
     const tablesDB = $derived(sdk.forProject(page.params.region, page.params.project).tablesDB);
 
     async function onCreateIndex(index: CreateIndexesCallbackType) {

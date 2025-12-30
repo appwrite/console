@@ -70,11 +70,11 @@
             await sdk
                 .forProject(page.params.region, page.params.project)
                 .backups.createArchive(['databases'], data.database.$id);
+            await invalidate(Dependencies.BACKUPS);
             addNotification({
                 type: 'success',
                 message: 'Database backup has started'
             });
-            invalidate(Dependencies.BACKUPS);
             trackEvent('click_manual_submit');
             showFeedbackNotification();
         } catch (error) {
@@ -140,7 +140,6 @@
                     ? `Backup policies have been created`
                     : `<b>${totalPolicies[0].label}</b> policy has been created`;
 
-            // TODO: html isn't yet supported on Toast.
             addNotification({
                 isHtml: true,
                 type: 'success',
@@ -149,7 +148,7 @@
 
             trackEvents(totalPolicies);
 
-            invalidate(Dependencies.BACKUPS);
+            await invalidate(Dependencies.BACKUPS);
             showFeedbackNotification();
         } catch (err) {
             addNotification({
@@ -163,19 +162,14 @@
     };
 
     onMount(() => {
-        return realtime
-            .forProject(page.params.region, page.params.project)
-            .subscribe(['project', 'console'], (response) => {
-                // fast path return.
-                if (!response.channels.includes(`projects.${getProjectId()}`)) return;
+        return realtime.forProject(page.params.region, ['project', 'console'], (response) => {
+            // fast path return.
+            if (!response.channels.includes(`projects.${getProjectId()}`)) return;
 
-                if (
-                    response.events.includes('archives.*') ||
-                    response.events.includes('policies.*')
-                ) {
-                    invalidate(Dependencies.BACKUPS);
-                }
-            });
+            if (response.events.includes('archives.*') || response.events.includes('policies.*')) {
+                invalidate(Dependencies.BACKUPS);
+            }
+        });
     });
 </script>
 

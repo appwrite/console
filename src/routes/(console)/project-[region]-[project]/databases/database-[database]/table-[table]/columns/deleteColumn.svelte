@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { invalidate } from '$app/navigation';
     import { page } from '$app/state';
     import { addNotification } from '$lib/stores/notifications';
     import type { Columns } from '../store';
@@ -8,7 +7,6 @@
     import { isRelationship } from '../rows/store';
     import Confirm from '$lib/components/confirm.svelte';
     import { Layout } from '@appwrite.io/pink-svelte';
-    import { Dependencies } from '$lib/constants';
     import type { Models } from '@appwrite.io/console';
     import type { Entity } from '$database/(entity)';
 
@@ -61,7 +59,6 @@
                         : `${selectedColumns.length} columns have been deleted`
             });
 
-            await invalidate(Dependencies.TABLE);
             showDelete = false;
             selectedColumn = Array.isArray(selectedColumn) ? [] : null;
         } catch (e) {

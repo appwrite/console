@@ -22,6 +22,7 @@
         type ColumnsWidth,
         indexes,
         isCsvImportInProgress,
+        isWaterfallFromFaker,
         reorderItems,
         showCreateIndexSheet
     } from '../store';
@@ -39,7 +40,8 @@
         IconTrash,
         IconViewList,
         IconLockClosed,
-        IconFingerPrint
+        IconFingerPrint,
+        IconMail
     } from '@appwrite.io/pink-icons-svelte';
     import { type ComponentProps, onDestroy, onMount } from 'svelte';
     import { Click, trackEvent } from '$lib/actions/analytics';
@@ -51,6 +53,9 @@
     import { page } from '$app/state';
     import { debounce } from '$lib/helpers/debounce';
     import type { PageData } from './$types';
+    import { realtime } from '$lib/stores/sdk';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
 
     const {
         data
@@ -122,7 +127,7 @@
     const columnFormatIcon = {
         ip: IconLocationMarker,
         url: IconLink,
-        email: IconLink,
+        email: IconMail,
         enum: IconViewList
     };
 
@@ -136,6 +141,16 @@
     onMount(() => {
         columnsOrder = preferences.getColumnOrder(tableId);
         columnsWidth = preferences.getColumnWidths(tableId + '#columns');
+
+        return realtime.forProject(page.params.region, ['project', 'console'], async (response) => {
+            if (
+                response.events.includes('databases.*.tables.*.columns.*.delete') ||
+                (response.events.includes('databases.*.tables.*.columns.*.update') &&
+                    !$isWaterfallFromFaker)
+            ) {
+                await invalidate(Dependencies.TABLE);
+            }
+        });
     });
 
     function getColumnStatusBadge(status: string): ComponentProps<Badge>['type'] {
@@ -246,6 +261,12 @@
             resizable: true
         },
         {
+            id: 'type',
+            width: 150,
+            minimumWidth: 150,
+            resizable: false
+        },
+        {
             id: 'indexed',
             width: getColumnWidth('indexed', 150),
             minimumWidth: 150,
@@ -296,8 +317,8 @@
     <SpreadsheetContainer>
         <Spreadsheet.Root
             let:root
-            allowSelection
             height="100%"
+            allowSelection
             emptyCells={emptyCellsCount}
             bind:selectedRows={selectedColumns}
             columns={spreadsheetColumns}
@@ -305,6 +326,7 @@
             on:columnsResize={(resize) => saveColumnsWidth(resize.detail)}>
             <svelte:fragment slot="header" let:root>
                 <Spreadsheet.Header.Cell column="key" {root}>Column name</Spreadsheet.Header.Cell>
+                <Spreadsheet.Header.Cell column="type" {root}>Type</Spreadsheet.Header.Cell>
                 <Spreadsheet.Header.Cell column="indexed" {root}>Indexed</Spreadsheet.Header.Cell>
                 <Spreadsheet.Header.Cell column="default" {root}
                     >Default value</Spreadsheet.Header.Cell>
@@ -312,6 +334,7 @@
             </svelte:fragment>
 
             {#each updatedColumnsForSheet as column, index (column.key)}
+                {@const isId = column.key === '$id'}
                 {@const option = columnOptions.find((option) => option.type === column.type)}
                 {@const isSelectable =
                     column['system'] || column.type === 'relationship' ? 'disabled' : true}
@@ -356,8 +379,9 @@
                                             {column.key}{column.array ? '[]' : undefined}
                                         {/if}
                                     </Typography.Text>
+
                                     {#if isString(column) && column.encrypt}
-                                        <Tooltip>
+                                        <Tooltip portal>
                                             <Icon
                                                 size="s"
                                                 icon={IconLockClosed}
@@ -365,13 +389,7 @@
                                             <div slot="tooltip">Encrypted</div>
                                         </Tooltip>
                                     {/if}
-                                </Layout.Stack>
-                                <Layout.Stack
-                                    gap="s"
-                                    inline
-                                    direction="row"
-                                    alignItems="center"
-                                    style="flex:0 0 auto; white-space:nowrap;">
+
                                     {#if column.status !== 'available'}
                                         <Badge
                                             size="s"
@@ -409,12 +427,17 @@
                             {/if}
                         </Layout.Stack>
                     </Spreadsheet.Cell>
+                    <Spreadsheet.Cell column="type" {root} isEditable={false}>
+                        {@const columnType = column['format'] ? column['format'] : column.type}
+                        {columnType.toLowerCase()}
+                    </Spreadsheet.Cell>
                     <Spreadsheet.Cell column="indexed" {root} isEditable={false}>
-                        {@const isActuallyIndexed = $indexes.some((index) =>
-                            index.columns.includes(column.key)
-                        )}
+                        <!-- $id is always indexed internally -->
+                        {@const isActuallyIndexed =
+                            isId || $indexes.some((index) => index.columns.includes(column.key))}
 
-                        {@const checked = isActuallyIndexed || !!columnIndexMap[column.key]}
+                        <!-- $id is always indexed internally -->
+                        {@const checked = isId || isActuallyIndexed || !!columnIndexMap[column.key]}
 
                         <Selector.Checkbox
                             size="s"
@@ -431,15 +454,18 @@
                             }} />
                     </Spreadsheet.Cell>
                     <Spreadsheet.Cell column="default" {root} isEditable={false}>
-                        {@const _default =
-                            column?.default !== null && column?.default !== undefined
-                                ? column?.default
-                                : null}
+                        {@const _default = column.required
+                            ? '-'
+                            : column?.default !== null && column?.default !== undefined
+                              ? column?.default
+                              : null}
 
                         {#if _default === null}
                             <Badge variant="secondary" content="NULL" size="xs" />
+                        {:else if isSpatialType(column)}
+                            {JSON.stringify(_default)}
                         {:else}
-                            {isSpatialType(column) ? JSON.stringify(_default) : _default}
+                            {_default}
                         {/if}
                     </Spreadsheet.Cell>
                     <Spreadsheet.Cell column="actions" {root} isEditable={false}>
@@ -449,8 +475,7 @@
                                     <Icon icon={IconDotsHorizontal} size="s" />
                                 </Button>
                             </CsvDisabled>
-                        {:else if column.key !== '$sequence'}
-                            <!-- TODO: no portal, rather see if we can fix the cell -->
+                        {:else if !isId}
                             <Popover let:toggle padding="none" placement="bottom-end" portal>
                                 <Button text icon ariaLabel="more options" on:click={toggle}>
                                     <Icon icon={IconDotsHorizontal} size="s" />

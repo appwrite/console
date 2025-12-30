@@ -91,7 +91,8 @@
     // spatial type selected -> reset field list to single empty field
     // and the field already is not spatial type
     $effect(() => {
-        if (selectedType === IndexType.Spatial && !fieldList.at(0).value) {
+        const firstField = entity.fields.find((field) => field.key === fieldList.at(0)?.value);
+        if (selectedType === IndexType.Spatial && firstField && !isSpatialType(firstField)) {
             fieldList = [{ value: '', order: null, length: null }];
         }
     });

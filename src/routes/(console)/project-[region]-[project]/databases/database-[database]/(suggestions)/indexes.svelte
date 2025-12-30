@@ -8,7 +8,7 @@
         mockSuggestions,
         type SuggestedIndexSchema
     } from './store';
-    import { Modal, Confirm } from '$lib/components';
+    import { Modal } from '$lib/components';
     import { type Entity, SideSheet } from '$database/(entity)';
     import { isSmallViewport } from '$lib/stores/viewport';
     import { IndexType } from '@appwrite.io/console';
@@ -38,7 +38,6 @@
     let creatingIndexes = $state(false);
     let loadingSuggestions = $state(false);
     let indexes = $state<SuggestedIndexSchema[]>([]);
-    let confirmDismiss = $state(false);
     let columnOptions: Array<{
         value: string;
         label: string;
@@ -193,7 +192,6 @@
 
     function dismissIndexes() {
         indexes = [];
-        confirmDismiss = false;
         $showIndexesSuggestions = false;
     }
 
@@ -357,13 +355,7 @@
                         text
                         size="s"
                         disabled={loadingSuggestions || creatingIndexes}
-                        on:click={() => {
-                            if (indexes.length > 0 && !creatingIndexes) {
-                                confirmDismiss = true;
-                            } else {
-                                $showIndexesSuggestions = false;
-                            }
-                        }}>Cancel</Button>
+                        on:click={() => dismissIndexes()}>Cancel</Button>
 
                     <Button
                         size="s"
@@ -392,13 +384,7 @@
         }}
         cancel={{
             disabled: loadingSuggestions || creatingIndexes,
-            onClick: () => {
-                if (indexes.length > 0 && !creatingIndexes) {
-                    confirmDismiss = true;
-                } else {
-                    $showIndexesSuggestions = false;
-                }
-            }
+            onClick: () => dismissIndexes()
         }}>
         {#if modalError}
             <Alert.Inline status="error" title={modalError} />
@@ -542,15 +528,6 @@
         </Layout.Stack>
     {/if}
 {/snippet}
-
-<Confirm
-    confirmDeletion
-    action="Dismiss"
-    title="Dismiss indexes"
-    bind:open={confirmDismiss}
-    onSubmit={dismissIndexes}>
-    Are you sure you want to dismiss these suggested indexes? This action cannot be undone.
-</Confirm>
 
 <style lang="scss">
     // Custom logic to hide the Sheet's

@@ -1,4 +1,5 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
+    import { columns } from './store';
     import { wizard } from '$lib/stores/wizard';
     import CreateAndroid from './createAndroid.svelte';
     import CreateApple from './createApple.svelte';
@@ -7,7 +8,7 @@
     import CreateWeb from './createWeb.svelte';
     import { createPlatform } from './wizard/store';
     import { Click, trackEvent } from '$lib/actions/analytics';
-    import { PlatformType } from '@appwrite.io/console';
+    import type { PlatformType } from '@appwrite.io/console';
 
     export enum Platform {
         Web,
@@ -26,25 +27,20 @@
         });
     }
 
-    export async function continuePlatform(
-        platform: Platform,
-        name: string,
-        key: string,
-        type: PlatformType
-    ) {
+    export async function continuePlatform(platform: Platform, name: string, type: PlatformType) {
         createPlatform.set({
             name: name,
-            key: key,
             type: type
         });
+
         trackEvent(Click.PlatformCreateClick, {
             platform: platforms[platform],
             state: 'continue'
         });
+
         wizard.start(platforms[platform], null, 1, {
             isConnectPlatform: true,
-            platform: type,
-            key: key
+            platform: type
         });
     }
 
@@ -58,8 +54,7 @@
 </script>
 
 <script lang="ts">
-    import { base } from '$app/paths';
-    import { page } from '$app/state';
+    import { resolve } from '$app/paths';
     import { Button } from '$lib/elements/forms';
     import { canWritePlatforms } from '$lib/stores/roles';
     import { setOverviewAction } from '../context';
@@ -83,25 +78,33 @@
     import type { ComponentType } from 'svelte';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
 
-    export let data;
+    import { page } from '$app/state';
+    import type { PageProps } from './$types';
+    import type { Models } from '@appwrite.io/console';
+    import { type DeleteOperationState, MultiSelectionTable } from '$lib/components';
+    import { sdk } from '$lib/stores/sdk';
+    import { Submit, trackError } from '$lib/actions/analytics';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
 
-    enum PlatformTypes {
-        'apple-ios' = 'iOS',
-        'apple-macos' = 'macOS',
-        'apple-watchos' = 'watchOS',
-        'apple-tvos' = 'tvOS',
-        'android' = 'Android',
-        'flutter-android' = 'Android',
-        'flutter-ios' = 'iOS',
-        'flutter-linux' = 'Linux',
-        'flutter-macos' = 'macOS',
-        'flutter-windows' = 'Windows',
-        'flutter-web' = 'Web',
-        'react-native-android' = 'Android',
-        'react-native-ios' = 'iOS',
-        'web' = 'Web'
-    }
-    const path = `${base}/project-${page.params.region}-${page.params.project}/overview/platforms`;
+    const { data }: PageProps = $props();
+
+    const PlatformTypes = {
+        'apple-ios': 'iOS',
+        'apple-macos': 'macOS',
+        'apple-watchos': 'watchOS',
+        'apple-tvos': 'tvOS',
+        android: 'Android',
+        'flutter-android': 'Android',
+        'flutter-ios': 'iOS',
+        'flutter-linux': 'Linux',
+        'flutter-macos': 'macOS',
+        'flutter-windows': 'Windows',
+        'flutter-web': 'Web',
+        'react-native-android': 'Android',
+        'react-native-ios': 'iOS',
+        web: 'Web'
+    } as const;
 
     function getPlatformInfo(platform: string): ComponentType {
         if (platform.includes('flutter')) {
@@ -117,45 +120,82 @@
         }
     }
 
+    function getPlatformPath(platform: Models.Platform) {
+        return resolve('/(console)/project-[region]-[project]/overview/platforms/[platform]', {
+            region: page.params.region,
+            project: page.params.project,
+            platform: platform.$id
+        });
+    }
+
+    async function handlePlatformDelete(
+        selectedPlatforms: string[]
+    ): Promise<DeleteOperationState> {
+        const promises = selectedPlatforms.map((platformId) => {
+            return sdk.forConsole.projects.deletePlatform({
+                projectId: page.params.project,
+                platformId
+            });
+        });
+
+        try {
+            await Promise.all(promises);
+            trackEvent(Submit.PlatformDelete, { total: selectedPlatforms.length });
+        } catch (error) {
+            trackError(error, Submit.PlatformDelete);
+            return error;
+        } finally {
+            await invalidate(Dependencies.PROJECT);
+        }
+    }
+
     setOverviewAction(Action);
 </script>
 
-{#if data.platforms.platforms.length}
-    <Table.Root columns={4} let:root>
-        <svelte:fragment slot="header" let:root>
-            <Table.Header.Cell {root}>Name</Table.Header.Cell>
-            <Table.Header.Cell {root}>Platform type</Table.Header.Cell>
-            <Table.Header.Cell {root}>Identifier</Table.Header.Cell>
-            <Table.Header.Cell {root}>Last updated</Table.Header.Cell>
-        </svelte:fragment>
-        {#each data.platforms.platforms as platform}
-            <Table.Row.Link href={`${path}/${platform.$id}`} {root}>
-                <Table.Cell {root}>
-                    {platform.name}
-                </Table.Cell>
-                <Table.Cell {root}>
-                    <Layout.Stack direction="row" gap="s" alignItems="center">
-                        <Icon icon={getPlatformInfo(platform.type)} />
-                        {PlatformTypes[platform.type]}
-                    </Layout.Stack>
-                </Table.Cell>
-                <Table.Cell {root}>
-                    {#if platform.type.includes('web') || platform.type === 'web'}
-                        {platform.hostname || '—'}
-                    {:else}
-                        {platform.key || platform.hostname || '—'}
-                    {/if}
-                </Table.Cell>
-                <Table.Cell {root}>
-                    {#if platform.$updatedAt}
-                        <DualTimeView time={platform.$updatedAt} />
-                    {:else}
-                        never
-                    {/if}
-                </Table.Cell>
-            </Table.Row.Link>
-        {/each}
-    </Table.Root>
+{#if data.platforms.total}
+    <MultiSelectionTable
+        resource="platform"
+        columns={$columns}
+        onDelete={handlePlatformDelete}
+        allowSelection={false}>
+        {#snippet header(root)}
+            {#each $columns as column}
+                <Table.Header.Cell {root} column={column.id}>
+                    {column.title}
+                </Table.Header.Cell>
+            {/each}
+        {/snippet}
+
+        {#snippet children(root)}
+            {#each data.platforms.platforms as platform}
+                <Table.Row.Link href={getPlatformPath(platform)} {root} id={platform.$id}>
+                    <Table.Cell {root}>
+                        {platform.name}
+                    </Table.Cell>
+                    <Table.Cell {root}>
+                        <Layout.Stack direction="row" gap="s" alignItems="center">
+                            <Icon icon={getPlatformInfo(platform.type)} />
+                            {PlatformTypes[platform.type]}
+                        </Layout.Stack>
+                    </Table.Cell>
+                    <Table.Cell {root}>
+                        {#if platform.type.includes('web') || platform.type === 'web'}
+                            {platform.hostname || '—'}
+                        {:else}
+                            {platform.key || platform.hostname || '—'}
+                        {/if}
+                    </Table.Cell>
+                    <Table.Cell {root}>
+                        {#if platform.$updatedAt}
+                            <DualTimeView time={platform.$updatedAt} />
+                        {:else}
+                            never
+                        {/if}
+                    </Table.Cell>
+                </Table.Row.Link>
+            {/each}
+        {/snippet}
+    </MultiSelectionTable>
 {:else}
     <Card.Base padding="none">
         <Empty
