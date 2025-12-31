@@ -84,7 +84,7 @@
                             {#if identity.providerAccessTokenExpiry}
                                 <DualTimeView
                                     time={identity.providerAccessTokenExpiry}
-                                    showDatetime={true} />
+                                    showDatetime />
                             {:else}
                                 -
                             {/if}
