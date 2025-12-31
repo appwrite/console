@@ -630,7 +630,6 @@
                 permissions: row.$permissions
             });
 
-            invalidate(Dependencies.ROW);
             trackEvent(Submit.RowUpdate);
             addNotification({
                 message: 'Row has been updated',
@@ -1105,7 +1104,14 @@
                                         <EditRowCell
                                             {row}
                                             column={rowColumn}
-                                            onRowStructureUpdate={updateRowContents}
+                                            onRowStructureUpdate={async (row) => {
+                                                const success = await updateRowContents(row);
+                                                if (success) {
+                                                    // database update succeeded!
+                                                    paginatedRows.update(index, row);
+                                                }
+                                                return success;
+                                            }}
                                             noInlineEdit={isRelatedToMany && hasItems}
                                             onChange={(row) => paginatedRows.update(index, row)}
                                             onRevert={(row) => paginatedRows.update(index, row)}
