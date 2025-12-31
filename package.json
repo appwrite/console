@@ -1,9 +1,6 @@
 {
     "name": "@appwrite/console",
     "type": "module",
-    "engines": {
-        "node": ">=22.0.0"
-    },
     "scripts": {
         "dev": "vite dev",
         "build": "node build.js",
