@@ -7,8 +7,10 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Typography, Link, Layout } from '@appwrite.io/pink-svelte';
-    import { project } from '../../store';
+    import type { Models } from '@appwrite.io/console';
     import { tick } from 'svelte';
+
+    let { project }: { project: Models.Project } = $props();
 
     let passwordHistory = $state(5);
     let passwordHistoryEnabled = $state(false);
@@ -19,12 +21,11 @@
 
     // Initialize and sync state when project updates
     $effect(() => {
-        const currentProject = $project;
-        const historyValue = currentProject?.authPasswordHistory;
+        const historyValue = project?.authPasswordHistory;
         passwordHistory = historyValue < 1 ? 5 : historyValue;
         passwordHistoryEnabled = (historyValue ?? 0) !== 0;
-        passwordDictionary = currentProject?.authPasswordDictionary ?? false;
-        authPersonalDataCheck = currentProject?.authPersonalDataCheck ?? false;
+        passwordDictionary = project?.authPasswordDictionary ?? false;
+        authPersonalDataCheck = project?.authPersonalDataCheck ?? false;
     });
 
     $effect(() => {
@@ -38,29 +39,29 @@
     });
 
     const hasChanges = $derived(
-        passwordHistoryEnabled !== (($project?.authPasswordHistory ?? 0) !== 0) ||
-            (passwordHistoryEnabled && passwordHistory !== ($project?.authPasswordHistory ?? 0)) ||
-            passwordDictionary !== ($project?.authPasswordDictionary ?? false) ||
-            authPersonalDataCheck !== ($project?.authPersonalDataCheck ?? false)
+        passwordHistoryEnabled !== ((project?.authPasswordHistory ?? 0) !== 0) ||
+            (passwordHistoryEnabled && passwordHistory !== (project?.authPasswordHistory ?? 0)) ||
+            passwordDictionary !== (project?.authPasswordDictionary ?? false) ||
+            authPersonalDataCheck !== (project?.authPersonalDataCheck ?? false)
     );
 
     async function updatePasswordPolicies() {
         try {
             // Update password history
             await sdk.forConsole.projects.updateAuthPasswordHistory({
-                projectId: $project.$id,
+                projectId: project.$id,
                 limit: passwordHistoryEnabled ? passwordHistory : 0
             });
 
             // Update password dictionary
             await sdk.forConsole.projects.updateAuthPasswordDictionary({
-                projectId: $project.$id,
+                projectId: project.$id,
                 enabled: passwordDictionary
             });
 
             // Update personal data check
             await sdk.forConsole.projects.updatePersonalDataCheck({
-                projectId: $project.$id,
+                projectId: project.$id,
                 enabled: authPersonalDataCheck
             });
 

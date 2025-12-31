@@ -1,5 +1,6 @@
 <script lang="ts">
     import { Container } from '$lib/layout';
+    import { page } from '$app/state';
     import UpdateMockNumbers from './updateMockNumbers.svelte';
     import UpdateMembershipPrivacy from './updateMembershipPrivacy.svelte';
     import UpdateUsersLimit from './updateUsersLimit.svelte';
@@ -13,8 +14,8 @@
     <UpdateUsersLimit />
     <UpdateSessionLength />
     <UpdateSessionsLimit />
-    <PasswordPolicies />
-    <SessionSecurity />
+    <PasswordPolicies project={page.data.project} />
+    <SessionSecurity project={page.data.project} />
     <UpdateMockNumbers />
     <UpdateMembershipPrivacy />
 </Container>

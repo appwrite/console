@@ -7,10 +7,9 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Typography } from '@appwrite.io/pink-svelte';
-    import { project as projectStore } from '../../store';
-    import { page } from '$app/state';
+    import type { Models } from '@appwrite.io/console';
 
-    const project = $derived($projectStore ?? page.data?.project);
+    let { project }: { project: Models.Project } = $props();
 
     let authSessionAlerts = $state(false);
     let sessionInvalidation = $state(false);
