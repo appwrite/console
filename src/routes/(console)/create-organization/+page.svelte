@@ -151,7 +151,7 @@
             }
 
             trackEvent(Submit.OrganizationCreate, {
-                plan: billingIdToPlan(billingPlan)?.name,
+                plan: billingIdToPlan(selectedPlan)?.name,
                 budget_cap_enabled: billingBudget !== null,
                 members_invited: collaborators?.length
             });

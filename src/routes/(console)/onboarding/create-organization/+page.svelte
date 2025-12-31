@@ -24,7 +24,7 @@
                 organization = await sdk.forConsole.organizations.create({
                     organizationId: ID.unique(),
                     name: organizationName,
-                    billingPlan: BillingPlan.FREE
+                    billingPlan: getBasePlanFromGroup(BillingPlanGroup.Starter).$id
                 });
 
                 trackEvent(Submit.OrganizationCreate, {
