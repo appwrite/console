@@ -2,7 +2,7 @@
     import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Id } from '$lib/components';
-    import { toLocaleDateTime } from '$lib/helpers/date';
+    import DualTimeView from '$lib/components/dualTimeView.svelte';
     import { columns } from './store';
     import { IconExclamation } from '@appwrite.io/pink-icons-svelte';
     import { Layout, Tooltip, Table, Icon } from '@appwrite.io/pink-svelte';
@@ -72,8 +72,10 @@
                                 {`Last backup: ${lastBackup}`}
                             </span>
                         </Tooltip>
+                    {:else if column.type === 'datetime'}
+                        <DualTimeView time={database[column.id]} showDatetime />
                     {:else}
-                        {toLocaleDateTime(database[column.id])}
+                        {database[column.id]}
                     {/if}
                 </Table.Cell>
             {/each}
