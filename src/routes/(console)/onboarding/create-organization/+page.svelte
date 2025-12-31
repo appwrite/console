@@ -2,7 +2,7 @@
     import { isCloud } from '$lib/system';
     import { sdk } from '$lib/stores/sdk';
     import { BillingPlanGroup, ID } from '@appwrite.io/console';
-    import { BillingPlan, Dependencies } from '$lib/constants';
+    import { Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
     import { loadAvailableRegions } from '$routes/(console)/regions';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';

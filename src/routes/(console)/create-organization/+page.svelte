@@ -34,7 +34,6 @@
     let taxId: string | null = $state(null);
     let collaborators: string[] = $state([]);
     let paymentMethodId: string | null = $state(null);
-    let billingPlan: string = $state(BillingPlan.FREE);
 
     let showCreditModal = $state(false);
     let billingBudget: number | undefined = $state(undefined);

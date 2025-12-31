@@ -5,7 +5,6 @@
     import { isSupportOnline, showSupportModal } from '$routes/(console)/wizard/support/store';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { localeShortTimezoneName, utcHourToLocaleHour } from '$lib/helpers/date';
-    import { plansInfo } from '$lib/stores/billing';
     import { Card } from '$lib/components/index';
     import { app } from '$lib/stores/app';
     import { currentPlan, organizationList } from '$lib/stores/organization';
