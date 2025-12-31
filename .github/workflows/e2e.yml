@@ -12,17 +12,13 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
-
-            - name: Use Node.js
-              uses: actions/setup-node@v3
+            - name: Setup Bun
+              uses: oven-sh/setup-bun@v2
               with:
-                  node-version: 22
-
-            - name: Install pnpm
-              uses: pnpm/action-setup@v4
+                  version: latest
 
             - name: Install dependencies
-              run: pnpm install --frozen-lockfile
+              run: bun install --frozen-lockfile
 
             - name: Cache Playwright browsers
               uses: actions/cache@v4
@@ -34,11 +30,10 @@ jobs:
                       ${{ runner.os }}-playwright-
 
             - name: Install Playwright Browsers
-              if: steps.playwright-cache.outputs.cache-hit != 'true'
-              run: pnpm exec playwright install --with-deps chromium
+              run: bunx playwright install --with-deps chromium
 
             - name: E2E Tests
-              run: pnpm run e2e
+              run: bun run e2e
             - uses: actions/upload-artifact@v4
               if: ${{ !cancelled() }}
               with:

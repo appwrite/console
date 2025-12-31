@@ -9,7 +9,7 @@
         "build": "node build.js",
         "preview": "vite preview",
         "prepare": "svelte-kit sync || echo ''",
-        "clean": "rm -rf node_modules && rm -rf .svelte_kit && pnpm i --force",
+        "clean": "rm -rf node_modules && rm -rf .svelte_kit && bun install --force",
         "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
         "check:watch": "svelte-check --tsconfig ./tsconfig.json --watch",
         "format": "prettier --write --cache .",
@@ -91,13 +91,8 @@
         "vite": "^7.0.6",
         "vitest": "^3.2.4"
     },
-    "pnpm": {
-        "onlyBuiltDependencies": [
-            "@parcel/watcher",
-            "@sentry/cli",
-            "esbuild",
-            "svelte-preprocess"
-        ]
+    "overrides": {
+        "vite": "npm:rolldown-vite@latest"
     },
-    "packageManager": "pnpm@10.20.0"
+    "packageManager": "bun@1.3.2"
 }

@@ -15,29 +15,25 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
-
-            - name: Use Node.js
-              uses: actions/setup-node@v3
+            - name: Setup Bun
+              uses: oven-sh/setup-bun@v2
               with:
-                  node-version: 22
-
-            - name: Install pnpm
-              uses: pnpm/action-setup@v4
+                  version: latest
 
             - name: Audit dependencies
-              run: pnpm audit --audit-level high
+              run: bun audit --audit-level high
 
             - name: Install dependencies
-              run: pnpm install --frozen-lockfile
+              run: bun install --frozen-lockfile
 
             - name: Svelte Diagnostics
-              run: pnpm run check
+              run: bun check
 
             - name: Linter
-              run: pnpm run lint
+              run: bun lint
 
             - name: Unit Tests
-              run: pnpm run test
+              run: bun test
 
             - name: Build Console
-              run: pnpm run build
+              run: bun run build
