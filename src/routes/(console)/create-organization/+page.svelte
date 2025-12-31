@@ -60,18 +60,21 @@
         if (page.url.searchParams.has('name')) {
             name = page.url.searchParams.get('name');
         }
+
         if (page.url.searchParams.has('plan')) {
             const plan = page.url.searchParams.get('plan');
             if (plan) {
-                billingPlan = plan;
+                selectedPlan = plan;
             }
         }
+
         if (
             data?.hasFreeOrganizations ||
             (page.url.searchParams.has('type') && page.url.searchParams.get('type') === 'createPro')
         ) {
-            billingPlan = BillingPlan.PRO;
+            selectedPlan = BillingPlan.PRO;
         }
+
         if (page.url.searchParams.has('type')) {
             const type = page.url.searchParams.get('type');
             if (type === 'payment_confirmed') {
