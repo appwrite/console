@@ -8,6 +8,7 @@
     import { Table, Badge, Layout, Popover, Typography } from '@appwrite.io/pink-svelte';
     import { goto } from '$app/navigation';
     import Link from '$lib/elements/link.svelte';
+    import { calculateSize } from '$lib/helpers/sizeConvertion';
 
     export let data: PageData;
 
@@ -48,8 +49,10 @@
                             </Id>
                         {/key}
                     {:else if column.id === 'name'}
+                        {bucket.name}
+                    {:else if column.id === 'storageUsage'}
                         <Layout.Stack direction="row" gap="s" alignItems="center">
-                            <span>{bucket.name}</span>
+                            <span>{calculateSize(0)}</span>
                             {#if bucket.transformations}
                                 <Popover let:show let:hide placement="bottom-start" portal>
                                     <span
