@@ -130,19 +130,18 @@
         return project.status === 'archived';
     }
 
-    $: projectsToArchive = (data.archivedProjectsPage ?? data.projects.projects).filter(
-        (project) => project.status === 'archived'
+    const projectsToArchive = $derived(
+        (data.archivedProjectsPage ?? data.projects.projects).filter(
+            (project) => project.status === 'archived'
+        )
     );
 
-    $: activeProjects = (data.activeProjectsPage ?? data.projects.projects).filter(
-        (project) => project.status === 'active'
-    );
-
-    $: activeTotalOverall =
+    const activeTotalOverall = $derived(
         data?.activeTotalOverall ??
-        data?.organization?.projects?.length ??
-        data?.projects?.total ??
-        0;
+            data?.organization?.projects?.length ??
+            data?.projects?.total ??
+            0
+    );
 
     function clearSearch() {
         searchQuery?.clearInput();
