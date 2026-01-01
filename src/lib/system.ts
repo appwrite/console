@@ -14,7 +14,7 @@ export const VARS = {
     EMAIL_VERIFICATION: env.PUBLIC_CONSOLE_EMAIL_VERIFICATION === 'true',
     MOCK_AI_SUGGESTIONS: (env.PUBLIC_CONSOLE_MOCK_AI_SUGGESTIONS ?? 'true') === 'true',
     POSTHOG_API_KEY: env.PUBLIC_POSTHOG_API_KEY ?? undefined,
-    POSTHOG_HOST: env.PUBLIC_POSTHOG_HOST ?? 'https://us.i.posthog.com'
+    POSTHOG_HOST: env.PUBLIC_POSTHOG_HOST ?? undefined
 };
 
 export const ENV = {
