@@ -47,23 +47,20 @@
 
     async function updatePasswordPolicies() {
         try {
-            // Update password history
-            await sdk.forConsole.projects.updateAuthPasswordHistory({
-                projectId: project.$id,
-                limit: passwordHistoryEnabled ? passwordHistory : 0
-            });
-
-            // Update password dictionary
-            await sdk.forConsole.projects.updateAuthPasswordDictionary({
-                projectId: project.$id,
-                enabled: passwordDictionary
-            });
-
-            // Update personal data check
-            await sdk.forConsole.projects.updatePersonalDataCheck({
-                projectId: project.$id,
-                enabled: authPersonalDataCheck
-            });
+            await Promise.all([
+                sdk.forConsole.projects.updateAuthPasswordHistory({
+                    projectId: project.$id,
+                    limit: passwordHistoryEnabled ? passwordHistory : 0
+                }),
+                sdk.forConsole.projects.updateAuthPasswordDictionary({
+                    projectId: project.$id,
+                    enabled: passwordDictionary
+                }),
+                sdk.forConsole.projects.updatePersonalDataCheck({
+                    projectId: project.$id,
+                    enabled: authPersonalDataCheck
+                })
+            ]);
 
             await invalidate(Dependencies.PROJECT);
             addNotification({

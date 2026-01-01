@@ -27,17 +27,16 @@
 
     async function updateSessionSecurity() {
         try {
-            // Update session alerts
-            await sdk.forConsole.projects.updateSessionAlerts({
-                projectId: project.$id,
-                alerts: authSessionAlerts
-            });
-
-            // Update session invalidation
-            await sdk.forConsole.projects.updateSessionInvalidation({
-                projectId: project.$id,
-                enabled: sessionInvalidation
-            });
+            await Promise.all([
+                sdk.forConsole.projects.updateSessionAlerts({
+                    projectId: project.$id,
+                    alerts: authSessionAlerts
+                }),
+                sdk.forConsole.projects.updateSessionInvalidation({
+                    projectId: project.$id,
+                    enabled: sessionInvalidation
+                })
+            ]);
 
             await invalidate(Dependencies.PROJECT);
 
@@ -46,7 +45,7 @@
                 message: 'Updated session security settings.'
             });
             trackEvent(Submit.AuthSessionAlertsUpdate);
-            trackEvent(Submit.AuthInvalidateSesssion);
+            trackEvent(Submit.AuthInvalidateSession);
         } catch (error) {
             addNotification({
                 type: 'error',
