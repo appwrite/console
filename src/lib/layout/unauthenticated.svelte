@@ -109,7 +109,7 @@
                             <Layout.Stack gap="s" direction="row">
                                 {#if currentReview?.image}
                                     <Avatar
-                                        src={getCampaignImageUrl(currentReview?.image)}
+                                        src={currentReview.image}
                                         alt={currentReview.name}
                                         size="m" />
                                 {:else}

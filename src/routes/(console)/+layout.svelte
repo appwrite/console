@@ -45,7 +45,7 @@
     import { headerAlert } from '$lib/stores/headerAlert';
     import { UsageRates } from '$lib/components/billing';
     import { canSeeProjects } from '$lib/stores/roles';
-    import { BottomModalAlert, EmailVerificationBanner } from '$lib/components';
+    import { BottomModalAlert } from '$lib/components';
     import {
         IconAnnotation,
         IconBookOpen,
@@ -59,7 +59,6 @@
     import type { LayoutData } from './$types';
 
     export let data: LayoutData;
-    let emailBannerClosed = false;
 
     function kebabToSentenceCase(str: string) {
         return str
@@ -83,7 +82,7 @@
             keys: ['g', 'p'],
             group: 'navigation',
             disabled:
-                (page.url.pathname.includes('/console/organization-') &&
+                (page.url.pathname.includes(base + '/organization-') &&
                     !page.url.pathname.endsWith('/members') &&
                     !page.url.pathname.endsWith('/settings')) ||
                 !$canSeeProjects,
@@ -335,21 +334,16 @@
 <CommandCenter />
 <Shell
     showSideNavigation={page.url.pathname !== '/' &&
-        !page?.params.organization &&
-        !page.url.pathname.includes('/console/account') &&
-        !page.url.pathname.includes('/console/card') &&
-        !page.url.pathname.includes('/console/onboarding')}
-    showHeader={!page.url.pathname.includes('/console/onboarding/create-project')}
-    showFooter={!page.url.pathname.includes('/console/onboarding/create-project')}
+        !page.url.pathname.includes(base + '/account') &&
+        !page.url.pathname.includes(base + '/card') &&
+        !page.url.pathname.includes(base + '/onboarding')}
+    showHeader={!page.url.pathname.includes(base + '/onboarding/create-project')}
+    showFooter={!page.url.pathname.includes(base + '/onboarding/create-project')}
     selectedProject={page.data?.project}>
     <!--    <Header slot="header" />-->
     <slot />
     <Footer slot="footer" />
 </Shell>
-
-<EmailVerificationBanner
-    {emailBannerClosed}
-    onEmailBannerClose={(closed) => (emailBannerClosed = closed)} />
 
 {#if $wizard.show && $wizard.component}
     <svelte:component this={$wizard.component} {...$wizard.props} />

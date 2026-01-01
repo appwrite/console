@@ -5,7 +5,6 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { identities } from './store';
-    import { toLocaleDateTime } from '$lib/helpers/date';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { oAuthProviders } from '$lib/stores/oauth-providers';
@@ -82,7 +81,13 @@
                             <DualTimeView time={identity.$createdAt} />
                         </Table.Cell>
                         <Table.Cell column="expiryDate" {root}>
-                            {toLocaleDateTime(identity.providerAccessTokenExpiry)}
+                            {#if identity.providerAccessTokenExpiry}
+                                <DualTimeView
+                                    time={identity.providerAccessTokenExpiry}
+                                    showDatetime />
+                            {:else}
+                                -
+                            {/if}
                         </Table.Cell>
                         <Table.Cell column="actions" {root}>
                             <Button text on:click={() => deleteIdentity(identity.$id)}>

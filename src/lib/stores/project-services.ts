@@ -31,11 +31,6 @@ function createServices() {
                 value: null
             },
             {
-                label: 'Health',
-                method: ApiService.Health,
-                value: null
-            },
-            {
                 label: 'Locale',
                 method: ApiService.Locale,
                 value: null
@@ -92,11 +87,6 @@ function createServices() {
                     label: 'Functions',
                     method: ApiService.Functions,
                     value: project.serviceStatusForFunctions
-                },
-                {
-                    label: 'Health',
-                    method: ApiService.Health,
-                    value: project.serviceStatusForHealth
                 },
                 {
                     label: 'Locale',

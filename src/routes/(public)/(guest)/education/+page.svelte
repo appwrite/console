@@ -7,13 +7,14 @@
     import AppwriteLogoLight from '$lib/images/appwrite-logo-light.svg';
     import GithubLogoDark from '$lib/images/github-logo-dark.svg';
     import GithubLogoLight from '$lib/images/github-logo-light.svg';
+    import { base } from '$app/paths';
 
     function onGithubLogin() {
         localStorage.setItem('githubEducationProgram', 'true');
         sdk.forConsole.account.createOAuth2Session({
             provider: OAuthProvider.Github,
-            success: window.location.origin + '/console/education?success',
-            failure: window.location.origin + '/console/education?failure',
+            success: window.location.origin + base + '/education?success',
+            failure: window.location.origin + base + '/education?failure',
             scopes: ['read:user', 'user:email']
         });
     }

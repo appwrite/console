@@ -31,7 +31,10 @@
 </script>
 
 <svelte:head>
-    <title>Databases - Appwrite</title>
+    <!-- svelte bug, the table header just stays! -->
+    {#key page.url.pathname}
+        <title>Databases - Appwrite</title>
+    {/key}
 </svelte:head>
 
 <slot />

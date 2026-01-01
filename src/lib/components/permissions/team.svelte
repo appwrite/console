@@ -141,7 +141,7 @@
         </div>
     {:else}
         <Card.Base padding="none">
-            <Empty title="You have no teams. Create a team to see them here." type="secondary">
+            <Empty title="No teams yet. Create a team to see it here." type="secondary">
                 <Typography.Text slot="description">
                     Need a hand? Learn more in our <Link.Anchor
                         href="https://appwrite.io/docs/products/auth/teams"

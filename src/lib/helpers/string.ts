@@ -1,3 +1,5 @@
+import { clampMin } from './numbers';
+
 /**
  * Capitalizes the first letter of a string
  *
@@ -45,8 +47,8 @@ const formatter = Intl.NumberFormat('en', {
     notation: 'compact'
 });
 
-export function formatNum(number: number): string {
-    return formatter.format(number);
+export function formatNum(number: number, min: number = 0): string {
+    return formatter.format(clampMin(number, min));
 }
 
 /**

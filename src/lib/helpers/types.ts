@@ -35,7 +35,10 @@ const columnTypes = [
     'boolean',
     'datetime',
     'relationship',
-    'enum'
+    'enum',
+    'point',
+    'linestring',
+    'polygon'
 ] as const;
 export type ColumnType = (typeof columnTypes)[number];
 export type Column = PinkColumn & {
@@ -77,3 +80,5 @@ export type TableRootProp = {
     addAvailableId: (id: string) => void;
     removeAvailableId: (id: string) => void;
 };
+
+export type NestedNumberArray = Array<number | NestedNumberArray>;

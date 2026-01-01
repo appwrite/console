@@ -19,6 +19,8 @@
     import { trackEvent, Click } from '$lib/actions/analytics';
     import { type Models } from '@appwrite.io/console';
     import { getServiceLimit, readOnly, upgradeURL } from '$lib/stores/billing';
+    import { BillingPlan } from '$lib/constants';
+    import { hideNotification, shouldShowNotification } from '$lib/helpers/notifications';
     import { onMount, type ComponentType } from 'svelte';
     import { canWriteProjects } from '$lib/stores/roles';
     import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
@@ -33,20 +35,41 @@
         IconReact,
         IconUnity
     } from '@appwrite.io/pink-icons-svelte';
+    import type { PageProps } from './$types';
     import { getPlatformInfo } from '$lib/helpers/platform';
     import CreateProjectCloud from './createProjectCloud.svelte';
     import { currentPlan, regions as regionsStore } from '$lib/stores/organization';
     import SelectProjectCloud from '$lib/components/billing/alerts/selectProjectCloud.svelte';
     import ArchiveProject from '$lib/components/archiveProject.svelte';
 
-    export let data;
+    let { data }: PageProps = $props();
 
-    let showCreate = false;
-    let addOrganization = false;
-    let showSelectProject = false;
-    let showCreateProjectCloud = false;
+    let showCreate = $state(false);
+    let addOrganization = $state(false);
+    let showSelectProject = $state(false);
+    let showCreateProjectCloud = $state(false);
+    let freePlanAlertDismissed = $state(false);
 
-    let searchQuery: SearchQuery;
+    let searchQuery: SearchQuery | null = $state(null);
+
+    const projectCreationDisabled = $derived.by(() => {
+        return (
+            (isCloud &&
+                getServiceLimit('projects', null, data.currentPlan) <= data.projects.total) ||
+            (isCloud && $readOnly && !GRACE_PERIOD_OVERRIDE) ||
+            !$canWriteProjects
+        );
+    });
+
+    const reachedProjectLimit = $derived.by(() => {
+        return (
+            isCloud && getServiceLimit('projects', null, data.currentPlan) <= data.projects.total
+        );
+    });
+
+    const projectsLimit = $derived.by(() => {
+        return getServiceLimit('projects', null, data.currentPlan);
+    });
 
     function filterPlatforms(platforms: { name: string; icon: string }[]) {
         return platforms.filter(
@@ -79,25 +102,23 @@
         }
     }
 
-    $: projectCreationDisabled =
-        (isCloud && getServiceLimit('projects') <= data.allProjectsCount) ||
-        (isCloud && $readOnly && !GRACE_PERIOD_OVERRIDE) ||
-        !$canWriteProjects;
+    function dismissFreePlanAlert() {
+        freePlanAlertDismissed = true;
+        const notificationId = `freePlanAlert_${data.organization.$id}`;
+        hideNotification(notificationId, { coolOffPeriod: 24 });
 
-    $: $registerCommands([
-        {
-            label: 'Create project',
-            callback: () => {
-                showCreate = true;
-            },
-            keys: ['c'],
-            disabled: projectCreationDisabled,
-            group: 'projects',
-            icon: IconPlus
-        }
-    ]);
+        trackEvent(Click.OrganizationClickUpgrade, {
+            from: 'button',
+            source: 'free_plan_info_alert_dismiss'
+        });
+    }
 
-    onMount(async () => checkPricingRefAndRedirect(page.url.searchParams));
+    onMount(async () => {
+        checkPricingRefAndRedirect(page.url.searchParams);
+        const notificationId = `freePlanAlert_${data.organization.$id}`;
+        const shouldShow = shouldShowNotification(notificationId);
+        freePlanAlertDismissed = !shouldShow;
+    });
 
     function findRegion(project: Models.Project) {
         return $regionsStore.regions.find((region) => region.$id === project.region);
@@ -122,9 +143,25 @@
         data?.organization?.projects?.length ??
         data?.projects?.total ??
         0;
+
     function clearSearch() {
         searchQuery?.clearInput();
     }
+
+    $effect(() => {
+        $registerCommands([
+            {
+                label: 'Create project',
+                callback: () => {
+                    showCreate = true;
+                },
+                keys: ['c'],
+                disabled: projectCreationDisabled,
+                group: 'projects',
+                icon: IconPlus
+            }
+        ]);
+    });
 </script>
 
 <SelectProjectCloud
@@ -137,13 +174,27 @@
         <SearchQuery bind:this={searchQuery} placeholder="Search by name or ID" />
 
         {#if $canWriteProjects}
-            <Button
-                on:click={handleCreateProject}
-                event="create_project"
-                disabled={projectCreationDisabled}>
-                <Icon icon={IconPlus} slot="start" size="s" />
-                Create project
-            </Button>
+            {#if projectCreationDisabled && reachedProjectLimit}
+                <Tooltip placement="bottom">
+                    <div>
+                        <Button event="create_project" disabled>
+                            <Icon icon={IconPlus} slot="start" size="s" />
+                            Create project
+                        </Button>
+                    </div>
+                    <span slot="tooltip">
+                        You have reached your limit of {projectsLimit} projects.
+                    </span>
+                </Tooltip>
+            {:else}
+                <Button
+                    on:click={handleCreateProject}
+                    event="create_project"
+                    disabled={projectCreationDisabled}>
+                    <Icon icon={IconPlus} slot="start" size="s" />
+                    Create project
+                </Button>
+            {/if}
         {/if}
     </Layout.Stack>
 
@@ -170,13 +221,35 @@
         </Alert.Inline>
     {/if}
 
-    {#if activeProjects.length > 0}
+    {#if isCloud && data.organization.billingPlan === BillingPlan.FREE && projectsToArchive.length === 0 && !freePlanAlertDismissed}
+        <Alert.Inline dismissible on:dismiss={dismissFreePlanAlert}>
+            <Typography.Text
+                >Your Free plan includes up to 2 projects and limited resources. Upgrade to unlock
+                more capacity and features.</Typography.Text>
+            <svelte:fragment slot="actions">
+                <Button
+                    compact
+                    size="s"
+                    href={$upgradeURL}
+                    on:click={() => {
+                        trackEvent(Click.OrganizationClickUpgrade, {
+                            from: 'button',
+                            source: 'free_plan_info_alert'
+                        });
+                    }}>
+                    Upgrade to Pro
+                </Button>
+            </svelte:fragment>
+        </Alert.Inline>
+    {/if}
+
+    {#if data.projects.total > 0}
         <CardContainer
             disableEmpty={!$canWriteProjects}
             total={activeTotalOverall}
             offset={data.offset}
             on:click={handleCreateProject}>
-            {#each activeProjects as project}
+            {#each data.projects.projects as project}
                 {@const platforms = filterPlatforms(
                     project.platforms.map((platform) => getPlatformInfo(platform.type))
                 )}

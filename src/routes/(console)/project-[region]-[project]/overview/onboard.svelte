@@ -12,66 +12,68 @@
     } from '@appwrite.io/pink-svelte';
     import { addPlatform, continuePlatform } from './platforms/+page.svelte';
     import { app } from '$lib/stores/app';
-    import {
-        IconArrowRight,
-        IconNodeJs,
-        IconPhp,
-        IconPython
-    } from '@appwrite.io/pink-icons-svelte';
+    import AuthPreview from './assets/auth-preview.svg';
+    import AuthPreviewDark from './assets/auth-preview-dark.svg';
+    import { IconArrowRight } from '@appwrite.io/pink-icons-svelte';
     import DatabaseImgSource from './assets/database.png';
     import DatabaseImgSourceDark from './assets/database-dark.png';
-    import UsersImgSource from './assets/users.svg';
-    import UsersImgSourceDark from './assets/users-dark.svg';
     import DiscordImgSource from './assets/discord.png';
     import DiscordImgSourceDark from './assets/discord-dark.png';
+    import { mcpTools } from '../store';
     import PlatformIosImgSource from './assets/platform-ios.svg';
     import PlatformIosImgSourceDark from './assets/platform-ios-dark.svg';
     import PlatformAndroidImgSource from './assets/platform-android.svg';
     import PlatformAndroidImgSourceDark from './assets/platform-android-dark.svg';
     import PlatformFlutterImgSource from './assets/platform-flutter.svg';
     import PlatformFlutterImgSourceDark from './assets/platform-flutter-dark.svg';
-    import { base } from '$app/paths';
+    import PlatformSdkImgSource from './assets/platform-sdk.jpg';
+    import PlatformSdkImgSourceDark from './assets/platform-sdk-dark.png';
+    import { resolve } from '$app/paths';
     import { isSmallViewport } from '$lib/stores/viewport';
-    import { AvatarGroup } from '$lib/components';
     import type { Models } from '@appwrite.io/console';
     import { getPlatformInfo } from '$lib/helpers/platform';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { goto } from '$app/navigation';
     import { page } from '$app/state';
 
-    function createKey() {
-        trackEvent(Click.KeyCreateClick, {
-            source: 'onboarding'
-        });
-        goto(
-            `${base}/project-${page.params.region}-${page.params.project}/overview/api-keys/create`,
-            {
-                replaceState: true
-            }
-        );
-    }
+    let {
+        pingCount = 0,
+        platforms = []
+    }: {
+        pingCount: number;
+        platforms: Array<Models.Platform>;
+    } = $props();
 
-    export let platforms: Models.Platform[] = [];
-    export let pingCount = 0;
+    const platformMap = $derived.by(() => {
+        const map = new Map<string, Models.Platform>();
+        platforms.forEach((platform) => {
+            const platformInfo = getPlatformInfo(platform.type);
+            map.set(platformInfo.name, platform);
+        });
+
+        return map;
+    });
+
+    const projectRoute = $derived.by(() => {
+        return resolve('/(console)/project-[region]-[project]', {
+            region: page.params.region,
+            project: page.params.project
+        });
+    });
+
+    function createKey() {
+        trackEvent(Click.KeyCreateClick, { source: 'onboarding' });
+
+        goto(`${projectRoute}/overview/api-keys/create`, { replaceState: true });
+    }
 
     function openPlatformWizard(type: number, platform?: Models.Platform) {
         if (platform) {
-            continuePlatform(type, platform.name, platform.key, platform.type);
+            continuePlatform(type, platform.name, platform.type);
         } else {
             trackEvent(Click.PlatformCreateClick, { source: 'onboarding' });
             addPlatform(type);
         }
-    }
-
-    let platformMap = new Map();
-
-    $: {
-        let updatedMap = new Map();
-        platforms.forEach((platform) => {
-            const platformInfo = getPlatformInfo(platform.type);
-            updatedMap.set(platformInfo.name, platform);
-        });
-        platformMap = updatedMap;
     }
 </script>
 
@@ -342,17 +344,34 @@
                                         </Layout.Stack>
                                     </Card.Button>
                                 </Layout.Stack>
-                                <Layout.Stack direction="row" gap="xxs" alignItems="center">
-                                    <Typography.Text>Or connect</Typography.Text>
-                                    <Link.Button variant="muted" on:click={createKey}
-                                        >server side</Link.Button>
-                                    <div style:padding-inline-start="8px">
-                                        <AvatarGroup
-                                            icons={[IconPython, IconNodeJs, IconPhp]}
-                                            total={7}
-                                            size="s" />
-                                    </div>
-                                </Layout.Stack>
+                                <span class="with-separators eyebrow-heading-3">or</span>
+
+                                <Card.Button on:click={createKey} padding="none">
+                                    <Layout.Stack gap="xl">
+                                        <div
+                                            class="card-top-image api-key-card-image"
+                                            style:background-image={`url('${
+                                                $app.themeInUse === 'dark'
+                                                    ? PlatformSdkImgSourceDark
+                                                    : PlatformSdkImgSource
+                                            }')`}>
+                                            <Layout.Stack
+                                                direction="row"
+                                                alignItems="center"
+                                                justifyContent="space-between">
+                                                <Layout.Stack gap="xxs">
+                                                    <Typography.Title size="s"
+                                                        >Create API key</Typography.Title>
+                                                    <Typography.Text
+                                                        >Connect your server or backend to Appwrite</Typography.Text>
+                                                </Layout.Stack>
+                                                <div class="arrow-icon">
+                                                    <Icon icon={IconArrowRight} size="s" />
+                                                </div>
+                                            </Layout.Stack>
+                                        </div>
+                                    </Layout.Stack>
+                                </Card.Button>
                             </Layout.Stack>
                         </Layout.Stack></Step.Item>
                     <Step.Item state="next"
@@ -396,9 +415,7 @@
                                     <Card.Button
                                         on:click={() => {
                                             trackEvent(Click.OnboardingSetupDatabaseClick);
-                                            goto(
-                                                `${base}/project-${page.params.region}-${page.params.project}/databases`
-                                            );
+                                            goto(`${projectRoute}/databases`);
                                         }}
                                         padding="s"
                                         ><Layout.Stack gap="xl"
@@ -479,10 +496,12 @@
                                     <div class="double-width-card">
                                         <Card.Base padding="s"
                                             ><div class="full-height-card">
-                                                <Layout.Stack direction="row">
+                                                <Layout.Stack
+                                                    direction={$isSmallViewport ? 'column' : 'row'}>
                                                     <Layout.Stack
                                                         gap="xl"
-                                                        justifyContent="space-between">
+                                                        justifyContent="space-between"
+                                                        style={`flex: ${$isSmallViewport ? '1 1 auto' : '0 0 30%'}; min-width: ${$isSmallViewport ? 'auto' : '240px'}`}>
                                                         <Typography.Title size="s"
                                                             >Set up Auth</Typography.Title>
                                                         <Layout.Stack
@@ -491,7 +510,7 @@
                                                             justifyContent="flex-end">
                                                             <Link.Anchor
                                                                 variant="quiet-muted"
-                                                                href={`${base}/project-${page.params.region}-${page.params.project}/auth/settings`}
+                                                                href={`${projectRoute}/auth/settings`}
                                                                 on:click={() => {
                                                                     trackEvent(
                                                                         Click.OnboardingAuthEmailPasswordClick
@@ -501,7 +520,7 @@
                                                             </Link.Anchor>
                                                             <Link.Anchor
                                                                 variant="quiet-muted"
-                                                                href={`${base}/project-${page.params.region}-${page.params.project}/auth/settings`}
+                                                                href={`${projectRoute}/auth/settings`}
                                                                 on:click={() => {
                                                                     trackEvent(
                                                                         Click.OnboardingAuthOauth2Click
@@ -509,7 +528,7 @@
                                                                 }}>OAuth 2</Link.Anchor>
                                                             <Link.Anchor
                                                                 variant="quiet-muted"
-                                                                href={`${base}/project-${page.params.region}-${page.params.project}/auth/settings`}
+                                                                href={`${projectRoute}/auth/settings`}
                                                                 on:click={() => {
                                                                     trackEvent(
                                                                         Click.OnboardingAuthAllMethodsClick
@@ -519,33 +538,95 @@
                                                     </Layout.Stack>
                                                     <div
                                                         class="auth-image"
+                                                        style="flex: 1 1 auto"
                                                         style:background-image={`url('${
                                                             $app.themeInUse === 'dark'
-                                                                ? UsersImgSourceDark
-                                                                : UsersImgSource
+                                                                ? AuthPreviewDark
+                                                                : AuthPreview
                                                         }')`}>
                                                     </div>
                                                 </Layout.Stack>
                                             </div></Card.Base>
                                     </div>
+                                </Layout.Stack>
+                                <Layout.Stack
+                                    gap="l"
+                                    direction={$isSmallViewport ? 'column' : 'row'}>
+                                    <Card.Base
+                                        padding="s"
+                                        style={`flex: ${$isSmallViewport ? '1 1 auto' : '1 1 70%'};`}>
+                                        <div class="full-height-card">
+                                            <Layout.Stack gap="xl" justifyContent="space-between">
+                                                <Layout.Stack gap="s">
+                                                    <Typography.Title
+                                                        color="--fgcolor-neutral-secondary"
+                                                        size="s">MCP server</Typography.Title>
+                                                    <Typography.Text
+                                                        color="--fgcolor-neutral-secondary">
+                                                        Deploy the Appwrite MCP server with a single
+                                                        click, or view the <Link.Anchor
+                                                            href="https://appwrite.io/docs"
+                                                            target="_blank">docs</Link.Anchor> for instructions.
+                                                    </Typography.Text>
+                                                </Layout.Stack>
+                                                <Layout.Stack gap="s">
+                                                    <Typography.Text
+                                                        color="--fgcolor-neutral-tertiary"
+                                                        size="s">One-click install</Typography.Text>
+                                                    <Layout.Stack
+                                                        direction="row"
+                                                        gap="s"
+                                                        wrap="wrap">
+                                                        {#each mcpTools as tool}
+                                                            <Button.Anchor
+                                                                href={tool.href}
+                                                                target="_blank"
+                                                                rel="noreferrer"
+                                                                size="s"
+                                                                variant="secondary">
+                                                                <Icon
+                                                                    slot="start"
+                                                                    icon={tool.icon}
+                                                                    size="xs" />
+                                                                {tool.label}
+                                                            </Button.Anchor>
+                                                        {/each}
+                                                    </Layout.Stack>
+                                                </Layout.Stack>
+                                            </Layout.Stack>
+                                        </div>
+                                    </Card.Base>
 
                                     <Card.Link
                                         href="https://appwrite.io/discord"
                                         padding="s"
                                         on:click={() => {
                                             trackEvent(Click.OnboardingDiscordClick);
-                                        }}>
+                                        }}
+                                        style={`flex: ${$isSmallViewport ? '1 1 auto' : '1 1 28%'};`}>
                                         <div class="full-height-card">
                                             <Layout.Stack gap="xs" justifyContent="space-between">
-                                                <Layout.Stack direction="column" gap="xxxs">
-                                                    <img
-                                                        src={$app.themeInUse === 'dark'
-                                                            ? DiscordImgSourceDark
-                                                            : DiscordImgSource}
-                                                        class="discord"
-                                                        alt="" />
-                                                    <Typography.Title size="s"
-                                                        >Discord</Typography.Title>
+                                                <Layout.Stack
+                                                    direction="row"
+                                                    alignItems="center"
+                                                    justifyContent="space-between"
+                                                    class="discord-header">
+                                                    <Layout.Stack
+                                                        direction="row"
+                                                        alignItems="flex-start"
+                                                        gap="xs">
+                                                        <img
+                                                            src={$app.themeInUse === 'dark'
+                                                                ? DiscordImgSourceDark
+                                                                : DiscordImgSource}
+                                                            class="discord"
+                                                            alt="" />
+                                                        <Typography.Title size="s"
+                                                            >Discord</Typography.Title>
+                                                    </Layout.Stack>
+                                                    <div class="arrow-icon arrow-icon-discord">
+                                                        <Icon icon={IconArrowRight} size="s" />
+                                                    </div>
                                                 </Layout.Stack>
                                                 <Layout.Stack
                                                     direction="row"
@@ -556,9 +637,6 @@
                                                         color="--fgcolor-neutral-secondary">
                                                         Join our Discord for support, tips and
                                                         product updates</Typography.Text>
-                                                    <div class="arrow-icon arrow-icon-discord">
-                                                        <Icon icon={IconArrowRight} size="s" />
-                                                    </div>
                                                 </Layout.Stack>
                                             </Layout.Stack>
                                         </div>
@@ -624,6 +702,24 @@
             background-position: bottom;
             background-repeat: no-repeat;
         }
+        .api-key-card-image {
+            background-size: cover;
+            background-position: right center;
+            background-repeat: no-repeat;
+            margin: 0;
+            width: 100%;
+            height: 100%;
+            min-height: 160px;
+            border-radius: var(--border-radius-m);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: flex-start;
+            padding: var(--base-16, 16px);
+            @media (min-width: 1200px) {
+                min-height: 187px;
+            }
+        }
         .full-height-card {
             height: 100%;
         }
@@ -635,7 +731,7 @@
             margin-bottom: calc(-1 * var(--base-16, 16px));
             align-self: flex-end;
             background-size: cover;
-            background-position: left bottom;
+            background-position: right bottom;
             background-repeat: no-repeat;
         }
         :global(.full-height-card div) {
@@ -647,6 +743,30 @@
                 width: 250%;
             }
         }
+        .double-width-card .full-height-card {
+            height: 240px;
+            width: 100%;
+
+            @media (max-width: 1024px) {
+                height: 220px;
+            }
+
+            @media (max-width: 768px) {
+                height: auto;
+            }
+        }
+
+        .auth-image {
+            @media (max-width: 1024px) {
+                height: 180px;
+                background-position: center bottom;
+            }
+
+            @media (max-width: 768px) {
+                height: 160px;
+                margin-right: 0;
+            }
+        }
 
         .arrow-icon {
             color: var(--border-neutral-strong);
@@ -656,7 +776,7 @@
             }
         }
         .arrow-icon-discord {
-            align-items: flex-end;
+            align-items: flex-start;
         }
 
         .platform-image {

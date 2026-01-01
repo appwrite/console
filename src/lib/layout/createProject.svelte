@@ -15,10 +15,10 @@
     import { formatCurrency } from '$lib/helpers/numbers';
 
     let {
-        projectName = $bindable(''),
-        id = $bindable(''),
+        projectName = $bindable(),
+        id = $bindable(),
         regions = [],
-        region = $bindable(''),
+        region = $bindable(),
         showTitle = true,
         billingPlan = undefined,
         projects = undefined,

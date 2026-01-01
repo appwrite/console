@@ -8,7 +8,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { database } from './store';
-    import { toLocaleDate } from '$lib/helpers/date';
+    import DualTimeView from '$lib/components/dualTimeView.svelte';
     import { type Models, Query } from '@appwrite.io/console';
     import { Spinner, Table } from '@appwrite.io/pink-svelte';
 
@@ -126,7 +126,9 @@
                 {#each tableItems as table}
                     <Table.Row.Base {root}>
                         <Table.Cell {root}>{table.name}</Table.Cell>
-                        <Table.Cell {root}>{toLocaleDate(table.updatedAt)}</Table.Cell>
+                        <Table.Cell {root}>
+                            <DualTimeView time={table.updatedAt} />
+                        </Table.Cell>
                     </Table.Row.Base>
                 {/each}
             </Table.Root>

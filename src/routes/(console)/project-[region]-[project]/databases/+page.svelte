@@ -2,9 +2,9 @@
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/state';
-    import { Empty, PaginationWithLimit, SearchQuery, ViewSelector } from '$lib/components';
+    import { Empty, PaginationWithLimit } from '$lib/components';
     import { Button } from '$lib/elements/forms';
-    import { Container } from '$lib/layout';
+    import { Container, ResponsiveContainerHeader } from '$lib/layout';
     import type { Models } from '@appwrite.io/console';
 
     import type { PageData } from './$types';
@@ -14,7 +14,7 @@
     import Table from './table.svelte';
     import { registerCommands } from '$lib/commandCenter';
     import { canWriteDatabases } from '$lib/stores/roles';
-    import { Icon, Layout } from '@appwrite.io/pink-svelte';
+    import { Icon } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import EmptySearch from '$lib/components/emptySearch.svelte';
 
@@ -46,25 +46,18 @@
 </script>
 
 <Container>
-    <Layout.Stack direction="row" justifyContent="space-between">
-        <Layout.Stack direction="row" alignItems="center">
-            <SearchQuery placeholder="Search by name or ID" />
-        </Layout.Stack>
-        <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
-            <ViewSelector
-                ui="new"
-                {columns}
-                view={data.view}
-                hideColumns={!data.databases.total}
-                hideView={!data.databases.total} />
-            {#if $canWriteDatabases}
-                <Button event="create_database" on:click={() => (showCreate = true)}>
-                    <Icon icon={IconPlus} slot="start" size="s" />
-                    Create database
-                </Button>
-            {/if}
-        </Layout.Stack>
-    </Layout.Stack>
+    <ResponsiveContainerHeader
+        hasSearch
+        {columns}
+        bind:view={data.view}
+        searchPlaceholder="Search by name or ID">
+        {#if $canWriteDatabases}
+            <Button event="create_database" on:click={() => (showCreate = true)}>
+                <Icon icon={IconPlus} slot="start" size="s" />
+                Create database
+            </Button>
+        {/if}
+    </ResponsiveContainerHeader>
 
     {#if data.databases.total}
         {#if data.view === 'grid'}

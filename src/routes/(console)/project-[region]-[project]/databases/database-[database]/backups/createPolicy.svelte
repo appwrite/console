@@ -20,8 +20,7 @@
         type UserBackupPolicy
     } from '$lib/helpers/backups';
     import { InputNumber } from '$lib/elements/forms/index.js';
-    import { organization } from '$lib/stores/organization';
-    import { BillingPlan } from '$lib/constants';
+    import { currentPlan } from '$lib/stores/organization';
     import { Card, Icon, Layout, Link, Tag, Typography } from '@appwrite.io/pink-svelte';
     import { IconPencil, IconTrash } from '@appwrite.io/pink-icons-svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
@@ -149,7 +148,7 @@
         );
 
         // pre-check the hourly if on pro plan
-        if ($organization.billingPlan === BillingPlan.PRO && isFromBackupsTab) {
+        if ($currentPlan?.backupPolicies === 1 && isFromBackupsTab) {
             presetPolicies.update((all) =>
                 all.map((policy) => {
                     policy.id = ID.unique();
@@ -176,7 +175,7 @@
 </script>
 
 <div class="u-flex-vertical u-gap-16">
-    {#if $organization.billingPlan === BillingPlan.SCALE}
+    {#if $currentPlan?.backupPolicies > 1}
         {#if title || subtitle}
             <div class="body-text-2">
                 {#if title}
@@ -195,7 +194,7 @@
     {/if}
 
     <!-- because we show a set of pre-defined ones -->
-    {#if $organization.billingPlan === BillingPlan.PRO}
+    {#if $currentPlan?.backupPolicies === 1}
         {@const dailyPolicy = $presetPolicies[1]}
 
         {#if isFromBackupsTab}

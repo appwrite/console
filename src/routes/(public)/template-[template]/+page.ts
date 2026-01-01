@@ -1,17 +1,18 @@
 import { BillingPlan } from '$lib/constants.js';
 import { sdk } from '$lib/stores/sdk.js';
-import { ID, type Models } from '@appwrite.io/console';
+import { ID, type Models, Query, Platform } from '@appwrite.io/console';
 import { isCloud } from '$lib/system.js';
 import { error, redirect } from '@sveltejs/kit';
 import type { OrganizationList } from '$lib/stores/organization.js';
 import { redirectTo } from '$routes/store.js';
+import { base } from '$app/paths';
 
 export const load = async ({ parent, url, params }) => {
     const { account } = await parent();
 
     if (!account && !isCloud) {
         redirectTo.set(url.pathname + url.search);
-        redirect(302, '/console/login?redirect=' + url.pathname + url.search);
+        redirect(302, base + '/login?redirect=' + url.pathname + url.search);
     }
 
     if (!url.searchParams.has('type')) {
@@ -38,7 +39,11 @@ export const load = async ({ parent, url, params }) => {
 
     let organizations: Models.TeamList<Record<string, unknown>> | OrganizationList | undefined;
     if (isCloud) {
-        organizations = account?.$id ? await sdk.forConsole.billing.listOrganization() : undefined;
+        organizations = account?.$id
+            ? await sdk.forConsole.billing.listOrganization([
+                  Query.equal('platform', Platform.Appwrite)
+              ])
+            : undefined;
     } else {
         organizations = account?.$id ? await sdk.forConsole.teams.list() : undefined;
     }
@@ -48,7 +53,6 @@ export const load = async ({ parent, url, params }) => {
             ID.unique(),
             'Personal project',
             BillingPlan.FREE,
-            null,
             null
         );
     }

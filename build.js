@@ -28,6 +28,8 @@ async function main() {
     logEnv('MULTI REGION', env?.PUBLIC_APPWRITE_MULTI_REGION);
     logEnv('APPWRITE ENDPOINT', env?.PUBLIC_APPWRITE_ENDPOINT, 'relative');
     logEnv('GROWTH ENDPOINT', env?.PUBLIC_GROWTH_ENDPOINT);
+    logEnv('CONSOLE EMAIL VERIFICATION', env?.PUBLIC_CONSOLE_EMAIL_VERIFICATION);
+    logEnv('CONSOLE MOCK AI SUGGESTIONS', env?.PUBLIC_CONSOLE_MOCK_AI_SUGGESTIONS);
     log();
     logDelimiter();
     await build();

@@ -1,6 +1,7 @@
 <script lang="ts">
-    import InputURL from '$lib/elements/forms/inputURL.svelte';
     import type { Models } from '@appwrite.io/console';
+    import InputURL from '$lib/elements/forms/inputURL.svelte';
+    import { IconLink } from '@appwrite.io/pink-icons-svelte';
 
     export let id: string;
     export let label: string;
@@ -19,4 +20,5 @@
     {nullable}
     {autofocus}
     placeholder="Enter URL"
-    required={column.required} />
+    required={column.required}
+    leadingIcon={!limited ? IconLink : undefined} />

@@ -1,5 +1,6 @@
 <script lang="ts">
     import { Input } from '@appwrite.io/pink-svelte';
+    import type { ComponentType } from 'svelte';
 
     export let label: string;
     export let id: string;
@@ -13,6 +14,7 @@
     export let autofocus = false;
     export let autocomplete = false;
     export let maxlength: number = null;
+    export let leadingIcon: ComponentType | undefined = undefined;
 
     let error: string;
 
@@ -46,6 +48,7 @@
     {maxlength}
     {label}
     {nullable}
+    {leadingIcon}
     type="url"
     autofocus={autofocus || undefined}
     autocomplete={autocomplete ? 'on' : 'off'}

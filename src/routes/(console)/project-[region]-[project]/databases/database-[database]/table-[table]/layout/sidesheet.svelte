@@ -1,18 +1,25 @@
 <script lang="ts">
     import type { Snippet } from 'svelte';
-    import { Button, Form } from '$lib/elements/forms';
-    import { Badge, Divider, Layout, Sheet, Tag, Typography } from '@appwrite.io/pink-svelte';
     import { Copy } from '$lib/components';
+    import { writable } from 'svelte/store';
+    import { Button, Form } from '$lib/elements/forms';
+    import { isTabletViewport } from '$lib/stores/viewport';
+    import { Badge, Divider, Layout, Sheet, Tag, Typography } from '@appwrite.io/pink-svelte';
+    import type { HTMLAttributes } from 'svelte/elements';
+    import { beforeNavigate } from '$app/navigation';
 
     let {
         show = $bindable(false),
         title,
         closeOnBlur = false,
         submit,
+        cancel,
         children = null,
         footer = null,
         titleBadge = null,
-        topAction = null
+        topAction = null,
+        topEndActions = null,
+        ...restProps
     }: {
         show: boolean;
         title: string;
@@ -34,14 +41,28 @@
                   onClick?: () => boolean | void | Promise<boolean | void>;
               }
             | undefined;
+        cancel?:
+            | {
+                  text?: string;
+                  disabled?: boolean;
+                  onClick?: () => void;
+              }
+            | undefined;
         children?: Snippet;
-        footer?: Snippet | null;
-    } = $props();
+        footer?: Snippet;
+        topEndActions?: Snippet;
+    } & HTMLAttributes<HTMLDivElement> = $props();
+
+    let form: Form;
+    let submitting = $state(writable(false));
 
     let copyText = $state(undefined);
+    beforeNavigate(() => {
+        show = false;
+    });
 </script>
 
-<div class="sheet-container">
+<div class="sheet-container" data-side-sheet-visible={show} {...restProps}>
     <Sheet bind:open={show} {closeOnBlur}>
         <div slot="header" style:width="100%">
             <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
@@ -69,11 +90,19 @@
                         {/if}
                     {/if}
                 </Layout.Stack>
+
+                {#if topEndActions}
+                    <Layout.Stack direction="row" gap="xs" alignItems="center" inline>
+                        {@render topEndActions()}
+                    </Layout.Stack>
+                {/if}
             </Layout.Stack>
         </div>
 
         <Layout.Stack direction="column" justifyContent="space-evenly">
             <Form
+                bind:this={form}
+                bind:isSubmitting={submitting}
                 onSubmit={async () => {
                     try {
                         const keepOpen = await submit?.onClick?.();
@@ -87,32 +116,49 @@
                 <Layout.Stack gap="xl" class="sheet-content">
                     {@render children?.()}
                 </Layout.Stack>
-
-                {#if submit}
-                    <div class="sheet-footer">
-                        <Layout.Stack gap="l">
-                            <Divider />
-
-                            <div class="sheet-footer-actions">
-                                <Layout.Stack
-                                    gap="m"
-                                    direction="row"
-                                    justifyContent="flex-end"
-                                    alignItems="center">
-                                    {#if footer}
-                                        {@render footer?.()}
-                                    {/if}
-                                    <Button size="s" secondary on:click={() => (show = false)}
-                                        >Cancel</Button>
-                                    <Button size="s" submit disabled={submit.disabled}>
-                                        {submit.text}
-                                    </Button>
-                                </Layout.Stack>
-                            </div>
-                        </Layout.Stack>
-                    </div>
-                {/if}
             </Form>
+
+            {#if submit}
+                <div class="sheet-footer">
+                    <Layout.Stack gap="l">
+                        <Divider />
+
+                        <div class="sheet-footer-actions">
+                            <Layout.Stack
+                                gap="m"
+                                direction="row"
+                                justifyContent="flex-end"
+                                alignItems="center">
+                                {#if footer}
+                                    {@render footer?.()}
+                                {/if}
+
+                                <Button
+                                    size="s"
+                                    secondary
+                                    disabled={cancel?.disabled}
+                                    on:click={() => {
+                                        if (cancel?.onClick) {
+                                            cancel.onClick();
+                                        } else {
+                                            show = false;
+                                        }
+                                    }}>{cancel?.text ?? 'Cancel'}</Button>
+
+                                <Button
+                                    size="s"
+                                    submit
+                                    disabled={submit.disabled || $submitting}
+                                    forceShowLoader={$submitting && $isTabletViewport}
+                                    submissionLoader={$submitting && $isTabletViewport}
+                                    on:click={() => form?.triggerSubmit()}>
+                                    {submit.text}
+                                </Button>
+                            </Layout.Stack>
+                        </div>
+                    </Layout.Stack>
+                </div>
+            {/if}
         </Layout.Stack>
     </Sheet>
 </div>
@@ -131,6 +177,14 @@
         & :global(.sheet-content) {
             // overflow-y: auto;
             padding-bottom: 5rem;
+
+            @media (max-width: 768px) {
+                /*
+                 * different mobile browsers handle bottom spaces differently,
+                 * therefore, having extra bottom space doesn't hurt anyone imo!
+                 */
+                padding-bottom: 15rem;
+            }
         }
     }
 
@@ -140,6 +194,10 @@
         bottom: 0;
         position: absolute;
         background: var(--bgcolor-neutral-primary);
+
+        @media (max-width: 768px) {
+            position: fixed;
+        }
 
         & .sheet-footer-actions {
             padding-inline: var(--space-8);

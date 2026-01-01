@@ -55,7 +55,7 @@
     async function handleSubmit() {
         isButtonDisabled = true;
         try {
-            if (paymentMethodId === null) {
+            if (paymentMethodId === null || paymentMethodId === '$new') {
                 try {
                     if (showState && !state) {
                         throw Error('Please select a state');
@@ -65,13 +65,17 @@
                         method = await setPaymentMethod(paymentMethod.id, name, state);
                     } else {
                         const card = await submitStripeCard(name, $organization.$id);
-                        if (card && Object.hasOwn(card, 'id')) {
+                        // When Stripe returns an expanded PaymentMethod for US cards, we need state.
+                        if (Object.hasOwn(card, 'id') && (card as PaymentMethod)?.card) {
                             if ((card as PaymentMethod).card?.country === 'US') {
                                 paymentMethod = card as PaymentMethod;
                                 showState = true;
                                 return;
                             }
-                        } else if (card && Object.hasOwn(card, '$id')) {
+                        }
+
+                        // Otherwise, we expect an Appwrite PaymentMethodData with `$id`.
+                        if (Object.hasOwn(card, '$id')) {
                             method = card as PaymentMethodData;
                         }
                     }
@@ -143,7 +147,6 @@
     onSubmit={handleSubmit}
     size="big"
     title="Retry payment">
-    <!-- TODO: format currency -->
     <p class="text">
         Your payment of <span class="inline-tag">{formatCurrency(invoice.grossAmount)}</span> due on {toLocaleDate(
             invoice.dueAt

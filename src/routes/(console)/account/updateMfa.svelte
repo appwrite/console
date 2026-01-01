@@ -12,6 +12,7 @@
     import { factors } from './store';
     import MfaRecoveryCodes from './mfaRecoveryCodes.svelte';
     import type { Models } from '@appwrite.io/console';
+    import { AuthenticationFactor } from '@appwrite.io/console';
     import MfaRegenerateCodes from './mfaRegenerateCodes.svelte';
     import { page } from '$app/state';
     import { onMount } from 'svelte';
@@ -56,15 +57,11 @@
         const userId = searchParams.get('userId');
         const secret = searchParams.get('secret');
 
-        history.replaceState(null, '', cleanUrl);
-
         if (userId && secret) {
+            history.replaceState(null, '', cleanUrl);
             try {
                 await sdk.forConsole.account.updateVerification({ userId, secret });
-                addNotification({
-                    message: 'Email verified successfully',
-                    type: 'success'
-                });
+                // Don't show notification here - the modal will handle it
                 await Promise.all([
                     invalidate(Dependencies.ACCOUNT),
                     invalidate(Dependencies.FACTORS)
@@ -81,7 +78,20 @@
     async function updateMfa() {
         try {
             await sdk.forConsole.account.updateMFA({ mfa: !$user.mfa });
-            await invalidate(Dependencies.ACCOUNT);
+
+            if (!$user.mfa && $user.emailVerification && !$factors.email) {
+                // Automatically set up email MFA when enabling MFA if the user has a verified email
+                // This provides a fallback authentication method without requiring user interaction
+                try {
+                    await sdk.forConsole.account.createMFAChallenge({
+                        factor: AuthenticationFactor.Email
+                    });
+                } catch (emailError) {
+                    // Silently ignore - email MFA is optional and shouldn't block MFA enablement
+                }
+            }
+
+            await Promise.all([invalidate(Dependencies.ACCOUNT), invalidate(Dependencies.FACTORS)]);
             addNotification({
                 message: `Multi-factor authentication has been ${$user.mfa ? 'enabled' : 'disabled'}`,
                 type: 'success'
@@ -280,6 +290,7 @@
                                         <Button
                                             secondary
                                             class="recovery-codes-button"
+                                            disabled={enabledMethods.length === 0}
                                             on:click={() => (showRegenerateRecoveryCodes = true)}>
                                             Regenerate
                                         </Button>
@@ -287,6 +298,7 @@
                                         <Button
                                             secondary
                                             class="recovery-codes-button"
+                                            disabled={enabledMethods.length === 0}
                                             on:click={createRecoveryCodes}>View</Button>
                                     {/if}
                                 </Layout.Stack>

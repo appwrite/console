@@ -1,8 +1,10 @@
 <script lang="ts">
     import { Input } from '@appwrite.io/pink-svelte';
+    import type { ComponentType } from 'svelte';
 
     export let value = '';
     export let autofocus = true;
+    export let leadingIcon: ComponentType | undefined = undefined;
 
     let error = false;
 
@@ -10,11 +12,7 @@
 
     const handleInvalid = (event: Event & { currentTarget: EventTarget & HTMLInputElement }) => {
         event.preventDefault();
-
-        if (event.currentTarget.validity.patternMismatch) {
-            error = true;
-            return;
-        }
+        error = true; // show on any error
     };
 
     $: if (value) {
@@ -25,6 +23,7 @@
 <Input.Text
     {pattern}
     {autofocus}
+    {leadingIcon}
     id="id"
     placeholder="Enter ID"
     maxlength={36}

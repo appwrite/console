@@ -5,6 +5,7 @@ import { Query } from '@appwrite.io/console';
 import { toLocaleDateTime } from '$lib/helpers/date';
 import { derived, get, writable } from 'svelte/store';
 import type { Column, ColumnType } from '$lib/helpers/types';
+import { isSpatialType } from '$routes/(console)/project-[region]-[project]/databases/database-[database]/table-[table]/rows/store';
 
 export type TagValue = {
     tag: string;
@@ -13,7 +14,7 @@ export type TagValue = {
 
 export type Operator = {
     toTag: (column: string, input?: string | number | string[], type?: string) => TagValue;
-    toQuery: (column: string, input?: string | number | string[]) => string;
+    toQuery: (column: string, input?: string | number | string[], distance?: number) => string;
     types: ColumnType[];
     hideInput?: boolean;
 };
@@ -35,13 +36,14 @@ function initQueries(initialValue = new Map<TagValue, string>()) {
         operator: Operator;
         column: Column;
         value: string | number | string[];
+        distance?: number;
     };
 
-    function addFilter({ column, operator, value }: AddFilterArgs) {
+    function addFilter({ column, operator, value, distance }: AddFilterArgs) {
         queries.update((map) => {
             map.set(
                 operator.toTag(column.title, value, column?.type),
-                operator.toQuery(column.id, value)
+                operator.toQuery(column.id, value, distance)
             );
             return map;
         });
@@ -101,15 +103,27 @@ export function addFilter(
     columnId: string,
     operatorKey: string,
     value: any, // We cast to any to not cause type errors in the input components
-    arrayValues: string[] = []
+    arrayValues: string[] = [],
+    distance?: number
 ) {
     const operator = operatorKey ? operators[operatorKey] : null;
     const column = columns.find((c) => c.id === columnId) as Column;
     if (!column || !operator) return;
+
     if (column.array) {
-        queries.addFilter({ column, operator, value: arrayValues });
+        queries.addFilter({ column, operator, value: arrayValues, distance });
     } else {
-        queries.addFilter({ column, operator, value: value ?? '' });
+        const isSpatialArrayWrappingRequired =
+            isSpatialType(column) &&
+            [
+                ValidOperators.Contains,
+                ValidOperators.Equal,
+                ValidOperators.NotEqual,
+                ValidOperators.NotContains
+            ].includes(operatorKey as ValidOperators);
+        const preparedValue =
+            isSpatialArrayWrappingRequired && value != null ? [value] : (value ?? '');
+        queries.addFilter({ column, operator, value: preparedValue, distance });
     }
 }
 
@@ -124,7 +138,20 @@ export enum ValidOperators {
     NotEqual = 'not equal',
     IsNotNull = 'is not null',
     IsNull = 'is null',
-    Contains = 'contains'
+    Contains = 'contains',
+    NotContains = 'not contains',
+    Crosses = 'crosses',
+    NotCrosses = 'not crosses',
+    DistanceEqual = 'distance equal',
+    DistanceNotEqual = 'distance not equal',
+    DistanceGreaterThan = 'distance greater than',
+    DistanceLessThan = 'distance less than',
+    Intersects = 'intersects',
+    NotIntersects = 'not intersects',
+    Overlaps = 'overlaps',
+    NotOverlaps = 'not overlaps',
+    Touches = 'touches',
+    NotTouches = 'not touches'
 }
 
 export enum ValidTypes {
@@ -134,13 +161,16 @@ export enum ValidTypes {
     Boolean = 'boolean',
     Datetime = 'datetime',
     Relationship = 'relationship',
-    Enum = 'enum'
+    Enum = 'enum',
+    Point = 'point',
+    Line = 'linestring',
+    Polygon = 'polygon'
 }
 
 const operatorsDefault = new Map<
     ValidOperators,
     {
-        query: (col: string, input: string | number | string[]) => string;
+        query: (col: string, input: string | number | string[], distance?: number) => string;
         types: ColumnType[];
         hideInput?: boolean;
     }
@@ -184,7 +214,10 @@ const operatorsDefault = new Map<
                 ValidTypes.Integer,
                 ValidTypes.Double,
                 ValidTypes.Boolean,
-                ValidTypes.Enum
+                ValidTypes.Enum,
+                ValidTypes.Point,
+                ValidTypes.Line,
+                ValidTypes.Polygon
             ]
         }
     ],
@@ -192,7 +225,15 @@ const operatorsDefault = new Map<
         ValidOperators.NotEqual,
         {
             query: Query.notEqual,
-            types: [ValidTypes.String, ValidTypes.Integer, ValidTypes.Double, ValidTypes.Boolean]
+            types: [
+                ValidTypes.String,
+                ValidTypes.Integer,
+                ValidTypes.Double,
+                ValidTypes.Boolean,
+                ValidTypes.Point,
+                ValidTypes.Line,
+                ValidTypes.Polygon
+            ]
         }
     ],
     [
@@ -205,7 +246,10 @@ const operatorsDefault = new Map<
                 ValidTypes.Double,
                 ValidTypes.Boolean,
                 ValidTypes.Datetime,
-                ValidTypes.Relationship
+                ValidTypes.Relationship,
+                ValidTypes.Point,
+                ValidTypes.Line,
+                ValidTypes.Polygon
             ],
             hideInput: true
         }
@@ -220,7 +264,10 @@ const operatorsDefault = new Map<
                 ValidTypes.Double,
                 ValidTypes.Boolean,
                 ValidTypes.Datetime,
-                ValidTypes.Relationship
+                ValidTypes.Relationship,
+                ValidTypes.Point,
+                ValidTypes.Line,
+                ValidTypes.Polygon
             ],
             hideInput: true
         }
@@ -235,8 +282,102 @@ const operatorsDefault = new Map<
                 ValidTypes.Double,
                 ValidTypes.Boolean,
                 ValidTypes.Datetime,
-                ValidTypes.Enum
+                ValidTypes.Enum,
+                ValidTypes.Point,
+                ValidTypes.Line,
+                ValidTypes.Polygon
             ]
+        }
+    ],
+    [
+        ValidOperators.NotContains,
+        {
+            query: Query.contains,
+            types: [ValidTypes.Point, ValidTypes.Line, ValidTypes.Polygon]
+        }
+    ],
+    [
+        ValidOperators.Crosses,
+        {
+            query: Query.crosses,
+            types: [ValidTypes.Point, ValidTypes.Line, ValidTypes.Polygon]
+        }
+    ],
+    [
+        ValidOperators.NotCrosses,
+        {
+            query: Query.notCrosses,
+            types: [ValidTypes.Point, ValidTypes.Line, ValidTypes.Polygon]
+        }
+    ],
+    [
+        ValidOperators.DistanceEqual,
+        {
+            query: Query.distanceEqual,
+            types: [ValidTypes.Point]
+        }
+    ],
+    [
+        ValidOperators.DistanceNotEqual,
+        {
+            query: Query.distanceNotEqual,
+            types: [ValidTypes.Point]
+        }
+    ],
+    [
+        ValidOperators.DistanceGreaterThan,
+        {
+            query: Query.distanceGreaterThan,
+            types: [ValidTypes.Point]
+        }
+    ],
+    [
+        ValidOperators.DistanceLessThan,
+        {
+            query: Query.distanceLessThan,
+            types: [ValidTypes.Point]
+        }
+    ],
+    [
+        ValidOperators.Intersects,
+        {
+            query: Query.intersects,
+            types: [ValidTypes.Point, ValidTypes.Line, ValidTypes.Polygon]
+        }
+    ],
+    [
+        ValidOperators.NotIntersects,
+        {
+            query: Query.notIntersects,
+            types: [ValidTypes.Point, ValidTypes.Line, ValidTypes.Polygon]
+        }
+    ],
+    [
+        ValidOperators.Overlaps,
+        {
+            query: Query.overlaps,
+            types: [ValidTypes.Point, ValidTypes.Line, ValidTypes.Polygon]
+        }
+    ],
+    [
+        ValidOperators.NotOverlaps,
+        {
+            query: Query.notOverlaps,
+            types: [ValidTypes.Point, ValidTypes.Line, ValidTypes.Polygon]
+        }
+    ],
+    [
+        ValidOperators.Touches,
+        {
+            query: Query.touches,
+            types: [ValidTypes.Point, ValidTypes.Line, ValidTypes.Polygon]
+        }
+    ],
+    [
+        ValidOperators.NotTouches,
+        {
+            query: Query.notTouches,
+            types: [ValidTypes.Point, ValidTypes.Line, ValidTypes.Polygon]
         }
     ]
 ]);

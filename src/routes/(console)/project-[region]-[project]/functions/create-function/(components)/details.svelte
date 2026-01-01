@@ -11,7 +11,7 @@
     import type { ComponentType } from 'svelte';
 
     export let name: string;
-    export let id: string;
+    export let id: string | null;
     export let entrypoint: string;
     export let showEntrypoint = false;
     export let runtime: string;

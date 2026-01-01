@@ -1,5 +1,6 @@
 <script lang="ts">
     import { Input } from '@appwrite.io/pink-svelte';
+    import type { ComponentType } from 'svelte';
 
     export let label: string = null;
     export let id: string;
@@ -15,6 +16,7 @@
     export let max: number = null;
     export let step: number | 'any' = 1;
     export let helper: string = undefined;
+    export let leadingIcon: ComponentType | undefined = undefined;
 
     let error: string;
 
@@ -56,6 +58,7 @@
     {label}
     {step}
     {nullable}
+    {leadingIcon}
     bind:value
     autofocus={autofocus || undefined}
     helper={error || helper}

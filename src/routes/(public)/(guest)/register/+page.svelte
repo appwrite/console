@@ -20,11 +20,34 @@
     import { redirectTo } from '$routes/store';
     import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
     import { Layout, Link, Typography } from '@appwrite.io/pink-svelte';
+    import { getRandomTestimonial } from '$lib/data/testimonials';
 
     export let data;
 
     let name: string, mail: string, pass: string, disabled: boolean;
     let terms = false;
+
+    const randomTestimonial = getRandomTestimonial();
+    const testimonialCampaign = {
+        $id: 'testimonial-signup',
+        template: 'review',
+        title: randomTestimonial.headline,
+        description: 'Join thousands of developers building amazing apps with Appwrite',
+        reviews: [
+            {
+                name: randomTestimonial.name,
+                image: randomTestimonial.avatar,
+                description: randomTestimonial.title,
+                review: randomTestimonial.blurb
+            }
+        ]
+    };
+
+    trackEvent(Submit.TestimonialView, {
+        testimonial_id: randomTestimonial.id,
+        testimonial_name: randomTestimonial.name,
+        testimonial_company: randomTestimonial.title
+    });
 
     async function register() {
         try {
@@ -43,7 +66,9 @@
             trackEvent(Submit.AccountCreate, {
                 campaign_name: data?.couponData?.code,
                 email: mail,
-                name: name
+                name: name,
+                testimonial_id: randomTestimonial.id,
+                testimonial_name: randomTestimonial.name
             });
 
             if (data?.couponData?.code) {
@@ -81,9 +106,17 @@
     }
 
     function onGithubLogin() {
+        let successUrl = window.location.origin;
+
+        if (page.url.searchParams.has('code')) {
+            successUrl += `?code=${page.url.searchParams.get('code')}`;
+        } else if (page.url.searchParams.has('campaign')) {
+            successUrl += `?campaign=${page.url.searchParams.get('campaign')}`;
+        }
+
         sdk.forConsole.account.createOAuth2Session({
             provider: OAuthProvider.Github,
-            success: window.location.origin,
+            success: successUrl,
             failure: window.location.origin,
             scopes: ['read:user', 'user:email']
         });
@@ -94,17 +127,28 @@
     <title>Sign up - Appwrite</title>
 </svelte:head>
 
-<Unauthenticated coupon={data?.couponData} campaign={data?.campaign}>
+<Unauthenticated coupon={data?.couponData} campaign={data?.campaign || testimonialCampaign}>
     <svelte:fragment slot="title">Sign up</svelte:fragment>
     <svelte:fragment>
         <Form onSubmit={register}>
             <Layout.Stack>
+                {#if isCloud}
+                    <div style:margin-bottom="var(--gap-s, 8px)">
+                        <Button secondary fullWidth on:click={onGithubLogin} {disabled}>
+                            <span class="icon-github" aria-hidden="true"></span>
+                            <span class="text">Sign up with GitHub</span>
+                        </Button>
+                    </div>
+                    <span class="with-separators eyebrow-heading-3">or</span>
+                {/if}
+
                 <InputText
                     id="name"
                     label="Name"
                     placeholder="Your name"
                     autofocus
                     required
+                    autocomplete
                     bind:value={name} />
                 <InputEmail
                     id="email"
@@ -133,18 +177,6 @@
                     >.</InputChoice>
 
                 <Button fullWidth submit disabled={disabled || !terms}>Sign up</Button>
-
-                {#if isCloud}
-                    <span class="with-separators eyebrow-heading-3">or</span>
-                    <Button
-                        secondary
-                        fullWidth
-                        on:click={onGithubLogin}
-                        disabled={disabled || !terms}>
-                        <span class="icon-github" aria-hidden="true"></span>
-                        <span class="text">Sign up with GitHub</span>
-                    </Button>
-                {/if}
             </Layout.Stack>
         </Form>
     </svelte:fragment>

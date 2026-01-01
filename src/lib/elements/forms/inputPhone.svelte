@@ -1,5 +1,6 @@
 <script lang="ts">
     import { Input } from '@appwrite.io/pink-svelte';
+    import type { ComponentType } from 'svelte';
 
     export let label: string = null;
     export let id: string;
@@ -14,6 +15,7 @@
     export let minlength: number = null;
     export let maxlength: number = 15;
     export let nullable = false;
+    export let leadingIcon: ComponentType | undefined = undefined;
 
     const pattern = String.raw`^\+[1-9]\d{1,14}$`;
 
@@ -55,6 +57,7 @@
     {label}
     {nullable}
     {pattern}
+    {leadingIcon}
     on:input
     on:invalid={handleInvalid}
     type="text"

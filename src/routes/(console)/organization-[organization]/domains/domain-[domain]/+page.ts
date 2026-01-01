@@ -14,13 +14,21 @@ export const load = async ({ parent, depends, url, route }) => {
     const offset = pageToOffset(page, limit);
     const { domain } = await parent();
 
+    const records = await sdk.forConsole.domains.listRecords({
+        domainId: domain.$id,
+        queries: [Query.offset(offset), Query.limit(limit)]
+    });
+
+    records.dnsRecords = records.dnsRecords.sort((a, b) => {
+        return (
+            Number(b.lock) - Number(a.lock) || Date.parse(b.$createdAt) - Date.parse(a.$createdAt)
+        );
+    });
+
     return {
-        domain,
-        recordList: await sdk.forConsole.domains.listRecords({
-            domainId: domain.$id,
-            queries: [Query.offset(offset), Query.limit(limit)]
-        }),
+        limit,
         offset,
-        limit
+        domain,
+        recordList: records
     };
 };

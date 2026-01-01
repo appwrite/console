@@ -86,10 +86,11 @@
                     </svelte:fragment>
                 </Alert.Inline>
             {:else}
-                <Alert.Inline status="info" dismissible on:dismiss={() => (showAlert = false)}>
-                    Some configuration changes are not live yet. Your function is redeploying —
-                    changes will be applied once the build is complete.
-                </Alert.Inline>
+                <Alert.Inline
+                    status="info"
+                    dismissible
+                    on:dismiss={() => (showAlert = false)}
+                    title="Some configuration changes are not live yet. Your function is redeploying — changes will be applied once the build is complete." />
             {/if}
         {/if}
         <Layout.Stack gap="xxxl">
@@ -112,7 +113,7 @@
                                                 placement={'bottom'}>
                                                 <div>
                                                     <ActionMenu.Item.Button
-                                                        trailingIcon={IconRefresh}
+                                                        leadingIcon={IconRefresh}
                                                         disabled={activeDeployment.sourceSize === 0}
                                                         on:click={() => {
                                                             selectedDeployment = activeDeployment;
@@ -133,7 +134,7 @@
                                             deployment={activeDeployment}
                                             {toggle} />
                                         <ActionMenu.Item.Anchor
-                                            trailingIcon={IconTerminal}
+                                            leadingIcon={IconTerminal}
                                             href={`${base}/project-${page.params.region}-${page.params.project}/functions/function-${page.params.function}/deployment-${activeDeployment.$id}`}>
                                             Build logs
                                         </ActionMenu.Item.Anchor>

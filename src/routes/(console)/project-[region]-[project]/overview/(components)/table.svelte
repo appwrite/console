@@ -2,26 +2,32 @@
     import { base } from '$app/paths';
     import { page } from '$app/state';
     import { goto } from '$app/navigation';
-    import { Empty } from '$lib/components';
-    import { Button } from '$lib/elements/forms';
+    import { Empty, MultiSelectionTable } from '$lib/components';
     import { canWriteKeys } from '$lib/stores/roles';
     import type { Models } from '@appwrite.io/console';
-    import { diffDays, toLocaleDate, toLocaleDateTime } from '$lib/helpers/date';
+    import { diffDays } from '$lib/helpers/date';
+    import DualTimeView from '$lib/components/dualTimeView.svelte';
     import { devKeyColumns, keyColumns, showDevKeysCreateModal } from '../store';
-    import { Badge, FloatingActionBar, Layout, Table } from '@appwrite.io/pink-svelte';
+    import { Badge, Layout, Table } from '@appwrite.io/pink-svelte';
     import DeleteBatch from './deleteBatch.svelte';
     import { capitalize } from '$lib/helpers/string';
     import { getEffectiveScopes } from '../api-keys/scopes.svelte';
 
-    export let keyType: 'api' | 'dev' = 'api';
-    export let keys: Models.KeyList | Models.DevKeyList;
+    let {
+        keyType = 'api',
+        keys
+    }: {
+        keyType?: 'api' | 'dev';
+        keys: Models.KeyList | Models.DevKeyList;
+    } = $props();
 
-    let showDeleteModal = false;
-    let selectedRows: string[] = [];
+    let selectedKeys = $state([]);
+    let showDeleteModal = $state(false);
 
     const isApiKey = keyType === 'api';
     const label = isApiKey ? 'API' : 'dev';
     const slug = isApiKey ? 'api-keys' : 'dev-keys';
+    const columns = isApiKey ? $keyColumns : $devKeyColumns;
 
     function getApiKeyScopeCount(key: Models.Key | Models.DevKey) {
         const apiKey = key as Models.Key;
@@ -52,47 +58,65 @@
         else
             return 'Dev keys allow bypassing rate limits and CORS errors in your development environment.';
     }
-
-    const columns = isApiKey ? $keyColumns : $devKeyColumns;
 </script>
 
 {#if keys.total}
-    <Table.Root let:root {columns} bind:selectedRows allowSelection={$canWriteKeys}>
-        <svelte:fragment slot="header" let:root>
+    <MultiSelectionTable
+        {columns}
+        confirmDeletion={false}
+        allowSelection={$canWriteKeys}
+        showSuccessNotification={false}
+        resource={`${capitalize(label)} key`}
+        onDelete={(selectedRows) => {
+            showDeleteModal = true;
+            selectedKeys = selectedRows;
+        }}>
+        {#snippet header(root)}
             {#each columns as column}
                 <Table.Header.Cell column={column.id} {root}>{column.title}</Table.Header.Cell>
             {/each}
-        </svelte:fragment>
-        {#each getKeys() as key (key.$id)}
-            <Table.Row.Link id={key.$id} href={`${slug}/${key.$id}`} {root}>
-                <Table.Cell {root}>
-                    {key.name}
-                </Table.Cell>
-                <Table.Cell {root}>
-                    {key.accessedAt ? toLocaleDate(key.accessedAt) : 'never'}
-                </Table.Cell>
-                <Table.Cell {root}>
-                    {@const expiration = getExpiryDetails(key)}
-                    <Layout.Stack gap="s" direction="row">
-                        {key.expire ? toLocaleDateTime(key.expire) : 'never'}
+        {/snippet}
 
-                        {#if expiration.status}
-                            <Badge
-                                size="s"
-                                variant="secondary"
-                                type={expiration.status}
-                                content={expiration.message} />
-                        {/if}
-                    </Layout.Stack>
-                </Table.Cell>
-                {#if isApiKey}
+        {#snippet children(root)}
+            {#each getKeys() as key (key.$id)}
+                <Table.Row.Link id={key.$id} href={`${slug}/${key.$id}`} {root}>
                     <Table.Cell {root}>
-                        {getApiKeyScopeCount(key)} Scopes
+                        {key.name}
                     </Table.Cell>
-                {/if}
-            </Table.Row.Link>
-        {/each}
-    </Table.Root>
+                    <Table.Cell {root}>
+                        {#if key.accessedAt}
+                            <DualTimeView time={key.accessedAt} />
+                        {:else}
+                            never
+                        {/if}
+                    </Table.Cell>
+                    <Table.Cell {root}>
+                        {@const expiration = getExpiryDetails(key)}
+                        <Layout.Stack gap="s" direction="row">
+                            {#if key.expire}
+                                <DualTimeView time={key.expire} />
+                            {:else}
+                                never
+                            {/if}
+
+                            {#if expiration.status}
+                                <Badge
+                                    size="s"
+                                    variant="secondary"
+                                    type={expiration.status}
+                                    content={expiration.message} />
+                            {/if}
+                        </Layout.Stack>
+                    </Table.Cell>
+                    {#if isApiKey}
+                        <Table.Cell {root}>
+                            {getApiKeyScopeCount(key)} Scopes
+                        </Table.Cell>
+                    {/if}
+                </Table.Row.Link>
+            {/each}
+        {/snippet}
+    </MultiSelectionTable>
 {:else}
     <Empty
         single
@@ -100,9 +124,9 @@
         href="https://appwrite.io/docs/advanced/platform/{slug}"
         target="{label} key"
         description={getDescription()}
-        on:click={() => {
+        on:click={async () => {
             if (isApiKey) {
-                goto(
+                await goto(
                     `${base}/project-${page.params.region}-${page.params.project}/overview/${slug}/create`
                 );
             } else {
@@ -111,21 +135,4 @@
         }} />
 {/if}
 
-{#if selectedRows.length > 0}
-    <FloatingActionBar>
-        <svelte:fragment slot="start">
-            <Badge content={selectedRows.length.toString()} />
-            <span>
-                {capitalize(label)}
-                {selectedRows.length > 1 ? 'keys' : 'key'}
-                selected
-            </span>
-        </svelte:fragment>
-        <svelte:fragment slot="end">
-            <Button text on:click={() => (selectedRows = [])}>Cancel</Button>
-            <Button secondary on:click={() => (showDeleteModal = true)}>Delete</Button>
-        </svelte:fragment>
-    </FloatingActionBar>
-{/if}
-
-<DeleteBatch {keyType} bind:keyIds={selectedRows} bind:showDelete={showDeleteModal} />
+<DeleteBatch {keyType} bind:keyIds={selectedKeys} bind:showDelete={showDeleteModal} />

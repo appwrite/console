@@ -9,11 +9,12 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { IndexType } from '@appwrite.io/console';
-    import { isRelationship } from '../rows/store';
+    import { isRelationship, isSpatialType } from '../rows/store';
     import { table, indexes } from '../store';
     import { Icon, Layout } from '@appwrite.io/pink-svelte';
-    import { IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
+    import { IconCalendar, IconFingerPrint, IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
+    import { columnOptions as baseColumnOptions } from '../columns/store';
 
     let {
         showCreateIndex = $bindable(false),
@@ -26,22 +27,55 @@
     const databaseId = page.params.database;
 
     let key = $state('');
-    let types = [
-        { value: IndexType.Key, label: 'Key' },
-        { value: IndexType.Unique, label: 'Unique' },
-        { value: IndexType.Fulltext, label: 'Fulltext' }
-    ];
 
-    let selectedType = $state(IndexType.Key);
+    let selectedType = $state<IndexType>(IndexType.Key);
 
-    let columnOptions = $table.columns
-        .filter((column) => !isRelationship(column))
-        .map((column) => ({
-            value: column.key,
-            label: column.key
-        }));
+    let columnOptions = $derived(
+        $table.columns
+            .filter((column) => {
+                if (selectedType === IndexType.Spatial) {
+                    return isSpatialType(column); // keep only spatial
+                }
+                return !isRelationship(column) && !isSpatialType(column); // keep non-relationship and non-spatial
+            })
+            .map((column) => ({
+                value: column.key,
+                label: column.key,
+                leadingIcon: baseColumnOptions.find((option) => option.type === column.type)?.icon
+            }))
+    );
 
     let columnList = $state([{ value: '', order: '', length: null }]);
+
+    const types = [
+        { value: IndexType.Key, label: 'Key' },
+        { value: IndexType.Unique, label: 'Unique' },
+        { value: IndexType.Fulltext, label: 'Fulltext' },
+        { value: IndexType.Spatial, label: 'Spatial' }
+    ];
+
+    // order options derived from selected type
+    let orderOptions = $derived.by(() =>
+        selectedType === IndexType.Spatial
+            ? [
+                  { value: 'ASC', label: 'ASC' },
+                  { value: 'DESC', label: 'DESC' },
+                  { value: null, label: 'NONE' }
+              ]
+            : [
+                  { value: 'ASC', label: 'ASC' },
+                  { value: 'DESC', label: 'DESC' }
+              ]
+    );
+
+    // spatial type selected -> reset column list to single empty column
+    // and the column already is not spatial type
+    $effect(() => {
+        const firstColumn = $table.columns.find((col) => col.key === columnList.at(0)?.value);
+        if (selectedType === IndexType.Spatial && firstColumn && !isSpatialType(firstColumn)) {
+            columnList = [{ value: '', order: null, length: null }];
+        }
+    });
 
     function generateIndexKey() {
         let indexKeys = $indexes.map((index) => index.key);
@@ -55,29 +89,41 @@
     }
 
     function initialize() {
+        const column = $table.columns.filter((column) => externalColumnKey === column.key);
+        const isSpatial = column.length && isSpatialType(column[0]);
+        const order = isSpatial ? null : 'ASC';
+        selectedType = isSpatial ? IndexType.Spatial : IndexType.Key;
         columnList = externalColumnKey
-            ? [{ value: externalColumnKey, order: 'ASC', length: null }]
-            : [{ value: '', order: 'ASC', length: null }];
-        selectedType = IndexType.Key;
+            ? [{ value: externalColumnKey, order, length: null }]
+            : [{ value: '', order, length: null }];
         key = `index_${$indexes.length + 1}`;
     }
 
-    const addColumnDisabled = $derived(!columnList.at(-1)?.value || !columnList.at(-1)?.order);
+    const addColumnDisabled = $derived(
+        selectedType === IndexType.Spatial ||
+            !columnList.at(-1)?.value ||
+            (!columnList.at(-1)?.order && columnList.at(-1)?.order !== null)
+    );
 
     const isOnIndexesPage = $derived(page.route.id?.endsWith('/indexes'));
     const navigatorPathToIndexes = $derived(
         `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/table-${$table?.$id}/indexes`
     );
 
+    let initializedForOpen = $state(false);
     $effect(() => {
-        if (showCreateIndex) {
+        if (showCreateIndex && !initializedForOpen) {
             initialize();
             key = generateIndexKey();
+            initializedForOpen = true;
+        }
+        if (!showCreateIndex && initializedForOpen) {
+            initializedForOpen = false;
         }
     });
 
     export async function create() {
-        if (!(key && selectedType && !addColumnDisabled)) {
+        if (!key || !selectedType || (selectedType !== IndexType.Spatial && addColumnDisabled)) {
             addNotification({
                 type: 'error',
                 message: 'Selected column key or type invalid'
@@ -86,14 +132,15 @@
         }
 
         try {
+            const orders = columnList.map((a) => a.order).filter((order) => order !== null);
             await sdk.forProject(page.params.region, page.params.project).tablesDB.createIndex({
                 databaseId,
                 tableId: $table.$id,
                 key,
                 type: selectedType,
                 columns: columnList.map((a) => a.value),
-                orders: columnList.map((a) => a.order),
-                lengths: columnList.map((a) => (a.length ? Number(a.length) : null))
+                lengths: columnList.map((a) => (a.length ? Number(a.length) : null)),
+                ...(orders.length ? { orders } : {})
             });
 
             await Promise.allSettled([
@@ -113,7 +160,7 @@
                       ]
                     : undefined
             });
-            trackEvent(Submit.IndexCreate);
+            trackEvent(Submit.IndexCreate, { type: 'manual' });
             showCreateIndex = false;
         } catch (err) {
             addNotification({
@@ -151,9 +198,22 @@
             <InputSelect
                 required
                 options={[
-                    { value: '$id', label: '$id' },
-                    { value: '$createdAt', label: '$createdAt' },
-                    { value: '$updatedAt', label: '$updatedAt' },
+                    // allow system fields only for non-spatial index types
+                    ...(selectedType === IndexType.Spatial
+                        ? []
+                        : [
+                              { value: '$id', label: '$id', leadingIcon: IconFingerPrint },
+                              {
+                                  value: '$createdAt',
+                                  label: '$createdAt',
+                                  leadingIcon: IconCalendar
+                              },
+                              {
+                                  value: '$updatedAt',
+                                  label: '$updatedAt',
+                                  leadingIcon: IconCalendar
+                              }
+                          ]),
                     ...columnOptions
                 ]}
                 id={`column-${index}`}
@@ -162,10 +222,7 @@
                 bind:value={column.value} />
 
             <InputSelect
-                options={[
-                    { value: 'ASC', label: 'ASC' },
-                    { value: 'DESC', label: 'DESC' }
-                ]}
+                options={orderOptions}
                 required
                 id={`order-${index}`}
                 label={index === 0 ? 'Order' : undefined}

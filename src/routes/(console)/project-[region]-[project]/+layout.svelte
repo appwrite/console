@@ -27,15 +27,13 @@
     import CsvImportBox from '$lib/components/csvImportBox.svelte';
 
     onMount(() => {
-        return realtime
-            .forProject(page.params.region, page.params.project)
-            .subscribe(['project', 'console'], (response) => {
-                if (response.events.includes('stats.connections')) {
-                    for (const [projectId, value] of Object.entries(response.payload)) {
-                        stats.add(projectId, [new Date(response.timestamp).toISOString(), value]);
-                    }
+        return realtime.forProject(page.params.region, ['project', 'console'], (response) => {
+            if (response.events.includes('stats.connections')) {
+                for (const [projectId, value] of Object.entries(response.payload)) {
+                    stats.add(projectId, [new Date(response.timestamp).toISOString(), value]);
                 }
-            });
+            }
+        });
     });
 
     $: $registerCommands([
@@ -138,8 +136,13 @@
 
     @media (max-width: 768px) {
         .layout-level-progress-bars {
-            position: relative;
+            width: 100%;
             align-items: center;
+            box-sizing: border-box;
+        }
+
+        :global(main:has([data-side-sheet-visible='true']) .layout-level-progress-bars) {
+            visibility: hidden;
         }
     }
 </style>

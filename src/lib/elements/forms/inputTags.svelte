@@ -1,5 +1,6 @@
 <script lang="ts">
     import { Input } from '@appwrite.io/pink-svelte';
+    import type { ComponentType } from 'svelte';
 
     export let id: string;
     export let label: string;
@@ -9,6 +10,7 @@
     export let disabled = false;
     export let helper: string | undefined = undefined;
     export let pattern: string | undefined = undefined;
+    export let leadingIcon: ComponentType | undefined = undefined;
 
     let value = '';
     let error: string;
@@ -37,6 +39,7 @@
     {disabled}
     {pattern}
     {required}
+    {leadingIcon}
     bind:value={tags}
     helper={error || helper}
     on:invalid={handleInvalid}

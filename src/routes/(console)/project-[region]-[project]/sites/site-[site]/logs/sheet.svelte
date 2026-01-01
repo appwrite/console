@@ -15,9 +15,11 @@
     } from '@appwrite.io/pink-svelte';
     import { timeFromNow } from '$lib/helpers/date';
     import { capitalize } from '$lib/helpers/string';
+    import { getBadgeTypeFromStatusCode } from '$lib/helpers/httpStatus';
     import { Copy } from '$lib/components';
     import { LogsRequest, LogsResponse } from '$lib/components/logs';
     import { site } from '../store';
+    import { timer } from '$lib/actions/timer';
 
     export let open = false;
     export let selectedLogId: string;
@@ -99,9 +101,9 @@
                                         <Badge
                                             content={selectedLog.responseStatusCode.toString()}
                                             variant="secondary"
-                                            type={selectedLog?.responseStatusCode >= 400
-                                                ? 'error'
-                                                : 'success'} />
+                                            type={getBadgeTypeFromStatusCode(
+                                                selectedLog.responseStatusCode
+                                            )} />
                                     </span>
                                 </Layout.Stack>
                                 <Layout.Stack gap="xs" inline>
@@ -111,7 +113,12 @@
                                         Duration
                                     </Typography.Text>
                                     <Typography.Text variant="m-400">
-                                        {calculateTime(selectedLog.duration)}
+                                        {#if ['processing', 'waiting'].includes(selectedLog.status)}
+                                            <span use:timer={{ start: selectedLog.$createdAt }}
+                                            ></span>
+                                        {:else}
+                                            {calculateTime(selectedLog.duration)}
+                                        {/if}
                                     </Typography.Text>
                                 </Layout.Stack>
                                 <Layout.Stack gap="xs" inline>

@@ -12,8 +12,7 @@
         Button,
         Layout,
         Avatar,
-        Typography,
-        Badge
+        Typography
     } from '@appwrite.io/pink-svelte';
 
     import {
@@ -42,6 +41,7 @@
     import type { HTMLAttributes } from 'svelte/elements';
     import type { Models } from '@appwrite.io/console';
     import { noWidthTransition } from '$lib/stores/sidebar';
+    import { base } from '$app/paths';
 
     type $$Props = HTMLAttributes<HTMLElement> & {
         state?: 'closed' | 'open' | 'icons';
@@ -79,13 +79,7 @@
         { name: 'Functions', icon: IconLightningBolt, slug: 'functions', category: 'build' },
         { name: 'Messaging', icon: IconChatBubble, slug: 'messaging', category: 'build' },
         { name: 'Storage', icon: IconFolder, slug: 'storage', category: 'build' },
-        {
-            name: 'Sites',
-            icon: IconGlobeAlt,
-            slug: 'sites',
-            category: 'deploy',
-            badge: 'Early access'
-        }
+        { name: 'Sites', icon: IconGlobeAlt, slug: 'sites', category: 'deploy' }
     ];
 
     const isSelected = (service: string): boolean => {
@@ -138,7 +132,7 @@
                 <Tooltip placement="right" disabled={state !== 'icons'}>
                     <a
                         class="progress-card"
-                        href={`/console/project-${project.region}-${project.$id}/get-started`}
+                        href={`${base}/project-${project?.region}-${project?.$id}/get-started`}
                         on:click={() => {
                             trackEvent('click_menu_get_started');
                             sideBarIsOpen = false;
@@ -162,7 +156,7 @@
                 <Layout.Stack direction="column" gap="s">
                     <Tooltip placement="right" disabled={state !== 'icons'}>
                         <a
-                            href={`/console/project-${project.region}-${project.$id}/overview/platforms`}
+                            href={`${base}/project-${project.region}-${project.$id}/overview/platforms`}
                             class="link"
                             class:active={isSelected('overview')}
                             on:click={() => {
@@ -192,7 +186,7 @@
                     {#each buildProjectOptions as projectOption}
                         <Tooltip placement="right" disabled={state !== 'icons'}>
                             <a
-                                href={`/console/project-${project.region}-${project.$id}/${projectOption.slug}`}
+                                href={`${base}/project-${project.region}-${project.$id}/${projectOption.slug}`}
                                 class="link"
                                 class:active={isSelected(projectOption.slug)}
                                 on:click={() => {
@@ -223,7 +217,7 @@
                     {#each deployProjectOptions as projectOption}
                         <Tooltip placement="right" disabled={state !== 'icons'}>
                             <a
-                                href={`/console/project-${project.region}-${project.$id}/${projectOption.slug}`}
+                                href={`${base}/project-${project.region}-${project.$id}/${projectOption.slug}`}
                                 class="link"
                                 class:active={isSelected(projectOption.slug)}
                                 on:click={() => {
@@ -238,12 +232,6 @@
                                     class:has-text={state === 'open'}
                                     class="link-text">
                                     {projectOption.name}
-                                    {#if projectOption?.badge}
-                                        <Badge
-                                            variant="secondary"
-                                            content={projectOption.badge}
-                                            size="xs" />
-                                    {/if}
                                 </span>
                             </a>
                             <span slot="tooltip">{projectOption.name}</span>
@@ -253,7 +241,7 @@
                         <div class="mobile-tablet-settings">
                             <Tooltip placement="right" disabled={state !== 'icons'}>
                                 <a
-                                    href={`/console/project-${project.region}-${project.$id}/settings`}
+                                    href={`${base}/project-${project.region}-${project.$id}/settings`}
                                     on:click={() => {
                                         trackEvent('click_menu_settings');
                                         sideBarIsOpen = false;
@@ -271,7 +259,7 @@
                         </div>
                     {/if}
                 </Layout.Stack>
-            {:else if $isSmallViewport}
+            {:else if $isTabletViewport}
                 <div class="action-buttons">
                     <Layout.Stack direction="column" gap="s">
                         <DropList show={$feedback.show} scrollable>
@@ -313,7 +301,7 @@
                 <div class="only-desktop">
                     <Tooltip placement="right" disabled={state !== 'icons'}>
                         <a
-                            href={`/console/project-${project.region}-${project.$id}/settings`}
+                            href={`${base}/project-${project.region}-${project.$id}/settings`}
                             class="link"
                             on:click={() => {
                                 trackEvent('click_menu_settings');

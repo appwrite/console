@@ -24,7 +24,7 @@ import type {
 } from '$lib/sdk/billing';
 import { isCloud } from '$lib/system';
 import { activeHeaderAlert, orgMissingPaymentMethod } from '$routes/(console)/store';
-import { AppwriteException, Query } from '@appwrite.io/console';
+import { AppwriteException, Query, Platform } from '@appwrite.io/console';
 import { derived, get, writable } from 'svelte/store';
 import { headerAlert } from './headerAlert';
 import { addNotification, notifications } from './notifications';
@@ -100,7 +100,7 @@ export function tierToPlan(tier: Tier) {
         case BillingPlan.ENTERPRISE:
             return tierEnterprise;
         default:
-            return tierFree;
+            return tierCustom;
     }
 }
 
@@ -488,6 +488,9 @@ export async function paymentExpired(org: Organization) {
     const nots = get(notifications);
     const expiredNotification = nots.some((n) => n.message === expiredMessage);
     const expiringNotification = nots.some((n) => n.message === expiringMessage);
+    const cardExpiry = new Date(payment.expiryYear, payment.expiryMonth, 1);
+    const nextMonth = new Date(year, month + 1, 1);
+    const isExpiringNextMonth = cardExpiry.getTime() === nextMonth.getTime();
     if (payment.expired && !expiredNotification) {
         addNotification({
             type: 'error',
@@ -503,7 +506,7 @@ export async function paymentExpired(org: Organization) {
                 }
             ]
         });
-    } else if (!expiringNotification && payment.expiryYear <= year && payment.expiryMonth < month) {
+    } else if (!expiringNotification && !payment.expired && isExpiringNextMonth) {
         addNotification({
             type: 'warning',
             isHtml: true,
@@ -554,7 +557,8 @@ export async function checkForMissingPaymentMethod() {
     const orgs = await sdk.forConsole.billing.listOrganization([
         Query.notEqual('billingPlan', BillingPlan.FREE),
         Query.isNull('paymentMethodId'),
-        Query.isNull('backupPaymentMethodId')
+        Query.isNull('backupPaymentMethodId'),
+        Query.equal('platform', Platform.Appwrite)
     ]);
     if (orgs?.total) {
         orgMissingPaymentMethod.set(orgs.teams[0]);
@@ -620,7 +624,7 @@ export const billingURL = derived(
     ($page) => `${base}/organization-${$page.data?.organization?.$id}/billing`
 );
 
-export const hideBillingHeaderRoutes = ['/console/create-organization', '/console/account'];
+export const hideBillingHeaderRoutes = [base + '/create-organization', base + '/account'];
 
 export function calculateExcess(addon: AggregationTeam, plan: Plan) {
     return {

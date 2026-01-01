@@ -24,7 +24,14 @@
     import Details from '../../details.svelte';
     import Configuration from './configuration.svelte';
     import Aside from '../../aside.svelte';
-    import { Adapter, BuildRuntime, Framework, ID, type Models } from '@appwrite.io/console';
+    import {
+        Adapter,
+        BuildRuntime,
+        Framework,
+        ID,
+        TemplateReferenceType,
+        type Models
+    } from '@appwrite.io/console';
     import {
         ConnectBehaviour,
         NewRepository,
@@ -53,7 +60,7 @@
     let domain = data.domain;
     let domainIsValid = true;
     let framework = data?.template?.frameworks[0];
-    let branch = 'main';
+    let branch = '';
     let rootDir = './';
     let connectBehaviour: 'now' | 'later' = 'now';
     let repositoryBehaviour: 'new' | 'existing' = 'new';
@@ -159,7 +166,8 @@
                         repository: data.template.providerRepositoryId,
                         owner: data.template.providerOwner,
                         rootDirectory: framework.providerRootDirectory,
-                        version: data.template.providerVersion,
+                        type: TemplateReferenceType.Tag,
+                        reference: data.template.providerVersion,
                         activate: true
                     });
 

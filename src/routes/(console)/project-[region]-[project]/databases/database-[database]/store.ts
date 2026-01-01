@@ -5,7 +5,7 @@ import { derived, writable } from 'svelte/store';
 import { IconChartBar, IconCloudUpload, IconCog } from '@appwrite.io/pink-icons-svelte';
 
 export const database = derived(page, ($page) => $page.data.database as Models.Database);
-export const showCreate = writable(false);
+export const showCreateTable = writable(false);
 
 export const tableViewColumns = writable<Column[]>([
     { id: '$id', title: 'Table ID', type: 'string', width: 200 },

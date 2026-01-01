@@ -1,31 +1,51 @@
 <script lang="ts">
     import { page } from '$app/state';
-    import { Empty, EmptySearch, AvatarInitials, PaginationWithLimit } from '$lib/components';
+    import {
+        Empty,
+        EmptySearch,
+        AvatarInitials,
+        PaginationWithLimit,
+        MultiSelectionTable,
+        type DeleteOperationState
+    } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import type { Models } from '@appwrite.io/console';
     import { invalidate } from '$app/navigation';
     import { base } from '$app/paths';
-    import { toLocaleDateTime } from '$lib/helpers/date';
-    import type { PageData } from './$types';
+    import DualTimeView from '$lib/components/dualTimeView.svelte';
+    import type { PageProps } from './$types';
     import CreateMember from '../createMembership.svelte';
     import DeleteMembership from '../deleteMembership.svelte';
     import { Dependencies } from '$lib/constants';
-    import { Click, trackEvent } from '$lib/actions/analytics';
+    import { Click, trackEvent, Submit, trackError } from '$lib/actions/analytics';
     import { Table, Layout, Icon } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { sdk } from '$lib/stores/sdk';
 
-    export let data: PageData;
+    const { data }: PageProps = $props();
 
-    let showCreate = false;
-    let showDelete = false;
-    let selectedMembership: Models.Membership;
+    let showCreate = $state(false);
+    let showDelete = $state(false);
+    let selectedMembership: Models.Membership | null = $state(null);
 
-    const region = page.params.region;
-    const project = page.params.project;
+    async function handleBulkDelete(selectedRows: string[]): Promise<DeleteOperationState> {
+        const promises = selectedRows.map((membershipId) => {
+            return sdk.forProject(page.params.region, page.params.project).teams.deleteMembership({
+                teamId: page.params.team,
+                membershipId
+            });
+        });
 
-    async function memberCreated() {
-        invalidate(Dependencies.MEMBERSHIPS);
+        try {
+            await Promise.all(promises);
+            trackEvent(Submit.MembershipUpdate, { total: selectedRows.length });
+        } catch (error) {
+            trackError(error, Submit.MembershipUpdate);
+            return error;
+        } finally {
+            await invalidate(Dependencies.MEMBERSHIPS);
+        }
     }
 </script>
 
@@ -38,52 +58,62 @@
     </Layout.Stack>
 
     {#if data.memberships.total}
-        <Table.Root
-            let:root
+        <MultiSelectionTable
+            resource="membership"
+            onDelete={handleBulkDelete}
             columns={[
                 { id: 'name' },
                 { id: 'roles' },
                 { id: 'joined' },
                 { id: 'actions', width: 40 }
             ]}>
-            <svelte:fragment slot="header" let:root>
+            {#snippet header(root)}
                 <Table.Header.Cell column="name" {root}>Name</Table.Header.Cell>
                 <Table.Header.Cell column="roles" {root}>Roles</Table.Header.Cell>
                 <Table.Header.Cell column="joined" {root}>Joined</Table.Header.Cell>
                 <Table.Header.Cell column="actions" {root} />
-            </svelte:fragment>
-            {#each data.memberships.memberships as membership}
-                {@const username = membership.userName ? membership.userName : '-'}
-                <Table.Row.Link
-                    {root}
-                    href={`${base}/project-${region}-${project}/auth/user-${membership.userId}`}>
-                    <Table.Cell column="name" {root}>
-                        <Layout.Stack direction="row" alignItems="center">
-                            <AvatarInitials size="xs" name={username} />
-                            <span>{username}</span>
-                        </Layout.Stack>
-                    </Table.Cell>
-                    <Table.Cell column="roles" {root}>
-                        {membership.roles}
-                    </Table.Cell>
-                    <Table.Cell column="joined" {root}>
-                        {toLocaleDateTime(membership.joined)}
-                    </Table.Cell>
-                    <Table.Cell column="actions" {root}>
-                        <button
-                            class="button is-only-icon is-text"
-                            aria-label="Delete item"
-                            on:click|preventDefault={() => {
-                                selectedMembership = membership;
-                                showDelete = true;
-                                trackEvent(Click.MembershipDeleteClick);
-                            }}>
-                            <span class="icon-trash" aria-hidden="true"></span>
-                        </button>
-                    </Table.Cell>
-                </Table.Row.Link>
-            {/each}
-        </Table.Root>
+            {/snippet}
+
+            {#snippet children(root)}
+                {#each data.memberships.memberships as membership (membership.$id)}
+                    {@const username = membership.userName ? membership.userName : '-'}
+                    <Table.Row.Link
+                        {root}
+                        href={`${base}/project-${page.params.region}-${page.params.project}/auth/user-${membership.userId}`}
+                        id={membership.$id}>
+                        <Table.Cell column="name" {root}>
+                            <Layout.Stack direction="row" alignItems="center">
+                                <AvatarInitials size="xs" name={username} />
+                                <span>{username}</span>
+                            </Layout.Stack>
+                        </Table.Cell>
+                        <Table.Cell column="roles" {root}>
+                            {membership.roles}
+                        </Table.Cell>
+                        <Table.Cell column="joined" {root}>
+                            <DualTimeView time={membership.joined} />
+                        </Table.Cell>
+                        <Table.Cell column="actions" {root}>
+                            <button
+                                class="button is-only-icon is-text"
+                                aria-label="Delete item"
+                                onclick={(event) => {
+                                    event.preventDefault();
+                                    showDelete = true;
+                                    selectedMembership = membership;
+                                    trackEvent(Click.MembershipDeleteClick);
+                                }}>
+                                <span class="icon-trash" aria-hidden="true"></span>
+                            </button>
+                        </Table.Cell>
+                    </Table.Row.Link>
+                {/each}
+            {/snippet}
+
+            {#snippet deleteContentNotice()}
+                This action is irreversible and will remove the selected members from this team.
+            {/snippet}
+        </MultiSelectionTable>
 
         <PaginationWithLimit
             name="Memberships"
@@ -93,7 +123,7 @@
     {:else if data.search}
         <EmptySearch>
             <div class="u-text-center">
-                <b>Sorry, we couldn't find ‘{data.search}'</b>
+                <b>Sorry, we couldn't find '{data.search}'</b>
                 <p>There are no members that match your search.</p>
             </div>
             <Button
@@ -113,8 +143,12 @@
     {/if}
 </Container>
 
-<CreateMember teamId={page.params.team} bind:showCreate on:created={memberCreated} />
+<CreateMember
+    bind:showCreate
+    teamId={page.params.team}
+    on:created={() => invalidate(Dependencies.MEMBERSHIPS)} />
+
 <DeleteMembership
-    {selectedMembership}
     bind:showDelete
+    {selectedMembership}
     on:deleted={() => invalidate(Dependencies.MEMBERSHIPS)} />

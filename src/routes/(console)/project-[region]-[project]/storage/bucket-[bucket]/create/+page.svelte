@@ -92,11 +92,11 @@
 </script>
 
 <Wizard
-    title="Create file"
-    href={`${base}/project-${page.params.region}-${page.params.project}/storage/bucket-${page.params.bucket}/`}
-    bind:showExitModal
     column
-    confirmExit>
+    confirmExit
+    title="Create file"
+    bind:showExitModal
+    href={`${base}/project-${page.params.region}-${page.params.project}/storage/bucket-${page.params.bucket}/`}>
     <Form bind:this={formComponent} onSubmit={create} bind:isSubmitting>
         <Layout.Stack gap="xxl">
             <Fieldset legend="Data">
@@ -115,6 +115,7 @@
                             >.
                         </Alert.Inline>
                     {/if}
+
                     <Upload.Dropzone
                         bind:files
                         required
@@ -123,6 +124,7 @@
                         <Typography.Text variant="l-500"
                             >Drag and drop files here or click to upload</Typography.Text>
                     </Upload.Dropzone>
+
                     {#if files}
                         <Upload.List
                             files={Array.from(files).map((f) => {

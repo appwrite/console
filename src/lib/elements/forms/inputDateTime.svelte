@@ -1,10 +1,10 @@
 <script lang="ts">
-    import { onMount } from 'svelte';
+    import { type ComponentType, onMount } from 'svelte';
     import { Input, Layout, Selector } from '@appwrite.io/pink-svelte';
 
     export let id: string;
     export let label: string = '';
-    export let value: string;
+    export let value: string | null;
     export let required = false;
     export let nullable = false;
     export let disabled = false;
@@ -13,9 +13,11 @@
     export let autocomplete = false;
     export let step: number | 'any' = 0.001;
     export let type: 'date' | 'time' | 'datetime-local' = 'date';
+    export let leadingIcon: ComponentType | undefined = undefined;
 
     let error: string;
     let element: HTMLInputElement;
+    let previousValue: string | null = null;
 
     onMount(() => {
         if (element && autofocus) {
@@ -23,14 +25,16 @@
         }
     });
 
-    let prevValue = '';
     function handleNullChange(e: CustomEvent<boolean>) {
         const isNull = e.detail;
+
         if (isNull) {
-            prevValue = value;
+            if (value !== null) {
+                previousValue = value;
+            }
             value = null;
         } else {
-            value = prevValue;
+            value = previousValue;
         }
     }
 
@@ -38,9 +42,7 @@
         error = null;
     }
 
-    function onChange(event: CustomEvent) {
-        value = (event.target as HTMLInputElement).value;
-    }
+    $: isValueNull = value === null;
 </script>
 
 <Layout.Stack gap="s" direction="row">
@@ -50,19 +52,20 @@
         {disabled}
         {readonly}
         {required}
-        {value}
+        bind:value
         {step}
         {type}
         helper={error}
-        on:change={onChange}
+        {leadingIcon}
         autocomplete={autocomplete ? 'on' : 'off'}>
-        {#if nullable}
-            <Selector.Checkbox
-                size="s"
-                slot="end"
-                label="NULL"
-                checked={value === null}
-                on:change={handleNullChange} />
-        {/if}
+        <svelte:fragment slot="end">
+            {#if nullable}
+                <Selector.Checkbox
+                    size="s"
+                    label="NULL"
+                    checked={isValueNull}
+                    on:change={handleNullChange} />
+            {/if}
+        </svelte:fragment>
     </Input.DateTime>
 </Layout.Stack>

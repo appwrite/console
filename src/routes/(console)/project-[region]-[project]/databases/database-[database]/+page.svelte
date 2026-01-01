@@ -2,7 +2,7 @@
     import { EmptySearch, PaginationWithLimit, SearchQuery, ViewSelector } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
-    import { showCreate, tableViewColumns } from './store';
+    import { showCreateTable, tableViewColumns } from './store';
     import Table from './table.svelte';
     import Grid from './grid.svelte';
     import type { PageData } from './$types';
@@ -33,7 +33,7 @@
                 hideView={!data.tables.total} />
 
             {#if $canWriteTables}
-                <Button event="create_table" on:click={() => ($showCreate = true)}>
+                <Button event="create_table" on:click={() => ($showCreateTable = true)}>
                     <Icon icon={IconPlus} slot="start" size="s" />
                     Create table
                 </Button>
@@ -43,7 +43,7 @@
 
     {#if data.tables.total}
         {#if data.view === 'grid'}
-            <Grid {data} bind:showCreate={$showCreate} />
+            <Grid {data} bind:showCreate={$showCreateTable} />
         {:else}
             <Table {data} />
         {/if}
@@ -77,13 +77,13 @@
                         href="https://appwrite.io/docs/products/databases/databases"
                         text
                         event="empty_documentation"
-                        ariaLabel={`create table`}>Documentation</Button>
+                        ariaLabel="create table">Documentation</Button>
 
                     {#if $canWriteTables}
                         <Button
                             secondary
                             on:click={() => {
-                                $showCreate = true;
+                                $showCreateTable = true;
                             }}>
                             Create table
                         </Button>

@@ -65,7 +65,7 @@
             body: JSON.stringify({
                 subject: 'SOC-2 Request',
                 email: email,
-                firstName: $user?.name ?? '',
+                firstName: ($user?.name ?? '').slice(0, 40),
                 message: `SOC-2 request for ${$organization?.name ?? ''} (${$organization?.$id ?? ''})`,
                 tags: ['cloud'],
                 customFields: [

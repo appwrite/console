@@ -19,29 +19,25 @@
         leadingHtml?: string;
         badge?: string;
     }[];
+    export let leadingIcon: ComponentType | undefined = undefined;
 
-    let element: HTMLSelectElement;
     let error: string;
 
     const handleInvalid = (event: Event) => {
         event.preventDefault();
+        const element = event.target as HTMLInputElement;
 
         if (element.validity.valueMissing) {
             error = 'This field is required';
             return;
         }
+
         error = element.validationMessage;
     };
 
     const isNotEmpty = (value: string | number | boolean) => {
         return typeof value === 'boolean' ? true : !!value;
     };
-
-    $: if (required && !isNotEmpty(value)) {
-        element?.setCustomValidity('This field is required');
-    } else {
-        element?.setCustomValidity('');
-    }
 
     $: if (isNotEmpty(value)) {
         error = null;
@@ -56,9 +52,11 @@
     {placeholder}
     {disabled}
     {autofocus}
+    {leadingIcon}
     helper={error ?? helper}
     {required}
     state={error ? 'error' : 'default'}
+    data-command-center-ignore
     on:invalid={handleInvalid}
     on:input
     on:change

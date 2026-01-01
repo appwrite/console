@@ -45,10 +45,18 @@ export function addFilterAndApply(
     if (value || arrayValues?.length) {
         if (colId === 'sourceSize' || colId === 'buildSize') {
             addSizeFilter(value, colId, columns);
-        } else if (colId === 'statusCode') {
+        } else if (colId === 'responseStatusCode') {
             addStatusCodeFilter(value, colId, columns);
-        } else if (colId === '$createdAt' || colId === '$updatedAt' || colId === 'buildDuration') {
+        } else if (
+            colId === '$createdAt' ||
+            colId === '$updatedAt' ||
+            colId === 'buildDuration' ||
+            colId === 'scheduledAt' ||
+            colId === 'deliveredAt'
+        ) {
             addDateFilter(value, colId, columns);
+        } else if (colId === 'duration') {
+            addDurationFilter(value, colId, columns);
         } else {
             addFilter(columns, colId, operator, value, arrayValues);
         }
@@ -74,4 +82,8 @@ export function addDateFilter(value: string, colId: string, columns: Column[]) {
 
 export function addSizeFilter(value: string, colId: string, columns: Column[]) {
     addFilter(columns, colId, ValidOperators.GreaterThanOrEqual, value);
+}
+
+export function addDurationFilter(value: string, colId: string, columns: Column[]) {
+    addFilter(columns, colId, ValidOperators.GreaterThan, value);
 }

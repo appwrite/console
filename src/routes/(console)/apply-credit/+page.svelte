@@ -134,7 +134,7 @@
                     name,
                     billingPlan,
                     paymentMethodId,
-                    null,
+                    undefined,
                     couponData.code ? couponData.code : null,
                     collaborators,
                     billingBudget,
@@ -148,7 +148,7 @@
                     selectedOrg.$id,
                     billingPlan,
                     paymentMethodId,
-                    null,
+                    undefined,
                     couponData.code ? couponData.code : null,
                     collaborators
                 );
@@ -174,7 +174,7 @@
                     '',
                     clientSecret,
                     paymentMethodId,
-                    `/console/apply-credit?${params}`
+                    `${base}/apply-credit?${params}`
                 );
                 org = await sdk.forConsole.billing.validateOrganization(org.teamId, collaborators);
             }

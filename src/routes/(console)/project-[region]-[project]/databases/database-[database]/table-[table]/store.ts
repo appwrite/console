@@ -1,5 +1,5 @@
 import { page } from '$app/stores';
-import type { Column } from '$lib/helpers/types';
+import type { Column, ColumnType } from '$lib/helpers/types';
 import type { Models } from '@appwrite.io/console';
 import { derived, writable } from 'svelte/store';
 import type { SortDirection } from '$lib/components';
@@ -15,6 +15,9 @@ export type Columns =
     | Models.ColumnIp
     | Models.ColumnString
     | Models.ColumnUrl
+    | Models.ColumnPoint
+    | Models.ColumnLine
+    | Models.ColumnPolygon
     | (Models.ColumnRelationship & { default?: never });
 
 type Table = Omit<Models.Table, 'columns'> & {
@@ -25,14 +28,23 @@ export const table = derived(page, ($page) => $page.data.table as Table);
 export const columns = derived(page, ($page) => $page.data.table.columns as Columns[]);
 export const indexes = derived(page, ($page) => $page.data.table.indexes as Models.ColumnIndex[]);
 
+/**
+ * adding a lot of fake data will trigger the realtime below
+ * and will keep invalidating the `Dependencies.TABLE` making a lot of API noise!
+ */
+export const isWaterfallFromFaker = writable(false);
+
 export const tableColumns = writable<Column[]>([]);
 
 export const isCsvImportInProgress = writable(false);
 
 export const columnsOrder = writable<string[]>([]);
-export const columnsWidth = writable<{
+
+export type ColumnsWidth = {
     [columnId: string]: { fixed: number | { min: number }; resized: number };
-}>();
+};
+
+export const columnsWidth = writable<ColumnsWidth>();
 
 type DatabaseSheetOptions = {
     show: boolean;
@@ -58,12 +70,18 @@ export const databaseRowSheetOptions = writable<
     DatabaseSheetOptions & {
         row: Models.Row;
         rowId?: string;
+        rows: Models.Row[];
+        rowIndex?: number;
+        autoFocus?: boolean;
     }
 >({
     title: null,
     show: false,
     row: null,
-    rowId: null // for loading from a given id
+    rowId: null, // for loading from a given id
+    rows: [],
+    rowIndex: -1,
+    autoFocus: true
 });
 
 export const databaseRelatedRowSheetOptions = writable<
@@ -175,7 +193,9 @@ export const expandTabs = writable(null);
 export const spreadsheetRenderKey = writable('initial');
 
 export const paginatedRowsLoading = writable(false);
-export const paginatedRows = createSparsePagedDataStore<Models.DefaultRow>(SPREADSHEET_PAGE_LIMIT);
+export const paginatedRows = createSparsePagedDataStore<Models.DefaultRow | Models.Row>(
+    SPREADSHEET_PAGE_LIMIT
+);
 
 export const PROHIBITED_ROW_KEYS = [
     '$id',
@@ -188,3 +208,32 @@ export const PROHIBITED_ROW_KEYS = [
 ];
 
 export const sheetHeightStore = writable('74.5vh');
+
+export const getDefaultSpatialData = (
+    type: Extract<ColumnType, 'point' | 'linestring' | 'polygon'>
+) => {
+    if (type === 'point') return [0, 0];
+    else if (type === 'linestring')
+        return [
+            [0, 0],
+            [0, 0]
+        ];
+    else if (type === 'polygon')
+        return [
+            [
+                [0, 0],
+                [0, 0],
+                [0, 0],
+                [0, 0]
+            ]
+        ];
+};
+
+export const getSingleRingPolygon = () => {
+    return [
+        [0, 0],
+        [0, 0],
+        [0, 0],
+        [0, 0]
+    ];
+};

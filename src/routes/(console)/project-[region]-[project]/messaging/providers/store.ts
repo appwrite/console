@@ -10,6 +10,7 @@ import {
     IconFirebase,
     IconMailgun,
     IconMsg91,
+    IconResend,
     IconSendgrid,
     IconTelesign,
     IconTextMagic,
@@ -18,11 +19,11 @@ import {
 } from './components';
 
 export const columns = writable<Column[]>([
-    { id: '$id', title: 'Provider ID', type: 'string' },
-    { id: 'name', title: 'Name', type: 'string' },
-    { id: 'provider', title: 'Provider', type: 'string' },
-    { id: 'type', title: 'Type', type: 'string' },
-    { id: 'enabled', title: 'Status', type: 'boolean' }
+    { id: '$id', title: 'Provider ID', type: 'string', width: 200 },
+    { id: 'name', title: 'Name', type: 'string', width: { min: 120 } },
+    { id: 'provider', title: 'Provider', type: 'string', width: { min: 120 } },
+    { id: 'type', title: 'Type', type: 'string', width: { min: 120 } },
+    { id: 'enabled', title: 'Status', type: 'boolean', width: { min: 120 } }
 ]);
 
 export type ProviderInput = {
@@ -283,6 +284,55 @@ export const providers: ProvidersMap = {
                             '<b>How to get the API key?</b>',
                             'Create an account in <a class="link" href="https://login.sendgrid.com/login/identifier" target="_blank" rel="noopener noreferrer">SendGrid</a>.',
                             'Head to <b>Settings -> API Keys -> Create API key.</b>'
+                        ]
+                    },
+                    [
+                        {
+                            label: 'Sender email',
+                            name: 'fromEmail',
+                            type: 'email',
+                            placeholder: 'Enter email'
+                        },
+                        {
+                            label: 'Sender name',
+                            name: 'fromName',
+                            type: 'text',
+                            optional: true,
+                            placeholder: 'Enter name'
+                        }
+                    ],
+                    [
+                        {
+                            label: 'Reply-to email',
+                            name: 'replyToEmail',
+                            type: 'email',
+                            optional: true,
+                            placeholder: 'Enter email'
+                        },
+                        {
+                            label: 'Reply-to name',
+                            name: 'replyToName',
+                            type: 'text',
+                            optional: true,
+                            placeholder: 'Enter name'
+                        }
+                    ]
+                ]
+            },
+            [Providers.Resend]: {
+                imageIcon: IconResend,
+                title: 'Resend',
+                description: '',
+                configure: [
+                    {
+                        label: 'API key',
+                        name: 'apiKey',
+                        type: 'password',
+                        placeholder: 'Enter API key',
+                        popover: [
+                            '<b>How to get the API key?</b>',
+                            'Create an account in <a class="link" href="https://resend.com/signup" target="_blank" rel="noopener noreferrer">Resend</a>.',
+                            'Head to <b>API Keys -> Create API Key.</b>'
                         ]
                     },
                     [
@@ -648,6 +698,14 @@ export type MailgunProviderParams = ProviderParams & {
 };
 
 export type SendgridProviderParams = ProviderParams & {
+    fromEmail: string;
+    fromName: string;
+    replyToEmail: string;
+    replyToName: string;
+    apiKey: string;
+};
+
+export type ResendProviderParams = ProviderParams & {
     fromEmail: string;
     fromName: string;
     replyToEmail: string;

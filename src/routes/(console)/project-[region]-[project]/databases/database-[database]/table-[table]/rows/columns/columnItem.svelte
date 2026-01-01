@@ -26,23 +26,20 @@
     let formStore = writable(formValues);
 
     function removeArrayItem(key: string, index: number) {
-        const next = {
-            ...$formStore,
-            [key]: $formStore[key].filter((_, i) => i !== index)
-        };
-
-        formStore.set(next);
-        onUpdateFormValues?.(next);
+        const currentArray = Array.isArray($formStore[key]) ? $formStore[key] : [];
+        const filteredArray = currentArray.filter((_: object, i: number) => i !== index);
+        formStore.update((values) => {
+            values[key] = filteredArray.length === 0 ? [] : filteredArray;
+            return values;
+        });
     }
 
     function addArrayItem(key: string) {
-        const next = {
-            ...$formStore,
-            [key]: [...($formStore[key] ?? []), null]
-        };
-
-        formStore.set(next);
-        onUpdateFormValues?.(next);
+        const currentArray = Array.isArray($formStore[key]) ? $formStore[key] : null;
+        formStore.update((values) => {
+            values[key] = currentArray ? [...currentArray, null] : [null];
+            return values;
+        });
     }
 
     function getColumnType(column: Columns) {
@@ -57,8 +54,7 @@
                 case 'enum':
                     return 'Enum';
                 default:
-                    'String';
-                    break;
+                    return 'String';
             }
         }
         return `${capitalize(column.type)}${column.array ? '[]' : ''}`;
@@ -107,7 +103,7 @@
             on:click />
     {:else}
         <Layout.Stack>
-            {#each [...($formStore[column.key]?.keys() ?? [])] as index}
+            {#each [...($formStore[column.key]?.keys() ?? [])] as index (index)}
                 <Layout.Stack direction="row" alignItems="flex-end" gap="xs">
                     <Column
                         {column}

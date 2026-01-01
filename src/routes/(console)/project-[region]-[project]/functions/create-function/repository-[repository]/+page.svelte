@@ -10,7 +10,7 @@
     import { installation, repository } from '$lib/stores/vcs';
     import { Layout } from '@appwrite.io/pink-svelte';
     import { writable } from 'svelte/store';
-    import { ID, Runtime, VCSDeploymentType, VCSDetectionType } from '@appwrite.io/console';
+    import { ID, Runtime, VCSReferenceType, VCSDetectionType } from '@appwrite.io/console';
     import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import Details from '../(components)/details.svelte';
@@ -25,7 +25,7 @@
 
     export let data;
 
-    const specificationOptions = data.specificationsList.specifications.map((size) => ({
+    const specificationOptions = (data.specificationsList?.specifications ?? []).map((size) => ({
         label:
             `${size.cpus} CPU, ${size.memory} MB RAM` +
             (!size.enabled ? ` (Upgrade to use this)` : ''),
@@ -46,7 +46,7 @@
     let isSubmitting = writable(false);
 
     let name = '';
-    let id: string;
+    let id: string | null = null;
     let runtime: Runtime;
     let entrypoint = '';
     let buildCommand = '';
@@ -55,7 +55,7 @@
     let rootDir = './';
     let variables: Partial<Models.Variable>[] = [];
     let silentMode = false;
-    let specification = specificationOptions[0].value;
+    let specification = specificationOptions[0]?.value || '';
 
     let detectingRuntime = true;
 
@@ -132,7 +132,7 @@
                 .forProject(page.params.region, page.params.project)
                 .functions.createVcsDeployment({
                     functionId: func.$id,
-                    type: VCSDeploymentType.Branch,
+                    type: VCSReferenceType.Branch,
                     reference: branch,
                     activate: true
                 });

@@ -3,6 +3,7 @@ import type { Columns } from '$routes/(console)/project-[region]-[project]/datab
 import { ID, type Models } from '@appwrite.io/console';
 import { sdk } from '$lib/stores/sdk';
 import { isWithinSafeRange } from '$lib/helpers/numbers';
+import type { NestedNumberArray } from './types';
 
 export async function generateColumns(
     project: Models.Project,
@@ -42,7 +43,24 @@ export async function generateColumns(
             size: 1000,
             required: false
         }),
-        client.tablesDB.createBooleanColumn({ databaseId, tableId, key: 'active', required: false })
+        client.tablesDB.createBooleanColumn({
+            databaseId,
+            tableId,
+            key: 'active',
+            required: false
+        }),
+        client.tablesDB.createPointColumn({
+            databaseId,
+            tableId,
+            key: 'location',
+            required: false
+        }),
+        client.tablesDB.createLineColumn({
+            databaseId,
+            tableId,
+            key: 'route',
+            required: false
+        })
     ]);
 }
 
@@ -66,7 +84,10 @@ export function generateFakeRecords(
         const id = ID.unique();
         ids.push(id);
 
-        let row: Record<string, string | number | boolean | Array<string | number | boolean>> = {
+        let row: Record<
+            string,
+            string | number | boolean | Array<string | number | boolean | NestedNumberArray>
+        > = {
             $id: id
         };
 
@@ -78,7 +99,12 @@ export function generateFakeRecords(
                 age: faker.number.int({ min: 18, max: 80 }),
                 city: faker.location.city(),
                 description: faker.lorem.sentence(),
-                active: faker.datatype.boolean()
+                active: faker.datatype.boolean(),
+                location: [faker.location.longitude(), faker.location.latitude()],
+                route: Array.from({ length: 5 }, () => [
+                    faker.location.longitude(),
+                    faker.location.latitude()
+                ])
             };
         } else {
             for (const column of filteredColumns) {
@@ -116,10 +142,10 @@ function generateStringValue(key: string, maxLength: number): string {
 
 function generateValueForColumn(
     column: Columns
-): string | number | boolean | null | Array<string | number | boolean> {
+): string | number | boolean | null | Array<string | number | boolean | NestedNumberArray> {
     if (column.array) {
         const arraySize = faker.number.int({ min: 1, max: 5 });
-        const items: Array<string | number | boolean> = [];
+        const items: Array<string | number | NestedNumberArray | boolean> = [];
 
         for (let i = 0; i < arraySize; i++) {
             const itemAttribute = { ...column, array: false };
@@ -135,7 +161,9 @@ function generateValueForColumn(
     return generateSingleValue(column);
 }
 
-function generateSingleValue(column: Columns): string | number | boolean | null {
+function generateSingleValue(
+    column: Columns
+): string | number | boolean | NestedNumberArray | null {
     switch (column.type) {
         case 'string': {
             if ('format' in column && column.format) {
@@ -170,15 +198,21 @@ function generateSingleValue(column: Columns): string | number | boolean | null 
 
         case 'integer': {
             const intAttr = column as Models.ColumnInteger;
-            const min = !isWithinSafeRange(intAttr.min) ? 0 : intAttr.min;
-            const max = !isWithinSafeRange(intAttr.max) ? 100 : intAttr.max;
+            const min = isWithinSafeRange(intAttr.min) ? intAttr.min : 0;
+            const fallbackMax = Math.max(min + 100, 100);
+            const max = isWithinSafeRange(intAttr.max)
+                ? intAttr.max
+                : Math.min(fallbackMax, Number.MAX_SAFE_INTEGER);
             return faker.number.int({ min, max });
         }
 
         case 'double': {
             const floatAttr = column as Models.ColumnFloat;
-            const min = !isWithinSafeRange(floatAttr.min) ? 0 : floatAttr.min;
-            const max = !isWithinSafeRange(floatAttr.max) ? 100 : floatAttr.max;
+            const min = isWithinSafeRange(floatAttr.min) ? floatAttr.min : 0;
+            const fallbackMax = Math.max(min + 100, 100);
+            const max = isWithinSafeRange(floatAttr.max)
+                ? floatAttr.max
+                : Math.min(fallbackMax, Number.MAX_SAFE_INTEGER);
             const precision = 4;
 
             return faker.number.float({ min, max, fractionDigits: precision });
@@ -192,6 +226,25 @@ function generateSingleValue(column: Columns): string | number | boolean | null 
             return faker.date.recent({ days: 365 }).toISOString();
         }
 
+        case 'point': {
+            return [faker.location.longitude(), faker.location.latitude()];
+        }
+
+        case 'linestring': {
+            return Array.from({ length: 5 }, () => [
+                faker.location.longitude(),
+                faker.location.latitude()
+            ]);
+        }
+
+        case 'polygon': {
+            const points = Array.from({ length: 5 }, () => [
+                faker.location.longitude(),
+                faker.location.latitude()
+            ]);
+            points.push(points[0]); // close polygon
+            return [points];
+        }
         default: {
             return faker.lorem.word();
         }

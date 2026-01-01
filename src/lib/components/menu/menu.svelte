@@ -69,8 +69,8 @@
     .separator {
         height: 1px;
         margin-block: 2px;
-        margin-inline-start: calc(var(--base-4) * -1);
-        width: calc(100% + var(--base-8));
+        width: 100%;
+        margin-inline: 0;
         background-color: var(--border-neutral);
     }
 </style>

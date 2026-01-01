@@ -31,3 +31,6 @@ export { default as InputDigits } from './inputDigits.svelte';
 export { default as InputSelectCheckbox } from './inputSelectCheckbox.svelte';
 export { default as InputFilePicker } from './inputFilePicker.svelte';
 export { default as Seekbar } from './Seekbar.svelte';
+export { default as InputPoint } from './inputPoint.svelte';
+export { default as InputLine } from './inputLine.svelte';
+export { default as InputPolygon } from './inputPolygon.svelte';
