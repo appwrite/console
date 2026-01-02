@@ -34,7 +34,7 @@
 
     const filteredMethods = $derived(methods?.paymentMethods.filter((method) => !!method?.last4));
     const submitEvent = $derived(
-        isBackup ? Submit.OrganizationBackupPaymentDelete : Submit.OrganizationPaymentDelete
+        isBackup ? Submit.OrganizationBackupPaymentUpdate : Submit.OrganizationPaymentUpdate
     );
 
     onMount(async () => {
