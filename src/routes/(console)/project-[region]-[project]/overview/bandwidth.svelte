@@ -35,21 +35,21 @@
     const dispatch = createEventDispatcher();
     const fakeBarChartData = generateFakeBarChartData();
 
-    let network = $derived(
+    const network = $derived(
         $usage?.network as unknown as Array<{
             date: number;
             value: number;
         }>
     );
 
-    let bandwidth = $derived(humanFileSize(totalMetrics($usage?.network)));
+    const bandwidth = $derived(humanFileSize(totalMetrics($usage?.network)));
 
-    let chartData = $derived(loading ? fakeBarChartData : network?.map((e) => [e.date, e.value]));
+    const chartData = $derived(loading ? fakeBarChartData : network?.map((e) => [e.date, e.value]));
 
-    let chartOptions = $derived.by(() => {
+    const chartOptions = $derived.by(() => {
         return {
             animation: true,
-            animationDuration: 500,
+            animationDuration: 200,
             animationEasing: 'quadraticInOut',
             animationDurationUpdate: 500,
             animationEasingUpdate: 'quadraticInOut',
@@ -115,6 +115,11 @@
                 style="position: absolute; inset: 0;">
                 <BarChart
                     options={chartOptions}
+                    setOptionConfig={{
+                        notMerge: false,
+                        lazyUpdate: false,
+                        replaceMerge: ['series']
+                    }}
                     series={[
                         {
                             name: 'Bandwidth',

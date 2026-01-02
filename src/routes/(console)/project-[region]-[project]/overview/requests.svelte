@@ -49,9 +49,9 @@
     let chartOptions = $derived.by(() => {
         return {
             animation: true,
-            animationDuration: 500,
+            animationDuration: 200,
             animationEasing: 'quadraticInOut',
-            animationDurationUpdate: 500,
+            animationDurationUpdate: 200,
             animationEasingUpdate: 'quadraticInOut',
             universalTransition: true,
             yAxis: {
@@ -107,6 +107,11 @@
                 <LineChart
                     applyStyles={!loading}
                     options={chartOptions}
+                    setOptionConfig={{
+                        notMerge: false,
+                        lazyUpdate: false,
+                        replaceMerge: ['series']
+                    }}
                     series={[
                         {
                             name: 'Requests',

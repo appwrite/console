@@ -7,13 +7,18 @@
     export let series: LineSeriesOption[];
     export let options: EChartsOption = null;
     export let formatted: 'days' | 'hours' = 'days';
-
     export let applyStyles: boolean = true;
+    export let setOptionConfig: {
+        notMerge?: boolean;
+        lazyUpdate?: boolean;
+        replaceMerge?: string[];
+    } = undefined;
 </script>
 
 <Base
     {options}
     {formatted}
+    {setOptionConfig}
     series={series.map((s) => {
         s.type = 'line';
         s.stack = 'total';
