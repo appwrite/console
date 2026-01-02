@@ -27,7 +27,9 @@
 
         if (url.searchParams.has(pageParam)) {
             const page = Number(url.searchParams.get(pageParam));
-            const newPage = Math.floor(((page - 1) * previousLimit) / limit);
+            const prev =
+                Number.isFinite(previousLimit) && previousLimit > 0 ? previousLimit : limit;
+            const newPage = Math.floor(((page - 1) * prev) / limit) + 1;
             const safePage = Math.max(1, Number.isFinite(newPage) ? newPage : 1);
             if (removeOnFirstPage && safePage === 1) {
                 url.searchParams.delete(pageParam);
