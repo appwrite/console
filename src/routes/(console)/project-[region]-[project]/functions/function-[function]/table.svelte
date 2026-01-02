@@ -1,5 +1,10 @@
 <script lang="ts">
-    import { type DeleteOperationState, Id, MultiSelectionTable } from '$lib/components';
+    import {
+        type DeleteOperationState,
+        type DeleteOperation,
+        Id,
+        MultiSelectionTable
+    } from '$lib/components';
     import type { PageData } from './$types';
     import { type Models } from '@appwrite.io/console';
     import type { Column } from '$lib/helpers/types';
@@ -52,22 +57,25 @@
         invalidate(Dependencies.DEPLOYMENTS);
     }
 
-    async function deleteDeployments(selectedRows: string[]): Promise<DeleteOperationState> {
-        const promises = selectedRows.map((deploymentId) =>
+    async function deleteDeployments(batchDelete: DeleteOperation): Promise<DeleteOperationState> {
+        const result = await batchDelete((deploymentId) =>
             sdk.forProject(page.params.region, page.params.project).functions.deleteDeployment({
                 functionId: page.params.function,
                 deploymentId
             })
         );
+
         try {
-            await Promise.all(promises);
-            trackEvent(Submit.DeploymentDelete);
-        } catch (error) {
-            trackError(error, Submit.DeploymentDelete);
-            return error;
+            if (result.error) {
+                trackError(result.error, Submit.DeploymentDelete);
+            } else {
+                trackEvent(Submit.DeploymentDelete, { total: result.deleted.length });
+            }
         } finally {
             await invalidate(Dependencies.DEPLOYMENTS);
         }
+
+        return result;
     }
 </script>
 

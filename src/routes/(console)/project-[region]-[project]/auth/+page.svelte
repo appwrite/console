@@ -9,6 +9,7 @@
     import {
         AvatarInitials,
         Copy,
+        type DeleteOperation,
         type DeleteOperationState,
         Empty,
         EmptySearch,
@@ -60,20 +61,22 @@
         );
     }
 
-    async function handleDelete(selectedRows: string[]): Promise<DeleteOperationState> {
-        const promises = selectedRows.map((userId) => {
-            return sdk.forProject(page.params.region, page.params.project).users.delete({ userId });
-        });
+    async function handleDelete(batchDelete: DeleteOperation): Promise<DeleteOperationState> {
+        const result = await batchDelete((userId) =>
+            sdk.forProject(page.params.region, page.params.project).users.delete({ userId })
+        );
 
         try {
-            await Promise.all(promises);
-            trackEvent(Submit.UserDelete, { total: selectedRows.length });
-        } catch (error) {
-            trackError(error, Submit.UserDelete);
-            return error;
+            if (result.error) {
+                trackError(result.error, Submit.UserDelete);
+            } else {
+                trackEvent(Submit.UserDelete, { total: result.deleted.length });
+            }
         } finally {
             await invalidate(Dependencies.USERS);
         }
+
+        return result;
     }
 </script>
 

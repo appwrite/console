@@ -277,6 +277,7 @@ export enum Submit {
     DatabaseDelete = 'submit_database_delete',
     DatabaseUpdateName = 'submit_database_update_name',
     DatabaseImportCsv = 'submit_database_import_csv',
+    DatabaseBackupDelete = 'submit_database_backup_delete',
 
     ColumnCreate = 'submit_column_create',
     ColumnUpdate = 'submit_column_update',
