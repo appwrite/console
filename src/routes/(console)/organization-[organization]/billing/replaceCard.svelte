@@ -14,7 +14,7 @@
     import type { PaymentMethod } from '@stripe/stripe-js';
 
     let {
-        show = false,
+        show = $bindable(false),
         isBackup = false,
         methods,
         organization
