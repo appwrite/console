@@ -51,8 +51,8 @@
         onDelete?: (
             batchDelete: DeleteOperation,
             /**
-             * this is useful if you have a custom deletion logic
-             * and don't want to use the batchDelete helper provided!
+             * this is useful when you have a custom deletion logic
+             * and the default `batchDelete` helper doesn't fit the use-case!
              */
             selectedRows: string[]
         ) => Promise<DeleteOperationState> | DeleteOperationState;
