@@ -16,16 +16,27 @@
     let passwordHistoryEnabled = $state(false);
     let passwordDictionary = $state(false);
     let authPersonalDataCheck = $state(false);
+    let lastValidLimit = $state(5);
 
     let maxPasswordInputField: InputNumber | null = null;
 
     // Initialize and sync state when project updates
     $effect(() => {
         const historyValue = project?.authPasswordHistory;
-        passwordHistory = historyValue < 1 ? 5 : historyValue;
+        if (historyValue && historyValue > 0) {
+            passwordHistory = historyValue;
+            lastValidLimit = historyValue;
+        }
         passwordHistoryEnabled = (historyValue ?? 0) !== 0;
         passwordDictionary = project?.authPasswordDictionary ?? false;
         authPersonalDataCheck = project?.authPersonalDataCheck ?? false;
+    });
+
+    // restore last valid limit when enabling
+    $effect(() => {
+        if (passwordHistoryEnabled && passwordHistory < 1) {
+            passwordHistory = lastValidLimit;
+        }
     });
 
     $effect(() => {
