@@ -25,7 +25,9 @@
     import type { PageData } from './$types';
 
     export let data: PageData;
-    let organization = data.organization;
+
+    // Reactive statement to update organization when data changes
+    $: organization = data.organization;
 
     // why are these reactive?
     $: defaultPaymentMethod = data?.paymentMethods?.paymentMethods?.find(
@@ -133,7 +135,9 @@
             availableCredit={data?.availableCredit}
             currentPlan={data?.currentPlan}
             nextPlan={data?.nextPlan}
-            currentAggregation={data?.billingAggregation} />
+            currentAggregation={data?.billingAggregation}
+            limit={data?.limit}
+            offset={data?.offset} />
     {:else}
         <PlanSummaryOld
             availableCredit={data?.availableCredit}

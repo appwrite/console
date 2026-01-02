@@ -45,7 +45,7 @@
     import { headerAlert } from '$lib/stores/headerAlert';
     import { UsageRates } from '$lib/components/billing';
     import { canSeeProjects } from '$lib/stores/roles';
-    import { BottomModalAlert, EmailVerificationBanner } from '$lib/components';
+    import { BottomModalAlert } from '$lib/components';
     import {
         IconAnnotation,
         IconBookOpen,
@@ -334,8 +334,6 @@
 <CommandCenter />
 <Shell
     showSideNavigation={page.url.pathname !== '/' &&
-        !page?.params.organization &&
-        !page.url.pathname.includes(base + '/account') &&
         !page.url.pathname.includes(base + '/card') &&
         !page.url.pathname.includes(base + '/onboarding')}
     showHeader={!page.url.pathname.includes(base + '/onboarding/create-project')}
@@ -345,8 +343,6 @@
     <slot />
     <Footer slot="footer" />
 </Shell>
-
-<EmailVerificationBanner />
 
 {#if $wizard.show && $wizard.component}
     <svelte:component this={$wizard.component} {...$wizard.props} />

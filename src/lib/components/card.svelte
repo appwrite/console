@@ -21,21 +21,23 @@
     };
 
     type ButtonProps = {
-        isButton: true;
+        isButton: boolean;
         href?: never;
     };
 
     type AnchorProps = {
         href: string;
-        isButton?: never;
+        isButton?: boolean;
+        external?: boolean;
     };
 
+    let classes = '';
     type $$Props = BaseProps & (ButtonProps | AnchorProps | BaseProps) & BaseCardProps;
 
-    export let isDashed = false;
-    export let isButton = false;
+    export let isDashed: boolean = false;
+    export let isButton: boolean = false;
     export let href: string = null;
-    let classes = '';
+    export let external: boolean = false;
     export { classes as class };
     export let style = '';
     export let padding: $$Props['padding'] = 'm';
@@ -47,7 +49,15 @@
 </script>
 
 {#if href}
-    <Card.Link class={resolvedClasses} {href} {style} {padding} {radius} {variant} on:click>
+    <Card.Link
+        {href}
+        {style}
+        {padding}
+        {radius}
+        {variant}
+        on:click
+        class={resolvedClasses}
+        {...external ? { target: '_blank' } : {}}>
         <Layout.Stack gap="xl" height={fullHeightChild ? '100%' : undefined}>
             <slot />
         </Layout.Stack>

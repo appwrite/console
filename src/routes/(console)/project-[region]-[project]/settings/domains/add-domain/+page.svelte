@@ -30,7 +30,7 @@
 
     async function addDomain() {
         const apexDomain = getApexDomain(domainName);
-        let domain = data.domains?.domains.find((d: Models.Domain) => d.domain === apexDomain);
+        let domain = data.domainsList.domains.find((d: Models.Domain) => d.domain === apexDomain);
 
         if (apexDomain && !domain && isCloud) {
             try {
@@ -39,15 +39,7 @@
                     domain: apexDomain
                 });
             } catch (error) {
-                // apex might already be added on organization level, skip.
-                const alreadyAdded = error?.type === 'domain_already_exists';
-                if (!alreadyAdded) {
-                    addNotification({
-                        type: 'error',
-                        message: error.message
-                    });
-                    return;
-                }
+                // Apex domain creation error needs to be silent.
             }
         }
 
@@ -59,17 +51,7 @@
                 await goto(routeBase);
                 await invalidate(Dependencies.DOMAINS);
             } else {
-                let redirect = `${routeBase}/add-domain/verify-${domainName}?rule=${rule.$id}`;
-
-                if (isCloud) {
-                    /**
-                     * Domains are only on cloud!
-                     * Self-hosted instances have rules.
-                     */
-                    redirect += `&domain=${domain.$id}`;
-                }
-
-                await goto(redirect);
+                await goto(`${routeBase}/add-domain/verify-${domainName}?rule=${rule.$id}`);
                 await invalidate(Dependencies.DOMAINS);
             }
         } catch (error) {

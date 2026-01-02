@@ -99,6 +99,18 @@
                     replyToName: ''
                 };
                 break;
+            case Providers.Resend:
+                $providerParams[$provider] = {
+                    providerId: id,
+                    name: name,
+                    enabled: true,
+                    apiKey: '',
+                    fromEmail: '',
+                    fromName: '',
+                    replyToEmail: '',
+                    replyToName: ''
+                };
+                break;
             case Providers.SMTP:
                 $providerParams[$provider] = {
                     providerId: id,

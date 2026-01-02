@@ -187,7 +187,7 @@
             <Fieldset legend="Targets">
                 <Targets type={MessagingProviderType.Push} bind:topics bind:targets />
             </Fieldset>
-            <Fieldset legend="Schedule">
+            <Fieldset legend="Settings">
                 <Schedule bind:scheduledAt {targets} />
             </Fieldset>
         </Layout.Stack>

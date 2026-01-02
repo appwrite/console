@@ -95,10 +95,11 @@
     export let tooltipPortal = false;
     export let tooltipDelay: number = 0;
     export let tooltipPlacement: TooltipPlacement = undefined;
+    export let copyText: string | undefined = undefined;
 </script>
 
 {#key value}
-    <Copy {value} {event} {tooltipPortal} {tooltipDelay} {tooltipPlacement}>
+    <Copy {value} {event} {tooltipPortal} {tooltipDelay} {tooltipPlacement} {copyText}>
         <Tag size="xs" variant="code">
             <Icon icon={IconDuplicate} size="s" slot="start" />
             <span

@@ -2,7 +2,7 @@
     "name": "@appwrite/console",
     "type": "module",
     "engines": {
-        "node": ">=20"
+        "node": ">=22.0.0"
     },
     "scripts": {
         "dev": "vite dev",
@@ -12,7 +12,7 @@
         "clean": "rm -rf node_modules && rm -rf .svelte_kit && pnpm i --force",
         "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
         "check:watch": "svelte-check --tsconfig ./tsconfig.json --watch",
-        "format": "prettier --write .",
+        "format": "prettier --write --cache .",
         "lint": "prettier --check . && eslint .",
         "test": "TZ=EST vitest run",
         "test:ui": "TZ=EST vitest --ui",
@@ -22,15 +22,17 @@
     },
     "dependencies": {
         "@ai-sdk/svelte": "^1.1.24",
-        "@appwrite.io/console": "https://pkg.pr.new/appwrite-labs/cloud/@appwrite.io/console@636ed39",
+        "@appwrite.io/console": "https://pkg.vc/-/@appwrite/@appwrite.io/console@f21fc7f",
         "@appwrite.io/pink-icons": "0.25.0",
-        "@appwrite.io/pink-icons-svelte": "https://pkg.vc/-/@appwrite/@appwrite.io/pink-icons-svelte@8f82877",
+        "@appwrite.io/pink-icons-svelte": "https://pkg.vc/-/@appwrite/@appwrite.io/pink-icons-svelte@865e2fc",
         "@appwrite.io/pink-legacy": "^1.0.3",
-        "@appwrite.io/pink-svelte": "https://pkg.vc/-/@appwrite/@appwrite.io/pink-svelte@8f82877",
+        "@appwrite.io/pink-svelte": "https://pkg.vc/-/@appwrite/@appwrite.io/pink-svelte@865e2fc",
         "@faker-js/faker": "^9.9.0",
         "@popperjs/core": "^2.11.8",
         "@sentry/sveltekit": "^8.38.0",
         "@stripe/stripe-js": "^3.5.0",
+        "@threlte/core": "^8.3.1",
+        "@threlte/extras": "^9.7.1",
         "ai": "^2.2.37",
         "analytics": "^0.8.16",
         "cron-parser": "^4.9.0",
@@ -45,6 +47,7 @@
         "prismjs": "^1.30.0",
         "remarkable": "^2.0.1",
         "svelte-confetti": "^1.4.0",
+        "three": "^0.181.2",
         "tippy.js": "^6.3.7"
     },
     "devDependencies": {
@@ -52,7 +55,7 @@
         "@eslint/js": "^9.31.0",
         "@melt-ui/pp": "^0.3.2",
         "@melt-ui/svelte": "^0.86.5",
-        "@playwright/test": "^1.51.1",
+        "@playwright/test": "^1.55.1",
         "@sveltejs/adapter-static": "^3.0.8",
         "@sveltejs/kit": "^2.42.1",
         "@sveltejs/vite-plugin-svelte": "^5.0.3",
@@ -63,6 +66,7 @@
         "@types/deep-equal": "^1.0.4",
         "@types/prismjs": "^1.26.5",
         "@types/remarkable": "^2.0.8",
+        "@types/three": "^0.182.0",
         "@typescript-eslint/eslint-plugin": "^8.28.0",
         "@typescript-eslint/parser": "^8.28.0",
         "@vitest/ui": "^3.2.4",
@@ -95,5 +99,5 @@
             "svelte-preprocess"
         ]
     },
-    "packageManager": "pnpm@10.15.1"
+    "packageManager": "pnpm@10.20.0"
 }

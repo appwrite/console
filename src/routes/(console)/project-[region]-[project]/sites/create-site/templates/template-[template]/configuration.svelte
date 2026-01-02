@@ -41,8 +41,8 @@
 
     variables.map((variable) => {
         if (variable.value === '{apiEndpoint}') {
-            variable.value = getApiEndpoint();
-            variable.placeholder = getApiEndpoint();
+            variable.value = getApiEndpoint(page.params.region);
+            variable.placeholder = getApiEndpoint(page.params.region);
         } else if (variable.value === '{projectId}') {
             variable.value = page.params.project;
             variable.placeholder = page.params.project;

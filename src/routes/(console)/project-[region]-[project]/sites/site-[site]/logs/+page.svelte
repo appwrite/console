@@ -4,16 +4,17 @@
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { Container, ResponsiveContainerHeader } from '$lib/layout';
-    import { sdk } from '$lib/stores/sdk';
+    import { realtime } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import Table from './table.svelte';
     import { Card, Empty } from '@appwrite.io/pink-svelte';
     import { columns } from './store';
+    import { page } from '$app/state';
 
     export let data;
 
     onMount(() => {
-        return sdk.forConsole.client.subscribe('console', (response) => {
+        return realtime.forConsole(page.params.region, 'console', (response) => {
             if (response.events.includes('sites.*.executions.*')) {
                 invalidate(Dependencies.EXECUTIONS);
             }
