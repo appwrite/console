@@ -27,16 +27,14 @@
 
     async function updateSessionSecurity() {
         try {
-            await Promise.all([
-                sdk.forConsole.projects.updateSessionAlerts({
-                    projectId: project.$id,
-                    alerts: authSessionAlerts
-                }),
-                sdk.forConsole.projects.updateSessionInvalidation({
-                    projectId: project.$id,
-                    enabled: sessionInvalidation
-                })
-            ]);
+            await sdk.forConsole.projects.updateSessionAlerts({
+                projectId: project.$id,
+                alerts: authSessionAlerts
+            });
+            await sdk.forConsole.projects.updateSessionInvalidation({
+                projectId: project.$id,
+                enabled: sessionInvalidation
+            });
 
             await invalidate(Dependencies.PROJECT);
 
