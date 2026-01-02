@@ -106,9 +106,17 @@
     }
 
     function onGithubLogin() {
+        let successUrl = window.location.origin;
+
+        if (page.url.searchParams.has('code')) {
+            successUrl += `?code=${page.url.searchParams.get('code')}`;
+        } else if (page.url.searchParams.has('campaign')) {
+            successUrl += `?campaign=${page.url.searchParams.get('campaign')}`;
+        }
+
         sdk.forConsole.account.createOAuth2Session({
             provider: OAuthProvider.Github,
-            success: window.location.origin,
+            success: successUrl,
             failure: window.location.origin,
             scopes: ['read:user', 'user:email']
         });
@@ -124,6 +132,16 @@
     <svelte:fragment>
         <Form onSubmit={register}>
             <Layout.Stack>
+                {#if isCloud}
+                    <div style:margin-bottom="var(--gap-s, 8px)">
+                        <Button secondary fullWidth on:click={onGithubLogin} {disabled}>
+                            <span class="icon-github" aria-hidden="true"></span>
+                            <span class="text">Sign up with GitHub</span>
+                        </Button>
+                    </div>
+                    <span class="with-separators eyebrow-heading-3">or</span>
+                {/if}
+
                 <InputText
                     id="name"
                     label="Name"
@@ -159,18 +177,6 @@
                     >.</InputChoice>
 
                 <Button fullWidth submit disabled={disabled || !terms}>Sign up</Button>
-
-                {#if isCloud}
-                    <span class="with-separators eyebrow-heading-3">or</span>
-                    <Button
-                        secondary
-                        fullWidth
-                        on:click={onGithubLogin}
-                        disabled={disabled || !terms}>
-                        <span class="icon-github" aria-hidden="true"></span>
-                        <span class="text">Sign up with GitHub</span>
-                    </Button>
-                {/if}
             </Layout.Stack>
         </Form>
     </svelte:fragment>
