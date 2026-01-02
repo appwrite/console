@@ -83,10 +83,7 @@ export const load: PageLoad = async ({ parent, depends, url, route }) => {
 
     // make number
     const credits = availableCredit ? availableCredit.available : null;
-    const {
-        backup,
-        primary
-    } = getOrganizationPaymentMethods(organization, paymentMethods)
+    const { backup, primary } = getOrganizationPaymentMethods(organization, paymentMethods);
 
     return {
         paymentMethods,

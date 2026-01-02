@@ -68,8 +68,7 @@
         bind:error
         bind:open={showDelete}
         title="Remove payment method"
-        onSubmit={isBackup ? removeBackupMethod : removeDefaultMethod}
-    >
+        onSubmit={isBackup ? removeBackupMethod : removeDefaultMethod}>
         <Typography.Text>
             Are you sure you want to remove the payment method from <b>{$organization?.name}</b>?
         </Typography.Text>

@@ -12,12 +12,12 @@
     let {
         show = $bindable(false),
         isLinked = false,
-        selectedPaymentMethod,
+        selectedPaymentMethod
     }: {
         show: boolean;
         isLinked?: boolean;
         selectedPaymentMethod: PaymentMethodData;
-    } = $props()
+    } = $props();
 
     let year: number | null = $state(null);
     let month: string | null = $state(null);

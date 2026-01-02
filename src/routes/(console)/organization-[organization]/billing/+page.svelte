@@ -20,12 +20,15 @@
     import { Alert } from '@appwrite.io/pink-svelte';
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import { base } from '$app/paths';
     import type { PageData } from './$types';
+    import { resolve } from '$app/paths';
 
     export let data: PageData;
 
     $: organization = data.organization;
+    $: baseUrl = resolve('/(console)/organization-[organization]/billing', {
+        organization: organization.$id
+    });
 
     onMount(async () => {
         if (page.url.searchParams.has('type')) {
@@ -47,7 +50,7 @@
                     organization.$id,
                     invoice.clientSecret,
                     organization.paymentMethodId,
-                    `${base}/organization-${organization.$id}/billing?type=validate-invoice&invoice=${invoice.$id}`
+                    `${baseUrl}?type=validate-invoice&invoice=${invoice.$id}`
                 );
             }
 
@@ -140,8 +143,7 @@
         methods={data?.paymentMethods}
         organization={data?.organization}
         backupMethod={data.backupPaymentMethod}
-        primaryMethod={data.primaryPaymentMethod}
-    />
+        primaryMethod={data.primaryPaymentMethod} />
 
     <BillingAddress
         organization={data?.organization}
