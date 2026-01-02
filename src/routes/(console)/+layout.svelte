@@ -15,7 +15,6 @@
     import {
         calculateTrialDay,
         checkForEnterpriseTrial,
-        checkForMandate,
         checkForMarkedForDeletion,
         checkForMissingPaymentMethod,
         checkForNewDevUpgradePro,
@@ -308,7 +307,6 @@
             if (org?.billingPlan !== BillingPlan.FREE) {
                 await paymentExpired(org);
                 await checkPaymentAuthorizationRequired(org);
-                await checkForMandate(org);
 
                 if ($plansInfo.get(org.billingPlan)?.trialDays) {
                     calculateTrialDay(org);
