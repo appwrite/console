@@ -75,32 +75,31 @@
                                 </div>
                                 <span class="text u-trim">{log.userName ?? 'Anonymous'}</span>
                             {/if}
-</Layout.Stack>
-</Table.Cell>
+                        </Layout.Stack>
+                    </Table.Cell>
 
-<Table.Cell column="event" {root}>
-    {log.event}
-</Table.Cell>
+                    <Table.Cell column="event" {root}>
+                        {log.event}
+                    </Table.Cell>
 
-<Table.Cell column="location" {root}>
-    {#if log.countryCode !== '--'}
-        {log.countryName}
-    {:else}
-        Unknown
-    {/if}
-</Table.Cell>
+                    <Table.Cell column="location" {root}>
+                        {#if log.countryCode !== '--'}
+                            {log.countryName}
+                        {:else}
+                            Unknown
+                        {/if}
+                    </Table.Cell>
 
-<Table.Cell column="ip" {root}>
-    <InteractiveText variant="copy" text={log.ip} isVisible />
-</Table.Cell>
+                    <Table.Cell column="ip" {root}>
+                        <InteractiveText variant="copy" text={log.ip} isVisible />
+                    </Table.Cell>
 
-<Table.Cell column="date" {root}>
-    <DualTimeView time={log.time} showDatetime />
-</Table.Cell>
-</Table.Row.Base>
-{/each}
-</Table.Root>
-</div>
+                    <Table.Cell column="date" {root}>
+                        <DualTimeView time={log.time} showDatetime />
+                    </Table.Cell>
+                </Table.Row.Base>
+            {/each}
+        </Table.Root>
 
         <PaginationWithLimit
             {limit}
