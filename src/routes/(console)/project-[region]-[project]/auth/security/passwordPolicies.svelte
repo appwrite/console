@@ -8,65 +8,67 @@
     import { sdk } from '$lib/stores/sdk';
     import { Typography, Link, Layout } from '@appwrite.io/pink-svelte';
     import type { Models } from '@appwrite.io/console';
-    import { tick } from 'svelte';
+    import { onMount } from 'svelte';
 
-    let { project }: { project: Models.Project } = $props();
+    let {
+        project
+    }: {
+        project: Models.Project;
+    } = $props();
 
-    let passwordHistory = $state(5);
-    let passwordHistoryEnabled = $state(false);
-    let passwordDictionary = $state(false);
-    let authPersonalDataCheck = $state(false);
     let lastValidLimit = $state(5);
+    let passwordHistory = $state(5);
+    let passwordDictionary = $state(false);
+    let passwordHistoryEnabled = $state(false);
+    let authPersonalDataCheck = $state(false);
 
-    let maxPasswordInputField: InputNumber | null = null;
-
-    // Initialize and sync state when project updates
-    $effect(() => {
-        const historyValue = project?.authPasswordHistory;
+    onMount(() => {
+        // update initial states here in onMount.
+        const historyValue = project.authPasswordHistory;
         if (historyValue && historyValue > 0) {
             passwordHistory = historyValue;
             lastValidLimit = historyValue;
         }
+
         passwordHistoryEnabled = (historyValue ?? 0) !== 0;
-        passwordDictionary = project?.authPasswordDictionary ?? false;
-        authPersonalDataCheck = project?.authPersonalDataCheck ?? false;
+        passwordDictionary = project.authPasswordDictionary ?? false;
+        authPersonalDataCheck = project.authPersonalDataCheck ?? false;
     });
 
-    // restore last valid limit when enabling
     $effect(() => {
+        // restore last valid limit when enabling
         if (passwordHistoryEnabled && passwordHistory < 1) {
             passwordHistory = lastValidLimit;
         }
     });
 
-    $effect(() => {
-        if (passwordHistoryEnabled) {
-            tick().then(() => {
-                if (maxPasswordInputField) {
-                    maxPasswordInputField.addInputFocus();
-                }
-            });
-        }
-    });
+    const hasChanges = $derived.by(() => {
+        const dictChanged = passwordDictionary !== (project.authPasswordDictionary ?? false);
+        const dataCheckChanged = authPersonalDataCheck !== (project.authPersonalDataCheck ?? false);
+        const historyChanged =
+            passwordHistoryEnabled !== ((project.authPasswordHistory ?? 0) !== 0);
+        const limitChanged =
+            passwordHistoryEnabled &&
+            Number(passwordHistory) !== (project.authPasswordHistory ?? 0);
 
-    const hasChanges = $derived(
-        passwordHistoryEnabled !== ((project?.authPasswordHistory ?? 0) !== 0) ||
-            (passwordHistoryEnabled && passwordHistory !== (project?.authPasswordHistory ?? 0)) ||
-            passwordDictionary !== (project?.authPasswordDictionary ?? false) ||
-            authPersonalDataCheck !== (project?.authPersonalDataCheck ?? false)
-    );
+        return historyChanged || dictChanged || dataCheckChanged || limitChanged;
+    });
 
     async function updatePasswordPolicies() {
         try {
-            await sdk.forConsole.projects.updateAuthPasswordHistory({
+            const projectSdk = sdk.forConsole.projects;
+
+            await projectSdk.updateAuthPasswordHistory({
                 projectId: project.$id,
                 limit: passwordHistoryEnabled ? passwordHistory : 0
             });
-            await sdk.forConsole.projects.updateAuthPasswordDictionary({
+
+            await projectSdk.updateAuthPasswordDictionary({
                 projectId: project.$id,
                 enabled: passwordDictionary
             });
-            await sdk.forConsole.projects.updatePersonalDataCheck({
+
+            await projectSdk.updatePersonalDataCheck({
                 projectId: project.$id,
                 enabled: authPersonalDataCheck
             });
@@ -108,10 +110,10 @@
                                 required
                                 max={20}
                                 min={1}
-                                id="password-history"
+                                autofocus
                                 label="Limit"
+                                id="password-history"
                                 bind:value={passwordHistory}
-                                bind:this={maxPasswordInputField}
                                 helper="Maximum 20 passwords." />
                         {/if}
                     </Layout.Stack>
