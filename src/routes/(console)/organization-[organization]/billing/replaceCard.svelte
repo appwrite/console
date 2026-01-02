@@ -73,7 +73,7 @@
                 type: 'success',
                 message: `Your ${isBackup ? 'backup' : 'default'} payment method has been updated`
             });
-            invalidate(Dependencies.ORGANIZATION);
+            await invalidate(Dependencies.PAYMENT_METHODS);
             trackEvent(
                 isBackup ? Submit.OrganizationBackupPaymentDelete : Submit.OrganizationPaymentDelete
             );

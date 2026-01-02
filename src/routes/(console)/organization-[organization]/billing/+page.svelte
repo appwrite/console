@@ -9,7 +9,6 @@
     import PaymentHistory from './paymentHistory.svelte';
     import TaxId from './taxId.svelte';
     import { failedInvoice, tierToPlan, upgradeURL, useNewPricingModal } from '$lib/stores/billing';
-    import type { PaymentMethodData } from '$lib/sdk/billing';
     import { onMount } from 'svelte';
     import { page } from '$app/state';
     import { confirmPayment } from '$lib/stores/stripe';
@@ -26,17 +25,7 @@
 
     export let data: PageData;
 
-    // Reactive statement to update organization when data changes
     $: organization = data.organization;
-
-    // why are these reactive?
-    $: defaultPaymentMethod = data?.paymentMethods?.paymentMethods?.find(
-        (method: PaymentMethodData) => method.$id === organization?.paymentMethodId
-    );
-
-    $: backupPaymentMethod = data?.paymentMethods?.paymentMethods?.find(
-        (method: PaymentMethodData) => method.$id === organization?.backupPaymentMethodId
-    );
 
     onMount(async () => {
         if (page.url.searchParams.has('type')) {
@@ -115,7 +104,7 @@
             </Alert.Inline>
         {/if}
     {/if}
-    {#if defaultPaymentMethod?.failed && !backupPaymentMethod}
+    {#if data.primaryPaymentMethod?.failed && !data.backupPaymentMethod}
         <Alert.Inline
             status="error"
             title={`The default payment method for ${organization.name} has expired`}>
@@ -146,7 +135,14 @@
             currentInvoice={data?.billingInvoice} />
     {/if}
     <PaymentHistory />
-    <PaymentMethods organization={data?.organization} methods={data?.paymentMethods} />
+
+    <PaymentMethods
+        methods={data?.paymentMethods}
+        organization={data?.organization}
+        backupMethod={data.backupPaymentMethod}
+        primaryMethod={data.primaryPaymentMethod}
+    />
+
     <BillingAddress
         organization={data?.organization}
         billingAddress={data?.billingAddress}

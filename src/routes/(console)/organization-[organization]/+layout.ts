@@ -24,7 +24,7 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
     depends(Dependencies.MEMBERS);
     depends(Dependencies.PAYMENT_METHODS);
 
-    const requestedOrg = await checkPlatformAndRedirect(params, organizations, prefs);
+    await checkPlatformAndRedirect(params, organizations, prefs);
 
     let roles = isCloud ? [] : defaultRoles;
     let scopes = isCloud ? [] : defaultScopes;
@@ -46,13 +46,8 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
             sdk.forConsole.account.updatePrefs({ prefs: newPrefs });
         }
 
-        // fetch org only if we haven't already fetched it for platform check
-        const orgPromise: Promise<Organization> = requestedOrg
-            ? Promise.resolve(requestedOrg)
-            : (sdk.forConsole.teams.get({ teamId: params.organization }) as Promise<Organization>);
-
         const [org, members, countryList, locale] = await Promise.all([
-            orgPromise,
+            sdk.forConsole.teams.get({ teamId: params.organization }) as Promise<Organization>,
             sdk.forConsole.teams.listMemberships({ teamId: params.organization }),
             sdk.forConsole.locale.listCountries(),
             sdk.forConsole.locale.get(),
@@ -96,7 +91,7 @@ async function checkPlatformAndRedirect(
     params: { organization: string },
     organizations: { teams: Array<{ $id: string; platform?: string }> },
     prefs: Record<string, string>
-): Promise<Organization | null> {
+) {
     // check if preloaded
     let requestedOrg = organizations.teams.find((team) => team.$id === params.organization) as
         | Organization
@@ -154,8 +149,4 @@ async function checkPlatformAndRedirect(
             redirect(303, resolve('/(console)'));
         }
     }
-
-    // send the org,
-    // if already in the full list so we don't have to make another API request.
-    return requestedOrg;
 }
