@@ -81,7 +81,11 @@
     import { page } from '$app/state';
     import type { PageProps } from './$types';
     import type { Models } from '@appwrite.io/console';
-    import { type DeleteOperationState, MultiSelectionTable } from '$lib/components';
+    import {
+        type DeleteOperationState,
+        type DeleteOperation,
+        MultiSelectionTable
+    } from '$lib/components';
     import { sdk } from '$lib/stores/sdk';
     import { Submit, trackError } from '$lib/actions/analytics';
     import { invalidate } from '$app/navigation';
@@ -129,24 +133,26 @@
     }
 
     async function handlePlatformDelete(
-        selectedPlatforms: string[]
+        batchDelete: DeleteOperation
     ): Promise<DeleteOperationState> {
-        const promises = selectedPlatforms.map((platformId) => {
-            return sdk.forConsole.projects.deletePlatform({
+        const result = await batchDelete((platformId) =>
+            sdk.forConsole.projects.deletePlatform({
                 projectId: page.params.project,
                 platformId
-            });
-        });
+            })
+        );
 
         try {
-            await Promise.all(promises);
-            trackEvent(Submit.PlatformDelete, { total: selectedPlatforms.length });
-        } catch (error) {
-            trackError(error, Submit.PlatformDelete);
-            return error;
+            if (result.error) {
+                trackError(result.error, Submit.PlatformDelete);
+            } else {
+                trackEvent(Submit.PlatformDelete, { total: result.deleted.length });
+            }
         } finally {
             await invalidate(Dependencies.PROJECT);
         }
+
+        return result;
     }
 
     setOverviewAction(Action);

@@ -3,6 +3,7 @@
         Card,
         Confirm,
         type DeleteOperationState,
+        type DeleteOperation,
         Modal,
         MultiSelectionTable
     } from '$lib/components';
@@ -18,7 +19,7 @@
     import { columns } from './store';
     import { database } from '../store';
     import type { BackupArchive, BackupPolicy } from '$lib/sdk/backups';
-    import { Click, trackEvent } from '$lib/actions/analytics';
+    import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { copy } from '$lib/helpers/copy';
     import { LabelCard } from '$lib/components/index.js';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
@@ -110,39 +111,44 @@
         }
     }
 
-    async function deleteBackups(selectedRows: string[]): Promise<DeleteOperationState> {
-        const promises = selectedRows.map((archiveId) => {
-            return sdk
+    async function deleteSingleBackup(archiveId: string) {
+        try {
+            await sdk
                 .forProject(page.params.region, page.params.project)
                 .backups.deleteArchive(archiveId);
-        });
+
+            addNotification({
+                type: 'success',
+                message: 'Backup deleted'
+            });
+
+            showDelete = false;
+            selectedBackup = null;
+            await invalidate(Dependencies.BACKUPS);
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
+        }
+    }
+
+    async function deleteBackups(batchDelete: DeleteOperation): Promise<DeleteOperationState> {
+        const result = await batchDelete((archiveId) =>
+            sdk.forProject(page.params.region, page.params.project).backups.deleteArchive(archiveId)
+        );
 
         try {
-            await Promise.all(promises);
-
-            if (selectedBackup) {
-                addNotification({
-                    type: 'success',
-                    message: '1 backup deleted'
-                });
-            }
-        } catch (error) {
-            if (selectedBackup) {
-                addNotification({
-                    type: 'error',
-                    message: error.message
-                });
+            if (result.error) {
+                trackError(result.error, Submit.DatabaseBackupDelete);
             } else {
-                return error;
+                trackEvent(Submit.DatabaseBackupDelete);
             }
         } finally {
-            if (selectedBackup) {
-                showDelete = false;
-                selectedBackup = null;
-            }
-
             await invalidate(Dependencies.BACKUPS);
         }
+
+        return result;
     }
 
     async function restoreBackup() {
@@ -299,7 +305,7 @@
     bind:open={showDelete}
     onSubmit={async () => {
         if (!selectedBackup) return;
-        await deleteBackups([selectedBackup.$id]);
+        await deleteSingleBackup(selectedBackup.$id);
     }}>
     <Typography.Text>
         Are you sure you want to delete the <b>{getCleanBackupName(selectedBackup)}</b> backup?

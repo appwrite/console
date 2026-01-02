@@ -3,6 +3,7 @@
     import { page } from '$app/state';
     import {
         type DeleteOperationState,
+        type DeleteOperation,
         Empty,
         EmptyFilter,
         EmptySearch,
@@ -99,22 +100,24 @@
         }
     ]);
 
-    async function handleDelete(selectedRows: string[]): Promise<DeleteOperationState> {
-        const promises = selectedRows.map((id) =>
+    async function handleDelete(batchDelete: DeleteOperation): Promise<DeleteOperationState> {
+        const result = await batchDelete((id) =>
             sdk
                 .forProject(page.params.region, page.params.project)
                 .messaging.delete({ messageId: id })
         );
 
         try {
-            await Promise.all(promises);
-            trackEvent(Submit.MessagingMessageDelete, { total: selectedRows.length });
-        } catch (error) {
-            trackError(error, Submit.MessagingMessageDelete);
-            return error;
+            if (result.error) {
+                trackError(result.error, Submit.MessagingMessageDelete);
+            } else {
+                trackEvent(Submit.MessagingMessageDelete, { total: result.deleted.length });
+            }
         } finally {
             await invalidate(Dependencies.MESSAGING_MESSAGES);
         }
+
+        return result;
     }
 
     onMount(() => {
