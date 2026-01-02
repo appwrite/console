@@ -93,6 +93,11 @@
         const deleted: string[] = [];
         let firstError: Error | undefined;
 
+        // prevent infinite loop
+        if (batchSize !== undefined) {
+            batchSize = Math.max(1, Math.floor(Math.abs(batchSize)));
+        }
+
         async function processBatch(batch: string[]) {
             // build promises
             const results = await Promise.allSettled(batch.map((id) => deleteFn(id)));
