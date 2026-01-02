@@ -63,10 +63,6 @@
             color: [loading ? 'var(--border-neutral-strong)' : 'var(--bgcolor-accent)']
         } satisfies EChartsOption;
     });
-
-    $effect(() => {
-        console.log(totalMetrics($usage?.requests));
-    });
 </script>
 
 <Layout.Stack gap="l">
