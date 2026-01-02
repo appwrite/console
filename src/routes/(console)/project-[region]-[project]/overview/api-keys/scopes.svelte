@@ -34,6 +34,7 @@
     import { Accordion, Divider, Layout, Selector } from '@appwrite.io/pink-svelte';
 
     export let scopes: string[];
+    export let type: 'api' | 'organization' | 'account' = 'api';
 
     const baseFilteredScopes = allScopes.filter((scope) => {
         const val = scope.scope;
@@ -43,16 +44,19 @@
         return !legacyPrefixes.some((prefix) => val.startsWith(prefix));
     });
 
+    console.log(baseFilteredScopes);
+
     // insert cloud-only scopes right after databases.write
     const databasesWriteIndex = baseFilteredScopes.findIndex((s) => s.scope === 'databases.write');
-    const filteredScopes =
+    const filteredScopes = (
         isCloud && databasesWriteIndex !== -1
             ? [
                   ...baseFilteredScopes.slice(0, databasesWriteIndex + 1),
                   ...cloudOnlyBackupScopes,
                   ...baseFilteredScopes.slice(databasesWriteIndex + 1)
               ]
-            : baseFilteredScopes;
+            : baseFilteredScopes
+    ).filter((scope) => scope.type === type);
 
     // include all scopes
     const scopeCatalog = new Set([
@@ -60,25 +64,7 @@
         ...(isCloud ? cloudOnlyBackupScopes.map((s) => s.scope) : [])
     ]);
 
-    enum Category {
-        Auth = 'Auth',
-        Database = 'Database',
-        Functions = 'Functions',
-        Messaging = 'Messaging',
-        Sites = 'Sites',
-        Storage = 'Storage',
-        Other = 'Other'
-    }
-
-    const categories = [
-        Category.Auth,
-        Category.Database,
-        Category.Functions,
-        Category.Storage,
-        Category.Messaging,
-        Category.Sites,
-        Category.Other
-    ];
+    const categories = Array.from(new Set(filteredScopes.map((scope) => scope.category)));
 
     let mounted = false;
 
@@ -150,7 +136,7 @@
         return 'indeterminate';
     }
 
-    function onCategoryChange(event: CustomEvent<boolean | 'indeterminate'>, category: Category) {
+    function onCategoryChange(event: CustomEvent<boolean | 'indeterminate'>, category: string) {
         if (event.detail === 'indeterminate') return;
         filteredScopes.forEach((s) => {
             if (s.category === category) {

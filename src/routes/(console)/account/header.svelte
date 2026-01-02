@@ -11,42 +11,46 @@
 
     const path = `${base}/account`;
 
-    $: permanentTabs = [
-        {
-            href: path,
-            title: 'Overview',
-            event: 'overview'
-        },
-        {
-            href: `${path}/sessions`,
-            title: 'Sessions',
-            event: 'sessions'
-        },
-        {
-            href: `${path}/activity`,
-            title: 'Activity',
-            event: 'activity',
-            hasChildren: true
-        },
-        {
-            href: `${path}/organizations`,
-            title: 'Organizations',
-            event: 'organizations',
-            hasChildren: true
-        }
-    ];
-
-    $: tabs = isCloud
-        ? [
-              ...permanentTabs,
-              {
-                  href: `${path}/payments`,
-                  title: 'Payments',
-                  event: 'payments',
-                  hasChildren: true
-              }
-          ]
-        : permanentTabs;
+    const tabs = $derived(
+        [
+            {
+                href: path,
+                title: 'Overview',
+                event: 'overview'
+            },
+            {
+                href: `${path}/sessions`,
+                title: 'Sessions',
+                event: 'sessions'
+            },
+            {
+                href: `${path}/activity`,
+                title: 'Activity',
+                event: 'activity',
+                hasChildren: true
+            },
+            {
+                href: `${path}/organizations`,
+                title: 'Organizations',
+                event: 'organizations',
+                hasChildren: true
+            },
+            {
+                href: `${path}/payments`,
+                title: 'Payments',
+                event: 'payments',
+                hasChildren: true,
+                disabled: !isCloud
+            },
+            {
+                href: `${path}/integrations`,
+                title: 'Integrations',
+                event: 'integrations',
+                hasChildren: true,
+                disabled: !isCloud
+            }
+        ].filter((tab) => !tab.disabled)
+    );
 </script>
 
 <Cover>

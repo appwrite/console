@@ -10,33 +10,109 @@
 
     export let showDelete = false;
     export let keyIds: string[] = [];
-    export let keyType: 'api' | 'dev' = 'api';
+    export let keyType: 'api' | 'dev' | 'organization' | 'account' = 'api';
 
     let error: string;
 
-    const isApiKey = keyType === 'api';
-    const label = isApiKey ? 'API' : 'dev';
     const projectId = page.params.project;
+    const organizationId = page.params.organization;
+
+    function getLabel(): string {
+        switch (keyType) {
+            case 'api':
+                return 'API';
+            case 'dev':
+                return 'dev';
+            case 'organization':
+                return 'organization';
+            case 'account':
+                return 'account';
+        }
+    }
+
+    function getSlug(): string {
+        switch (keyType) {
+            case 'api':
+                return 'api-keys';
+            case 'dev':
+                return 'dev-keys';
+            case 'organization':
+                return 'organization-keys';
+            case 'account':
+                return 'account-keys';
+        }
+    }
+
+    function getEvent() {
+        switch (keyType) {
+            case 'api':
+                return Submit.KeyDelete;
+            case 'dev':
+                return Submit.DevKeyDelete;
+            case 'organization':
+                return Submit.KeyDelete;
+            case 'account':
+                return Submit.KeyDelete;
+        }
+    }
+
+    function getDependency() {
+        switch (keyType) {
+            case 'api':
+                return Dependencies.KEYS;
+            case 'dev':
+                return Dependencies.DEV_KEYS;
+            case 'organization':
+                return Dependencies.ORGANIZATION;
+            case 'account':
+                return Dependencies.ACCOUNT;
+        }
+    }
+
+    function deleteKey(keyId: string) {
+        switch (keyType) {
+            case 'api':
+                return sdk.forConsole.projects.deleteKey({
+                    projectId,
+                    keyId
+                });
+            case 'dev':
+                return sdk.forConsole.projects.deleteDevKey({
+                    projectId,
+                    keyId
+                });
+            case 'organization':
+                return sdk.forConsole.organizations.deleteKey({
+                    organizationId,
+                    keyId
+                });
+            case 'account':
+                return sdk.forConsole.account.deleteKey({
+                    keyId
+                });
+        }
+    }
+
+    async function postDeleteRedirect() {
+        switch (keyType) {
+            case 'api':
+                await goto(
+                    `${base}/project-${page.params.region}-${page.params.project}/overview/${slug}`
+                );
+                break;
+            default:
+                break;
+        }
+    }
+
+    const label = getLabel();
+    const slug = getSlug();
+    const event = getEvent();
+    const dependency = getDependency();
 
     async function handleDelete() {
-        const slug = isApiKey ? 'api-keys' : 'dev-keys';
-        const event = isApiKey ? Submit.KeyDelete : Submit.DevKeyDelete;
-        const dependency = isApiKey ? Dependencies.KEYS : Dependencies.DEV_KEYS;
-
         try {
-            await Promise.all(
-                keyIds.map((key) =>
-                    isApiKey
-                        ? sdk.forConsole.projects.deleteKey({
-                              projectId,
-                              keyId: key
-                          })
-                        : sdk.forConsole.projects.deleteDevKey({
-                              projectId,
-                              keyId: key
-                          })
-                )
-            );
+            await Promise.all(keyIds.map((key) => deleteKey(key)));
 
             await invalidate(dependency);
             showDelete = false;
@@ -47,9 +123,8 @@
             });
 
             trackEvent(event);
-            await goto(
-                `${base}/project-${page.params.region}-${page.params.project}/overview/${slug}`
-            );
+
+            postDeleteRedirect();
         } catch (e) {
             error = e.message;
             trackError(e, event);

@@ -6,6 +6,7 @@
     import { Button, Form, InputText } from '$lib/elements/forms';
     import { toLocaleDate, toLocaleDateTime } from '$lib/helpers/date';
     import { Container } from '$lib/layout';
+    import { page } from '$app/state';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
@@ -19,20 +20,90 @@
     import { getEffectiveScopes } from '../api-keys/scopes.svelte';
 
     export let key: Models.DevKey | Models.Key;
-    export let keyType: 'api' | 'dev' = 'api';
+    export let keyType: 'api' | 'dev' | 'organization' | 'account' = 'api';
 
     let name: string = null;
     let scopes: string[] = null;
 
+    function getCardTitle() {
+        switch (keyType) {
+            case 'api':
+            case 'dev':
+            case 'organization':
+                return 'Key details';
+            case 'account':
+                return 'Token details';
+        }
+    }
+
+    function getLabel() {
+        switch (keyType) {
+            case 'api':
+                return 'API key';
+            case 'dev':
+                return 'Dev key';
+            case 'organization':
+                return 'Organization key';
+            case 'account':
+                return 'Account token';
+        }
+    }
+
+    function getEvent() {
+        switch (keyType) {
+            case 'api':
+                return Submit.KeyUpdateName;
+            case 'dev':
+                return Submit.DevKeyUpdateName;
+            case 'organization':
+                return Submit.OrganizationKeyUpdateName;
+            case 'account':
+                return Submit.AccountTokenUpdateName;
+        }
+    }
+
+    function getScopeUpdateEvent() {
+        switch (keyType) {
+            case 'api':
+                return Submit.KeyUpdateScopes;
+            case 'organization':
+                return Submit.OrganizationKeyUpdateScopes;
+            case 'account':
+                return Submit.AccountTokenUpdateScopes;
+            default:
+                return Submit.KeyUpdateScopes;
+        }
+    }
+
+    function getDependency() {
+        switch (keyType) {
+            case 'api':
+                return Dependencies.KEY;
+            case 'dev':
+                return Dependencies.DEV_KEY;
+            case 'organization':
+                return Dependencies.ORGANIZATION;
+            case 'account':
+                return Dependencies.ACCOUNT;
+        }
+    }
+
+    function hasScopes() {
+        switch (keyType) {
+            case 'api':
+            case 'organization':
+            case 'account':
+                return true;
+            case 'dev':
+                return false;
+        }
+    }
+
     let showDelete = false;
-    const isApiKey = keyType === 'api';
-    const label = isApiKey ? 'API' : 'Dev';
-    const event = isApiKey ? Submit.KeyUpdateName : Submit.DevKeyUpdateName;
-    const dependency = isApiKey ? Dependencies.KEY : Dependencies.DEV_KEY;
 
     onMount(() => {
         name ??= key.name;
-        if (isApiKey) {
+        if (hasScopes()) {
             scopes ??= (key as Models.Key).scopes;
         }
     });
@@ -43,61 +114,102 @@
 
     async function updateName() {
         try {
-            if (isApiKey) {
-                await sdk.forConsole.projects.updateKey({
-                    projectId: $project.$id,
-                    keyId: key.$id,
-                    name,
-                    scopes,
-                    expire: key.expire
-                });
-            } else {
-                await sdk.forConsole.projects.updateDevKey({
-                    projectId: $project.$id,
-                    keyId: key.$id,
-                    name,
-                    expire: key.expire
-                });
+            switch (keyType) {
+                case 'api':
+                    await sdk.forConsole.projects.updateKey({
+                        projectId: $project.$id,
+                        keyId: key.$id,
+                        name,
+                        scopes: asApiKey(key).scopes,
+                        expire: key.expire
+                    });
+                    break;
+                case 'dev':
+                    await sdk.forConsole.projects.updateDevKey({
+                        projectId: $project.$id,
+                        keyId: key.$id,
+                        name,
+                        expire: key.expire
+                    });
+                    break;
+                case 'account':
+                    await sdk.forConsole.account.updateKey({
+                        keyId: key.$id,
+                        name,
+                        expire: key.expire,
+                        scopes: asApiKey(key).scopes
+                    });
+                    break;
+                case 'organization':
+                    await sdk.forConsole.organizations.updateKey({
+                        organizationId: page.params.organization,
+                        keyId: key.$id,
+                        name,
+                        expire: key.expire,
+                        scopes: asApiKey(key).scopes
+                    });
+                    break;
             }
 
-            await invalidate(dependency);
-            trackEvent(event);
+            await invalidate(getDependency());
+            trackEvent(getEvent());
             addNotification({
                 type: 'success',
-                message: `${label} key name has been updated`
+                message: `${getLabel()} name has been updated`
             });
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
-            trackError(error, event);
+            trackError(error, getEvent());
         }
     }
 
     async function updateScopes() {
         try {
-            await sdk.forConsole.projects.updateKey({
-                projectId: $project.$id,
-                keyId: key.$id,
-                name: key.name,
-                scopes,
-                expire: key.expire
-            });
-            await invalidate(Dependencies.KEY);
-            trackEvent(Submit.KeyUpdateScopes, {
+            switch (keyType) {
+                case 'api':
+                    await sdk.forConsole.projects.updateKey({
+                        projectId: $project.$id,
+                        keyId: key.$id,
+                        name: key.name,
+                        scopes,
+                        expire: key.expire
+                    });
+                    break;
+                case 'account':
+                    await sdk.forConsole.account.updateKey({
+                        keyId: key.$id,
+                        name: key.name,
+                        scopes,
+                        expire: key.expire
+                    });
+                    break;
+                case 'organization':
+                    await sdk.forConsole.organizations.updateKey({
+                        organizationId: page.params.organization,
+                        keyId: key.$id,
+                        name: key.name,
+                        scopes,
+                        expire: key.expire
+                    });
+                    break;
+            }
+            await invalidate(getDependency());
+            trackEvent(getScopeUpdateEvent(), {
                 scopes
             });
             addNotification({
                 type: 'success',
-                message: 'API key scopes have been updated'
+                message: getLabel() + ' scopes have been updated'
             });
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
-            trackError(error, Submit.KeyUpdateScopes);
+            trackError(error, getScopeUpdateEvent());
         }
     }
 
@@ -111,13 +223,13 @@
 </script>
 
 <svelte:head>
-    <title>{label} key - Appwrite</title>
+    <title>{getLabel()} - Appwrite</title>
 </svelte:head>
 
 <Container>
     {@const accessedAt = key.accessedAt ? toLocaleDate(key.accessedAt) : 'never'}
     <CardGrid>
-        <svelte:fragment slot="title">Key details</svelte:fragment>
+        <svelte:fragment slot="title">{getCardTitle()}</svelte:fragment>
         <svelte:fragment slot="aside">
             <Layout.GridFraction start={1} end={2} gap="xxxl" rowGap="xl">
                 {#each Object.entries(tiles) as [label, value]}
@@ -144,7 +256,7 @@
     <Form onSubmit={updateName}>
         <CardGrid>
             <svelte:fragment slot="title">Name</svelte:fragment>
-            Choose any name that will help you distinguish between {label} keys.
+            Choose any name that will help you distinguish between {getLabel()}s.
             <svelte:fragment slot="aside">
                 <InputText
                     id="name"
@@ -160,18 +272,18 @@
         </CardGrid>
     </Form>
 
-    {#if isApiKey}
+    {#if hasScopes() && keyType !== 'dev'}
         <Form onSubmit={updateScopes}>
             {@const apiKey = asApiKey(key)}
             {@const apiKeyCorrectScopes = getEffectiveScopes(apiKey.scopes)}
             {@const currentEffective = scopes ? getEffectiveScopes(scopes) : null}
             <CardGrid>
                 <svelte:fragment slot="title">Scopes</svelte:fragment>
-                You can choose which permission scope to grant your application. It is a best practice
-                to allow only the permissions you need to meet your project goals.
+                You can choose which permission scope to grant your {getLabel()}. It is a best
+                practice to allow only the permissions you need to meet your goals.
                 <svelte:fragment slot="aside">
                     {#if scopes !== null}
-                        <Scopes bind:scopes />
+                        <Scopes type={keyType} bind:scopes />
                     {/if}
                 </svelte:fragment>
 
@@ -189,8 +301,8 @@
     <UpdateExpirationDate {keyType} {key} />
 
     <CardGrid>
-        <svelte:fragment slot="title">Delete {label} key</svelte:fragment>
-        The {label} key will be permanently deleted. This action is irreversible.
+        <svelte:fragment slot="title">Delete {getLabel()}</svelte:fragment>
+        The {getLabel()} will be permanently deleted. This action is irreversible.
         <svelte:fragment slot="aside">
             <Box>
                 <div class="u-flex u-gap-16">

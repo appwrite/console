@@ -35,6 +35,15 @@
             keys: ['g', 's'],
             disabled: page.url.pathname.endsWith('/settings') || !$isOwner,
             group: 'navigation'
+        },
+        {
+            label: 'Go to integrations',
+            callback: () => {
+                goto(`${base}/organization-${data.organization.$id}/integrations`);
+            },
+            keys: ['g', 'i'],
+            disabled: page.url.pathname.endsWith('/integrations') || !$isOwner,
+            group: 'navigation'
         }
     ]);
 </script>
