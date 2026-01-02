@@ -50,6 +50,10 @@
         deleteContentNotice?: Snippet;
         onDelete?: (
             batchDelete: DeleteOperation,
+            /**
+             * this is useful if you have a custom deletion logic
+             * and don't want to use the batchDelete helper provided!
+             */
             selectedRows: string[]
         ) => Promise<DeleteOperationState> | DeleteOperationState;
         onCancel?: () => Promise<void> | void;
