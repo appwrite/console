@@ -4,7 +4,6 @@
     import CustomId from '$lib/components/customId.svelte';
     import { SvgIcon } from '$lib/components/index.js';
     import { Button, Form, InputSelect } from '$lib/elements/forms';
-    import type { AllowedRegions } from '$lib/sdk/billing.js';
     import { app } from '$lib/stores/app';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
@@ -23,6 +22,7 @@
         Typography
     } from '@appwrite.io/pink-svelte';
     import { filterRegions } from '$lib/helpers/regions';
+    import type { AllowedRegions } from '$lib/sdk/billing';
 
     let { data } = $props();
 

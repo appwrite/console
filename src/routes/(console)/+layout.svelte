@@ -6,7 +6,7 @@
 
     import { app } from '$lib/stores/app';
     import { database, checkForDatabaseBackupPolicies } from '$lib/stores/database';
-    import { newOrgModal, organization, type Organization } from '$lib/stores/organization';
+    import { newOrgModal, organization } from '$lib/stores/organization';
     import { wizard } from '$lib/stores/wizard';
     import { afterUpdate, onMount } from 'svelte';
     import { loading } from '$routes/store';
@@ -23,7 +23,6 @@
         checkForUsageLimit,
         checkPaymentAuthorizationRequired,
         paymentExpired,
-        plansInfo,
         showUsageRatesModal
     } from '$lib/stores/billing';
     import { goto } from '$app/navigation';
@@ -57,6 +56,7 @@
         IconSwitchHorizontal
     } from '@appwrite.io/pink-icons-svelte';
     import type { LayoutData } from './$types';
+    import type { Models } from '@appwrite.io/console';
 
     export let data: LayoutData;
 
@@ -292,7 +292,7 @@
     });
 
     let currentOrganizationId = null;
-    async function checkForUsageLimits(org: Organization) {
+    async function checkForUsageLimits(org: Models.Organization) {
         if (!org) return;
         if (currentOrganizationId === org.$id) return;
         if (isCloud) {
@@ -310,7 +310,7 @@
                 await checkPaymentAuthorizationRequired(org);
                 await checkForMandate(org);
 
-                if ($plansInfo.get(org.billingPlan)?.trialDays) {
+                if (org?.billingTrialDays) {
                     calculateTrialDay(org);
                 }
             }

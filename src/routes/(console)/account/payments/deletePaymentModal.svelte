@@ -5,19 +5,21 @@
     import Confirm from '$lib/components/confirm.svelte';
     import { Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
-    import type { Organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import { Layout, Link, Typography } from '@appwrite.io/pink-svelte';
+    import type { Models } from '@appwrite.io/console';
 
-    export let linkedOrgs: Organization[] = [];
-    export let showDelete = false;
     export let method: string;
+    export let showDelete = false;
+    export let linkedOrgs: Array<Models.Organization> = [];
 
     let error: string;
 
     async function handleDelete() {
         try {
-            await sdk.forConsole.billing.deletePaymentMethod(method);
+            await sdk.forConsole.account.deletePaymentMethod({
+                paymentMethodId: method
+            });
             await invalidate(Dependencies.PAYMENT_METHODS);
             showDelete = false;
             addNotification({

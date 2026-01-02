@@ -5,10 +5,8 @@
     import { CardGrid, CreditCardBrandImage, CreditCardInfo } from '$lib/components';
     import { BillingPlan, Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
-    import { type Organization } from '$lib/stores/organization';
     import { Button } from '$lib/elements/forms';
     import { hasStripePublicKey, isCloud } from '$lib/system';
-    import type { PaymentList, PaymentMethodData } from '$lib/sdk/billing';
     import DeleteOrgPayment from './deleteOrgPayment.svelte';
     import ReplaceCard from './replaceCard.svelte';
     import EditPaymentModal from '$routes/(console)/account/payments/editPaymentModal.svelte';
@@ -33,24 +31,25 @@
         IconSwitchHorizontal,
         IconTrash
     } from '@appwrite.io/pink-icons-svelte';
+    import type { Models } from '@appwrite.io/console';
 
-    export let organization: Organization;
-    export let methods: PaymentList;
+    export let organization: Models.Organization;
+    export let methods: Models.PaymentMethodList;
 
-    let showPayment = false;
     let showEdit = false;
     let showDelete = false;
+    let showPayment = false;
     let showReplace = false;
     let isSelectedBackup = false;
-    let backupPaymentMethod: PaymentMethodData;
-    let defaultPaymentMethod: PaymentMethodData;
+    let backupPaymentMethod: Models.PaymentMethod;
+    let defaultPaymentMethod: Models.PaymentMethod;
 
     async function addPaymentMethod(paymentMethodId: string) {
         try {
-            await sdk.forConsole.billing.setOrganizationPaymentMethod(
-                organization.$id,
+            await sdk.forConsole.organizations.setDefaultPaymentMethod({
+                organizationId: organization.$id,
                 paymentMethodId
-            );
+            });
             addNotification({
                 type: 'success',
                 message: `A new payment method has been added to ${organization.name}`
@@ -68,10 +67,10 @@
 
     async function addBackupPaymentMethod(paymentMethodId: string) {
         try {
-            await sdk.forConsole.billing.setOrganizationPaymentMethodBackup(
-                organization.$id,
+            await sdk.forConsole.organizations.setBackupPaymentMethod({
+                organizationId: organization.$id,
                 paymentMethodId
-            );
+            });
             addNotification({
                 type: 'success',
                 message: `A new payment method has been added to ${organization.name}`
@@ -87,14 +86,20 @@
     }
 
     $: if (organization?.backupPaymentMethodId) {
-        sdk.forConsole.billing
-            .getOrganizationPaymentMethod(organization.$id, organization.backupPaymentMethodId)
+        sdk.forConsole.organizations
+            .getPaymentMethod({
+                organizationId: organization.$id,
+                paymentMethodId: organization.backupPaymentMethodId
+            })
             .then((res) => (backupPaymentMethod = res));
     }
 
     $: if (organization?.paymentMethodId) {
-        sdk.forConsole.billing
-            .getOrganizationPaymentMethod(organization.$id, organization.paymentMethodId)
+        sdk.forConsole.organizations
+            .getPaymentMethod({
+                organizationId: organization.$id,
+                paymentMethodId: organization.paymentMethodId
+            })
             .then((res) => (defaultPaymentMethod = res));
     }
 

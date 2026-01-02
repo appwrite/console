@@ -31,10 +31,10 @@
 
     async function updateSelected() {
         try {
-            await sdk.forConsole.billing.updateSelectedProjects(
-                projects[0].teamId,
-                selectedProjects
-            );
+            await sdk.forConsole.organizations.updateProjects({
+                organizationId,
+                projects: selectedProjects
+            });
 
             showSelectProject = false;
             invalidate(Dependencies.ORGANIZATION);
