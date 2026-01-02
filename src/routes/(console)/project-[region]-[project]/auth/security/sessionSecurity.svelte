@@ -8,22 +8,24 @@
     import { sdk } from '$lib/stores/sdk';
     import { Typography } from '@appwrite.io/pink-svelte';
     import type { Models } from '@appwrite.io/console';
+    import { onMount } from 'svelte';
 
     let { project }: { project: Models.Project } = $props();
 
     let authSessionAlerts = $state(false);
     let sessionInvalidation = $state(false);
 
-    // Initialize state from project
-    $effect(() => {
+    onMount(() => {
         authSessionAlerts = project?.authSessionAlerts ?? false;
         sessionInvalidation = project?.authInvalidateSessions ?? false;
     });
 
-    const hasChanges = $derived(
-        authSessionAlerts !== (project?.authSessionAlerts ?? false) ||
-            sessionInvalidation !== (project?.authInvalidateSessions ?? false)
-    );
+    const hasChanges = $derived.by(() => {
+        const alertsChanged = authSessionAlerts !== (project?.authSessionAlerts ?? false);
+        const invalidationChanged =
+            sessionInvalidation !== (project?.authInvalidateSessions ?? false);
+        return alertsChanged || invalidationChanged;
+    });
 
     async function updateSessionSecurity() {
         try {

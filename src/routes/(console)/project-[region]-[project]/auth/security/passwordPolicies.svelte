@@ -43,11 +43,15 @@
     });
 
     const hasChanges = $derived.by(() => {
-        const dictChanged = passwordDictionary !== project.authPasswordDictionary;
-        const dataCheckChanged = authPersonalDataCheck !== project.authPersonalDataCheck;
-        const historyChanged = passwordHistoryEnabled !== (project.authPasswordHistory !== 0);
+        const dictChanged = passwordDictionary !== (project.authPasswordDictionary ?? false);
+        const dataCheckChanged = authPersonalDataCheck !== (project.authPersonalDataCheck ?? false);
+        const historyChanged =
+            passwordHistoryEnabled !== ((project.authPasswordHistory ?? 0) !== 0);
+        const limitChanged =
+            passwordHistoryEnabled &&
+            Number(passwordHistory) !== (project.authPasswordHistory ?? 0);
 
-        return historyChanged || dictChanged || dataCheckChanged;
+        return historyChanged || dictChanged || dataCheckChanged || limitChanged;
     });
 
     async function updatePasswordPolicies() {
