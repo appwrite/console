@@ -78,32 +78,12 @@
 
         <Layout.Stack gap="l">
             {#if data.recordList.total}
-                <Layout.Stack
-                    direction="row"
-                    gap="m"
-                    justifyContent="space-between"
-                    alignItems="center"
-                    wrap="wrap">
-                    <Layout.Stack
-                        direction="row"
-                        gap="s"
-                        alignItems="center"
-                        wrap="wrap"
-                        style="flex: 1">
-                        <Button secondary on:click={() => (showImportModal = true)}>
-                            <Icon icon={IconUpload} size="s" slot="start" />
-                            Import zone file
-                        </Button>
-                        <Tooltip>
-                            <PinkButton.Button variant="secondary" icon on:click={downloadRecords}>
-                                <Icon icon={IconDownload} size="s" />
-                            </PinkButton.Button>
-                            <svelte:fragment slot="tooltip">Export as .txt</svelte:fragment>
-                        </Tooltip>
-                        {#if $isSmallViewport}
+                {#if $isSmallViewport}
+                    <Layout.Stack gap="s">
+                        <div class="u-flex u-gap-8">
                             <div style="flex: 1">
                                 <Popover let:toggle padding="none">
-                                    <Button secondary fullWidthMobile on:click={toggle}
+                                    <Button secondary fullWidth on:click={toggle}
                                         >Add preset</Button>
                                     <svelte:fragment slot="tooltip" let:toggle>
                                         <ActionMenu.Root>
@@ -119,14 +99,22 @@
                                     </svelte:fragment>
                                 </Popover>
                             </div>
-                        {/if}
-                    </Layout.Stack>
-                    <Layout.Stack
-                        direction="row"
-                        gap="s"
-                        alignItems="center"
-                        style="flex: 1; min-width: 250px; justify-content: flex-end;">
-                        {#if $isSmallViewport}
+                            <Button
+                                secondary
+                                icon
+                                ariaLabel="Import zone file"
+                                on:click={() => (showImportModal = true)}>
+                                <Icon size="m" icon={IconUpload} />
+                            </Button>
+                            <Tooltip>
+                                <PinkButton.Button
+                                    variant="secondary"
+                                    icon
+                                    on:click={downloadRecords}>
+                                    <Icon icon={IconDownload} size="m" />
+                                </PinkButton.Button>
+                                <svelte:fragment slot="tooltip">Export as .txt</svelte:fragment>
+                            </Tooltip>
                             <Button
                                 secondary
                                 icon
@@ -134,11 +122,46 @@
                                 on:click={() => (showDisplaySettingsModal = true)}>
                                 <Icon icon={IconAdjustments} />
                             </Button>
-                        {:else}
+                        </div>
+                        <Button fullWidth on:click={() => (showCreate = true)}>
+                            <Icon size="s" icon={IconPlus} slot="start" />
+                            Create record
+                        </Button>
+                    </Layout.Stack>
+                {:else}
+                    <Layout.Stack
+                        direction="row"
+                        gap="m"
+                        justifyContent="space-between"
+                        alignItems="center"
+                        wrap="wrap">
+                        <Layout.Stack
+                            direction="row"
+                            gap="s"
+                            alignItems="center"
+                            wrap="wrap"
+                            style="flex: 1">
+                            <Button secondary on:click={() => (showImportModal = true)}>
+                                <Icon icon={IconUpload} size="s" slot="start" />
+                                Import zone file
+                            </Button>
+                            <Tooltip>
+                                <PinkButton.Button
+                                    variant="secondary"
+                                    icon
+                                    on:click={downloadRecords}>
+                                    <Icon icon={IconDownload} size="s" />
+                                </PinkButton.Button>
+                                <svelte:fragment slot="tooltip">Export as .txt</svelte:fragment>
+                            </Tooltip>
+                        </Layout.Stack>
+                        <Layout.Stack
+                            direction="row"
+                            gap="s"
+                            alignItems="center"
+                            style="flex: 1; min-width: 250px; justify-content: flex-end;">
                             <ViewSelector ui="new" view={View.Table} {columns} hideView />
-                        {/if}
 
-                        {#if !$isSmallViewport}
                             <Popover let:toggle padding="none">
                                 <Button secondary on:click={toggle}>Add preset</Button>
                                 <svelte:fragment slot="tooltip" let:toggle>
@@ -154,19 +177,16 @@
                                     </ActionMenu.Root>
                                 </svelte:fragment>
                             </Popover>
-                        {/if}
 
-                        <div
-                            style={$isSmallViewport
-                                ? 'flex: 1; display:flex; justify-content: flex-end;'
-                                : ''}>
-                            <Button fullWidthMobile on:click={() => (showCreate = true)}>
-                                <Icon size="s" icon={IconPlus} slot="start" />
-                                Create record
-                            </Button>
-                        </div>
+                            <div>
+                                <Button on:click={() => (showCreate = true)}>
+                                    <Icon size="s" icon={IconPlus} slot="start" />
+                                    Create record
+                                </Button>
+                            </div>
+                        </Layout.Stack>
                     </Layout.Stack>
-                </Layout.Stack>
+                {/if}
                 <div class="responsive-table">
                     <Table {data} />
                 </div>
