@@ -1,11 +1,12 @@
 import { BillingPlan, DEFAULT_BILLING_PROJECTS_LIMIT, Dependencies } from '$lib/constants';
-import type { Address } from '$lib/sdk/billing';
+import type { Address, PaymentList } from '$lib/sdk/billing';
 import { type Organization } from '$lib/stores/organization';
 import { sdk } from '$lib/stores/sdk';
 import { redirect } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 import { isCloud } from '$lib/system';
 import { base } from '$app/paths';
+import { type PaymentMethodData } from '$lib/sdk/billing';
 
 import { getLimit, getPage, pageToOffset } from '$lib/helpers/load';
 
@@ -21,7 +22,7 @@ export const load: PageLoad = async ({ parent, depends, url, route }) => {
     depends(Dependencies.CREDIT);
     depends(Dependencies.INVOICES);
     depends(Dependencies.ADDRESS);
-    //aggregation reloads on page param changes
+    // aggregation reloads on page param changes
     depends(Dependencies.BILLING_AGGREGATION);
 
     const billingAddressId = (organization as Organization)?.billingAddressId;
@@ -82,6 +83,7 @@ export const load: PageLoad = async ({ parent, depends, url, route }) => {
 
     // make number
     const credits = availableCredit ? availableCredit.available : null;
+    const { backup, primary } = getOrganizationPaymentMethods(organization, paymentMethods);
 
     return {
         paymentMethods,
@@ -98,6 +100,32 @@ export const load: PageLoad = async ({ parent, depends, url, route }) => {
         offset: pageToOffset(
             getPage(url) || 1,
             getLimit(url, route, DEFAULT_BILLING_PROJECTS_LIMIT)
-        )
+        ),
+
+        backupPaymentMethod: backup,
+        primaryPaymentMethod: primary
     };
 };
+
+function getOrganizationPaymentMethods(
+    organization: Organization,
+    paymentMethods: PaymentList
+): {
+    backup: PaymentMethodData | null;
+    primary: PaymentMethodData | null;
+} {
+    let backup: PaymentMethodData | null = null;
+    let primary: PaymentMethodData | null = null;
+
+    for (const paymentMethod of paymentMethods.paymentMethods) {
+        if (paymentMethod.$id === organization.paymentMethodId) {
+            primary = paymentMethod;
+        } else if (paymentMethod.$id === organization.backupPaymentMethodId) {
+            backup = paymentMethod;
+        }
+
+        if (primary && backup) break;
+    }
+
+    return { primary, backup };
+}
