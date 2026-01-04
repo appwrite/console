@@ -39,6 +39,8 @@
     import MobileSupportModal from './wizard/support/mobileSupportModal.svelte';
     import { showSupportModal } from './wizard/support/store';
     import { activeHeaderAlert, consoleVariables } from './store';
+    import { user } from '$lib/stores/user';
+    import { initializeSessionRecording } from '$lib/actions/posthog';
 
     import { base } from '$app/paths';
     import { headerAlert } from '$lib/stores/headerAlert';
@@ -268,6 +270,10 @@
 
             $stripe = await loadStripe(VARS.PUBLIC_STRIPE_KEY);
             await checkForMissingPaymentMethod();
+        }
+
+        if ($user && isCloud) {
+            await initializeSessionRecording($user);
         }
     });
 
