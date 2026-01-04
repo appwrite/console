@@ -101,40 +101,44 @@
         </Typography.Text>
     </Layout.Stack>
 
-    <Table.Root
-        columns={[
-            { id: 'type', width: { min: 150 } },
-            { id: 'name', width: { min: 80 } },
-            { id: 'value', width: { min: 100 } }
-        ]}
-        let:root>
-        <svelte:fragment slot="header" let:root>
-            <Table.Header.Cell column="type" {root}>Type</Table.Header.Cell>
-            <Table.Header.Cell column="name" {root}>Name</Table.Header.Cell>
-            <Table.Header.Cell column="value" {root}>Value</Table.Header.Cell>
-        </svelte:fragment>
-        <Table.Row.Base {root}>
-            <Table.Cell column="type" {root}>{variant.toUpperCase()}</Table.Cell>
-            <Table.Cell column="name" {root}>{subdomain || '@'}</Table.Cell>
-            <Table.Cell column="value" {root}>
-                <InteractiveText variant="copy" isVisible text={setTarget()} />
-            </Table.Cell>
-        </Table.Row.Base>
-        {#if $regionalConsoleVariables._APP_DOMAIN_TARGET_CAA}
+    <div class="responsive-table">
+        <Table.Root
+            columns={[
+                { id: 'type', width: { min: 150 } },
+                { id: 'name', width: { min: 80 } },
+                { id: 'value', width: { min: 200 } }
+            ]}
+            let:root>
+            <svelte:fragment slot="header" let:root>
+                <Table.Header.Cell column="type" {root}>Type</Table.Header.Cell>
+                <Table.Header.Cell column="name" {root}>Name</Table.Header.Cell>
+                <Table.Header.Cell column="value" {root}>Value</Table.Header.Cell>
+            </svelte:fragment>
+
             <Table.Row.Base {root}>
-                <Table.Cell column="type" {root}>
-                    <Layout.Stack gap="s" direction="row" alignItems="center">
-                        <span>CAA</span>
-                        <Badge variant="secondary" size="xs" content="Recommended" />
-                    </Layout.Stack>
-                </Table.Cell>
-                <Table.Cell column="name" {root}>@</Table.Cell>
+                <Table.Cell column="type" {root}>{variant.toUpperCase()}</Table.Cell>
+                <Table.Cell column="name" {root}>{subdomain || '@'}</Table.Cell>
                 <Table.Cell column="value" {root}>
-                    <InteractiveText variant="copy" isVisible text={caaText} />
+                    <InteractiveText variant="copy" isVisible text={setTarget()} />
                 </Table.Cell>
             </Table.Row.Base>
-        {/if}
-    </Table.Root>
+
+            {#if $regionalConsoleVariables._APP_DOMAIN_TARGET_CAA}
+                <Table.Row.Base {root}>
+                    <Table.Cell column="type" {root}>
+                        <Layout.Stack direction="row" alignItems="center" gap="s">
+                            <span>CAA</span>
+                            <Badge variant="secondary" size="xs" content="Recommended" />
+                        </Layout.Stack>
+                    </Table.Cell>
+                    <Table.Cell column="name" {root}>@</Table.Cell>
+                    <Table.Cell column="value" {root}>
+                        <InteractiveText variant="copy" isVisible text={caaText} />
+                    </Table.Cell>
+                </Table.Row.Base>
+            {/if}
+        </Table.Root>
+    </div>
     <Layout.Stack gap="s" direction="row" alignItems="center">
         {#if variant === 'cname' && !subdomain}
             {#if isCloud}
@@ -170,3 +174,13 @@
         {/if}
     </Layout.Stack>
 </Layout.Stack>
+
+<style>
+    /* responsive table container */
+    .responsive-table {
+        overflow: hidden;
+        width: 100%;
+        scrollbar-width: thin;
+        position: relative;
+    }
+</style>

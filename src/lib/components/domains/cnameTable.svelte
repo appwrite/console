@@ -35,29 +35,31 @@
         </Typography.Text>
     </Layout.Stack>
 
-    <Table.Root
-        columns={[
-            { id: 'type', width: { min: 150 } },
-            { id: 'name', width: { min: 80 } },
-            { id: 'value', width: { min: 100 } }
-        ]}
-        let:root>
-        <svelte:fragment slot="header" let:root>
-            <Table.Header.Cell column="type" {root}>Type</Table.Header.Cell>
-            <Table.Header.Cell column="name" {root}>Name</Table.Header.Cell>
-            <Table.Header.Cell column="value" {root}>Value</Table.Header.Cell>
-        </svelte:fragment>
-        <Table.Row.Base {root}>
-            <Table.Cell column="type" {root}>CNAME</Table.Cell>
-            <Table.Cell column="name" {root}>{subdomain}</Table.Cell>
-            <Table.Cell column="value" {root}>
-                <InteractiveText
-                    variant="copy"
-                    isVisible
-                    text={$regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME} />
-            </Table.Cell>
-        </Table.Row.Base>
-    </Table.Root>
+    <div class="responsive-table">
+        <Table.Root
+            columns={[
+                { id: 'type', width: { min: 150 } },
+                { id: 'name', width: { min: 80 } },
+                { id: 'value', width: { min: 100 } }
+            ]}
+            let:root>
+            <svelte:fragment slot="header" let:root>
+                <Table.Header.Cell column="type" {root}>Type</Table.Header.Cell>
+                <Table.Header.Cell column="name" {root}>Name</Table.Header.Cell>
+                <Table.Header.Cell column="value" {root}>Value</Table.Header.Cell>
+            </svelte:fragment>
+            <Table.Row.Base {root}>
+                <Table.Cell column="type" {root}>CNAME</Table.Cell>
+                <Table.Cell column="name" {root}>{subdomain}</Table.Cell>
+                <Table.Cell column="value" {root}>
+                    <InteractiveText
+                        variant="copy"
+                        isVisible
+                        text={$regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME} />
+                </Table.Cell>
+            </Table.Row.Base>
+        </Table.Root>
+    </div>
     <Layout.Stack gap="s" direction="row" alignItems="center">
         <Icon icon={IconInfo} size="s" color="--fgcolor-neutral-secondary" />
         <Typography.Text variant="m-400" color="--fgcolor-neutral-secondary">
@@ -69,3 +71,13 @@
         </Typography.Text>
     </Layout.Stack>
 </Layout.Stack>
+
+<style>
+    /* responsive table container */
+    .responsive-table {
+        overflow: hidden;
+        width: 100%;
+        scrollbar-width: thin;
+        position: relative;
+    }
+</style>
