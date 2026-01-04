@@ -348,6 +348,12 @@
                         currentPlan?.imageTransformations
                     ),
                     createResourceRow(
+                        'screenshots-generated',
+                        'Screenshots generated',
+                        getResource(resources, 'screenshotsGenerated'),
+                        currentPlan?.screenshotsGenerated
+                    ),
+                    createResourceRow(
                         'gb-hours',
                         'GB-hours',
                         getResource(resources, 'GBHours'),
