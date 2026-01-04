@@ -35,16 +35,22 @@
         </Typography.Text>
     </Layout.Stack>
 
-    <Table.Root columns={3} let:root>
+    <Table.Root
+        columns={[
+            { id: 'type', width: { min: 150 } },
+            { id: 'name', width: { min: 80 } },
+            { id: 'value', width: { min: 100 } }
+        ]}
+        let:root>
         <svelte:fragment slot="header" let:root>
-            <Table.Header.Cell {root}>Type</Table.Header.Cell>
-            <Table.Header.Cell {root}>Name</Table.Header.Cell>
-            <Table.Header.Cell {root}>Value</Table.Header.Cell>
+            <Table.Header.Cell column="type" {root}>Type</Table.Header.Cell>
+            <Table.Header.Cell column="name" {root}>Name</Table.Header.Cell>
+            <Table.Header.Cell column="value" {root}>Value</Table.Header.Cell>
         </svelte:fragment>
         <Table.Row.Base {root}>
-            <Table.Cell {root}>CNAME</Table.Cell>
-            <Table.Cell {root}>{subdomain}</Table.Cell>
-            <Table.Cell {root}>
+            <Table.Cell column="type" {root}>CNAME</Table.Cell>
+            <Table.Cell column="name" {root}>{subdomain}</Table.Cell>
+            <Table.Cell column="value" {root}>
                 <InteractiveText
                     variant="copy"
                     isVisible
