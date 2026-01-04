@@ -13,9 +13,16 @@
     } from '@appwrite.io/pink-svelte';
     import DomainMetrics from './domainMetrics.svelte';
     import { base } from '$app/paths';
+    import { isSmallViewport } from '$lib/stores/viewport';
     import { app } from '$lib/stores/app';
     import { Button } from '$lib/elements/forms';
-    import { IconDownload, IconPlus, IconUpload } from '@appwrite.io/pink-icons-svelte';
+    import {
+        IconDownload,
+        IconPlus,
+        IconUpload,
+        IconAdjustments
+    } from '@appwrite.io/pink-icons-svelte';
+    import DisplaySettingsModal from '$lib/layout/displaySettingsModal.svelte';
     import { ViewSelector } from '$lib/components';
     import { View } from '$lib/helpers/load';
     import { columns, presets } from './store';
@@ -33,6 +40,7 @@
     let showCreate = false;
     let showPresetModal = false;
     let showImportModal = false;
+    let showDisplaySettingsModal = false;
     let selectedPreset = '';
 
     async function downloadRecords() {
@@ -70,43 +78,118 @@
 
         <Layout.Stack gap="l">
             {#if data.recordList.total}
-                <Layout.Stack direction="row" justifyContent="space-between">
-                    <Layout.Stack direction="row" gap="s" inline>
-                        <Button secondary on:click={() => (showImportModal = true)}>
-                            <Icon icon={IconUpload} size="s" slot="start" />
-                            Import zone file
-                        </Button>
-                        <Tooltip>
-                            <PinkButton.Button variant="secondary" icon on:click={downloadRecords}>
-                                <Icon icon={IconDownload} size="s" />
-                            </PinkButton.Button>
-                            <svelte:fragment slot="tooltip">Export as .txt</svelte:fragment>
-                        </Tooltip>
-                    </Layout.Stack>
-                    <Layout.Stack direction="row" gap="s" inline>
-                        <ViewSelector ui="new" view={View.Table} {columns} hideView />
-                        <Popover let:toggle padding="none">
-                            <Button secondary on:click={toggle}>Add preset</Button>
-                            <svelte:fragment slot="tooltip" let:toggle>
-                                <ActionMenu.Root>
-                                    {#each presets as preset}
-                                        <ActionMenu.Item.Button
-                                            on:click={(e) => {
-                                                toggle(e);
-                                                selectedPreset = preset;
-                                                showPresetModal = true;
-                                            }}>{preset}</ActionMenu.Item.Button>
-                                    {/each}
-                                </ActionMenu.Root>
-                            </svelte:fragment>
-                        </Popover>
-                        <Button size="s" on:click={() => (showCreate = true)}>
+                {#if $isSmallViewport}
+                    <Layout.Stack gap="s">
+                        <div class="u-flex u-gap-8">
+                            <div style="flex: 1">
+                                <Popover let:toggle padding="none">
+                                    <Button secondary fullWidth on:click={toggle}
+                                        >Add preset</Button>
+                                    <svelte:fragment slot="tooltip" let:toggle>
+                                        <ActionMenu.Root>
+                                            {#each presets as preset}
+                                                <ActionMenu.Item.Button
+                                                    on:click={(e) => {
+                                                        toggle(e);
+                                                        selectedPreset = preset;
+                                                        showPresetModal = true;
+                                                    }}>{preset}</ActionMenu.Item.Button>
+                                            {/each}
+                                        </ActionMenu.Root>
+                                    </svelte:fragment>
+                                </Popover>
+                            </div>
+                            <Button
+                                secondary
+                                icon
+                                ariaLabel="Import zone file"
+                                on:click={() => (showImportModal = true)}>
+                                <Icon size="m" icon={IconUpload} />
+                            </Button>
+                            <Tooltip>
+                                <PinkButton.Button
+                                    variant="secondary"
+                                    icon
+                                    on:click={downloadRecords}>
+                                    <Icon icon={IconDownload} size="m" />
+                                </PinkButton.Button>
+                                <svelte:fragment slot="tooltip">Export as .txt</svelte:fragment>
+                            </Tooltip>
+                            <Button
+                                secondary
+                                icon
+                                ariaLabel="Display settings"
+                                on:click={() => (showDisplaySettingsModal = true)}>
+                                <Icon icon={IconAdjustments} />
+                            </Button>
+                        </div>
+                        <Button fullWidth on:click={() => (showCreate = true)}>
                             <Icon size="s" icon={IconPlus} slot="start" />
                             Create record
                         </Button>
                     </Layout.Stack>
-                </Layout.Stack>
-                <Table {data} />
+                {:else}
+                    <Layout.Stack
+                        direction="row"
+                        gap="m"
+                        justifyContent="space-between"
+                        alignItems="center"
+                        wrap="wrap">
+                        <Layout.Stack
+                            direction="row"
+                            gap="s"
+                            alignItems="center"
+                            wrap="wrap"
+                            style="flex: 1">
+                            <Button secondary on:click={() => (showImportModal = true)}>
+                                <Icon icon={IconUpload} size="s" slot="start" />
+                                Import zone file
+                            </Button>
+                            <Tooltip>
+                                <PinkButton.Button
+                                    variant="secondary"
+                                    icon
+                                    on:click={downloadRecords}>
+                                    <Icon icon={IconDownload} size="s" />
+                                </PinkButton.Button>
+                                <svelte:fragment slot="tooltip">Export as .txt</svelte:fragment>
+                            </Tooltip>
+                        </Layout.Stack>
+                        <Layout.Stack
+                            direction="row"
+                            gap="s"
+                            alignItems="center"
+                            style="flex: 1; min-width: 250px; justify-content: flex-end;">
+                            <ViewSelector ui="new" view={View.Table} {columns} hideView />
+
+                            <Popover let:toggle padding="none">
+                                <Button secondary on:click={toggle}>Add preset</Button>
+                                <svelte:fragment slot="tooltip" let:toggle>
+                                    <ActionMenu.Root>
+                                        {#each presets as preset}
+                                            <ActionMenu.Item.Button
+                                                on:click={(e) => {
+                                                    toggle(e);
+                                                    selectedPreset = preset;
+                                                    showPresetModal = true;
+                                                }}>{preset}</ActionMenu.Item.Button>
+                                        {/each}
+                                    </ActionMenu.Root>
+                                </svelte:fragment>
+                            </Popover>
+
+                            <div>
+                                <Button on:click={() => (showCreate = true)}>
+                                    <Icon size="s" icon={IconPlus} slot="start" />
+                                    Create record
+                                </Button>
+                            </div>
+                        </Layout.Stack>
+                    </Layout.Stack>
+                {/if}
+                <div class="responsive-table">
+                    <Table {data} />
+                </div>
             {:else}
                 <Card.Base padding="none">
                     <Empty
@@ -153,3 +236,20 @@
 {#if showRetry}
     <RetryDomainModal bind:show={showRetry} selectedDomain={data.domain} />
 {/if}
+
+{#if showDisplaySettingsModal}
+    <DisplaySettingsModal
+        bind:show={showDisplaySettingsModal}
+        {columns}
+        hideView
+        view={View.Table} />
+{/if}
+
+<style>
+    .responsive-table {
+        overflow: hidden;
+        width: 100%;
+        scrollbar-width: thin;
+        position: relative;
+    }
+</style>
