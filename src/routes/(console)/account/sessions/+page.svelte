@@ -95,70 +95,84 @@
         <Typography.Title>Sessions</Typography.Title>
         <Button secondary on:click={logoutAll}>Sign out all sessions</Button>
     </Layout.Stack>
-
-    <Table.Root
-        let:root
-        columns={[
-            { id: 'client', width: { min: 450 } },
-            { id: 'location', width: { min: 200 } },
-            { id: 'ip', width: { min: 330 } },
-            { id: 'actions', width: 100 }
-        ]}>
-        <svelte:fragment slot="header" let:root>
-            <Table.Header.Cell column="client" {root}>Client</Table.Header.Cell>
-            <Table.Header.Cell column="location" {root}>Location</Table.Header.Cell>
-            <Table.Header.Cell column="ip" {root}>IP</Table.Header.Cell>
-            <Table.Header.Cell column="actions" {root} />
-        </svelte:fragment>
-        {#each data.sessions.sessions as session}
-            {@const browser = getBrowser(session.clientCode)}
-            <Table.Row.Base {root}>
-                <Table.Cell column="client" {root}>
-                    <Layout.Stack direction="row" alignItems="center">
-                        {#if session.clientName}
-                            <div class="avatar is-size-small">
-                                {#if browser}
-                                    <img
-                                        height="20"
-                                        width="20"
-                                        src={getBrowser(session.clientCode).toString()}
-                                        alt={session.clientName} />
-                                {:else}
-                                    <Icon icon={IconGlobeAlt} size="s" />
-                                {/if}
+    <div class="responsive-table">
+        <Table.Root
+            let:root
+            columns={[
+                { id: 'client', width: { min: 450 } },
+                { id: 'location', width: { min: 200 } },
+                { id: 'ip', width: { min: 330 } },
+                { id: 'actions', width: 100 }
+            ]}>
+            <svelte:fragment slot="header" let:root>
+                <Table.Header.Cell column="client" {root}>Client</Table.Header.Cell>
+                <Table.Header.Cell column="location" {root}>Location</Table.Header.Cell>
+                <Table.Header.Cell column="ip" {root}>IP</Table.Header.Cell>
+                <Table.Header.Cell column="actions" {root} />
+            </svelte:fragment>
+            {#each data.sessions.sessions as session}
+                {@const browser = getBrowser(session.clientCode)}
+                <Table.Row.Base {root}>
+                    <Table.Cell column="client" {root}>
+                        <Layout.Stack direction="row" alignItems="center">
+                            {#if session.clientName}
+                                <div class="avatar is-size-small">
+                                    {#if browser}
+                                        <img
+                                            height="20"
+                                            width="20"
+                                            src={getBrowser(session.clientCode).toString()}
+                                            alt={session.clientName} />
+                                    {:else}
+                                        <Icon icon={IconGlobeAlt} size="s" />
+                                    {/if}
+                                </div>
+                                <Trim>
+                                    {session.clientName}
+                                    {session.clientVersion}
+                                    on {session.osName}
+                                    {session.osVersion}
+                                </Trim>
+                            {:else}
+                                <span class="avatar is-color-empty"></span>
+                                <p class="text u-trim">Unknown</p>
+                            {/if}
+                            <div class="is-only-desktop">
+                                <Badge variant="secondary" content={session.provider} />
                             </div>
-                            <Trim>
-                                {session.clientName}
-                                {session.clientVersion}
-                                on {session.osName}
-                                {session.osVersion}
-                            </Trim>
+                            {#if session.current}
+                                <Badge
+                                    type="success"
+                                    variant="secondary"
+                                    content="current session" />
+                            {/if}
+                        </Layout.Stack>
+                    </Table.Cell>
+                    <Table.Cell column="location" {root}>
+                        {#if session.countryCode !== '--'}
+                            {session.countryName}
                         {:else}
-                            <span class="avatar is-color-empty"></span>
-                            <p class="text u-trim">Unknown</p>
+                            Unknown
                         {/if}
-                        <div class="is-only-desktop">
-                            <Badge variant="secondary" content={session.provider} />
-                        </div>
-                        {#if session.current}
-                            <Badge type="success" variant="secondary" content="current session" />
-                        {/if}
-                    </Layout.Stack>
-                </Table.Cell>
-                <Table.Cell column="location" {root}>
-                    {#if session.countryCode !== '--'}
-                        {session.countryName}
-                    {:else}
-                        Unknown
-                    {/if}
-                </Table.Cell>
-                <Table.Cell column="ip" {root}>
-                    <InteractiveText variant="copy" text={session.ip} isVisible />
-                </Table.Cell>
-                <Table.Cell column="actions" {root}>
-                    <Button size="xs" secondary on:click={() => logout(session)}>Sign out</Button>
-                </Table.Cell>
-            </Table.Row.Base>
-        {/each}
-    </Table.Root>
+                    </Table.Cell>
+                    <Table.Cell column="ip" {root}>
+                        <InteractiveText variant="copy" text={session.ip} isVisible />
+                    </Table.Cell>
+                    <Table.Cell column="actions" {root}>
+                        <Button size="xs" secondary on:click={() => logout(session)}
+                            >Sign out</Button>
+                    </Table.Cell>
+                </Table.Row.Base>
+            {/each}
+        </Table.Root>
+    </div>
 </Container>
+
+<style>
+    .responsive-table {
+        overflow: hidden;
+        width: 100%;
+        scrollbar-width: thin;
+        position: relative;
+    }
+</style>
