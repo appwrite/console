@@ -13,9 +13,16 @@
     } from '@appwrite.io/pink-svelte';
     import DomainMetrics from './domainMetrics.svelte';
     import { base } from '$app/paths';
+    import { isSmallViewport } from '$lib/stores/viewport';
     import { app } from '$lib/stores/app';
     import { Button } from '$lib/elements/forms';
-    import { IconDownload, IconPlus, IconUpload } from '@appwrite.io/pink-icons-svelte';
+    import {
+        IconDownload,
+        IconPlus,
+        IconUpload,
+        IconAdjustments
+    } from '@appwrite.io/pink-icons-svelte';
+    import DisplaySettingsModal from '$lib/layout/displaySettingsModal.svelte';
     import { ViewSelector } from '$lib/components';
     import { View } from '$lib/helpers/load';
     import { columns, presets } from './store';
@@ -33,6 +40,7 @@
     let showCreate = false;
     let showPresetModal = false;
     let showImportModal = false;
+    let showDisplaySettingsModal = false;
     let selectedPreset = '';
 
     async function downloadRecords() {
@@ -70,8 +78,8 @@
 
         <Layout.Stack gap="l">
             {#if data.recordList.total}
-                <Layout.Stack direction="row" justifyContent="space-between">
-                    <Layout.Stack direction="row" gap="s" inline>
+                <div class="u-flex u-gap-16 u-main-space-between u-cross-center u-flex-wrap">
+                    <div class="u-flex u-gap-8 u-cross-center u-flex-wrap" style="flex: 1">
                         <Button secondary on:click={() => (showImportModal = true)}>
                             <Icon icon={IconUpload} size="s" slot="start" />
                             Import zone file
@@ -82,31 +90,50 @@
                             </PinkButton.Button>
                             <svelte:fragment slot="tooltip">Export as .txt</svelte:fragment>
                         </Tooltip>
-                    </Layout.Stack>
-                    <Layout.Stack direction="row" gap="s" inline>
-                        <ViewSelector ui="new" view={View.Table} {columns} hideView />
-                        <Popover let:toggle padding="none">
-                            <Button secondary on:click={toggle}>Add preset</Button>
-                            <svelte:fragment slot="tooltip" let:toggle>
-                                <ActionMenu.Root>
-                                    {#each presets as preset}
-                                        <ActionMenu.Item.Button
-                                            on:click={(e) => {
-                                                toggle(e);
-                                                selectedPreset = preset;
-                                                showPresetModal = true;
-                                            }}>{preset}</ActionMenu.Item.Button>
-                                    {/each}
-                                </ActionMenu.Root>
-                            </svelte:fragment>
-                        </Popover>
-                        <Button size="s" on:click={() => (showCreate = true)}>
-                            <Icon size="s" icon={IconPlus} slot="start" />
-                            Create record
-                        </Button>
-                    </Layout.Stack>
-                </Layout.Stack>
-                <Table {data} />
+                        <div style="flex: 1">
+                            <Popover let:toggle padding="none">
+                                <Button secondary fullWidthMobile on:click={toggle}
+                                    >Add preset</Button>
+                                <svelte:fragment slot="tooltip" let:toggle>
+                                    <ActionMenu.Root>
+                                        {#each presets as preset}
+                                            <ActionMenu.Item.Button
+                                                on:click={(e) => {
+                                                    toggle(e);
+                                                    selectedPreset = preset;
+                                                    showPresetModal = true;
+                                                }}>{preset}</ActionMenu.Item.Button>
+                                        {/each}
+                                    </ActionMenu.Root>
+                                </svelte:fragment>
+                            </Popover>
+                        </div>
+                    </div>
+                    <div
+                        class="u-flex u-gap-8 u-cross-center u-flex-nowrap"
+                        style="flex: 1; min-width: 250px; justify-content: flex-end;">
+                        {#if $isSmallViewport}
+                            <Button
+                                secondary
+                                icon
+                                ariaLabel="Display settings"
+                                on:click={() => (showDisplaySettingsModal = true)}>
+                                <Icon icon={IconAdjustments} />
+                            </Button>
+                        {:else}
+                            <ViewSelector ui="new" view={View.Table} {columns} hideView />
+                        {/if}
+                        <div style="flex: 1; display:flex; justify-content: flex-end;">
+                            <Button fullWidthMobile on:click={() => (showCreate = true)}>
+                                <Icon size="s" icon={IconPlus} slot="start" />
+                                Create record
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+                <div class="responsive-table">
+                    <Table {data} />
+                </div>
             {:else}
                 <Card.Base padding="none">
                     <Empty
@@ -153,3 +180,20 @@
 {#if showRetry}
     <RetryDomainModal bind:show={showRetry} selectedDomain={data.domain} />
 {/if}
+
+{#if showDisplaySettingsModal}
+    <DisplaySettingsModal
+        bind:show={showDisplaySettingsModal}
+        {columns}
+        hideView
+        view={View.Table} />
+{/if}
+
+<style>
+    .responsive-table {
+        overflow: hidden;
+        width: 100%;
+        scrollbar-width: thin;
+        position: relative;
+    }
+</style>
