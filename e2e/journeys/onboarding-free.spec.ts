@@ -1,8 +1,7 @@
-import { test } from '@playwright/test';
-import { registerUserStep } from '../steps/account';
-import { createFreeProject } from '../steps/free-project';
+import { test, expect } from '../fixtures/base';
 
-test('onboarding - free tier', async ({ page }) => {
-    await registerUserStep(page);
-    await createFreeProject(page);
+test('onboarding - free tier', async ({ page, project }) => {
+    await expect(page).toHaveURL(
+        new RegExp(`/project-${project.region}-${project.id}/get-started`)
+    );
 });
