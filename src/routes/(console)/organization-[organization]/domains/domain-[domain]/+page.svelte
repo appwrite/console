@@ -78,8 +78,18 @@
 
         <Layout.Stack gap="l">
             {#if data.recordList.total}
-                <div class="u-flex u-gap-16 u-main-space-between u-cross-center u-flex-wrap">
-                    <div class="u-flex u-gap-8 u-cross-center u-flex-wrap" style="flex: 1">
+                <Layout.Stack
+                    direction="row"
+                    gap="m"
+                    justifyContent="space-between"
+                    alignItems="center"
+                    wrap="wrap">
+                    <Layout.Stack
+                        direction="row"
+                        gap="s"
+                        alignItems="center"
+                        wrap="wrap"
+                        style="flex: 1">
                         <Button secondary on:click={() => (showImportModal = true)}>
                             <Icon icon={IconUpload} size="s" slot="start" />
                             Import zone file
@@ -90,10 +100,47 @@
                             </PinkButton.Button>
                             <svelte:fragment slot="tooltip">Export as .txt</svelte:fragment>
                         </Tooltip>
-                        <div style="flex: 1">
+                        {#if $isSmallViewport}
+                            <div style="flex: 1">
+                                <Popover let:toggle padding="none">
+                                    <Button secondary fullWidthMobile on:click={toggle}
+                                        >Add preset</Button>
+                                    <svelte:fragment slot="tooltip" let:toggle>
+                                        <ActionMenu.Root>
+                                            {#each presets as preset}
+                                                <ActionMenu.Item.Button
+                                                    on:click={(e) => {
+                                                        toggle(e);
+                                                        selectedPreset = preset;
+                                                        showPresetModal = true;
+                                                    }}>{preset}</ActionMenu.Item.Button>
+                                            {/each}
+                                        </ActionMenu.Root>
+                                    </svelte:fragment>
+                                </Popover>
+                            </div>
+                        {/if}
+                    </Layout.Stack>
+                    <Layout.Stack
+                        direction="row"
+                        gap="s"
+                        alignItems="center"
+                        style="flex: 1; min-width: 250px; justify-content: flex-end;">
+                        {#if $isSmallViewport}
+                            <Button
+                                secondary
+                                icon
+                                ariaLabel="Display settings"
+                                on:click={() => (showDisplaySettingsModal = true)}>
+                                <Icon icon={IconAdjustments} />
+                            </Button>
+                        {:else}
+                            <ViewSelector ui="new" view={View.Table} {columns} hideView />
+                        {/if}
+
+                        {#if !$isSmallViewport}
                             <Popover let:toggle padding="none">
-                                <Button secondary fullWidthMobile on:click={toggle}
-                                    >Add preset</Button>
+                                <Button secondary on:click={toggle}>Add preset</Button>
                                 <svelte:fragment slot="tooltip" let:toggle>
                                     <ActionMenu.Root>
                                         {#each presets as preset}
@@ -107,30 +154,19 @@
                                     </ActionMenu.Root>
                                 </svelte:fragment>
                             </Popover>
-                        </div>
-                    </div>
-                    <div
-                        class="u-flex u-gap-8 u-cross-center u-flex-nowrap"
-                        style="flex: 1; min-width: 250px; justify-content: flex-end;">
-                        {#if $isSmallViewport}
-                            <Button
-                                secondary
-                                icon
-                                ariaLabel="Display settings"
-                                on:click={() => (showDisplaySettingsModal = true)}>
-                                <Icon icon={IconAdjustments} />
-                            </Button>
-                        {:else}
-                            <ViewSelector ui="new" view={View.Table} {columns} hideView />
                         {/if}
-                        <div style="flex: 1; display:flex; justify-content: flex-end;">
+
+                        <div
+                            style={$isSmallViewport
+                                ? 'flex: 1; display:flex; justify-content: flex-end;'
+                                : ''}>
                             <Button fullWidthMobile on:click={() => (showCreate = true)}>
                                 <Icon size="s" icon={IconPlus} slot="start" />
                                 Create record
                             </Button>
                         </div>
-                    </div>
-                </div>
+                    </Layout.Stack>
+                </Layout.Stack>
                 <div class="responsive-table">
                     <Table {data} />
                 </div>
