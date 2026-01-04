@@ -97,6 +97,32 @@ export enum InvalidFileType {
     EXTENSION = 'invalid_extension'
 }
 
+/**
+ * Check if a file is an image based on its MIME type
+ */
+export function isImageFile(mimeType: string | null | undefined): boolean {
+    if (!mimeType) return false;
+    return mimeType.startsWith('image/');
+}
+
+/**
+ * Check if a file is larger than the specified size threshold (in bytes)
+ */
+export function isLargeFile(fileSize: number, thresholdBytes: number = 1024 * 1024): boolean {
+    return fileSize > thresholdBytes;
+}
+
+/**
+ * Check if a file is a large image
+ */
+export function isLargeImage(
+    mimeType: string | null | undefined,
+    fileSize: number,
+    thresholdBytes: number = 1024 * 1024
+): boolean {
+    return isImageFile(mimeType) && isLargeFile(fileSize, thresholdBytes);
+}
+
 export const defaultIgnore = `
 ### Node ###
 # Logs
