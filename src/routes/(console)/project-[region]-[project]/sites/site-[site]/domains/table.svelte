@@ -47,6 +47,23 @@
               ? 'Deployed from ' + proxy.deploymentVcsProviderBranch
               : 'Active deployment';
     };
+
+    function updatedLabel(proxyRule: Models.ProxyRule): string {
+        if (proxyRule.status === 'verified') {
+            return '';
+        }
+
+        const prefix =
+            proxyRule.status === 'created'
+                ? 'Checked'
+                : proxyRule.status === 'verifying'
+                  ? 'Updated'
+                  : proxyRule.status === 'unverified'
+                    ? 'Failed'
+                    : '';
+
+        return prefix + ' ' + timeFromNowShort(proxyRule.$updatedAt);
+    }
 </script>
 
 <Table.Root columns={[...$columns, { id: 'actions', width: 40 }]} let:root>
@@ -63,14 +80,6 @@
         {@const isLogsViewable =
             proxyRule.logs?.length > 0 &&
             (proxyRule.status === 'verifying' || proxyRule.status === 'unverified')}
-        {@const updatedLabel =
-            proxyRule.status === 'created'
-                ? 'Checked'
-                : proxyRule.status === 'verifying'
-                  ? 'Updated'
-                  : proxyRule.status === 'unverified'
-                    ? 'Failed'
-                    : ''}
         <Table.Row.Base {root}>
             {#each $columns as column}
                 <Table.Cell column={column.id} {root}>
@@ -132,7 +141,7 @@
                                 variant="m-400"
                                 color="--fgcolor-neutral-tertiary"
                                 style="font-size: 0.875rem;">
-                                {updatedLabel + ' ' + timeFromNowShort(proxyRule.$updatedAt)}
+                                {updatedLabel(proxyRule)}
                             </Typography.Text>
                         </Layout.Stack>
                     {/if}
