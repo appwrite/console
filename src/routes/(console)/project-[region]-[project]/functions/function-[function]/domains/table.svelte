@@ -25,6 +25,7 @@
     import { regionalProtocol } from '$routes/(console)/project-[region]-[project]/store';
     import DnsRecordsAction from '$lib/components/domains/dnsRecordsAction.svelte';
     import ViewLogsModal from '$lib/components/domains/viewLogsModal.svelte';
+    import { timeFromNowShort } from '$lib/helpers/date';
 
     let {
         proxyRules,
@@ -46,6 +47,28 @@
               ? 'Deployed from ' + proxy.deploymentVcsProviderBranch
               : 'Active deployment';
     };
+
+    function updatedLabel(proxyRule: Models.ProxyRule): string {
+        if (proxyRule.status === 'verified') {
+            return '';
+        }
+
+        const timeStr = timeFromNowShort(proxyRule.$updatedAt);
+        if (timeStr === 'n/a') {
+            return '';
+        }
+
+        const prefix =
+            proxyRule.status === 'created'
+                ? 'Checked'
+                : proxyRule.status === 'verifying'
+                  ? 'Updated'
+                  : proxyRule.status === 'unverified'
+                    ? 'Failed'
+                    : '';
+
+        return prefix + ' ' + timeStr;
+    }
 </script>
 
 <Table.Root columns={[...$columns, { id: 'actions', width: 40 }]} let:root>
@@ -117,6 +140,15 @@
                         </Layout.Stack>
                     {:else if column.id === 'target'}
                         {proxyTarget(proxyRule)}
+                    {:else if column.id === 'updated' && proxyRule.status !== 'verified'}
+                        <Layout.Stack direction="row" justifyContent="flex-end">
+                            <Typography.Text
+                                variant="m-400"
+                                color="--fgcolor-neutral-tertiary"
+                                style="font-size: 0.875rem;">
+                                {updatedLabel(proxyRule)}
+                            </Typography.Text>
+                        </Layout.Stack>
                     {/if}
                 </Table.Cell>
             {/each}
