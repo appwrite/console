@@ -60,6 +60,11 @@
             return '';
         }
 
+        const timeStr = timeFromNowShort(proxyRule.$updatedAt);
+        if (timeStr === 'n/a') {
+            return '';
+        }
+
         const prefix =
             proxyRule.status === 'created'
                 ? 'Checked'
@@ -69,7 +74,7 @@
                     ? 'Failed'
                     : '';
 
-        return prefix + ' ' + timeFromNowShort(proxyRule.$updatedAt);
+        return prefix + ' ' + timeStr;
     }
 </script>
 

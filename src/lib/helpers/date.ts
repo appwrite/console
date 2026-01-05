@@ -207,11 +207,8 @@ export function timeFromNow(datetime: string): string {
 }
 
 export function timeFromNowShort(datetime: string): string {
-    if (!datetime) {
-        return 'unknown time';
-    }
-    if (!isValidDate(datetime)) {
-        return 'invalid date';
+    if (!datetime || !isValidDate(datetime)) {
+        return 'n/a';
     }
 
     const timeStr = dayjs().to(dayjs(datetime));
