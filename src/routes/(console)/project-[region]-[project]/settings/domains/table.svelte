@@ -24,6 +24,7 @@
     import { regionalProtocol } from '../../store';
     import DnsRecordsAction from '$lib/components/domains/dnsRecordsAction.svelte';
     import ViewLogsModal from '$lib/components/domains/viewLogsModal.svelte';
+    import { timeFromNowShort } from '$lib/helpers/date';
 
     let {
         domains,
@@ -45,6 +46,12 @@
             type: 'string',
             format: 'string',
             width: { min: 300, max: 550 }
+        },
+        {
+            id: 'updated',
+            title: '',
+            type: 'string',
+            width: { min: 160, max: 180 }
         }
     ];
 </script>
@@ -63,6 +70,14 @@
         {@const isLogsViewable =
             proxyRule.logs?.length > 0 &&
             (proxyRule.status === 'verifying' || proxyRule.status === 'unverified')}
+        {@const updatedLabel =
+            proxyRule.status === 'created'
+                ? 'Checked'
+                : proxyRule.status === 'verifying'
+                  ? 'Updated'
+                  : proxyRule.status === 'unverified'
+                    ? 'Failed'
+                    : ''}
         <Table.Row.Base {root}>
             {#each columns as column}
                 <Table.Cell column={column.id} {root}>
@@ -115,6 +130,15 @@
                                     </Link>
                                 {/if}
                             </Layout.Stack>
+                        </Layout.Stack>
+                    {:else if column.id === 'updated' && proxyRule.status !== 'verified'}
+                        <Layout.Stack direction="row" justifyContent="flex-end">
+                            <Typography.Text
+                                variant="m-400"
+                                color="--fgcolor-neutral-tertiary"
+                                style="font-size: 0.875rem;">
+                                {updatedLabel + ' ' + timeFromNowShort(proxyRule.$updatedAt)}
+                            </Typography.Text>
                         </Layout.Stack>
                     {/if}
                 </Table.Cell>
