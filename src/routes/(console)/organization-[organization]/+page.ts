@@ -23,6 +23,11 @@ export const load: PageLoad = async ({ params, url, route, depends, parent }) =>
     const archivedPage =
         Number.isFinite(archivedPageRaw) && archivedPageRaw > 0 ? archivedPageRaw : 1;
     const archivedOffset = pageToOffset(archivedPage, limit);
+
+    const searchQueries = search
+        ? [Query.or([Query.search('search', search), Query.contains('labels', search)])]
+        : [];
+
     const [activeProjects, archivedProjects, activeTotal, archivedTotal] = await Promise.all([
         sdk.forConsole.projects.list({
             queries: [
@@ -30,9 +35,9 @@ export const load: PageLoad = async ({ params, url, route, depends, parent }) =>
                 Query.equal('teamId', params.organization),
                 Query.or([Query.equal('status', 'active'), Query.isNull('status')]),
                 Query.limit(limit),
-                Query.orderDesc('')
-            ],
-            search: search || undefined
+                Query.orderDesc(''),
+                ...searchQueries
+            ]
         }),
         sdk.forConsole.projects.list({
             queries: [
@@ -40,23 +45,23 @@ export const load: PageLoad = async ({ params, url, route, depends, parent }) =>
                 Query.equal('teamId', params.organization),
                 Query.equal('status', 'archived'),
                 Query.limit(limit),
-                Query.orderDesc('')
-            ],
-            search: search || undefined
+                Query.orderDesc(''),
+                ...searchQueries
+            ]
         }),
         sdk.forConsole.projects.list({
             queries: [
                 Query.equal('teamId', params.organization),
-                Query.or([Query.equal('status', 'active'), Query.isNull('status')])
-            ],
-            search: search || undefined
+                Query.or([Query.equal('status', 'active'), Query.isNull('status')]),
+                ...searchQueries
+            ]
         }),
         sdk.forConsole.projects.list({
             queries: [
                 Query.equal('teamId', params.organization),
-                Query.equal('status', 'archived')
-            ],
-            search: search || undefined
+                Query.equal('status', 'archived'),
+                ...searchQueries
+            ]
         })
     ]);
 
