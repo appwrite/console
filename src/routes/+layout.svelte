@@ -309,4 +309,11 @@
             background-color: var(--color-mid-neutral-70, #56565c);
         }
     }
+
+    .responsive-table {
+        overflow: hidden;
+        width: 100%;
+        scrollbar-width: thin;
+        position: relative;
+    }
 </style>

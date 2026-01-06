@@ -187,9 +187,7 @@
                         </Layout.Stack>
                     </Layout.Stack>
                 {/if}
-                <div class="responsive-table">
-                    <Table {data} />
-                </div>
+                <Table {data} />
             {:else}
                 <Card.Base padding="none">
                     <Empty
@@ -244,12 +242,3 @@
         hideView
         view={View.Table} />
 {/if}
-
-<style>
-    .responsive-table {
-        overflow: hidden;
-        width: 100%;
-        scrollbar-width: thin;
-        position: relative;
-    }
-</style>
