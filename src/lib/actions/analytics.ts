@@ -7,6 +7,7 @@ import { ENV, MODE, VARS, isCloud } from '$lib/system';
 import { AppwriteException } from '@appwrite.io/console';
 import { browser } from '$app/environment';
 import { getReferrerAndUtmSource, getTrackedQueryParams } from '$lib/helpers/utm';
+import { ProfileMode } from '$lib/profiles/index.svelte';
 
 function plausible(domain: string): AnalyticsPlugin {
     if (!browser) return { name: 'analytics-plugin-plausible' };
@@ -42,13 +43,24 @@ function plausible(domain: string): AnalyticsPlugin {
 
 const PLAUSIBLE_DOMAINS = {
     CLOUD: 'cloud.appwrite.io',
-    GLOBAL: 'console.appwrite',
+    STUDIO: 'studio.imagine.dev',
     SELF_HOSTED: 'self-hosted.appwrite'
+    /*GLOBAL: 'console.appwrite',*/
 };
+
+function getPlausibleDomain(): string {
+    if (VARS.CONSOLE_PROFILE === ProfileMode.STUDIO) {
+        return PLAUSIBLE_DOMAINS.STUDIO;
+    } else {
+        return isCloud
+            ? PLAUSIBLE_DOMAINS.CLOUD
+            : PLAUSIBLE_DOMAINS.SELF_HOSTED;
+    }
+}
 
 const analytics = Analytics({
     app: 'appwrite',
-    plugins: [plausible(isCloud ? PLAUSIBLE_DOMAINS.CLOUD : PLAUSIBLE_DOMAINS.SELF_HOSTED)]
+    plugins: [plausible(getPlausibleDomain())]
 });
 
 export function trackEvent(name: string, data: object = null): void {
