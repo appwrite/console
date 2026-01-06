@@ -15,7 +15,6 @@
     import {
         calculateTrialDay,
         checkForEnterpriseTrial,
-        checkForMandate,
         checkForMarkedForDeletion,
         checkForMissingPaymentMethod,
         checkForNewDevUpgradePro,
@@ -308,7 +307,6 @@
             if (org?.billingPlan !== BillingPlan.FREE) {
                 await paymentExpired(org);
                 await checkPaymentAuthorizationRequired(org);
-                await checkForMandate(org);
 
                 if ($plansInfo.get(org.billingPlan)?.trialDays) {
                     calculateTrialDay(org);
@@ -334,8 +332,6 @@
 <CommandCenter />
 <Shell
     showSideNavigation={page.url.pathname !== '/' &&
-        !page?.params.organization &&
-        !page.url.pathname.includes(base + '/account') &&
         !page.url.pathname.includes(base + '/card') &&
         !page.url.pathname.includes(base + '/onboarding')}
     showHeader={!page.url.pathname.includes(base + '/onboarding/create-project')}

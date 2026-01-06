@@ -35,21 +35,41 @@
         IconReact,
         IconUnity
     } from '@appwrite.io/pink-icons-svelte';
+    import type { PageProps } from './$types';
     import { getPlatformInfo } from '$lib/helpers/platform';
     import CreateProjectCloud from './createProjectCloud.svelte';
     import { currentPlan, regions as regionsStore } from '$lib/stores/organization';
     import SelectProjectCloud from '$lib/components/billing/alerts/selectProjectCloud.svelte';
     import ArchiveProject from '$lib/components/archiveProject.svelte';
 
-    export let data;
+    let { data }: PageProps = $props();
 
-    let showCreate = false;
-    let addOrganization = false;
-    let showSelectProject = false;
-    let showCreateProjectCloud = false;
-    let freePlanAlertDismissed = false;
+    let showCreate = $state(false);
+    let addOrganization = $state(false);
+    let showSelectProject = $state(false);
+    let showCreateProjectCloud = $state(false);
+    let freePlanAlertDismissed = $state(false);
 
-    let searchQuery: SearchQuery;
+    let searchQuery: SearchQuery | null = $state(null);
+
+    const projectCreationDisabled = $derived.by(() => {
+        return (
+            (isCloud &&
+                getServiceLimit('projects', null, data.currentPlan) <= data.projects.total) ||
+            (isCloud && $readOnly && !GRACE_PERIOD_OVERRIDE) ||
+            !$canWriteProjects
+        );
+    });
+
+    const reachedProjectLimit = $derived.by(() => {
+        return (
+            isCloud && getServiceLimit('projects', null, data.currentPlan) <= data.projects.total
+        );
+    });
+
+    const projectsLimit = $derived.by(() => {
+        return getServiceLimit('projects', null, data.currentPlan);
+    });
 
     function filterPlatforms(platforms: { name: string; icon: string }[]) {
         return platforms.filter(
@@ -82,28 +102,6 @@
         }
     }
 
-    $: projectCreationDisabled =
-        (isCloud && getServiceLimit('projects', null, data.currentPlan) <= data.projects.total) ||
-        (isCloud && $readOnly && !GRACE_PERIOD_OVERRIDE) ||
-        !$canWriteProjects;
-
-    $: reachedProjectLimit =
-        isCloud && getServiceLimit('projects', null, data.currentPlan) <= data.projects.total;
-    $: projectsLimit = getServiceLimit('projects', null, data.currentPlan);
-
-    $: $registerCommands([
-        {
-            label: 'Create project',
-            callback: () => {
-                showCreate = true;
-            },
-            keys: ['c'],
-            disabled: projectCreationDisabled,
-            group: 'projects',
-            icon: IconPlus
-        }
-    ]);
-
     function dismissFreePlanAlert() {
         freePlanAlertDismissed = true;
         const notificationId = `freePlanAlert_${data.organization.$id}`;
@@ -132,14 +130,37 @@
         return project.status === 'archived';
     }
 
-    $: projectsToArchive = isCloud
-        ? data.projects.projects.filter((project) => project.status === 'archived')
-        : [];
+    const projectsToArchive = $derived(
+        (data.archivedProjectsPage ?? data.projects.projects).filter(
+            (project) => project.status === 'archived'
+        )
+    );
 
-    $: activeProjects = data.projects.projects.filter((project) => project.status !== 'archived');
+    const activeTotalOverall = $derived(
+        data?.activeTotalOverall ??
+            data?.organization?.projects?.length ??
+            data?.projects?.total ??
+            0
+    );
+
     function clearSearch() {
         searchQuery?.clearInput();
     }
+
+    $effect(() => {
+        $registerCommands([
+            {
+                label: 'Create project',
+                callback: () => {
+                    showCreate = true;
+                },
+                keys: ['c'],
+                disabled: projectCreationDisabled,
+                group: 'projects',
+                icon: IconPlus
+            }
+        ]);
+    });
 </script>
 
 <SelectProjectCloud
@@ -221,13 +242,13 @@
         </Alert.Inline>
     {/if}
 
-    {#if activeProjects.length > 0}
+    {#if data.projects.total > 0}
         <CardContainer
             disableEmpty={!$canWriteProjects}
-            total={data.projects.total}
+            total={activeTotalOverall}
             offset={data.offset}
             on:click={handleCreateProject}>
-            {#each activeProjects as project}
+            {#each data.projects.projects as project}
                 {@const platforms = filterPlatforms(
                     project.platforms.map((platform) => getPlatformInfo(platform.type))
                 )}
@@ -309,13 +330,16 @@
         name="Projects"
         limit={data.limit}
         offset={data.offset}
-        total={data.projects.total} />
+        total={activeTotalOverall} />
 
     <!-- Archived Projects Section -->
     <ArchiveProject
         {projectsToArchive}
         organization={data.organization}
-        currentPlan={$currentPlan} />
+        currentPlan={$currentPlan}
+        archivedTotalOverall={data.archivedTotalOverall}
+        archivedOffset={data.archivedOffset}
+        limit={data.limit} />
 </Container>
 <CreateOrganization bind:show={addOrganization} />
 <CreateProject bind:show={showCreate} teamId={page.params.organization} />

@@ -42,11 +42,19 @@
     import { onMount } from 'svelte';
 
     interface Props {
-        data?: Partial<Models.ColumnPoint>;
         editing?: boolean;
+        disabled?: boolean;
+        data?: Partial<Models.ColumnPoint>;
     }
 
-    let { data = { required: false, default: null }, editing }: Props = $props();
+    let {
+        data = {
+            default: null,
+            required: false
+        },
+        editing = false,
+        disabled = false
+    }: Props = $props();
 
     let savedDefault = $state(data.default);
     let defaultChecked = $state(!!data.default);
@@ -96,6 +104,7 @@
     size="s"
     id="required"
     label="Required"
+    {disabled}
     bind:checked={$required}
     on:change={(e) => {
         if (e.detail) defaultChecked = false;
@@ -106,6 +115,7 @@
     size="s"
     id="default"
     label="Default value"
+    {disabled}
     bind:checked={defaultChecked}
     on:change={(e) => {
         if (e.detail) {
@@ -126,6 +136,7 @@
     {/if}
 
     <InputPoint
+        {disabled}
         values={defaultChecked ? data.default : null}
         onChangePoint={(index, newValue) => {
             if (data.default) {

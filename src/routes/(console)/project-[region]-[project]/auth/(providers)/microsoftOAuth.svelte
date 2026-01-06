@@ -38,8 +38,9 @@
         }
     };
 
-    $: secret =
-        clientSecret && tenantID ? JSON.stringify({ clientSecret, tenantID }) : provider.secret;
+    $: secret = clientSecret
+        ? JSON.stringify({ clientSecret, ...(tenantID && { tenantID }) })
+        : provider.secret;
 </script>
 
 <Modal {error} onSubmit={update} bind:show on:close title={`${provider.name} OAuth2 settings`}>

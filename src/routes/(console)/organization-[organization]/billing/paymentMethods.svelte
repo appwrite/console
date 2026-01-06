@@ -34,16 +34,17 @@
         IconTrash
     } from '@appwrite.io/pink-icons-svelte';
 
-    export let organization: Organization;
     export let methods: PaymentList;
+    export let organization: Organization;
+
+    export let backupMethod: PaymentMethodData;
+    export let primaryMethod: PaymentMethodData;
 
     let showPayment = false;
     let showEdit = false;
     let showDelete = false;
     let showReplace = false;
     let isSelectedBackup = false;
-    let backupPaymentMethod: PaymentMethodData;
-    let defaultPaymentMethod: PaymentMethodData;
 
     async function addPaymentMethod(paymentMethodId: string) {
         try {
@@ -56,7 +57,7 @@
                 message: `A new payment method has been added to ${organization.name}`
             });
             trackEvent(Submit.OrganizationPaymentUpdate);
-            invalidate(Dependencies.ORGANIZATION);
+            await invalidate(Dependencies.PAYMENT_METHODS);
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -76,7 +77,7 @@
                 type: 'success',
                 message: `A new payment method has been added to ${organization.name}`
             });
-            invalidate(Dependencies.ORGANIZATION);
+            await invalidate(Dependencies.PAYMENT_METHODS);
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -86,30 +87,18 @@
         }
     }
 
-    $: if (organization?.backupPaymentMethodId) {
-        sdk.forConsole.billing
-            .getOrganizationPaymentMethod(organization.$id, organization.backupPaymentMethodId)
-            .then((res) => (backupPaymentMethod = res));
-    }
-
-    $: if (organization?.paymentMethodId) {
-        sdk.forConsole.billing
-            .getOrganizationPaymentMethod(organization.$id, organization.paymentMethodId)
-            .then((res) => (defaultPaymentMethod = res));
-    }
-
     $: if (!showReplace) {
         isSelectedBackup = false;
     }
 
     $: hasPaymentError =
-        defaultPaymentMethod?.lastError ||
-        defaultPaymentMethod?.expired ||
-        backupPaymentMethod?.lastError ||
-        backupPaymentMethod?.expired;
+        primaryMethod?.lastError ||
+        primaryMethod?.expired ||
+        backupMethod?.lastError ||
+        backupMethod?.expired;
 </script>
 
-<CardGrid>
+<CardGrid overflow={false}>
     <svelte:fragment slot="title">Payment methods</svelte:fragment>
     View or update your organization payment methods here.
     <svelte:fragment slot="aside">
@@ -117,7 +106,7 @@
             <Table.Root
                 let:root
                 columns={[
-                    { id: 'cc', width: { min: 155 } },
+                    { id: 'cc', width: { min: 225 } },
                     { id: 'name', width: { min: 140 } },
                     { id: 'expiry', width: { min: 75 } },
                     { id: 'status', width: { min: 110 }, hide: !hasPaymentError },
@@ -132,14 +121,14 @@
                 </svelte:fragment>
 
                 <Table.Row.Base {root}>
-                    <CreditCardInfo {root} paymentMethod={defaultPaymentMethod} />
+                    <CreditCardInfo {root} paymentMethod={primaryMethod} />
                     <Table.Cell column="actions" {root}>
                         <Popover let:toggle placement="bottom-start" padding="none">
                             <Button text icon ariaLabel="more options" on:click={toggle}>
                                 <Icon icon={IconDotsHorizontal} size="s" />
                             </Button>
                             <ActionMenu.Root slot="tooltip">
-                                {#if defaultPaymentMethod?.userId === $user?.$id}
+                                {#if primaryMethod?.userId === $user?.$id}
                                     <ActionMenu.Item.Button
                                         leadingIcon={IconPencil}
                                         on:click={() => {
@@ -171,14 +160,14 @@
                 </Table.Row.Base>
                 {#if organization?.backupPaymentMethodId}
                     <Table.Row.Base {root}>
-                        <CreditCardInfo {root} isBackup paymentMethod={backupPaymentMethod} />
+                        <CreditCardInfo {root} isBackup paymentMethod={backupMethod} />
                         <Table.Cell column="actions" {root}>
                             <Popover let:toggle placement="bottom-start" padding="none">
                                 <Button text icon ariaLabel="more options" on:click={toggle}>
                                     <Icon icon={IconDotsHorizontal} size="s" />
                                 </Button>
                                 <ActionMenu.Root slot="tooltip">
-                                    {#if backupPaymentMethod?.userId === $user?.$id}
+                                    {#if backupMethod?.userId === $user?.$id}
                                         <ActionMenu.Item.Button
                                             leadingIcon={IconPencil}
                                             on:click={() => {
@@ -308,18 +297,18 @@
 {#if showPayment && isCloud && hasStripePublicKey}
     <PaymentModal
         bind:show={showPayment}
-        on:submit={(e) => {
+        onCardSubmit={(card) => {
             if (isSelectedBackup) {
-                addBackupPaymentMethod(e.detail.$id);
+                addBackupPaymentMethod(card.$id);
             } else {
-                addPaymentMethod(e.detail.$id);
+                addPaymentMethod(card.$id);
             }
         }} />
 {/if}
 {#if showEdit && isCloud && hasStripePublicKey}
     <EditPaymentModal
-        selectedPaymentMethod={isSelectedBackup ? backupPaymentMethod : defaultPaymentMethod}
-        bind:show={showEdit} />
+        bind:show={showEdit}
+        selectedPaymentMethod={isSelectedBackup ? backupMethod : primaryMethod} />
 {/if}
 {#if isCloud && hasStripePublicKey}
     <ReplaceCard {organization} {methods} bind:show={showReplace} isBackup={isSelectedBackup} />

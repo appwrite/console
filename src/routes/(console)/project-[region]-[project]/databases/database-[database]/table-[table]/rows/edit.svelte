@@ -10,25 +10,41 @@
     import { invalidate } from '$app/navigation';
     import { table, type Columns, PROHIBITED_ROW_KEYS } from '../store';
     import ColumnItem from './columns/columnItem.svelte';
-    import { buildWildcardColumnsQuery, isRelationship, isRelationshipToMany } from './store';
+    import {
+        buildWildcardColumnsQuery,
+        isRelationship,
+        isRelationshipToMany,
+        isSpatialType
+    } from './store';
     import { Layout, Skeleton } from '@appwrite.io/pink-svelte';
     import { deepClone } from '$lib/helpers/object';
+    import deepEqual from 'deep-equal';
+    import { onMount } from 'svelte';
 
     const tableId = page.params.table;
     const databaseId = page.params.database;
 
     let {
         row = $bindable(),
-        rowId = $bindable(null)
+        rowId = $bindable(null),
+        autoFocus = true,
+        disabled = $bindable(true)
     }: {
         row?: Models.Row | null;
         rowId?: string | null;
+        autoFocus?: boolean;
+        disabled?: boolean;
     } = $props();
 
     let loading = $state(false);
 
     let work = $state<Writable<Models.Row> | null>(null);
     let columnFormWrapper = $state<HTMLElement | null>(null);
+
+    onMount(() => {
+        /* silences the not read error warning */
+        disabled;
+    });
 
     function initWork() {
         const filteredKeys = Object.keys(row).filter((key) => {
@@ -76,7 +92,9 @@
     $effect(() => {
         if (row) {
             work = initWork();
-            requestAnimationFrame(() => focusFirstInput());
+            if (autoFocus) {
+                requestAnimationFrame(() => focusFirstInput());
+            }
         } else {
             work = null;
         }
@@ -89,6 +107,10 @@
 
         const workColumn = $work?.[column.key];
         const currentColumn = $doc?.[column.key];
+
+        if (isSpatialType(column)) {
+            return deepEqual(workColumn, currentColumn);
+        }
 
         if (column.array) {
             return !symmetricDifference(Array.from(workColumn), Array.from(currentColumn)).length;
@@ -143,11 +165,14 @@
         }
     }
 
-    export function isDisabled(): boolean {
-        if (!work || !row || !$table?.columns?.length) return true;
+    $effect(() => {
+        if (!work || !row || !$table?.columns?.length) {
+            disabled = true;
+            return;
+        }
 
-        return $table.columns.every((column) => compareColumns(column, $work, row));
-    }
+        disabled = $table.columns.every((column) => compareColumns(column, $work, row));
+    });
 
     function focusFirstInput() {
         const firstInput = columnFormWrapper?.querySelector<HTMLInputElement | HTMLTextAreaElement>(

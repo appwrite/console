@@ -23,6 +23,7 @@
         type ColumnsWidth,
         indexes,
         isCsvImportInProgress,
+        isWaterfallFromFaker,
         reorderItems,
         showCreateIndexSheet
     } from '../store';
@@ -55,6 +56,9 @@
     import { page } from '$app/state';
     import { debounce } from '$lib/helpers/debounce';
     import type { PageData } from './$types';
+    import { realtime } from '$lib/stores/sdk';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
 
     const {
         data
@@ -140,6 +144,16 @@
     onMount(() => {
         columnsOrder = preferences.getColumnOrder(tableId);
         columnsWidth = preferences.getColumnWidths(tableId + '#columns');
+
+        return realtime.forProject(page.params.region, ['project', 'console'], async (response) => {
+            if (
+                response.events.includes('databases.*.tables.*.columns.*.delete') ||
+                (response.events.includes('databases.*.tables.*.columns.*.update') &&
+                    !$isWaterfallFromFaker)
+            ) {
+                await invalidate(Dependencies.TABLE);
+            }
+        });
     });
 
     function getColumnStatusBadge(status: string): ComponentProps<Badge>['type'] {
@@ -368,8 +382,9 @@
                                             {column.key}{column.array ? '[]' : undefined}
                                         {/if}
                                     </Typography.Text>
+
                                     {#if isString(column) && column.encrypt}
-                                        <Tooltip>
+                                        <Tooltip portal>
                                             <Icon
                                                 size="s"
                                                 icon={IconLockClosed}
@@ -377,13 +392,7 @@
                                             <div slot="tooltip">Encrypted</div>
                                         </Tooltip>
                                     {/if}
-                                </Layout.Stack>
-                                <Layout.Stack
-                                    gap="s"
-                                    inline
-                                    direction="row"
-                                    alignItems="center"
-                                    style="flex:0 0 auto; white-space:nowrap;">
+
                                     {#if column.status !== 'available'}
                                         <Badge
                                             size="s"

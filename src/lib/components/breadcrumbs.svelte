@@ -140,7 +140,8 @@
                 queries: [
                     Query.equal('teamId', organizationId ?? page.data.currentOrgId),
                     Query.limit(5),
-                    Query.orderDesc('$updatedAt')
+                    Query.orderDesc('$updatedAt'),
+                    Query.select(['$id', 'name', 'region', 'teamId'])
                 ]
             })) ?? loadedProjects;
 

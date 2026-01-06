@@ -4,6 +4,7 @@
     import {
         AvatarInitials,
         type DeleteOperationState,
+        type DeleteOperation,
         MultiSelectionTable
     } from '$lib/components';
     import { Button } from '$lib/elements/forms';
@@ -23,14 +24,14 @@
     let showDelete = $state(false);
     let selectedMembership: Models.Membership | null = $state(null);
 
-    async function handleBulkDelete(selectedRows: string[]): Promise<DeleteOperationState> {
+    async function handleBulkDelete(batchDelete: DeleteOperation): Promise<DeleteOperationState> {
         // Precompute a lookup map from membershipId to teamId for efficient access
         const membershipIdToTeamId: Record<string, string> = {};
         for (const membership of data.memberships.memberships) {
             membershipIdToTeamId[membership.$id] = membership.teamId;
         }
 
-        const promises = selectedRows.map((membershipId) =>
+        const result = await batchDelete((membershipId) =>
             sdk.forProject(page.params.region, page.params.project).teams.deleteMembership({
                 teamId: membershipIdToTeamId[membershipId] || '',
                 membershipId
@@ -38,14 +39,16 @@
         );
 
         try {
-            await Promise.all(promises);
-            trackEvent(Submit.MembershipUpdate, { total: selectedRows.length });
-        } catch (error) {
-            trackError(error, Submit.MembershipUpdate);
-            return error;
+            if (result.error) {
+                trackError(result.error, Submit.MembershipUpdate);
+            } else {
+                trackEvent(Submit.MembershipUpdate, { total: result.deleted.length });
+            }
         } finally {
             await invalidate(Dependencies.MEMBERSHIPS);
         }
+
+        return result;
     }
 </script>
 

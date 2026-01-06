@@ -13,7 +13,7 @@
     import DeploymentMetrics from './deploymentMetrics.svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { onMount } from 'svelte';
-    import { sdk } from '$lib/stores/sdk';
+    import { realtime, sdk } from '$lib/stores/sdk';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import CreateCliModal from './createCliModal.svelte';
@@ -32,11 +32,7 @@
     let showAlert = true;
 
     onMount(() => {
-        if (page.url.searchParams.has('createDeployment')) {
-            showConnectRepo = true;
-        }
-
-        return sdk.forConsole.realtime.subscribe('console', (response) => {
+        return realtime.forConsole(page.params.region, 'console', (response) => {
             if (response.events.includes('sites.*.deployments.*')) {
                 invalidate(Dependencies.DEPLOYMENTS);
             }

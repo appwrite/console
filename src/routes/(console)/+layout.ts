@@ -35,7 +35,11 @@ export const load: LayoutLoad = async ({ depends, parent }) => {
         try {
             projectsCount = (
                 await sdk.forConsole.projects.list({
-                    queries: [Query.equal('teamId', currentOrgId), Query.limit(1)]
+                    queries: [
+                        Query.equal('teamId', currentOrgId),
+                        Query.limit(1),
+                        Query.select(['$id'])
+                    ]
                 })
             ).total;
         } catch (e) {

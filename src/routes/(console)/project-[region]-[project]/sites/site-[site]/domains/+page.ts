@@ -28,6 +28,7 @@ export const load = async ({ params, depends, url, route, parent }) => {
             Query.limit(limit),
             Query.offset(offset),
             Query.orderDesc(''),
+            Query.orderDesc('$updatedAt'),
             ...parsedQueries.values()
         ],
         search: search || undefined

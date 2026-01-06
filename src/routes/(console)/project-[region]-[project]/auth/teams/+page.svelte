@@ -12,6 +12,7 @@
         SearchQuery,
         PaginationWithLimit,
         type DeleteOperationState,
+        type DeleteOperation,
         MultiSelectionTable
     } from '$lib/components';
     import Create from '../createTeam.svelte';
@@ -44,20 +45,22 @@
         );
     };
 
-    async function handleDelete(selectedRows: string[]): Promise<DeleteOperationState> {
-        const promises = selectedRows.map((teamId) => {
-            return sdk.forProject(page.params.region, page.params.project).teams.delete({ teamId });
-        });
+    async function handleDelete(batchDelete: DeleteOperation): Promise<DeleteOperationState> {
+        const result = await batchDelete((teamId) =>
+            sdk.forProject(page.params.region, page.params.project).teams.delete({ teamId })
+        );
 
         try {
-            await Promise.all(promises);
-            trackEvent(Submit.TeamDelete, { total: selectedRows.length });
-        } catch (error) {
-            trackError(error, Submit.TeamDelete);
-            return error;
+            if (result.error) {
+                trackError(result.error, Submit.TeamDelete);
+            } else {
+                trackEvent(Submit.TeamDelete, { total: result.deleted.length });
+            }
         } finally {
             await invalidate(Dependencies.TEAMS);
         }
+
+        return result;
     }
 </script>
 
