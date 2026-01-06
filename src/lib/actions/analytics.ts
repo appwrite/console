@@ -3,7 +3,7 @@ import Plausible from 'plausible-tracker';
 import { get } from 'svelte/store';
 import { page } from '$app/state';
 import { user } from '$lib/stores/user';
-import { ENV, MODE, VARS, isCloud } from '$lib/system';
+import { ENV, MODE, VARS } from '$lib/system';
 import { AppwriteException } from '@appwrite.io/console';
 import { browser } from '$app/environment';
 import { getReferrerAndUtmSource, getTrackedQueryParams } from '$lib/helpers/utm';
@@ -41,18 +41,18 @@ function plausible(domain: string): AnalyticsPlugin {
     };
 }
 
-function getPlausibleDomain(): string | null {
-    const plausibleConfig = resolvedProfile.analytics.plausible;
-    if (!plausibleConfig) return null;
+let analytics: ReturnType<typeof Analytics>;
 
-    return isCloud ? plausibleConfig.cloud : (plausibleConfig.selfHosted ?? null);
+function getAnalytics() {
+    if (!analytics) {
+        const plausibleDomain = resolvedProfile.analytics.plausible;
+        analytics = Analytics({
+            app: 'appwrite',
+            plugins: plausibleDomain ? [plausible(plausibleDomain)] : []
+        });
+    }
+    return analytics;
 }
-
-const plausibleDomain = getPlausibleDomain();
-const analytics = Analytics({
-    app: 'appwrite',
-    plugins: plausibleDomain ? [plausible(plausibleDomain)] : []
-});
 
 export function trackEvent(name: string, data: object = null): void {
     if (!isTrackingAllowed()) {
@@ -73,7 +73,7 @@ export function trackEvent(name: string, data: object = null): void {
     if (ENV.DEV || ENV.PREVIEW) {
         console.debug(`[Analytics] Event ${name} ${path}`, data);
     } else {
-        analytics.track(name, { ...data, path });
+        getAnalytics().track(name, { ...data, path });
         sendEventToGrowth(name, path, data);
     }
 }
@@ -95,7 +95,7 @@ export function trackPageView(path: string) {
     if (ENV.DEV || ENV.PREVIEW) {
         console.debug(`[Analytics] Pageview ${path}`);
     } else {
-        analytics.page({
+        getAnalytics().page({
             path
         });
     }
