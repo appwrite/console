@@ -41,18 +41,10 @@ function plausible(domain: string): AnalyticsPlugin {
     };
 }
 
-let analytics: ReturnType<typeof Analytics>;
-
-function getAnalytics() {
-    if (!analytics) {
-        const plausibleDomain = resolvedProfile.analytics.plausible;
-        analytics = Analytics({
-            app: 'appwrite',
-            plugins: plausibleDomain ? [plausible(plausibleDomain)] : []
-        });
-    }
-    return analytics;
-}
+const analytics = Analytics({
+    app: 'appwrite',
+    plugins: [plausible(resolvedProfile.analytics.plausible)]
+});
 
 export function trackEvent(name: string, data: object = null): void {
     if (!isTrackingAllowed()) {
@@ -73,7 +65,7 @@ export function trackEvent(name: string, data: object = null): void {
     if (ENV.DEV || ENV.PREVIEW) {
         console.debug(`[Analytics] Event ${name} ${path}`, data);
     } else {
-        getAnalytics().track(name, { ...data, path });
+        analytics.track(name, { ...data, path });
         sendEventToGrowth(name, path, data);
     }
 }
@@ -95,7 +87,7 @@ export function trackPageView(path: string) {
     if (ENV.DEV || ENV.PREVIEW) {
         console.debug(`[Analytics] Pageview ${path}`);
     } else {
-        getAnalytics().page({
+        analytics.page({
             path
         });
     }
