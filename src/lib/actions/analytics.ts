@@ -3,7 +3,7 @@ import Plausible from 'plausible-tracker';
 import { get } from 'svelte/store';
 import { page } from '$app/state';
 import { user } from '$lib/stores/user';
-import { ENV, MODE, VARS, isCloud } from '$lib/system';
+import { ENV, MODE, VARS } from '$lib/system';
 import { AppwriteException } from '@appwrite.io/console';
 import { browser } from '$app/environment';
 import { getReferrerAndUtmSource, getTrackedQueryParams } from '$lib/helpers/utm';
@@ -41,17 +41,9 @@ function plausible(domain: string): AnalyticsPlugin {
     };
 }
 
-function getPlausibleDomain(): string | null {
-    const plausibleConfig = resolvedProfile.analytics.plausible;
-    if (!plausibleConfig) return null;
-
-    return isCloud ? plausibleConfig.cloud : (plausibleConfig.selfHosted ?? null);
-}
-
-const plausibleDomain = getPlausibleDomain();
 const analytics = Analytics({
     app: 'appwrite',
-    plugins: plausibleDomain ? [plausible(plausibleDomain)] : []
+    plugins: [plausible(resolvedProfile.analytics.plausible)]
 });
 
 export function trackEvent(name: string, data: object = null): void {
