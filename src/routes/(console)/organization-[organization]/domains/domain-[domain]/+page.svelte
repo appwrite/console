@@ -80,7 +80,7 @@
             {#if data.recordList.total}
                 {#if $isSmallViewport}
                     <Layout.Stack gap="s">
-                        <div class="u-flex u-gap-8">
+                        <Layout.Stack direction="row" gap="s">
                             <div style="flex: 1">
                                 <Popover let:toggle padding="none">
                                     <Button secondary fullWidth on:click={toggle}
@@ -122,7 +122,7 @@
                                 on:click={() => (showDisplaySettingsModal = true)}>
                                 <Icon icon={IconAdjustments} />
                             </Button>
-                        </div>
+                        </Layout.Stack>
                         <Button fullWidth on:click={() => (showCreate = true)}>
                             <Icon size="s" icon={IconPlus} slot="start" />
                             Create record
