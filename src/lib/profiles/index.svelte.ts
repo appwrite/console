@@ -77,6 +77,12 @@ export type Profile = {
     support: {
         technical: string[];
     };
+    analytics: {
+        plausible?: {
+            cloud: string;
+            selfHosted?: string;
+        };
+    };
 };
 
 export const base: Profile = {
@@ -161,6 +167,12 @@ export const base: Profile = {
             'Sites',
             'Other'
         ]
+    },
+    analytics: {
+        plausible: {
+            cloud: 'cloud.appwrite.io',
+            selfHosted: 'self-hosted.appwrite'
+        }
     }
 };
 
@@ -243,6 +255,11 @@ export const studio: Profile = {
             'Storage',
             'Other'
         ]
+    },
+    analytics: {
+        plausible: {
+            cloud: 'studio.imagine.dev'
+        }
     }
 };
 
