@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { base } from '$app/paths';
+    import { base, resolve } from '$app/paths';
     import { InputText } from '$lib/elements/forms/index.js';
     import { Wizard } from '$lib/layout';
     import { Fieldset, Layout, Typography } from '@appwrite.io/pink-svelte';
@@ -17,7 +17,10 @@
     import { page } from '$app/state';
     import { copy } from '$lib/helpers/copy';
 
-    export let basePath: string = `${base}/project-${page.params.region}-${page.params.project}/overview`;
+    export let basePath: string = resolve('/(console)/project-[region]-[project]/overview', {
+        project: page.params.project,
+        region: page.params.region
+    });
 
     const projectId = page.params.project;
 

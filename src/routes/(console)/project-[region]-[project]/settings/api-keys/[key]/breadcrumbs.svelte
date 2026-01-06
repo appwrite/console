@@ -1,29 +1,41 @@
 <script lang="ts">
-    import { base } from '$app/paths';
+    import { resolve } from '$app/paths';
     import { page } from '$app/state';
     import { Breadcrumbs } from '$lib/layout';
     import { organization } from '$lib/stores/organization';
     import { project } from '../../../store';
     import { key } from './store';
 
-    $: breadcrumbs = [
+    const breadcrumbs = $derived([
         {
-            href: `${base}/organization-${$organization?.$id}`,
+            href: resolve('/(console)/organization-[organization]', {
+                organization: $organization?.$id
+            }),
             title: $organization?.name
         },
         {
-            href: `${base}/project-${page.params.region}-${page.params.project}`,
+            href: resolve('/(console)/project-[region]-[project]', {
+                region: page.params.region,
+                project: page.params.project
+            }),
             title: $project?.name
         },
         {
-            href: `${base}/project-${page.params.region}-${page.params.project}/settings/api-keys`,
+            href: resolve('/(console)/project-[region]-[project]/settings/api-keys', {
+                region: page.params.region,
+                project: page.params.project
+            }),
             title: 'API keys'
         },
         {
-            href: `${base}/project-${page.params.region}-${page.params.project}/settings/api-keys/${$key?.$id}`,
+            href: resolve('/(console)/project-[region]-[project]/settings/api-keys/[key]', {
+                region: page.params.region,
+                project: page.params.project,
+                key: $key?.$id
+            }),
             title: $key?.name
         }
-    ];
+    ]);
 </script>
 
 <Breadcrumbs {breadcrumbs} />
