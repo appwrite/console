@@ -4,8 +4,6 @@ import { OAuthProvider, Platform } from '@appwrite.io/console';
 import { env } from '$env/dynamic/public';
 import { BillingPlan } from '@appwrite.io/console';
 import type { Component } from 'svelte';
-import UnauthenticatedConsole from './(unauthenticated)/console.svelte';
-import UnauthenticatedStudio from './(unauthenticated)/studio.svelte';
 import StudioCss from './css/studio.css?url';
 import ConsoleCss from './css/console.css?url';
 import { isCloud } from '$lib/system';
@@ -61,7 +59,7 @@ export type Profile = {
     minimalOrgHeader: boolean;
     getProjectRoute: (params: { region: string; project: string }) => ResolvedPathname;
     component: {
-        unauthenticated: Component;
+        getUnauthenticated: () => Promise<Component>;
     };
     links: {
         docs: string;
@@ -98,9 +96,6 @@ export const base: Profile = {
         },
         alt: 'Logo Appwrite'
     },
-    component: {
-        unauthenticated: UnauthenticatedConsole
-    },
     logins: [Logins.EMAIL, isCloud && Logins.GITHUB].filter(Boolean),
     oauthProviders: {
         github: {
@@ -135,6 +130,9 @@ export const base: Profile = {
             region,
             project
         });
+    },
+    component: {
+        getUnauthenticated: async () => (await import('./(unauthenticated)/console.svelte')).default
     },
     links: {
         website: 'https://appwrite.io',
@@ -205,9 +203,6 @@ export const studio: Profile = {
         }
     },
     css: StudioCss,
-    component: {
-        unauthenticated: UnauthenticatedStudio
-    },
     showOnboarding: false,
     useCommandCenter: false,
     showGithubIssueSupport: false,
@@ -234,6 +229,9 @@ export const studio: Profile = {
             region,
             project
         });
+    },
+    component: {
+        getUnauthenticated: async () => (await import('./(unauthenticated)/studio.svelte')).default
     },
     links: {
         website: 'https://imagine.dev',

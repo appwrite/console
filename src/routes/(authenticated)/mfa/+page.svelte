@@ -12,7 +12,6 @@
     import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     export let data;
-    const Unauthenticated = resolvedProfile.component.unauthenticated;
     const factors = data.factors as Models.MfaFactors & { recoveryCode: boolean };
 
     let disabled = false;
@@ -53,24 +52,26 @@
     <title>Verify - {resolvedProfile.platform}</title>
 </svelte:head>
 
-<Unauthenticated align="center">
-    <svelte:fragment slot="top">
-        <div class="top u-flex u-position-absolute u-main-center">
-            <div class="flex u-width-full-line">
-                <Button compact on:click={back}>
-                    <Icon icon={IconChevronLeft} slot="start" size="s" />
-                    Back
-                </Button>
+{#await resolvedProfile.component.getUnauthenticated() then Unauthenticated}
+    <Unauthenticated align="center">
+        <svelte:fragment slot="top">
+            <div class="top u-flex u-position-absolute u-main-center">
+                <div class="flex u-width-full-line">
+                    <Button compact on:click={back}>
+                        <Icon icon={IconChevronLeft} slot="start" size="s" />
+                        Back
+                    </Button>
+                </div>
             </div>
-        </div>
-    </svelte:fragment>
-    <svelte:fragment slot="title">Verify your identity</svelte:fragment>
-    <Form onSubmit={submit}>
-        <Layout.Stack gap="l" justifyContent="center" alignContent="center" alignItems="center">
-            <MfaChallengeFormList {factors} bind:challenge bind:code bind:disabled />
-        </Layout.Stack>
-    </Form>
-</Unauthenticated>
+        </svelte:fragment>
+        <svelte:fragment slot="title">Verify your identity</svelte:fragment>
+        <Form onSubmit={submit}>
+            <Layout.Stack gap="l" justifyContent="center" alignContent="center" alignItems="center">
+                <MfaChallengeFormList {factors} bind:challenge bind:code bind:disabled />
+            </Layout.Stack>
+        </Form>
+    </Unauthenticated>
+{/await}
 
 <style lang="scss">
     @use '@appwrite.io/pink-legacy/src/abstract/variables/devices';

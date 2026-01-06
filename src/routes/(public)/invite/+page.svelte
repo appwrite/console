@@ -42,63 +42,65 @@
             trackError(error, Submit.MembershipUpdateStatus);
         }
     };
-    const Unauthenticated = resolvedProfile.component.unauthenticated;
 </script>
 
 <svelte:head>
     <title>Accept invite - {resolvedProfile.platform}</title>
 </svelte:head>
 
-<Unauthenticated>
-    <svelte:fragment slot="title">
-        {#if !userId || !secret || !membershipId || !teamId}
-            Invalid invite
-        {:else}
-            Invite
-        {/if}
-    </svelte:fragment>
-    <svelte:fragment>
-        {#if !userId || !secret || !membershipId || !teamId}
-            <Layout.Stack>
-                <Alert.Inline status="warning" title="The invite link is not valid">
-                    Please ask the project owner to send you a new invite.
-                </Alert.Inline>
-                <div>
-                    <Button href={`${base}/register`}>Sign up to {resolvedProfile.platform}</Button>
-                </div>
-            </Layout.Stack>
-        {:else}
-            <Layout.Stack>
-                <Typography.Text>
-                    You have been invited to join an organization on {resolvedProfile.platform}
-                </Typography.Text>
-                <Form onSubmit={acceptInvite}>
-                    <Layout.Stack>
-                        <InputChoice
-                            required
-                            bind:value={terms}
-                            id="terms"
-                            label="terms"
-                            showLabel={false}>
-                            By accepting the invitation, you agree to the <Link.Anchor
-                                href={resolvedProfile.links.terms}
-                                target="_blank"
-                                rel="noopener noreferrer">Terms and Conditions</Link.Anchor>
-                            and
-                            <Link.Anchor
-                                href={resolvedProfile.links.privacy}
-                                target="_blank"
-                                rel="noopener noreferrer">
-                                Privacy Policy</Link.Anchor
-                            >.</InputChoice>
+{#await resolvedProfile.component.getUnauthenticated() then Unauthenticated}
+    <Unauthenticated>
+        <svelte:fragment slot="title">
+            {#if !userId || !secret || !membershipId || !teamId}
+                Invalid invite
+            {:else}
+                Invite
+            {/if}
+        </svelte:fragment>
+        <svelte:fragment>
+            {#if !userId || !secret || !membershipId || !teamId}
+                <Layout.Stack>
+                    <Alert.Inline status="warning" title="The invite link is not valid">
+                        Please ask the project owner to send you a new invite.
+                    </Alert.Inline>
+                    <div>
+                        <Button href={`${base}/register`}
+                            >Sign up to {resolvedProfile.platform}</Button>
+                    </div>
+                </Layout.Stack>
+            {:else}
+                <Layout.Stack>
+                    <Typography.Text>
+                        You have been invited to join an organization on {resolvedProfile.platform}
+                    </Typography.Text>
+                    <Form onSubmit={acceptInvite}>
+                        <Layout.Stack>
+                            <InputChoice
+                                required
+                                bind:value={terms}
+                                id="terms"
+                                label="terms"
+                                showLabel={false}>
+                                By accepting the invitation, you agree to the <Link.Anchor
+                                    href={resolvedProfile.links.terms}
+                                    target="_blank"
+                                    rel="noopener noreferrer">Terms and Conditions</Link.Anchor>
+                                and
+                                <Link.Anchor
+                                    href={resolvedProfile.links.privacy}
+                                    target="_blank"
+                                    rel="noopener noreferrer">
+                                    Privacy Policy</Link.Anchor
+                                >.</InputChoice>
 
-                        <Layout.Stack direction="row">
-                            <Button secondary href={`${base}/login`}>Cancel</Button>
-                            <Button submit disabled={!terms}>Accept</Button>
+                            <Layout.Stack direction="row">
+                                <Button secondary href={`${base}/login`}>Cancel</Button>
+                                <Button submit disabled={!terms}>Accept</Button>
+                            </Layout.Stack>
                         </Layout.Stack>
-                    </Layout.Stack>
-                </Form>
-            </Layout.Stack>
-        {/if}
-    </svelte:fragment>
-</Unauthenticated>
+                    </Form>
+                </Layout.Stack>
+            {/if}
+        </svelte:fragment>
+    </Unauthenticated>
+{/await}

@@ -95,65 +95,67 @@
             });
         }
     }
-    const Unauthenticated = resolvedProfile.component.unauthenticated;
 </script>
 
 <svelte:head>
     <title>Sign up - {resolvedProfile.platform}</title>
 </svelte:head>
 
-<Unauthenticated {imgLight} {imgDark}>
-    <svelte:fragment slot="title">{title}</svelte:fragment>
-    <svelte:fragment>
-        <Form onSubmit={invite}>
-            <Layout.Stack>
-                <InputText
-                    id="name"
-                    label="Name"
-                    placeholder="Your name"
-                    autofocus={true}
-                    bind:value={name} />
-                <InputEmail
-                    id="email"
-                    label="Email"
-                    placeholder="Your email"
-                    required={true}
-                    bind:value={mail} />
-                <InputPassword
-                    id="password"
-                    label="Password"
-                    placeholder="Your password"
-                    required={true}
-                    bind:value={pass} />
-                <InputText
-                    id="Code"
-                    label="Code"
-                    placeholder="Your code"
-                    required={true}
-                    bind:value={code} />
-                <InputChoice required value={terms} id="terms" label="terms" showLabel={false}>
-                    By registering, you agree that you have read, understand, and acknowledge our <a
-                        class="link"
-                        href={resolvedProfile.links.privacy}
-                        target="_blank"
-                        rel="noopener noreferrer">
-                        Privacy Policy</a>
-                    and accept our
-                    <a
-                        class="link"
-                        href={resolvedProfile.links.terms}
-                        target="_blank"
-                        rel="noopener noreferrer">General Terms of Use</a
-                    >.</InputChoice>
-                <Button fullWidth submit>Sign up</Button>
-            </Layout.Stack>
-        </Form>
-    </svelte:fragment>
-    <svelte:fragment slot="links">
-        <li class="inline-links-item">
-            <span class="text">
-                Already got an account? <a class="link" href={`${base}/login`}>Sign in</a>
-            </span>
-        </li>
-    </svelte:fragment>
-</Unauthenticated>
+{#await resolvedProfile.component.getUnauthenticated() then Unauthenticated}
+    <Unauthenticated {imgLight} {imgDark}>
+        <svelte:fragment slot="title">{title}</svelte:fragment>
+        <svelte:fragment>
+            <Form onSubmit={invite}>
+                <Layout.Stack>
+                    <InputText
+                        id="name"
+                        label="Name"
+                        placeholder="Your name"
+                        autofocus={true}
+                        bind:value={name} />
+                    <InputEmail
+                        id="email"
+                        label="Email"
+                        placeholder="Your email"
+                        required={true}
+                        bind:value={mail} />
+                    <InputPassword
+                        id="password"
+                        label="Password"
+                        placeholder="Your password"
+                        required={true}
+                        bind:value={pass} />
+                    <InputText
+                        id="Code"
+                        label="Code"
+                        placeholder="Your code"
+                        required={true}
+                        bind:value={code} />
+                    <InputChoice required value={terms} id="terms" label="terms" showLabel={false}>
+                        By registering, you agree that you have read, understand, and acknowledge
+                        our <a
+                            class="link"
+                            href={resolvedProfile.links.privacy}
+                            target="_blank"
+                            rel="noopener noreferrer">
+                            Privacy Policy</a>
+                        and accept our
+                        <a
+                            class="link"
+                            href={resolvedProfile.links.terms}
+                            target="_blank"
+                            rel="noopener noreferrer">General Terms of Use</a
+                        >.</InputChoice>
+                    <Button fullWidth submit>Sign up</Button>
+                </Layout.Stack>
+            </Form>
+        </svelte:fragment>
+        <svelte:fragment slot="links">
+            <li class="inline-links-item">
+                <span class="text">
+                    Already got an account? <a class="link" href={`${base}/login`}>Sign in</a>
+                </span>
+            </li>
+        </svelte:fragment>
+    </Unauthenticated>
+{/await}
