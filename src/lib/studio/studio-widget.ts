@@ -312,6 +312,7 @@ export async function initImagine(
             initImagineConfig(
                 {
                     AI_SERVICE_ENDPOINT: env.PUBLIC_AI_SERVICE_BASE_URL,
+                    API_ENDPOINT: env.PUBLIC_API_BASE_URL,
                     APPWRITE_ENDPOINT: env.PUBLIC_APPWRITE_ENDPOINT,
                     APPWRITE_SITES_BASE_URL: env.PUBLIC_APPWRITE_SITES_BASE_URL,
                     REALTIME_URI: env.PUBLIC_REALTIME_URI
