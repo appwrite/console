@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { base, resolve } from '$app/paths';
+    import { resolve } from '$app/paths';
     import { InputText } from '$lib/elements/forms/index.js';
     import { Wizard } from '$lib/layout';
     import { Fieldset, Layout, Typography } from '@appwrite.io/pink-svelte';
