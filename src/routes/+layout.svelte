@@ -17,6 +17,7 @@
     import { ThemeDark, ThemeLight, ThemeDarkCloud, ThemeLightCloud } from '../themes';
     import { isSmallViewport, updateViewport } from '$lib/stores/viewport';
     import { feedback } from '$lib/stores/feedback';
+    import '$lib/profiles/css/base.css';
 
     function resolveTheme(theme: AppStore['themeInUse']) {
         switch (theme) {
@@ -308,12 +309,5 @@
         .theme-dark &:not(:checked):not(:disabled) {
             background-color: var(--color-mid-neutral-70, #56565c);
         }
-    }
-
-    .responsive-table {
-        overflow: hidden;
-        width: 100%;
-        scrollbar-width: thin;
-        position: relative;
     }
 </style>
