@@ -52,9 +52,7 @@ function getPlausibleDomain(): string {
     if (VARS.CONSOLE_PROFILE === ProfileMode.STUDIO) {
         return PLAUSIBLE_DOMAINS.STUDIO;
     } else {
-        return isCloud
-            ? PLAUSIBLE_DOMAINS.CLOUD
-            : PLAUSIBLE_DOMAINS.SELF_HOSTED;
+        return isCloud ? PLAUSIBLE_DOMAINS.CLOUD : PLAUSIBLE_DOMAINS.SELF_HOSTED;
     }
 }
 
