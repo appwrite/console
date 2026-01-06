@@ -8,6 +8,7 @@
     import { canWriteProjects } from '$lib/stores/roles';
     import { isCloud } from '$lib/system';
     import { Typography } from '@appwrite.io/pink-svelte';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     const path = `${base}/project-${page.params.region}-${page.params.project}/settings`;
     const tabs: TabElement[] = [
@@ -15,6 +16,12 @@
             href: path,
             title: 'Overview',
             event: 'overview'
+        },
+        {
+            href: `${path}/api-keys`,
+            title: 'API keys',
+            event: 'api-keys',
+            disabled: !resolvedProfile.showExtendedAccountsMenu
         },
         {
             href: `${path}/domains`,
