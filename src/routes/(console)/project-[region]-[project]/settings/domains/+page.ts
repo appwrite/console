@@ -21,7 +21,11 @@ export const load: PageLoad = async ({ depends, url, route, params, parent }) =>
     const { organization } = await parent();
 
     const rules = await sdk.forProject(params.region, params.project).proxy.listRules({
-        queries: [Query.equal('type', RuleType.API), Query.equal('trigger', RuleTrigger.MANUAL)],
+        queries: [
+            Query.equal('type', RuleType.API),
+            Query.equal('trigger', RuleTrigger.MANUAL),
+            Query.orderDesc('$updatedAt')
+        ],
         search: search || undefined
     });
 

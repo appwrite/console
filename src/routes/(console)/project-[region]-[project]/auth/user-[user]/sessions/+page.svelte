@@ -1,6 +1,13 @@
 <script lang="ts">
     import { EmptySearch, Trim } from '$lib/components';
-    import { Badge, Layout, Table, Typography, Icon } from '@appwrite.io/pink-svelte';
+    import {
+        Badge,
+        Layout,
+        Table,
+        Typography,
+        Icon,
+        InteractiveText
+    } from '@appwrite.io/pink-svelte';
     import { IconGlobeAlt } from '@appwrite.io/pink-icons-svelte';
     import { Button } from '$lib/elements/forms';
     import { isValueOfStringEnum } from '$lib/helpers/types';
@@ -36,9 +43,9 @@
         <Table.Root
             let:root
             columns={[
-                { id: 'client' },
-                { id: 'location', width: 200 },
-                { id: 'ip', width: 200 },
+                { id: 'client', width: { min: 450 } },
+                { id: 'location', width: { min: 200 } },
+                { id: 'ip', width: { min: 200 } },
                 { id: 'actions', width: 100 }
             ]}>
             <svelte:fragment slot="header" let:root>
@@ -84,7 +91,7 @@
                         {/if}
                     </Table.Cell>
                     <Table.Cell column="ip" {root}>
-                        {session.ip}
+                        <InteractiveText variant="copy" text={session.ip} isVisible />
                     </Table.Cell>
                     <Table.Cell column="actions" {root}>
                         <Button

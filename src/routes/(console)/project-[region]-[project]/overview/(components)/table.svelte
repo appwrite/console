@@ -67,7 +67,7 @@
         allowSelection={$canWriteKeys}
         showSuccessNotification={false}
         resource={`${capitalize(label)} key`}
-        onDelete={(selectedRows) => {
+        onDelete={(_, selectedRows) => {
             showDeleteModal = true;
             selectedKeys = selectedRows;
         }}>

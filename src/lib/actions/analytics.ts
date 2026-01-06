@@ -268,7 +268,7 @@ export enum Submit {
     AuthSessionAlertsUpdate = 'submit_auth_session_alerts_update',
     AuthMembershipPrivacyUpdate = 'submit_auth_membership_privacy_update',
     AuthMockNumbersUpdate = 'submit_auth_mock_numbers_update',
-    AuthInvalidateSesssion = 'submit_auth_invalidate_session',
+    AuthInvalidateSession = 'submit_auth_invalidate_session',
     SessionsLengthUpdate = 'submit_sessions_length_update',
     SessionsLimitUpdate = 'submit_sessions_limit_update',
     SessionDelete = 'submit_session_delete',
@@ -277,6 +277,7 @@ export enum Submit {
     DatabaseDelete = 'submit_database_delete',
     DatabaseUpdateName = 'submit_database_update_name',
     DatabaseImportCsv = 'submit_database_import_csv',
+    DatabaseBackupDelete = 'submit_database_backup_delete',
 
     ColumnCreate = 'submit_column_create',
     ColumnUpdate = 'submit_column_update',
