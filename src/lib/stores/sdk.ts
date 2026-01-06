@@ -114,7 +114,6 @@ if (!building) {
     scopedConsoleClient.setProject('console');
     clientConsole.setEndpoint(endpoint).setProject('console');
 
-    // set platform type!
     clientConsole.setPlatform(resolvedProfile.platform);
     scopedConsoleClient.setPlatform(resolvedProfile.platform);
 

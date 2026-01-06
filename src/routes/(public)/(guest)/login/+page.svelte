@@ -21,7 +21,6 @@
     let { data }: PageProps = $props();
 
     const profile = $derived(resolvedProfile);
-    const Unauthenticated = $derived(profile.component.unauthenticated);
 
     async function login() {
         try {
@@ -102,61 +101,63 @@
     <title>Sign in - {profile.platform}</title>
 </svelte:head>
 
-<Unauthenticated coupon={data?.couponData} campaign={data?.campaign}>
-    <svelte:fragment slot="title">Sign in</svelte:fragment>
-    <svelte:fragment>
-        <Form onSubmit={login}>
-            <Layout.Stack>
-                {#if emailEnabled}
-                    <InputEmail
-                        id="email"
-                        label="Email"
-                        placeholder="Email"
-                        autofocus={true}
-                        required={true}
-                        bind:value={mail} />
-                    <InputPassword
-                        id="password"
-                        label="Password"
-                        placeholder="Password"
-                        required={true}
-                        bind:value={pass} />
-                    <Button fullWidth submit {disabled}>Sign in</Button>
-                    <span class="with-separators eyebrow-heading-3">or</span>
-                {/if}
-                {#if profile.logins.includes(Logins.GITHUB)}
-                    <Button
-                        secondary
-                        fullWidth
-                        on:click={() => onOauthLogin(profile.oauthProviders.github)}
-                        {disabled}>
-                        <span class="icon-github" aria-hidden="true"></span>
-                        <span class="text">Sign in with GitHub</span>
-                    </Button>
-                {/if}
-                {#if profile.logins.includes(Logins.GOOGLE)}
-                    <Button
-                        secondary
-                        fullWidth
-                        on:click={() => onOauthLogin(profile.oauthProviders.google)}
-                        {disabled}>
-                        <span class="icon-google" aria-hidden="true"></span>
-                        <span class="text">Sign in with Google</span>
-                    </Button>
-                {/if}
-            </Layout.Stack>
-        </Form>
-    </svelte:fragment>
-    <svelte:fragment slot="links">
-        {#if emailEnabled}
-            <li class="inline-links-item">
-                <a href={`${base}/recover`}><span class="text">Forgot password?</span></a>
-            </li>
-            <li class="inline-links-item">
-                <a href={`${base}/register${page?.url?.search ?? ''}`}>
-                    <span class="text">Sign up</span>
-                </a>
-            </li>
-        {/if}
-    </svelte:fragment>
-</Unauthenticated>
+{#await resolvedProfile.component.getUnauthenticated() then Unauthenticated}
+    <Unauthenticated coupon={data?.couponData} campaign={data?.campaign}>
+        <svelte:fragment slot="title">Sign in</svelte:fragment>
+        <svelte:fragment>
+            <Form onSubmit={login}>
+                <Layout.Stack>
+                    {#if emailEnabled}
+                        <InputEmail
+                            id="email"
+                            label="Email"
+                            placeholder="Email"
+                            autofocus={true}
+                            required={true}
+                            bind:value={mail} />
+                        <InputPassword
+                            id="password"
+                            label="Password"
+                            placeholder="Password"
+                            required={true}
+                            bind:value={pass} />
+                        <Button fullWidth submit {disabled}>Sign in</Button>
+                        <span class="with-separators eyebrow-heading-3">or</span>
+                    {/if}
+                    {#if profile.logins.includes(Logins.GITHUB)}
+                        <Button
+                            secondary
+                            fullWidth
+                            on:click={() => onOauthLogin(profile.oauthProviders.github)}
+                            {disabled}>
+                            <span class="icon-github" aria-hidden="true"></span>
+                            <span class="text">Sign in with GitHub</span>
+                        </Button>
+                    {/if}
+                    {#if profile.logins.includes(Logins.GOOGLE)}
+                        <Button
+                            secondary
+                            fullWidth
+                            on:click={() => onOauthLogin(profile.oauthProviders.google)}
+                            {disabled}>
+                            <span class="icon-google" aria-hidden="true"></span>
+                            <span class="text">Sign in with Google</span>
+                        </Button>
+                    {/if}
+                </Layout.Stack>
+            </Form>
+        </svelte:fragment>
+        <svelte:fragment slot="links">
+            {#if emailEnabled}
+                <li class="inline-links-item">
+                    <a href={`${base}/recover`}><span class="text">Forgot password?</span></a>
+                </li>
+                <li class="inline-links-item">
+                    <a href={`${base}/register${page?.url?.search ?? ''}`}>
+                        <span class="text">Sign up</span>
+                    </a>
+                </li>
+            {/if}
+        </svelte:fragment>
+    </Unauthenticated>
+{/await}

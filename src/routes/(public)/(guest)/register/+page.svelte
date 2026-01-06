@@ -113,73 +113,79 @@
             scopes: ['read:user', 'user:email']
         });
     }
-
-    const Unauthenticated = resolvedProfile.component.unauthenticated;
 </script>
 
 <svelte:head>
     <title>Sign up - {resolvedProfile.platform}</title>
 </svelte:head>
 
-<Unauthenticated coupon={data?.couponData} campaign={data?.campaign || testimonialCampaign}>
-    <svelte:fragment slot="title">Sign up</svelte:fragment>
-    <svelte:fragment>
-        <Form onSubmit={register}>
-            <Layout.Stack>
-                <InputText
-                    id="name"
-                    label="Name"
-                    placeholder="Your name"
-                    autofocus
-                    required
-                    autocomplete
-                    bind:value={name} />
-                <InputEmail
-                    id="email"
-                    label="Email"
-                    placeholder="Your email"
-                    required
-                    bind:value={mail} />
-                <InputPassword
-                    id="password"
-                    label="Password"
-                    placeholder="Your password"
-                    helper="Password must be at least 8 characters long"
-                    required
-                    bind:value={pass} />
-                <InputChoice required bind:value={terms} id="terms" label="terms" showLabel={false}>
-                    By registering, you agree that you have read, understand, and acknowledge our <Link.Anchor
-                        href={resolvedProfile.links.privacy}
-                        target="_blank"
-                        rel="noopener noreferrer">
-                        Privacy Policy</Link.Anchor>
-                    and accept our
-                    <Link.Anchor
-                        href={resolvedProfile.links.privacy}
-                        target="_blank"
-                        rel="noopener noreferrer">General Terms of Use</Link.Anchor
-                    >.</InputChoice>
+{#await resolvedProfile.component.getUnauthenticated() then Unauthenticated}
+    <Unauthenticated coupon={data?.couponData} campaign={data?.campaign || testimonialCampaign}>
+        <svelte:fragment slot="title">Sign up</svelte:fragment>
+        <svelte:fragment>
+            <Form onSubmit={register}>
+                <Layout.Stack>
+                    <InputText
+                        id="name"
+                        label="Name"
+                        placeholder="Your name"
+                        autofocus
+                        required
+                        autocomplete
+                        bind:value={name} />
+                    <InputEmail
+                        id="email"
+                        label="Email"
+                        placeholder="Your email"
+                        required
+                        bind:value={mail} />
+                    <InputPassword
+                        id="password"
+                        label="Password"
+                        placeholder="Your password"
+                        helper="Password must be at least 8 characters long"
+                        required
+                        bind:value={pass} />
+                    <InputChoice
+                        required
+                        bind:value={terms}
+                        id="terms"
+                        label="terms"
+                        showLabel={false}>
+                        By registering, you agree that you have read, understand, and acknowledge
+                        our <Link.Anchor
+                            href={resolvedProfile.links.privacy}
+                            target="_blank"
+                            rel="noopener noreferrer">
+                            Privacy Policy</Link.Anchor>
+                        and accept our
+                        <Link.Anchor
+                            href={resolvedProfile.links.privacy}
+                            target="_blank"
+                            rel="noopener noreferrer">General Terms of Use</Link.Anchor
+                        >.</InputChoice>
 
-                <Button fullWidth submit disabled={disabled || !terms}>Sign up</Button>
+                    <Button fullWidth submit disabled={disabled || !terms}>Sign up</Button>
 
-                {#if isCloud}
-                    <span class="with-separators eyebrow-heading-3">or</span>
-                    <Button
-                        secondary
-                        fullWidth
-                        on:click={onGithubLogin}
-                        disabled={disabled || !terms}>
-                        <span class="icon-github" aria-hidden="true"></span>
-                        <span class="text">Sign up with GitHub</span>
-                    </Button>
-                {/if}
-            </Layout.Stack>
-        </Form>
-    </svelte:fragment>
-    <svelte:fragment slot="links">
-        <Typography.Text variant="m-400">
-            Already got an account? <Link.Anchor href={`${base}/login${page?.url?.search ?? ''}`}
-                >Sign in</Link.Anchor>
-        </Typography.Text>
-    </svelte:fragment>
-</Unauthenticated>
+                    {#if isCloud}
+                        <span class="with-separators eyebrow-heading-3">or</span>
+                        <Button
+                            secondary
+                            fullWidth
+                            on:click={onGithubLogin}
+                            disabled={disabled || !terms}>
+                            <span class="icon-github" aria-hidden="true"></span>
+                            <span class="text">Sign up with GitHub</span>
+                        </Button>
+                    {/if}
+                </Layout.Stack>
+            </Form>
+        </svelte:fragment>
+        <svelte:fragment slot="links">
+            <Typography.Text variant="m-400">
+                Already got an account? <Link.Anchor
+                    href={`${base}/login${page?.url?.search ?? ''}`}>Sign in</Link.Anchor>
+            </Typography.Text>
+        </svelte:fragment>
+    </Unauthenticated>
+{/await}

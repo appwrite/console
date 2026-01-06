@@ -64,59 +64,60 @@
             });
         }
     }
-    const Unauthenticated = resolvedProfile.component.unauthenticated;
 </script>
 
 <svelte:head>
     <title>Recover - {resolvedProfile.platform}</title>
 </svelte:head>
 
-<Unauthenticated>
-    <svelte:fragment slot="title">Password recovery</svelte:fragment>
-    <svelte:fragment>
-        {#if userId && secret}
-            <Form onSubmit={setPassword}>
-                <Layout.Stack>
-                    <InputPassword
-                        label="New password"
-                        placeholder="Enter password"
-                        id="password"
-                        autofocus={true}
-                        required={true}
-                        bind:value={password} />
-                    <InputPassword
-                        label="Confirm password"
-                        placeholder="Confirm password"
-                        id="confirm-password"
-                        required={true}
-                        bind:value={confirmPassword} />
+{#await resolvedProfile.component.getUnauthenticated() then Unauthenticated}
+    <Unauthenticated>
+        <svelte:fragment slot="title">Password recovery</svelte:fragment>
+        <svelte:fragment>
+            {#if userId && secret}
+                <Form onSubmit={setPassword}>
+                    <Layout.Stack>
+                        <InputPassword
+                            label="New password"
+                            placeholder="Enter password"
+                            id="password"
+                            autofocus={true}
+                            required={true}
+                            bind:value={password} />
+                        <InputPassword
+                            label="Confirm password"
+                            placeholder="Confirm password"
+                            id="confirm-password"
+                            required={true}
+                            bind:value={confirmPassword} />
 
-                    <Button fullWidth submit>Update</Button>
-                </Layout.Stack>
-            </Form>
-        {:else}
-            <Form onSubmit={recover}>
-                <Layout.Stack>
-                    <InputEmail
-                        id="email"
-                        label="Email"
-                        placeholder="Email"
-                        autofocus={true}
-                        required={true}
-                        bind:value={email} />
+                        <Button fullWidth submit>Update</Button>
+                    </Layout.Stack>
+                </Form>
+            {:else}
+                <Form onSubmit={recover}>
+                    <Layout.Stack>
+                        <InputEmail
+                            id="email"
+                            label="Email"
+                            placeholder="Email"
+                            autofocus={true}
+                            required={true}
+                            bind:value={email} />
 
-                    <Button fullWidth submit>Recover</Button>
-                </Layout.Stack>
-            </Form>
-        {/if}
-    </svelte:fragment>
-    <svelte:fragment slot="links">
-        <Layout.Stack direction="row" justifyContent="center" alignItems="center">
-            <Link.Anchor href={`${base}/login`} variant="quiet">Sign in</Link.Anchor>
-            <div style:height="20px">
-                <Divider vertical />
-            </div>
-            <Link.Anchor href={`${base}/register`} variant="quiet">Sign up</Link.Anchor>
-        </Layout.Stack>
-    </svelte:fragment>
-</Unauthenticated>
+                        <Button fullWidth submit>Recover</Button>
+                    </Layout.Stack>
+                </Form>
+            {/if}
+        </svelte:fragment>
+        <svelte:fragment slot="links">
+            <Layout.Stack direction="row" justifyContent="center" alignItems="center">
+                <Link.Anchor href={`${base}/login`} variant="quiet">Sign in</Link.Anchor>
+                <div style:height="20px">
+                    <Divider vertical />
+                </div>
+                <Link.Anchor href={`${base}/register`} variant="quiet">Sign up</Link.Anchor>
+            </Layout.Stack>
+        </svelte:fragment>
+    </Unauthenticated>
+{/await}
