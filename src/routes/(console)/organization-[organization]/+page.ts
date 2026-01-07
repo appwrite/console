@@ -1,4 +1,5 @@
 import { Query } from '@appwrite.io/console';
+import { isCloud } from '$lib/system';
 import { sdk } from '$lib/stores/sdk';
 import { getLimit, getPage, getSearch, pageToOffset } from '$lib/helpers/load';
 import { CARD_LIMIT, Dependencies } from '$lib/constants';
@@ -23,49 +24,54 @@ export const load: PageLoad = async ({ params, url, route, depends, parent }) =>
     const archivedPage =
         Number.isFinite(archivedPageRaw) && archivedPageRaw > 0 ? archivedPageRaw : 1;
     const archivedOffset = pageToOffset(archivedPage, limit);
+    const common = [Query.equal('teamId', params.organization)];
+    const active = isCloud
+        ? [Query.or([Query.equal('status', 'active'), Query.isNull('status')])]
+        : [];
+
     const [activeProjects, archivedProjects, activeTotal, archivedTotal] = await Promise.all([
         sdk.forConsole.projects.list({
             queries: [
                 Query.offset(offset),
-                Query.equal('teamId', params.organization),
-                Query.or([Query.equal('status', 'active'), Query.isNull('status')]),
                 Query.limit(limit),
-                Query.orderDesc('')
+                Query.orderDesc(''),
+                ...common,
+                ...active
             ],
             search: search || undefined
         }),
+        isCloud
+            ? sdk.forConsole.projects.list({
+                  queries: [
+                      Query.offset(archivedOffset),
+                      Query.limit(limit),
+                      Query.orderDesc(''),
+                      ...common,
+                      Query.equal('status', 'archived')
+                  ],
+                  search: search || undefined
+              })
+            : Promise.resolve({ projects: [], total: 0 }),
         sdk.forConsole.projects.list({
-            queries: [
-                Query.offset(archivedOffset),
-                Query.equal('teamId', params.organization),
-                Query.equal('status', 'archived'),
-                Query.limit(limit),
-                Query.orderDesc('')
-            ],
+            queries: [...common, ...active],
             search: search || undefined
         }),
-        sdk.forConsole.projects.list({
-            queries: [
-                Query.equal('teamId', params.organization),
-                Query.or([Query.equal('status', 'active'), Query.isNull('status')])
-            ],
-            search: search || undefined
-        }),
-        sdk.forConsole.projects.list({
-            queries: [
-                Query.equal('teamId', params.organization),
-                Query.equal('status', 'archived')
-            ],
-            search: search || undefined
-        })
+        isCloud
+            ? sdk.forConsole.projects.list({
+                  queries: [...common, Query.equal('status', 'archived')],
+                  search: search || undefined
+              })
+            : Promise.resolve({ projects: [], total: 0 })
     ]);
 
     // set `default` if no region!
     for (const project of activeProjects.projects) {
         project.region ??= 'default';
     }
-    for (const project of archivedProjects.projects) {
-        project.region ??= 'default';
+    if (isCloud) {
+        for (const project of archivedProjects.projects) {
+            project.region ??= 'default';
+        }
     }
 
     return {
