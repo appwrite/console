@@ -25,7 +25,6 @@
         try {
             await sdk.forConsole.projects.updateLabels({ projectId: $project.$id, labels });
             await invalidate(Dependencies.PROJECT);
-            await invalidate(Dependencies.ORGANIZATION);
             isDisabled = true;
             addNotification({
                 type: 'success',
