@@ -61,8 +61,7 @@ export const load: PageLoad = async ({ params, url, route, depends, parent }) =>
         }),
         isCloud
             ? sdk.forConsole.projects.list({
-                  queries: [...commonQueries, ...searchQueries, Query.equal('status', 'archived')],
-                  search: search || undefined
+                  queries: [...commonQueries, ...searchQueries, Query.equal('status', 'archived')]
               })
             : Promise.resolve({ projects: [], total: 0 })
     ]);
