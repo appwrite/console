@@ -109,8 +109,8 @@ importers:
         specifier: ^9.37.0
         version: 9.39.1
       '@imagine.dev/web-components':
-        specifier: ^0.0.140
-        version: 0.0.140(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
+        specifier: https://pkg.vc/-/@appwrite/@imagine.dev/web-components@ad8767ea
+        version: https://pkg.vc/-/@appwrite/@imagine.dev/web-components@ad8767ea(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
       '@melt-ui/pp':
         specifier: ^0.3.2
         version: 0.3.2(@melt-ui/svelte@0.86.6(svelte@5.45.6))(svelte@5.45.6)
@@ -655,8 +655,9 @@ packages:
     resolution: {integrity: sha512-bV0Tgo9K4hfPCek+aMAn81RppFKv2ySDQeMoSZuvTASywNTnVJCArCZE2FWqpvIatKu7VMRLWlR1EazvVhDyhQ==}
     engines: {node: '>=18.18'}
 
-  '@imagine.dev/web-components@0.0.140':
-    resolution: {integrity: sha512-QPgl1uhHw5KBU3pWU6SygMVJ0jXxbpXt0EZ3QoQtXqWh6dBoy4cbhugfuaM6UxMZlNbooR8/SRIZVjFNCayj/A==}
+  '@imagine.dev/web-components@https://pkg.vc/-/@appwrite/@imagine.dev/web-components@ad8767ea':
+    resolution: {tarball: https://pkg.vc/-/@appwrite/@imagine.dev/web-components@ad8767ea}
+    version: 0.0.142
     peerDependencies:
       react: 19.1.0
       react-dom: 19.1.0
@@ -2681,6 +2682,9 @@ packages:
   natural-compare@1.4.0:
     resolution: {integrity: sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==}
 
+  ndjson-readablestream@1.4.0:
+    resolution: {integrity: sha512-aufwPqwZzsS+NTekCJbHz8kJ6VlyeI8LD7owYSWm3cs4rx3CkY+J+DoD1af/ySLbc4ESJkESgJeMj1V4t3ZYPg==}
+
   node-addon-api@7.1.1:
     resolution: {integrity: sha512-5m3bsyrjFWE1xf7nz7YXdN4udnVtXK6/Yfgn5qnahL6bCkf2yKt4k3nuTKAtT4r3IG8JNR2ncsIMdZuAzJjHQQ==}
 
@@ -4039,8 +4043,9 @@ snapshots:
 
   '@humanwhocodes/retry@0.4.3': {}
 
-  '@imagine.dev/web-components@0.0.140(react-dom@19.2.1(react@19.2.1))(react@19.2.1)':
+  '@imagine.dev/web-components@https://pkg.vc/-/@appwrite/@imagine.dev/web-components@ad8767ea(react-dom@19.2.1(react@19.2.1))(react@19.2.1)':
     dependencies:
+      ndjson-readablestream: 1.4.0
       react: 19.2.1
       react-dom: 19.2.1(react@19.2.1)
 
@@ -6266,6 +6271,8 @@ snapshots:
   nanotar@0.1.1: {}
 
   natural-compare@1.4.0: {}
+
+  ndjson-readablestream@1.4.0: {}
 
   node-addon-api@7.1.1:
     optional: true

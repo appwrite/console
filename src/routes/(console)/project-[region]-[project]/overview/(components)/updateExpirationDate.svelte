@@ -14,6 +14,7 @@
 
     export let keyType: 'api' | 'dev' = 'api';
     export let key: Models.DevKey | Models.Key;
+    export let basePath: string = undefined;
 
     const projectId = page.params.project;
 

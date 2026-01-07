@@ -240,16 +240,19 @@
                             <span slot="tooltip">{projectOption.name}</span>
                         </Tooltip>
                     {/each}
-                    <div class="only-mobile divider">
-                        <Divider />
-                    </div>
-                    <div class="products-label-container" class:studio>
-                        <span class="products-label" class:hidden={state === 'icons'}>Deploy</span>
-                        <span
-                            class:studio
-                            class="products-label-indicator"
-                            class:hidden={state !== 'icons'}></span>
-                    </div>
+                    {#if resolvedProfile.services.sites}
+                        <div class="only-mobile divider">
+                            <Divider />
+                        </div>
+                        <div class="products-label-container" class:studio>
+                            <span class="products-label" class:hidden={state === 'icons'}
+                                >Deploy</span>
+                            <span
+                                class:studio
+                                class="products-label-indicator"
+                                class:hidden={state !== 'icons'}></span>
+                        </div>
+                    {/if}
                     {@const deployProjectOptions = projectOptions.filter(
                         (projectOption) => projectOption.category === 'deploy'
                     )}

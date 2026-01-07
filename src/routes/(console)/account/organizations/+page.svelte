@@ -23,6 +23,7 @@
     import { Icon, Tooltip, Typography } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { isFreePlan } from '$lib/helpers/billing';
+    import { resolvedProfile } from '$lib/profiles/index.svelte';
 
     const {
         data
@@ -97,11 +98,12 @@
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
         <Typography.Title>Organizations</Typography.Title>
-
-        <Button on:click={createOrg} event="create_organization">
-            <Icon icon={IconPlus} slot="start" size="s" />
-            Create organization
-        </Button>
+        {#if resolvedProfile.showCreateOrganization}
+            <Button on:click={createOrg} event="create_organization">
+                <Icon icon={IconPlus} slot="start" size="s" />
+                Create organization
+            </Button>
+        {/if}
     </div>
 
     {#if data.organizations.teams.length}

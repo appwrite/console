@@ -15,10 +15,12 @@
 
     let {
         keyType = 'api',
-        keys
+        keys,
+        basePath = `${base}/project-${page.params.region}-${page.params.project}/overview`
     }: {
         keyType?: 'api' | 'dev';
         keys: Models.KeyList | Models.DevKeyList;
+        basePath?: string;
     } = $props();
 
     let selectedKeys = $state([]);
@@ -126,13 +128,11 @@
         description={getDescription()}
         on:click={async () => {
             if (isApiKey) {
-                await goto(
-                    `${base}/project-${page.params.region}-${page.params.project}/overview/${slug}/create`
-                );
+                await goto(`${basePath}/${slug}/create`);
             } else {
                 $showDevKeysCreateModal = true;
             }
         }} />
 {/if}
 
-<DeleteBatch {keyType} bind:keyIds={selectedKeys} bind:showDelete={showDeleteModal} />
+<DeleteBatch {keyType} {basePath} bind:keyIds={selectedKeys} bind:showDelete={showDeleteModal} />

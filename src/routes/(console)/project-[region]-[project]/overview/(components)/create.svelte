@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { base } from '$app/paths';
+    import { resolve } from '$app/paths';
     import { InputText } from '$lib/elements/forms/index.js';
     import { Wizard } from '$lib/layout';
     import { Fieldset, Layout, Typography } from '@appwrite.io/pink-svelte';
@@ -16,6 +16,11 @@
     import Scopes from '../api-keys/scopes.svelte';
     import { page } from '$app/state';
     import { copy } from '$lib/helpers/copy';
+
+    export let basePath: string = resolve('/(console)/project-[region]-[project]/overview', {
+        project: page.params.project,
+        region: page.params.region
+    });
 
     const projectId = page.params.project;
 
@@ -41,9 +46,7 @@
             }
 
             trackEvent(Submit.KeyCreate);
-            await goto(
-                `${base}/project-${page.params.region}-${page.params.project}/overview/api-keys/${$id}`
-            );
+            await goto(`${basePath}/api-keys/${$id}`);
             addNotification({
                 message: `API key has been created`,
                 type: 'success',
@@ -74,7 +77,7 @@
 
 <Wizard
     title="Create API key"
-    href={`${base}/project-${page.params.region}-${page.params.project}/overview/api-keys/`}
+    href={`${basePath}/api-keys/`}
     bind:showExitModal
     column
     columnSize="s"

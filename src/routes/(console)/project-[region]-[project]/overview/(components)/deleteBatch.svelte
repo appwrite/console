@@ -11,6 +11,7 @@
     export let showDelete = false;
     export let keyIds: string[] = [];
     export let keyType: 'api' | 'dev' = 'api';
+    export let basePath: string = `${base}/project-${page.params.region}-${page.params.project}/overview`;
 
     let error: string;
 
@@ -47,9 +48,7 @@
             });
 
             trackEvent(event);
-            await goto(
-                `${base}/project-${page.params.region}-${page.params.project}/overview/${slug}`
-            );
+            await goto(`${basePath}/${slug}`);
         } catch (e) {
             error = e.message;
             trackError(e, event);
