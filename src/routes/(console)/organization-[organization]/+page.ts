@@ -24,9 +24,10 @@ export const load: PageLoad = async ({ params, url, route, depends, parent }) =>
     const archivedPage =
         Number.isFinite(archivedPageRaw) && archivedPageRaw > 0 ? archivedPageRaw : 1;
     const archivedOffset = pageToOffset(archivedPage, limit);
-    
+
     const searchQueries = search
-      ? [Query.or([Query.search('search', search), Query.contains('labels', search)])];
+        ? [Query.or([Query.search('search', search), Query.contains('labels', search)])]
+        : [];
     const commonQueries = [Query.equal('teamId', params.organization)];
     const activeQueries = isCloud
         ? [Query.or([Query.equal('status', 'active'), Query.isNull('status')])]
