@@ -1,6 +1,6 @@
 <script lang="ts">
     import { goto, invalidate } from '$app/navigation';
-    import { base } from '$app/paths';
+    import { base, resolve } from '$app/paths';
     import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Button, Form } from '$lib/elements/forms';
@@ -112,9 +112,16 @@
 
             if (upload?.status === 'success') {
                 const deploymentId = upload.$id;
-                await goto(
-                    `${base}/project-${page.params.region}-${page.params.project}/functions/function-${func.$id}/deployment-${deploymentId}`
+                const resolvedPath = resolve(
+                    `/(console)/project-[region]-[project]/functions/function-[function]/deployment-[deployment]`,
+                    {
+                        region: page.params.region,
+                        project: page.params.project,
+                        function: func.$id,
+                        deployment: deploymentId
+                    }
                 );
+                await goto(resolvedPath);
             }
 
             invalidate(Dependencies.FUNCTION);

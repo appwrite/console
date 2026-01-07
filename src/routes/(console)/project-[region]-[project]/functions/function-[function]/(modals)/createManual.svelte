@@ -36,7 +36,9 @@
             show = false;
             files = undefined;
             await invalidate(Dependencies.DEPLOYMENTS);
-            trackEvent(Submit.DeploymentCreate);
+            trackEvent(Submit.DeploymentCreate, {
+                type: 'function'
+            });
             addNotification({
                 type: 'success',
                 message: 'Deployment created successfully'

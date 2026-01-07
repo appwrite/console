@@ -36,7 +36,9 @@
             });
             show = false;
             invalidate(Dependencies.DEPLOYMENTS);
-            trackEvent(Submit.DeploymentCreate);
+            trackEvent(Submit.DeploymentCreate, {
+                type: 'site'
+            });
             addNotification({
                 message: 'Deployment upload started',
                 type: 'success'

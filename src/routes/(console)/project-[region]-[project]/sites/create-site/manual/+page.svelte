@@ -1,6 +1,6 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
-    import { base } from '$app/paths';
+    import { base, resolve } from '$app/paths';
     import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Button, Form } from '$lib/elements/forms';
@@ -115,9 +115,14 @@
 
             if (upload?.status === 'success') {
                 const deploymentId = upload.$id;
-                await goto(
-                    `${base}/project-${page.params.region}-${page.params.project}/sites/create-site/deploying?site=${site.$id}&deployment=${deploymentId}`
+                const resolvedPath = resolve(
+                    `/(console)/project-[region]-[project]/sites/create-site/deploying`,
+                    {
+                        region: page.params.region,
+                        project: page.params.project
+                    }
                 );
+                await goto(`${resolvedPath}?site=${site.$id}&deployment=${deploymentId}`);
             }
         } catch (e) {
             const upload = $uploader.files.find((f) => f.resourceId === site?.$id);
