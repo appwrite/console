@@ -42,15 +42,15 @@ export const load: PageLoad = async ({ params, url, route, depends, parent }) =>
         }),
         isCloud
             ? sdk.forConsole.projects.list({
-                queries: [
-                    Query.offset(archivedOffset),
-                    Query.limit(limit),
-                    Query.orderDesc(''),
-                    ...common,
-                    Query.equal('status', 'archived')
-                ],
-                search: search || undefined
-            })
+                  queries: [
+                      Query.offset(archivedOffset),
+                      Query.limit(limit),
+                      Query.orderDesc(''),
+                      ...common,
+                      Query.equal('status', 'archived')
+                  ],
+                  search: search || undefined
+              })
             : Promise.resolve({ projects: [], total: 0 }),
         sdk.forConsole.projects.list({
             queries: [...common, ...active],
@@ -58,9 +58,9 @@ export const load: PageLoad = async ({ params, url, route, depends, parent }) =>
         }),
         isCloud
             ? sdk.forConsole.projects.list({
-                queries: [...common, Query.equal('status', 'archived')],
-                search: search || undefined
-            })
+                  queries: [...common, Query.equal('status', 'archived')],
+                  search: search || undefined
+              })
             : Promise.resolve({ projects: [], total: 0 })
     ]);
 
