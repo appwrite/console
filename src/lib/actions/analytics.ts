@@ -13,7 +13,7 @@ function plausible(domain: string): AnalyticsPlugin {
 
     init({
         domain,
-        autoCapturePageviews: false,
+        autoCapturePageviews: false
     });
 
     return {
