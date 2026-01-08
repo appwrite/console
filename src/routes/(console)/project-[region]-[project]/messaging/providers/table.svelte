@@ -1,7 +1,12 @@
 <script lang="ts">
     import { base } from '$app/paths';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { type DeleteOperationState, Id, MultiSelectionTable } from '$lib/components';
+    import {
+        type DeleteOperationState,
+        type DeleteOperation,
+        Id,
+        MultiSelectionTable
+    } from '$lib/components';
     import type { PageData } from './$types';
     import { columns } from './store';
     import Provider from '../provider.svelte';
@@ -20,22 +25,24 @@
         data: PageData;
     } = $props();
 
-    async function handleDelete(selectedRows: string[]): Promise<DeleteOperationState> {
-        const promises = selectedRows.map((id) => {
-            return sdk
+    async function handleDelete(batchDelete: DeleteOperation): Promise<DeleteOperationState> {
+        const result = await batchDelete((id) =>
+            sdk
                 .forProject(page.params.region, page.params.project)
-                .messaging.deleteProvider({ providerId: id });
-        });
+                .messaging.deleteProvider({ providerId: id })
+        );
 
         try {
-            await Promise.all(promises);
-            trackEvent(Submit.MessagingProviderDelete, { total: selectedRows.length });
-        } catch (error) {
-            trackError(error, Submit.MessagingProviderDelete);
-            return error;
+            if (result.error) {
+                trackError(result.error, Submit.MessagingProviderDelete);
+            } else {
+                trackEvent(Submit.MessagingProviderDelete, { total: result.deleted.length });
+            }
         } finally {
             await invalidate(Dependencies.MESSAGING_PROVIDERS);
         }
+
+        return result;
     }
 </script>
 

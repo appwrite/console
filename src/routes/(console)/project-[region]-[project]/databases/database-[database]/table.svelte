@@ -2,7 +2,12 @@
     import { invalidate } from '$app/navigation';
     import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { Id, MultiSelectionTable, type DeleteOperationState } from '$lib/components';
+    import {
+        Id,
+        MultiSelectionTable,
+        type DeleteOperation,
+        type DeleteOperationState
+    } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
     import { canWriteTables } from '$lib/stores/roles';
@@ -23,23 +28,26 @@
 
     const entitySingular = terminology.entity.lower.singular;
 
-    async function onDelete(selectedTables: string[]): Promise<DeleteOperationState> {
-        const promises = selectedTables.map((tableId) =>
+    async function onDelete(batchDelete: DeleteOperation): Promise<DeleteOperationState> {
+        const result = await batchDelete((tableId) =>
             sdk.forProject(page.params.region, page.params.project).tablesDB.deleteTable({
                 databaseId: page.params.database,
                 tableId
             })
         );
+
         try {
-            await Promise.all(promises);
-            trackEvent(Submit.TableDelete);
-        } catch (error) {
-            trackError(error, Submit.TableDelete);
-            return error;
+            if (result.error) {
+                trackError(result.error, Submit.TableDelete);
+            } else {
+                trackEvent(Submit.TableDelete, { total: result.deleted.length });
+            }
         } finally {
             await invalidate(Dependencies.TABLES);
             subNavigation.update();
         }
+
+        return result;
     }
 </script>
 

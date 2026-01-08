@@ -6,6 +6,7 @@
     import {
         Avatar,
         type DeleteOperationState,
+        type DeleteOperation,
         Empty,
         EmptySearch,
         MultiSelectionTable,
@@ -65,23 +66,25 @@
         showDelete = true;
     }
 
-    async function handleBulkDelete(selectedRows: string[]): Promise<DeleteOperationState> {
-        const promises = selectedRows.map((fileId) => {
-            return sdk.forProject(page.params.region, page.params.project).storage.deleteFile({
+    async function handleBulkDelete(batchDelete: DeleteOperation): Promise<DeleteOperationState> {
+        const result = await batchDelete((fileId) =>
+            sdk.forProject(page.params.region, page.params.project).storage.deleteFile({
                 bucketId: page.params.bucket,
                 fileId
-            });
-        });
+            })
+        );
 
         try {
-            await Promise.all(promises);
-            trackEvent(Submit.FileDelete, { total: selectedRows.length });
-        } catch (error) {
-            trackError(error, Submit.FileDelete);
-            return error;
+            if (result.error) {
+                trackError(result.error, Submit.FileDelete);
+            } else {
+                trackEvent(Submit.FileDelete, { total: result.deleted.length });
+            }
         } finally {
             await invalidate(Dependencies.FILES);
         }
+
+        return result;
     }
 
     const beforeunload = (event: BeforeUnloadEvent) => {

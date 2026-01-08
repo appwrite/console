@@ -1300,26 +1300,6 @@ export class Billing {
         );
     }
 
-    async setupPaymentMandate(
-        organizationId: string,
-        paymentMethodId: string
-    ): Promise<PaymentMethodData> {
-        const path = `/account/payment-methods/${paymentMethodId}/setup`;
-        const params = {
-            organizationId,
-            paymentMethodId
-        };
-        const uri = new URL(this.client.config.endpoint + path);
-        return await this.client.call(
-            'patch',
-            uri,
-            {
-                'content-type': 'application/json'
-            },
-            params
-        );
-    }
-
     async listAddresses(queries: string[] = []): Promise<AddressesList> {
         const path = `/account/billing-addresses`;
         const params = {

@@ -1,4 +1,5 @@
 <script lang="ts">
+    import PaginationWithLimit from './paginationWithLimit.svelte';
     import { Button, InputText } from '$lib/elements/forms';
     import { GridItem1, CardContainer, Modal } from '$lib/components';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
@@ -45,9 +46,19 @@
         projectsToArchive: Models.Project[];
         organization: Organization;
         currentPlan: Plan;
+        archivedTotalOverall: number;
+        archivedOffset: number;
+        limit: number;
     }
 
-    let { projectsToArchive, organization, currentPlan }: Props = $props();
+    let {
+        projectsToArchive,
+        organization,
+        currentPlan,
+        archivedTotalOverall,
+        archivedOffset,
+        limit
+    }: Props = $props();
 
     // Check if current plan order is less than Pro (order < 1 means FREE plan)
     let isPlanBelowPro = $derived(currentPlan?.order < 1);
@@ -187,7 +198,7 @@
     }
 
     import { formatName as formatNameHelper } from '$lib/helpers/string';
-    function formatName(name: string, limit: number = 19) {
+    function formatName(name: string, limit: number = 16) {
         return formatNameHelper(name, limit, $isSmallViewport);
     }
 </script>
@@ -196,7 +207,7 @@
     <div class="archive-projects-margin-top">
         <Accordion
             title={isPlanBelowPro ? 'Archived projects' : 'Pending archive'}
-            badge={`${projectsToArchive.length}`}>
+            badge={`${archivedTotalOverall}`}>
             <Typography.Text tag="p" size="s">
                 {#if isPlanBelowPro}
                     These projects are archived and require a plan upgrade to restore access.
@@ -206,7 +217,7 @@
             </Typography.Text>
 
             <div class="archive-projects-margin">
-                <CardContainer disableEmpty={true} total={projectsToArchive.length}>
+                <CardContainer disableEmpty={true} total={archivedTotalOverall}>
                     {#each projectsToArchive as project}
                         {@const platforms = filterPlatforms(
                             project.platforms.map((platform) => getPlatformInfo(platform.type))
@@ -266,7 +277,7 @@
                                 </Badge>
                             {/each}
 
-                            {#if platforms.length > 3}
+                            {#if platforms.length > 2}
                                 <Badge
                                     variant="secondary"
                                     content={`+${platforms.length - 2}`}
@@ -282,6 +293,15 @@
                         </GridItem1>
                     {/each}
                 </CardContainer>
+
+                <PaginationWithLimit
+                    name="Archived Projects"
+                    {limit}
+                    offset={archivedOffset}
+                    total={archivedTotalOverall}
+                    pageParam="archivedPage"
+                    removeOnFirstPage
+                    class="pagination-container" />
             </div>
         </Accordion>
     </div>
@@ -354,5 +374,8 @@
         display: flex;
         align-items: center;
         gap: 8px;
+    }
+    :global(.pagination-container) {
+        margin-top: 16px;
     }
 </style>

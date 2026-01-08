@@ -11,17 +11,23 @@
     import { columns } from './store';
     import Table from './table.svelte';
     import type { PageProps } from './$types';
-    import { Icon } from '@appwrite.io/pink-svelte';
+    import { Icon, Tooltip } from '@appwrite.io/pink-svelte';
     import { registerCommands } from '$lib/commandCenter';
     import { canWriteDatabases } from '$lib/stores/roles';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import EmptySearch from '$lib/components/emptySearch.svelte';
+    import { isServiceLimited } from '$lib/stores/billing';
+    import { organization } from '$lib/stores/organization';
 
     import { resolveRoute } from '$lib/stores/navigation';
 
     const { data }: PageProps = $props();
 
     let showCreate = $state(false);
+
+    const isLimited = $derived(
+        isServiceLimited('databases', $organization?.billingPlan, data.databases.total)
+    );
 
     async function handleCreate(event: CustomEvent<Models.Database>) {
         showCreate = false;
@@ -41,7 +47,7 @@
                     showCreate = true;
                 },
                 keys: ['c'],
-                disabled: showCreate || !$canWriteDatabases,
+                disabled: showCreate || !$canWriteDatabases || isLimited,
                 icon: IconPlus,
                 group: 'databases',
                 rank: 10
@@ -57,10 +63,20 @@
         bind:view={data.view}
         searchPlaceholder="Search by name or ID">
         {#if $canWriteDatabases}
-            <Button event="create_database" on:click={() => (showCreate = true)}>
-                <Icon icon={IconPlus} slot="start" size="s" />
-                Create database
-            </Button>
+            <Tooltip disabled={!isLimited}>
+                <div>
+                    <Button
+                        disabled={isLimited}
+                        event="create_database"
+                        on:click={() => (showCreate = true)}>
+                        <Icon icon={IconPlus} slot="start" size="s" />
+                        Create database
+                    </Button>
+                </div>
+                <svelte:fragment slot="tooltip">
+                    You have reached the maximum number of databases for your plan.
+                </svelte:fragment>
+            </Tooltip>
         {/if}
     </ResponsiveContainerHeader>
 
@@ -68,7 +84,11 @@
         {#if data.view === 'grid'}
             <Grid {data} bind:showCreate />
         {:else}
-            <Table {data} />
+            <Table
+                entities={data.entities}
+                policies={data.policies}
+                databases={data.databases}
+                lastBackups={data.lastBackups} />
         {/if}
 
         <PaginationWithLimit

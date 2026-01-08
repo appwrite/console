@@ -250,6 +250,7 @@ export enum Submit {
     ProjectDelete = 'submit_project_delete',
     ProjectUpdateName = 'submit_project_update_name',
     ProjectUpdateTeam = 'submit_project_update_team',
+    ProjectUpdateLabels = 'submit_project_update_labels',
     ProjectService = 'submit_project_service',
     ProjectUpdateSMTP = 'submit_project_update_smtp',
     MemberCreate = 'submit_member_create',
@@ -280,6 +281,7 @@ export enum Submit {
     DatabaseDelete = 'submit_database_delete',
     DatabaseUpdateName = 'submit_database_update_name',
     DatabaseImportCsv = 'submit_database_import_csv',
+    DatabaseBackupDelete = 'submit_database_backup_delete',
 
     ColumnCreate = 'submit_column_create',
     ColumnUpdate = 'submit_column_update',
