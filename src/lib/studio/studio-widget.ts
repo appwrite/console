@@ -280,6 +280,12 @@ export function hideStudio() {
     component.style.width = '';
     restoreBodyScroll();
 }
+
+export async function invalidateSiteInfo(): Promise<void> {
+    const webComponents = await getWebComponents();
+    webComponents.invalidateSiteInfo?.();
+}
+
 export type ErrorParams = {
     traceId?: string;
     message: string;

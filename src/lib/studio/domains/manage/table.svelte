@@ -31,12 +31,14 @@
         siteId,
         region,
         projectId,
-        onAddNewDomain = null
+        onAddNewDomain,
+        onDomainsChanged
     }: {
         siteId: string;
         region: string;
         projectId: string;
         onAddNewDomain?: () => void;
+        onDomainsChanged?: () => void;
     } = $props();
 
     let loading = $state(true);
@@ -76,6 +78,7 @@
 
         if (wasDeleteOpen || wasRetryOpen) {
             loadDomains();
+            onDomainsChanged?.();
         }
 
         previousDeleteState = showDelete;
@@ -166,7 +169,7 @@
     <RetryDomainModal bind:show={showRetry} {selectedProxyRule} />
 {/if}
 
-{#snippet domainActions(rule: Models.ProxyRule, toggle: () => void)}
+{#snippet domainActions(rule, toggle)}
     <ActionMenu.Root>
         <ActionMenu.Item.Anchor href={`${$regionalProtocol}${rule.domain}`} external>
             Open domain

@@ -8,7 +8,12 @@
     import { app } from '$lib/stores/app';
     import { Dependencies } from '$lib/constants';
     import { goto, invalidate } from '$app/navigation';
-    import { ensureStudioComponent, initImagine, getWebComponents } from './studio-widget';
+    import {
+        ensureStudioComponent,
+        initImagine,
+        getWebComponents,
+        invalidateSiteInfo
+    } from './studio-widget';
     import AddDomains from './domains/add/view.svelte';
     import VerifyDomain from './domains/verify/view.svelte';
     import ManageDomains from './domains/manage/view.svelte';
@@ -88,6 +93,7 @@
     {siteId}
     bind:show={showAddDomainsWizard}
     onDomainAdded={(rule, domain, verified) => {
+        invalidateSiteInfo();
         if (!verified) {
             ruleIdForVerification = rule;
             domainForVerification = domain;
@@ -98,6 +104,7 @@
 <VerifyDomain
     rule={ruleIdForVerification}
     domain={domainForVerification}
+    onVerified={invalidateSiteInfo}
     bind:show={showVerifyDomainsWizard}
     onChangeDomain={() => {
         ruleIdForVerification = null;
@@ -111,6 +118,7 @@
     {projectId}
     domain={primaryDomainForSite}
     bind:show={showManageDomainsSheet}
+    onDomainsChanged={invalidateSiteInfo}
     onAddNewDomain={() => {
         showAddDomainsWizard = true;
         showManageDomainsSheet = false;
