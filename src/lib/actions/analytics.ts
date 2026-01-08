@@ -1,5 +1,5 @@
 import Analytics, { type AnalyticsPlugin } from 'analytics';
-import Plausible from 'plausible-tracker';
+import { init, track } from '@plausible-analytics/tracker';
 import { get } from 'svelte/store';
 import { page } from '$app/state';
 import { user } from '$lib/stores/user';
@@ -11,30 +11,30 @@ import { getReferrerAndUtmSource, getTrackedQueryParams } from '$lib/helpers/utm
 function plausible(domain: string): AnalyticsPlugin {
     if (!browser) return { name: 'analytics-plugin-plausible' };
 
-    const instance = Plausible({
-        domain
+    init({
+        domain,
+        autoCapturePageviews: false
     });
 
     return {
         name: 'analytics-plugin-plausible',
         page: ({ payload }) => {
-            instance.trackPageview({
+            track('pageview', {
                 url: payload.properties.path,
-                referrer: payload.properties.referrer,
-                deviceWidth: payload.properties.width
+                props: {
+                    referrer: payload.properties.referrer,
+                    deviceWidth: String(payload.properties.width)
+                }
             });
         },
         track: ({ payload }) => {
-            instance.trackEvent(
-                payload.event,
-                {
-                    props: payload.properties
-                },
-                {
-                    url: payload.properties.path,
-                    deviceWidth: payload.properties.width
+            track(payload.event, {
+                url: payload.properties.path,
+                props: {
+                    ...payload.properties,
+                    deviceWidth: String(payload.properties.width)
                 }
-            );
+            });
         },
         loaded: () => true
     };
