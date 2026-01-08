@@ -273,10 +273,14 @@
         within your project.
     {:else}
         Set the environment variables or secret keys that will be passed to your {product}. Global
-        variables can be found in <Link
-            href={`${base}/project-${$project.region}-${$project.$id}/settings#variables`}>
-            project settings</Link
-        >.
+        variables can be found in {#if $project && $project.region && $project.$id}
+            <Link
+                href={`${base}/project-${$project.region}-${$project.$id}/settings#variables`}>
+                project settings</Link
+            >.
+        {:else}
+            project settings.
+        {/if}
     {/if}
     <svelte:fragment slot="aside">
         <Layout.Stack gap="l">
@@ -323,12 +327,16 @@
                                 Some environment variables have
                             {/if}
                             a naming conflict with a global variable. View global variables in
-                            <a
-                                href={`${base}/project-${$project.region}-${$project.$id}/settings`}
-                                title="Project settings"
-                                class="link">
-                                project settings</a
-                            >.
+                            {#if $project && $project.region && $project.$id}
+                                <a
+                                    href={`${base}/project-${$project.region}-${$project.$id}/settings`}
+                                    title="Project settings"
+                                    class="link">
+                                    project settings</a
+                                >.
+                            {:else}
+                                project settings.
+                            {/if}
                         </p>
                     </Alert.Inline>
                 {/if}
