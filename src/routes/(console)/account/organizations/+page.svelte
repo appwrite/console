@@ -111,7 +111,7 @@
             event="organization"
             offset={data.offset}
             on:click={createOrg}
-            disableEmpty={false}
+            disableEmpty={!resolvedProfile.showCreateOrganization}
             total={data.organizations.total}>
             {#each data.organizations.teams as organization}
                 {@const avatarList = getMemberships(organization.$id)}

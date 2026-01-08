@@ -236,6 +236,8 @@
         }
     }
 
+    /* for stricter type */
+    let selectedOrg: Organization;
     $: selectedOrg = organizations.find((org) => org.isSelected);
 
     $: organizationsBottomSheet = createOrganizationBottomSheet(selectedOrg);
