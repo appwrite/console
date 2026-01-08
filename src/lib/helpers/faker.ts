@@ -5,7 +5,6 @@ import { ID, type Models } from '@appwrite.io/console';
 import { isWithinSafeRange } from '$lib/helpers/numbers';
 import type { DatabaseType, Field } from '$database/(entity)';
 
-/* @todo: @itznotabug - either use databaseSdk or use switch */
 export async function generateFields(
     project: Models.Project,
     databaseId: string,
@@ -74,9 +73,9 @@ export async function generateFields(
             ]);
         }
 
-        case 'documentsdb':
-        case 'vectordb': {
-            /* empty */
+        case 'documentsdb': /* doesn't need any fields */
+        case 'vectordb': /* vector embeddings + metadata defined at collection creation */ {
+            /* no individual field creation needed */
             break;
         }
     }

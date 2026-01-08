@@ -10,6 +10,7 @@
     const entityType = terminology.entity.lower.singular;
 
     const database = $derived(page.data.database);
+    const entityObject = $derived(page.data[entityType]);
 
     const breadcrumbs = $derived.by(() => {
         const params = page.params;
@@ -34,7 +35,7 @@
             },
             {
                 href: withPath(databasePath, `/${entityType}-${entityId}`),
-                title: entity.title.singular
+                title: entityObject?.name ?? entity.title.singular
             }
         ];
     });
