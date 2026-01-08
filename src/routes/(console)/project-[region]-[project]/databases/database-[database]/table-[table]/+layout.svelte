@@ -313,6 +313,8 @@
             } finally {
                 columnCreationHandler = null;
             }
+        } else {
+            columns = currentFields as Columns[];
         }
 
         let rowIds = [];
