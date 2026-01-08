@@ -15,7 +15,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { invalidate } from '$app/navigation';
     import { calculateSize } from '$lib/helpers/sizeConvertion';
-    import { ID } from '@appwrite.io/console';
+    import { ID, type Models } from '@appwrite.io/console';
     import { columns } from './store';
     import { database } from '../store';
     import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
@@ -44,7 +44,6 @@
     import { capitalize } from '$lib/helpers/string';
     import Ellipse from './components/Ellipse.svelte';
     import { page } from '$app/state';
-    import { type Models } from '@appwrite.io/console';
 
     const {
         data
