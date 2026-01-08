@@ -18,7 +18,6 @@
     import { ID } from '@appwrite.io/console';
     import { columns } from './store';
     import { database } from '../store';
-    import type { BackupArchive, BackupPolicy } from '$lib/sdk/backups';
     import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { copy } from '$lib/helpers/copy';
     import { LabelCard } from '$lib/components/index.js';
@@ -45,6 +44,7 @@
     import { capitalize } from '$lib/helpers/string';
     import Ellipse from './components/Ellipse.svelte';
     import { page } from '$app/state';
+    import { type Models } from '@appwrite.io/console';
 
     const {
         data
@@ -53,7 +53,7 @@
     } = $props();
 
     let showDelete = $state(false);
-    let selectedBackup: BackupArchive | null = $state(null);
+    let selectedBackup: Models.BackupArchive | null = $state(null);
 
     let showDropdown = [];
 
@@ -87,15 +87,15 @@
         );
     });
 
-    function getPolicyDetails(policyId: string | null): BackupPolicy | null {
+    function getPolicyDetails(policyId: string | null): Models.BackupPolicy | null {
         return data.policies.policies.find((policy) => policy.$id === policyId);
     }
 
-    function getCleanBackupName(backup: BackupArchive): string {
+    function getCleanBackupName(backup: Models.BackupArchive): string {
         return toLocaleDateTime(backup.$createdAt).replaceAll(',', '');
     }
 
-    function getBackupStatus(backup: BackupArchive) {
+    function getBackupStatus(backup: Models.BackupArchive) {
         switch (backup.status) {
             case 'pending':
                 return 'pending';

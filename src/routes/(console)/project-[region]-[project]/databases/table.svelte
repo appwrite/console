@@ -6,10 +6,19 @@
     import { columns } from './store';
     import { IconExclamation } from '@appwrite.io/pink-icons-svelte';
     import { Layout, Tooltip, Table, Icon } from '@appwrite.io/pink-svelte';
-    import type { BackupPolicy } from '$lib/sdk/backups';
+    import { type Models } from '@appwrite.io/console';
 
-    export let data;
-    const tables = data.tables;
+    let {
+        tables,
+        policies,
+        databases,
+        lastBackups
+    }: {
+        tables: Record<string, string>;
+        databases: Models.DatabaseList;
+        lastBackups: Record<string, string>;
+        policies: Record<string, Models.BackupPolicy[]>;
+    } = $props();
 
     function getPolicyDescription(cron: string): string {
         const [minute, hour, dayOfMonth, , dayOfWeek] = cron.split(' ');
@@ -19,6 +28,10 @@
         if (minute !== '*' && hour === '*') return 'Hourly';
         if (hour !== '*') return 'Daily';
     }
+
+    function getPoliciesDescription(policies: Models.BackupPolicy[] | null): string {
+        return policies?.map((policy) => getPolicyDescription(policy.schedule)).join(', ') ?? '';
+    }
 </script>
 
 <Table.Root columns={$columns} let:root>
@@ -27,7 +40,7 @@
             <Table.Header.Cell column={id} {root}>{title}</Table.Header.Cell>
         {/each}
     </svelte:fragment>
-    {#each data.databases.databases as database (database.$id)}
+    {#each databases.databases as database (database.$id)}
         <!-- takes directly to the spreadsheet -->
         {@const tableId = tables[database?.$id] ?? null}
         {@const tableHref = tableId ? `/table-${tableId}` : ''}
@@ -45,18 +58,16 @@
                     {:else if column.id === 'name'}
                         {database.name}
                     {:else if column.id === 'backup'}
-                        {@const policies = data.policies?.[database.$id] ?? null}
-                        {@const lastBackup = data.lastBackups?.[database.$id] ?? null}
-                        {@const description = policies
-                            ?.map((policy: BackupPolicy) => getPolicyDescription(policy.schedule))
-                            .join(', ')}
+                        {@const backupPolicies = policies?.[database.$id] ?? null}
+                        {@const lastBackup = lastBackups?.[database.$id] ?? null}
+                        {@const description = getPoliciesDescription(backupPolicies)}
 
                         <Tooltip
                             placement="bottom"
-                            disabled={!policies || !lastBackup}
+                            disabled={!backupPolicies || !lastBackup}
                             maxWidth="fit-content">
                             <span class="u-trim">
-                                {#if !policies}
+                                {#if !backupPolicies}
                                     <Layout.Stack direction="row" gap="xxs" alignItems="center">
                                         <Icon
                                             icon={IconExclamation}

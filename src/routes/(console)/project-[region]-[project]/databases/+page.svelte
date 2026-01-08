@@ -77,7 +77,11 @@
         {#if data.view === 'grid'}
             <Grid {data} bind:showCreate />
         {:else}
-            <Table {data} />
+            <Table
+                tables={data.tables}
+                policies={data.policies}
+                databases={data.databases}
+                lastBackups={data.lastBackups} />
         {/if}
 
         <PaginationWithLimit
