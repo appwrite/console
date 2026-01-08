@@ -110,7 +110,7 @@
         }
     });
 
-    $: {
+    $effect(() => {
         if (browser) {
             const isCloudClass = isCloud ? 'is-cloud' : '';
 
@@ -137,7 +137,7 @@
                 document.body.classList.remove('no-transition');
             });
         }
-    }
+    });
 
     const preloadFonts = [
         base + '/fonts/inter/inter-v8-latin-600.woff2',

@@ -12,7 +12,9 @@ export const VARS = {
     GROWTH_ENDPOINT: env.PUBLIC_GROWTH_ENDPOINT ?? undefined,
     PUBLIC_STRIPE_KEY: env.PUBLIC_STRIPE_KEY ?? undefined,
     EMAIL_VERIFICATION: env.PUBLIC_CONSOLE_EMAIL_VERIFICATION === 'true',
-    MOCK_AI_SUGGESTIONS: (env.PUBLIC_CONSOLE_MOCK_AI_SUGGESTIONS ?? 'true') === 'true'
+    MOCK_AI_SUGGESTIONS: (env.PUBLIC_CONSOLE_MOCK_AI_SUGGESTIONS ?? 'true') === 'true',
+    POSTHOG_API_KEY: env.PUBLIC_POSTHOG_API_KEY ?? undefined,
+    POSTHOG_HOST: env.PUBLIC_POSTHOG_HOST ?? undefined
 };
 
 export const ENV = {
