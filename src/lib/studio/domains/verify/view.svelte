@@ -28,12 +28,14 @@
         rule,
         domain,
         onChangeDomain,
+        onVerified,
         show = $bindable(false)
     }: {
         show: boolean;
         rule: string;
         domain: Models.Domain;
         onChangeDomain: () => void;
+        onVerified?: () => void;
     } = $props();
 
     const isSubDomain = $derived.by(() => isASubdomain(domain?.domain));
@@ -50,15 +52,15 @@
                     .proxy.updateRuleVerification({ ruleId: rule });
 
                 verified = ruleData.status === 'verified';
-                throw new Error(
-                    'Domain verification failed. Please check your domain settings or try again later'
-                );
             } else if (isCloud) {
                 const domainData = await sdk.forConsole.domains.get({
                     domainId: domain.$id
                 });
 
                 verified = domainData.nameservers.toLowerCase() === 'appwrite';
+            }
+
+            if (!verified) {
                 throw new Error(
                     'Domain verification failed. Please check your domain settings or try again later'
                 );
@@ -70,6 +72,7 @@
             });
 
             show = false;
+            onVerified?.();
             await invalidate(Dependencies.DOMAINS);
             await invalidate(Dependencies.SITES_DOMAINS);
         } catch (error) {
