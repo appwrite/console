@@ -53,7 +53,7 @@
         IconPlus,
         IconPuzzle
     } from '@appwrite.io/pink-icons-svelte';
-    import { type Field, SideSheet } from '$database/(entity)';
+    import { type Field, SideSheet, useTerminology } from '$database/(entity)';
     import EditRow from './rows/edit.svelte';
     import EditRelatedRow from './rows/editRelated.svelte';
     import EditColumn from './columns/edit.svelte';
@@ -61,7 +61,7 @@
     import EditRowPermissions from './rows/editPermissions.svelte';
     import { Dialog, Layout, Typography, Selector, Icon } from '@appwrite.io/pink-svelte';
     import { Button, Seekbar } from '$lib/elements/forms';
-    import { generateFakeRecords, generateColumns } from '$lib/helpers/faker';
+    import { generateFakeRecords, generateFields } from '$lib/helpers/faker';
     import { addNotification } from '$lib/stores/notifications';
     import { hash } from '$lib/helpers/string';
     import { preferences } from '$lib/stores/preferences';
@@ -93,6 +93,9 @@
     let createColumn: CreateColumn;
     let selectedOption: Option['name'] = 'String';
     let createMoreColumns = false;
+
+    /* terminology */
+    const { type: databaseType } = useTerminology(page);
 
     let columnCreationHandler: ((response: RealtimeResponse) => void) | null = null;
 
@@ -278,7 +281,7 @@
         $spreadsheetLoading = true;
         $randomDataModalState.show = false;
 
-        let columns: Columns[] = [];
+        let columns: Field[] = [];
         const currentFields = table.fields;
         const hasAnyRelationships = currentFields.some((field: Field) => isRelationship(field));
         const filteredColumns = currentFields.filter(
@@ -295,7 +298,13 @@
 
                 columnCreationHandler = handler;
 
-                columns = await generateColumns($project, page.params.database, page.params.table);
+                columns = await generateFields(
+                    $project,
+                    page.params.database,
+                    page.params.table,
+                    databaseType
+                );
+
                 startWaiting(columns.length);
                 await waitPromise;
 

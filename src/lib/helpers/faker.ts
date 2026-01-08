@@ -1,71 +1,89 @@
-import { faker } from '@faker-js/faker';
-import type { Columns } from '$routes/(console)/project-[region]-[project]/databases/database-[database]/table-[table]/store';
-import { ID, type Models } from '@appwrite.io/console';
 import { sdk } from '$lib/stores/sdk';
-import { isWithinSafeRange } from '$lib/helpers/numbers';
+import { faker } from '@faker-js/faker';
 import type { NestedNumberArray } from './types';
+import { ID, type Models } from '@appwrite.io/console';
+import { isWithinSafeRange } from '$lib/helpers/numbers';
+import type { DatabaseType, Field } from '$database/(entity)';
 
-export async function generateColumns(
+/* @todo: @itznotabug - either use databaseSdk or use switch */
+export async function generateFields(
     project: Models.Project,
     databaseId: string,
-    tableId: string
-): Promise<Columns[]> {
+    tableId: string,
+    databaseType: DatabaseType
+): Promise<Field[]> {
     const client = sdk.forProject(project.region, project.$id);
 
-    return await Promise.all([
-        client.tablesDB.createStringColumn({
-            databaseId,
-            tableId,
-            key: 'name',
-            size: 255,
-            required: false
-        }),
-        client.tablesDB.createEmailColumn({ databaseId, tableId, key: 'email', required: false }),
-        client.tablesDB.createIntegerColumn({
-            databaseId,
-            tableId,
-            key: 'age',
-            required: false,
-            min: 18,
-            max: 80
-        }),
-        client.tablesDB.createStringColumn({
-            databaseId,
-            tableId,
-            key: 'city',
-            size: 100,
-            required: false
-        }),
-        client.tablesDB.createStringColumn({
-            databaseId,
-            tableId,
-            key: 'description',
-            size: 1000,
-            required: false
-        }),
-        client.tablesDB.createBooleanColumn({
-            databaseId,
-            tableId,
-            key: 'active',
-            required: false
-        }),
-        client.tablesDB.createPointColumn({
-            databaseId,
-            tableId,
-            key: 'location',
-            required: false
-        }),
-        client.tablesDB.createLineColumn({
-            databaseId,
-            tableId,
-            key: 'route',
-            required: false
-        })
-    ]);
+    switch (databaseType) {
+        case 'legacy':
+        case 'tablesdb': {
+            return await Promise.all([
+                client.tablesDB.createStringColumn({
+                    databaseId,
+                    tableId,
+                    key: 'name',
+                    size: 255,
+                    required: false
+                }),
+                client.tablesDB.createEmailColumn({
+                    databaseId,
+                    tableId,
+                    key: 'email',
+                    required: false
+                }),
+                client.tablesDB.createIntegerColumn({
+                    databaseId,
+                    tableId,
+                    key: 'age',
+                    required: false,
+                    min: 18,
+                    max: 80
+                }),
+                client.tablesDB.createStringColumn({
+                    databaseId,
+                    tableId,
+                    key: 'city',
+                    size: 100,
+                    required: false
+                }),
+                client.tablesDB.createStringColumn({
+                    databaseId,
+                    tableId,
+                    key: 'description',
+                    size: 1000,
+                    required: false
+                }),
+                client.tablesDB.createBooleanColumn({
+                    databaseId,
+                    tableId,
+                    key: 'active',
+                    required: false
+                }),
+                client.tablesDB.createPointColumn({
+                    databaseId,
+                    tableId,
+                    key: 'location',
+                    required: false
+                }),
+                client.tablesDB.createLineColumn({
+                    databaseId,
+                    tableId,
+                    key: 'route',
+                    required: false
+                })
+            ]);
+        }
+
+        case 'documentsdb':
+        case 'vectordb': {
+            /* empty */
+            break;
+        }
+    }
 }
 
 export function generateFakeRecords(
-    columns: Columns[],
+    fields: Field[],
     count: number
 ): {
     ids: string[];
@@ -73,7 +91,7 @@ export function generateFakeRecords(
 } {
     if (count <= 0) return { ids: [], rows: [] };
 
-    const filteredColumns = columns.filter(
+    const filteredColumns = fields.filter(
         (col) => col.type !== 'relationship' && col.status === 'available'
     );
 
@@ -108,7 +126,7 @@ export function generateFakeRecords(
             };
         } else {
             for (const column of filteredColumns) {
-                row[column.key] = generateValueForColumn(column);
+                row[column.key] = generateValueForField(column);
             }
         }
 
@@ -140,15 +158,15 @@ function generateStringValue(key: string, maxLength: number): string {
     return text.length <= maxLength ? text : text.substring(0, maxLength);
 }
 
-function generateValueForColumn(
-    column: Columns
+function generateValueForField(
+    field: Field
 ): string | number | boolean | null | Array<string | number | boolean | NestedNumberArray> {
-    if (column.array) {
+    if (field.array) {
         const arraySize = faker.number.int({ min: 1, max: 5 });
         const items: Array<string | number | NestedNumberArray | boolean> = [];
 
         for (let i = 0; i < arraySize; i++) {
-            const itemAttribute = { ...column, array: false };
+            const itemAttribute = { ...field, array: false };
             const item = generateSingleValue(itemAttribute);
             if (item !== null) {
                 items.push(item);
@@ -158,16 +176,14 @@ function generateValueForColumn(
         return items;
     }
 
-    return generateSingleValue(column);
+    return generateSingleValue(field);
 }
 
-function generateSingleValue(
-    column: Columns
-): string | number | boolean | NestedNumberArray | null {
-    switch (column.type) {
+function generateSingleValue(field: Field): string | number | boolean | NestedNumberArray | null {
+    switch (field.type) {
         case 'string': {
-            if ('format' in column && column.format) {
-                switch (column.format) {
+            if ('format' in field && field.format) {
+                switch (field.format) {
                     case 'email': {
                         return faker.internet.email();
                     }
@@ -181,7 +197,7 @@ function generateSingleValue(
                     }
 
                     case 'enum': {
-                        const enumAttr = column as Models.ColumnEnum;
+                        const enumAttr = field as Models.ColumnEnum;
                         if (enumAttr.elements?.length > 0) {
                             return faker.helpers.arrayElement(enumAttr.elements);
                         }
@@ -190,14 +206,14 @@ function generateSingleValue(
                 }
                 return '';
             } else {
-                const stringAttr = column as Models.ColumnString;
+                const stringAttr = field as Models.ColumnString;
                 const maxLength = Math.min(stringAttr.size ?? 255, 1000);
-                return generateStringValue(column.key, maxLength);
+                return generateStringValue(field.key, maxLength);
             }
         }
 
         case 'integer': {
-            const intAttr = column as Models.ColumnInteger;
+            const intAttr = field as Models.ColumnInteger;
             const min = isWithinSafeRange(intAttr.min) ? intAttr.min : 0;
             const fallbackMax = Math.max(min + 100, 100);
             const max = isWithinSafeRange(intAttr.max)
@@ -207,7 +223,7 @@ function generateSingleValue(
         }
 
         case 'double': {
-            const floatAttr = column as Models.ColumnFloat;
+            const floatAttr = field as Models.ColumnFloat;
             const min = isWithinSafeRange(floatAttr.min) ? floatAttr.min : 0;
             const fallbackMax = Math.max(min + 100, 100);
             const max = isWithinSafeRange(floatAttr.max)
