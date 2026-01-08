@@ -25,7 +25,13 @@
                 )
             ) {
                 deployment = response.payload as Models.Deployment;
-                if (deployment.status === 'ready') {
+
+                const isReady =
+                    deployment.status === 'ready' &&
+                    deployment.screenshotLight &&
+                    deployment.screenshotDark;
+
+                if (isReady) {
                     const resolvedUrl = resolve(
                         '/(console)/project-[region]-[project]/sites/create-site/finish',
                         {
