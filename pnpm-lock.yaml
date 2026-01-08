@@ -29,6 +29,9 @@ importers:
       '@faker-js/faker':
         specifier: ^9.9.0
         version: 9.9.0
+      '@plausible-analytics/tracker':
+        specifier: ^0.4.4
+        version: 0.4.4
       '@popperjs/core':
         specifier: ^2.11.8
         version: 2.11.8
@@ -71,9 +74,6 @@ importers:
       nanotar:
         specifier: ^0.1.1
         version: 0.1.1
-      plausible-tracker:
-        specifier: ^0.3.9
-        version: 0.3.9
       pretty-bytes:
         specifier: ^6.1.1
         version: 6.1.1
@@ -1007,6 +1007,9 @@ packages:
   '@parcel/watcher@2.5.1':
     resolution: {integrity: sha512-dfUnCxiN9H4ap84DvD2ubjw+3vUNpstxa0TneY/Paat8a3R4uQZDLSvWjmznAY/DoahqTHl9V46HF/Zs3F29pg==}
     engines: {node: '>= 10.0.0'}
+
+  '@plausible-analytics/tracker@0.4.4':
+    resolution: {integrity: sha512-fz0NOYUEYXtg1TBaPEEvtcBq3FfmLFuTe1VZw4M8sTWX129br5dguu3M15+plOQnc181ShYe67RfwhKgK89VnA==}
 
   '@playwright/test@1.56.1':
     resolution: {integrity: sha512-vSMYtL/zOcFpvJCW71Q/OEGQb7KYBPAdKh35WNSkaZA75JlAO8ED8UN6GUNTm3drWomcbcqRPFqQbLae8yBTdg==}
@@ -2900,10 +2903,6 @@ packages:
     resolution: {integrity: sha512-5gTmgEY/sqK6gFXLIsQNH19lWb4ebPDLA4SdLP7dsWkIXHWlG66oPuVvXSGFPppYZz8ZDZq0dYYrbHfBCVUb1Q==}
     engines: {node: '>=12'}
 
-  plausible-tracker@0.3.9:
-    resolution: {integrity: sha512-hMhneYm3GCPyQon88SZrVJx+LlqhM1kZFQbuAgXPoh/Az2YvO1B6bitT9qlhpiTdJlsT5lsr3gPmzoVjb5CDXA==}
-    engines: {node: '>=10'}
-
   playwright-core@1.56.1:
     resolution: {integrity: sha512-hutraynyn31F+Bifme+Ps9Vq59hKuUCz7H1kDOcBs+2oGguKkWTU50bBWrtz34OUWmIwpBTWDxaRPXrIXkgvmQ==}
     engines: {node: '>=18'}
@@ -4574,6 +4573,8 @@ snapshots:
       '@parcel/watcher-win32-ia32': 2.5.1
       '@parcel/watcher-win32-x64': 2.5.1
     optional: true
+
+  '@plausible-analytics/tracker@0.4.4': {}
 
   '@playwright/test@1.56.1':
     dependencies:
@@ -6674,8 +6675,6 @@ snapshots:
   picomatch@4.0.2: {}
 
   picomatch@4.0.3: {}
-
-  plausible-tracker@0.3.9: {}
 
   playwright-core@1.56.1: {}
 
