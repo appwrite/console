@@ -93,12 +93,14 @@ async function fetchPolicies(databases: Models.DatabaseList, params: RouteParams
             try {
                 const { policies } = await sdk
                     .forProject(params.region, params.project)
-                    .backups.listPolicies([
-                        // TODO: are all needed!?
-                        // Query.limit(3),
-                        Query.equal('resourceType', 'database'),
-                        Query.equal('resourceId', database.$id)
-                    ]);
+                    .backups.listPolicies({
+                        queries: [
+                            // TODO: are all needed!?
+                            // Query.limit(3),
+                            Query.equal('resourceType', 'database'),
+                            Query.equal('resourceId', database.$id)
+                        ]
+                    });
 
                 if (policies.length > 0) {
                     databasePolicies[database.$id] = policies;
@@ -122,12 +124,14 @@ async function fetchLastBackups(databases: Models.DatabaseList, params: RoutePar
             try {
                 const { archives } = await sdk
                     .forProject(params.region, params.project)
-                    .backups.listArchives([
-                        Query.limit(1),
-                        Query.orderDesc('$createdAt'),
-                        Query.equal('resourceType', 'database'),
-                        Query.equal('resourceId', database.$id)
-                    ]);
+                    .backups.listArchives({
+                        queries: [
+                            Query.limit(1),
+                            Query.orderDesc('$createdAt'),
+                            Query.equal('resourceType', 'database'),
+                            Query.equal('resourceId', database.$id)
+                        ]
+                    });
 
                 if (archives.length > 0) {
                     lastBackups[database.$id] = timeFromNow(archives[0].$createdAt);

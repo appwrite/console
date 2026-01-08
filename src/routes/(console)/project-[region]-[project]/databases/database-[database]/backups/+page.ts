@@ -23,23 +23,23 @@ export const load = async ({ params, url, route, depends, parent }) => {
     if (isCloud && backupsEnabled) {
         try {
             [backups, policies] = await Promise.all([
-                sdk
-                    .forProject(params.region, params.project)
-                    .backups.listArchives([
+                sdk.forProject(params.region, params.project).backups.listArchives({
+                    queries: [
                         Query.limit(limit),
                         Query.offset(offset),
                         Query.orderDesc('$createdAt'),
                         Query.equal('resourceType', 'database'),
                         Query.equal('resourceId', params.database)
-                    ]),
+                    ]
+                }),
 
-                sdk
-                    .forProject(params.region, params.project)
-                    .backups.listPolicies([
+                sdk.forProject(params.region, params.project).backups.listPolicies({
+                    queries: [
                         Query.orderDesc('$createdAt'),
                         Query.equal('resourceType', 'database'),
                         Query.equal('resourceId', params.database)
-                    ])
+                    ]
+                })
             ]);
         } catch (e) {
             // ignore

@@ -115,7 +115,7 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .backups.deleteArchive(archiveId);
+                .backups.deleteArchive({ archiveId });
 
             addNotification({
                 type: 'success',
@@ -135,7 +135,9 @@
 
     async function deleteBackups(batchDelete: DeleteOperation): Promise<DeleteOperationState> {
         const result = await batchDelete((archiveId) =>
-            sdk.forProject(page.params.region, page.params.project).backups.deleteArchive(archiveId)
+            sdk
+                .forProject(page.params.region, page.params.project)
+                .backups.deleteArchive({ archiveId })
         );
 
         try {
@@ -160,12 +162,12 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .backups.createRestoration(
-                    selectedBackup.$id,
-                    ['databases'],
-                    newDatabaseInfo.id ?? ID.unique(),
-                    newDatabaseInfo.name
-                );
+                .backups.createRestoration({
+                    archiveId: selectedBackup.$id,
+                    services: ['databases'],
+                    newResourceId: newDatabaseInfo.id ?? ID.unique(),
+                    newResourceName: newDatabaseInfo.name
+                });
             await invalidate(Dependencies.BACKUPS);
 
             addNotification({

@@ -39,9 +39,9 @@
 
     async function deletePolicy() {
         try {
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .backups.deletePolicy(selectedPolicy.$id);
+            await sdk.forProject(page.params.region, page.params.project).backups.deletePolicy({
+                policyId: selectedPolicy.$id
+            });
             addNotification({
                 type: 'success',
                 message: 'Backup policy has been deleted'
