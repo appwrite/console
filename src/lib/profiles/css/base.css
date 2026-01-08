@@ -1,0 +1,6 @@
+.responsive-table {
+    overflow: hidden;
+    width: 100%;
+    scrollbar-width: thin;
+    position: relative;
+}

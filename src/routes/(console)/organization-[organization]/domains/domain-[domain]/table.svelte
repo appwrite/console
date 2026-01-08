@@ -50,7 +50,10 @@
 </script>
 
 <Layout.Stack>
-    <Table.Root columns={[...$columns, { id: 'actions', width: 40 }]} let:root>
+    <Table.Root
+        class="responsive-table"
+        columns={[...$columns, { id: 'actions', width: 40 }]}
+        let:root>
         <svelte:fragment slot="header" let:root>
             {#each $columns as { id, title } (id)}
                 <Table.Header.Cell column={id} {root}>

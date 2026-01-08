@@ -17,6 +17,7 @@
     import { ThemeDark, ThemeLight, ThemeDarkCloud, ThemeLightCloud } from '../themes';
     import { isSmallViewport, updateViewport } from '$lib/stores/viewport';
     import { feedback } from '$lib/stores/feedback';
+    import '$lib/profiles/css/base.css';
 
     function resolveTheme(theme: AppStore['themeInUse']) {
         switch (theme) {
