@@ -60,10 +60,14 @@
             value: team.$id,
             label: team.name
         })) ?? []),
-        {
-            value: newOrgId,
-            label: 'Create new organization'
-        }
+        ...(resolvedProfile.showCreateOrganization
+            ? [
+                  {
+                      value: newOrgId,
+                      label: 'Create new organization'
+                  }
+              ]
+            : [])
     ];
     let name: string;
     let coupon: string;
@@ -391,26 +395,32 @@
     </svelte:fragment>
     <svelte:fragment slot="footer">
         <Button fullWidthMobile secondary on:click={() => (showExitModal = true)}>Cancel</Button>
-        <Button
-            fullWidthMobile
-            on:click={() => {
-                if (formComponent.checkValidity() && (!couponForm || couponForm.checkValidity())) {
-                    handleSubmit();
-                }
-            }}
-            disabled={!couponData?.code || $isSubmitting}>
-            {#if $isSubmitting}
-                <span class="loader is-small is-transparent u-line-height-1-5" aria-hidden="true"
-                ></span>
-            {/if}
-            {#if selectedOrgId === newOrgId}
-                Create organization
-            {:else if isUpgrade()}
-                Upgrade
-            {:else}
-                Apply
-            {/if}
-        </Button>
+        {#if resolvedProfile.showCreateOrganization}
+            <Button
+                fullWidthMobile
+                on:click={() => {
+                    if (
+                        formComponent.checkValidity() &&
+                        (!couponForm || couponForm.checkValidity())
+                    ) {
+                        handleSubmit();
+                    }
+                }}
+                disabled={!couponData?.code || $isSubmitting}>
+                {#if $isSubmitting}
+                    <span
+                        class="loader is-small is-transparent u-line-height-1-5"
+                        aria-hidden="true"></span>
+                {/if}
+                {#if selectedOrgId === newOrgId}
+                    Create organization
+                {:else if isUpgrade()}
+                    Upgrade
+                {:else}
+                    Apply
+                {/if}
+            </Button>
+        {/if}
     </svelte:fragment>
     <svelte:fragment slot="exit">
         You can apply your credits to an organization at a later date. All other data entered will

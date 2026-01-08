@@ -7,14 +7,18 @@ import { ID, Query, type Models } from '@appwrite.io/console';
 import { BillingPlan } from '$lib/constants';
 import { redirect } from '@sveltejs/kit';
 import { base, resolve } from '$app/paths';
-import { resolvedProfile } from '$lib/profiles/index.svelte';
+import { ProfileMode, resolvedProfile } from '$lib/profiles/index.svelte';
 
 // TODO: this needs to be cleaned up!
 export const load: PageLoad = async ({ parent }) => {
     const { account, organizations } = await parent();
 
-    const firstOrganization = organizations?.teams[0]?.$id;
+    /* short circuit and redirect */
+    if (resolvedProfile.id === ProfileMode.STUDIO) {
+        redirect(303, resolve('/'));
+    }
 
+    const firstOrganization = organizations?.teams[0]?.$id;
     if (!resolvedProfile.showOnboarding) {
         if (!organizations?.total) {
             redirect(303, resolve('/(console)/create-organization'));
