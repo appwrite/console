@@ -88,7 +88,7 @@
             hideDivider>
             <Logs {deployment} hideTitle fullHeight />
             <svelte:fragment slot="end">
-                <LogsTimer status={effectiveStatus} {deployment} />
+                <LogsTimer {deployment} />
             </svelte:fragment>
         </Accordion>
     </Card>

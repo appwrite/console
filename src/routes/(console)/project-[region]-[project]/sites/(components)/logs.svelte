@@ -72,7 +72,7 @@
                     variant="secondary"
                     type={badgeTypeDeployment(effectiveStatus)} />
             </Layout.Stack>
-            <LogsTimer status={effectiveStatus} {deployment} />
+            <LogsTimer {deployment} />
         </Layout.Stack>
     {/if}
 
