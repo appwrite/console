@@ -38,9 +38,7 @@
         footer?: Snippet;
     } = $props();
 
-    let effectiveStatus = $derived(
-        getEffectiveBuildStatus(deployment.status, deployment.$createdAt, $regionalConsoleVariables)
-    );
+    let effectiveStatus = $derived(getEffectiveBuildStatus(deployment, $regionalConsoleVariables));
     let totalSize = $derived(humanFileSize(deployment?.totalSize ?? 0));
 </script>
 

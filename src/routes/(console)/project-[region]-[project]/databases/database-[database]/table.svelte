@@ -1,6 +1,5 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { resolve } from '$app/paths';
     import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import {
@@ -13,17 +12,21 @@
     import DualTimeView from '$lib/components/dualTimeView.svelte';
     import { canWriteTables } from '$lib/stores/roles';
     import { sdk } from '$lib/stores/sdk';
-    import { Table } from '@appwrite.io/pink-svelte';
     import type { PageData } from './$types';
-    import { tableViewColumns } from './store';
+    import { Table } from '@appwrite.io/pink-svelte';
+    import { tableViewColumns, buildEntityRoute } from './store';
     import { subNavigation } from '$lib/stores/database';
-    import type { Models } from '@appwrite.io/console';
+    import { type TerminologyResult } from '$database/(entity)';
 
     const {
-        data
+        data,
+        terminology
     }: {
         data: PageData;
+        terminology: TerminologyResult;
     } = $props();
+
+    const entitySingular = $derived(terminology.entity.lower.singular);
 
     async function onDelete(batchDelete: DeleteOperation): Promise<DeleteOperationState> {
         const result = await batchDelete((tableId) =>
@@ -46,22 +49,10 @@
 
         return result;
     }
-
-    function getTableHref(table: Models.Table) {
-        return resolve(
-            '/(console)/project-[region]-[project]/databases/database-[database]/table-[table]',
-            {
-                region: page.params.region,
-                project: page.params.project,
-                database: page.params.database,
-                table: table.$id
-            }
-        );
-    }
 </script>
 
 <MultiSelectionTable
-    resource="table"
+    resource={entitySingular}
     columns={$tableViewColumns}
     allowSelection={$canWriteTables}
     {onDelete}>
@@ -72,18 +63,21 @@
     {/snippet}
 
     {#snippet children(root)}
-        {#each data.tables.tables as table (table.$id)}
-            <Table.Row.Link {root} id={table.$id} href={getTableHref(table)}>
+        {#each data.entities.entities as entity (entity.$id)}
+            <Table.Row.Link
+                {root}
+                id={entity.$id}
+                href={buildEntityRoute(page, entitySingular, entity.$id)}>
                 {#each $tableViewColumns as column}
                     <Table.Cell column={column.id} {root}>
                         {#if column.id === '$id'}
                             {#key $tableViewColumns}
-                                <Id value={table.$id}>{table.$id}</Id>
+                                <Id value={entity.$id}>{entity.$id}</Id>
                             {/key}
                         {:else if column.id === 'name'}
-                            {table.name}
+                            {entity.name}
                         {:else}
-                            <DualTimeView time={table[column.id]} />
+                            <DualTimeView time={entity[column.id]} />
                         {/if}
                     </Table.Cell>
                 {/each}

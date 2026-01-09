@@ -1,53 +1,53 @@
 <script lang="ts">
     import { addNotification } from '$lib/stores/notifications';
-    import { sdk } from '$lib/stores/sdk';
-    import type { Models } from '@appwrite.io/console';
-    import { page } from '$app/state';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { invalidate } from '$app/navigation';
-    import { Dependencies } from '$lib/constants';
     import Confirm from '$lib/components/confirm.svelte';
+    import { getTerminologies, type Index } from '$database/(entity)';
 
     let {
         showDelete = $bindable(false),
-        selectedIndex = $bindable(null)
+        selectedIndex = $bindable(null),
+        onDeleteIndexes
     }: {
         showDelete: boolean;
-        selectedIndex: Models.ColumnIndex | string[];
+        selectedIndex: Index | string[] | null;
+        onDeleteIndexes: (selectedKeys: string[]) => Promise<void>;
     } = $props();
 
     let error: string = $state(null);
     let selectedKeys = $derived(getKeys(selectedIndex));
 
-    function getKeys(selected: Models.ColumnIndex | string[]): string[] {
+    const { dependencies } = getTerminologies();
+
+    function getKeys(selected: Index | string[]): string[] {
         return Array.isArray(selected) ? selected : [selected.key];
+    }
+
+    async function cleanup() {
+        // reset selection!
+        selectedIndex = Array.isArray(selectedIndex) ? [] : null;
+
+        showDelete = false; // hide.
+
+        // events and notif!
+        trackEvent(Submit.IndexDelete);
+        addNotification({
+            type: 'success',
+            message:
+                selectedKeys.length === 1
+                    ? 'Index has been deleted'
+                    : `${selectedKeys.length} indexes have been deleted`
+        });
+
+        // invalidate proper dependency.
+        await invalidate(dependencies.entity.singular);
     }
 
     async function handleDelete() {
         try {
-            await Promise.all(
-                selectedKeys.map((key) =>
-                    sdk.forProject(page.params.region, page.params.project).tablesDB.deleteIndex({
-                        databaseId: page.params.database,
-                        tableId: page.params.table,
-                        key
-                    })
-                )
-            );
-            addNotification({
-                type: 'success',
-                message:
-                    selectedKeys.length === 1
-                        ? 'Index has been deleted'
-                        : `${selectedKeys.length} indexes have been deleted`
-            });
-
-            trackEvent(Submit.IndexDelete);
-
-            await invalidate(Dependencies.TABLE);
-
-            showDelete = false;
-            selectedIndex = Array.isArray(selectedIndex) ? [] : null;
+            await onDeleteIndexes(selectedKeys);
+            await cleanup();
         } catch (e) {
             error = e.message;
             trackError(e, Submit.IndexDelete);

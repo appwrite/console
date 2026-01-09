@@ -54,8 +54,7 @@
     <svelte:fragment slot="menu" let:toggle>
         <ActionMenu.Root>
             {@const effectiveStatus = getEffectiveBuildStatus(
-                deployment.status,
-                deployment.$createdAt,
+                deployment,
                 $regionalConsoleVariables
             )}
             {#if !inCard}
