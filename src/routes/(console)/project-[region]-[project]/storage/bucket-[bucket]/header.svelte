@@ -18,6 +18,12 @@
             hasChildren: true
         },
         {
+            href: `${path}/editor`,
+            title: 'Editor',
+            event: 'editor',
+            hasChildren: true
+        },
+        {
             href: `${path}/usage`,
             title: 'Usage',
             event: 'usage',
