@@ -39,7 +39,12 @@
     } = $props();
 
     let effectiveStatus = $derived(
-        getEffectiveBuildStatus(deployment.status, deployment.$createdAt, $regionalConsoleVariables)
+        getEffectiveBuildStatus(
+            deployment.status,
+            deployment.$createdAt,
+            [deployment.screenshotLight, deployment.screenshotDark],
+            $regionalConsoleVariables
+        )
     );
     let totalSize = $derived(humanFileSize(deployment?.totalSize ?? 0));
 </script>

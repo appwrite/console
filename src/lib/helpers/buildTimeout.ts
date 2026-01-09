@@ -24,12 +24,30 @@ function isBuildTimedOut(createdAt: string, status: string, timeoutSeconds: numb
 export function getEffectiveBuildStatus(
     originalStatus: string,
     createdAt: string,
+    screenshots: Array<string | null | undefined>,
     consoleVariables: Models.ConsoleVariables | undefined
 ): string {
     const timeoutSeconds = getBuildTimeoutSeconds(consoleVariables);
     if (isBuildTimedOut(createdAt, originalStatus, timeoutSeconds)) {
         return 'failed';
     }
+
+    const isReady = originalStatus === 'ready';
+    let hasScreenshot = true;
+    if (screenshots.length === 0) {
+        hasScreenshot = false;
+    }
+    for (const screenshot of screenshots) {
+        if (!screenshot) {
+            hasScreenshot = false;
+            break;
+        }
+    }
+
+    if (isReady && !hasScreenshot) {
+        return 'finalizing';
+    }
+
     return originalStatus;
 }
 

@@ -84,6 +84,7 @@
             {@const effectiveStatus = getEffectiveBuildStatus(
                 deployment.status,
                 deployment.$createdAt,
+                [deployment.screenshotLight, deployment.screenshotDark],
                 $regionalConsoleVariables
             )}
             <Table.Row.Link

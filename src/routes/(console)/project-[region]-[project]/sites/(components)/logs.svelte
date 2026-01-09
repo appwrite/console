@@ -6,6 +6,7 @@
             case 'ready':
                 return 'success';
             case 'building':
+            case 'finalizing':
                 return 'warning';
             case 'processing':
                 return undefined;
@@ -41,7 +42,12 @@
     } = $props();
 
     let effectiveStatus = $derived(
-        getEffectiveBuildStatus(deployment.status, deployment.$createdAt, $regionalConsoleVariables)
+        getEffectiveBuildStatus(
+            deployment.status,
+            deployment.$createdAt,
+            [deployment.screenshotLight, deployment.screenshotDark],
+            $regionalConsoleVariables
+        )
     );
 
     function setCopy() {

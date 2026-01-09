@@ -44,6 +44,7 @@
         getEffectiveBuildStatus(
             data.deployment.status,
             data.deployment.$createdAt,
+            [data.deployment.screenshotLight, data.deployment.screenshotDark],
             $regionalConsoleVariables
         )
     );

@@ -77,6 +77,7 @@
                         {@const effectiveStatus = getEffectiveBuildStatus(
                             status,
                             deployment.$createdAt,
+                            [deployment.screenshotLight, deployment.screenshotDark],
                             $regionalConsoleVariables
                         )}
                         {#if activeDeployment?.$id === deployment?.$id}

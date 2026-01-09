@@ -16,6 +16,7 @@
     let { data } = $props();
 
     let deployment = $state(data.deployment);
+    let skipScreenshotInterval = $state(null);
 
     onMount(() => {
         return realtime.forConsole(page.params.region, 'console', async (response) => {
@@ -26,24 +27,35 @@
             ) {
                 deployment = response.payload as Models.Deployment;
 
-                const isReady =
-                    deployment.status === 'ready' &&
-                    deployment.screenshotLight &&
-                    deployment.screenshotDark;
+                const isReady = deployment.status === 'ready';
 
-                if (isReady) {
-                    const resolvedUrl = resolve(
-                        '/(console)/project-[region]-[project]/sites/create-site/finish',
-                        {
-                            region: page.params.region,
-                            project: page.params.project
-                        }
-                    );
-                    await goto(`${resolvedUrl}?site=${data.site.$id}`);
+                const isFinished =
+                    isReady && deployment.screenshotLight && deployment.screenshotDark;
+
+                // Fallback mechanism
+                // If ready but not finished for over 30 seconds, go anyway
+                if (isReady && isFinished) {
+                    clearInterval(skipScreenshotInterval);
+                    goToFinishScreen();
+                } else if (isReady) {
+                    skipScreenshotInterval = setInterval(async () => {
+                        goToFinishScreen();
+                    }, 30000);
                 }
             }
         });
     });
+
+    async function goToFinishScreen() {
+        const resolvedUrl = resolve(
+            '/(console)/project-[region]-[project]/sites/create-site/finish',
+            {
+                region: page.params.region,
+                project: page.params.project
+            }
+        );
+        await goto(`${resolvedUrl}?site=${data.site.$id}`);
+    }
 </script>
 
 <Wizard
@@ -83,7 +95,7 @@
     </svelte:fragment>
     <svelte:fragment slot="footer">
         <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
-            {#if ['processing', 'building'].includes(data.deployment.status)}
+            {#if ['processing', 'building', 'finalizing'].includes(data.deployment.status)}
                 <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
                     Deployment will continue in the background
                 </Typography.Text>

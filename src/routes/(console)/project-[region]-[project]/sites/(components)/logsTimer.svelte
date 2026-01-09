@@ -10,12 +10,17 @@
     let { status, deployment }: { status: string; deployment: Models.Deployment } = $props();
 
     let effectiveStatus = $derived(
-        getEffectiveBuildStatus(status, deployment.$createdAt, $regionalConsoleVariables)
+        getEffectiveBuildStatus(
+            status,
+            deployment.$createdAt,
+            [deployment.screenshotLight, deployment.screenshotDark],
+            $regionalConsoleVariables
+        )
     );
 </script>
 
 <Layout.Stack direction="row" alignItems="center" inline>
-    {#if ['processing', 'building'].includes(effectiveStatus)}
+    {#if ['processing', 'building', 'finalizing'].includes(effectiveStatus)}
         <Typography.Code color="--fgcolor-neutral-secondary">
             <Layout.Stack direction="row" alignItems="center" inline>
                 <p use:timer={{ start: deployment.$createdAt }}></p>
