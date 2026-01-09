@@ -90,6 +90,11 @@
 
     let credits = $state(0);
     let creditsUsed = $state(0);
+    let enforcedCreditLimit = $state(0);
+
+    let monthlyCredits = $state(0);
+    let dailyCredits: number | null = $state(null);
+
     let showSupport = $state(false);
     let activeTheme = $state($app.theme);
     let shouldAnimateThemeToggle = $state(false);
@@ -130,9 +135,12 @@
 
         const usage = await sdk.forConsole.billing.listUsage(org.$id, startDate, endDate);
         creditsUsed = usage.imagineCreditsTotal;
-        const creditsLimit = plan?.limits?.credits ?? 0;
 
-        credits = Math.max(0, creditsLimit - creditsUsed);
+        monthlyCredits = plan?.limits?.credits ?? 0;
+        dailyCredits = plan?.limits?.dailyCredits ?? null;
+        enforcedCreditLimit = dailyCredits ?? monthlyCredits ?? 0;
+
+        credits = Math.max(0, enforcedCreditLimit - creditsUsed);
     }
 
     beforeNavigate(() => (showAccountMenu = false));
@@ -307,14 +315,23 @@
                                         >{credits} Credit(s) left
                                     </Layout.Stack>
                                     <svelte:fragment slot="more">
-                                        <ProgressBar
-                                            maxSize={plan.limits.credits ?? 0}
-                                            data={[
-                                                {
-                                                    size: credits,
-                                                    color: 'var(--bgcolor-neutral-invert)'
-                                                }
-                                            ]} />
+                                        <Layout.Stack>
+                                            <ProgressBar
+                                                maxSize={enforcedCreditLimit}
+                                                data={[
+                                                    {
+                                                        size: credits,
+                                                        color: 'var(--bgcolor-neutral-invert)'
+                                                    }
+                                                ]} />
+
+                                            {#if dailyCredits !== null}
+                                                <Typography.Caption>
+                                                    {dailyCredits} daily and {monthlyCredits} monthly
+                                                    credits
+                                                </Typography.Caption>
+                                            {/if}
+                                        </Layout.Stack>
                                     </svelte:fragment>
                                 </ActionMenu.Item.Anchor>
                                 <Divider />
