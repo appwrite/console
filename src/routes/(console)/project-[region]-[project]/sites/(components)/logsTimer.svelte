@@ -7,7 +7,7 @@
 
     import { Layout, Spinner, Typography } from '@appwrite.io/pink-svelte';
 
-    let { deployment }: { status: string; deployment: Models.Deployment } = $props();
+    let { deployment }: { deployment: Models.Deployment } = $props();
 
     let effectiveStatus = $derived(getEffectiveBuildStatus(deployment, $regionalConsoleVariables));
 </script>
