@@ -9,6 +9,8 @@
     import { getPageTitle } from '../../store';
     import { resolvedProfile } from '$lib/profiles/index.svelte';
     import type { PageProps } from './$types';
+    import { isSmallViewport } from '$lib/stores/viewport';
+    import MobileMessage from '$lib/studio/mobileMessage.svelte';
 
     let { params, data }: PageProps = $props();
     let anchor: HTMLElement = $state();
@@ -19,16 +21,18 @@
     }
 
     onMount(async () => {
-        ensureStudioComponent();
-        await tick();
-        positionStudio();
-        navigateToRoute({
-            id: 'project',
-            props: {
-                projectId: params.project,
-                region: params.region
-            }
-        });
+        if (!$isSmallViewport) {
+            ensureStudioComponent();
+            await tick();
+            positionStudio();
+            navigateToRoute({
+                id: 'project',
+                props: {
+                    projectId: params.project,
+                    region: params.region
+                }
+            });
+        }
     });
 
     onDestroy(() => {
@@ -36,7 +40,9 @@
     });
 
     $effect(() => {
-        positionStudio();
+        if (!$isSmallViewport && anchor) {
+            positionStudio();
+        }
     });
 </script>
 
@@ -44,7 +50,11 @@
     <title>{getPageTitle(data.project.name, 'Studio', resolvedProfile.platform)}</title>
 </svelte:head>
 
-<div class="studio-page" bind:this={anchor}></div>
+{#if $isSmallViewport}
+    <MobileMessage />
+{:else}
+    <div class="studio-page" bind:this={anchor}></div>
+{/if}
 
 <style>
     .studio-page {
