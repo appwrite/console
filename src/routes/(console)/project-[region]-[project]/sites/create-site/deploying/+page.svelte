@@ -12,38 +12,66 @@
     import { onMount } from 'svelte';
     import { getFrameworkIcon } from '$lib/stores/sites';
     import type { Models } from '@appwrite.io/console';
+    import { getEffectiveBuildStatus } from '$lib/helpers/buildTimeout';
+    import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
 
     let { data } = $props();
 
     let deployment = $state(data.deployment);
-    let skipScreenshotInterval = $state(null);
+    let skipScreenshotInterval: ReturnType<typeof setInterval> | null = $state(null);
+
+    let effectiveStatus = $derived(
+        getEffectiveBuildStatus(
+            deployment.status,
+            deployment.$createdAt,
+            [deployment.screenshotLight, deployment.screenshotDark],
+            $regionalConsoleVariables
+        )
+    );
 
     onMount(() => {
-        return realtime.forConsole(page.params.region, 'console', async (response) => {
-            if (
-                response.events.includes(
-                    `sites.${data.site.$id}.deployments.${data.deployment.$id}.update`
-                )
-            ) {
-                deployment = response.payload as Models.Deployment;
+        const intervalCleanup = () => {
+            if (skipScreenshotInterval) {
+                clearInterval(skipScreenshotInterval);
+            }
+        };
 
-                const isReady = deployment.status === 'ready';
+        const realtimeUnsubscribe = realtime.forConsole(
+            page.params.region,
+            'console',
+            async (response) => {
+                if (
+                    response.events.includes(
+                        `sites.${data.site.$id}.deployments.${data.deployment.$id}.update`
+                    )
+                ) {
+                    deployment = response.payload as Models.Deployment;
 
-                const isFinished =
-                    isReady && deployment.screenshotLight && deployment.screenshotDark;
+                    const isReady = deployment.status === 'ready';
 
-                // Fallback mechanism
-                // If ready but not finished for over 30 seconds, go anyway
-                if (isReady && isFinished) {
-                    clearInterval(skipScreenshotInterval);
-                    goToFinishScreen();
-                } else if (isReady) {
-                    skipScreenshotInterval = setInterval(async () => {
+                    const isFinished =
+                        isReady && deployment.screenshotLight && deployment.screenshotDark;
+
+                    // Fallback mechanism
+                    // If ready but not finished for over 30 seconds, go anyway
+                    if (isReady && !skipScreenshotInterval) {
+                        skipScreenshotInterval = setInterval(async () => {
+                            goToFinishScreen();
+                        }, 30000);
+                    }
+
+                    if (isReady && isFinished) {
+                        clearInterval(skipScreenshotInterval);
                         goToFinishScreen();
-                    }, 30000);
+                    }
                 }
             }
-        });
+        );
+
+        return () => {
+            realtimeUnsubscribe();
+            intervalCleanup();
+        };
     });
 
     async function goToFinishScreen() {
@@ -95,7 +123,7 @@
     </svelte:fragment>
     <svelte:fragment slot="footer">
         <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
-            {#if ['processing', 'building', 'finalizing'].includes(data.deployment.status)}
+            {#if ['processing', 'building', 'finalizing'].includes(effectiveStatus)}
                 <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
                     Deployment will continue in the background
                 </Typography.Text>

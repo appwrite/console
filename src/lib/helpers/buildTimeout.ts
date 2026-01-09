@@ -24,7 +24,9 @@ function isBuildTimedOut(createdAt: string, status: string, timeoutSeconds: numb
 export function getEffectiveBuildStatus(
     originalStatus: string,
     createdAt: string,
-    screenshots: Array<string | null | undefined>,
+    screenshots: Array<
+        Models.Deployment['screenshotLight'] | Models.Deployment['screenshotDark'] | undefined
+    >,
     consoleVariables: Models.ConsoleVariables | undefined
 ): string {
     const timeoutSeconds = getBuildTimeoutSeconds(consoleVariables);
