@@ -146,11 +146,20 @@
         if (!row || !work) return;
 
         try {
+            const data = $table?.columns?.length
+                ? $table.columns.reduce((acc, column) => {
+                      if (!compareColumns(column, $work, row)) {
+                          acc[column.key] = $work?.[column.key];
+                      }
+                      return acc;
+                  }, {} as Record<string, unknown>)
+                : { ...$work };
+
             await sdk.forProject(page.params.region, page.params.project).tablesDB.updateRow({
                 databaseId,
                 tableId,
                 rowId: row.$id,
-                data: $work,
+                data,
                 permissions: $work.$permissions
             });
 

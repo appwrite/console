@@ -213,6 +213,19 @@
         return workColumn === currentColumn;
     }
 
+    function buildUpdateData(workValue: Models.Row, originalRow: Models.Row) {
+        if (!relatedTable?.columns?.length) {
+            return { ...workValue };
+        }
+
+        return relatedTable.columns.reduce((acc, column) => {
+            if (!compareColumns(column, workValue, originalRow)) {
+                acc[column.key] = workValue?.[column.key];
+            }
+            return acc;
+        }, {} as Record<string, unknown>);
+    }
+
     function calculateAndCompareDisabledState() {
         if (!relatedTable?.columns?.length || !fetchedRows.length) return true;
 
@@ -245,11 +258,13 @@
                 const work = workData.get(rowId);
 
                 const workValue = get(work);
+                const originalRow = fetchedRows.find((row) => row.$id === rowId);
+                const data = originalRow ? buildUpdateData(workValue, originalRow) : { ...workValue };
                 await sdk.forProject(page.params.region, page.params.project).tablesDB.updateRow({
                     databaseId,
                     tableId: relatedTable.$id,
                     rowId: rowId,
-                    data: workValue,
+                    data,
                     permissions: workValue.$permissions
                 });
 
@@ -263,13 +278,14 @@
                     if (!work) return;
 
                     const workValue = get(work);
+                    const data = buildUpdateData(workValue, row);
                     return sdk
                         .forProject(page.params.region, page.params.project)
                         .tablesDB.updateRow({
                             databaseId,
                             tableId: relatedTable.$id,
                             rowId: row.$id,
-                            data: workValue,
+                            data,
                             permissions: workValue.$permissions
                         });
                 });
