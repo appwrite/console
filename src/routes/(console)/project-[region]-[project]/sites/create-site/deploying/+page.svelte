@@ -18,14 +18,14 @@
     let { data } = $props();
 
     let deployment = $state(data.deployment);
-    let skipScreenshotInterval: ReturnType<typeof setInterval> | null = $state(null);
+    let skipScreenshotTimeout: ReturnType<typeof setTimeout> | null = $state(null);
 
     let effectiveStatus = $derived(getEffectiveBuildStatus(deployment, $regionalConsoleVariables));
 
     onMount(() => {
-        const intervalCleanup = () => {
-            if (skipScreenshotInterval) {
-                clearInterval(skipScreenshotInterval);
+        const timeoutCleanup = () => {
+            if (skipScreenshotTimeout) {
+                clearTimeout(skipScreenshotTimeout);
             }
         };
 
@@ -47,14 +47,14 @@
 
                     // Fallback mechanism
                     // If ready but not finished for over 30 seconds, go anyway
-                    if (isReady && !skipScreenshotInterval) {
-                        skipScreenshotInterval = setInterval(async () => {
+                    if (isReady && !skipScreenshotTimeout) {
+                        skipScreenshotTimeout = setTimeout(async () => {
                             goToFinishScreen();
                         }, 30000);
                     }
 
                     if (isReady && isFinished) {
-                        clearInterval(skipScreenshotInterval);
+                        clearInterval(skipScreenshotTimeout);
                         goToFinishScreen();
                     }
                 }
@@ -63,7 +63,7 @@
 
         return () => {
             realtimeUnsubscribe();
-            intervalCleanup();
+            timeoutCleanup();
         };
     });
 
