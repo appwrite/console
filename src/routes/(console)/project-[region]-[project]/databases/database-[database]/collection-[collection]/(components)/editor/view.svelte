@@ -130,6 +130,10 @@
     let lastParseContent = '';
     let lastParsePromise: Promise<ParseResult> | null = null;
 
+    // Serialized data cache
+    let lastSerializedText = '';
+    let lastSerializedData: JsonValue | null = null;
+
     // Get $id from data
     const documentId = $derived(
         data && typeof data === 'object' && !Array.isArray(data) && '$id' in data && data.$id
@@ -222,6 +226,17 @@
         if (value === null) return 'null';
         if (Array.isArray(value)) return 'array';
         return typeof value;
+    }
+
+    function serializeData(value: JsonValue): string {
+        if (value === lastSerializedData) {
+            return lastSerializedText;
+        }
+
+        const serialized = dataToString(value);
+        lastSerializedData = value;
+        lastSerializedText = serialized;
+        return serialized;
     }
 
     // Find ranges of system keys (lines starting with $id, $createdAt, $updatedAt)
@@ -746,7 +761,7 @@
     onMount(() => {
         if (!editorContainer) return;
 
-        const initialContent = dataToString(data);
+        const initialContent = serializeData(data);
         lastExpectedContent = initialContent;
 
         baseExtensions = [
@@ -825,7 +840,7 @@
 
                     data = parsed;
                     onChange?.(parsed, hasDataChanged);
-                    lastExpectedContent = dataToString(parsed);
+                    lastExpectedContent = serializeData(parsed);
                 }, DEBOUNCE_DELAY);
             }),
             readOnlyCompartment.of(EditorState.readOnly.of(readonly))
@@ -849,6 +864,8 @@
         }
         lastParseContent = '';
         lastParsePromise = null;
+        lastSerializedData = null;
+        lastSerializedText = '';
         editorView?.destroy();
         editorView = null;
     });
@@ -871,13 +888,15 @@
             lastDocId = documentId;
             lastParseContent = '';
             lastParsePromise = null;
+            lastSerializedData = null;
+            lastSerializedText = '';
 
             // For existing documents only:
             // capture snapshot and reset editor state/history
             if (!isNew) {
                 // Capture original data snapshot when switching documents
                 originalData = $state.snapshot(data);
-                const expected = dataToString(data);
+                const expected = serializeData(data);
 
                 lastExpectedContent = expected;
 
@@ -897,7 +916,7 @@
         }
 
         // Only react when the external data actually changed
-        const expectedContent = dataToString(data);
+        const expectedContent = serializeData(data);
         if (expectedContent === lastExpectedContent) return;
         lastExpectedContent = expectedContent;
 
