@@ -11,20 +11,22 @@
     import { Icon, Layout } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { page } from '$app/state';
+    import deepEqual from 'deep-equal';
 
     type PrefRow = { id: string; key: string; value: string };
 
-    $: if (prefs) {
-        const normalize = (entries: [string, string][] | PrefRow[]) =>
-            entries
-                .map(item => Array.isArray(item) ? item : [item.key, item.value])
-                .filter(([k, v]: [string, string]) => k.trim() && v.trim())
-                .sort(([a]: [string, string], [b]: [string, string]) => a.localeCompare(b));
+    function normalize(entries: [string, string][] | PrefRow[]): [string, string][] {
+        return entries
+            .map(item => Array.isArray(item) ? item : [item.key, item.value])
+            .filter(([k, v]: [string, string]) => k.trim() && v.trim())
+            .sort(([a]: [string, string], [b]: [string, string]) => a.localeCompare(b));
+    }
 
+    $: if (prefs) {
         const currentNormalized = normalize(prefs);
         const originalNormalized = normalize(Object.entries($team.prefs as Record<string, string>));
 
-        arePrefsDisabled = JSON.stringify(currentNormalized) === JSON.stringify(originalNormalized);
+        arePrefsDisabled = deepEqual(currentNormalized, originalNormalized);
     }
 
     let prefs: PrefRow[] = null;
@@ -108,7 +110,7 @@
                                 compact
                                 disabled={(!pref.key || !pref.value) && index === 0}
                                 on:click={() => {
-                                    prefs.splice(index, 1);
+                                        prefs.splice(index, 1);
                                     prefs = [...prefs];
                                 }}>
                                 <span class="icon-x" aria-hidden="true"></span>
