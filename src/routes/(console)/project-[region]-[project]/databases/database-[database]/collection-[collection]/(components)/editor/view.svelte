@@ -2,6 +2,8 @@
     export type JsonValue = string | number | boolean | null | JsonObject | JsonArray | object;
     export type JsonObject = { [key: string]: JsonValue };
     export type JsonArray = JsonValue[];
+
+    type ParseResult = { ok: true; value: JsonValue } | { ok: false; error: unknown };
 </script>
 
 <script lang="ts">
@@ -123,6 +125,10 @@
 
     // Generate a stable ID once for new documents
     let generatedId = $state(ID.unique());
+
+    // Content cache
+    let lastParseContent = '';
+    let lastParsePromise: Promise<ParseResult> | null = null;
 
     // Get $id from data
     const documentId = $derived(
@@ -660,15 +666,35 @@
         { decorations: (v) => v.decorations }
     );
 
+    function parseWithCache(content: string): Promise<ParseResult> {
+        if (lastParsePromise && content === lastParseContent) {
+            return lastParsePromise;
+        }
+
+        lastParseContent = content;
+        lastParsePromise = (async () => {
+            try {
+                const value = await parse<JsonValue>(content);
+                return { ok: true, value };
+            } catch (error) {
+                return { ok: false, error };
+            }
+        })();
+
+        return lastParsePromise;
+    }
+
+    function isParseError(result: ParseResult): result is { ok: false; error: unknown } {
+        return !result.ok;
+    }
+
     // Safe parse variant that indicates success without mutating editor on failure
     async function tryParseEditorContent(
         content: string
     ): Promise<{ ok: boolean; value: JsonValue }> {
-        try {
-            const value = await parse<JsonValue>(content);
-            return { ok: true, value };
-        } catch {
-            /* empty */
+        const result = await parseWithCache(content);
+        if (!isParseError(result)) {
+            return result;
         }
 
         return { ok: false, value: data };
@@ -678,23 +704,25 @@
     async function javascriptLinter(view: { state: { doc: Text } }): Promise<Diagnostic[]> {
         if (isUpdatingFromEditor) return [];
         const content = view.state.doc.toString();
-        try {
-            await parse(content);
+        const result = await parseWithCache(content);
+        if (!isParseError(result)) {
             errorMessage = null;
             return [];
-        } catch (error) {
-            const errorMsg = error instanceof Error ? error.message : String(error);
-            errorMessage = errorMsg;
-            const diags = (error && 'diagnostics' in error ? error.diagnostics : undefined) as
-                | { from: number; to: number }[]
-                | undefined;
-            if (diags && diags.length && errorInPlace) {
-                const { from, to } = diags[0];
-                return [{ from, to, severity: 'error', message: errorMsg }];
-            }
-            // Fallback to full-doc underline
-            return [{ from: 0, to: content.length, severity: 'error', message: errorMsg }];
         }
+        const errorMsg =
+            result.error instanceof Error ? result.error.message : String(result.error);
+        errorMessage = errorMsg;
+        const diags = (
+            result.error && typeof result.error === 'object' && 'diagnostics' in result.error
+                ? (result.error as { diagnostics?: { from: number; to: number }[] }).diagnostics
+                : undefined
+        ) as { from: number; to: number }[] | undefined;
+        if (diags && diags.length && errorInPlace) {
+            const { from, to } = diags[0];
+            return [{ from, to, severity: 'error', message: errorMsg }];
+        }
+        // Fallback to full-doc underline
+        return [{ from: 0, to: content.length, severity: 'error', message: errorMsg }];
     }
 
     // Handle save logic - called from both button and keyboard shortcut
@@ -819,6 +847,8 @@
             clearTimeout(changeTimer);
             changeTimer = null;
         }
+        lastParseContent = '';
+        lastParsePromise = null;
         editorView?.destroy();
         editorView = null;
     });
@@ -839,6 +869,8 @@
         // Detect document switch
         if (documentId !== lastDocId) {
             lastDocId = documentId;
+            lastParseContent = '';
+            lastParsePromise = null;
 
             // For existing documents only:
             // capture snapshot and reset editor state/history
