@@ -3,7 +3,7 @@
         key: string;
         type: IndexType;
         fields: string[];
-        lengths: number[];
+        lengths: (number | null)[];
         orders: string[];
     };
 </script>
