@@ -23,14 +23,17 @@
         randomDataModalState,
         spreadsheetRenderKey,
         spreadsheetLoading
-    } from '../store';
+    } from '$database/store';
     import type { LayoutData } from './$types';
     import { resolveRoute, withPath } from '$lib/stores/navigation';
     import { generateFakeRecords } from '$lib/helpers/faker';
     import { addNotification } from '$lib/stores/notifications';
     import { sleep } from '$lib/helpers/promises';
     import { hash } from '$lib/helpers/string';
-    import { documentActivitySheet, documentPermissionSheet } from './store';
+    import {
+        documentActivitySheet,
+        documentPermissionSheet
+    } from '$database/collection-[collection]/store';
     import { SideSheet, EditRecordPermissions, RecordActivity } from '$database/(entity)';
 
     export let data: LayoutData;
@@ -55,23 +58,21 @@
         // set faker method.
         $randomDataModalState.onSubmit = async () => await createFakeData();
 
-        return realtime
-            .forProject(page.params.region, page.params.project)
-            .subscribe(['project', 'console'], (response) => {
-                if (response.events.includes('databases.*.collections.*.indexes.*')) {
-                    // don't invalidate when -
-                    // 1. from faker
-                    // 2. ai indexes creation
-                    // 3. ai columns creation
-                    if (
-                        !isWaterfallFromFaker /*&&
-                        !$showIndexesSuggestions &&
-                        !$tableColumnSuggestions.table*/
-                    ) {
-                        invalidate(Dependencies.COLLECTION);
-                    }
+        return realtime.forProject(page.params.region, ['project', 'console'], (response) => {
+            if (response.events.includes('databases.*.collections.*.indexes.*')) {
+                // don't invalidate when -
+                // 1. from faker
+                // 2. ai indexes creation
+                // 3. ai columns creation
+                if (
+                    !isWaterfallFromFaker /*&&
+                    !$showIndexesSuggestions &&
+                    !$tableColumnSuggestions.table*/
+                ) {
+                    invalidate(Dependencies.COLLECTION);
                 }
-            });
+            }
+        });
     });
 
     // TODO: use route ids instead of pathname
@@ -183,10 +184,7 @@
 
         let documentIds = [];
         try {
-            const { records, ids } = generateFakeRecords(
-                $randomDataModalState.value,
-                'documentsdb'
-            );
+            const { rows, ids } = generateFakeRecords($randomDataModalState.value, 'documentsdb');
 
             documentIds = ids;
 
@@ -195,7 +193,7 @@
                 .documentsDB.createDocuments({
                     databaseId: page.params.database,
                     collectionId: page.params.collection,
-                    documents: records
+                    documents: rows
                 });
 
             addNotification({

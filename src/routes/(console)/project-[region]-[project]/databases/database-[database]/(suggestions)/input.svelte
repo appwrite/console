@@ -8,6 +8,12 @@
     import { Button, InputTextarea } from '$lib/elements/forms';
     import { Card, Layout, Selector, Typography } from '@appwrite.io/pink-svelte';
 
+    const {
+        isModal = false
+    }: {
+        isModal?: boolean;
+    } = $props();
+
     onMount(() => {
         if (featureActive) {
             $tableColumnSuggestions.enabled = true;
@@ -36,19 +42,23 @@
     });
 
     const subtitle = $derived.by(() => {
-        switch (type) {
-            default:
-            case 'legacy':
-            case 'tablesdb':
-                return featureActive
-                    ? `Enable AI to suggest useful ${field.plural} based on your ${entity} name`
-                    : `Sign up for Cloud to generate ${field.plural} based on your ${entity} name`;
+        const isDocs = type === 'documentsdb';
 
-            case 'documentsdb':
-                return featureActive
-                    ? `Enable AI to generate sample documents based on your ${entity} name`
-                    : `Sign up for Cloud to generate sample documents based on your ${entity} name`;
+        if (featureActive) {
+            if (isModal) {
+                return isDocs
+                    ? `Use AI to generate sample documents`
+                    : `Use AI to suggest useful ${field.plural}`;
+            }
+
+            return isDocs
+                ? `Enable AI to generate sample documents based on your ${entity} name`
+                : `Enable AI to suggest useful ${field.plural} based on your ${entity} name`;
         }
+
+        return isDocs
+            ? `Sign up for Cloud to generate sample documents based on your ${entity} name`
+            : `Sign up for Cloud to generate ${field.plural} based on your ${entity} name`;
     });
 </script>
 
@@ -66,7 +76,7 @@
                 </Typography.Text>
             </Layout.Stack>
 
-            {#if featureActive}
+            {#if featureActive && !isModal}
                 <div class="suggestions-switch">
                     <Selector.Switch
                         id="suggestions"
@@ -86,7 +96,7 @@
 
         <!-- just being safe with extra guard! -->
         {#if $tableColumnSuggestions.enabled && featureActive}
-            <div transition:slide={{ duration: 200 }}>
+            <div class="context-input" transition:slide={{ duration: 200 }}>
                 <InputTextarea
                     id="context"
                     rows={3}
@@ -101,5 +111,9 @@
 <style lang="scss">
     .suggestions-switch :global(button):not(:disabled) {
         cursor: pointer;
+    }
+
+    .context-input :global(.input) {
+        background: var(--bgcolor-neutral-primary);
     }
 </style>

@@ -27,17 +27,17 @@
 
     let {
         rows,
-        tableId
+        tableId,
+        disabledState = $bindable(true)
     }: {
         rows: string | Models.Row[];
         tableId: string;
+        disabledState?: boolean;
     } = $props();
 
     let loading = $state(false);
     let fetchedRows = $state<Models.Row[]>([]);
     let relatedTable = $state<Entity | null>(null);
-
-    let disabledState = $state(calculateAndCompareDisabledState());
 
     let workData = $state<Map<string, Writable<Models.Row>>>(new Map());
     let columnFormWrapper = $state<HTMLElement | null>(null);
@@ -50,6 +50,9 @@
                 focusFirstInput();
             });
         }
+
+        /* silences the not read error warning */
+        disabledState;
     });
 
     function isSingleStore() {
@@ -304,10 +307,6 @@
         }
     }
 
-    export function isDisabled(): boolean {
-        return disabledState;
-    }
-
     function focusFirstInput() {
         const firstInput = columnFormWrapper?.querySelector<HTMLInputElement | HTMLTextAreaElement>(
             'input:not([disabled]):not([readonly]), textarea:not([disabled]):not([readonly])'
@@ -344,6 +343,18 @@
 
         return `${values.join(' | ')} (...${row.$id.slice(-5)})`;
     }
+
+    $effect(() => {
+        if (rows && tableId) {
+            loadRelatedRow().then(() => {
+                focusFirstInput();
+            });
+        }
+    });
+
+    $effect(() => {
+        disabledState = calculateAndCompareDisabledState();
+    });
 </script>
 
 {#if loading}

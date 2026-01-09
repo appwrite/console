@@ -11,13 +11,21 @@
     import { addNotification } from '$lib/stores/notifications';
     import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { isSmallViewport } from '$lib/stores/viewport';
-    import { IconChevronDown, IconChevronUp, IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import {
+        IconChevronDown,
+        IconChevronUp,
+        IconPlus,
+        IconViewBoards
+    } from '@appwrite.io/pink-icons-svelte';
     import type { Models } from '@appwrite.io/console';
     import { expandTabs, randomDataModalState } from '$database/store';
-    import { EmptySheet } from '$database/(entity)';
-    import { isCollectionsCsvImportInProgress, noSqlDocument } from './store';
+    import { EmptySheet, EmptySheetCards } from '$database/(entity)';
+    import {
+        isCollectionsCsvImportInProgress,
+        noSqlDocument
+    } from '$database/collection-[collection]/store';
     import { canWriteRows } from '$lib/stores/roles';
-    import SpreadSheet from './spreadsheet.svelte';
+    import SpreadSheet from '$database/collection-[collection]/spreadsheet.svelte';
 
     const { data }: PageProps = $props();
 
@@ -29,7 +37,7 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .migrations.createCsvMigration({
+                .migrations.createCSVImport({
                     bucketId: file.bucketId,
                     fileId: file.$id,
                     resourceId: `${page.params.database}:${page.params.collection}`,
@@ -115,37 +123,48 @@
         {:else if $hasPageQueries}
             <EmptySheet
                 mode="records-filtered"
-                title="There are no documents that match your filters"
-                actions={{
-                    primary: {
-                        text: 'Clear filters',
-                        onClick: () => {
+                title="There are no documents that match your filters">
+                {#snippet actions()}
+                    <Button
+                        size="s"
+                        secondary
+                        on:click={() => {
                             queries.clearAll();
                             queries.apply();
                             trackEvent(Submit.FilterClear, {
                                 source: 'database_collections'
                             });
-                        }
-                    }
-                }} />
+                        }}>
+                        Clear filters
+                    </Button>
+                {/snippet}
+            </EmptySheet>
         {:else}
-            <EmptySheet
-                mode="records"
-                type="documentsdb"
-                showActions={$canWriteRows}
-                actions={{
-                    primary: {
-                        text: 'Create documents',
-                        onClick: () => {
-                            // some side sheet with a json editor
-                        }
-                    },
-                    random: {
-                        onClick: () => {
+            <EmptySheet mode="records" type="documentsdb" showActions={$canWriteRows}>
+                {#snippet actions()}
+                    <EmptySheetCards
+                        icon={IconPlus}
+                        title="Create documents"
+                        subtitle="Create documents manually"
+                        onClick={() => {
+                            if (!$noSqlDocument.isNew) {
+                                noSqlDocument.update(() => ({
+                                    show: true,
+                                    isNew: true,
+                                    document: {}
+                                }));
+                            }
+                        }} />
+
+                    <EmptySheetCards
+                        icon={IconViewBoards}
+                        title="Generate sample data"
+                        subtitle="Generate data for testing"
+                        onClick={() => {
                             $randomDataModalState.show = true;
-                        }
-                    }
-                }} />
+                        }} />
+                {/snippet}
+            </EmptySheet>
         {/if}
     </div>
 {/key}

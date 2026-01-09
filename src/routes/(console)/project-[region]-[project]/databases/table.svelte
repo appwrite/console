@@ -2,19 +2,23 @@
     import { page } from '$app/state';
     import { columns, getDatabaseTypeTitle } from './store';
     import { Id } from '$lib/components';
-    import type { PageData } from './$types';
     import type { Models } from '@appwrite.io/console';
     import { useTerminology } from '$database/(entity)';
-    import { toLocaleDateTime } from '$lib/helpers/date';
-    import type { BackupPolicy } from '$lib/sdk/backups';
+    import DualTimeView from '$lib/components/dualTimeView.svelte';
     import { resolveRoute, withPath } from '$lib/stores/navigation';
     import { IconExclamation } from '@appwrite.io/pink-icons-svelte';
     import { Layout, Tooltip, Table, Icon } from '@appwrite.io/pink-svelte';
 
-    const {
-        data
+    let {
+        entities,
+        policies,
+        databases,
+        lastBackups
     }: {
-        data: PageData;
+        entities: Record<string, string>;
+        databases: Models.DatabaseList;
+        lastBackups: Record<string, string>;
+        policies: Record<string, Models.BackupPolicy[]>;
     } = $props();
 
     function getPolicyDescription(cron: string): string {
@@ -24,6 +28,10 @@
         if (dayOfWeek !== '*') return 'Weekly on Mondays';
         if (minute !== '*' && hour === '*') return 'Hourly';
         if (hour !== '*') return 'Daily';
+    }
+
+    function getPoliciesDescription(policies: Models.BackupPolicy[] | null): string {
+        return policies?.map((policy) => getPolicyDescription(policy.schedule)).join(', ') ?? '';
     }
 
     function getEntityUrl(database: Models.Database, entityId: string) {
@@ -47,8 +55,7 @@
         {/each}
     </svelte:fragment>
 
-    {@const entities = data.entities}
-    {#each data.databases.databases as database (database.$id)}
+    {#each databases.databases as database (database.$id)}
         <!-- takes directly to the spreadsheet -->
         {@const entityId = entities[database?.$id] ?? null}
         <Table.Row.Link {root} href={getEntityUrl(database, entityId)}>
@@ -65,18 +72,16 @@
                     {:else if column.id === 'type'}
                         {getDatabaseTypeTitle(database)}
                     {:else if column.id === 'backup'}
-                        {@const policies = data.policies?.[database.$id] ?? null}
-                        {@const lastBackup = data.lastBackups?.[database.$id] ?? null}
-                        {@const description = policies
-                            ?.map((policy: BackupPolicy) => getPolicyDescription(policy.schedule))
-                            .join(', ')}
+                        {@const backupPolicies = policies?.[database.$id] ?? null}
+                        {@const lastBackup = lastBackups?.[database.$id] ?? null}
+                        {@const description = getPoliciesDescription(backupPolicies)}
 
                         <Tooltip
                             placement="bottom"
-                            disabled={!policies || !lastBackup}
+                            disabled={!backupPolicies || !lastBackup}
                             maxWidth="fit-content">
                             <span class="u-trim">
-                                {#if !policies}
+                                {#if !backupPolicies}
                                     <Layout.Stack direction="row" gap="xxs" alignItems="center">
                                         <Icon
                                             icon={IconExclamation}
@@ -92,8 +97,10 @@
                                 {`Last backup: ${lastBackup}`}
                             </span>
                         </Tooltip>
+                    {:else if column.type === 'datetime'}
+                        <DualTimeView time={database[column.id]} showDatetime />
                     {:else}
-                        {toLocaleDateTime(database[column.id])}
+                        {database[column.id]}
                     {/if}
                 </Table.Cell>
             {/each}

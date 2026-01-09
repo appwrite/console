@@ -16,15 +16,16 @@
 
     let {
         entity,
-        record = $bindable(null)
+        record = $bindable(null),
+        arePermsDisabled = $bindable(true)
     }: {
         entity: Entity;
         record: Record;
+        arePermsDisabled?: boolean;
     } = $props();
 
     let permissions = $state(record.$permissions);
 
-    let arePermsDisabled = $state(true);
     let showPermissionAlert = $state(true);
 
     const { analytics, dependencies, terminology } = getTerminologies();

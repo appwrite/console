@@ -12,24 +12,19 @@
     import { SortButton } from '$lib/components';
     import type { Column } from '$lib/helpers/types';
     import { type DatabaseType, getTerminologies, SpreadsheetContainer } from '$database/(entity)';
-    import { onDestroy, onMount } from 'svelte';
+    import { onDestroy, onMount, type Snippet } from 'svelte';
     import { debounce } from '$lib/helpers/debounce';
     import { expandTabs, spreadsheetLoading } from '$database/store';
     import { NoSqlEditor } from '$database/collection-[collection]/(components)/editor';
 
     type Mode = 'records' | 'records-filtered' | 'indexes';
 
-    interface Action {
-        text?: string;
-        disabled?: boolean;
-        onClick?: () => void;
-    }
-
     const {
         type = 'tablesdb',
         mode,
         title,
         actions,
+        subtitle,
         showActions = true,
         customColumns = [],
         onOpenCreateColumn
@@ -37,13 +32,11 @@
         type?: DatabaseType;
         mode: Mode;
         title?: string;
+        subtitle?: Snippet;
+        actions?: Snippet;
         showActions?: boolean;
-        customColumns?: Column[]; // these are filtered with `hide`
+        customColumns?: Column[];
         onOpenCreateColumn?: () => Promise<void> | void;
-        actions?: {
-            primary?: Action;
-            random?: Action;
-        };
     } = $props();
 
     let spreadsheetContainer: HTMLElement;
@@ -122,53 +115,111 @@
     const getCustomColumns = (): Column[] =>
         customColumns.map((col: Column) => ({
             ...col,
-            width: 180,
             hide: false,
             ...baseColProps
         }));
 
-    const getRowColumns = (): Column[] => [
-        {
-            id: '$id',
-            title: '$id',
-            type: 'string',
-            width: 180,
-            icon: IconFingerPrint,
-            ...baseColProps
-        },
-        ...getCustomColumns(),
-        {
-            id: '$createdAt',
-            title: '$createdAt',
-            type: 'datetime',
-            width: 180,
-            icon: IconCalendar,
-            ...baseColProps
-        },
-        {
-            id: '$updatedAt',
-            title: '$updatedAt',
-            type: 'datetime',
-            width: 180,
-            icon: IconCalendar,
-            ...baseColProps
-        },
-        {
-            id: 'actions',
-            title: '',
-            type: 'string',
-            icon: IconPlus,
-            width: customColumns.length ? 555 : 832,
-            ...baseColProps
-        },
-        {
-            id: 'empty',
-            title: '',
-            type: 'string',
-            ...baseColProps
-        }
-    ];
+    const getRowColumns = (): Column[] => {
+        const minColumnWidth = 180;
+        const fixedWidths = { id: 180, actions: 40 };
+        const hasCustomColumns = customColumns.length > 0;
 
+        const customColumnsData = getCustomColumns();
+
+        // Calculate column widths based on whether we have custom columns
+        let columnWidths = {
+            id: fixedWidths.id,
+            createdAt: fixedWidths.id,
+            updatedAt: fixedWidths.id,
+            custom: minColumnWidth,
+            actions: hasCustomColumns ? fixedWidths.actions : 1387
+        };
+
+        if (hasCustomColumns) {
+            const equalWidthColumns = [
+                ...customColumnsData,
+                { id: '$createdAt' },
+                { id: '$updatedAt' }
+            ];
+
+            const totalBaseWidth =
+                fixedWidths.id + fixedWidths.actions + equalWidthColumns.length * minColumnWidth;
+
+            const viewportWidth =
+                spreadsheetContainer?.clientWidth ||
+                (typeof window !== 'undefined' ? window.innerWidth : totalBaseWidth);
+
+            const excessSpace = Math.max(0, viewportWidth - totalBaseWidth);
+            const extraPerColumn =
+                equalWidthColumns.length > 0 ? excessSpace / equalWidthColumns.length : 0;
+            const distributedWidth = minColumnWidth + extraPerColumn;
+
+            columnWidths.createdAt = distributedWidth;
+            columnWidths.updatedAt = distributedWidth;
+            columnWidths.custom = distributedWidth;
+        }
+
+        const columns: Column[] = [
+            {
+                id: '$id',
+                title: '$id',
+                type: 'string',
+                width: columnWidths.id,
+                icon: IconFingerPrint,
+                ...baseColProps
+            }
+        ];
+
+        if (hasCustomColumns) {
+            columns.push(
+                ...customColumnsData.map((col) => ({
+                    ...col,
+                    width: columnWidths.custom
+                }))
+            );
+        }
+
+        columns.push(
+            {
+                id: '$createdAt',
+                title: '$createdAt',
+                type: 'datetime',
+                width: columnWidths.createdAt,
+                icon: IconCalendar,
+                ...baseColProps
+            },
+            {
+                id: '$updatedAt',
+                title: '$updatedAt',
+                type: 'datetime',
+                width: columnWidths.updatedAt,
+                icon: IconCalendar,
+                ...baseColProps
+            },
+            {
+                id: 'actions',
+                title: '',
+                type: 'string',
+                icon: IconPlus,
+                isAction: hasCustomColumns,
+                width: columnWidths.actions,
+                ...baseColProps
+            }
+        );
+
+        if (!hasCustomColumns) {
+            columns.push({
+                id: 'empty',
+                title: '',
+                type: 'string',
+                ...baseColProps
+            });
+        }
+
+        return columns;
+    };
+
+    // TODO: @itznotabug - we probably don't need `hasCustomColumns` but check please.
     const getDocumentsDbColumns = (): Column[] => [
         {
             id: '$id',
@@ -214,22 +265,30 @@
         }
     ];
 
-    const getIndexesColumns = (): Column[] =>
-        [
+    const getIndexesColumns = (): Column[] => {
+        const columns = [
             { id: 'key', title: 'Key', icon: null, isPrimary: false },
             { id: 'type', title: 'Type', icon: null, isPrimary: false },
-            { id: 'columns', title: 'Columns', icon: null, isPrimary: false },
-            {
+            { id: 'columns', title: 'Columns', icon: null, isPrimary: false }
+        ] as Column[];
+
+        if (!$isSmallViewport) {
+            columns.push({
                 id: 'empty',
                 title: '',
                 width: 40,
                 isAction: true,
                 isPrimary: false
-            }
-        ] as Column[];
+            } as Column);
+        }
+
+        return columns;
+    };
+
+    const isRecordMode = $derived(mode === 'records' || mode === 'records-filtered');
 
     const spreadsheetColumns = $derived.by(() => {
-        return mode === 'records'
+        return isRecordMode
             ? type !== 'documentsdb'
                 ? getRowColumns()
                 : getDocumentsDbColumns()
@@ -240,12 +299,16 @@
         ($isSmallViewport ? 14 : $isTabletViewport ? 17 : 24) + (!$expandTabs ? 2 : 0)
     );
 
-    const modeTerminology = $derived(terminology.record.lower.plural);
+    const modeTerminology = $derived(
+        mode === 'indexes' ? 'indexes' : terminology.record.lower.plural
+    );
 </script>
 
 <div
-    data-mode={mode}
     data-type={type}
+    data-mode={mode}
+    class:custom-columns={customColumns.length > 0}
+    class:no-custom-columns={customColumns.length <= 0}
     data-loading={$spreadsheetLoading}
     bind:this={spreadsheetContainer}
     class="databases-spreadsheet spreadsheet-container-outer">
@@ -261,17 +324,20 @@
             }}>
             <svelte:fragment slot="header" let:root>
                 {#each spreadsheetColumns as column (column.id)}
-                    {@const columnActionsById = column.id === 'actions'}
-                    <!-- svelte-ignore a11y_click_events_have_key_events -->
-                    <div
-                        role="button"
-                        tabindex="0"
-                        style:cursor={columnActionsById && onOpenCreateColumn ? 'pointer' : null}
-                        onclick={() => {
-                            if (columnActionsById && mode === 'records') {
-                                onOpenCreateColumn?.();
-                            }
-                        }}>
+                    {#if column.isAction}
+                        <Spreadsheet.Header.Cell column="actions" {root}>
+                            <Button.Button
+                                icon
+                                variant="extra-compact"
+                                onclick={() => {
+                                    if (isRecordMode) {
+                                        onOpenCreateColumn?.();
+                                    }
+                                }}>
+                                <Icon icon={IconPlus} color="--fgcolor-neutral-primary" />
+                            </Button.Button>
+                        </Spreadsheet.Header.Cell>
+                    {:else}
                         <Spreadsheet.Header.Cell
                             {root}
                             column={column.id}
@@ -294,7 +360,7 @@
                                 </Layout.Stack>
                             {/if}
                         </Spreadsheet.Header.Cell>
-                    </div>
+                    {/if}
                 {/each}
             </svelte:fragment>
 
@@ -321,51 +387,37 @@
     {#if !$spreadsheetLoading}
         <div
             class="spreadsheet-fade-bottom"
+            class:custom-columns={customColumns.length > 0}
             data-collapsed-tabs={!$expandTabs}
             style:--overlay-top={overlayTopOffset}
             style:--overlay-left={overlayLeftOffset}
             style:--dynamic-overlay-height={dynamicOverlayHeight}>
             <div class="empty-actions">
-                <Layout.Stack gap="xl" alignItems="center">
-                    <Typography.Title
-                        >{title ?? `You have no ${modeTerminology} yet`}</Typography.Title>
+                <Layout.Stack
+                    gap="xl"
+                    alignItems="center"
+                    alignContent="center"
+                    style="width: 653px; max-width: {$isSmallViewport ? '353px' : undefined}">
+                    <Layout.Stack gap="xs" alignItems="center" alignContent="center">
+                        <Typography.Title
+                            >{title ?? `You have no ${modeTerminology} yet`}</Typography.Title>
 
-                    {#if showActions}
-                        <Layout.Stack
-                            inline
-                            gap="s"
-                            alignItems="center"
-                            direction={$isSmallViewport ? 'column' : 'row'}>
-                            {#if mode !== 'records-filtered'}
-                                <Button.Button
-                                    icon
-                                    size="s"
-                                    variant="secondary"
-                                    disabled={actions?.primary?.disabled}
-                                    onclick={actions?.primary?.onClick}>
-                                    <Icon icon={IconPlus} size="s" />
-                                    {actions?.primary?.text ?? `Create ${mode}`}
-                                </Button.Button>
+                        {@render subtitle?.()}
+                    </Layout.Stack>
 
-                                {#if mode === 'records'}
-                                    <Button.Button
-                                        size="s"
-                                        variant="secondary"
-                                        disabled={actions?.random?.disabled}
-                                        onclick={actions?.random?.onClick}>
-                                        {actions?.random?.text ?? `Generate sample data`}
-                                    </Button.Button>
+                    {#if showActions && actions}
+                        {@const inline = mode === 'records-filtered'}
+                        <div class="controlled-width">
+                            <Layout.Stack {inline}>
+                                {#if inline}
+                                    {@render actions?.()}
+                                {:else}
+                                    <Layout.Grid columns={2} columnsXS={1}>
+                                        {@render actions?.()}
+                                    </Layout.Grid>
                                 {/if}
-                            {:else}
-                                <Button.Button
-                                    size="s"
-                                    variant="secondary"
-                                    disabled={actions?.primary?.disabled}
-                                    onclick={actions?.primary?.onClick}>
-                                    {actions?.primary?.text}
-                                </Button.Button>
-                            {/if}
-                        </Layout.Stack>
+                            </Layout.Stack>
+                        </div>
                     {/if}
                 </Layout.Stack>
             </div>
@@ -379,13 +431,58 @@
         position: fixed;
         overflow: hidden;
 
+        & :global(.spreadsheet-container) {
+            overflow-x: auto;
+            overflow-y: auto;
+        }
+
+        & :global([data-select='true']) {
+            opacity: 0.85;
+            pointer-events: none;
+        }
+
+        &.custom-columns {
+            width: unset;
+        }
+
+        &.no-custom-columns {
+            @media (max-width: 768px) {
+                & :global(.spreadsheet-wrapper) {
+                    opacity: 0;
+                }
+
+                & > .spreadsheet-fade-bottom {
+                    top: var(--top-actions-spacing) !important;
+                    background: var(--bgcolor-neutral-primary) !important;
+                }
+            }
+        }
+
+        &:not(.custom-columns) :global(.spreadsheet-container) {
+            overflow-x: hidden;
+            overflow-y: hidden;
+        }
+
+        /* alternative selector for header selection */
+        & :global(.sticky-header [data-select='true']) {
+            opacity: 1;
+            pointer-events: none;
+        }
+
         &[data-mode='records'][data-type='tablesdb'] {
+            --top-actions-spacing: 50%;
             & :global([role='rowheader'] :nth-last-child(2) [role='presentation']) {
                 display: none;
             }
         }
 
         &[data-mode='indexes'] {
+            --top-actions-spacing: 40%;
+
+            & :global([role='cell']:last-child [role='presentation']) {
+                display: none;
+            }
+
             & :global([role='rowheader'] [role='cell']:nth-last-child(1)) {
                 pointer-events: none;
 
@@ -432,7 +529,21 @@
         justify-content: center;
         transition: none !important;
 
-        height: var(--dynamic-overlay-height, 70.35vh);
+        // TODO: @itznotabug - check if we need it.
+        height: var(--dynamic-overlay-height, 70.5vh);
+
+        &.custom-columns {
+            pointer-events: none;
+        }
+    }
+
+    .controlled-width {
+        width: 100%;
+
+        @media (min-width: 1440px) {
+            width: 538px;
+            max-width: 538px;
+        }
     }
 
     :global(.theme-dark) .spreadsheet-fade-bottom {
@@ -451,6 +562,13 @@
         @media (max-width: 1024px) {
             // experiment
             margin-bottom: 15%;
+        }
+    }
+
+    @media (max-width: 768px) {
+        // global but controlled properly!
+        :global(main:has(.no-custom-columns) .console-container) {
+            opacity: 0;
         }
     }
 </style>

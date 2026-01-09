@@ -2,7 +2,7 @@
     import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Empty, Id } from '$lib/components';
-    import { toLocaleDateTime } from '$lib/helpers/date';
+    import DualTimeView from '$lib/components/dualTimeView.svelte';
     import { Container } from '$lib/layout';
     import { Button } from '$lib/elements/forms';
     import type { PageData } from './$types';
@@ -58,7 +58,11 @@
                             {:else if column.id === 'events'}
                                 {webhook.events.length}
                             {:else if column.type === 'datetime'}
-                                {webhook[column.id] ? toLocaleDateTime(webhook[column.id]) : '-'}
+                                {#if webhook[column.id]}
+                                    <DualTimeView time={webhook[column.id]} showDatetime />
+                                {:else}
+                                    -
+                                {/if}
                             {:else if column.id === 'enabled'}
                                 <Layout.Stack direction="row" gap="s" alignItems="normal">
                                     <Status

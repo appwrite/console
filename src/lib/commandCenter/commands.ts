@@ -102,15 +102,22 @@ const commandsEnabled = derived(disabledMap, ($disabledMap) => {
     return Array.from($disabledMap.values()).every((disabled) => !disabled);
 });
 
-function isInputEvent(event: KeyboardEvent) {
-    const element = event.target as HTMLElement | null;
-    if (!element) return false;
+export function isTargetInputLike(element: EventTarget | null) {
+    if (!(element instanceof HTMLElement)) return false;
 
-    const tag = element.tagName;
-    if (['INPUT', 'TEXTAREA', 'SELECT'].includes(tag)) return true;
-
-    if (element.isContentEditable) return true;
-    return !!element.closest?.('.cm-editor');
+    return !!element.closest(
+        [
+            'input',
+            'textarea',
+            'select',
+            '[contenteditable]',
+            '[role="combobox"]',
+            '[role="textbox"]',
+            '[role="searchbox"]',
+            '[data-command-center-ignore]',
+            '.cm-editor'
+        ].join(',')
+    );
 }
 
 function getCommandRank(command: KeyedCommand) {
@@ -213,7 +220,12 @@ export const commandCenterKeyDownHandler = derived(
             for (const command of commandsArr) {
                 if (!isKeyedCommand(command)) continue;
                 if (!command.forceEnable) {
-                    if (command.disabled || !enabled || isInputEvent(event) || $wizard.show) {
+                    if (
+                        command.disabled ||
+                        !enabled ||
+                        isTargetInputLike(event.target) ||
+                        $wizard.show
+                    ) {
                         continue;
                     }
                 }

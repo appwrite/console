@@ -1,6 +1,6 @@
 <script lang="ts" context="module">
     import { writable } from 'svelte/store';
-    import type { Option } from './columns/store';
+    import type { Option } from '$database/table-[table]/columns/store';
 
     const createColumnArgs = writable({
         showCreate: false,
@@ -20,7 +20,7 @@
 <script lang="ts">
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import { realtime, sdk } from '$lib/stores/sdk';
+    import { type RealtimeResponse, realtime, sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import {
         columnsOrder,
@@ -31,25 +31,41 @@
         rowActivitySheet,
         databaseRelatedRowSheetOptions,
         rowPermissionSheet,
+        isWaterfallFromFaker,
         showRowCreateSheet
-    } from './store';
+    } from '$database/table-[table]/store';
     import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
-    import CreateColumn from './createColumn.svelte';
+    import CreateColumn from '$database/table-[table]/createColumn.svelte';
     import { CreateColumnPanel } from '$lib/commandCenter/panels';
     import { project } from '../../../store';
     import { page } from '$app/state';
     import { canWriteTables } from '$lib/stores/roles';
-    import { IconEye, IconLockClosed, IconPlus, IconPuzzle } from '@appwrite.io/pink-icons-svelte';
-    import EditRow from './rows/edit.svelte';
-    import EditRelatedRow from './rows/editRelated.svelte';
-    import EditColumn from './columns/edit.svelte';
-    import { Layout, Selector } from '@appwrite.io/pink-svelte';
-    import { generateFakeRecords, generateColumns } from '$lib/helpers/faker';
+    import {
+        IconChevronDown,
+        IconChevronUp,
+        IconEye,
+        IconLockClosed,
+        IconPlus,
+        IconPuzzle
+    } from '@appwrite.io/pink-icons-svelte';
+    import {
+        CreateIndex,
+        EditRecordPermissions,
+        RecordActivity,
+        SideSheet,
+        type Field,
+        useTerminology
+    } from '$database/(entity)';
+    import EditRow from '$database/table-[table]/rows/edit.svelte';
+    import EditRelatedRow from '$database/table-[table]/rows/editRelated.svelte';
+    import EditColumn from '$database/table-[table]/columns/edit.svelte';
+    import { Dialog, Layout, Selector, Typography, Icon } from '@appwrite.io/pink-svelte';
+    import { Button, Seekbar } from '$lib/elements/forms';
+    import { generateFakeRecords, generateFields } from '$lib/helpers/faker';
     import { addNotification } from '$lib/stores/notifications';
-    import { sleep } from '$lib/helpers/promises';
     import { hash } from '$lib/helpers/string';
     import { preferences } from '$lib/stores/preferences';
-    import { buildFieldUrl, isRelationship } from './rows/store';
+    import { buildFieldUrl, isRelationship } from '$database/table-[table]/rows/store';
     import { chunks } from '$lib/helpers/array';
     import { Submit, trackEvent } from '$lib/actions/analytics';
     import {
@@ -57,20 +73,15 @@
         spreadsheetLoading,
         randomDataModalState,
         spreadsheetRenderKey
-    } from '../store';
+    } from '$database/store';
 
     import type { LayoutData } from './$types';
-
-    import {
-        CreateIndex,
-        EditRecordPermissions,
-        type Field,
-        SideSheet,
-        RecordActivity
-    } from '$database/(entity)';
     import { resolveRoute, withPath } from '$lib/stores/navigation';
-    import IndexesSuggestions from '../(suggestions)/indexes.svelte';
-    import { showIndexesSuggestions, tableColumnSuggestions } from '../(suggestions)';
+    import { isTabletViewport } from '$lib/stores/viewport';
+    import { showColumnsSuggestionsModal } from '$database/(suggestions)';
+    import IndexesSuggestions from '$database/(suggestions)/indexes.svelte';
+    import ColumnsSuggestions from '$database/(suggestions)/columns.svelte';
+    import { setupColumnObserver } from '$database/(observer)/columnObserver';
 
     export let data: LayoutData;
 
@@ -78,16 +89,46 @@
     let editRelatedRow: EditRelatedRow;
     let editRecordPermissions: EditRecordPermissions;
 
+    let editRowDisabled = true;
+    let editRelatedRowDisabled = true;
+    let editRowPermissionsDisabled = true;
+
     let createIndex: CreateIndex;
     let createColumn: CreateColumn;
     let selectedOption: Option['name'] = 'String';
     let createMoreColumns = false;
 
-    /**
-     * adding a lot of fake data will trigger the realtime below
-     * and will keep invalidating the `Dependencies.TABLE` making a lot of API noise!
-     */
-    let isWaterfallFromFaker = false;
+    /* terminology */
+    const { type: databaseType } = useTerminology(page);
+
+    let columnCreationHandler: ((response: RealtimeResponse) => void) | null = null;
+
+    // manual management of focus is needed!
+    const autoFocusAction = (node: HTMLElement, shouldFocus: boolean) => {
+        const button = node.querySelector('button');
+        if (!button) return;
+
+        const handleBlur = () => button.classList.remove('focus-visible');
+        const applyFocus = (focus: boolean) => {
+            if (focus) {
+                button.classList.add('focus-visible');
+                button.focus();
+            } else {
+                button.classList.remove('focus-visible');
+            }
+        };
+
+        button.addEventListener('blur', handleBlur);
+        applyFocus(shouldFocus);
+
+        return {
+            update: applyFocus,
+            destroy() {
+                button.removeEventListener('blur', handleBlur);
+                button.classList.remove('focus-visible');
+            }
+        };
+    };
 
     $: table = data.table;
     $: basePath = resolveRoute(
@@ -101,26 +142,16 @@
         // set faker method.
         $randomDataModalState.onSubmit = async () => await createFakeData();
 
-        return realtime
-            .forProject(page.params.region, page.params.project)
-            .subscribe(['project', 'console'], (response) => {
-                if (
-                    response.events.includes('databases.*.tables.*.columns.*') ||
-                    response.events.includes('databases.*.tables.*.indexes.*')
-                ) {
-                    // don't invalidate when -
-                    // 1. from faker
-                    // 2. ai indexes creation
-                    // 3. ai columns creation
-                    if (
-                        !isWaterfallFromFaker &&
-                        !$showIndexesSuggestions &&
-                        !$tableColumnSuggestions.table
-                    ) {
-                        invalidate(Dependencies.TABLE);
-                    }
+        return realtime.forProject(page.params.region, ['project', 'console'], (response) => {
+            if (
+                response.events.includes('databases.*.tables.*.columns.*') ||
+                response.events.includes('databases.*.tables.*.indexes.*')
+            ) {
+                if ($isWaterfallFromFaker) {
+                    columnCreationHandler?.(response);
                 }
-            });
+            }
+        });
     });
 
     // TODO: use route ids instead of pathname
@@ -255,8 +286,9 @@
         indexes: 700
     });
 
+    // TODO: @itznotabug - needs to be fixed!
     async function createFakeData() {
-        isWaterfallFromFaker = true;
+        isWaterfallFromFaker.set(true);
 
         $spreadsheetLoading = true;
         $randomDataModalState.show = false;
@@ -268,9 +300,26 @@
 
         if (!columns.length) {
             try {
-                columns = await generateColumns($project, page.params.database, page.params.table);
+                const {
+                    startWaiting,
+                    waitPromise,
+                    columnCreationHandler: handler
+                } = setupColumnObserver();
+
+                columnCreationHandler = handler;
+
+                columns = await generateFields(
+                    $project,
+                    page.params.database,
+                    page.params.table,
+                    databaseType
+                );
+
+                startWaiting(columns.length);
+                await waitPromise;
 
                 await invalidate(Dependencies.TABLE);
+
                 trackEvent(Submit.ColumnCreate, { type: 'faker' });
             } catch (e) {
                 addNotification({
@@ -279,15 +328,16 @@
                 });
                 $spreadsheetLoading = false;
                 return;
+            } finally {
+                columnCreationHandler = null;
             }
+        } else {
+            columns = currentFields;
         }
-
-        /* let the columns be processed! */
-        await sleep(1250);
 
         let rowIds = [];
         try {
-            const { records, ids } = generateFakeRecords(
+            const { rows, ids } = generateFakeRecords(
                 $randomDataModalState.value,
                 'tablesdb',
                 columns
@@ -297,7 +347,7 @@
             const tablesSDK = sdk.forProject(page.params.region, page.params.project).tablesDB;
 
             if (hasAnyRelationships) {
-                for (const batch of chunks(records)) {
+                for (const batch of chunks(rows)) {
                     try {
                         await Promise.all(
                             batch.map((row) =>
@@ -317,7 +367,7 @@
                 await tablesSDK.createRows({
                     databaseId: page.params.database,
                     tableId: page.params.table,
-                    rows: records
+                    rows
                 });
             }
 
@@ -337,10 +387,8 @@
             $randomDataModalState.value = 25;
         }
 
-        /* api is too fast! */
-        // await sleep(1250);
         $spreadsheetLoading = false;
-        isWaterfallFromFaker = false;
+        isWaterfallFromFaker.set(false);
 
         spreadsheetRenderKey.set(hash(rowIds));
     }
@@ -348,6 +396,8 @@
     $: if (!$showCreateColumnSheet.show) {
         createMoreColumns = false;
     }
+
+    $: currentRowId = $databaseRowSheetOptions.row?.$id ?? $databaseRowSheetOptions.rowId;
 </script>
 
 <svelte:head>
@@ -404,28 +454,79 @@
 </SideSheet>
 
 <SideSheet
-    closeOnBlur
     title={$databaseRowSheetOptions.title}
     bind:show={$databaseRowSheetOptions.show}
     submit={{
         text: 'Update',
-        disabled: editRow?.isDisabled(),
+        disabled: editRowDisabled,
         onClick: async () => await editRow?.update()
     }}
     topAction={{
         mode: 'copy-tag',
         text: 'Row URL',
-        show: !!($databaseRowSheetOptions.rowId ?? $databaseRowSheetOptions.row?.$id),
-        value: buildFieldUrl(
-            'row',
-            $databaseRowSheetOptions.rowId ?? $databaseRowSheetOptions.row?.$id
-        )
+        show: !!currentRowId,
+        value: buildFieldUrl('row', currentRowId)
     }}>
-    <EditRow
-        {table}
-        bind:this={editRow}
-        bind:row={$databaseRowSheetOptions.row}
-        bind:rowId={$databaseRowSheetOptions.rowId} />
+    {#snippet topEndActions()}
+        {@const rows = $databaseRowSheetOptions.rows ?? []}
+        {@const currentIndex = $databaseRowSheetOptions.rowIndex ?? -1}
+        {@const isFirstRow = currentIndex <= 0}
+        {@const isLastRow = currentIndex >= rows.length - 1}
+
+        {#if !$isTabletViewport}
+            {@const shouldFocusPrev = !$databaseRowSheetOptions.autoFocus && !isFirstRow}
+            {@const shouldFocusNext =
+                !$databaseRowSheetOptions.autoFocus && isFirstRow && !isLastRow}
+
+            <div use:autoFocusAction={shouldFocusPrev} class:nav-button-wrapper={shouldFocusPrev}>
+                <Button
+                    icon
+                    text
+                    size="xs"
+                    on:click={() => {
+                        if (currentIndex > 0) {
+                            databaseRowSheetOptions.update((opts) => ({
+                                ...opts,
+                                row: rows[currentIndex - 1],
+                                rowIndex: currentIndex - 1
+                            }));
+                        }
+                    }}
+                    disabled={isFirstRow}>
+                    <Icon icon={IconChevronUp} />
+                </Button>
+            </div>
+
+            <div use:autoFocusAction={shouldFocusNext} class:nav-button-wrapper={shouldFocusNext}>
+                <Button
+                    icon
+                    text
+                    size="xs"
+                    on:click={() => {
+                        if (currentIndex < rows.length - 1) {
+                            databaseRowSheetOptions.update((opts) => ({
+                                ...opts,
+                                row: rows[currentIndex + 1],
+                                rowIndex: currentIndex + 1
+                            }));
+                        }
+                    }}
+                    disabled={isLastRow}>
+                    <Icon icon={IconChevronDown} />
+                </Button>
+            </div>
+        {/if}
+    {/snippet}
+
+    {#key currentRowId}
+        <EditRow
+            {table}
+            bind:this={editRow}
+            bind:row={$databaseRowSheetOptions.row}
+            bind:rowId={$databaseRowSheetOptions.rowId}
+            bind:disabled={editRowDisabled}
+            autoFocus={$databaseRowSheetOptions.autoFocus} />
+    {/key}
 </SideSheet>
 
 <SideSheet
@@ -434,13 +535,14 @@
     bind:show={$databaseRelatedRowSheetOptions.show}
     submit={{
         text: 'Update',
-        disabled: editRelatedRow?.isDisabled(),
+        disabled: editRelatedRowDisabled,
         onClick: async () => await editRelatedRow?.update()
     }}>
     <EditRelatedRow
         bind:this={editRelatedRow}
         rows={$databaseRelatedRowSheetOptions.rows}
-        tableId={$databaseRelatedRowSheetOptions.tableId} />
+        tableId={$databaseRelatedRowSheetOptions.tableId}
+        bind:disabledState={editRelatedRowDisabled} />
 </SideSheet>
 
 <SideSheet
@@ -479,17 +581,45 @@
     bind:show={$rowPermissionSheet.show}
     submit={{
         text: 'Update',
-        disabled: editRecordPermissions?.disableSubmit(),
+        disabled: editRowPermissionsDisabled,
         onClick: async () => editRecordPermissions?.updatePermissions()
     }}>
     <EditRecordPermissions
         entity={table}
         bind:this={editRecordPermissions}
-        bind:record={$rowPermissionSheet.row} />
+        bind:record={$rowPermissionSheet.row}
+        bind:arePermsDisabled={editRowPermissionsDisabled} />
 </SideSheet>
 
 <SideSheet title="Row activity" bind:show={$rowActivitySheet.show} closeOnBlur>
     <RecordActivity record={$rowActivitySheet.row} />
 </SideSheet>
 
+<Dialog title="Generate sample data" bind:open={$randomDataModalState.show}>
+    <Layout.Stack style="gap: 28px;">
+        <Typography.Text>
+            Select how many sample rows to generate for testing. This won't delete or replace any
+            existing rows.
+        </Typography.Text>
+
+        <Seekbar max={100} breakpointCount={5} bind:value={$randomDataModalState.value} />
+    </Layout.Stack>
+
+    <svelte:fragment slot="footer">
+        <Layout.Stack direction="row" gap="s" justifyContent="flex-end">
+            <Button text on:click={() => ($randomDataModalState.show = false)}>Cancel</Button>
+            <Button on:click={createFakeData}>Create</Button>
+        </Layout.Stack>
+    </svelte:fragment>
+</Dialog>
+
+<ColumnsSuggestions bind:show={$showColumnsSuggestionsModal} />
+
 <IndexesSuggestions {table} />
+
+<style lang="scss">
+    // not the best solution but needed!
+    .nav-button-wrapper :global(button.focus-visible) {
+        outline: var(--border-width-l) solid var(--border-focus);
+    }
+</style>

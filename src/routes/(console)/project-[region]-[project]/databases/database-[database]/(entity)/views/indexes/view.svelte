@@ -32,12 +32,15 @@
         type CreateIndexesCallbackType,
         SpreadsheetContainer,
         SideSheet,
-        type Index
+        type Index,
+        getTerminologies
     } from '$database/(entity)';
     import { preferences } from '$lib/stores/preferences';
     import { debounce } from '$lib/helpers/debounce';
     import { page } from '$app/state';
+    import { realtime } from '$lib/stores/sdk';
     import type { ColumnsWidth } from '$database/table-[table]/store';
+    import { invalidate } from '$app/navigation';
 
     let {
         entity,
@@ -107,8 +110,25 @@
         entity.indexes.length >= emptyCellsLimit ? 0 : emptyCellsLimit - entity.indexes.length
     );
 
+    const { dependencies, terminology } = getTerminologies();
+
     onMount(() => {
         columnsWidth = preferences.getColumnWidths(entity.$id + '#indexes');
+
+        // example: databases.*.tables.*.indexes.*
+        // example: documentsdb.*.collections.indexes.*
+        // this is needed because `documentsdb` doesn't use `database` prefix don't exist
+        const derivedEventsForIndex = `${terminology.type}.*.${terminology.entity.lower.plural}.*.indexes.*`;
+        const indexEvents =
+            terminology.type === 'documentsdb'
+                ? [derivedEventsForIndex]
+                : ['databases.*.tables.*.indexes.*', derivedEventsForIndex];
+
+        return realtime.forProject(page.params.region, ['project', 'console'], (response) => {
+            if (indexEvents.some((event) => response.events.includes(event))) {
+                invalidate(dependencies.entity.singular);
+            }
+        });
     });
 
     function getEntityStatusBadge(status: string): ComponentProps<Badge>['type'] {
@@ -200,7 +220,7 @@
                         <Spreadsheet.Header.Cell column="key" {root}>Key</Spreadsheet.Header.Cell>
                         <Spreadsheet.Header.Cell column="type" {root}>Type</Spreadsheet.Header.Cell>
                         <Spreadsheet.Header.Cell column="columns" {root}
-                            >Columns</Spreadsheet.Header.Cell>
+                            >{terminology.field.title.singular}</Spreadsheet.Header.Cell>
                         <!--<Spreadsheet.Header.Cell column="orders" {root}
                             >Orders</Spreadsheet.Header.Cell>-->
                         <Spreadsheet.Header.Cell column="lengths" {root}

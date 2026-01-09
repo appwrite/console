@@ -2,6 +2,7 @@
     import { tick } from 'svelte';
     import { debounce } from '$lib/helpers/debounce';
 
+    // TODO - @itznotabug, use SvelteSet
     const batchQueue = new Set<() => void>();
     let batchPromise: Promise<void> | null = null;
 
@@ -101,6 +102,7 @@
         tooltipPortal = false,
         tooltipDelay = 0,
         tooltipPlacement,
+        copyText,
         children
     }: {
         value: string;
@@ -109,12 +111,13 @@
         tooltipDelay?: number;
         tooltipPlacement?: TooltipPlacement;
         truncate?: boolean;
+        copyText?: string;
         children: Snippet;
     } = $props();
 </script>
 
 {#key value}
-    <Copy {value} {event} {tooltipPortal} {tooltipDelay} {tooltipPlacement}>
+    <Copy {value} {event} {tooltipPortal} {tooltipDelay} {tooltipPlacement} {copyText}>
         <Tag size="xs" variant="code">
             <Icon icon={IconDuplicate} size="s" slot="start" />
             <span

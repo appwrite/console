@@ -66,7 +66,10 @@
                         </Typography.Text>
                     </Layout.Stack>
                     <Layout.Stack gap="s" direction="row">
-                        <Button href="#" secondary>Docs</Button>
+                        <Button
+                            href="https://appwrite.io/docs/products/sites/deploy-from-git"
+                            external
+                            secondary>Docs</Button>
                         <Button
                             href={`https://github.com/${data.installations.installations[0].organization}`}
                             text>Go to GitHub</Button>

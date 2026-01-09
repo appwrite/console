@@ -9,6 +9,12 @@ import type { Columns, SortState } from '$database/store';
 export const columns = derived(page, ($page) => $page.data.table.columns as Columns[]);
 export const indexes = derived(page, ($page) => $page.data.table.indexes as Models.ColumnIndex[]);
 
+/**
+ * adding a lot of fake data will trigger the realtime below
+ * and will keep invalidating the `Dependencies.TABLE` making a lot of API noise!
+ */
+export const isWaterfallFromFaker = writable(false);
+
 export const tableColumns = writable<Column[]>([]);
 
 export const isTablesCsvImportInProgress = writable(false);
@@ -45,12 +51,18 @@ export const databaseRowSheetOptions = writable<
     DatabaseSheetOptions & {
         row: Models.Row;
         rowId?: string;
+        rows: Models.Row[];
+        rowIndex?: number;
+        autoFocus?: boolean;
     }
 >({
     title: null,
     show: false,
     row: null,
-    rowId: null // for loading from a given id
+    rowId: null, // for loading from a given id
+    rows: [],
+    rowIndex: -1,
+    autoFocus: true
 });
 
 export const databaseRelatedRowSheetOptions = writable<
@@ -145,7 +157,9 @@ export const rowPermissionSheet = writable({
 });
 
 export const paginatedRowsLoading = writable(false);
-export const paginatedRows = createSparsePagedDataStore<Models.DefaultRow>(SPREADSHEET_PAGE_LIMIT);
+export const paginatedRows = createSparsePagedDataStore<Models.DefaultRow | Models.Row>(
+    SPREADSHEET_PAGE_LIMIT
+);
 
 export const PROHIBITED_ROW_KEYS = [
     '$id',

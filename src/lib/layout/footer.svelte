@@ -82,7 +82,7 @@
                     <Icon size="s" icon={IconCloud} />
                 {/if}
 
-                {#if $version}
+                {#if $version && !isCloud}
                     <Link.Anchor
                         size="s"
                         variant="quiet"
@@ -143,7 +143,7 @@
                 </Link.Anchor>
             {/if}
             {#if $isSmallViewport}
-                {#if $version}
+                {#if $version && !isCloud}
                     <span class="divider-wrapper">
                         <Divider vertical />
                     </span>
@@ -157,15 +157,18 @@
                         style="white-space: nowrap;">
                         Version {$version}
                     </Link.Anchor>
-                    {#if isCloud}
-                        <Icon size="s" icon={IconCloud} />
-                        <Badge
-                            size="xs"
-                            type="success"
-                            variant="secondary"
-                            content="Generally Available"
-                            style="white-space: nowrap;" />
-                    {/if}
+                {/if}
+                {#if isCloud}
+                    <span class="divider-wrapper">
+                        <Divider vertical />
+                    </span>
+                    <Icon size="s" icon={IconCloud} />
+                    <Badge
+                        size="xs"
+                        type="success"
+                        variant="secondary"
+                        content="Generally Available"
+                        style="white-space: nowrap;" />
                 {/if}
             {/if}
         </Layout.Stack>

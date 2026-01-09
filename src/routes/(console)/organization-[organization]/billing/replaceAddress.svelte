@@ -11,9 +11,11 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { base } from '$app/paths';
     import { Alert, Badge, Card, Layout, Skeleton } from '@appwrite.io/pink-svelte';
-    import { page } from '$app/state';
+    import type { Models } from '@appwrite.io/console';
 
     export let show = false;
+    export let locale: Models.Locale;
+    export let countryList: Models.CountryList;
     let loading = true;
     let addresses: AddressesList;
     let selectedAddress: string;
@@ -44,13 +46,9 @@
                 : null
             : null;
 
-        const locale = await sdk.forProject(page.params.region, page.params.project).locale.get();
         if (locale?.countryCode) {
             country = locale.countryCode;
         }
-        const countryList = await sdk
-            .forProject(page.params.region, page.params.project)
-            .locale.listCountries();
         options = countryList.countries.map((country) => {
             return {
                 value: country.code,

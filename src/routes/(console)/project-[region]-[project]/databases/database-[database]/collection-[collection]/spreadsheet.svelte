@@ -46,14 +46,17 @@
         paginatedDocuments,
         paginatedDocumentsLoading,
         sortState
-    } from './store';
+    } from '$database/collection-[collection]/store';
     import {
         type SortState,
         randomDataModalState,
         spreadsheetRenderKey,
         spreadsheetLoading
     } from '$database/store';
-    import { type JsonValue, NoSqlEditor } from './(components)/editor';
+    import {
+        type JsonValue,
+        NoSqlEditor
+    } from '$database/collection-[collection]/(components)/editor';
 
     import { buildFieldUrl } from '$database/table-[table]/rows/store';
     import {
@@ -384,7 +387,7 @@
                     databaseId,
                     collectionId,
                     documentId: $id,
-                    data: documentWithoutDates ?? []
+                    data: documentWithoutDates ?? {}
                 });
 
                 trackEvent(Submit.DocumentCreate);

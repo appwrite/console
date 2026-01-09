@@ -12,7 +12,8 @@
         Layout,
         Link,
         Typography,
-        Divider
+        Divider,
+        Skeleton
     } from '@appwrite.io/pink-svelte';
     import {
         IconChevronDown,
@@ -46,6 +47,7 @@
 
     const entityId = $derived(page.params[entityTypeSingular]);
 
+    let loading = $state(true);
     let openBottomSheet = $state(false);
 
     let entities = $state<EntityList>({ total: 0, entities: [] });
@@ -76,10 +78,14 @@
     );
 
     async function loadEntities() {
-        entities = await databasesSdk.listEntities({
-            databaseId: page.params.database,
-            queries: [Query.orderDesc(''), Query.limit(100)]
-        });
+        try {
+            entities = await databasesSdk.listEntities({
+                databaseId: page.params.database,
+                queries: [Query.orderDesc(''), Query.limit(100)]
+            });
+        } finally {
+            loading = false;
+        }
     }
 
     onMount(() => {
@@ -108,7 +114,20 @@
                 {data.database?.name}
             </a>
             <div class="entity-content" style:padding-bottom={entityContentPadding}>
-                {#if entities?.total}
+                {#if loading}
+                    <ul class="drop-list u-margin-inline-start-8 u-margin-block-start-4">
+                        {#each Array(2) as _}
+                            <Layout.Stack gap="s" direction="row" alignItems="center">
+                                <li>
+                                    <div
+                                        class="u-padding-block-8 u-padding-inline-end-4 u-padding-inline-start-8 u-flex u-cross-center u-gap-8">
+                                        <Skeleton variant="line" width="70%" height={19} />
+                                    </div>
+                                </li>
+                            </Layout.Stack>
+                        {/each}
+                    </ul>
+                {:else if entities?.total}
                     <ul class="drop-list u-margin-inline-start-8 u-margin-block-start-4">
                         {#each sortedEntities as entity, index}
                             {@const isFirst = index === 0}
@@ -405,6 +424,8 @@
         left: 1.25rem;
         position: absolute;
         padding-block-end: 1rem;
+        z-index: 1;
+        background: var(--bgcolor-neutral-primary);
     }
 
     .action-menu-divider {

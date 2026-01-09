@@ -11,7 +11,6 @@
     let {
         show = $bindable(false),
         title,
-        headerEnd,
         closeOnBlur = false,
         submit,
         cancel,
@@ -19,6 +18,7 @@
         footer = null,
         titleBadge = null,
         topAction = null,
+        topEndActions = null,
         noContentPadding = false,
         ...restProps
     }: {
@@ -51,8 +51,8 @@
               }
             | undefined;
         children?: Snippet;
-        footer?: Snippet | null;
-        headerEnd?: Snippet | null;
+        footer?: Snippet;
+        topEndActions?: Snippet;
     } & HTMLAttributes<HTMLDivElement> = $props();
 
     let form: Form;
@@ -93,7 +93,11 @@
                     {/if}
                 </Layout.Stack>
 
-                {@render headerEnd?.()}
+                {#if topEndActions}
+                    <Layout.Stack direction="row" gap="xs" alignItems="center" inline>
+                        {@render topEndActions()}
+                    </Layout.Stack>
+                {/if}
             </Layout.Stack>
         </div>
 

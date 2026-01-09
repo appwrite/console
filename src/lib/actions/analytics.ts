@@ -1,5 +1,5 @@
 import Analytics, { type AnalyticsPlugin } from 'analytics';
-import Plausible from 'plausible-tracker';
+import { init, track } from '@plausible-analytics/tracker';
 import { get } from 'svelte/store';
 import { page } from '$app/state';
 import { user } from '$lib/stores/user';
@@ -11,30 +11,30 @@ import { getReferrerAndUtmSource, getTrackedQueryParams } from '$lib/helpers/utm
 function plausible(domain: string): AnalyticsPlugin {
     if (!browser) return { name: 'analytics-plugin-plausible' };
 
-    const instance = Plausible({
-        domain
+    init({
+        domain,
+        autoCapturePageviews: false
     });
 
     return {
         name: 'analytics-plugin-plausible',
         page: ({ payload }) => {
-            instance.trackPageview({
+            track('pageview', {
                 url: payload.properties.path,
-                referrer: payload.properties.referrer,
-                deviceWidth: payload.properties.width
+                props: {
+                    referrer: payload.properties.referrer,
+                    deviceWidth: String(payload.properties.width)
+                }
             });
         },
         track: ({ payload }) => {
-            instance.trackEvent(
-                payload.event,
-                {
-                    props: payload.properties
-                },
-                {
-                    url: payload.properties.path,
-                    deviceWidth: payload.properties.width
+            track(payload.event, {
+                url: payload.properties.path,
+                props: {
+                    ...payload.properties,
+                    deviceWidth: String(payload.properties.width)
                 }
-            );
+            });
         },
         loaded: () => true
     };
@@ -198,7 +198,10 @@ export enum Click {
     VariablesCreateClick = 'click_variable_create',
     VariablesUpdateClick = 'click_variable_update',
     VariablesImportClick = 'click_variable_import',
-    WebsiteOpenClick = 'click_open_website'
+    WebsiteOpenClick = 'click_open_website',
+    CopyPromptStarterKitClick = 'click_copy_prompt_starter_kit',
+    OpenInCursorClick = 'click_open_in_cursor',
+    OpenInLovableClick = 'click_open_in_lovable'
 }
 
 export enum Submit {
@@ -247,6 +250,7 @@ export enum Submit {
     ProjectDelete = 'submit_project_delete',
     ProjectUpdateName = 'submit_project_update_name',
     ProjectUpdateTeam = 'submit_project_update_team',
+    ProjectUpdateLabels = 'submit_project_update_labels',
     ProjectService = 'submit_project_service',
     ProjectUpdateSMTP = 'submit_project_update_smtp',
     MemberCreate = 'submit_member_create',
@@ -277,6 +281,7 @@ export enum Submit {
     DatabaseDelete = 'submit_database_delete',
     DatabaseUpdateName = 'submit_database_update_name',
     DatabaseImportCsv = 'submit_database_import_csv',
+    DatabaseBackupDelete = 'submit_database_backup_delete',
 
     ColumnCreate = 'submit_column_create',
     ColumnUpdate = 'submit_column_update',
@@ -376,6 +381,7 @@ export enum Submit {
     BucketUpdateSize = 'submit_bucket_update_size',
     BucketUpdateCompression = 'submit_bucket_update_compression',
     BucketUpdateExtensions = 'submit_bucket_update_extensions',
+    BucketUpdateTransformations = 'submit_bucket_update_transformations',
     FileCreate = 'submit_file_create',
     FileDelete = 'submit_file_delete',
     FileUpdatePermissions = 'submit_file_update_permissions',

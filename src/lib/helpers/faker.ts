@@ -1,68 +1,84 @@
-import { faker } from '@faker-js/faker';
-import { ID, type Models } from '@appwrite.io/console';
 import { sdk } from '$lib/stores/sdk';
-import { isWithinSafeRange } from '$lib/helpers/numbers';
+import { faker } from '@faker-js/faker';
 import type { NestedNumberArray } from './types';
-import type { Columns } from '$database/store';
+import { ID, type Models } from '@appwrite.io/console';
+import { isWithinSafeRange } from '$lib/helpers/numbers';
 import type { DatabaseType, Field } from '$database/(entity)';
 
-export async function generateColumns(
+export async function generateFields(
     project: Models.Project,
     databaseId: string,
-    tableId: string
-): Promise<Columns[]> {
+    tableId: string,
+    databaseType: DatabaseType
+): Promise<Field[]> {
     const client = sdk.forProject(project.region, project.$id);
 
-    return await Promise.all([
-        client.tablesDB.createStringColumn({
-            databaseId,
-            tableId,
-            key: 'name',
-            size: 255,
-            required: false
-        }),
-        client.tablesDB.createEmailColumn({ databaseId, tableId, key: 'email', required: false }),
-        client.tablesDB.createIntegerColumn({
-            databaseId,
-            tableId,
-            key: 'age',
-            required: false,
-            min: 18,
-            max: 80
-        }),
-        client.tablesDB.createStringColumn({
-            databaseId,
-            tableId,
-            key: 'city',
-            size: 100,
-            required: false
-        }),
-        client.tablesDB.createStringColumn({
-            databaseId,
-            tableId,
-            key: 'description',
-            size: 1000,
-            required: false
-        }),
-        client.tablesDB.createBooleanColumn({
-            databaseId,
-            tableId,
-            key: 'active',
-            required: false
-        }),
-        client.tablesDB.createPointColumn({
-            databaseId,
-            tableId,
-            key: 'location',
-            required: false
-        }),
-        client.tablesDB.createLineColumn({
-            databaseId,
-            tableId,
-            key: 'route',
-            required: false
-        })
-    ]);
+    switch (databaseType) {
+        case 'legacy':
+        case 'tablesdb': {
+            return await Promise.all([
+                client.tablesDB.createStringColumn({
+                    databaseId,
+                    tableId,
+                    key: 'name',
+                    size: 255,
+                    required: false
+                }),
+                client.tablesDB.createEmailColumn({
+                    databaseId,
+                    tableId,
+                    key: 'email',
+                    required: false
+                }),
+                client.tablesDB.createIntegerColumn({
+                    databaseId,
+                    tableId,
+                    key: 'age',
+                    required: false,
+                    min: 18,
+                    max: 80
+                }),
+                client.tablesDB.createStringColumn({
+                    databaseId,
+                    tableId,
+                    key: 'city',
+                    size: 100,
+                    required: false
+                }),
+                client.tablesDB.createStringColumn({
+                    databaseId,
+                    tableId,
+                    key: 'description',
+                    size: 1000,
+                    required: false
+                }),
+                client.tablesDB.createBooleanColumn({
+                    databaseId,
+                    tableId,
+                    key: 'active',
+                    required: false
+                }),
+                client.tablesDB.createPointColumn({
+                    databaseId,
+                    tableId,
+                    key: 'location',
+                    required: false
+                }),
+                client.tablesDB.createLineColumn({
+                    databaseId,
+                    tableId,
+                    key: 'route',
+                    required: false
+                })
+            ]);
+        }
+
+        case 'documentsdb': /* doesn't need any fields */
+        case 'vectordb': /* vector embeddings + metadata defined at collection creation */ {
+            /* no individual field creation needed */
+            break;
+        }
+    }
 }
 
 function generateDefaultRecord(
@@ -93,12 +109,17 @@ export function generateFakeRecords(
     field?: Field[]
 ): {
     ids: string[];
-    records: (Models.Document | Models.Row)[];
+    rows: Models.Row[];
 } {
-    if (count <= 0) return { ids: [], records: [] };
+    if (count <= 0) return { ids: [], rows: [] };
 
-    const ids = [];
-    const records = [];
+    const filteredColumns =
+        field?.filter(
+            (column) => column.type !== 'relationship' && column.status === 'available'
+        ) ?? [];
+
+    const ids: string[] = [];
+    const rows: Models.Row[] = [];
 
     for (let i = 0; i < count; i++) {
         const id = ID.unique();
@@ -109,27 +130,19 @@ export function generateFakeRecords(
             string | number | boolean | Array<string | number | boolean | NestedNumberArray>
         >;
 
-        if (type === 'documentsdb') {
+        if (type === 'documentsdb' || filteredColumns.length === 0) {
             record = generateDefaultRecord(id);
         } else {
-            const filteredColumns =
-                field?.filter((col) => col.type !== 'relationship' && col.status === 'available') ??
-                [];
-
-            if (filteredColumns.length === 0) {
-                record = generateDefaultRecord(id);
-            } else {
-                record = { $id: id };
-                for (const column of filteredColumns) {
-                    record[column.key] = generateValueForColumn(column);
-                }
+            record = { $id: id };
+            for (const column of filteredColumns) {
+                record[column.key] = generateValueForField(column);
             }
         }
 
-        records.push(record);
+        rows.push(record as Models.Row);
     }
 
-    return { ids, records };
+    return { ids, rows };
 }
 
 function generateStringValue(key: string, maxLength: number): string {
@@ -154,7 +167,7 @@ function generateStringValue(key: string, maxLength: number): string {
     return text.length <= maxLength ? text : text.substring(0, maxLength);
 }
 
-function generateValueForColumn(
+function generateValueForField(
     field: Field
 ): string | number | boolean | null | Array<string | number | boolean | NestedNumberArray> {
     if (field.array) {

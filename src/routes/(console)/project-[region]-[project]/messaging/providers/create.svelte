@@ -118,6 +118,20 @@
                             enabled: $providerParams[$provider].enabled
                         });
                     break;
+                case Providers.Resend:
+                    response = await sdk
+                        .forProject(page.params.region, page.params.project)
+                        .messaging.createResendProvider({
+                            providerId,
+                            name: $providerParams[$provider].name,
+                            apiKey: $providerParams[$provider].apiKey,
+                            fromName: $providerParams[$provider].fromName || undefined,
+                            fromEmail: $providerParams[$provider].fromEmail,
+                            replyToName: $providerParams[$provider].replyToName || undefined,
+                            replyToEmail: $providerParams[$provider].replyToEmail || undefined,
+                            enabled: $providerParams[$provider].enabled
+                        });
+                    break;
                 case Providers.SMTP:
                     response = await sdk
                         .forProject(page.params.region, page.params.project)

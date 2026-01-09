@@ -14,6 +14,7 @@
     };
     export let title = '';
     export let hideFooter = false;
+    export let backdrop: boolean = true;
 
     let alert: HTMLElement;
 
@@ -29,32 +30,40 @@
 </script>
 
 <Form isModal {onSubmit}>
-    <Modal {size} {title} bind:open={show} {hideFooter} {dismissible}>
-        <slot slot="description" name="description" />
-        {#if error}
-            <div bind:this={alert}>
-                <Alert.Inline
-                    dismissible
-                    status="warning"
-                    on:dismiss={() => {
-                        error = null;
-                    }}>
-                    {error}
-                </Alert.Inline>
-            </div>
-        {/if}
-        <slot />
-        <svelte:fragment slot="footer">
-            <Layout.Stack direction="row" justifyContent="flex-end">
-                <slot name="footer" />
-            </Layout.Stack>
-        </svelte:fragment>
-    </Modal>
+    <div class:modal-no-backdrop={!backdrop}>
+        <Modal {size} {title} bind:open={show} {hideFooter} {dismissible}>
+            <slot slot="description" name="description" />
+            {#if error}
+                <div bind:this={alert}>
+                    <Alert.Inline
+                        dismissible
+                        status="warning"
+                        on:dismiss={() => {
+                            error = null;
+                        }}>
+                        {error}
+                    </Alert.Inline>
+                </div>
+            {/if}
+            <slot />
+            <svelte:fragment slot="footer">
+                <Layout.Stack direction="row" justifyContent="flex-end">
+                    <slot name="footer" />
+                </Layout.Stack>
+            </svelte:fragment>
+        </Modal>
+    </div>
 </Form>
 
 <style>
     /* temporary fix to modal width */
     :global(dialog section) {
         max-width: 100% !important;
+    }
+
+    :global(.modal-no-backdrop dialog::backdrop) {
+        background: transparent;
+        opacity: 0;
+        animation: none;
     }
 </style>

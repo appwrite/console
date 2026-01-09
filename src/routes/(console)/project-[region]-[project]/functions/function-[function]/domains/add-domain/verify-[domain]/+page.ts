@@ -3,18 +3,27 @@ import { isCloud } from '$lib/system';
 import { Dependencies } from '$lib/constants.js';
 import { type Models, Query } from '@appwrite.io/console';
 
-export const load = async ({ depends, parent }) => {
-    const { organization } = await parent();
-    depends(Dependencies.DOMAINS);
+export const load = async ({ depends, parent, params, url }) => {
+    const { function: func, organization } = await parent();
+    depends(Dependencies.FUNCTION_DOMAINS);
 
-    let domainsList: Models.DomainsList;
-    if (isCloud) {
-        domainsList = await sdk.forConsole.domains.list({
-            queries: [Query.equal('teamId', organization.$id)]
-        });
+    const ruleId = url.searchParams.get('rule');
+    if (!ruleId) {
+        throw new Error('Rule ID is required');
     }
 
+    const [proxyRule, domainsList] = await Promise.all([
+        sdk.forProject(params.region, params.project).proxy.getRule({ ruleId }),
+        isCloud
+            ? sdk.forConsole.domains.list({
+                  queries: [Query.equal('teamId', organization.$id)]
+              })
+            : Promise.resolve<Models.DomainsList>({ total: 0, domains: [] })
+    ]);
+
     return {
+        function: func,
+        proxyRule,
         domainsList
     };
 };

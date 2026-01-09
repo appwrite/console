@@ -3,7 +3,13 @@
     import { sdk } from '$lib/stores/sdk';
     import type { PageProps } from './$types';
     import { showCreateColumnSheet } from '$database/table-[table]/store';
-    import { type CreateIndexesCallbackType, Indexes, EmptySheet } from '$database/(entity)';
+    import {
+        type CreateIndexesCallbackType,
+        Indexes,
+        EmptySheet,
+        EmptySheetCards
+    } from '$database/(entity)';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { onDestroy } from 'svelte';
 
     let { data }: PageProps = $props();
@@ -44,25 +50,27 @@
 
 <Indexes {onCreateIndex} {onDeleteIndexes} entity={data.collection}>
     {#snippet emptyIndexesSheetView(toggle)}
-        <EmptySheet
-            mode="indexes"
-            actions={{
-                primary: {
-                    onClick: toggle,
-                    disabled: !data.collection.fields?.length
-                }
-            }} />
+        <EmptySheet mode="indexes">
+            {#snippet actions()}
+                <EmptySheetCards
+                    icon={IconPlus}
+                    title="Create index"
+                    disabled={!data.collection.fields?.length}
+                    subtitle="Create indexes manually"
+                    onClick={toggle} />
+            {/snippet}
+        </EmptySheet>
     {/snippet}
 
     {#snippet emptyEntitiesSheetView(toggle)}
-        <EmptySheet
-            mode="indexes"
-            title="You have no indexes yet"
-            actions={{
-                primary: {
-                    text: 'Create indexes',
-                    onClick: toggle
-                }
-            }} />
+        <EmptySheet mode="indexes" title="You have no indexes yet">
+            {#snippet actions()}
+                <EmptySheetCards
+                    icon={IconPlus}
+                    title="Create indexes"
+                    subtitle="Create indexes manually"
+                    onClick={toggle} />
+            {/snippet}
+        </EmptySheet>
     {/snippet}
 </Indexes>

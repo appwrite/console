@@ -14,6 +14,7 @@
     import type { Column } from '$lib/helpers/types';
     import type { Writable } from 'svelte/store';
     import { TagList } from '.';
+    import { toLocalDateTimeISO } from '$lib/helpers/date';
     import { Icon, Layout } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
@@ -79,7 +80,7 @@
         value = column?.array ? [] : null;
         if (column?.type === 'datetime') {
             const now = new Date();
-            value = now.toISOString().slice(0, 16);
+            value = toLocalDateTimeISO(now.toISOString()).slice(0, 16);
         }
         // Initialize spatial data with default values
         if (column?.type === 'point') {
@@ -108,7 +109,11 @@
         if (isDistanceOperator && distanceValue !== null && value !== null) {
             addFilter(columnsArray, columnId, operatorKey, value, arrayValues, distanceValue);
         } else {
-            addFilter(columnsArray, columnId, operatorKey, value, arrayValues);
+            const preparedValue =
+                column?.type === 'datetime' && typeof value === 'string' && value
+                    ? new Date(value).toISOString()
+                    : value;
+            addFilter(columnsArray, columnId, operatorKey, preparedValue, arrayValues);
         }
 
         columnId = null;

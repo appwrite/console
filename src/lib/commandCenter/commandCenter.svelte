@@ -30,7 +30,12 @@
     import { getContext, setContext } from 'svelte';
     import { get, writable, type Readable } from 'svelte/store';
     import { fade } from 'svelte/transition';
-    import { commandCenterKeyDownHandler, disableCommands, registerCommands } from './commands';
+    import {
+        commandCenterKeyDownHandler,
+        disableCommands,
+        isTargetInputLike,
+        registerCommands
+    } from './commands';
     import { RootPanel } from './panels';
     import { addSubPanel, clearSubPanels, subPanels } from './subPanels';
     import { addNotification } from '$lib/stores/notifications';
@@ -95,21 +100,9 @@
         keys = [];
     }, 1000);
 
-    function isInputEvent(event: KeyboardEvent) {
-        const element = event.target as HTMLElement | null;
-        if (!element) return false;
-
-        const tag = element.tagName;
-        if (['INPUT', 'TEXTAREA', 'SELECT'].includes(tag)) return true;
-
-        // Treat contenteditable and CodeMirror editor as input contexts
-        if (element.isContentEditable) return true;
-        return !!element.closest?.('.cm-editor');
-    }
-
     const handleKeydown = (e: KeyboardEvent) => {
         if (!$subPanels.length) {
-            if (isInputEvent(e)) return;
+            if (isTargetInputLike(e.target)) return;
             keys = [...keys, e.key].slice(-10);
             resetKeys();
         }

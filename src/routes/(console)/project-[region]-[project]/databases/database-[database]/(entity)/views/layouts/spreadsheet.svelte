@@ -151,7 +151,7 @@
                 title={sideSheetOptions?.sideSheetTitle ?? 'Edit document'}>
                 {@render noSqlEditor?.()}
 
-                {#snippet headerEnd()}
+                {#snippet topEndActions()}
                     {@render sideSheetHeaderAction?.()}
                 {/snippet}
             </SideSheet>

@@ -9,17 +9,22 @@
     import { columns } from './store';
     import Table from './table.svelte';
     import type { PageProps } from './$types';
+    import { Icon } from '@appwrite.io/pink-svelte';
     import { registerCommands } from '$lib/commandCenter';
     import { canWriteDatabases } from '$lib/stores/roles';
-    import { Icon } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import EmptySearch from '$lib/components/emptySearch.svelte';
+    import { isServiceLimited } from '$lib/stores/billing';
+    import { organization } from '$lib/stores/organization';
+
     import { resolveRoute, withPath } from '$lib/stores/navigation';
     import EmptyDatabaseCloud from './empty.svelte';
 
     const { data }: PageProps = $props();
 
-    let showCreate = $state(false);
+    const isLimited = $derived(
+        isServiceLimited('databases', $organization?.billingPlan, data.databases.total)
+    );
 
     async function goToCreateDatabaseWizard() {
         await goto(
@@ -32,10 +37,10 @@
             {
                 label: 'Create database',
                 callback: () => {
-                    showCreate = true;
+                    goToCreateDatabaseWizard();
                 },
                 keys: ['c'],
-                disabled: showCreate || !$canWriteDatabases,
+                disabled: !$canWriteDatabases || isLimited,
                 icon: IconPlus,
                 group: 'databases',
                 rank: 10
@@ -51,7 +56,11 @@
         {#if data.view === 'grid'}
             <Grid {data} onCreateDatabaseClick={goToCreateDatabaseWizard} />
         {:else}
-            <Table {data} />
+            <Table
+                entities={data.entities}
+                policies={data.policies}
+                databases={data.databases}
+                lastBackups={data.lastBackups} />
         {/if}
 
         <PaginationWithLimit

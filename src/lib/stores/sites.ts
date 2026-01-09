@@ -26,6 +26,8 @@ export function getFrameworkIcon(framework: string) {
             return 'vite';
         case framework.toLocaleLowerCase().includes('lynx'):
             return 'lynx';
+        case framework.toLocaleLowerCase().includes('tanstack'):
+            return 'tanstack';
         case framework.toLocaleLowerCase().includes('other'):
             return 'empty';
 

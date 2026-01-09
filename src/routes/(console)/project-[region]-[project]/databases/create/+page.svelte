@@ -13,8 +13,7 @@
     import { type DatabaseType, useDatabasesSdk } from '$database/(entity)';
     import { isCloud } from '$lib/system';
     import { upgradeURL } from '$lib/stores/billing';
-    import { BillingPlan } from '$lib/constants';
-    import { organization } from '$lib/stores/organization';
+    import { currentPlan } from '$lib/stores/organization';
     import EmptyDarkMobile from '$lib/images/backups/upgrade/backups-mobile-dark.png';
     import EmptyLightMobile from '$lib/images/backups/upgrade/backups-mobile-light.png';
     import { app } from '$lib/stores/app';
@@ -105,16 +104,14 @@
         const totalPoliciesPromise = totalPolicies.map((policy) => {
             cronExpression(policy);
 
-            return sdk
-                .forProject(page.params.region, page.params.project)
-                .backups.createPolicy(
-                    ID.unique(),
-                    ['databases'],
-                    policy.retained,
-                    policy.schedule,
-                    policy.label,
-                    resourceId
-                );
+            return sdk.forProject(page.params.region, page.params.project).backups.createPolicy({
+                policyId: ID.unique(),
+                services: ['databases'],
+                retention: policy.retained,
+                schedule: policy.schedule,
+                name: policy.label,
+                resourceId
+            });
         });
 
         await Promise.all(totalPoliciesPromise);
@@ -225,7 +222,7 @@
 </Wizard>
 
 {#snippet cloudBackupOptions()}
-    {#if $organization?.billingPlan !== BillingPlan.FREE}
+    {#if $currentPlan?.backupsEnabled}
         <div style:width="100%">
             <CreatePolicy
                 bind:totalPolicies

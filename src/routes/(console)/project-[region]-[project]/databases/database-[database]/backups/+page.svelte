@@ -67,14 +67,15 @@
 
     const createManualBackup = async () => {
         try {
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .backups.createArchive(['databases'], data.database.$id);
+            await sdk.forProject(page.params.region, page.params.project).backups.createArchive({
+                services: ['databases'],
+                resourceId: data.database.$id
+            });
+            await invalidate(Dependencies.BACKUPS);
             addNotification({
                 type: 'success',
                 message: 'Database backup has started'
             });
-            invalidate(Dependencies.BACKUPS);
             trackEvent('click_manual_submit');
             showFeedbackNotification();
         } catch (error) {
@@ -120,16 +121,14 @@
         const totalPoliciesPromise = totalPolicies.map((policy) => {
             cronExpression(policy);
 
-            return sdk
-                .forProject(page.params.region, page.params.project)
-                .backups.createPolicy(
-                    ID.unique(),
-                    ['databases'],
-                    policy.retained,
-                    policy.schedule,
-                    policy.label,
-                    data.database.$id
-                );
+            return sdk.forProject(page.params.region, page.params.project).backups.createPolicy({
+                policyId: ID.unique(),
+                services: ['databases'],
+                retention: policy.retained,
+                schedule: policy.schedule,
+                name: policy.label,
+                resourceId: data.database.$id
+            });
         });
 
         try {
@@ -140,7 +139,6 @@
                     ? `Backup policies have been created`
                     : `<b>${totalPolicies[0].label}</b> policy has been created`;
 
-            // TODO: html isn't yet supported on Toast.
             addNotification({
                 isHtml: true,
                 type: 'success',
@@ -149,7 +147,7 @@
 
             trackEvents(totalPolicies);
 
-            invalidate(Dependencies.BACKUPS);
+            await invalidate(Dependencies.BACKUPS);
             showFeedbackNotification();
         } catch (err) {
             addNotification({
@@ -163,19 +161,14 @@
     };
 
     onMount(() => {
-        return realtime
-            .forProject(page.params.region, page.params.project)
-            .subscribe(['project', 'console'], (response) => {
-                // fast path return.
-                if (!response.channels.includes(`projects.${getProjectId()}`)) return;
+        return realtime.forProject(page.params.region, ['project', 'console'], (response) => {
+            // fast path return.
+            if (!response.channels.includes(`projects.${getProjectId()}`)) return;
 
-                if (
-                    response.events.includes('archives.*') ||
-                    response.events.includes('policies.*')
-                ) {
-                    invalidate(Dependencies.BACKUPS);
-                }
-            });
+            if (response.events.includes('archives.*') || response.events.includes('policies.*')) {
+                invalidate(Dependencies.BACKUPS);
+            }
+        });
     });
 </script>
 
