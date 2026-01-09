@@ -26,7 +26,7 @@
         terminology: TerminologyResult;
     } = $props();
 
-    const entitySingular = terminology.entity.lower.singular;
+    const entitySingular = $derived(terminology.entity.lower.singular);
 
     async function onDelete(batchDelete: DeleteOperation): Promise<DeleteOperationState> {
         const result = await batchDelete((tableId) =>

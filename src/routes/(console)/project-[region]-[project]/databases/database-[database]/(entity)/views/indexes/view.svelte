@@ -216,7 +216,7 @@
                         <Spreadsheet.Header.Cell column="key" {root}>Key</Spreadsheet.Header.Cell>
                         <Spreadsheet.Header.Cell column="type" {root}>Type</Spreadsheet.Header.Cell>
                         <Spreadsheet.Header.Cell column="columns" {root}
-                            >Columns</Spreadsheet.Header.Cell>
+                            >{terminology.field.title.singular}</Spreadsheet.Header.Cell>
                         <!--<Spreadsheet.Header.Cell column="orders" {root}
                             >Orders</Spreadsheet.Header.Cell>-->
                         <Spreadsheet.Header.Cell column="lengths" {root}
