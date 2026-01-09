@@ -5,7 +5,12 @@ import { AppwriteException, type Models } from '@appwrite.io/console';
 import type { Attributes, Collection, Columns, Table } from '$database/store';
 import type { Term, TerminologyResult, TerminologyShape } from '$database/(entity)/helpers/types';
 
+type BaseTerminology = typeof baseTerminology;
+type ImplementedDBTypes = Omit<BaseTerminology, 'vectordb' | 'legacy'>;
+
 export type DatabaseType = 'legacy' | 'tablesdb' | 'documentsdb' | 'vectordb';
+
+export type RecordType = ImplementedDBTypes[keyof ImplementedDBTypes]['record'];
 
 export type Entity = Partial<Collection | Table> & {
     indexes?: Index[];

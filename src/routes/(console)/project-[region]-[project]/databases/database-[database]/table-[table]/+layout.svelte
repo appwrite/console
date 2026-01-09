@@ -65,7 +65,8 @@
     import { addNotification } from '$lib/stores/notifications';
     import { hash } from '$lib/helpers/string';
     import { preferences } from '$lib/stores/preferences';
-    import { buildFieldUrl, isRelationship } from '$database/table-[table]/rows/store';
+    import { buildFieldUrl } from '$database/(entity)/helpers/navigation';
+    import { isRelationship } from '$database/table-[table]/rows/store';
     import { chunks } from '$lib/helpers/array';
     import { Submit, trackEvent } from '$lib/actions/analytics';
     import {

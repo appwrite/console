@@ -12,7 +12,6 @@
     import { type ComponentType, onDestroy, onMount } from 'svelte';
     import type { PageData } from './$types';
     import {
-        buildFieldUrl,
         isRelationship,
         isRelationshipToMany,
         isSpatialType,
@@ -36,6 +35,7 @@
         databaseRelatedRowSheetOptions,
         rowPermissionSheet
     } from '$database/table-[table]/store';
+    import { buildFieldUrl } from '$database/(entity)/helpers/navigation';
     import type { Column, ColumnType } from '$lib/helpers/types';
     import {
         Alert,

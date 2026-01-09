@@ -1,4 +1,3 @@
-import { page } from '$app/state';
 import type { Field } from '$database/(entity)';
 import type { Column } from '$lib/helpers/types';
 import { type Models } from '@appwrite.io/console';
@@ -44,8 +43,4 @@ export function isSpatialType(
     const spatialTypes = ['point', 'linestring', 'polygon'];
 
     return spatialTypes.includes(field.type.toLowerCase());
-}
-
-export function buildFieldUrl(recordType: 'row' | 'document', recordId: string) {
-    return `${page.url}/${recordType}-${recordId}`;
 }
