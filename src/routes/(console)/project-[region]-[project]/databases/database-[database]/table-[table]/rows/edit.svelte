@@ -118,10 +118,6 @@
 
         if (isRelationship(column)) {
             if (isRelationshipToMany(column as Models.ColumnRelationship)) {
-                if (!Array.isArray(workColumn) || !Array.isArray(currentColumn)) {
-                    return workColumn === currentColumn;
-                }
-
                 const workIds = workColumn.map((doc: string | Record<string, unknown>) =>
                     typeof doc === 'string' ? doc : doc.$id
                 );
@@ -146,20 +142,11 @@
         if (!row || !work) return;
 
         try {
-            const data = $table?.columns?.length
-                ? $table.columns.reduce((acc, column) => {
-                      if (!compareColumns(column, $work, row)) {
-                          acc[column.key] = $work?.[column.key];
-                      }
-                      return acc;
-                  }, {} as Record<string, unknown>)
-                : { ...$work };
-
             await sdk.forProject(page.params.region, page.params.project).tablesDB.updateRow({
                 databaseId,
                 tableId,
                 rowId: row.$id,
-                data,
+                data: $work,
                 permissions: $work.$permissions
             });
 
