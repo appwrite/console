@@ -54,7 +54,7 @@
                     }
 
                     if (isReady && isFinished) {
-                        clearInterval(skipScreenshotTimeout);
+                        clearTimeout(skipScreenshotTimeout);
                         goToFinishScreen();
                     }
                 }
