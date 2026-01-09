@@ -26,14 +26,7 @@
     let { data }: PageProps = $props();
 
     let deployment = $derived(data.deployment);
-    let effectiveStatus = $derived(
-        getEffectiveBuildStatus(
-            deployment.status,
-            deployment.$createdAt,
-            [deployment.screenshotLight, deployment.screenshotDark],
-            $regionalConsoleVariables
-        )
-    );
+    let effectiveStatus = $derived(getEffectiveBuildStatus(deployment, $regionalConsoleVariables));
 
     let showRedeploy = $state(false);
     let showActivate = $state(false);

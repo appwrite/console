@@ -20,14 +20,7 @@
     let deployment = $state(data.deployment);
     let skipScreenshotInterval: ReturnType<typeof setInterval> | null = $state(null);
 
-    let effectiveStatus = $derived(
-        getEffectiveBuildStatus(
-            deployment.status,
-            deployment.$createdAt,
-            [deployment.screenshotLight, deployment.screenshotDark],
-            $regionalConsoleVariables
-        )
-    );
+    let effectiveStatus = $derived(getEffectiveBuildStatus(deployment, $regionalConsoleVariables));
 
     onMount(() => {
         const intervalCleanup = () => {

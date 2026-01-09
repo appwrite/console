@@ -95,9 +95,7 @@
     {#snippet children(root)}
         {#each data.deploymentList.deployments as deployment (deployment.$id)}
             {@const effectiveStatus = getEffectiveBuildStatus(
-                deployment.status,
-                deployment.$createdAt,
-                [deployment.screenshotLight, deployment.screenshotDark],
+                deployment,
                 $regionalConsoleVariables
             )}
             <Table.Row.Link

@@ -73,11 +73,8 @@
                         <Id value={deployment.$id}>{deployment.$id}</Id>
                     </Table.Cell>
                     <Table.Cell {root}>
-                        {@const status = deployment.status}
                         {@const effectiveStatus = getEffectiveBuildStatus(
-                            status,
-                            deployment.$createdAt,
-                            [deployment.screenshotLight, deployment.screenshotDark],
+                            deployment,
                             $regionalConsoleVariables
                         )}
                         {#if activeDeployment?.$id === deployment?.$id}

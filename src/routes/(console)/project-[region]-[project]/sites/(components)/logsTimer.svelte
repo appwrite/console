@@ -7,16 +7,9 @@
 
     import { Layout, Spinner, Typography } from '@appwrite.io/pink-svelte';
 
-    let { status, deployment }: { status: string; deployment: Models.Deployment } = $props();
+    let { deployment }: { status: string; deployment: Models.Deployment } = $props();
 
-    let effectiveStatus = $derived(
-        getEffectiveBuildStatus(
-            status,
-            deployment.$createdAt,
-            [deployment.screenshotLight, deployment.screenshotDark],
-            $regionalConsoleVariables
-        )
-    );
+    let effectiveStatus = $derived(getEffectiveBuildStatus(deployment, $regionalConsoleVariables));
 </script>
 
 <Layout.Stack direction="row" alignItems="center" inline>
