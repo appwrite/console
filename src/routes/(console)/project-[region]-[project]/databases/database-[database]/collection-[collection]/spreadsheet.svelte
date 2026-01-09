@@ -359,8 +359,8 @@
         }
 
         if (action === 'delete') {
-            // showDelete = true;
-            // selectedRowForDelete = document.$id;
+            selectedDocumentForDelete = document.$id;
+            showDelete = true;
         }
 
         if (action === 'activity') {
@@ -776,7 +776,7 @@
 
     <p>
         {#if isSingle}
-            Are you sure you want to delete this row from <b>{collection.name}</b>?
+            Are you sure you want to delete this document from <b>{collection.name}</b>?
         {:else}
             Are you sure you want to delete <b>{selectedDocuments.length}</b>
             {selectedDocuments.length > 1 ? 'documents' : 'document'} from <b>{collection.name}</b>?

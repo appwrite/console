@@ -1,7 +1,13 @@
 import { sdk } from '$lib/stores/sdk';
 import type { Page } from '@sveltejs/kit';
 import type { TerminologyResult } from './types';
-import { type DatabaseType, type Entity, type EntityList, toSupportiveEntity } from './terminology';
+import {
+    type DatabaseType,
+    type Entity,
+    type EntityList,
+    type Record,
+    toSupportiveEntity
+} from './terminology';
 import type { Models } from '@appwrite.io/console';
 
 export type DatabaseSdkResult = {
@@ -32,6 +38,26 @@ export type DatabaseSdkResult = {
         databaseType?: DatabaseType;
     }) => Promise<EntityList>;
     delete: (params: { databaseId: string; databaseType?: DatabaseType }) => Promise<{}>;
+    deleteEntity: (params: {
+        databaseId: string;
+        entityId: string;
+        databaseType?: DatabaseType;
+    }) => Promise<{}>;
+    updateRecord: (params: {
+        databaseId: string;
+        entityId: string;
+        recordId: string;
+        data?: object;
+        permissions?: string[];
+        databaseType?: DatabaseType;
+    }) => Promise<Record>;
+    updateRecordPermissions: (params: {
+        databaseId: string;
+        entityId: string;
+        recordId: string;
+        permissions: string[];
+        databaseType?: DatabaseType;
+    }) => Promise<Record>;
 };
 
 export function useDatabasesSdk(
@@ -164,6 +190,76 @@ export function useDatabasesSdk(
                     return await baseSdk.tablesDB.delete(params);
                 case 'documentsdb':
                     return await baseSdk.documentsDB.delete(params);
+                case 'vectordb':
+                    throw new Error('Database type not supported yet');
+                default:
+                    throw new Error(`Unknown database type`);
+            }
+        },
+
+        async deleteEntity(params) {
+            switch (type ?? params.databaseType) {
+                case 'legacy': /* databases api */
+                case 'tablesdb':
+                    return await baseSdk.tablesDB.deleteTable({
+                        databaseId: params.databaseId,
+                        tableId: params.entityId
+                    });
+                case 'documentsdb':
+                    return await baseSdk.documentsDB.deleteCollection({
+                        databaseId: params.databaseId,
+                        collectionId: params.entityId
+                    });
+                case 'vectordb':
+                    throw new Error('Database type not supported yet');
+                default:
+                    throw new Error(`Unknown database type`);
+            }
+        },
+
+        async updateRecord(params) {
+            switch (type ?? params.databaseType) {
+                case 'legacy': /* databases api */
+                case 'tablesdb':
+                    return await baseSdk.tablesDB.updateRow({
+                        databaseId: params.databaseId,
+                        tableId: params.entityId,
+                        rowId: params.recordId,
+                        data: params.data,
+                        permissions: params.permissions
+                    });
+                case 'documentsdb':
+                    return await baseSdk.documentsDB.updateDocument({
+                        databaseId: params.databaseId,
+                        collectionId: params.entityId,
+                        documentId: params.recordId,
+                        data: params.data,
+                        permissions: params.permissions
+                    });
+                case 'vectordb':
+                    throw new Error('Database type not supported yet');
+                default:
+                    throw new Error(`Unknown database type`);
+            }
+        },
+
+        async updateRecordPermissions(params) {
+            switch (type ?? params.databaseType) {
+                case 'legacy': /* databases api */
+                case 'tablesdb':
+                    return await baseSdk.tablesDB.updateRow({
+                        databaseId: params.databaseId,
+                        tableId: params.entityId,
+                        rowId: params.recordId,
+                        permissions: params.permissions
+                    });
+                case 'documentsdb':
+                    return await baseSdk.documentsDB.updateDocument({
+                        databaseId: params.databaseId,
+                        collectionId: params.entityId,
+                        documentId: params.recordId,
+                        permissions: params.permissions
+                    });
                 case 'vectordb':
                     throw new Error('Database type not supported yet');
                 default:

@@ -1,6 +1,4 @@
 <script lang="ts">
-    import { page } from '$app/state';
-    import { sdk } from '$lib/stores/sdk';
     import { invalidate } from '$app/navigation';
     import { Alert } from '@appwrite.io/pink-svelte';
     import { Permissions } from '$lib/components/permissions';
@@ -28,7 +26,7 @@
 
     let showPermissionAlert = $state(true);
 
-    const { analytics, dependencies, terminology } = getTerminologies();
+    const { analytics, dependencies, terminology, databasesSdk } = getTerminologies();
     const entityTerm = terminology.entity.lower.singular;
     const recordTerm = terminology.record.lower.singular;
 
@@ -43,26 +41,16 @@
         try {
             const { $databaseId: databaseId, $id: recordId, entityId } = toSupportiveRecord(record);
 
-            if (terminology.type === 'documentsdb') {
-                await sdk
-                    .forProject(page.params.region, page.params.project)
-                    .documentsDB.updateDocument({
-                        databaseId,
-                        collectionId: entityId,
-                        documentId: recordId,
-                        permissions
-                    });
-            } else {
-                await sdk.forProject(page.params.region, page.params.project).tablesDB.updateRow({
-                    databaseId,
-                    tableId: entityId,
-                    rowId: recordId,
-                    permissions
-                });
-            }
+            await databasesSdk.updateRecordPermissions({
+                databaseId,
+                entityId,
+                recordId,
+                permissions
+            });
 
+            // TODO: @itznotabug, make suer this doesn't trigger or lose spreadsheet scroll state!
+            await invalidate(dependencies.record.singular);
             arePermsDisabled = true;
-            await invalidate(dependencies.record.plural);
             addNotification({
                 message: 'Permissions have been updated',
                 type: 'success'

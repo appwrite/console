@@ -2,7 +2,6 @@
     import { page } from '$app/state';
     import { sdk } from '$lib/stores/sdk';
     import type { PageProps } from './$types';
-    import { showCreateColumnSheet } from '$database/table-[table]/store';
     import {
         type CreateIndexesCallbackType,
         Indexes,
@@ -10,7 +9,6 @@
         EmptySheetCards
     } from '$database/(entity)';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
-    import { onDestroy } from 'svelte';
 
     let { data }: PageProps = $props();
 
@@ -44,8 +42,6 @@
             )
         );
     }
-
-    onDestroy(() => ($showCreateColumnSheet.show = false));
 </script>
 
 <Indexes {onCreateIndex} {onDeleteIndexes} entity={data.collection}>

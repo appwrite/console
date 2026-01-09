@@ -59,7 +59,7 @@
         $randomDataModalState.onSubmit = async () => await createFakeData();
 
         return realtime.forProject(page.params.region, ['project', 'console'], (response) => {
-            if (response.events.includes('databases.*.collections.*.indexes.*')) {
+            if (response.events.includes('documentsdb.*.collections.*.indexes.*')) {
                 // don't invalidate when -
                 // 1. from faker
                 // 2. ai indexes creation
