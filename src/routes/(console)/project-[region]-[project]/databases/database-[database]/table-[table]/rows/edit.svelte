@@ -118,6 +118,10 @@
 
         if (isRelationship(column)) {
             if (isRelationshipToMany(column as Models.ColumnRelationship)) {
+                if (!Array.isArray(workColumn) || !Array.isArray(currentColumn)) {
+                    return workColumn === currentColumn;
+                }
+
                 const workIds = workColumn.map((doc: string | Record<string, unknown>) =>
                     typeof doc === 'string' ? doc : doc.$id
                 );
