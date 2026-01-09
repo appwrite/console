@@ -26,6 +26,7 @@
         const timeoutCleanup = () => {
             if (skipScreenshotTimeout) {
                 clearTimeout(skipScreenshotTimeout);
+                skipScreenshotTimeout = null;
             }
         };
 
@@ -54,7 +55,11 @@
                     }
 
                     if (isReady && isFinished) {
-                        clearTimeout(skipScreenshotTimeout);
+                        if (skipScreenshotTimeout) {
+                            clearTimeout(skipScreenshotTimeout);
+                            skipScreenshotTimeout = null;
+                        }
+
                         goToFinishScreen();
                     }
                 }

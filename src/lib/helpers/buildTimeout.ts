@@ -27,7 +27,6 @@ export function getEffectiveBuildStatus(
 ): string {
     const originalStatus = deployment.status;
     const createdAt = deployment.$createdAt;
-    const screenshots = [deployment.screenshotLight, deployment.screenshotDark];
 
     const timeoutSeconds = getBuildTimeoutSeconds(consoleVariables);
     if (isBuildTimedOut(createdAt, originalStatus, timeoutSeconds)) {
@@ -35,16 +34,7 @@ export function getEffectiveBuildStatus(
     }
 
     const isReady = originalStatus === 'ready';
-    let hasScreenshot = true;
-    if (screenshots.length === 0) {
-        hasScreenshot = false;
-    }
-    for (const screenshot of screenshots) {
-        if (!screenshot) {
-            hasScreenshot = false;
-            break;
-        }
-    }
+    const hasScreenshot = deployment.screenshotLight && deployment.screenshotDark;
 
     if (isReady && !hasScreenshot) {
         return 'finalizing';
