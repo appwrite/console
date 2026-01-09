@@ -307,8 +307,8 @@
 <div
     data-type={type}
     data-mode={mode}
-    class:custom-columns={customColumns.length > 0}
-    class:no-custom-columns={customColumns.length <= 0}
+    class:custom-columns={spreadsheetColumns.length > 0}
+    class:no-custom-columns={spreadsheetColumns.length <= 0}
     data-loading={$spreadsheetLoading}
     bind:this={spreadsheetContainer}
     class="databases-spreadsheet spreadsheet-container-outer">
@@ -387,7 +387,7 @@
     {#if !$spreadsheetLoading}
         <div
             class="spreadsheet-fade-bottom"
-            class:custom-columns={customColumns.length > 0}
+            class:custom-columns={spreadsheetColumns.length > 0}
             data-collapsed-tabs={!$expandTabs}
             style:--overlay-top={overlayTopOffset}
             style:--overlay-left={overlayLeftOffset}
@@ -498,11 +498,6 @@
             &[data-loading='false'] :global(.skeleton) {
                 animation: none;
             }
-        }
-
-        & :global(.spreadsheet-container) {
-            overflow-x: hidden;
-            overflow-y: hidden;
         }
 
         & :global([data-select='true']) {

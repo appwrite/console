@@ -57,7 +57,6 @@
         type JsonValue,
         NoSqlEditor
     } from '$database/collection-[collection]/(components)/editor';
-
     import { buildFieldUrl } from '$database/(entity)/helpers/navigation';
     import {
         SpreadsheetOptions,

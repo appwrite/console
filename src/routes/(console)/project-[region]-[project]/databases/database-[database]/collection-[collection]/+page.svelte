@@ -46,7 +46,7 @@
 
             addNotification({
                 type: 'success',
-                message: 'Rows import from csv has started'
+                message: 'Documents import from csv has started'
             });
 
             trackEvent(Submit.DatabaseImportCsv);
