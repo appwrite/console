@@ -6,6 +6,7 @@
             case 'ready':
                 return 'success';
             case 'building':
+            case 'finalizing':
                 return 'warning';
             case 'processing':
                 return undefined;
@@ -40,9 +41,7 @@
         emptyCopy?: string;
     } = $props();
 
-    let effectiveStatus = $derived(
-        getEffectiveBuildStatus(deployment.status, deployment.$createdAt, $regionalConsoleVariables)
-    );
+    let effectiveStatus = $derived(getEffectiveBuildStatus(deployment, $regionalConsoleVariables));
 
     function setCopy() {
         if (effectiveStatus === 'failed') {
@@ -73,7 +72,7 @@
                     variant="secondary"
                     type={badgeTypeDeployment(effectiveStatus)} />
             </Layout.Stack>
-            <LogsTimer status={effectiveStatus} {deployment} />
+            <LogsTimer {deployment} />
         </Layout.Stack>
     {/if}
 
