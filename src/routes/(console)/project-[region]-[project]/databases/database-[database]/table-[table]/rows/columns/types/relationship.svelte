@@ -297,7 +297,7 @@
                     <Layout.Stack direction="row">
                         <InputSelect
                             {id}
-                            required={column.required === true}
+                            required={column.required}
                             {options}
                             bind:value={relatedList[0]}
                             placeholder={`Select ${column.key}`}
@@ -316,7 +316,7 @@
                         <Layout.Stack direction="row">
                             <InputSelect
                                 {id}
-                                required={column.required === true}
+                                required={column.required}
                                 autofocus={limited}
                                 options={getAvailableOptions(actualIndex)}
                                 bind:value={relatedList[actualIndex]}
@@ -346,7 +346,7 @@
                         <Layout.Stack direction="row">
                             <InputSelect
                                 {id}
-                                required={column.required === true}
+                                required={column.required}
                                 options={getAvailableOptions(i)}
                                 bind:value={item}
                                 on:change={updateRelatedList}
@@ -376,7 +376,7 @@
                         <Layout.Stack direction="row">
                             <Input.ComboBox
                                 {id}
-                                required={column.required === true}
+                                required={column.required}
                                 on:change={addNewItem}
                                 bind:value={newItemValue}
                                 options={availableOptions}
@@ -417,7 +417,7 @@
                     {options}
                     autofocus={limited}
                     bind:value={newItemValue}
-                    required={column.required === true}
+                    required={column.required}
                     label={limited ? undefined : label}
                     placeholder={`Select ${column.key}`}
                     noResultsOption={searchNoResultsOption}
@@ -444,7 +444,7 @@
                     {options}
                     autofocus={limited}
                     bind:value={newItemValue}
-                    required={column.required === true}
+                    required={column.required}
                     label={limited ? undefined : label}
                     disabled={noOptions}
                     placeholder={noOptions ? 'No related items available' : `Select ${column.key}`}
