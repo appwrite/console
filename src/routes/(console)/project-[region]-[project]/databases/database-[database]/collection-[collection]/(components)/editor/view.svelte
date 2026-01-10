@@ -68,7 +68,6 @@
     } from './helpers/constants';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { ID } from '@appwrite.io/console';
-    import { areObjectsSame } from '$lib/helpers/object';
 
     interface Props {
         isNew?: boolean;
@@ -115,9 +114,7 @@
     // Store the original data to preserve system values
     let originalData = $state<JsonValue>($state.snapshot(data));
 
-    // Check for enable, disable save button.
-    const hasDataChanged = $derived(!areObjectsSame(data, originalData));
-
+    // Check if the update is from editor
     let isUpdatingFromEditor = false;
 
     // Track previous isNew state to detect transitions
@@ -140,6 +137,18 @@
             ? String(data.$id)
             : generatedId
     );
+
+    // Check for enable, disable save button.
+    const hasDataChanged = $derived.by(() => {
+        // Fast path: reference equality
+        if (data === originalData) return false;
+
+        // Use cached serialization
+        const dataStr = serializeData(data);
+        const origStr = serializeData(originalData);
+
+        return dataStr !== origStr;
+    });
 
     // Convert data to formatted JavaScript object notation (no quotes on keys)
     function dataToString(value: JsonValue, indent = 0, key?: string): string {
