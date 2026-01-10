@@ -3,7 +3,23 @@
     export type JsonObject = { [key: string]: JsonValue };
     export type JsonArray = JsonValue[];
 
-    type ParseResult = { ok: true; value: JsonValue } | { ok: false; error: unknown };
+    type ParseResult =
+        | {
+              ok: true;
+              value: JsonValue;
+          }
+        | {
+              ok: false;
+              error: unknown;
+          };
+
+    type Hit = {
+        key: string;
+        valueFrom: number;
+        valueTo: number;
+        lineFrom: number;
+        lineTo: number;
+    };
 </script>
 
 <script lang="ts">
@@ -102,6 +118,7 @@
     let editorView: EditorView | null = null;
     let errorMessage = $state<string | null>(null);
     let changeTimer: ReturnType<typeof setTimeout> | null = null; // debounce timer for parse + onChange
+    let tooltipTimer: ReturnType<typeof setTimeout> | null = null; // timer for tooltip message reset
     let pendingCanonicalize = false; // set when a full-document replace (paste-all) occurs
     let lastExpectedContent = ''; // track latest serialized data to avoid spurious rewrites
     let lastDocId: string | null = null; // track current document identity for history reset
@@ -396,82 +413,279 @@
         return match ? match[1] : '  ';
     }
 
+    // Helper to ensure $createdAt and $updatedAt are positioned at the bottom of the document
+    function ensureTimestampsAtBottom(
+        expectedFields: Array<{ key: '$id' | '$createdAt' | '$updatedAt'; text: string }>,
+        hits: Map<string, Hit>,
+        doc: Text,
+        content: string,
+        closeIdx: number,
+        indent: string
+    ): Array<{ from: number; to: number; insert: string }> {
+        const changes: Array<{ from: number; to: number; insert: string }> = [];
+
+        const createdTxt = expectedFields.find((w) => w.key === '$createdAt')!.text;
+        const updatedTxt = expectedFields.find((w) => w.key === '$updatedAt')!.text;
+
+        // Collect bottom two top-level property keys
+        const keysBottom: string[] = [];
+        let ln = doc.lineAt(closeIdx).number - 1;
+        while (ln > 0 && keysBottom.length < 2) {
+            const L = doc.line(ln);
+            const txt = L.text;
+            const trimmed = txt.trim();
+            if (trimmed.length && trimmed !== '}') {
+                // Only match top-level keys: must start with exactly the top-level indent
+                if (txt.startsWith(indent)) {
+                    const m = txt.match(/^(\s+)([A-Za-z_$][A-Za-z0-9_$]*)\s*:/);
+                    if (m) {
+                        keysBottom.push(m[2]);
+                    }
+                }
+            }
+            ln--;
+        }
+
+        // Check if timestamps are already at the bottom in correct order
+        const atBottom =
+            keysBottom.length >= 2 &&
+            keysBottom[1] === '$createdAt' &&
+            keysBottom[0] === '$updatedAt';
+
+        if (atBottom) {
+            // Already positioned correctly, but check if values need updating
+            const createdHit = hits.get('$createdAt');
+            const updatedHit = hits.get('$updatedAt');
+
+            if (createdHit) {
+                const currentCreated = content
+                    .slice(createdHit.valueFrom, createdHit.valueTo)
+                    .trim();
+                if (currentCreated !== createdTxt) {
+                    changes.push({
+                        from: createdHit.valueFrom,
+                        to: createdHit.valueTo,
+                        insert: createdTxt
+                    });
+                }
+            }
+
+            if (updatedHit) {
+                const currentUpdated = content
+                    .slice(updatedHit.valueFrom, updatedHit.valueTo)
+                    .trim();
+                if (currentUpdated !== updatedTxt) {
+                    changes.push({
+                        from: updatedHit.valueFrom,
+                        to: updatedHit.valueTo,
+                        insert: updatedTxt
+                    });
+                }
+            }
+
+            return changes;
+        }
+
+        // Remove any existing created/updated lines completely (include trailing newline)
+        for (const k of ['$createdAt', '$updatedAt'] as const) {
+            const hit = hits.get(k);
+            if (!hit) continue;
+            let to = hit.lineTo;
+            if (to < content.length && content[to] === '\n') to = to + 1;
+            changes.push({ from: hit.lineFrom, to, insert: '' });
+        }
+
+        // Ensure the current last property (before close) ends with a comma
+        const lastPropLine = doc.lineAt(closeIdx).number - 1;
+        if (lastPropLine > 0) {
+            const L = doc.line(lastPropLine);
+            const txt = L.text;
+            if (txt.trim().length && !/,\s*$/.test(txt)) {
+                changes.push({ from: L.to, to: L.to, insert: ',' });
+            }
+        }
+
+        // Insert createdAt/updatedAt at bottom in order, using preserved values
+        const prefixNL = content[closeIdx - 1] === '\n' ? '' : '\n';
+        const bottomInsert = `${prefixNL}${indent}$createdAt: ${createdTxt},\n${indent}$updatedAt: ${updatedTxt},\n`;
+        changes.push({ from: closeIdx, to: closeIdx, insert: bottomInsert });
+
+        return changes;
+    }
+
+    // Helper to insert missing $id field at the top of the document
+    function createMissingIdInsertion(
+        expectedFields: Array<{ key: '$id' | '$createdAt' | '$updatedAt'; text: string }>,
+        hits: Map<string, Hit>,
+        content: string,
+        openIdx: number,
+        indent: string
+    ): { from: number; to: number; insert: string } | null {
+        const missing = expectedFields.filter(({ key }) => !hits.has(key));
+        const insertId = missing.find((m) => m.key === '$id');
+
+        if (!insertId) return null;
+
+        const firstLineEnd = content.indexOf('\n', openIdx);
+        const insertTopAt = firstLineEnd === -1 ? openIdx + 1 : firstLineEnd + 1;
+        const toInsertTop = `${indent}$id: ${insertId.text},\n`;
+
+        return { from: insertTopAt, to: insertTopAt, insert: toInsertTop };
+    }
+
+    // Fast-path check: verify if system fields already match expected values
+    // Returns true if all fields ($id, $createdAt, $updatedAt) found and match, false otherwise
+    function checkSystemFieldsMatch(
+        content: string,
+        openIdx: number,
+        closeIdx: number,
+        indent: string,
+        expectedFields: Array<{ key: '$id' | '$createdAt' | '$updatedAt'; text: string }>
+    ): boolean {
+        const FAST_CHECK_LINES = 20;
+        const foundValues = new Map<string, string>();
+
+        // Check first `FAST_CHECK_LINES` lines after opening brace for $id
+        let checkPos = openIdx + 1;
+        let linesChecked = 0;
+        while (linesChecked < FAST_CHECK_LINES && checkPos < closeIdx) {
+            const lineEnd = content.indexOf('\n', checkPos);
+            const end = lineEnd === -1 ? closeIdx : Math.min(lineEnd, closeIdx);
+            const line = content.slice(checkPos, end);
+
+            // Only match top-level fields: must start with exactly the top-level indent
+            if (line.startsWith(indent)) {
+                const afterIndent = line.slice(indent.length);
+                if (afterIndent.startsWith('$id')) {
+                    const match = afterIndent.match(/^\$id\s*:\s*(.+?)(?:,|$)/);
+                    if (match) {
+                        foundValues.set('$id', match[1].trim());
+                        break;
+                    }
+                }
+            }
+
+            if (lineEnd === -1 || end === closeIdx) break;
+            checkPos = end + 1;
+            linesChecked++;
+        }
+
+        // Check last `FAST_CHECK_LINES` lines before closing brace for $createdAt/$updatedAt
+        const lines: string[] = [];
+        let searchPos = closeIdx - 1;
+        while (lines.length < FAST_CHECK_LINES && searchPos > openIdx) {
+            const lineStart = content.lastIndexOf('\n', searchPos - 1);
+            const start = lineStart === -1 ? openIdx + 1 : lineStart + 1;
+            const lineContent = content.slice(start, searchPos + 1);
+            lines.push(lineContent);
+            searchPos = start - 2;
+        }
+
+        for (const line of lines) {
+            // Only match top-level fields: must start with exactly the top-level indent
+            if (!line.startsWith(indent)) continue;
+
+            const afterIndent = line.slice(indent.length);
+            if (afterIndent.startsWith('$createdAt')) {
+                const createdMatch = afterIndent.match(/^\$createdAt\s*:\s*(.+?)(?:,|$)/);
+                if (createdMatch) {
+                    foundValues.set('$createdAt', createdMatch[1].trim());
+                }
+            }
+            if (afterIndent.startsWith('$updatedAt')) {
+                const updatedMatch = afterIndent.match(/^\$updatedAt\s*:\s*(.+?)(?:,|$)/);
+                if (updatedMatch) {
+                    foundValues.set('$updatedAt', updatedMatch[1].trim());
+                }
+            }
+        }
+
+        // If all 3 found and values match expected, return true
+        if (foundValues.size === 3) {
+            return expectedFields.every(({ key, text }) => foundValues.get(key) === text);
+        }
+
+        return false;
+    }
+
     // In-place patch: ensure top-level $ system fields reflect originals without reformatting the whole doc
     function applySystemFieldsPatch(view: EditorView, doc: Text, parsed: JsonValue): boolean {
         if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return false;
         const obj = parsed as JsonObject;
-        const want: Array<{ key: '$id' | '$createdAt' | '$updatedAt'; text: string }> = [
+        const expectedFields: Array<{ key: '$id' | '$createdAt' | '$updatedAt'; text: string }> = [
             { key: '$id', text: dataToString(obj.$id ?? null) },
             { key: '$createdAt', text: dataToString(obj.$createdAt ?? null) },
             { key: '$updatedAt', text: dataToString(obj.$updatedAt ?? null) }
         ];
 
-        const s = doc.toString();
-        const openIdx = s.indexOf('{');
-        const closeIdx = s.lastIndexOf('}');
+        const content = doc.toString();
+        const openIdx = content.indexOf('{');
+        const closeIdx = content.lastIndexOf('}');
         if (openIdx === -1 || closeIdx === -1 || closeIdx <= openIdx) return false;
 
-        const indent = detectIndentation(s, openIdx, closeIdx);
+        const indent = detectIndentation(content, openIdx, closeIdx);
 
-        type Hit = {
-            key: string;
-            valueFrom: number;
-            valueTo: number;
-            lineFrom: number;
-            lineTo: number;
-        };
+        // Fast path: check if system fields already match expected values
+        if (checkSystemFieldsMatch(content, openIdx, closeIdx, indent, expectedFields)) {
+            return false; // Early exit - values already correct
+        }
+
+        // Values differ or not all found - proceed with full scan
         const hits = new Map<string, Hit>();
 
         // Scan lines between top-level braces to find existing $ fields at the start of a line
         let pos = openIdx + 1;
         while (pos < closeIdx) {
-            const lineEnd = s.indexOf('\n', pos);
+            const lineEnd = content.indexOf('\n', pos);
             const end = lineEnd === -1 ? closeIdx : Math.min(lineEnd, closeIdx);
             const lineFrom = pos;
             const lineTo = end;
-            const line = s.slice(lineFrom, lineTo);
-            const trimmed = line.trimStart();
-            const leading = line.length - trimmed.length;
-            if (leading >= indent.length && trimmed.startsWith('$')) {
-                const keyMatch = trimmed.match(/^(\$id|\$createdAt|\$updatedAt)\s*:\s*/);
-                if (keyMatch) {
-                    const key = keyMatch[1];
-                    const valStartRel = keyMatch[0].length;
-                    const absValStart = lineFrom + leading + valStartRel;
-                    // Find value end on this line (up to comma or end brace)
-                    let absValEnd = absValStart;
-                    if (s[absValStart] === '"' || s[absValStart] === "'") {
-                        const quote = s[absValStart];
-                        let i = absValStart + 1;
-                        while (i < lineTo) {
-                            const ch = s[i];
-                            if (ch === '\\') {
-                                i += 2;
-                                continue;
+            const line = content.slice(lineFrom, lineTo);
+
+            // Only match top-level fields: must start with exactly the top-level indent
+            if (line.startsWith(indent)) {
+                const afterIndent = line.slice(indent.length);
+                if (afterIndent.startsWith('$')) {
+                    const keyMatch = afterIndent.match(/^(\$id|\$createdAt|\$updatedAt)\s*:\s*/);
+                    if (keyMatch) {
+                        const key = keyMatch[1];
+                        const valStartRel = keyMatch[0].length;
+                        const absValStart = lineFrom + indent.length + valStartRel;
+                        // Find value end on this line (up to comma or end brace)
+                        let absValEnd = absValStart;
+                        if (content[absValStart] === '"' || content[absValStart] === "'") {
+                            const quote = content[absValStart];
+                            let i = absValStart + 1;
+                            while (i < lineTo) {
+                                const ch = content[i];
+                                if (ch === '\\') {
+                                    i += 2;
+                                    continue;
+                                }
+                                if (ch === quote) {
+                                    absValEnd = i + 1;
+                                    break;
+                                }
+                                i++;
                             }
-                            if (ch === quote) {
-                                absValEnd = i + 1;
-                                break;
+                            if (absValEnd === absValStart) {
+                                // fallback: to line end
+                                absValEnd = lineTo;
                             }
-                            i++;
+                        } else {
+                            // number/bool/null until comma or end
+                            let i = absValStart;
+                            while (i < lineTo && !/[,}]/.test(content[i])) i++;
+                            absValEnd = i;
                         }
-                        if (absValEnd === absValStart) {
-                            // fallback: to line end
-                            absValEnd = lineTo;
-                        }
-                    } else {
-                        // number/bool/null until comma or end
-                        let i = absValStart;
-                        while (i < lineTo && !/[,}]/.test(s[i])) i++;
-                        absValEnd = i;
+                        hits.set(key, {
+                            key,
+                            valueFrom: absValStart,
+                            valueTo: absValEnd,
+                            lineFrom,
+                            lineTo
+                        });
                     }
-                    hits.set(key, {
-                        key,
-                        valueFrom: absValStart,
-                        valueTo: absValEnd,
-                        lineFrom,
-                        lineTo
-                    });
                 }
             }
             if (lineEnd === -1 || end === closeIdx) break;
@@ -480,80 +694,40 @@
 
         const changes: { from: number; to: number; insert: string }[] = [];
 
-        // Replace existing values; skip created/updated if we plan to move them to bottom
-        const willMoveBottom = hits.has('$createdAt') || hits.has('$updatedAt');
-        for (const { key, text } of want) {
-            if (willMoveBottom && (key === '$createdAt' || key === '$updatedAt')) continue;
+        // Replace existing values; skip timestamps as they're handled by ensureTimestampsAtBottom
+        for (const { key, text } of expectedFields) {
+            if (key === '$createdAt' || key === '$updatedAt') continue;
             const hit = hits.get(key);
             if (hit) {
-                const current = s.slice(hit.valueFrom, hit.valueTo).trim();
+                const current = content.slice(hit.valueFrom, hit.valueTo).trim();
                 if (current !== text) {
                     changes.push({ from: hit.valueFrom, to: hit.valueTo, insert: text });
                 }
             }
         }
 
-        // If createdAt/updatedAt exist (or even if one is missing), ensure they are bottom-most in order
-        if (willMoveBottom) {
-            // Collect bottom two top-level property keys
-            const keysBottom: string[] = [];
-            let ln = doc.lineAt(closeIdx).number - 1;
-            while (ln > 0 && keysBottom.length < 2) {
-                const L = doc.line(ln);
-                const txt = L.text;
-                const trimmed = txt.trim();
-                if (trimmed.length && trimmed !== '}') {
-                    const m = txt.match(/^(\s+)([A-Za-z_$][A-Za-z0-9_$]*)\s*:/);
-                    if (m && m[1].length >= indent.length) {
-                        keysBottom.push(m[2]);
-                    }
-                }
-                ln--;
-            }
-            const atBottom =
-                keysBottom.length >= 2 &&
-                keysBottom[1] === '$createdAt' &&
-                keysBottom[0] === '$updatedAt';
-
-            if (!atBottom) {
-                // Remove any existing created/updated lines completely (include trailing newline)
-                for (const k of ['$createdAt', '$updatedAt'] as const) {
-                    const hit = hits.get(k);
-                    if (!hit) continue;
-                    let to = hit.lineTo;
-                    if (to < s.length && s[to] === '\n') to = to + 1;
-                    changes.push({ from: hit.lineFrom, to, insert: '' });
-                }
-
-                // Ensure the current last property (before close) ends with a comma
-                const lastPropLine = doc.lineAt(closeIdx).number - 1;
-                if (lastPropLine > 0) {
-                    const L = doc.line(lastPropLine);
-                    const txt = L.text;
-                    if (txt.trim().length && !/,\s*$/.test(txt)) {
-                        changes.push({ from: L.to, to: L.to, insert: ',' });
-                    }
-                }
-
-                // Insert createdAt/updatedAt at bottom in order, using preserved values
-                const createdTxt = want.find((w) => w.key === '$createdAt')!.text;
-                const updatedTxt = want.find((w) => w.key === '$updatedAt')!.text;
-                const prefixNL = s[closeIdx - 1] === '\n' ? '' : '\n';
-                const bottomInsert = `${prefixNL}${indent}$createdAt: ${createdTxt},\n${indent}$updatedAt: ${updatedTxt},\n`;
-                changes.push({ from: closeIdx, to: closeIdx, insert: bottomInsert });
-            }
-        }
+        // Ensure createdAt/updatedAt are at the bottom with correct values
+        const timestampChanges = ensureTimestampsAtBottom(
+            expectedFields,
+            hits,
+            doc,
+            content,
+            closeIdx,
+            indent
+        );
+        changes.push(...timestampChanges);
 
         // Insert missing $id at top (timestamps handled by bottom move block)
-        {
-            const missing = want.filter(({ key }) => !hits.has(key));
-            const insertId = missing.find((m) => m.key === '$id');
-            if (insertId) {
-                const firstLineEnd = s.indexOf('\n', openIdx);
-                const insertTopAt = firstLineEnd === -1 ? openIdx + 1 : firstLineEnd + 1;
-                const toInsertTop = `${indent}$id: ${insertId.text},\n`;
-                changes.push({ from: insertTopAt, to: insertTopAt, insert: toInsertTop });
-            }
+        const idInsertion = createMissingIdInsertion(
+            expectedFields,
+            hits,
+            content,
+            openIdx,
+            indent
+        );
+
+        if (idInsertion) {
+            changes.push(idInsertion);
         }
 
         if (!changes.length) return false;
@@ -871,6 +1045,10 @@
             clearTimeout(changeTimer);
             changeTimer = null;
         }
+        if (tooltipTimer) {
+            clearTimeout(tooltipTimer);
+            tooltipTimer = null;
+        }
         lastParseContent = '';
         lastParsePromise = null;
         lastSerializedData = null;
@@ -1014,7 +1192,14 @@
                             on:click={async () => {
                                 await copy(JSON.stringify(data, null, 2));
                                 tooltipMessage = 'Copied';
-                                setTimeout(() => (tooltipMessage = 'Copy document'), 1000);
+                                if (tooltipTimer) {
+                                    clearTimeout(tooltipTimer);
+                                }
+
+                                tooltipTimer = setTimeout(() => {
+                                    tooltipMessage = 'Copy document';
+                                    tooltipTimer = null;
+                                }, 1000);
                             }}>
                             <Icon icon={IconDuplicate} size="s" />
                         </Button>
