@@ -13,11 +13,6 @@ import { ProfileMode, resolvedProfile } from '$lib/profiles/index.svelte';
 export const load: PageLoad = async ({ parent }) => {
     const { account, organizations } = await parent();
 
-    /* short circuit and redirect */
-    if (resolvedProfile.id === ProfileMode.STUDIO) {
-        redirect(303, resolve('/'));
-    }
-
     const firstOrganization = organizations?.teams[0]?.$id;
     if (!resolvedProfile.showOnboarding) {
         if (!organizations?.total) {
