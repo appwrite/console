@@ -7,7 +7,7 @@ import { ID, Query, type Models } from '@appwrite.io/console';
 import { BillingPlan } from '$lib/constants';
 import { redirect } from '@sveltejs/kit';
 import { base, resolve } from '$app/paths';
-import { ProfileMode, resolvedProfile } from '$lib/profiles/index.svelte';
+import { resolvedProfile } from '$lib/profiles/index.svelte';
 
 // TODO: this needs to be cleaned up!
 export const load: PageLoad = async ({ parent }) => {
