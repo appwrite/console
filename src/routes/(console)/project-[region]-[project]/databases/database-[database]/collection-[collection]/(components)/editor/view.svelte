@@ -128,6 +128,7 @@
     let lastParsePromise: Promise<ParseResult> | null = null;
 
     // Serialized data cache
+    let originalSerialized = '';
     let lastSerializedText = '';
     let lastSerializedData: JsonValue | null = null;
 
@@ -143,11 +144,8 @@
         // Fast path: reference equality
         if (data === originalData) return false;
 
-        // Use cached serialization
-        const dataStr = serializeData(data);
-        const origStr = serializeData(originalData);
-
-        return dataStr !== origStr;
+        // Compare current data
+        return serializeData(data) !== originalSerialized;
     });
 
     // Convert data to formatted JavaScript object notation (no quotes on keys)
@@ -384,6 +382,20 @@
         return did;
     }
 
+    // Detect indentation from first line after opening brace
+    function detectIndentation(content: string, openIdx: number, closeIdx: number): string {
+        const afterOpenNL = content.indexOf('\n', openIdx);
+        if (afterOpenNL === -1) return '  ';
+
+        const lineStart = afterOpenNL + 1;
+        const lineEnd =
+            content.indexOf('\n', lineStart) === -1 ? closeIdx : content.indexOf('\n', lineStart);
+        const line = content.slice(lineStart, lineEnd);
+        const match = line.match(/^(\s+)/);
+
+        return match ? match[1] : '  ';
+    }
+
     // In-place patch: ensure top-level $ system fields reflect originals without reformatting the whole doc
     function applySystemFieldsPatch(view: EditorView, doc: Text, parsed: JsonValue): boolean {
         if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return false;
@@ -399,19 +411,7 @@
         const closeIdx = s.lastIndexOf('}');
         if (openIdx === -1 || closeIdx === -1 || closeIdx <= openIdx) return false;
 
-        // Determine indentation for top-level props
-        let indent = '  ';
-        {
-            const afterOpenNL = s.indexOf('\n', openIdx);
-            if (afterOpenNL !== -1) {
-                const lineStart = afterOpenNL + 1;
-                const lineEnd =
-                    s.indexOf('\n', lineStart) === -1 ? closeIdx : s.indexOf('\n', lineStart);
-                const line = s.slice(lineStart, lineEnd);
-                const m = line.match(/^(\s+)/);
-                if (m) indent = m[1];
-            }
-        }
+        const indent = detectIndentation(s, openIdx, closeIdx);
 
         type Hit = {
             key: string;
@@ -955,6 +955,11 @@
         editorView.dispatch({
             effects: wrapCompartment.reconfigure(wrapLines ? EditorView.lineWrapping : [])
         });
+    });
+
+    // Cache serialized data for improved comparison in `hasDataChanged`
+    $effect(() => {
+        originalSerialized = serializeData(originalData);
     });
 </script>
 
