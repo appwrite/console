@@ -98,9 +98,9 @@
     $effect(() => {
         if (adapter === Adapter.Static) {
             if (!fallback) {
-                fallback ||= selectedFramework.adapters.find(
-                    (a) => a.key === Adapter.Static
-                ).fallbackFile;
+                fallback ||=
+                    selectedFramework.adapters.find((a) => a.key === Adapter.Static)
+                        ?.fallbackFile || 'index.html';
             }
         }
     });
