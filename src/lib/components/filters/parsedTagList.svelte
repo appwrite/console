@@ -278,10 +278,6 @@
         {/if}
     {/key}
 
-    {#if filterCols?.length}
-        <QuickFilters {columns} {analyticsSource} {filterCols} />
-    {/if}
-
     {#if $parsedTags?.length}
         <Button
             size="s"
@@ -291,5 +287,9 @@
                 queries.apply();
                 parsedTags.set([]);
             }}>Clear all</Button>
+    {/if}
+
+    {#if filterCols?.length}
+        <QuickFilters {columns} {analyticsSource} {filterCols} />
     {/if}
 </Layout.Stack>

@@ -173,7 +173,7 @@
 {/snippet}
 
 {#snippet filtersButton(icon = false)}
-    <Button ariaLabel="Filters" on:click={() => (showFilters = !showFilters)} secondary {icon}>
+    <Button ariaLabel="Filters" on:click={() => (showFilters = !showFilters)} text {icon}>
         <Icon icon={IconFilterLine} />
     </Button>
 {/snippet}

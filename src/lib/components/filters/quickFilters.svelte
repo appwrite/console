@@ -24,7 +24,7 @@
 <Menu>
     <Button
         ariaLabel="Filters"
-        secondary
+        text
         icon
         badge={$parsedTags?.length ? `${$parsedTags.length}` : undefined}>
         <Icon icon={IconFilterLine} size="s" />
