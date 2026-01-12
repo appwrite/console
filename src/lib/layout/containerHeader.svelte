@@ -63,10 +63,10 @@
     $: planName = $organization?.billingPlanDetails?.name;
     // these can be organization level limitations as well.
     // we need to migrate this sometime later, but soon!
-    $: hasProjectLimitation = checkForProjectLimitation($organization?.billingPlan, serviceId);
+    $: hasProjectLimitation = checkForProjectLimitation($organization?.billingPlanId, serviceId);
 
     $: hasUsageFees = hasProjectLimitation
-        ? checkForUsageFees($organization?.billingPlan, serviceId)
+        ? checkForUsageFees($organization?.billingPlanId, serviceId)
         : false;
 
     $: isLimited = limit !== 0 && limit < Infinity;
@@ -160,7 +160,7 @@
                             <p class="text">
                                 You are limited to {limit}
                                 {title.toLocaleLowerCase()} per project on the {planName} plan.
-                                {#if canUpgrade($organization.billingPlan)}<Link
+                                {#if canUpgrade($organization.billingPlanId)}<Link
                                         href={$upgradeURL}
                                         event="organization_upgrade"
                                         eventData={{ from: 'button', source: 'resource_limit_tag' }}
@@ -180,7 +180,7 @@
                             <p class="text">
                                 You are limited to {limit}
                                 {title.toLocaleLowerCase()} per organization on the {planName} plan.
-                                {#if canUpgrade($organization.billingPlan)}
+                                {#if canUpgrade($organization.billingPlanId)}
                                     <Link href={$upgradeURL}>Upgrade</Link>
                                     for additional {title.toLocaleLowerCase()}.
                                 {/if}

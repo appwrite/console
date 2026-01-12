@@ -32,7 +32,11 @@
         );
     }
 
-    $: isLimited = isServiceLimited('databases', $organization?.billingPlan, data.databases.total);
+    $: isLimited = isServiceLimited(
+        'databases',
+        $organization?.billingPlanId,
+        data.databases.total
+    );
 
     $: $registerCommands([
         {

@@ -157,7 +157,7 @@
                 (option) => option.value === feedbackDowngradeReason
             )?.label,
             message: feedbackMessage ?? '',
-            fromPlanId: data.organization.billingPlan,
+            fromPlanId: data.organization.billingPlanId,
             toPlanId: selectedPlan.$id
         });
     }
@@ -310,7 +310,7 @@
     $: isUpgrade = selectedPlan.order > $currentPlan?.order;
     $: isDowngrade = selectedPlan.order < $currentPlan?.order;
     $: isButtonDisabled =
-        $organization?.billingPlan === selectedPlan.$id ||
+        $organization?.billingPlanId === selectedPlan.$id ||
         (isDowngrade && selectedPlan.group === BillingPlanGroup.Starter && data.hasFreeOrgs);
 </script>
 
@@ -466,7 +466,7 @@
         </Layout.Stack>
     </Form>
     <svelte:fragment slot="aside">
-        {#if selectedPlan.group !== BillingPlanGroup.Starter && data.organization.billingPlan !== selectedPlan.group && !data.organization.billingPlanDetails.selfService}
+        {#if selectedPlan.group !== BillingPlanGroup.Starter && data.organization.billingPlanId !== selectedPlan.group && !data.organization.billingPlanDetails.selfService}
             <EstimatedTotalBox
                 {collaborators}
                 {isDowngrade}

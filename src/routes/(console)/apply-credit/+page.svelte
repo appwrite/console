@@ -149,7 +149,7 @@
             }
 
             // Upgrade existing org
-            else if (selectedOrg?.billingPlan !== billingPlan.$id && isUpgrade()) {
+            else if (selectedOrg?.billingPlanId !== billingPlan.$id && isUpgrade()) {
                 org = await sdk.forConsole.organizations.updatePlan({
                     organizationId: selectedOrg.$id,
                     billingPlan: billingPlan.$id,
@@ -367,7 +367,7 @@
         </Form>
     </Layout.Stack>
     <svelte:fragment slot="aside">
-        {#if selectedOrg?.$id && selectedOrg?.billingPlan === billingPlan.$id}
+        {#if selectedOrg?.$id && selectedOrg?.billingPlanId === billingPlan.$id}
             <section
                 class="card"
                 style:--p-card-padding="1.5rem"

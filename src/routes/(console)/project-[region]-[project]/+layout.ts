@@ -25,7 +25,7 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
     );
 
     // organization can be null if not in the filtered list!
-    const includedInBasePlans = plansInfo.has(organization?.billingPlan);
+    const includedInBasePlans = plansInfo.has(organization?.billingPlanId);
 
     const [org, regionalConsoleVariables, rolesResult] = await Promise.all([
         !organization
@@ -58,7 +58,7 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
     // fetch if not available in `plansInfo`.
     // out of promise.all because we filter orgs based on platform now!
     const organizationPlan = includedInBasePlans
-        ? plansInfo.get(organization?.billingPlan)
+        ? plansInfo.get(organization?.billingPlanId)
         : isCloud
           ? await sdk.forConsole.organizations.getPlan({
                 organizationId: organization?.$id
@@ -86,7 +86,7 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
 
     if (!includedInBasePlans) {
         // save the custom plan to `plansInfo` cache.
-        plansInfo.set(organization.billingPlan, organizationPlan);
+        plansInfo.set(organization.billingPlanId, organizationPlan);
     }
 
     return {

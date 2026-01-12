@@ -79,7 +79,7 @@
                     bind:value={specification} />
 
                 <!-- always show upgrade on starters -->
-                {@const isStarter = isStarterPlan($organization.billingPlan)}
+                {@const isStarter = isStarterPlan($organization.billingPlanId)}
                 {#if isStarter}
                     <Input.Helper state="default">
                         <Link href={$upgradeURL} variant="muted">Upgrade</Link> your plan to adjust your

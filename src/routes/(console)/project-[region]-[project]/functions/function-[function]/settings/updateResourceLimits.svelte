@@ -91,7 +91,7 @@
                 {options} />
 
             <!-- always show upgrade on starters -->
-            {@const isStarter = isStarterPlan($organization.billingPlan)}
+            {@const isStarter = isStarterPlan($organization.billingPlanId)}
             {#if isCloud && isStarter}
                 <Alert.Inline title="Customizing specs available with Pro or Scale plans">
                     Upgrade your plan to adjust your CPU and RAM beyond the default.

@@ -114,7 +114,7 @@
                 {@const avatarList = getMemberships(organization.$id)}
                 {@const payingOrg = isPayingOrganization(organization)}
                 {@const planName = isCloudOrg(organization)
-                    ? getPlanName(organization.billingPlan)
+                    ? getPlanName(organization.billingPlanId)
                     : null}
 
                 <GridItem1 href={`${base}/organization-${organization.$id}`}>

@@ -12,7 +12,7 @@
 
     $: direction = responsive ? ($isSmallViewport ? 'column' : 'row') : 'row';
 
-    $: nextTierBillingPlan = getNextTierBillingPlan($organization.billingPlan);
+    $: nextTierBillingPlan = getNextTierBillingPlan($organization.billingPlanId);
 </script>
 
 <Card.Base variant="secondary" padding="s" radius="s">

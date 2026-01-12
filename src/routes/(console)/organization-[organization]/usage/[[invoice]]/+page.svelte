@@ -29,7 +29,7 @@
 
     const tier = data?.plan
         ? data.plan.$id
-        : (data?.currentInvoice?.plan ?? $organization?.billingPlan);
+        : (data?.currentInvoice?.plan ?? $organization?.billingPlanId);
 
     const plan = data?.plan ?? undefined;
 

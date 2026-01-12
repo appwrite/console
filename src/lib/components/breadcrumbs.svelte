@@ -22,7 +22,7 @@
     import { base } from '$app/paths';
     import { currentPlan, newOrgModal, organization } from '$lib/stores/organization';
     import { Click, trackEvent } from '$lib/actions/analytics';
-    import { ID, type Models, Query } from '@appwrite.io/console';
+    import { BillingPlanGroup, ID, type Models, Query } from '@appwrite.io/console';
     import { sdk } from '$lib/stores/sdk';
     import { page } from '$app/state';
     import { onDestroy } from 'svelte';
@@ -253,7 +253,9 @@
 
     let badgeType: 'success' | undefined;
     $: badgeType =
-        $organization && $organization.billingPlanDetails.price > 0 ? 'success' : undefined;
+        $organization && $organization.billingPlanDetails.group === BillingPlanGroup.Starter
+            ? 'success'
+            : undefined;
 </script>
 
 <svelte:window on:resize={onResize} />

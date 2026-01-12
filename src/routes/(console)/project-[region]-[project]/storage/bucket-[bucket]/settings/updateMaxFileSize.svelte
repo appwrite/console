@@ -45,7 +45,7 @@
             {#if isCloud}
                 {@const size = humanFileSize(sizeToBytes(service, 'MB', 1000))}
                 <!-- always show upgrade on starters -->
-                {@const isStarter = isStarterPlan($organization.billingPlan)}
+                {@const isStarter = isStarterPlan($organization.billingPlanId)}
                 {#if isStarter}
                     <Alert.Inline status="info">
                         The {currentPlan.name} plan has a maximum upload file size limit of {Math.floor(
