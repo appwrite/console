@@ -302,7 +302,7 @@
                     <Layout.Stack direction="row">
                         <InputSelect
                             {id}
-                            required
+                            required={column.required}
                             {options}
                             bind:value={relatedList[0]}
                             placeholder={`Select ${column.key}`}
@@ -321,7 +321,7 @@
                         <Layout.Stack direction="row">
                             <InputSelect
                                 {id}
-                                required
+                                required={column.required}
                                 autofocus={limited}
                                 options={getAvailableOptions(actualIndex)}
                                 bind:value={relatedList[actualIndex]}
@@ -351,7 +351,7 @@
                         <Layout.Stack direction="row">
                             <InputSelect
                                 {id}
-                                required
+                                required={column.required}
                                 options={getAvailableOptions(i)}
                                 bind:value={item}
                                 on:change={updateRelatedList}
@@ -381,7 +381,7 @@
                         <Layout.Stack direction="row">
                             <Input.ComboBox
                                 {id}
-                                required
+                                required={column.required}
                                 on:change={addNewItem}
                                 bind:value={newItemValue}
                                 options={availableOptions}
