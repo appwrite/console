@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { base } from '$app/paths';
     import { CardGrid, BoxAvatar, CopyInput, Empty } from '$lib/components';
     import { Container } from '$lib/layout';
     import { Button } from '$lib/elements/forms';
@@ -239,6 +240,11 @@
             </svelte:fragment>
 
             <svelte:fragment slot="actions">
+                <Button
+                    secondary
+                    href={`${base}/project-${page.params.region}-${page.params.project}/storage/bucket-${$file.bucketId}/file-${$file.$id}/editor`}>
+                    <span class="icon-image" aria-hidden="true"></span>
+                    <span class="text">Transform Image</span></Button>
                 <Button secondary href={downloadFile()} event="download_file" external>
                     <span class="icon-download" aria-hidden="true"></span>
                     <span class="text"> Download</span></Button>
