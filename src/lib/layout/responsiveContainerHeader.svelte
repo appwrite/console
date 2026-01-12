@@ -99,6 +99,9 @@
                 {#if showSearch && hasSearch}
                     <SearchQuery placeholder={searchPlaceholder} />
                 {/if}
+                <div style="overflow-x: auto;">
+                    <ParsedTagList {columns} {analyticsSource} />
+                </div>
             </Layout.Stack>
         {:else}
             <Layout.Stack direction="row" justifyContent="space-between" alignItems="flex-start">
