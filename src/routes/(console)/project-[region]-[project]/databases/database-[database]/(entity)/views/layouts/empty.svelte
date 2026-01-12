@@ -378,7 +378,7 @@
         </Spreadsheet.Root>
 
         {#snippet noSqlEditor()}
-            {#if type === 'documentsdb'}
+            {#if type === 'documentsdb' && mode === 'records'}
                 <NoSqlEditor loading />
             {/if}
         {/snippet}
@@ -406,9 +406,12 @@
                     </Layout.Stack>
 
                     {#if showActions && actions}
-                        {@const inline = mode === 'records-filtered'}
-                        <div class="controlled-width">
-                            <Layout.Stack {inline}>
+                        {@const isOnlyIndexes = mode === 'indexes' && type === 'documentsdb'}
+                        {@const inline = mode === 'records-filtered' || isOnlyIndexes}
+                        <div class="controlled-width" class:single-mode={isOnlyIndexes}>
+                            <Layout.Stack
+                                {inline}
+                                style="width: {isOnlyIndexes ? '353px' : undefined}">
                                 {#if inline}
                                     {@render actions?.()}
                                 {:else}
@@ -443,6 +446,10 @@
 
         &.custom-columns {
             width: unset;
+        }
+
+        &[data-mode='indexes'] {
+            width: 100%;
         }
 
         &.no-custom-columns {
@@ -538,6 +545,11 @@
         @media (min-width: 1440px) {
             width: 538px;
             max-width: 538px;
+        }
+
+        &.single-mode {
+            display: flex;
+            justify-content: center;
         }
     }
 

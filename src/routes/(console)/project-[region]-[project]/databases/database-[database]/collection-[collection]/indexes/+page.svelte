@@ -46,24 +46,12 @@
 
 <Indexes {onCreateIndex} {onDeleteIndexes} entity={data.collection}>
     {#snippet emptyIndexesSheetView(toggle)}
-        <EmptySheet mode="indexes">
+        <EmptySheet mode="indexes" type={data.database.type}>
             {#snippet actions()}
                 <EmptySheetCards
                     icon={IconPlus}
                     title="Create index"
                     disabled={!data.collection.fields?.length}
-                    subtitle="Create indexes manually"
-                    onClick={toggle} />
-            {/snippet}
-        </EmptySheet>
-    {/snippet}
-
-    {#snippet emptyEntitiesSheetView(toggle)}
-        <EmptySheet mode="indexes" title="You have no indexes yet">
-            {#snippet actions()}
-                <EmptySheetCards
-                    icon={IconPlus}
-                    title="Create indexes"
                     subtitle="Create indexes manually"
                     onClick={toggle} />
             {/snippet}

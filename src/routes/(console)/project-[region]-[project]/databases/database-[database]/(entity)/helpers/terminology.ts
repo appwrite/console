@@ -142,8 +142,11 @@ export function useTerminology(pageOrType: Page | DatabaseType): TerminologyResu
     }
 
     const dbTerminologies = terminologyData[type] || {};
+    const strictSchema = type === 'legacy' || type === 'tablesdb';
+
     return {
         type,
+        schema: strictSchema,
         source: dbTerminologies,
         field: dbTerminologies.field,
         record: dbTerminologies.record,

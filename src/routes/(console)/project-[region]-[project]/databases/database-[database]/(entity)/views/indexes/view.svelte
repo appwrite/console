@@ -204,7 +204,7 @@
 </Container>
 
 <div class="databases-spreadsheet">
-    {#if entity.fields?.length}
+    {#if !terminology.schema || entity.fields?.length}
         {#if entity.indexes.length}
             <SpreadsheetContainer>
                 <Spreadsheet.Root
