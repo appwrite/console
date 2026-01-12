@@ -2,7 +2,12 @@
     import { invalidate } from '$app/navigation';
     import { base } from '$app/paths';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { type DeleteOperationState, Id, MultiSelectionTable } from '$lib/components';
+    import {
+        type DeleteOperationState,
+        type DeleteOperation,
+        Id,
+        MultiSelectionTable
+    } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import type { PageData } from './$types';
     import ProviderType from '../../providerType.svelte';
@@ -32,8 +37,8 @@
         return record;
     });
 
-    async function handleDelete(selectedRows: string[]): Promise<DeleteOperationState> {
-        async function deleteSubscriber(subscriberId: string) {
+    async function handleDelete(batchDelete: DeleteOperation): Promise<DeleteOperationState> {
+        const result = await batchDelete(async (subscriberId) => {
             await sdk
                 .forProject(page.params.region, page.params.project)
                 .messaging.deleteSubscriber({
@@ -44,19 +49,19 @@
             const { target } = subscribers[subscriberId];
             const { [target.$id]: _, ...rest } = $targetsById;
             $targetsById = rest;
-        }
-
-        const promises = selectedRows.map((id) => deleteSubscriber(id));
+        });
 
         try {
-            await Promise.all(promises);
-            trackEvent(Submit.MessagingTopicSubscriberDelete, { total: selectedRows.length });
-        } catch (error) {
-            trackError(error, Submit.MessagingTopicSubscriberDelete);
-            return error;
+            if (result.error) {
+                trackError(result.error, Submit.MessagingTopicSubscriberDelete);
+            } else {
+                trackEvent(Submit.MessagingTopicSubscriberDelete, { total: result.deleted.length });
+            }
         } finally {
             await invalidate(Dependencies.MESSAGING_TOPIC_SUBSCRIBERS);
         }
+
+        return result;
     }
 </script>
 

@@ -29,6 +29,7 @@ export const load: PageLoad = async ({ depends, params, url, route, parent }) =>
             Query.limit(limit),
             Query.offset(offset),
             Query.orderDesc(''),
+            Query.orderDesc('$updatedAt'),
             ...parsedQueries.values()
         ],
         search: search || undefined

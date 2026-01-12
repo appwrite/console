@@ -26,9 +26,7 @@
     let { data }: PageProps = $props();
 
     let deployment = $derived(data.deployment);
-    let effectiveStatus = $derived(
-        getEffectiveBuildStatus(deployment.status, deployment.$createdAt, $regionalConsoleVariables)
-    );
+    let effectiveStatus = $derived(getEffectiveBuildStatus(deployment, $regionalConsoleVariables));
 
     let showRedeploy = $state(false);
     let showActivate = $state(false);
@@ -90,7 +88,7 @@
             hideDivider>
             <Logs {deployment} hideTitle fullHeight />
             <svelte:fragment slot="end">
-                <LogsTimer status={effectiveStatus} {deployment} />
+                <LogsTimer {deployment} />
             </svelte:fragment>
         </Accordion>
     </Card>

@@ -5,7 +5,6 @@
     import { isSupportOnline, showSupportModal } from '$routes/(console)/wizard/support/store';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { localeShortTimezoneName, utcHourToLocaleHour } from '$lib/helpers/date';
-    import { plansInfo } from '$lib/stores/billing';
     import { Card } from '$lib/components/index';
     import { app } from '$lib/stores/app';
     import { currentPlan, organizationList } from '$lib/stores/organization';
@@ -21,12 +20,12 @@
     $: hasPremiumSupport = $currentPlan?.premiumSupport ?? allOrgsHavePremiumSupport ?? false;
 
     $: allOrgsHavePremiumSupport = $organizationList.teams.every(
-        (team) => $plansInfo.get((team as Models.Organization).billingPlan)?.premiumSupport
+        (team) => (team as Models.Organization).billingPlanDetails?.premiumSupport
     );
 
     // there can only be one free organization
     $: freeOrganization = $organizationList.teams.find(
-        (team) => !$plansInfo.get((team as Models.Organization).billingPlan)?.premiumSupport
+        (team) => !(team as Models.Organization).billingPlanDetails?.premiumSupport
     );
 
     $: upgradeURL = `${base}/organization-${freeOrganization?.$id}/change-plan`;

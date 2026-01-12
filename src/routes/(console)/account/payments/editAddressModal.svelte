@@ -48,7 +48,7 @@
             show = false;
             addNotification({
                 type: 'success',
-                message: `Address has been added`
+                message: 'Address has been updated'
             });
             trackEvent(Submit.BillingAddressUpdate);
         } catch (e) {

@@ -69,7 +69,7 @@
                     city,
                     state,
                     postalCode: postalCode ? postalCode : undefined,
-                    addressLine2: addressLine2 ? postalCode : undefined
+                    addressLine2: addressLine2 ? addressLine2 : undefined
                 });
 
                 await sdk.forConsole.organizations.setBillingAddress({

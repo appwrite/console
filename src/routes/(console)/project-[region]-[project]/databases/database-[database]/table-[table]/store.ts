@@ -193,7 +193,9 @@ export const expandTabs = writable(null);
 export const spreadsheetRenderKey = writable('initial');
 
 export const paginatedRowsLoading = writable(false);
-export const paginatedRows = createSparsePagedDataStore<Models.DefaultRow>(SPREADSHEET_PAGE_LIMIT);
+export const paginatedRows = createSparsePagedDataStore<Models.DefaultRow | Models.Row>(
+    SPREADSHEET_PAGE_LIMIT
+);
 
 export const PROHIBITED_ROW_KEYS = [
     '$id',

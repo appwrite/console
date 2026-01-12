@@ -101,29 +101,35 @@
         </Typography.Text>
     </Layout.Stack>
 
-    <Table.Root columns={3} let:root>
+    <Table.Root
+        columns={[
+            { id: 'type', width: { min: 150 } },
+            { id: 'name', width: { min: 80 } },
+            { id: 'value', width: { min: 100 } }
+        ]}
+        let:root>
         <svelte:fragment slot="header" let:root>
-            <Table.Header.Cell {root}>Type</Table.Header.Cell>
-            <Table.Header.Cell {root}>Name</Table.Header.Cell>
-            <Table.Header.Cell {root}>Value</Table.Header.Cell>
+            <Table.Header.Cell column="type" {root}>Type</Table.Header.Cell>
+            <Table.Header.Cell column="name" {root}>Name</Table.Header.Cell>
+            <Table.Header.Cell column="value" {root}>Value</Table.Header.Cell>
         </svelte:fragment>
         <Table.Row.Base {root}>
-            <Table.Cell {root}>{variant.toUpperCase()}</Table.Cell>
-            <Table.Cell {root}>{subdomain || '@'}</Table.Cell>
-            <Table.Cell {root}>
+            <Table.Cell column="type" {root}>{variant.toUpperCase()}</Table.Cell>
+            <Table.Cell column="name" {root}>{subdomain || '@'}</Table.Cell>
+            <Table.Cell column="value" {root}>
                 <InteractiveText variant="copy" isVisible text={setTarget()} />
             </Table.Cell>
         </Table.Row.Base>
         {#if $regionalConsoleVariables._APP_DOMAIN_TARGET_CAA}
             <Table.Row.Base {root}>
-                <Table.Cell {root}>
+                <Table.Cell column="type" {root}>
                     <Layout.Stack gap="s" direction="row" alignItems="center">
                         <span>CAA</span>
                         <Badge variant="secondary" size="xs" content="Recommended" />
                     </Layout.Stack>
                 </Table.Cell>
-                <Table.Cell {root}>@</Table.Cell>
-                <Table.Cell {root}>
+                <Table.Cell column="name" {root}>@</Table.Cell>
+                <Table.Cell column="value" {root}>
                     <InteractiveText variant="copy" isVisible text={caaText} />
                 </Table.Cell>
             </Table.Row.Base>

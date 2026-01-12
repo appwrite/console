@@ -25,7 +25,7 @@ export const load: PageLoad = async ({ parent, depends, url, route }) => {
     depends(Dependencies.CREDIT);
     depends(Dependencies.INVOICES);
     depends(Dependencies.ADDRESS);
-    //aggregation reloads on page param changes
+    // aggregation reloads on page param changes
     depends(Dependencies.BILLING_AGGREGATION);
 
     const billingAddressId = (organization as Models.Organization)?.billingAddressId;
@@ -89,6 +89,7 @@ export const load: PageLoad = async ({ parent, depends, url, route }) => {
 
     // make number
     const credits = availableCredit ? availableCredit.available : null;
+    const { backup, primary } = getOrganizationPaymentMethods(organization, paymentMethods);
 
     return {
         paymentMethods,
@@ -105,6 +106,32 @@ export const load: PageLoad = async ({ parent, depends, url, route }) => {
         offset: pageToOffset(
             getPage(url) || 1,
             getLimit(url, route, DEFAULT_BILLING_PROJECTS_LIMIT)
-        )
+        ),
+
+        backupPaymentMethod: backup,
+        primaryPaymentMethod: primary
     };
 };
+
+function getOrganizationPaymentMethods(
+    organization: Models.Organization,
+    paymentMethods: Models.PaymentMethodList
+): {
+    backup: Models.PaymentMethod | null;
+    primary: Models.PaymentMethod | null;
+} {
+    let backup: Models.PaymentMethod | null = null;
+    let primary: Models.PaymentMethod | null = null;
+
+    for (const paymentMethod of paymentMethods.paymentMethods) {
+        if (paymentMethod.$id === organization.paymentMethodId) {
+            primary = paymentMethod;
+        } else if (paymentMethod.$id === organization.backupPaymentMethodId) {
+            backup = paymentMethod;
+        }
+
+        if (primary && backup) break;
+    }
+
+    return { primary, backup };
+}

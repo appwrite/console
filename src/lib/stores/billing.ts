@@ -8,7 +8,7 @@ import MarkedForDeletion from '$lib/components/billing/alerts/markedForDeletion.
 import MissingPaymentMethod from '$lib/components/billing/alerts/missingPaymentMethod.svelte';
 import newDevUpgradePro from '$lib/components/billing/alerts/newDevUpgradePro.svelte';
 import PaymentAuthRequired from '$lib/components/billing/alerts/paymentAuthRequired.svelte';
-import PaymentMandate from '$lib/components/billing/alerts/paymentMandate.svelte';
+
 import { NEW_DEV_PRO_UPGRADE_COUPON } from '$lib/constants';
 import { cachedStore } from '$lib/helpers/cache';
 import type { BillingPlansMap } from '$lib/sdk/billing';
@@ -568,28 +568,6 @@ export function checkForMarkedForDeletion(org: Models.Organization) {
             show: true,
             importance: 10
         });
-    }
-}
-
-export const paymentMissingMandate = writable<Models.PaymentMethod>(null);
-
-export async function checkForMandate(org: Models.Organization) {
-    const paymentId = org.paymentMethodId ?? org.backupPaymentMethodId;
-    if (!paymentId) return;
-
-    const paymentMethod = await sdk.forConsole.account.getPaymentMethod({
-        paymentMethodId: paymentId
-    });
-
-    if (paymentMethod?.mandateId === null && paymentMethod?.country.toLowerCase() === 'in') {
-        headerAlert.add({
-            id: 'paymentMandate',
-            component: PaymentMandate,
-            show: true,
-            importance: 8
-        });
-        activeHeaderAlert.set(headerAlert.get());
-        paymentMissingMandate.set(paymentMethod);
     }
 }
 

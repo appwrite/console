@@ -21,7 +21,7 @@ export const load: LayoutLoad = async ({ depends, parent }) => {
               })
             : null,
         fetch(`${endpoint}/health/version`, {
-            headers: { 'X-Appwrite-Project': project }
+            headers: { 'X-Appwrite-Project': project as string }
         }).then((response) => response.json() as { version?: string }),
         sdk.forConsole.console.variables()
     ]);

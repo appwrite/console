@@ -32,7 +32,7 @@
     async function updateSelected() {
         try {
             await sdk.forConsole.organizations.updateProjects({
-                organizationId: projects[0].teamId,
+                organizationId,
                 projects: selectedProjects
             });
 

@@ -38,7 +38,6 @@
     let taxId: string | null = $state(null);
     let collaborators: string[] = $state([]);
     let paymentMethodId: string | null = $state(null);
-    let billingPlan = $state(getBasePlanFromGroup(BillingPlanGroup.Starter).$id);
 
     let showCreditModal = $state(false);
     let billingBudget: number | undefined = $state(undefined);
@@ -69,7 +68,7 @@
         if (page.url.searchParams.has('plan')) {
             const plan = page.url.searchParams.get('plan');
             if (plan) {
-                billingPlan = plan;
+                selectedPlan = billingIdToPlan(plan);
             }
         }
 
@@ -77,7 +76,7 @@
             data?.hasFreeOrganizations ||
             (page.url.searchParams.has('type') && page.url.searchParams.get('type') === 'createPro')
         ) {
-            billingPlan = getBasePlanFromGroup(BillingPlanGroup.Pro).$id;
+            selectedPlan = getBasePlanFromGroup(BillingPlanGroup.Pro);
         }
 
         if (page.url.searchParams.has('type')) {
@@ -158,7 +157,7 @@
             }
 
             trackEvent(Submit.OrganizationCreate, {
-                plan: billingIdToPlan(billingPlan)?.name,
+                plan: selectedPlan.name,
                 budget_cap_enabled: billingBudget !== null,
                 members_invited: collaborators?.length
             });

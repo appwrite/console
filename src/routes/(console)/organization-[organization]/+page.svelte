@@ -70,12 +70,6 @@
         return getServiceLimit('projects', null, data.currentPlan);
     });
 
-    const projectsToArchive = $derived.by(() => {
-        return isCloud
-            ? data.projects.projects.filter((project) => project.status === 'archived')
-            : [];
-    });
-
     function filterPlatforms(platforms: { name: string; icon: string }[]) {
         return platforms.filter(
             (value, index, self) => index === self.findIndex((t) => t.name === value.name)
@@ -135,6 +129,19 @@
         return project.status === 'archived';
     }
 
+    const projectsToArchive = $derived(
+        (data.archivedProjectsPage ?? data.projects.projects).filter(
+            (project) => project.status === 'archived'
+        )
+    );
+
+    const activeTotalOverall = $derived(
+        data?.activeTotalOverall ??
+            data?.organization?.projects?.length ??
+            data?.projects?.total ??
+            0
+    );
+
     function clearSearch() {
         searchQuery?.clearInput();
     }
@@ -162,7 +169,7 @@
 
 <Container>
     <Layout.Stack direction="row" justifyContent="space-between" class="common-section">
-        <SearchQuery bind:this={searchQuery} placeholder="Search by name or ID" />
+        <SearchQuery bind:this={searchQuery} placeholder="Search by name, label, or ID" />
 
         {#if $canWriteProjects}
             {#if projectCreationDisabled && reachedProjectLimit}
@@ -237,7 +244,7 @@
     {#if data.projects.total > 0}
         <CardContainer
             disableEmpty={!$canWriteProjects}
-            total={data.projects.total}
+            total={activeTotalOverall}
             offset={data.offset}
             on:click={handleCreateProject}>
             {#each data.projects.projects as project}
@@ -322,13 +329,16 @@
         name="Projects"
         limit={data.limit}
         offset={data.offset}
-        total={data.projects.total} />
+        total={activeTotalOverall} />
 
     <!-- Archived Projects Section -->
     <ArchiveProject
         {projectsToArchive}
         organization={data.organization}
-        currentPlan={data.currentPlan} />
+        currentPlan={data.currentPlan}
+        archivedTotalOverall={data.archivedTotalOverall}
+        archivedOffset={data.archivedOffset}
+        limit={data.limit} />
 </Container>
 <CreateOrganization bind:show={addOrganization} />
 <CreateProject bind:show={showCreate} teamId={page.params.organization} />

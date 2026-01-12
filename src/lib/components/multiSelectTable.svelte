@@ -1,5 +1,13 @@
 <script lang="ts" module>
-    export type DeleteOperationState = Error | void;
+    export type DeleteOperationState = {
+        error?: Error;
+        deleted: string[];
+    } | void;
+
+    export type DeleteOperation = (
+        deleteFn: (id: string) => Promise<unknown>,
+        batchSize?: number
+    ) => Promise<Exclude<DeleteOperationState, void>>;
 </script>
 
 <script lang="ts">
@@ -40,7 +48,14 @@
         children: Snippet<[root: TableRootProps]>;
         deleteContent?: Snippet<[count: number]>;
         deleteContentNotice?: Snippet;
-        onDelete?: (selectedRows: string[]) => Promise<DeleteOperationState> | DeleteOperationState;
+        onDelete?: (
+            batchDelete: DeleteOperation,
+            /**
+             * this is useful when you have a custom deletion logic
+             * and the default `batchDelete` helper doesn't fit the use-case!
+             */
+            selectedRows: string[]
+        ) => Promise<DeleteOperationState> | DeleteOperationState;
         onCancel?: () => Promise<void> | void;
     } = $props();
 
@@ -49,10 +64,8 @@
     let onDeleteError: string | null = $state(null);
     let showConfirmDeletion: boolean = $state(false);
 
-    function notifySuccess() {
+    function notifySuccess(count: number) {
         if (!showSuccessNotification) return;
-
-        const count = selectedRows.length;
         if (count === 0) return;
 
         const label = `${resource}${count > 1 ? 's' : ''}`;
@@ -70,6 +83,75 @@
         }
 
         return `${resource}s`;
+    }
+
+    async function batchDelete(
+        ids: string[],
+        deleteFn: (id: string) => Promise<unknown>,
+        batchSize: number | undefined = undefined
+    ): Promise<Exclude<DeleteOperationState, void>> {
+        const deleted: string[] = [];
+        let firstError: Error | undefined;
+
+        // prevent infinite loop
+        if (batchSize !== undefined) {
+            batchSize = Math.max(1, Math.floor(Math.abs(batchSize)));
+        }
+
+        async function processBatch(batch: string[]) {
+            // build promises
+            const results = await Promise.allSettled(batch.map((id) => deleteFn(id)));
+
+            results.forEach((result, index) => {
+                if (result.status === 'fulfilled') {
+                    // success, log it!
+                    deleted.push(batch[index]);
+                } else if (!firstError) {
+                    // error
+                    firstError =
+                        result.reason instanceof Error
+                            ? result.reason
+                            : new Error(String(result.reason));
+                }
+            });
+        }
+
+        // batch when needed.
+        // example: >= 100 items to delete!
+        if (batchSize && batchSize < ids.length) {
+            for (let i = 0; i < ids.length; i += batchSize) {
+                const batch = ids.slice(i, i + batchSize);
+                await processBatch(batch);
+            }
+        } else {
+            await processBatch(ids);
+        }
+
+        return {
+            deleted,
+            error: firstError
+        };
+    }
+
+    async function consumeDeleteOperation() {
+        const state = await onDelete?.((deleteFn, batchSize) => {
+            return batchDelete(selectedRows, deleteFn, batchSize);
+        }, selectedRows);
+
+        if (!state) {
+            return false;
+        }
+
+        const deletedCount = state.deleted.length;
+        selectedRows = selectedRows.filter((id) => !state.deleted.includes(id));
+
+        if (state.error) {
+            onDeleteError = `Some ${getPluralResource()} were not deleted. Error: ${state.error.message}`;
+            return false;
+        }
+
+        notifySuccess(deletedCount);
+        return true;
     }
 </script>
 
@@ -104,13 +186,7 @@
                         if (confirmDeletion) {
                             showConfirmDeletion = true;
                         } else {
-                            const state = await onDelete?.(selectedRows);
-                            if (state instanceof Error) {
-                                // user should handle error on their own!
-                            } else {
-                                notifySuccess();
-                                selectedRows = [];
-                            }
+                            await consumeDeleteOperation();
                         }
                     }}>Delete</Button>
             </svelte:fragment>
@@ -129,16 +205,13 @@
                 disableModal = true;
                 onDeleteError = null;
 
-                const state = await onDelete?.(selectedRows);
-                if (state instanceof Error) {
-                    disableModal = false;
-                    onDeleteError = state.message || `Failed to delete ${resource}s`;
-                } else {
-                    notifySuccess();
-                    selectedRows = [];
-                    disableModal = false;
+                const allDeleted = await consumeDeleteOperation();
+
+                if (allDeleted) {
                     showConfirmDeletion = false;
                 }
+
+                disableModal = false;
             }}>
             <Typography.Text>
                 {@const selectionCount = selectedRows.length}
