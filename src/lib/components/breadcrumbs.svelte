@@ -253,7 +253,7 @@
 
     let badgeType: 'success' | undefined;
     $: badgeType =
-        $organization && $organization.billingPlanDetails.group === BillingPlanGroup.Starter
+        $organization && $organization.billingPlanDetails.group !== BillingPlanGroup.Starter
             ? 'success'
             : undefined;
 </script>
