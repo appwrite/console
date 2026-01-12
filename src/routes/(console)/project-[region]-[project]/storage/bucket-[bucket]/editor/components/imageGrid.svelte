@@ -29,15 +29,19 @@
 
         if (transformations?.gravity) params.gravity = transformations.gravity;
         if (transformations?.borderWidth) params.borderWidth = transformations.borderWidth;
-        if (transformations?.borderColor) params.borderColor = transformations.borderColor.replace('#', '');
+        if (transformations?.borderColor)
+            params.borderColor = transformations.borderColor.replace('#', '');
         if (transformations?.borderRadius) params.borderRadius = transformations.borderRadius;
-        if (transformations?.background) params.background = transformations.background.replace('#', '');
+        if (transformations?.background)
+            params.background = transformations.background.replace('#', '');
         if (transformations?.quality) params.quality = transformations.quality;
 
-        return sdk
-            .forProject(page.params.region, page.params.project)
-            .storage.getFilePreview(params)
-            .toString() + '&mode=admin';
+        return (
+            sdk
+                .forProject(page.params.region, page.params.project)
+                .storage.getFilePreview(params)
+                .toString() + '&mode=admin'
+        );
     }
 
     function selectFile(file: Models.File) {
@@ -58,7 +62,10 @@
 {:else}
     <Layout.Grid columns={4} columnsXS={2} columnsS={3} gap="m">
         {#each imageFiles as file (file.$id)}
-            {@const previewUrl = getPreview(file.$id, appliedPresets[file.$id] ? transformationState : undefined)}
+            {@const previewUrl = getPreview(
+                file.$id,
+                appliedPresets[file.$id] ? transformationState : undefined
+            )}
             {@const isSelected = selectedFile?.$id === file.$id}
             <div
                 class="grid-item"
@@ -75,7 +82,11 @@
                 <div class="image-wrapper">
                     <Avatar size="xl" src={previewUrl} alt={file.name} />
                     {#if appliedPresets[file.$id]}
-                        <Badge size="xs" variant="secondary" content="Preset" class="preset-badge" />
+                        <Badge
+                            size="xs"
+                            variant="secondary"
+                            content="Preset"
+                            class="preset-badge" />
                     {/if}
                 </div>
                 <div class="file-name">{file.name}</div>
@@ -135,4 +146,3 @@
         white-space: nowrap;
     }
 </style>
-

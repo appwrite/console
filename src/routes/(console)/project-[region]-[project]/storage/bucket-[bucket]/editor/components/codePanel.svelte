@@ -16,9 +16,7 @@
 
     let selectedSDK = $state<'js' | 'python' | 'flutter' | 'swift' | 'kotlin'>('js');
 
-    const code = $derived(
-        generateSDKCode(transformationState, bucketId, fileId, selectedSDK)
-    );
+    const code = $derived(generateSDKCode(transformationState, bucketId, fileId, selectedSDK));
 
     const sdkOptions = [
         { label: 'JavaScript', value: 'js' as const },
@@ -53,12 +51,7 @@
     </Layout.Stack>
 
     <div class="code-container">
-        <Code
-            code={code}
-            language={languageMap[selectedSDK]}
-            withCopy
-            withLineNumbers
-            allowScroll />
+        <Code {code} language={languageMap[selectedSDK]} withCopy withLineNumbers allowScroll />
     </div>
 </Layout.Stack>
 
@@ -77,4 +70,3 @@
         overflow-y: auto;
     }
 </style>
-

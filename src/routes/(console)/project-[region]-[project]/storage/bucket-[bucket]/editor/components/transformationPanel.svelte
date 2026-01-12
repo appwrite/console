@@ -1,18 +1,33 @@
 <script lang="ts">
     import { Accordion, Typography } from '@appwrite.io/pink-svelte';
-    import { InputSelect } from '$lib/elements/forms';
-    import { Tab, Tabs } from '$lib/components';
+    import type { Models } from '@appwrite.io/console';
     import type { TransformationState } from '$lib/helpers/imageTransformations';
+    import type { Preset } from './presetManager';
+    import { createEventDispatcher } from 'svelte';
 
     let {
         activeTab = $bindable('design'),
+        files,
+        selectedFile = $bindable(null),
         transformationState = $bindable({}),
+        presets,
+        selectedPresetId = $bindable(null),
         zoom = $bindable(100)
     }: {
         activeTab?: 'design' | 'code';
-        transformationState?: TransformationState & { aspectRatioLocked?: boolean; originalAspectRatio?: number; crop?: string };
+        files: Models.File[];
+        selectedFile?: Models.File | null;
+        transformationState?: TransformationState & {
+            aspectRatioLocked?: boolean;
+            originalAspectRatio?: number;
+            crop?: string;
+        };
+        presets: Preset[];
+        selectedPresetId?: string | null;
         zoom?: number;
     } = $props();
+
+    const dispatch = createEventDispatcher();
 
     // Crop options
     const cropOptions = [
@@ -25,10 +40,28 @@
 
     const zoomOptions = [50, 75, 100, 125, 150, 200];
 
+    function handleFileSwitch(event: Event) {
+        const select = event.target as HTMLSelectElement;
+        const fileId = select.value;
+        const file = files.find((f) => f.$id === fileId);
+        if (file) {
+            selectedFile = file;
+        }
+    }
+
+    function handlePresetSwitch(event: Event) {
+        const select = event.target as HTMLSelectElement;
+        const presetId = select.value;
+        selectedPresetId = presetId === 'none' ? null : presetId;
+        dispatch('presetSelected', presetId === 'none' ? null : presetId);
+    }
+
     function handleWidthChange(value: number) {
         transformationState.width = value;
         if (transformationState.aspectRatioLocked && transformationState.originalAspectRatio) {
-            transformationState.height = Math.round(value / transformationState.originalAspectRatio);
+            transformationState.height = Math.round(
+                value / transformationState.originalAspectRatio
+            );
         }
     }
 
@@ -49,27 +82,67 @@
 
     function toggleAspectRatioLock() {
         transformationState.aspectRatioLocked = !transformationState.aspectRatioLocked;
-        if (transformationState.aspectRatioLocked && transformationState.width && transformationState.height) {
-            transformationState.originalAspectRatio = transformationState.width / transformationState.height;
+        if (
+            transformationState.aspectRatioLocked &&
+            transformationState.width &&
+            transformationState.height
+        ) {
+            transformationState.originalAspectRatio =
+                transformationState.width / transformationState.height;
         }
     }
 </script>
 
 <div class="panel">
+    <!-- Header with file and preset selectors -->
+    <div class="panel-header">
+        <div class="file-selector">
+            <select
+                class="panel-select"
+                value={selectedFile?.$id || ''}
+                onchange={handleFileSwitch}>
+                {#each files as file}
+                    <option value={file.$id}
+                        >{file.name.length > 20
+                            ? file.name.substring(0, 20) + '...'
+                            : file.name}</option>
+                {/each}
+            </select>
+        </div>
+        <div class="preset-selector">
+            <select
+                class="panel-select"
+                value={selectedPresetId || 'none'}
+                onchange={handlePresetSwitch}>
+                <option value="none">None</option>
+                {#each presets as preset}
+                    <option value={preset.id}>{preset.name}</option>
+                {/each}
+            </select>
+        </div>
+    </div>
+
     <!-- Design/Code tabs and zoom -->
     <div class="view-toggle-section">
-        <Tabs>
-            <Tab selected={activeTab === 'design'} on:click={() => (activeTab = 'design')}>
+        <div class="segmented-control">
+            <button
+                class="segment-btn {activeTab === 'design' ? 'is-active' : ''}"
+                onclick={() => (activeTab = 'design')}>
                 Design
-            </Tab>
-            <Tab selected={activeTab === 'code'} on:click={() => (activeTab = 'code')}>
+            </button>
+            <button
+                class="segment-btn {activeTab === 'code' ? 'is-active' : ''}"
+                onclick={() => (activeTab = 'code')}>
                 Code
-            </Tab>
-        </Tabs>
-        <InputSelect
-            id="zoom-selector"
-            options={zoomOptions.map(z => ({ value: z, label: `${z}%` }))}
-            bind:value={zoom} />
+            </button>
+        </div>
+        <div class="zoom-selector">
+            <select class="panel-select-small" bind:value={zoom}>
+                {#each zoomOptions as option}
+                    <option value={option}>{option}%</option>
+                {/each}
+            </select>
+        </div>
     </div>
 
     {#if activeTab === 'design'}
@@ -78,7 +151,8 @@
             <Accordion title="Transform" open>
                 <div class="control-content">
                     <div class="control-row">
-                        <Typography.Text variant="m-400" class="label-muted">Dimensions</Typography.Text>
+                        <Typography.Text variant="m-400" class="label-muted"
+                            >Dimensions</Typography.Text>
                         <div class="dimensions-grid">
                             <!-- Width -->
                             <div class="input-group">
@@ -92,8 +166,10 @@
                                     oninput={(e) =>
                                         handleWidthChange(parseInt(e.currentTarget.value) || 0)} />
                                 <div class="spinner-controls">
-                                    <button class="spinner-btn" onclick={() => changeWidth(1)}>▲</button>
-                                    <button class="spinner-btn" onclick={() => changeWidth(-1)}>▼</button>
+                                    <button class="spinner-btn" onclick={() => changeWidth(1)}
+                                        >▲</button>
+                                    <button class="spinner-btn" onclick={() => changeWidth(-1)}
+                                        >▼</button>
                                 </div>
                             </div>
                             <!-- Height -->
@@ -108,23 +184,35 @@
                                     oninput={(e) =>
                                         handleHeightChange(parseInt(e.currentTarget.value) || 0)} />
                                 <div class="spinner-controls">
-                                    <button class="spinner-btn" onclick={() => changeHeight(1)}>▲</button>
-                                    <button class="spinner-btn" onclick={() => changeHeight(-1)}>▼</button>
+                                    <button class="spinner-btn" onclick={() => changeHeight(1)}
+                                        >▲</button>
+                                    <button class="spinner-btn" onclick={() => changeHeight(-1)}
+                                        >▼</button>
                                 </div>
                             </div>
                             <!-- Lock -->
                             <button
-                                class="lock-btn {transformationState.aspectRatioLocked ? 'is-locked' : ''}"
+                                class="lock-btn {transformationState.aspectRatioLocked
+                                    ? 'is-locked'
+                                    : ''}"
                                 onclick={toggleAspectRatioLock}
                                 aria-label="Toggle aspect ratio lock">
                                 {#if transformationState.aspectRatioLocked}
-                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                                    <svg
+                                        width="16"
+                                        height="16"
+                                        viewBox="0 0 16 16"
+                                        fill="currentColor">
                                         <path
                                             d="M12 6H11V4C11 2.34315 9.65685 1 8 1C6.34315 1 5 2.34315 5 4V6H4C2.89543 6 2 6.89543 2 8V14C2 15.1046 2.89543 16 4 16H12C13.1046 16 14 15.1046 14 14V8C14 6.89543 13.1046 6 12 6ZM7 4C7 3.44772 7.44772 3 8 3C8.55228 3 9 3.44772 9 4V6H7V4ZM12 14H4V8H12V14Z"
                                             fill-opacity="0.4" />
                                     </svg>
                                 {:else}
-                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                                    <svg
+                                        width="16"
+                                        height="16"
+                                        viewBox="0 0 16 16"
+                                        fill="currentColor">
                                         <path
                                             d="M11 6H12C13.1046 6 14 6.89543 14 8V14C14 15.1046 13.1046 16 12 16H4C2.89543 16 2 15.1046 2 14V8C2 6.89543 2.89543 6 4 6H5V4C5 2.34315 6.34315 1 8 1C9.65685 1 11 2.34315 11 4V6ZM7 6V4C7 3.44772 7.44772 3 8 3C8.55228 3 9 3.44772 9 4V6H7ZM4 8V14H12V8H4Z"
                                             fill-opacity="0.4" />
@@ -161,9 +249,13 @@
                             <input
                                 type="color"
                                 class="color-input"
-                                value={transformationState.borderColor ? `#${transformationState.borderColor}` : '#000000'}
+                                value={transformationState.borderColor
+                                    ? `#${transformationState.borderColor}`
+                                    : '#000000'}
                                 oninput={(e) => {
-                                    transformationState.borderColor = (e.target as HTMLInputElement).value.replace('#', '');
+                                    transformationState.borderColor = (
+                                        e.target as HTMLInputElement
+                                    ).value.replace('#', '');
                                 }} />
                             <input
                                 type="text"
@@ -171,7 +263,10 @@
                                 value={transformationState.borderColor || '000000'}
                                 placeholder="000000"
                                 oninput={(e) => {
-                                    const value = (e.target as HTMLInputElement).value.replace('#', '');
+                                    const value = (e.target as HTMLInputElement).value.replace(
+                                        '#',
+                                        ''
+                                    );
                                     if (/^[0-9A-Fa-f]{0,6}$/.test(value)) {
                                         transformationState.borderColor = value;
                                     }
@@ -180,7 +275,10 @@
                                 <button
                                     class="opacity-minus-btn"
                                     onclick={() => {
-                                        transformationState.borderOpacity = Math.max(0, (transformationState.borderOpacity || 100) - 1);
+                                        transformationState.borderOpacity = Math.max(
+                                            0,
+                                            (transformationState.borderOpacity || 100) - 1
+                                        );
                                     }}
                                     aria-label="Decrease opacity">
                                     −
@@ -203,20 +301,27 @@
                                 min="0"
                                 max="100"
                                 oninput={(e) => {
-                                    transformationState.borderWidth = parseInt(e.currentTarget.value) || 0;
+                                    transformationState.borderWidth =
+                                        parseInt(e.currentTarget.value) || 0;
                                 }} />
                             <div class="spinner-controls">
                                 <button
                                     class="spinner-btn"
                                     onclick={() => {
-                                        transformationState.borderWidth = Math.min(100, (transformationState.borderWidth || 0) + 1);
+                                        transformationState.borderWidth = Math.min(
+                                            100,
+                                            (transformationState.borderWidth || 0) + 1
+                                        );
                                     }}>
                                     ▲
                                 </button>
                                 <button
                                     class="spinner-btn"
                                     onclick={() => {
-                                        transformationState.borderWidth = Math.max(0, (transformationState.borderWidth || 0) - 1);
+                                        transformationState.borderWidth = Math.max(
+                                            0,
+                                            (transformationState.borderWidth || 0) - 1
+                                        );
                                     }}>
                                     ▼
                                 </button>
@@ -224,7 +329,8 @@
                         </div>
                     </div>
                     <div class="control-row">
-                        <Typography.Text variant="m-400" class="label-muted">Border radius</Typography.Text>
+                        <Typography.Text variant="m-400" class="label-muted"
+                            >Border radius</Typography.Text>
                         <div class="border-radius-control">
                             <button
                                 class="border-radius-icon-btn"
@@ -248,7 +354,8 @@
                                 min="0"
                                 max="100"
                                 oninput={(e) => {
-                                    transformationState.borderRadius = parseInt(e.currentTarget.value) || 0;
+                                    transformationState.borderRadius =
+                                        parseInt(e.currentTarget.value) || 0;
                                 }} />
                             <button
                                 class="border-radius-link-btn"
@@ -273,13 +380,18 @@
             <Accordion title="Fill">
                 <div class="control-content">
                     <div class="control-row">
-                        <Typography.Text variant="m-400" class="label-muted">Background Color</Typography.Text>
+                        <Typography.Text variant="m-400" class="label-muted"
+                            >Background Color</Typography.Text>
                         <input
                             type="color"
                             class="color-input-full"
-                            value={transformationState.background ? `#${transformationState.background}` : '#ffffff'}
+                            value={transformationState.background
+                                ? `#${transformationState.background}`
+                                : '#ffffff'}
                             oninput={(e) => {
-                                transformationState.background = (e.target as HTMLInputElement).value.replace('#', '');
+                                transformationState.background = (
+                                    e.target as HTMLInputElement
+                                ).value.replace('#', '');
                             }} />
                     </div>
                 </div>
@@ -291,7 +403,12 @@
             <Accordion title="Export">
                 <div class="control-content">
                     <button class="export-button">
-                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" class="export-icon">
+                        <svg
+                            width="16"
+                            height="16"
+                            viewBox="0 0 16 16"
+                            fill="currentColor"
+                            class="export-icon">
                             <path
                                 d="M2 2C2 1.44772 2.44772 1 3 1H6C6.55228 1 7 1.44772 7 2V3H13C13.5523 3 14 3.44772 14 4V13C14 13.5523 13.5523 14 13 14H3C2.44772 14 2 13.5523 2 13V2ZM3 2V13H13V4H7V2H3Z"
                                 fill-opacity="0.4" />
@@ -300,8 +417,17 @@
                                 fill-opacity="0.6" />
                         </svg>
                         <span>Export</span>
-                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" class="export-plus-icon">
-                            <path d="M8 3V13M3 8H13" stroke="currentColor" stroke-width="1.5" fill="none" />
+                        <svg
+                            width="16"
+                            height="16"
+                            viewBox="0 0 16 16"
+                            fill="currentColor"
+                            class="export-plus-icon">
+                            <path
+                                d="M8 3V13M3 8H13"
+                                stroke="currentColor"
+                                stroke-width="1.5"
+                                fill="none" />
                         </svg>
                     </button>
                 </div>
@@ -319,12 +445,53 @@
         height: 100%;
     }
 
+    .panel-header {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.5rem;
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid var(--color-border);
+    }
+
     .view-toggle-section {
         padding: 0.75rem 1rem;
         display: flex;
         justify-content: space-between;
         align-items: center;
         border-bottom: 1px solid var(--color-border);
+    }
+
+    .segmented-control {
+        display: inline-flex;
+        background: var(--color-neutral-10);
+        padding: 2px;
+        border-radius: var(--border-radius-small);
+    }
+
+    .segment-btn {
+        padding: 0.25rem 0.75rem;
+        font-size: var(--font-size-0);
+        font-weight: 500;
+        color: var(--color-neutral-60);
+        background: transparent;
+        border: none;
+        border-radius: calc(var(--border-radius-small) - 2px);
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .segment-btn:hover {
+        color: var(--color-neutral-100);
+    }
+
+    .segment-btn.is-active {
+        background: var(--color-neutral-0);
+        color: var(--color-neutral-100);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .zoom-selector {
+        min-width: 70px;
     }
 
     .accordion-group {
@@ -352,6 +519,7 @@
     }
 
     .panel-select,
+    .panel-select-small,
     .panel-input {
         width: 100%;
         border: 1px solid var(--color-border);
@@ -364,6 +532,10 @@
 
     .panel-select {
         padding: 0.5rem;
+    }
+
+    .panel-select-small {
+        padding: 0.25rem 0.5rem;
     }
 
     .panel-input {
@@ -471,6 +643,7 @@
         width: 100%;
     }
 
+    /* svelte-ignore css_unused_selector */
     .label-muted {
         color: var(--color-neutral-70);
     }
@@ -574,6 +747,4 @@
     .export-plus-icon {
         margin-left: auto;
     }
-
 </style>
-

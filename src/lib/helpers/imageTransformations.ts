@@ -6,7 +6,6 @@ export type TransformationState = {
     gravity?: string; // focal point: 'top-left', 'top', 'top-right', 'left', 'center', 'right', 'bottom-left', 'bottom', 'bottom-right'
     borderWidth?: number;
     borderColor?: string; // hex without #
-    borderStyle?: string; // 'solid', 'dashed', 'dotted'
     borderOpacity?: number; // 0-100
     borderRadius?: number;
     background?: string; // hex without #
@@ -20,22 +19,19 @@ export function generateTransformationParams(
 ): Record<string, string | number> {
     const params: Record<string, string | number> = {};
 
-    if (state.width) params.w = state.width;
-    if (state.height) params.h = state.height;
+    if (state.width) params.width = state.width;
+    if (state.height) params.height = state.height;
     if (state.gravity && state.gravity !== 'center') {
         params.gravity = state.gravity;
     }
     if (state.borderWidth && state.borderWidth > 0) {
-        params.border = state.borderWidth;
+        params.borderWidth = state.borderWidth;
         if (state.borderColor) {
-            params['border-color'] = state.borderColor.replace('#', '');
-        }
-        if (state.borderStyle) {
-            params['border-style'] = state.borderStyle;
+            params.borderColor = state.borderColor.replace('#', '');
         }
     }
     if (state.borderRadius && state.borderRadius > 0) {
-        params['border-radius'] = state.borderRadius;
+        params.borderRadius = state.borderRadius;
     }
     if (state.background) {
         params.background = state.background.replace('#', '');
@@ -125,4 +121,3 @@ export function getFormatLabel(format: ImageFormat): string {
             return 'JPG';
     }
 }
-

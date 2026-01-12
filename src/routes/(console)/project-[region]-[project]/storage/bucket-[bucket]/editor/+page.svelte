@@ -3,19 +3,17 @@
     import { Container } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
     import { ImageFormat, Query, type Models } from '@appwrite.io/console';
-import { Layout, Typography, Input } from '@appwrite.io/pink-svelte';
-import { onMount } from 'svelte';
-    import { Copy } from '$lib/components';
-    import { IconDuplicate } from '@appwrite.io/pink-icons-svelte';
-    import { InputSelect } from '$lib/elements/forms';
-    import { draggable } from '@neodrag/svelte';
-    import type { DragEventData } from '@neodrag/svelte';
-import ImageGrid from './components/imageGrid.svelte';
-import TransformationPanel from './components/transformationPanel.svelte';
-import CodePanel from './components/codePanel.svelte';
-import GridOverlay from './components/gridOverlay.svelte';
-import { getPresets, type Preset } from './components/presetManager';
-import type { TransformationState } from '$lib/helpers/imageTransformations';
+    import { Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { onMount } from 'svelte';
+    import { CopyInput } from '$lib/components';
+    import ImageGrid from './components/imageGrid.svelte';
+    import TransformationPanel from './components/transformationPanel.svelte';
+    import CodePanel from './components/codePanel.svelte';
+    import { getPresets, savePreset, createPreset, type Preset } from './components/presetManager';
+    import {
+        generateTransformationParams,
+        type TransformationState
+    } from '$lib/helpers/imageTransformations';
 
     // UI State
     let activeTab = $state<'design' | 'code'>('design');
@@ -25,7 +23,13 @@ import type { TransformationState } from '$lib/helpers/imageTransformations';
     let zoom = $state(100);
 
     // Transformation state
-    let transformationState = $state<TransformationState & { aspectRatioLocked?: boolean; originalAspectRatio?: number; crop?: string }>({
+    let transformationState = $state<
+        TransformationState & {
+            aspectRatioLocked?: boolean;
+            originalAspectRatio?: number;
+            crop?: string;
+        }
+    >({
         width: 700,
         height: 438,
         aspectRatioLocked: true,
@@ -33,7 +37,6 @@ import type { TransformationState } from '$lib/helpers/imageTransformations';
         gravity: 'center',
         borderWidth: 0,
         borderColor: '000000',
-        borderStyle: 'solid',
         borderOpacity: 100,
         borderRadius: 0,
         background: '',
@@ -50,34 +53,14 @@ import type { TransformationState } from '$lib/helpers/imageTransformations';
 
     // Canvas state
     let canvasContainer = $state<HTMLDivElement>();
-    let resizeStartDimensions = $state<{ width: number; height: number } | null>(null);
-
-    // Derived values for selectors
-    const fileOptions = $derived(bucketFiles.map(f => ({
-        value: f.$id,
-        label: f.name.length > 15 ? f.name.substring(0, 15) + '...' : f.name
-    })));
-
-    const presetOptions = $derived([
-        { value: 'none', label: 'None' },
-        ...presets.map(p => ({ value: p.id, label: p.name }))
-    ]);
-
-    let selectedFileId = $derived(selectedFile?.$id || '');
-
-    function handleFileChange(event: CustomEvent) {
-        const fileId = event.detail;
-        const file = bucketFiles.find((f) => f.$id === fileId);
-        if (file) {
-            selectedFile = file;
-        }
-    }
-
-    function handlePresetChangeTop(event: CustomEvent) {
-        const value = event.detail;
-        selectedPresetId = value === 'none' ? null : value;
-        handlePresetSelected(selectedPresetId);
-    }
+    let imageElement = $state<HTMLImageElement>();
+    let isResizing = $state(false);
+    let resizeHandle = $state<string | null>(null);
+    let startX = $state(0);
+    let startY = $state(0);
+    let startWidth = $state(0);
+    let startHeight = $state(0);
+    let focalPointOverlay = $state<string | null>(null);
 
     onMount(async () => {
         try {
@@ -108,85 +91,42 @@ import type { TransformationState } from '$lib/helpers/imageTransformations';
             transformationState.width = img.width;
             transformationState.height = img.height;
             transformationState.originalAspectRatio = img.width / img.height;
+            transformationState.aspectRatioLocked = true;
         };
-        img.src = getPreviewUrl();
+        // Load original image without transformations to get original dimensions
+        img.src =
+            sdk
+                .forProject(page.params.region, page.params.project)
+                .storage.getFilePreview({
+                    bucketId: selectedFile.bucketId,
+                    fileId: selectedFile.$id
+                })
+                .toString() + '&mode=admin';
     }
 
     function getPreviewUrl(): string {
         if (!selectedFile) return '';
-        
-        // Build params for SDK (camelCase)
-        const sdkParams: any = {
+        const params = generateTransformationParams(transformationState);
+        const previewParams: any = {
             bucketId: selectedFile.bucketId,
-            fileId: selectedFile.$id
+            fileId: selectedFile.$id,
+            ...params
         };
-        
-        if (transformationState.width) sdkParams.width = transformationState.width;
-        if (transformationState.height) sdkParams.height = transformationState.height;
-        if (transformationState.gravity && transformationState.gravity !== 'center') {
-            sdkParams.gravity = transformationState.gravity;
-        }
-        if (transformationState.borderWidth && transformationState.borderWidth > 0) {
-            sdkParams.borderWidth = transformationState.borderWidth;
-            if (transformationState.borderColor) {
-                sdkParams.borderColor = transformationState.borderColor.replace('#', '');
-            }
-            if (transformationState.borderStyle) {
-                sdkParams.borderStyle = transformationState.borderStyle;
-            }
-        }
-        if (transformationState.borderRadius && transformationState.borderRadius > 0) {
-            sdkParams.borderRadius = transformationState.borderRadius;
-        }
-        if (transformationState.background) {
-            sdkParams.background = transformationState.background.replace('#', '');
-        }
-        if (transformationState.quality && transformationState.quality < 100) {
-            sdkParams.quality = transformationState.quality;
-        }
-        if (transformationState.output) {
-            sdkParams.output = transformationState.output;
-        }
-        if (transformationState.rotation && transformationState.rotation !== 0) {
-            sdkParams.rotation = transformationState.rotation;
-        }
-        
-        const baseUrl = sdk
-            .forProject(page.params.region, page.params.project)
-            .storage.getFilePreview(sdkParams)
-            .toString();
-        
-        // Format URL parameters to match the desired format (kebab-case)
-        const url = new URL(baseUrl);
-        const params = new URLSearchParams();
-        
-        // Convert camelCase to kebab-case for display
-        url.searchParams.forEach((value, key) => {
-            if (key === 'width') {
-                params.set('w', value);
-            } else if (key === 'height') {
-                params.set('h', value);
-            } else if (key === 'borderWidth') {
-                params.set('border', value);
-            } else if (key === 'borderColor') {
-                params.set('border-color', value);
-            } else if (key === 'borderStyle') {
-                params.set('border-style', value);
-            } else if (key === 'borderRadius') {
-                params.set('border-radius', value);
-            } else {
-                params.set(key, value);
-            }
-        });
-        
-        return `${url.origin}${url.pathname}?${params.toString()}&mode=admin`;
+        return (
+            sdk
+                .forProject(page.params.region, page.params.project)
+                .storage.getFilePreview(previewParams)
+                .toString() + '&mode=admin'
+        );
     }
 
     let previewUrl = $derived(getPreviewUrl());
 
     // Watch for file selection changes and apply presets
+    let lastSelectedFileId = $state<string | null>(null);
     $effect(() => {
-        if (selectedFile) {
+        if (selectedFile && selectedFile.$id !== lastSelectedFileId) {
+            lastSelectedFileId = selectedFile.$id;
             // Reset transformations or apply preset if one is selected for this file
             if (appliedPresets[selectedFile.$id]) {
                 const preset = presets.find((p) => p.id === appliedPresets[selectedFile.$id]);
@@ -194,13 +134,14 @@ import type { TransformationState } from '$lib/helpers/imageTransformations';
                     transformationState = { ...preset.transformations };
                 }
             } else {
+                // Reset to original dimensions
                 loadImageDimensions();
             }
         }
     });
 
     function handleFocalPointClick(event: MouseEvent) {
-        if (!canvasContainer || !selectedFile || resizeStartDimensions) return;
+        if (!canvasContainer || !selectedFile || isResizing) return;
         const rect = canvasContainer.getBoundingClientRect();
         const x = event.clientX - rect.left;
         const y = event.clientY - rect.top;
@@ -222,97 +163,57 @@ import type { TransformationState } from '$lib/helpers/imageTransformations';
         else if (y > thirdY * 2) point = 'bottom';
 
         transformationState.gravity = point;
+        focalPointOverlay = point;
+        setTimeout(() => (focalPointOverlay = null), 1000);
     }
 
-    // Store handle positions to keep them at corners
-    let handlePosNw = $state({ x: 0, y: 0 });
-    let handlePosNe = $state({ x: 0, y: 0 });
-    let handlePosSw = $state({ x: 0, y: 0 });
-    let handlePosSe = $state({ x: 0, y: 0 });
+    function handleResizeStart(event: MouseEvent, handle: string) {
+        event.stopPropagation();
+        isResizing = true;
+        resizeHandle = handle;
+        startX = event.clientX;
+        startY = event.clientY;
+        startWidth = transformationState.width || 0;
+        startHeight = transformationState.height || 0;
+    }
 
-    function createResizeHandler(handle: string) {
-        // Determine cursor and axis based on handle position
-        const isDiagonal = handle.length === 2;
-        const axis = isDiagonal ? 'both' : (handle.includes('e') || handle.includes('w') ? 'x' : 'y');
-        
-        // Get the appropriate handle position based on handle name
-        let handlePos: { x: number; y: number };
-        if (handle === 'nw') handlePos = handlePosNw;
-        else if (handle === 'ne') handlePos = handlePosNe;
-        else if (handle === 'sw') handlePos = handlePosSw;
-        else handlePos = handlePosSe;
-        
-        return {
-            onDragStart: () => {
-                resizeStartDimensions = {
-                    width: transformationState.width || 0,
-                    height: transformationState.height || 0
-                };
-                handlePos.x = 0;
-                handlePos.y = 0;
-            },
-            onDrag: ({ offsetX, offsetY }: DragEventData) => {
-                if (!resizeStartDimensions) return;
-                
-                const scale = zoom / 100;
-                // Calculate dimension changes based on drag offset
-                const dx = offsetX / scale;
-                const dy = offsetY / scale;
+    function handleMouseMove(event: MouseEvent) {
+        if (!isResizing || !resizeHandle) return;
+        const dx = event.clientX - startX;
+        const dy = event.clientY - startY;
+        const scale = zoom / 100;
 
-                let newWidth = resizeStartDimensions.width;
-                let newHeight = resizeStartDimensions.height;
+        let newWidth = startWidth;
+        let newHeight = startHeight;
 
-                // Calculate new dimensions based on handle position
-                // East (right) handle: increase width
-                if (handle.includes('e')) {
-                    newWidth = Math.max(1, resizeStartDimensions.width + dx);
-                }
-                // West (left) handle: decrease width
-                if (handle.includes('w')) {
-                    newWidth = Math.max(1, resizeStartDimensions.width - dx);
-                }
-                // South (bottom) handle: increase height
-                if (handle.includes('s')) {
-                    newHeight = Math.max(1, resizeStartDimensions.height + dy);
-                }
-                // North (top) handle: decrease height
-                if (handle.includes('n')) {
-                    newHeight = Math.max(1, resizeStartDimensions.height - dy);
-                }
+        if (resizeHandle.includes('e')) {
+            newWidth = Math.max(1, startWidth + dx / scale);
+        }
+        if (resizeHandle.includes('w')) {
+            newWidth = Math.max(1, startWidth - dx / scale);
+        }
+        if (resizeHandle.includes('s')) {
+            newHeight = Math.max(1, startHeight + dy / scale);
+        }
+        if (resizeHandle.includes('n')) {
+            newHeight = Math.max(1, startHeight - dy / scale);
+        }
 
-                // Apply aspect ratio lock with smooth calculation
-                if (transformationState.aspectRatioLocked && transformationState.originalAspectRatio) {
-                    // For diagonal handles, prefer width-based calculation
-                    if (handle.includes('e') || handle.includes('w')) {
-                        newHeight = Math.round(newWidth / transformationState.originalAspectRatio);
-                    } else {
-                        newWidth = Math.round(newHeight * transformationState.originalAspectRatio);
-                    }
-                }
+        if (transformationState.aspectRatioLocked && transformationState.originalAspectRatio) {
+            if (resizeHandle.includes('e') || resizeHandle.includes('w')) {
+                newHeight = Math.round(newWidth / transformationState.originalAspectRatio);
+            } else {
+                newWidth = Math.round(newHeight * transformationState.originalAspectRatio);
+            }
+        }
 
-                // Apply with smooth transition (physics-like)
-                transformationState.width = Math.round(newWidth);
-                transformationState.height = Math.round(newHeight);
-                
-                // Reset handle position to keep it at the corner
-                handlePos.x = 0;
-                handlePos.y = 0;
-            },
-            onDragEnd: () => {
-                resizeStartDimensions = null;
-                handlePos.x = 0;
-                handlePos.y = 0;
-            },
-            // Physics-like behavior: grid snapping and smooth movement
-            grid: [5, 5], // Snap to 5px grid for smoother feel
-            threshold: { distance: 2 }, // Small threshold to prevent accidental drags
-            gpuAcceleration: true, // Smooth hardware-accelerated movement
-            axis: axis as 'both' | 'x' | 'y', // Constrain movement based on handle
-            // Keep handle at corner by resetting position reactively
-            position: handlePos,
-            // Add smooth easing for physics-like feel
-            defaultClassDragging: 'resizing'
-        };
+        transformationState.width = newWidth;
+        transformationState.height = newHeight;
+    }
+
+    function handleMouseUp() {
+        isResizing = false;
+        resizeHandle = null;
     }
 
     function handlePresetSelected(presetId: string | null) {
@@ -328,6 +229,50 @@ import type { TransformationState } from '$lib/helpers/imageTransformations';
         }
     }
 
+    function saveCurrentAsPreset() {
+        const name = prompt('Enter preset name:');
+        if (!name || !selectedFile) return;
+        const preset = createPreset(name, transformationState);
+        savePreset(page.params.bucket, preset);
+        presets = getPresets(page.params.bucket);
+        selectedPresetId = preset.id;
+        appliedPresets[selectedFile.$id] = preset.id;
+    }
+
+    function getFocalPointLabel(): string {
+        const point = transformationState.gravity || 'center';
+        const labels: Record<string, string> = {
+            'top-left': 'Top-Left',
+            top: 'Top',
+            'top-right': 'Top-Right',
+            left: 'Left',
+            center: 'Center',
+            right: 'Right',
+            'bottom-left': 'Bottom-Left',
+            bottom: 'Bottom',
+            'bottom-right': 'Bottom-Right'
+        };
+        return labels[point] || 'Center';
+    }
+
+    function getFocalPointPosition(): { top: string; left: string; width: string; height: string } {
+        const point = transformationState.gravity || 'center';
+        const positions: Record<
+            string,
+            { top: string; left: string; width: string; height: string }
+        > = {
+            'top-left': { top: '0%', left: '0%', width: '33.33%', height: '33.33%' },
+            top: { top: '0%', left: '33.33%', width: '33.33%', height: '33.33%' },
+            'top-right': { top: '0%', left: '66.66%', width: '33.33%', height: '33.33%' },
+            left: { top: '33.33%', left: '0%', width: '33.33%', height: '33.33%' },
+            center: { top: '33.33%', left: '33.33%', width: '33.33%', height: '33.33%' },
+            right: { top: '33.33%', left: '66.66%', width: '33.33%', height: '33.33%' },
+            'bottom-left': { top: '66.66%', left: '0%', width: '33.33%', height: '33.33%' },
+            bottom: { top: '66.66%', left: '33.33%', width: '33.33%', height: '33.33%' },
+            'bottom-right': { top: '66.66%', left: '66.66%', width: '33.33%', height: '33.33%' }
+        };
+        return positions[point] || positions.center;
+    }
 </script>
 
 <Container>
@@ -349,91 +294,124 @@ import type { TransformationState } from '$lib/helpers/imageTransformations';
             <ImageGrid
                 files={bucketFiles}
                 bind:selectedFile
-                transformationState={transformationState}
-                appliedPresets={appliedPresets} />
+                {transformationState}
+                {appliedPresets} />
         </Layout.Stack>
     {:else}
         <!-- Editor View -->
-        <div class="editor-wrapper">
-            <!-- Top Header: URL + File/Preset Selectors -->
-            <div class="editor-header">
-                <div class="url-input-wrapper">
-                    <Input.Text readonly value={previewUrl.replace(/^https?:\/\//, '')}>
-                        <span class="url-prefix" slot="start">https://</span>
-                        <Copy value={previewUrl} slot="end">
-                            <Input.Action icon={IconDuplicate} />
-                        </Copy>
-                    </Input.Text>
-                </div>
-                <div class="header-selectors">
-                    <InputSelect
-                        id="file-selector-top"
-                        options={fileOptions}
-                        value={selectedFileId}
-                        on:change={handleFileChange}
-                        placeholder="Select file" />
-                    <InputSelect
-                        id="preset-selector-top"
-                        options={presetOptions}
-                        value={selectedPresetId || 'none'}
-                        on:change={handlePresetChangeTop}
-                        placeholder="None" />
-                </div>
+        <Layout.Stack gap="l">
+            <!-- URL Input -->
+            <div class="url-section">
+                <CopyInput label="" value={previewUrl} />
             </div>
 
             <!-- Main Editor Layout -->
             <div class="editor-layout">
                 <!-- Left Panel - Canvas -->
                 <div class="preview-section">
+                    <!-- Focal Point Label -->
+                    <div class="focal-point-section">
+                        <Typography.Text class="focal-point-label">
+                            Focal point: {getFocalPointLabel()}
+                        </Typography.Text>
+                    </div>
+
                     <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
                     <div
                         class="preview-container"
                         bind:this={canvasContainer}
+                        role="button"
+                        tabindex="-1"
                         onclick={handleFocalPointClick}
-                        role="img"
-                        tabindex="-1">
+                        onkeydown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault();
+                                handleFocalPointClick(e as any);
+                            }
+                        }}
+                        onmousemove={handleMouseMove}
+                        onmouseup={handleMouseUp}
+                        onmouseleave={handleMouseUp}
+                        style="cursor: crosshair;">
                         <div class="preview-wrapper" style="transform: scale({zoom / 100});">
                             <img
+                                bind:this={imageElement}
                                 src={previewUrl}
                                 alt={selectedFile.name}
                                 class="preview-image"
-                                style="width: {transformationState.width || 0}px; height: {transformationState.height || 0}px;"
                                 draggable="false" />
                             <!-- Grid overlay (rule of thirds) -->
-                            <GridOverlay type="rule-of-thirds" />
-                            <!-- Resize handles with neodrag -->
+                            <div class="grid-overlay">
+                                <div class="grid-line grid-line-v" style="left: 33.33%;"></div>
+                                <div class="grid-line grid-line-v" style="left: 66.66%;"></div>
+                                <div class="grid-line grid-line-h" style="top: 33.33%;"></div>
+                                <div class="grid-line grid-line-h" style="top: 66.66%;"></div>
+                            </div>
+                            <!-- Focal point overlay -->
+                            {#if focalPointOverlay || transformationState.gravity}
+                                {@const pos = getFocalPointPosition()}
+                                <div
+                                    class="focal-overlay"
+                                    style="top: {pos.top}; left: {pos.left}; width: {pos.width}; height: {pos.height};">
+                                </div>
+                            {/if}
+                            <!-- Resize handles -->
                             <div class="resize-handles">
                                 <button
                                     type="button"
                                     class="handle handle-nw"
-                                    use:draggable={createResizeHandler('nw')}
-                                    aria-label="Resize from top-left"></button>
+                                    onmousedown={(e) => handleResizeStart(e, 'nw')}
+                                    aria-label="Resize from top-left"
+                                    style="cursor: nwse-resize;"></button>
                                 <button
                                     type="button"
                                     class="handle handle-ne"
-                                    use:draggable={createResizeHandler('ne')}
-                                    aria-label="Resize from top-right"></button>
+                                    onmousedown={(e) => handleResizeStart(e, 'ne')}
+                                    aria-label="Resize from top-right"
+                                    style="cursor: nesw-resize;"></button>
                                 <button
                                     type="button"
                                     class="handle handle-sw"
-                                    use:draggable={createResizeHandler('sw')}
-                                    aria-label="Resize from bottom-left"></button>
+                                    onmousedown={(e) => handleResizeStart(e, 'sw')}
+                                    aria-label="Resize from bottom-left"
+                                    style="cursor: nesw-resize;"></button>
                                 <button
                                     type="button"
                                     class="handle handle-se"
-                                    use:draggable={createResizeHandler('se')}
-                                    aria-label="Resize from bottom-right"></button>
+                                    onmousedown={(e) => handleResizeStart(e, 'se')}
+                                    aria-label="Resize from bottom-right"
+                                    style="cursor: nwse-resize;"></button>
                             </div>
+                        </div>
+                        <Typography.Text variant="m-400" class="dimensions-text">
+                            {transformationState.width || 0} × {transformationState.height || 0}
+                        </Typography.Text>
+
+                        <!-- Rotation slider -->
+                        <div class="rotation-slider">
+                            <input
+                                type="range"
+                                min="0"
+                                max="360"
+                                bind:value={transformationState.rotation}
+                                class="slider" />
+                            <Typography.Text class="rotation-text"
+                                >{transformationState.rotation || 0}°</Typography.Text>
                         </div>
                     </div>
                 </div>
 
-                <!-- Right Panel - Controls Sidebar -->
+                <!-- Right Panel - Controls -->
                 <div class="controls-section">
                     <TransformationPanel
                         bind:activeTab
+                        files={bucketFiles}
+                        bind:selectedFile
                         bind:transformationState
-                        bind:zoom />
+                        {presets}
+                        bind:selectedPresetId
+                        bind:zoom
+                        on:presetSelected={(e) => handlePresetSelected(e.detail)} />
 
                     {#if activeTab === 'code' && selectedFile}
                         <div class="code-panel-wrapper">
@@ -443,9 +421,16 @@ import type { TransformationState } from '$lib/helpers/imageTransformations';
                                 fileId={selectedFile.$id} />
                         </div>
                     {/if}
+
+                    <!-- Save as Preset Button -->
+                    <div class="preset-actions">
+                        <button class="save-preset-btn" onclick={saveCurrentAsPreset}>
+                            Save as preset
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
+        </Layout.Stack>
     {/if}
 </Container>
 
@@ -459,56 +444,48 @@ import type { TransformationState } from '$lib/helpers/imageTransformations';
         text-align: center;
     }
 
-    .editor-wrapper {
-        display: flex;
-        flex-direction: column;
-        gap: var(--space-m);
-    }
-
-    .editor-header {
-        display: flex;
-        align-items: center;
-        gap: var(--space-m);
-    }
-
-    .url-input-wrapper {
-        flex: 1;
-    }
-
-    .header-selectors {
-        display: flex;
-        gap: var(--space-s);
-    }
-
-    :global(.header-selectors > *) {
-        min-width: 120px;
+    .url-section {
+        width: 100%;
     }
 
     .editor-layout {
         display: grid;
-        grid-template-columns: 1fr 280px;
-        gap: 0;
-        min-height: 550px;
+        grid-template-columns: 1fr 320px;
+        gap: 1.5rem;
+        min-height: 600px;
         border: 1px solid var(--color-border);
-        border-radius: var(--border-radius-small);
+        border-radius: var(--border-radius-medium);
         overflow: hidden;
     }
 
     .preview-section {
-        background: var(--color-neutral-10);
+        background: var(--color-neutral-5);
         position: relative;
         display: flex;
         flex-direction: column;
         overflow: hidden;
+    }
+
+    .focal-point-section {
+        position: absolute;
+        top: 1rem;
+        left: 1rem;
+        z-index: 10;
+        background: rgba(255, 255, 255, 0.9);
+        padding: 0.5rem 0.75rem;
+        border-radius: var(--border-radius-small);
+        pointer-events: none;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
     .preview-container {
         flex: 1;
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
         position: relative;
-        padding: var(--space-xl);
+        padding: 2rem;
         overflow: auto;
     }
 
@@ -526,6 +503,39 @@ import type { TransformationState } from '$lib/helpers/imageTransformations';
         user-select: none;
     }
 
+    .grid-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        pointer-events: none;
+    }
+
+    .grid-line {
+        position: absolute;
+        background: rgba(255, 255, 255, 0.3);
+    }
+
+    .grid-line-v {
+        top: 0;
+        bottom: 0;
+        width: 1px;
+    }
+
+    .grid-line-h {
+        left: 0;
+        right: 0;
+        height: 1px;
+    }
+
+    .focal-overlay {
+        position: absolute;
+        background: rgba(59, 130, 246, 0.3);
+        border: 2px solid rgba(59, 130, 246, 0.6);
+        pointer-events: none;
+        transition: all 0.2s;
+    }
 
     .resize-handles {
         position: absolute;
@@ -545,53 +555,65 @@ import type { TransformationState } from '$lib/helpers/imageTransformations';
         border-radius: 50%;
         pointer-events: all;
         z-index: 10;
-        cursor: nwse-resize;
-        transition: transform 0.1s ease-out, background-color 0.2s;
-        will-change: transform;
-    }
-
-    .handle:hover {
-        transform: scale(1.2);
-        background: var(--color-primary-110);
     }
 
     .handle-nw {
         top: -6px;
         left: -6px;
-        cursor: nwse-resize;
     }
 
     .handle-ne {
         top: -6px;
         right: -6px;
-        cursor: nesw-resize;
     }
 
     .handle-sw {
         bottom: -6px;
         left: -6px;
-        cursor: nesw-resize;
     }
 
     .handle-se {
         bottom: -6px;
         right: -6px;
-        cursor: nwse-resize;
     }
 
-    /* Smooth transitions for image dimensions with physics-like easing */
-    .preview-image {
-        transition: width 0.15s cubic-bezier(0.4, 0, 0.2, 1), height 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    /* svelte-ignore css_unused_selector */
+    .dimensions-text {
+        margin-top: 1rem;
+        background: var(--color-neutral-0);
+        padding: 0.5rem 0.75rem;
+        border-radius: var(--border-radius-small);
+        border: 1px solid var(--color-border);
     }
 
-    /* Resizing state for handles (applied by neodrag) */
-    :global(.resizing) {
-        opacity: 0.9;
+    .rotation-slider {
+        margin-top: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        width: 100%;
+        max-width: 300px;
     }
 
-    :global(.resizing .handle) {
-        transform: scale(1.3);
-        background: var(--color-primary-110);
+    .slider {
+        flex: 1;
+        height: 4px;
+        border-radius: 2px;
+        background: var(--color-neutral-20);
+        outline: none;
+        accent-color: var(--color-primary-100);
+    }
+
+    /* svelte-ignore css_unused_selector */
+    .rotation-text {
+        min-width: 40px;
+        text-align: right;
+        color: var(--color-neutral-70);
+    }
+
+    .handle {
+        border: none;
+        padding: 0;
     }
 
     .controls-section {
@@ -606,8 +628,31 @@ import type { TransformationState } from '$lib/helpers/imageTransformations';
     .code-panel-wrapper {
         padding: 1rem;
         border-top: 1px solid var(--color-border);
-        flex: 1;
+        max-height: 400px;
         overflow-y: auto;
+    }
+
+    .preset-actions {
+        padding: 1rem;
+        border-top: 1px solid var(--color-border);
+        margin-top: auto;
+    }
+
+    .save-preset-btn {
+        width: 100%;
+        padding: 0.75rem;
+        background: var(--color-primary-100);
+        color: white;
+        border: none;
+        border-radius: var(--border-radius-small);
+        font-size: var(--font-size-0);
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    .save-preset-btn:hover {
+        background: var(--color-primary-110);
     }
 
     @media (max-width: 1024px) {

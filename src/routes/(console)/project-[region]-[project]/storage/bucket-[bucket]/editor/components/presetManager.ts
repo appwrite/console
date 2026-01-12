@@ -46,10 +46,7 @@ export function deletePreset(bucketId: string, presetId: string): void {
     }
 }
 
-export function createPreset(
-    name: string,
-    transformations: TransformationState
-): Preset {
+export function createPreset(name: string, transformations: TransformationState): Preset {
     return {
         id: `preset-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         name,
@@ -57,4 +54,3 @@ export function createPreset(
         createdAt: Date.now()
     };
 }
-
