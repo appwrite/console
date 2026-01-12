@@ -1,0 +1,579 @@
+<script lang="ts">
+    import { Accordion, Typography } from '@appwrite.io/pink-svelte';
+    import { InputSelect } from '$lib/elements/forms';
+    import { Tab, Tabs } from '$lib/components';
+    import type { TransformationState } from '$lib/helpers/imageTransformations';
+
+    let {
+        activeTab = $bindable('design'),
+        transformationState = $bindable({}),
+        zoom = $bindable(100)
+    }: {
+        activeTab?: 'design' | 'code';
+        transformationState?: TransformationState & { aspectRatioLocked?: boolean; originalAspectRatio?: number; crop?: string };
+        zoom?: number;
+    } = $props();
+
+    // Crop options
+    const cropOptions = [
+        { label: 'None', value: 'none' },
+        { label: '1:1', value: '1:1' },
+        { label: '4:3', value: '4:3' },
+        { label: '16:9', value: '16:9' },
+        { label: 'Custom', value: 'custom' }
+    ];
+
+    const zoomOptions = [50, 75, 100, 125, 150, 200];
+
+    function handleWidthChange(value: number) {
+        transformationState.width = value;
+        if (transformationState.aspectRatioLocked && transformationState.originalAspectRatio) {
+            transformationState.height = Math.round(value / transformationState.originalAspectRatio);
+        }
+    }
+
+    function handleHeightChange(value: number) {
+        transformationState.height = value;
+        if (transformationState.aspectRatioLocked && transformationState.originalAspectRatio) {
+            transformationState.width = Math.round(value * transformationState.originalAspectRatio);
+        }
+    }
+
+    function changeWidth(delta: number) {
+        handleWidthChange((transformationState.width || 0) + delta);
+    }
+
+    function changeHeight(delta: number) {
+        handleHeightChange((transformationState.height || 0) + delta);
+    }
+
+    function toggleAspectRatioLock() {
+        transformationState.aspectRatioLocked = !transformationState.aspectRatioLocked;
+        if (transformationState.aspectRatioLocked && transformationState.width && transformationState.height) {
+            transformationState.originalAspectRatio = transformationState.width / transformationState.height;
+        }
+    }
+</script>
+
+<div class="panel">
+    <!-- Design/Code tabs and zoom -->
+    <div class="view-toggle-section">
+        <Tabs>
+            <Tab selected={activeTab === 'design'} on:click={() => (activeTab = 'design')}>
+                Design
+            </Tab>
+            <Tab selected={activeTab === 'code'} on:click={() => (activeTab = 'code')}>
+                Code
+            </Tab>
+        </Tabs>
+        <InputSelect
+            id="zoom-selector"
+            options={zoomOptions.map(z => ({ value: z, label: `${z}%` }))}
+            bind:value={zoom} />
+    </div>
+
+    {#if activeTab === 'design'}
+        <!-- Transform Accordion -->
+        <div class="accordion-group">
+            <Accordion title="Transform" open>
+                <div class="control-content">
+                    <div class="control-row">
+                        <Typography.Text variant="m-400" class="label-muted">Dimensions</Typography.Text>
+                        <div class="dimensions-grid">
+                            <!-- Width -->
+                            <div class="input-group">
+                                <span class="input-prefix">W</span>
+                                <input
+                                    type="number"
+                                    class="panel-input"
+                                    value={transformationState.width || 0}
+                                    min="1"
+                                    max="4000"
+                                    oninput={(e) =>
+                                        handleWidthChange(parseInt(e.currentTarget.value) || 0)} />
+                                <div class="spinner-controls">
+                                    <button class="spinner-btn" onclick={() => changeWidth(1)}>▲</button>
+                                    <button class="spinner-btn" onclick={() => changeWidth(-1)}>▼</button>
+                                </div>
+                            </div>
+                            <!-- Height -->
+                            <div class="input-group">
+                                <span class="input-prefix">H</span>
+                                <input
+                                    type="number"
+                                    class="panel-input"
+                                    value={transformationState.height || 0}
+                                    min="1"
+                                    max="4000"
+                                    oninput={(e) =>
+                                        handleHeightChange(parseInt(e.currentTarget.value) || 0)} />
+                                <div class="spinner-controls">
+                                    <button class="spinner-btn" onclick={() => changeHeight(1)}>▲</button>
+                                    <button class="spinner-btn" onclick={() => changeHeight(-1)}>▼</button>
+                                </div>
+                            </div>
+                            <!-- Lock -->
+                            <button
+                                class="lock-btn {transformationState.aspectRatioLocked ? 'is-locked' : ''}"
+                                onclick={toggleAspectRatioLock}
+                                aria-label="Toggle aspect ratio lock">
+                                {#if transformationState.aspectRatioLocked}
+                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                                        <path
+                                            d="M12 6H11V4C11 2.34315 9.65685 1 8 1C6.34315 1 5 2.34315 5 4V6H4C2.89543 6 2 6.89543 2 8V14C2 15.1046 2.89543 16 4 16H12C13.1046 16 14 15.1046 14 14V8C14 6.89543 13.1046 6 12 6ZM7 4C7 3.44772 7.44772 3 8 3C8.55228 3 9 3.44772 9 4V6H7V4ZM12 14H4V8H12V14Z"
+                                            fill-opacity="0.4" />
+                                    </svg>
+                                {:else}
+                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                                        <path
+                                            d="M11 6H12C13.1046 6 14 6.89543 14 8V14C14 15.1046 13.1046 16 12 16H4C2.89543 16 2 15.1046 2 14V8C2 6.89543 2.89543 6 4 6H5V4C5 2.34315 6.34315 1 8 1C9.65685 1 11 2.34315 11 4V6ZM7 6V4C7 3.44772 7.44772 3 8 3C8.55228 3 9 3.44772 9 4V6H7ZM4 8V14H12V8H4Z"
+                                            fill-opacity="0.4" />
+                                    </svg>
+                                {/if}
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="control-row">
+                        <Typography.Text variant="m-400" class="label-muted">Crop</Typography.Text>
+                        <select
+                            class="panel-select full-width"
+                            value={transformationState.crop || 'none'}
+                            onchange={(e) => {
+                                transformationState.crop = (e.target as HTMLSelectElement).value;
+                            }}>
+                            {#each cropOptions as option}
+                                <option value={option.value}>{option.label}</option>
+                            {/each}
+                        </select>
+                    </div>
+                </div>
+            </Accordion>
+        </div>
+
+        <!-- Border Accordion -->
+        <div class="accordion-group">
+            <Accordion title="Border">
+                <div class="control-content">
+                    <div class="control-row">
+                        <Typography.Text variant="m-400" class="label-muted">Color</Typography.Text>
+                        <div class="color-input-wrapper">
+                            <input
+                                type="color"
+                                class="color-input"
+                                value={transformationState.borderColor ? `#${transformationState.borderColor}` : '#000000'}
+                                oninput={(e) => {
+                                    transformationState.borderColor = (e.target as HTMLInputElement).value.replace('#', '');
+                                }} />
+                            <input
+                                type="text"
+                                class="color-text-input"
+                                value={transformationState.borderColor || '000000'}
+                                placeholder="000000"
+                                oninput={(e) => {
+                                    const value = (e.target as HTMLInputElement).value.replace('#', '');
+                                    if (/^[0-9A-Fa-f]{0,6}$/.test(value)) {
+                                        transformationState.borderColor = value;
+                                    }
+                                }} />
+                            <div class="opacity-control">
+                                <button
+                                    class="opacity-minus-btn"
+                                    onclick={() => {
+                                        transformationState.borderOpacity = Math.max(0, (transformationState.borderOpacity || 100) - 1);
+                                    }}
+                                    aria-label="Decrease opacity">
+                                    −
+                                </button>
+                                <input
+                                    type="text"
+                                    class="opacity-input"
+                                    value={`${transformationState.borderOpacity || 100} %`}
+                                    readonly />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="control-row">
+                        <Typography.Text variant="m-400" class="label-muted">Width</Typography.Text>
+                        <div class="input-group">
+                            <input
+                                type="number"
+                                class="panel-input"
+                                value={transformationState.borderWidth || 0}
+                                min="0"
+                                max="100"
+                                oninput={(e) => {
+                                    transformationState.borderWidth = parseInt(e.currentTarget.value) || 0;
+                                }} />
+                            <div class="spinner-controls">
+                                <button
+                                    class="spinner-btn"
+                                    onclick={() => {
+                                        transformationState.borderWidth = Math.min(100, (transformationState.borderWidth || 0) + 1);
+                                    }}>
+                                    ▲
+                                </button>
+                                <button
+                                    class="spinner-btn"
+                                    onclick={() => {
+                                        transformationState.borderWidth = Math.max(0, (transformationState.borderWidth || 0) - 1);
+                                    }}>
+                                    ▼
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="control-row">
+                        <Typography.Text variant="m-400" class="label-muted">Border radius</Typography.Text>
+                        <div class="border-radius-control">
+                            <button
+                                class="border-radius-icon-btn"
+                                onclick={() => {
+                                    // Link/unlink border radius
+                                }}
+                                aria-label="Link border radius">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                                    <path
+                                        d="M4 2C2.89543 2 2 2.89543 2 4V12C2 13.1046 2.89543 14 4 14H12C13.1046 14 14 13.1046 14 12V4C14 2.89543 13.1046 2 12 2H4ZM3 4C3 3.44772 3.44772 3 4 3H12C12.5523 3 13 3.44772 13 4V12C13 12.5523 12.5523 13 12 13H4C3.44772 13 3 12.5523 3 12V4Z"
+                                        fill-opacity="0.4" />
+                                    <path
+                                        d="M4 3C3.44772 3 3 3.44772 3 4V5H4V4H5V3H4Z"
+                                        fill-opacity="0.6" />
+                                </svg>
+                            </button>
+                            <input
+                                type="number"
+                                class="panel-input"
+                                value={transformationState.borderRadius || 0}
+                                min="0"
+                                max="100"
+                                oninput={(e) => {
+                                    transformationState.borderRadius = parseInt(e.currentTarget.value) || 0;
+                                }} />
+                            <button
+                                class="border-radius-link-btn"
+                                onclick={() => {
+                                    // Link corners
+                                }}
+                                aria-label="Link corners">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                                    <path
+                                        d="M5 3L3 5L5 7L7 5L5 3ZM11 3L9 5L11 7L13 5L11 3ZM5 13L3 11L5 9L7 11L5 13ZM11 13L9 11L11 9L13 11L11 13Z"
+                                        fill-opacity="0.4" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </Accordion>
+        </div>
+
+        <!-- Fill Accordion -->
+        <div class="accordion-group">
+            <Accordion title="Fill">
+                <div class="control-content">
+                    <div class="control-row">
+                        <Typography.Text variant="m-400" class="label-muted">Background Color</Typography.Text>
+                        <input
+                            type="color"
+                            class="color-input-full"
+                            value={transformationState.background ? `#${transformationState.background}` : '#ffffff'}
+                            oninput={(e) => {
+                                transformationState.background = (e.target as HTMLInputElement).value.replace('#', '');
+                            }} />
+                    </div>
+                </div>
+            </Accordion>
+        </div>
+
+        <!-- Export Accordion -->
+        <div class="accordion-group">
+            <Accordion title="Export">
+                <div class="control-content">
+                    <button class="export-button">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" class="export-icon">
+                            <path
+                                d="M2 2C2 1.44772 2.44772 1 3 1H6C6.55228 1 7 1.44772 7 2V3H13C13.5523 3 14 3.44772 14 4V13C14 13.5523 13.5523 14 13 14H3C2.44772 14 2 13.5523 2 13V2ZM3 2V13H13V4H7V2H3Z"
+                                fill-opacity="0.4" />
+                            <path
+                                d="M4 4H12V5H4V4ZM4 7H12V8H4V7ZM4 10H9V11H4V10Z"
+                                fill-opacity="0.6" />
+                        </svg>
+                        <span>Export</span>
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" class="export-plus-icon">
+                            <path d="M8 3V13M3 8H13" stroke="currentColor" stroke-width="1.5" fill="none" />
+                        </svg>
+                    </button>
+                </div>
+            </Accordion>
+        </div>
+    {/if}
+</div>
+
+<style>
+    .panel {
+        display: flex;
+        flex-direction: column;
+        background: var(--color-neutral-0);
+        border-left: 1px solid var(--color-border);
+        height: 100%;
+    }
+
+    .view-toggle-section {
+        padding: 0.75rem 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid var(--color-border);
+    }
+
+    .accordion-group {
+        border-bottom: 1px solid var(--color-border);
+        background: var(--color-neutral-0);
+    }
+
+    :global(.accordion-group .accordion-trigger) {
+        padding: 1rem !important;
+        font-weight: 500;
+        color: var(--color-neutral-100);
+    }
+
+    .control-content {
+        padding: 0 1rem 1rem 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .control-row {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .panel-select,
+    .panel-input {
+        width: 100%;
+        border: 1px solid var(--color-border);
+        border-radius: var(--border-radius-small);
+        background: var(--color-neutral-0);
+        color: var(--color-neutral-100);
+        font-size: var(--font-size-0);
+        transition: border-color 0.2s;
+    }
+
+    .panel-select {
+        padding: 0.5rem;
+    }
+
+    .panel-input {
+        padding: 0.5rem;
+    }
+
+    .panel-select:hover,
+    .panel-input:hover {
+        border-color: var(--color-neutral-50);
+    }
+
+    .panel-select:focus,
+    .panel-input:focus {
+        outline: none;
+        border-color: var(--color-primary-100);
+        box-shadow: 0 0 0 3px rgba(253, 54, 110, 0.1);
+    }
+
+    .dimensions-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr auto;
+        gap: 0.5rem;
+        align-items: center;
+    }
+
+    .input-group {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .input-prefix {
+        position: absolute;
+        left: 0.75rem;
+        color: var(--color-neutral-50);
+        font-size: var(--font-size-0);
+        font-weight: 500;
+        pointer-events: none;
+    }
+
+    .dimensions-grid .panel-input {
+        padding-left: 2rem;
+        padding-right: 20px;
+    }
+
+    .spinner-controls {
+        position: absolute;
+        right: 2px;
+        top: 2px;
+        bottom: 2px;
+        display: flex;
+        flex-direction: column;
+        width: 16px;
+        border-left: 1px solid var(--color-border);
+        background: var(--color-neutral-5);
+        border-radius: 0 var(--border-radius-small) var(--border-radius-small) 0;
+    }
+
+    .spinner-btn {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        background: transparent;
+        font-size: 8px;
+        color: var(--color-neutral-50);
+        cursor: pointer;
+        padding: 0;
+    }
+
+    .spinner-btn:hover {
+        background: var(--color-neutral-10);
+        color: var(--color-neutral-100);
+    }
+
+    .spinner-btn:first-child {
+        border-bottom: 1px solid var(--color-border);
+    }
+
+    .lock-btn {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        background: transparent;
+        color: var(--color-neutral-50);
+        border-radius: var(--border-radius-small);
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .lock-btn:hover {
+        background: var(--color-neutral-10);
+        color: var(--color-neutral-80);
+    }
+
+    .lock-btn.is-locked {
+        color: var(--color-neutral-100);
+    }
+
+    .full-width {
+        width: 100%;
+    }
+
+    .label-muted {
+        color: var(--color-neutral-70);
+    }
+
+    .color-input-wrapper {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+    }
+
+    .color-input {
+        width: 38px;
+        height: 38px;
+        padding: 2px;
+        border: 1px solid var(--color-border);
+        border-radius: var(--border-radius-small);
+        cursor: pointer;
+        background: var(--color-neutral-0);
+    }
+
+    .color-text-input {
+        flex: 1;
+        padding: 0.5rem;
+        border: 1px solid var(--color-border);
+        border-radius: var(--border-radius-small);
+        background: var(--color-neutral-0);
+        color: var(--color-neutral-100);
+        font-size: var(--font-size-0);
+        font-family: monospace;
+    }
+
+    .color-input-full {
+        width: 100%;
+        height: 38px;
+        padding: 2px;
+        border: 1px solid var(--color-border);
+        border-radius: var(--border-radius-small);
+        cursor: pointer;
+        background: var(--color-neutral-0);
+    }
+
+    .border-radius-control {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .border-radius-icon-btn,
+    .border-radius-link-btn {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--color-border);
+        border-radius: var(--border-radius-small);
+        background: var(--color-neutral-0);
+        color: var(--color-neutral-50);
+        cursor: pointer;
+        padding: 0;
+        flex-shrink: 0;
+    }
+
+    .border-radius-icon-btn:hover,
+    .border-radius-link-btn:hover {
+        background: var(--color-neutral-10);
+        color: var(--color-neutral-80);
+    }
+
+    .border-radius-control .panel-input {
+        flex: 1;
+    }
+
+    .export-button {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1rem;
+        background: var(--color-primary-100);
+        color: white;
+        border: none;
+        border-radius: var(--border-radius-small);
+        font-size: var(--font-size-0);
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    .export-button:hover {
+        background: var(--color-primary-110);
+    }
+
+    .export-icon,
+    .export-icon,
+    .export-plus-icon {
+        flex-shrink: 0;
+    }
+
+    .export-plus-icon {
+        margin-left: auto;
+    }
+
+</style>
+

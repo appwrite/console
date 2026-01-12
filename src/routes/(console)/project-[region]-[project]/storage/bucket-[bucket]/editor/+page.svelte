@@ -3,61 +3,81 @@
     import { Container } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
     import { ImageFormat, Query, type Models } from '@appwrite.io/console';
-    import { Layout, Typography, Accordion } from '@appwrite.io/pink-svelte';
-    import { onMount} from 'svelte';
-    import { CopyInput, Tab, Tabs } from '$lib/components';
+import { Layout, Typography, Input } from '@appwrite.io/pink-svelte';
+import { onMount } from 'svelte';
+    import { Copy } from '$lib/components';
+    import { IconDuplicate } from '@appwrite.io/pink-icons-svelte';
+    import { InputSelect } from '$lib/elements/forms';
+    import { draggable } from '@neodrag/svelte';
+    import type { DragEventData } from '@neodrag/svelte';
+import ImageGrid from './components/imageGrid.svelte';
+import TransformationPanel from './components/transformationPanel.svelte';
+import CodePanel from './components/codePanel.svelte';
+import GridOverlay from './components/gridOverlay.svelte';
+import { getPresets, type Preset } from './components/presetManager';
+import type { TransformationState } from '$lib/helpers/imageTransformations';
 
     // UI State
     let activeTab = $state<'design' | 'code'>('design');
     let bucketFiles = $state<Models.File[]>([]);
     let selectedFile = $state<Models.File | null>(null);
     let loading = $state(true);
+    let zoom = $state(100);
 
     // Transformation state
-    let width = $state(584);
-    let height = $state(438);
-    let aspectRatioLocked = $state(true);
-    let originalAspectRatio = $state(584 / 438);
+    let transformationState = $state<TransformationState & { aspectRatioLocked?: boolean; originalAspectRatio?: number; crop?: string }>({
+        width: 700,
+        height: 438,
+        aspectRatioLocked: true,
+        originalAspectRatio: 700 / 438,
+        gravity: 'center',
+        borderWidth: 0,
+        borderColor: '000000',
+        borderStyle: 'solid',
+        borderOpacity: 100,
+        borderRadius: 0,
+        background: '',
+        quality: 100,
+        output: ImageFormat.Jpg,
+        rotation: 0,
+        crop: 'none'
+    });
 
-    // Focal point
-    let focalPoint = $state<string>('bottom-left');
-    const focalPointOptions = [
-        { label: 'Top-Left', value: 'top-left' },
-        { label: 'Top', value: 'top' },
-        { label: 'Top-Right', value: 'top-right' },
-        { label: 'Left', value: 'left' },
-        { label: 'Center', value: 'center' },
-        { label: 'Right', value: 'right' },
-        { label: 'Bottom-Left', value: 'bottom-left' },
-        { label: 'Bottom', value: 'bottom' },
-        { label: 'Bottom-Right', value: 'bottom-right' }
-    ];
+    // Presets
+    let presets = $state<Preset[]>([]);
+    let selectedPresetId = $state<string | null>(null);
+    let appliedPresets = $state<Record<string, string>>({}); // fileId -> presetId
 
-    // Crop/Gravity options
-    let gravity = $state<string>('4:3');
-    const gravityOptions = [
-        { label: '4:3', value: '4:3' },
-        { label: '16:9', value: '16:9' },
-        { label: '1:1', value: '1:1' },
-        { label: 'Custom', value: 'custom' }
-    ];
+    // Canvas state
+    let canvasContainer = $state<HTMLDivElement>();
+    let resizeStartDimensions = $state<{ width: number; height: number } | null>(null);
 
-    // Border
-    let borderWidth = $state(0);
-    let borderColor = $state('#000000');
+    // Derived values for selectors
+    const fileOptions = $derived(bucketFiles.map(f => ({
+        value: f.$id,
+        label: f.name.length > 15 ? f.name.substring(0, 15) + '...' : f.name
+    })));
 
-    // Background fill
-    let backgroundColor = $state('');
+    const presetOptions = $derived([
+        { value: 'none', label: 'None' },
+        ...presets.map(p => ({ value: p.id, label: p.name }))
+    ]);
 
-    // Export settings
-    let outputFormat = $state<ImageFormat>(ImageFormat.Jpg);
-    let quality = $state(100);
+    let selectedFileId = $derived(selectedFile?.$id || '');
 
-    // Canvas handling
-    let canvasEl = $state<HTMLCanvasElement>();
-    let isDragging = false;
-    let startX = 0;
-    let startY = 0;
+    function handleFileChange(event: CustomEvent) {
+        const fileId = event.detail;
+        const file = bucketFiles.find((f) => f.$id === fileId);
+        if (file) {
+            selectedFile = file;
+        }
+    }
+
+    function handlePresetChangeTop(event: CustomEvent) {
+        const value = event.detail;
+        selectedPresetId = value === 'none' ? null : value;
+        handlePresetSelected(selectedPresetId);
+    }
 
     onMount(async () => {
         try {
@@ -67,10 +87,13 @@
                     bucketId: page.params.bucket,
                     queries: [Query.limit(100), Query.orderDesc('$createdAt')]
                 });
-            bucketFiles = response.files;
-            if (bucketFiles.length > 0) {
+            bucketFiles = response.files.filter((f) => f.mimeType?.startsWith('image/'));
+            if (bucketFiles.length > 0 && !selectedFile) {
                 selectedFile = bucketFiles[0];
+                // Load original image dimensions
+                loadImageDimensions();
             }
+            presets = getPresets(page.params.bucket);
         } catch (error) {
             console.error('Failed to load bucket files:', error);
         } finally {
@@ -78,126 +101,233 @@
         }
     });
 
-    const drawCanvas = () => {
-        if (!canvasEl || !selectedFile) return;
-        const ctx = canvasEl.getContext('2d');
-        if (!ctx) return;
-
+    function loadImageDimensions() {
+        if (!selectedFile) return;
         const img = new Image();
-        img.crossOrigin = 'anonymous';
-        img.src = previewUrl;
-
         img.onload = () => {
-            canvasEl.width = width;
-            canvasEl.height = height;
-            ctx.clearRect(0, 0, width, height);
-            ctx.drawImage(img, 0, 0, width, height);
+            transformationState.width = img.width;
+            transformationState.height = img.height;
+            transformationState.originalAspectRatio = img.width / img.height;
         };
-    };
+        img.src = getPreviewUrl();
+    }
 
+    function getPreviewUrl(): string {
+        if (!selectedFile) return '';
+        
+        // Build params for SDK (camelCase)
+        const sdkParams: any = {
+            bucketId: selectedFile.bucketId,
+            fileId: selectedFile.$id
+        };
+        
+        if (transformationState.width) sdkParams.width = transformationState.width;
+        if (transformationState.height) sdkParams.height = transformationState.height;
+        if (transformationState.gravity && transformationState.gravity !== 'center') {
+            sdkParams.gravity = transformationState.gravity;
+        }
+        if (transformationState.borderWidth && transformationState.borderWidth > 0) {
+            sdkParams.borderWidth = transformationState.borderWidth;
+            if (transformationState.borderColor) {
+                sdkParams.borderColor = transformationState.borderColor.replace('#', '');
+            }
+            if (transformationState.borderStyle) {
+                sdkParams.borderStyle = transformationState.borderStyle;
+            }
+        }
+        if (transformationState.borderRadius && transformationState.borderRadius > 0) {
+            sdkParams.borderRadius = transformationState.borderRadius;
+        }
+        if (transformationState.background) {
+            sdkParams.background = transformationState.background.replace('#', '');
+        }
+        if (transformationState.quality && transformationState.quality < 100) {
+            sdkParams.quality = transformationState.quality;
+        }
+        if (transformationState.output) {
+            sdkParams.output = transformationState.output;
+        }
+        if (transformationState.rotation && transformationState.rotation !== 0) {
+            sdkParams.rotation = transformationState.rotation;
+        }
+        
+        const baseUrl = sdk
+            .forProject(page.params.region, page.params.project)
+            .storage.getFilePreview(sdkParams)
+            .toString();
+        
+        // Format URL parameters to match the desired format (kebab-case)
+        const url = new URL(baseUrl);
+        const params = new URLSearchParams();
+        
+        // Convert camelCase to kebab-case for display
+        url.searchParams.forEach((value, key) => {
+            if (key === 'width') {
+                params.set('w', value);
+            } else if (key === 'height') {
+                params.set('h', value);
+            } else if (key === 'borderWidth') {
+                params.set('border', value);
+            } else if (key === 'borderColor') {
+                params.set('border-color', value);
+            } else if (key === 'borderStyle') {
+                params.set('border-style', value);
+            } else if (key === 'borderRadius') {
+                params.set('border-radius', value);
+            } else {
+                params.set(key, value);
+            }
+        });
+        
+        return `${url.origin}${url.pathname}?${params.toString()}&mode=admin`;
+    }
+
+    let previewUrl = $derived(getPreviewUrl());
+
+    // Watch for file selection changes and apply presets
     $effect(() => {
-        if (previewUrl && selectedFile) {
-            drawCanvas();
+        if (selectedFile) {
+            // Reset transformations or apply preset if one is selected for this file
+            if (appliedPresets[selectedFile.$id]) {
+                const preset = presets.find((p) => p.id === appliedPresets[selectedFile.$id]);
+                if (preset) {
+                    transformationState = { ...preset.transformations };
+                }
+            } else {
+                loadImageDimensions();
+            }
         }
     });
 
-    function onMouseDown(event: MouseEvent) {
-        isDragging = true;
-        startX = event.clientX;
-        startY = event.clientY;
-    }
-    function onMouseMove(event: MouseEvent) {
-        if (!isDragging) return;
-        const dx = event.clientX - startX;
-        const dy = event.clientY - startY;
-        width = Math.max(1, width + dx);
-        height = Math.max(1, height + dy);
-        startX = event.clientX;
-        startY = event.clientY;
-    }
-    function onMouseUp() {
-        isDragging = false;
+    function handleFocalPointClick(event: MouseEvent) {
+        if (!canvasContainer || !selectedFile || resizeStartDimensions) return;
+        const rect = canvasContainer.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+        const width = rect.width;
+        const height = rect.height;
+
+        // Determine focal point based on position
+        const thirdX = width / 3;
+        const thirdY = height / 3;
+
+        let point = 'center';
+        if (x < thirdX && y < thirdY) point = 'top-left';
+        else if (x < thirdX && y > thirdY * 2) point = 'bottom-left';
+        else if (x > thirdX * 2 && y < thirdY) point = 'top-right';
+        else if (x > thirdX * 2 && y > thirdY * 2) point = 'bottom-right';
+        else if (x < thirdX) point = 'left';
+        else if (x > thirdX * 2) point = 'right';
+        else if (y < thirdY) point = 'top';
+        else if (y > thirdY * 2) point = 'bottom';
+
+        transformationState.gravity = point;
     }
 
-    // Generate preview URL with transformations
-    const getTransformedPreview = () => {
-        if (!selectedFile) return '';
+    // Store handle positions to keep them at corners
+    let handlePosNw = $state({ x: 0, y: 0 });
+    let handlePosNe = $state({ x: 0, y: 0 });
+    let handlePosSw = $state({ x: 0, y: 0 });
+    let handlePosSe = $state({ x: 0, y: 0 });
 
-        const params: any = {
-            bucketId: selectedFile.bucketId,
-            fileId: selectedFile.$id,
-            width,
-            height,
-            output: outputFormat
+    function createResizeHandler(handle: string) {
+        // Determine cursor and axis based on handle position
+        const isDiagonal = handle.length === 2;
+        const axis = isDiagonal ? 'both' : (handle.includes('e') || handle.includes('w') ? 'x' : 'y');
+        
+        // Get the appropriate handle position based on handle name
+        let handlePos: { x: number; y: number };
+        if (handle === 'nw') handlePos = handlePosNw;
+        else if (handle === 'ne') handlePos = handlePosNe;
+        else if (handle === 'sw') handlePos = handlePosSw;
+        else handlePos = handlePosSe;
+        
+        return {
+            onDragStart: () => {
+                resizeStartDimensions = {
+                    width: transformationState.width || 0,
+                    height: transformationState.height || 0
+                };
+                handlePos.x = 0;
+                handlePos.y = 0;
+            },
+            onDrag: ({ offsetX, offsetY }: DragEventData) => {
+                if (!resizeStartDimensions) return;
+                
+                const scale = zoom / 100;
+                // Calculate dimension changes based on drag offset
+                const dx = offsetX / scale;
+                const dy = offsetY / scale;
+
+                let newWidth = resizeStartDimensions.width;
+                let newHeight = resizeStartDimensions.height;
+
+                // Calculate new dimensions based on handle position
+                // East (right) handle: increase width
+                if (handle.includes('e')) {
+                    newWidth = Math.max(1, resizeStartDimensions.width + dx);
+                }
+                // West (left) handle: decrease width
+                if (handle.includes('w')) {
+                    newWidth = Math.max(1, resizeStartDimensions.width - dx);
+                }
+                // South (bottom) handle: increase height
+                if (handle.includes('s')) {
+                    newHeight = Math.max(1, resizeStartDimensions.height + dy);
+                }
+                // North (top) handle: decrease height
+                if (handle.includes('n')) {
+                    newHeight = Math.max(1, resizeStartDimensions.height - dy);
+                }
+
+                // Apply aspect ratio lock with smooth calculation
+                if (transformationState.aspectRatioLocked && transformationState.originalAspectRatio) {
+                    // For diagonal handles, prefer width-based calculation
+                    if (handle.includes('e') || handle.includes('w')) {
+                        newHeight = Math.round(newWidth / transformationState.originalAspectRatio);
+                    } else {
+                        newWidth = Math.round(newHeight * transformationState.originalAspectRatio);
+                    }
+                }
+
+                // Apply with smooth transition (physics-like)
+                transformationState.width = Math.round(newWidth);
+                transformationState.height = Math.round(newHeight);
+                
+                // Reset handle position to keep it at the corner
+                handlePos.x = 0;
+                handlePos.y = 0;
+            },
+            onDragEnd: () => {
+                resizeStartDimensions = null;
+                handlePos.x = 0;
+                handlePos.y = 0;
+            },
+            // Physics-like behavior: grid snapping and smooth movement
+            grid: [5, 5], // Snap to 5px grid for smoother feel
+            threshold: { distance: 2 }, // Small threshold to prevent accidental drags
+            gpuAcceleration: true, // Smooth hardware-accelerated movement
+            axis: axis as 'both' | 'x' | 'y', // Constrain movement based on handle
+            // Keep handle at corner by resetting position reactively
+            position: handlePos,
+            // Add smooth easing for physics-like feel
+            defaultClassDragging: 'resizing'
         };
+    }
 
-        if (focalPoint !== 'center') {
-            params.gravity = focalPoint;
-        }
-
-        if (borderWidth > 0) {
-            params.borderWidth = borderWidth;
-            params.borderColor = borderColor.replace('#', '');
-        }
-
-        if (backgroundColor) {
-            params.background = backgroundColor.replace('#', '');
-        }
-
-        if (quality < 100) {
-            params.quality = quality;
-        }
-
-        return (
-            sdk
-                .forProject(page.params.region, page.params.project)
-                .storage.getFilePreview(params)
-                .toString() + '&mode=admin'
-        );
-    };
-
-    let previewUrl = $derived(getTransformedPreview());
-
-    function handleFileSwitch(event: Event) {
-        const select = event.target as HTMLSelectElement;
-        const newFileId = select.value;
-        const found = bucketFiles.find((f) => f.$id === newFileId);
-        if (found) {
-            selectedFile = found;
-            // Reset dimensions or keep? Let's keep for now or maybe reset ratio if needed.
+    function handlePresetSelected(presetId: string | null) {
+        selectedPresetId = presetId;
+        if (presetId && selectedFile) {
+            const preset = presets.find((p) => p.id === presetId);
+            if (preset) {
+                transformationState = { ...preset.transformations };
+                appliedPresets[selectedFile.$id] = presetId;
+            }
+        } else if (selectedFile) {
+            delete appliedPresets[selectedFile.$id];
         }
     }
 
-    // Handle dimension changes with aspect ratio lock
-    function handleWidthChange(newWidth: number) {
-        width = newWidth;
-        if (aspectRatioLocked && originalAspectRatio) {
-            height = Math.round(newWidth / originalAspectRatio);
-        }
-    }
-
-    function handleHeightChange(newHeight: number) {
-        height = newHeight;
-        if (aspectRatioLocked && originalAspectRatio) {
-            width = Math.round(newHeight * originalAspectRatio);
-        }
-    }
-
-    function changeWidth(delta: number) {
-        handleWidthChange(width + delta);
-    }
-
-    function changeHeight(delta: number) {
-        handleHeightChange(height + delta);
-    }
-
-    const formatOptions = [
-        { label: 'Original', value: null }, // Handle original format if needed, simplistic maps for now
-        { label: 'JPG', value: ImageFormat.Jpg },
-        { label: 'PNG', value: ImageFormat.Png },
-        { label: 'GIF', value: ImageFormat.Gif },
-        { label: 'WEBP', value: ImageFormat.Webp }
-    ];
 </script>
 
 <Container>
@@ -205,266 +335,117 @@
         <Layout.Stack gap="l">
             <Typography.Text>Loading editor...</Typography.Text>
         </Layout.Stack>
-    {:else if !selectedFile}
+    {:else if bucketFiles.length === 0}
         <Layout.Stack gap="l">
             <div class="empty-state">
                 <Typography.Title>Image Editor</Typography.Title>
-                <Typography.Text>No files available to edit.</Typography.Text>
+                <Typography.Text>No images found in this bucket.</Typography.Text>
             </div>
         </Layout.Stack>
-    {:else}
+    {:else if !selectedFile}
+        <!-- Grid View -->
         <Layout.Stack gap="l">
-            <!-- URL Input -->
-            <div class="url-section">
-                <CopyInput label="" value={previewUrl} />
-            </div>
-
-            <!-- Design/Code Tabs with Quality Selector -->
-            <div class="tabs-section">
-                <Tabs>
-                    <Tab selected={activeTab === 'design'} on:click={() => (activeTab = 'design')}>
-                        Design
-                    </Tab>
-                    <Tab selected={activeTab === 'code'} on:click={() => (activeTab = 'code')}>
-                        Code
-                    </Tab>
-                </Tabs>
-                <div class="quality-selector">
-                    <select class="input-text-small" bind:value={quality}>
-                        <option value={100}>100%</option>
-                        <option value={90}>90%</option>
-                        <option value={80}>80%</option>
-                        <option value={70}>70%</option>
-                        <option value={50}>50%</option>
-                    </select>
+            <Typography.Title size="m">Select an image to edit</Typography.Title>
+            <ImageGrid
+                files={bucketFiles}
+                bind:selectedFile
+                transformationState={transformationState}
+                appliedPresets={appliedPresets} />
+        </Layout.Stack>
+    {:else}
+        <!-- Editor View -->
+        <div class="editor-wrapper">
+            <!-- Top Header: URL + File/Preset Selectors -->
+            <div class="editor-header">
+                <div class="url-input-wrapper">
+                    <Input.Text readonly value={previewUrl.replace(/^https?:\/\//, '')}>
+                        <span class="url-prefix" slot="start">https://</span>
+                        <Copy value={previewUrl} slot="end">
+                            <Input.Action icon={IconDuplicate} />
+                        </Copy>
+                    </Input.Text>
+                </div>
+                <div class="header-selectors">
+                    <InputSelect
+                        id="file-selector-top"
+                        options={fileOptions}
+                        value={selectedFileId}
+                        on:change={handleFileChange}
+                        placeholder="Select file" />
+                    <InputSelect
+                        id="preset-selector-top"
+                        options={presetOptions}
+                        value={selectedPresetId || 'none'}
+                        on:change={handlePresetChangeTop}
+                        placeholder="None" />
                 </div>
             </div>
 
             <!-- Main Editor Layout -->
             <div class="editor-layout">
-                <!-- Left Panel - Preview -->
+                <!-- Left Panel - Canvas -->
                 <div class="preview-section">
-                    <!-- Focal Point Selector -->
-                    <div class="focal-point-section">
-                        <Typography.Text class="focal-point-label">
-                            Focal point: {focalPointOptions.find((opt) => opt.value === focalPoint)
-                                ?.label || 'Bottom-Left'}
-                        </Typography.Text>
-                    </div>
-
-                    <div class="preview-container">
-                        <div class="preview-wrapper">
-                            <canvas
-                                bind:this={canvasEl}
-                                class="preview-canvas"
-                                onmousedown={onMouseDown}
-                                onmousemove={onMouseMove}
-                                onmouseup={onMouseUp}
-                                onmouseleave={onMouseUp}></canvas>
-                            <!-- Grid overlay -->
-                            <div class="grid-overlay">
-                                <div class="grid-line grid-line-v"></div>
-                                <div class="grid-line grid-line-v"></div>
-                                <div class="grid-line grid-line-h"></div>
-                                <div class="grid-line grid-line-h"></div>
+                    <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
+                    <div
+                        class="preview-container"
+                        bind:this={canvasContainer}
+                        onclick={handleFocalPointClick}
+                        role="img"
+                        tabindex="-1">
+                        <div class="preview-wrapper" style="transform: scale({zoom / 100});">
+                            <img
+                                src={previewUrl}
+                                alt={selectedFile.name}
+                                class="preview-image"
+                                style="width: {transformationState.width || 0}px; height: {transformationState.height || 0}px;"
+                                draggable="false" />
+                            <!-- Grid overlay (rule of thirds) -->
+                            <GridOverlay type="rule-of-thirds" />
+                            <!-- Resize handles with neodrag -->
+                            <div class="resize-handles">
+                                <button
+                                    type="button"
+                                    class="handle handle-nw"
+                                    use:draggable={createResizeHandler('nw')}
+                                    aria-label="Resize from top-left"></button>
+                                <button
+                                    type="button"
+                                    class="handle handle-ne"
+                                    use:draggable={createResizeHandler('ne')}
+                                    aria-label="Resize from top-right"></button>
+                                <button
+                                    type="button"
+                                    class="handle handle-sw"
+                                    use:draggable={createResizeHandler('sw')}
+                                    aria-label="Resize from bottom-left"></button>
+                                <button
+                                    type="button"
+                                    class="handle handle-se"
+                                    use:draggable={createResizeHandler('se')}
+                                    aria-label="Resize from bottom-right"></button>
                             </div>
-                        </div>
-                        <Typography.Text variant="m-400" class="dimensions-text">
-                            {width} × {height}
-                        </Typography.Text>
-
-                        <!-- Rotation slider -->
-                        <div class="rotation-slider">
-                            <input type="range" min="0" max="360" value="0" class="slider" />
-                            <Typography.Text class="rotation-text">0°</Typography.Text>
                         </div>
                     </div>
                 </div>
 
-                <!-- Right Panel - Controls -->
+                <!-- Right Panel - Controls Sidebar -->
                 <div class="controls-section">
-                    <!-- Top Header -->
-                    <div class="panel-header">
-                        <div class="file-selector">
-                            <select
-                                class="panel-select"
-                                value={selectedFile.$id}
-                                onchange={handleFileSwitch}>
-                                {#each bucketFiles as f}
-                                    <option value={f.$id}>{f.name}</option>
-                                {/each}
-                            </select>
+                    <TransformationPanel
+                        bind:activeTab
+                        bind:transformationState
+                        bind:zoom />
+
+                    {#if activeTab === 'code' && selectedFile}
+                        <div class="code-panel-wrapper">
+                            <CodePanel
+                                {transformationState}
+                                bucketId={selectedFile.bucketId}
+                                fileId={selectedFile.$id} />
                         </div>
-                        <div class="preset-selector">
-                            <select class="panel-select text-subtle">
-                                <option>None</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- View Toggle -->
-                    <div class="view-toggle-section">
-                        <div class="segmented-control">
-                            <button
-                                class="segment-btn {activeTab === 'design' ? 'is-active' : ''}"
-                                onclick={() => (activeTab = 'design')}>
-                                Design
-                            </button>
-                            <button
-                                class="segment-btn {activeTab === 'code' ? 'is-active' : ''}"
-                                onclick={() => (activeTab = 'code')}>
-                                Code
-                            </button>
-                        </div>
-                        <div class="quality-selector">
-                            <select class="panel-select-small" bind:value={quality}>
-                                <option value={100}>100%</option>
-                                <option value={90}>90%</option>
-                                <option value={80}>80%</option>
-                                <option value={75}>75%</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Accordions -->
-                    <!-- Transform -->
-                    <div class="accordion-group">
-                        <Accordion title="Transform" isOpen>
-                            <div class="control-content">
-                                <div class="control-row">
-                                    <Typography.Text variant="m-400" class="label-muted"
-                                        >Dimensions</Typography.Text>
-                                    <div class="dimensions-grid">
-                                        <!-- Width -->
-                                        <div class="input-group">
-                                            <span class="input-prefix">W</span>
-                                            <input
-                                                type="number"
-                                                class="panel-input"
-                                                value={width}
-                                                oninput={(e) =>
-                                                    handleWidthChange(
-                                                        parseInt(e.currentTarget.value) || 0
-                                                    )} />
-                                            <div class="spinner-controls">
-                                                <button
-                                                    class="spinner-btn"
-                                                    onclick={() => changeWidth(1)}>▲</button>
-                                                <button
-                                                    class="spinner-btn"
-                                                    onclick={() => changeWidth(-1)}>▼</button>
-                                            </div>
-                                        </div>
-                                        <!-- Height -->
-                                        <div class="input-group">
-                                            <span class="input-prefix">H</span>
-                                            <input
-                                                type="number"
-                                                class="panel-input"
-                                                value={height}
-                                                oninput={(e) =>
-                                                    handleHeightChange(
-                                                        parseInt(e.currentTarget.value) || 0
-                                                    )} />
-                                            <div class="spinner-controls">
-                                                <button
-                                                    class="spinner-btn"
-                                                    onclick={() => changeHeight(1)}>▲</button>
-                                                <button
-                                                    class="spinner-btn"
-                                                    onclick={() => changeHeight(-1)}>▼</button>
-                                            </div>
-                                        </div>
-                                        <!-- Lock -->
-                                        <button
-                                            class="lock-btn {aspectRatioLocked ? 'is-locked' : ''}"
-                                            onclick={() =>
-                                                (aspectRatioLocked = !aspectRatioLocked)}>
-                                            <span class="icon-link"></span>
-                                            <!-- Add lock icon here later if needed or usage CSS -->
-                                            🔒
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <div class="control-row">
-                                    <Typography.Text variant="m-400" class="label-muted"
-                                        >Crop</Typography.Text>
-                                    <select class="panel-select" bind:value={focalPoint}>
-                                        <option value="none" disabled>None</option>
-                                        {#each focalPointOptions as option}
-                                            <option value={option.value}>{option.label}</option>
-                                        {/each}
-                                    </select>
-                                </div>
-                            </div>
-                        </Accordion>
-                    </div>
-
-                    <!-- Border -->
-                    <div class="accordion-group">
-                        <Accordion title="Border">
-                            <div class="control-content">
-                                <div class="control-row">
-                                    <Typography.Text variant="m-400" class="label-muted"
-                                        >Width</Typography.Text>
-                                    <input
-                                        type="number"
-                                        class="panel-input"
-                                        bind:value={borderWidth}
-                                        min="0" />
-                                </div>
-                                {#if borderWidth > 0}
-                                    <div class="control-row">
-                                        <Typography.Text variant="m-400" class="label-muted"
-                                            >Color</Typography.Text>
-                                        <input
-                                            type="color"
-                                            class="color-input-full"
-                                            bind:value={borderColor} />
-                                    </div>
-                                {/if}
-                            </div>
-                        </Accordion>
-                    </div>
-
-                    <!-- Fill -->
-                    <div class="accordion-group">
-                        <Accordion title="Fill">
-                            <div class="control-content">
-                                <div class="control-row">
-                                    <Typography.Text variant="m-400" class="label-muted"
-                                        >Background Color</Typography.Text>
-                                    <input
-                                        type="color"
-                                        class="color-input-full"
-                                        bind:value={backgroundColor} />
-                                </div>
-                            </div>
-                        </Accordion>
-                    </div>
-
-                    <!-- Export -->
-                    <div class="accordion-group">
-                        <Accordion title="Export">
-                            <div class="control-content">
-                                <div class="control-row">
-                                    <Typography.Text variant="m-400" class="label-muted"
-                                        >Format</Typography.Text>
-                                    <select class="panel-select" bind:value={outputFormat}>
-                                        {#each formatOptions as option}
-                                            {#if option.value}
-                                                <option value={option.value}>{option.label}</option>
-                                            {/if}
-                                        {/each}
-                                    </select>
-                                </div>
-                            </div>
-                        </Accordion>
-                    </div>
+                    {/if}
                 </div>
             </div>
-        </Layout.Stack>
+        </div>
     {/if}
 </Container>
 
@@ -478,24 +459,38 @@
         text-align: center;
     }
 
-    .url-section {
-        width: 100%;
+    .editor-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-m);
     }
 
-    .tabs-section {
+    .editor-header {
         display: flex;
-        justify-content: space-between;
         align-items: center;
-        border-bottom: 1px solid var(--color-border);
+        gap: var(--space-m);
+    }
+
+    .url-input-wrapper {
+        flex: 1;
+    }
+
+    .header-selectors {
+        display: flex;
+        gap: var(--space-s);
+    }
+
+    :global(.header-selectors > *) {
+        min-width: 120px;
     }
 
     .editor-layout {
         display: grid;
-        grid-template-columns: 1fr 320px;
-        gap: 1.5rem;
-        height: 600px;
+        grid-template-columns: 1fr 280px;
+        gap: 0;
+        min-height: 550px;
         border: 1px solid var(--color-border);
-        border-radius: var(--border-radius-medium);
+        border-radius: var(--border-radius-small);
         overflow: hidden;
     }
 
@@ -507,342 +502,114 @@
         overflow: hidden;
     }
 
-    .focal-point-section {
-        position: absolute;
-        top: 1rem;
-        left: 1rem;
-        z-index: 10;
-        background: rgba(255, 255, 255, 0.8);
-        padding: 0.25rem 0.5rem;
-        border-radius: var(--border-radius-small);
-        pointer-events: none;
-    }
-
     .preview-container {
         flex: 1;
         display: flex;
-        flex-direction: column;
         align-items: center;
         justify-content: center;
         position: relative;
-        padding: 2rem;
+        padding: var(--space-xl);
+        overflow: auto;
     }
 
     .preview-wrapper {
         position: relative;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        transform-origin: center;
     }
 
-    .preview-canvas {
+    .preview-image {
         display: block;
         max-width: 100%;
-        max-height: 480px;
-        background: #fff;
+        max-height: 70vh;
+        border-radius: var(--border-radius-small);
+        user-select: none;
     }
 
-    .grid-overlay {
+
+    .resize-handles {
         position: absolute;
         top: 0;
         left: 0;
         right: 0;
         bottom: 0;
         pointer-events: none;
-        border: 1px solid var(--color-primary-100);
     }
 
-    .grid-line {
+    .handle {
         position: absolute;
-        background: rgba(253, 54, 110, 0.3); /* Brand color light */
+        width: 12px;
+        height: 12px;
+        background: var(--color-primary-100);
+        border: 2px solid white;
+        border-radius: 50%;
+        pointer-events: all;
+        z-index: 10;
+        cursor: nwse-resize;
+        transition: transform 0.1s ease-out, background-color 0.2s;
+        will-change: transform;
     }
 
-    .grid-line-v {
-        top: 0;
-        bottom: 0;
-        width: 1px;
-    }
-    .grid-line-v:nth-child(1) {
-        left: 33.33%;
-    }
-    .grid-line-v:nth-child(2) {
-        left: 66.66%;
+    .handle:hover {
+        transform: scale(1.2);
+        background: var(--color-primary-110);
     }
 
-    .grid-line-h {
-        left: 0;
-        right: 0;
-        height: 1px;
-    }
-    .grid-line-h:nth-child(3) {
-        top: 33.33%;
-    }
-    .grid-line-h:nth-child(4) {
-        top: 66.66%;
+    .handle-nw {
+        top: -6px;
+        left: -6px;
+        cursor: nwse-resize;
     }
 
-    .dimensions-text {
-        margin-top: 1rem;
-        background: var(--color-neutral-0);
-        padding: 0.25rem 0.5rem;
-        border-radius: var(--border-radius-small);
-        border: 1px solid var(--color-border);
+    .handle-ne {
+        top: -6px;
+        right: -6px;
+        cursor: nesw-resize;
     }
 
-    .rotation-slider {
-        position: absolute;
-        bottom: 1rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        background: var(--color-neutral-0);
-        padding: 0.5rem;
-        border-radius: var(--border-radius-medium);
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    .handle-sw {
+        bottom: -6px;
+        left: -6px;
+        cursor: nesw-resize;
     }
 
-    .slider {
-        width: 100px;
-        accent-color: var(--color-primary-100);
+    .handle-se {
+        bottom: -6px;
+        right: -6px;
+        cursor: nwse-resize;
+    }
+
+    /* Smooth transitions for image dimensions with physics-like easing */
+    .preview-image {
+        transition: width 0.15s cubic-bezier(0.4, 0, 0.2, 1), height 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Resizing state for handles (applied by neodrag) */
+    :global(.resizing) {
+        opacity: 0.9;
+    }
+
+    :global(.resizing .handle) {
+        transform: scale(1.3);
+        background: var(--color-primary-110);
     }
 
     .controls-section {
         display: flex;
         flex-direction: column;
         background: var(--color-neutral-0);
-        border: 1px solid var(--color-border);
-        border-right: none;
-        height: 100%;
-    }
-
-    .panel-header {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 0.5rem;
-        padding: 0.75rem 1rem;
-        border-bottom: 1px solid var(--color-border);
-    }
-
-    .view-toggle-section {
-        padding: 0.75rem 1rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-bottom: 1px solid var(--color-border);
-    }
-
-    /* Segmented Control */
-    .segmented-control {
-        display: inline-flex;
-        background: var(--color-neutral-10);
-        padding: 2px;
-        border-radius: var(--border-radius-small);
-    }
-
-    .segment-btn {
-        padding: 0.25rem 0.75rem;
-        font-size: var(--font-size-0);
-        font-weight: 500;
-        color: var(--color-neutral-60);
-        background: transparent;
-        border: none;
-        border-radius: calc(var(--border-radius-small) - 2px);
-        cursor: pointer;
-        transition: all 0.2s;
-    }
-
-    .segment-btn:hover {
-        color: var(--color-neutral-100);
-    }
-
-    .segment-btn.is-active {
-        background: var(--color-neutral-0);
-        color: var(--color-neutral-100);
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    }
-
-    .quality-selector {
-        min-width: 70px;
-    }
-
-    /* Accordions */
-    .accordion-group {
-        border-bottom: 1px solid var(--color-border);
-        background: var(--color-neutral-0);
-    }
-
-    :global(.accordion-group .accordion-trigger) {
-        padding: 1rem !important;
-        font-weight: 500;
-        color: var(--color-neutral-100);
-    }
-
-    .control-content {
-        padding: 0 1rem 1rem 1rem;
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-    }
-
-    .control-row {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-
-    /* Inputs */
-    .panel-select,
-    .panel-select-small,
-    .panel-input {
-        width: 100%;
-        border: 1px solid var(--color-border);
-        border-radius: var(--border-radius-small);
-        background: var(--color-neutral-0);
-        color: var(--color-neutral-100);
-        font-size: var(--font-size-0);
-        transition: border-color 0.2s;
-    }
-
-    .panel-select {
-        padding: 0.5rem;
-    }
-
-    .panel-select-small {
-        padding: 0.25rem 0.5rem;
-    }
-
-    .panel-input {
-        padding: 0.5rem;
-    }
-
-    .panel-select:hover,
-    .panel-input:hover {
-        border-color: var(--color-neutral-50);
-    }
-
-    .panel-select:focus,
-    .panel-input:focus {
-        outline: none;
-        border-color: var(--color-primary-100);
-        box-shadow: 0 0 0 3px rgba(253, 54, 110, 0.1);
-    }
-
-    /* Dimensions Grid */
-    .dimensions-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr auto;
-        gap: 0.5rem;
-        align-items: center;
-    }
-
-    .input-group {
-        position: relative;
-        display: flex;
-        align-items: center;
-    }
-
-    .input-prefix {
-        position: absolute;
-        left: 0.75rem;
-        color: var(--color-neutral-50);
-        font-size: var(--font-size-0);
-        font-weight: 500;
-        pointer-events: none;
-    }
-
-    .dimensions-grid .panel-input {
-        padding-left: 2rem; /* space for prefix */
-        padding-right: 20px; /* space for spinner */
-    }
-
-    /* Spinner Controls */
-    .spinner-controls {
-        position: absolute;
-        right: 2px;
-        top: 2px;
-        bottom: 2px;
-        display: flex;
-        flex-direction: column;
-        width: 16px;
         border-left: 1px solid var(--color-border);
-        background: var(--color-neutral-5);
-        border-radius: 0 var(--border-radius-small) var(--border-radius-small) 0;
+        height: 100%;
+        overflow-y: auto;
     }
 
-    .spinner-btn {
+    .code-panel-wrapper {
+        padding: 1rem;
+        border-top: 1px solid var(--color-border);
         flex: 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: none;
-        background: transparent;
-        font-size: 8px;
-        color: var(--color-neutral-50);
-        cursor: pointer;
-        padding: 0;
+        overflow-y: auto;
     }
 
-    .spinner-btn:hover {
-        background: var(--color-neutral-10);
-        color: var(--color-neutral-100);
-    }
-
-    .spinner-btn:first-child {
-        border-bottom: 1px solid var(--color-border);
-    }
-
-    /* Lock Button */
-    .lock-btn {
-        width: 32px;
-        height: 32px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: none;
-        background: transparent;
-        color: var(--color-neutral-50);
-        border-radius: var(--border-radius-small);
-        cursor: pointer;
-        transition: all 0.2s;
-    }
-
-    .lock-btn:hover {
-        background: var(--color-neutral-10);
-        color: var(--color-neutral-80);
-    }
-
-    .lock-btn.is-locked {
-        color: var(--color-neutral-100);
-    }
-
-    /* Helpers */
-    .full-width {
-        width: 100%;
-    }
-
-    .label-muted {
-        color: var(--color-neutral-70);
-    }
-
-    .color-input-small,
-    .color-input-full {
-        padding: 2px;
-        border: 1px solid var(--color-border);
-        border-radius: var(--border-radius-small);
-        cursor: pointer;
-        background: var(--color-neutral-0);
-    }
-
-    .color-input-small {
-        width: 38px;
-        height: 38px;
-        flex-shrink: 0;
-    }
-
-    .color-input-full {
-        width: 100%;
-        height: 38px;
-    }
-
-    /* Layout Media Query */
     @media (max-width: 1024px) {
         .editor-layout {
             grid-template-columns: 1fr;
@@ -850,7 +617,8 @@
 
         .controls-section {
             order: -1;
-            border-right: 1px solid var(--color-border);
+            border-left: none;
+            border-bottom: 1px solid var(--color-border);
         }
     }
 </style>
