@@ -86,7 +86,7 @@
         label="Min"
         placeholder="Enter size"
         bind:value={data.min}
-        step={0.1}
+        step="any"
         {disabled}
         required={editing} />
 
@@ -95,7 +95,7 @@
         label="Max"
         placeholder="Enter size"
         bind:value={data.max}
-        step={0.1}
+        step="any"
         {disabled}
         required={editing} />
 </Layout.Stack>
@@ -109,7 +109,7 @@
     bind:value={data.default}
     disabled={data.required || data.array || disabled}
     nullable={!data.required && !data.array}
-    step={0.1} />
+    step="any" />
 
 <RequiredArrayCheckboxes
     {editing}

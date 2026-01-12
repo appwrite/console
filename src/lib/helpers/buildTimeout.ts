@@ -22,14 +22,24 @@ function isBuildTimedOut(createdAt: string, status: string, timeoutSeconds: numb
  * Gets the effective status for a build, considering timeout
  */
 export function getEffectiveBuildStatus(
-    originalStatus: string,
-    createdAt: string,
+    deployment: Models.Deployment,
     consoleVariables: Models.ConsoleVariables | undefined
 ): string {
+    const originalStatus = deployment.status;
+    const createdAt = deployment.$createdAt;
+
     const timeoutSeconds = getBuildTimeoutSeconds(consoleVariables);
     if (isBuildTimedOut(createdAt, originalStatus, timeoutSeconds)) {
         return 'failed';
     }
+
+    const isReady = originalStatus === 'ready';
+    const hasScreenshot = deployment.screenshotLight && deployment.screenshotDark;
+
+    if (isReady && !hasScreenshot) {
+        return 'finalizing';
+    }
+
     return originalStatus;
 }
 

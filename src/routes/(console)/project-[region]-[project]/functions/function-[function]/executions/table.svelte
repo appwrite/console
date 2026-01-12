@@ -1,5 +1,10 @@
 <script lang="ts">
-    import { type DeleteOperationState, Id, MultiSelectionTable } from '$lib/components';
+    import {
+        type DeleteOperationState,
+        type DeleteOperation,
+        Id,
+        MultiSelectionTable
+    } from '$lib/components';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import type { Column } from '$lib/helpers/types';
     import type { Models } from '@appwrite.io/console';
@@ -30,8 +35,8 @@
     let open = $state(false);
     let selectedLogId: string | null = $state(null);
 
-    async function deleteExecutions(selectedRows: string[]): Promise<DeleteOperationState> {
-        const promises = selectedRows.map((executionId) =>
+    async function deleteExecutions(batchDelete: DeleteOperation): Promise<DeleteOperationState> {
+        const result = await batchDelete((executionId) =>
             sdk.forProject(page.params.region, page.params.project).functions.deleteExecution({
                 functionId: page.params.function,
                 executionId
@@ -39,14 +44,16 @@
         );
 
         try {
-            await Promise.all(promises);
-            trackEvent(Submit.ExecutionDelete);
-        } catch (error) {
-            trackError(error, Submit.ExecutionDelete);
-            return error;
+            if (result.error) {
+                trackError(result.error, Submit.ExecutionDelete);
+            } else {
+                trackEvent(Submit.ExecutionDelete, { total: result.deleted.length });
+            }
         } finally {
             await invalidate(Dependencies.EXECUTIONS);
         }
+
+        return result;
     }
 </script>
 

@@ -9,15 +9,28 @@
     import { Alert } from '@appwrite.io/pink-svelte';
     import type { Models } from '@appwrite.io/console';
 
-    export let show = false;
-    export let isLinked = false;
-    export let selectedPaymentMethod: Models.PaymentMethod;
+    let {
+        show = $bindable(false),
+        isLinked = false,
+        selectedPaymentMethod
+    }: {
+        show: boolean;
+        isLinked?: boolean;
+        selectedPaymentMethod: Models.PaymentMethod;
+    } = $props();
+
+    let year: number | null = $state(null);
+    let month: string | null = $state(null);
+    let error: string | null = $state(null);
 
     const currentYear = new Date().getFullYear();
 
-    let error: string;
-    let month: string;
-    let year: number;
+    const months = Array.from({ length: 12 }, (_, i) => {
+        const value = String(i + 1).padStart(2, '0');
+        return { value, label: value };
+    });
+
+    const options = $derived(createMonthOptions(year));
 
     async function handleSubmit() {
         try {
@@ -30,6 +43,8 @@
             trackEvent(Submit.PaymentMethodUpdate);
             invalidate(Dependencies.PAYMENT_METHODS);
             show = false;
+            trackEvent(Submit.PaymentMethodUpdate);
+            await invalidate(Dependencies.PAYMENT_METHODS);
             addNotification({
                 type: 'success',
                 message: 'Your payment method has been updated'
@@ -41,20 +56,6 @@
     }
 
     function createMonthOptions(year: number) {
-        const months = [
-            { value: '01', label: '01' },
-            { value: '02', label: '02' },
-            { value: '03', label: '03' },
-            { value: '04', label: '04' },
-            { value: '05', label: '05' },
-            { value: '06', label: '06' },
-            { value: '07', label: '07' },
-            { value: '08', label: '08' },
-            { value: '09', label: '09' },
-            { value: '10', label: '10' },
-            { value: '11', label: '11' },
-            { value: '12', label: '12' }
-        ];
         if (!year) return months;
         if (year === currentYear) {
             const currentMonth = new Date().getMonth() + 1;
@@ -63,8 +64,6 @@
             return months;
         }
     }
-
-    $: options = createMonthOptions(year);
 </script>
 
 <Modal bind:error onSubmit={handleSubmit} bind:show title="Update payment method">

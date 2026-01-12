@@ -4,7 +4,6 @@ import { sdk } from '$lib/stores/sdk';
 import { type Models, Query } from '@appwrite.io/console';
 import { timeFromNow } from '$lib/helpers/date';
 import type { PageLoad, RouteParams } from './$types';
-import type { BackupPolicy } from '$lib/sdk/backups';
 import { isSelfHosted } from '$lib/system';
 import { isCloud } from '$lib/system';
 
@@ -70,7 +69,8 @@ async function fetchDatabasesAndBackups(
         })
     );
 
-    let lastBackups: Record<string, string>, policies: Record<string, BackupPolicy[]>;
+    let lastBackups: Record<string, string> = {};
+    let policies: Record<string, Models.BackupPolicy[]> = {};
 
     if (isCloud && backupsEnabled) {
         [policies, lastBackups] = await Promise.all([
@@ -85,19 +85,21 @@ async function fetchDatabasesAndBackups(
 async function fetchPolicies(databases: Models.DatabaseList, params: RouteParams) {
     if (isSelfHosted) return {};
 
-    const databasePolicies: Record<string, BackupPolicy[]> = {};
+    const databasePolicies: Record<string, Models.BackupPolicy[]> = {};
 
     await Promise.all(
         databases.databases.map(async (database) => {
             try {
                 const { policies } = await sdk
                     .forProject(params.region, params.project)
-                    .backups.listPolicies([
-                        // TODO: are all needed!?
-                        // Query.limit(3),
-                        Query.equal('resourceType', 'database'),
-                        Query.equal('resourceId', database.$id)
-                    ]);
+                    .backups.listPolicies({
+                        queries: [
+                            // TODO: are all needed!?
+                            // Query.limit(3),
+                            Query.equal('resourceType', 'database'),
+                            Query.equal('resourceId', database.$id)
+                        ]
+                    });
 
                 if (policies.length > 0) {
                     databasePolicies[database.$id] = policies;
@@ -121,12 +123,14 @@ async function fetchLastBackups(databases: Models.DatabaseList, params: RoutePar
             try {
                 const { archives } = await sdk
                     .forProject(params.region, params.project)
-                    .backups.listArchives([
-                        Query.limit(1),
-                        Query.orderDesc('$createdAt'),
-                        Query.equal('resourceType', 'database'),
-                        Query.equal('resourceId', database.$id)
-                    ]);
+                    .backups.listArchives({
+                        queries: [
+                            Query.limit(1),
+                            Query.orderDesc('$createdAt'),
+                            Query.equal('resourceType', 'database'),
+                            Query.equal('resourceId', database.$id)
+                        ]
+                    });
 
                 if (archives.length > 0) {
                     lastBackups[database.$id] = timeFromNow(archives[0].$createdAt);

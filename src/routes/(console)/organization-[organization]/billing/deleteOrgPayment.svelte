@@ -27,7 +27,7 @@
                 message: `The payment method has been removed from ${$organization.name}`
             });
             trackEvent(Submit.OrganizationPaymentDelete);
-            invalidate(Dependencies.ORGANIZATION);
+            await invalidate(Dependencies.PAYMENT_METHODS);
             showDelete = false;
         } catch (e) {
             error = e.message;
@@ -50,7 +50,7 @@
                 message: `The payment method has been removed from ${$organization.name}`
             });
             trackEvent(Submit.OrganizationBackupPaymentDelete);
-            await invalidate(Dependencies.ORGANIZATION);
+            await invalidate(Dependencies.PAYMENT_METHODS);
             showDelete = false;
         } catch (e) {
             error = e.message;
@@ -70,10 +70,10 @@
     </Confirm>
 {:else}
     <Confirm
-        onSubmit={isBackup ? removeBackupMethod : removeDefaultMethod}
-        title="Remove payment method"
+        bind:error
         bind:open={showDelete}
-        bind:error>
+        title="Remove payment method"
+        onSubmit={isBackup ? removeBackupMethod : removeDefaultMethod}>
         <Typography.Text>
             Are you sure you want to remove the payment method from <b>{$organization?.name}</b>?
         </Typography.Text>

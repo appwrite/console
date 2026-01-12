@@ -6,6 +6,7 @@
         AvatarInitials,
         PaginationWithLimit,
         MultiSelectionTable,
+        type DeleteOperation,
         type DeleteOperationState
     } from '$lib/components';
     import { Button } from '$lib/elements/forms';
@@ -29,23 +30,25 @@
     let showDelete = $state(false);
     let selectedMembership: Models.Membership | null = $state(null);
 
-    async function handleBulkDelete(selectedRows: string[]): Promise<DeleteOperationState> {
-        const promises = selectedRows.map((membershipId) => {
-            return sdk.forProject(page.params.region, page.params.project).teams.deleteMembership({
+    async function handleBulkDelete(batchDelete: DeleteOperation): Promise<DeleteOperationState> {
+        const result = await batchDelete((membershipId) =>
+            sdk.forProject(page.params.region, page.params.project).teams.deleteMembership({
                 teamId: page.params.team,
                 membershipId
-            });
-        });
+            })
+        );
 
         try {
-            await Promise.all(promises);
-            trackEvent(Submit.MembershipUpdate, { total: selectedRows.length });
-        } catch (error) {
-            trackError(error, Submit.MembershipUpdate);
-            return error;
+            if (result.error) {
+                trackError(result.error, Submit.MembershipUpdate);
+            } else {
+                trackEvent(Submit.MembershipUpdate, { total: result.deleted.length });
+            }
         } finally {
             await invalidate(Dependencies.MEMBERSHIPS);
         }
+
+        return result;
     }
 </script>
 

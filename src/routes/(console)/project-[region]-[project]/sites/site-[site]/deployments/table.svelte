@@ -1,5 +1,10 @@
 <script lang="ts">
-    import { type DeleteOperationState, Id, MultiSelectionTable } from '$lib/components';
+    import {
+        type DeleteOperationState,
+        type DeleteOperation,
+        Id,
+        MultiSelectionTable
+    } from '$lib/components';
     import type { PageData } from './$types';
     import { type Models } from '@appwrite.io/console';
     import { formatTimeDetailed } from '$lib/helpers/timeConversion';
@@ -37,25 +42,28 @@
 
     let selectedDeployment: Models.Deployment | null = $state(null);
 
-    async function deleteDeployments(selectedRows: string[]): Promise<DeleteOperationState> {
-        const promises = selectedRows.map((deploymentId) =>
+    async function deleteDeployments(batchDelete: DeleteOperation): Promise<DeleteOperationState> {
+        const result = await batchDelete((deploymentId) =>
             sdk.forProject(page.params.region, page.params.project).sites.deleteDeployment({
                 siteId: page.params.site,
                 deploymentId
             })
         );
+
         try {
-            await Promise.all(promises);
-            trackEvent(Submit.DeploymentDelete);
-        } catch (error) {
-            trackError(error, Submit.DeploymentDelete);
-            return error;
+            if (result.error) {
+                trackError(result.error, Submit.DeploymentDelete);
+            } else {
+                trackEvent(Submit.DeploymentDelete, { total: result.deleted.length });
+            }
         } finally {
             await Promise.all([
                 invalidate(Dependencies.DEPLOYMENTS),
                 invalidate(Dependencies.SITE)
             ]);
         }
+
+        return result;
     }
 </script>
 
@@ -74,8 +82,7 @@
     {#snippet children(root)}
         {#each data.deploymentList.deployments as deployment (deployment.$id)}
             {@const effectiveStatus = getEffectiveBuildStatus(
-                deployment.status,
-                deployment.$createdAt,
+                deployment,
                 $regionalConsoleVariables
             )}
             <Table.Row.Link

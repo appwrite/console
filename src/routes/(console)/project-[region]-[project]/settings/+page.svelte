@@ -15,6 +15,7 @@
     import ChangeOrganization from './changeOrganization.svelte';
     import UpdateVariables from '../updateVariables.svelte';
     import { page } from '$app/state';
+    import UpdateLabels from './updateLabels.svelte';
 
     export let data;
 
@@ -84,8 +85,9 @@
 
 <Container>
     {#if $project}
-        <UpdateName />
         {#if $canWriteProjects}
+            <UpdateName />
+            <UpdateLabels />
             <UpdateServices />
             <UpdateInstallations {...data.installations} limit={data.limit} offset={data.offset} />
             <UpdateVariables

@@ -3,6 +3,7 @@ import {
     Account,
     Assistant,
     Avatars,
+    Backups,
     Client,
     Console,
     Functions,
@@ -25,7 +26,6 @@ import {
     Realtime,
     Organizations
 } from '@appwrite.io/console';
-import { Backups } from '../sdk/backups';
 import { Sources } from '$lib/sdk/sources';
 import {
     REGION_FRA,

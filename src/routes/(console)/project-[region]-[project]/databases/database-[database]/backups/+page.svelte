@@ -66,9 +66,10 @@
 
     const createManualBackup = async () => {
         try {
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .backups.createArchive(['databases'], data.database.$id);
+            await sdk.forProject(page.params.region, page.params.project).backups.createArchive({
+                services: ['databases'],
+                resourceId: data.database.$id
+            });
             await invalidate(Dependencies.BACKUPS);
             addNotification({
                 type: 'success',
@@ -119,16 +120,14 @@
         const totalPoliciesPromise = totalPolicies.map((policy) => {
             cronExpression(policy);
 
-            return sdk
-                .forProject(page.params.region, page.params.project)
-                .backups.createPolicy(
-                    ID.unique(),
-                    ['databases'],
-                    policy.retained,
-                    policy.schedule,
-                    policy.label,
-                    data.database.$id
-                );
+            return sdk.forProject(page.params.region, page.params.project).backups.createPolicy({
+                policyId: ID.unique(),
+                services: ['databases'],
+                retention: policy.retained,
+                schedule: policy.schedule,
+                name: policy.label,
+                resourceId: data.database.$id
+            });
         });
 
         try {
