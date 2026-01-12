@@ -31,7 +31,7 @@
     import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
     import { IconGithub, IconPlus, IconPlusSm } from '@appwrite.io/pink-icons-svelte';
     import { Badge, Icon, Layout, Tooltip, Typography } from '@appwrite.io/pink-svelte';
-    import { resolvedProfile } from '$lib/profiles/index.svelte';
+    import { isBillingEnabled, resolvedProfile } from '$lib/profiles/index.svelte';
     import { isFreePlan } from '$lib/helpers/billing';
 
     let areMembersLimited: boolean = $state(false);
@@ -75,7 +75,7 @@
                 title: 'Usage',
                 hasChildren: true,
                 disabled: !(
-                    isCloud &&
+                    isBillingEnabled &&
                     ($isOwner || $isBilling) &&
                     !page.data.currentPlan?.usagePerProject
                 )
@@ -84,7 +84,7 @@
                 href: `${path}/billing`,
                 event: 'billing',
                 title: 'Billing',
-                disabled: !(isCloud && $canSeeBilling)
+                disabled: !(isBillingEnabled && $canSeeBilling)
             },
             {
                 href: `${path}/settings`,
@@ -119,15 +119,15 @@
                 </Typography.Title>
 
                 {#if !resolvedProfile.minimalOrgHeader}
-                    {#if isCloud && organization?.billingPlan === BillingPlan.GITHUB_EDUCATION}
+                    {#if isBillingEnabled && organization?.billingPlan === BillingPlan.GITHUB_EDUCATION}
                         <Badge variant="secondary" content="Education">
                             <Icon icon={IconGithub} size="s" slot="start" />
                         </Badge>
-                    {:else if isCloud && isFreePlan(organization?.billingPlan)}
+                    {:else if isBillingEnabled && isFreePlan(organization?.billingPlan)}
                         <Badge variant="secondary" content="Free"></Badge>
                     {/if}
 
-                    {#if isCloud && organization?.billingTrialStartDate && $daysLeftInTrial > 0 && organization.billingPlan !== BillingPlan.FREE && $plansInfo.get(organization.billingPlan)?.trialDays}
+                    {#if isBillingEnabled && organization?.billingTrialStartDate && $daysLeftInTrial > 0 && organization.billingPlan !== BillingPlan.FREE && $plansInfo.get(organization.billingPlan)?.trialDays}
                         <Tooltip>
                             <Badge variant="secondary" content="Trial" />
                             <svelte:fragment slot="tooltip">

@@ -14,7 +14,7 @@
     import type { Models } from '@appwrite.io/console';
     import Delete from '../deleteMember.svelte';
     import Edit from './edit.svelte';
-    import { isCloud } from '$lib/system';
+    import { isBillingEnabled } from '$lib/profiles/index.svelte';
     import {
         IconDotsHorizontal,
         IconInfo,
@@ -47,7 +47,7 @@
     // Calculate if button should be disabled and tooltip should show
     $: memberCount = data.organizationMembers?.total ?? 0;
     $: isFreeWithMembers = isFreePlan($organization?.billingPlan) && memberCount >= 1;
-    $: isButtonDisabled = isCloud ? isFreeWithMembers : false;
+    $: isButtonDisabled = isBillingEnabled ? isFreeWithMembers : false;
 
     const resend = async (member: Models.Membership) => {
         try {
@@ -159,7 +159,7 @@
                         </Button.Button>
                         <div style:min-width="232px" slot="tooltip">
                             <ActionMenu.Root>
-                                {#if isCloud && $currentPlan?.supportsOrganizationRoles}
+                                {#if isBillingEnabled && $currentPlan?.supportsOrganizationRoles}
                                     <ActionMenu.Item.Button
                                         trailingIcon={IconPencil}
                                         on:click={() => {

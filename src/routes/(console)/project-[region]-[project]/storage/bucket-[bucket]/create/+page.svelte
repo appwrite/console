@@ -16,8 +16,8 @@
     import { writable } from 'svelte/store';
     import { Permissions } from '$lib/components/permissions';
     import type { PageData } from './$types';
-    import { isCloud } from '$lib/system';
     import { currentPlan } from '$lib/stores/organization';
+    import { isBillingEnabled } from '$lib/profiles/index.svelte';
     import { humanFileSize, sizeToBytes } from '$lib/helpers/sizeConvertion';
     import CustomId from '$lib/components/customId.svelte';
     import { IconPencil } from '@appwrite.io/pink-icons-svelte';
@@ -101,7 +101,7 @@
         <Layout.Stack gap="xxl">
             <Fieldset legend="Data">
                 <Layout.Stack>
-                    {#if isCloud && fileError === 'File size exceeds the limit'}
+                    {#if isBillingEnabled && fileError === 'File size exceeds the limit'}
                         {@const size = humanFileSize(
                             data.bucket.maximumFileSize ?? sizeToBytes(service, 'MB', 1000)
                         )}

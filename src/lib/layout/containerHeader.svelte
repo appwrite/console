@@ -16,8 +16,9 @@
         type PlanServices
     } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
-    import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
+    import { GRACE_PERIOD_OVERRIDE } from '$lib/system';
     import { createEventDispatcher, onMount } from 'svelte';
+    import { isBillingEnabled } from '$lib/profiles/index.svelte';
     import { ContainerButton } from '.';
     import { goto } from '$app/navigation';
     import { Layout, Typography } from '@appwrite.io/pink-svelte';
@@ -89,8 +90,8 @@
     $: if (isLimited) dispatch('data', { isButtonDisabled, limit, tier });
 </script>
 
-<!-- Show only if on Cloud, alerts are enabled, and it isn't a project limited service -->
-{#if isCloud && showAlert}
+<!-- Show only if billing is enabled, alerts are enabled, and it isn't a project limited service -->
+{#if isBillingEnabled && showAlert}
     <!-- some services are above limit -->
     {@const services = overflowingServices
         .map((s) => {
@@ -127,7 +128,7 @@
 <Layout.Stack direction="row" alignContent="center">
     <Layout.Stack direction="row">
         <Typography.Title size="m">{title}</Typography.Title>
-        {#if isCloud && isLimited}
+        {#if isBillingEnabled && isLimited}
             <DropList bind:show={showDropdown} width="16">
                 {#if hasProjectLimitation}
                     <Badge

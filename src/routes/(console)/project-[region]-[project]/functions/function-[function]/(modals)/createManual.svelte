@@ -13,8 +13,8 @@
     import { page } from '$app/state';
     import { consoleVariables } from '$routes/(console)/store';
     import { currentPlan } from '$lib/stores/organization';
-    import { isCloud } from '$lib/system';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
+    import { isBillingEnabled } from '$lib/profiles/index.svelte';
 
     export let show = false;
 
@@ -22,7 +22,7 @@
     let error: string = '';
 
     $: maxSize =
-        isCloud && $currentPlan?.deploymentSize
+        isBillingEnabled && $currentPlan?.deploymentSize
             ? $currentPlan.deploymentSize * 1000000
             : $consoleVariables._APP_COMPUTE_SIZE_LIMIT; // already in MB
 

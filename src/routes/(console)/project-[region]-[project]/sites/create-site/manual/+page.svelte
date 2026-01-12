@@ -18,10 +18,9 @@
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { InvalidFileType, removeFile } from '$lib/helpers/files';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
-    import { isCloud } from '$lib/system';
     import { currentPlan } from '$lib/stores/organization';
     import Domain from '../domain.svelte';
-    import { resolvedProfile } from '$lib/profiles/index.svelte';
+    import { isBillingEnabled, resolvedProfile } from '$lib/profiles/index.svelte';
 
     export let data;
     let showExitModal = false;
@@ -44,7 +43,7 @@
     let files: FileList;
 
     $: maxSize =
-        isCloud && $currentPlan
+        isBillingEnabled && $currentPlan
             ? $currentPlan.deploymentSize * 1000000
             : $regionalConsoleVariables._APP_COMPUTE_SIZE_LIMIT; // already in MB
 

@@ -4,7 +4,7 @@ import { type Organization } from '$lib/stores/organization';
 import { sdk } from '$lib/stores/sdk';
 import { redirect } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
-import { isCloud } from '$lib/system';
+import { isBillingEnabled } from '$lib/profiles/index.svelte';
 import { base } from '$app/paths';
 import { isFreePlan } from '$lib/helpers/billing';
 
@@ -62,7 +62,7 @@ export const load: PageLoad = async ({ parent, depends, url, route }) => {
         // ignore error
     }
 
-    const areCreditsSupported = isCloud
+    const areCreditsSupported = isBillingEnabled
         ? (currentPlan?.supportsCredits ??
           (!isFreePlan(organization.billingPlan) &&
               organization?.billingPlan !== BillingPlan.GITHUB_EDUCATION))

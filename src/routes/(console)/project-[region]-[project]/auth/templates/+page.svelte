@@ -55,7 +55,7 @@
     import { Button } from '$lib/elements/forms';
     import { currentPlan } from '$lib/stores/organization';
     import EmailSignature from './emailSignature.svelte';
-    import { isCloud } from '$lib/system';
+    import { isBillingEnabled } from '$lib/profiles/index.svelte';
     import { Accordion, Alert, Badge, Layout, Link, Typography } from '@appwrite.io/pink-svelte';
     import { page } from '$app/state';
 
@@ -144,7 +144,7 @@
             </Button>
         </svelte:fragment>
     </CardGrid>
-    {#if isCloud && $currentPlan.emailBranding}
+    {#if isBillingEnabled && $currentPlan.emailBranding}
         <EmailSignature />
     {/if}
 </Container>

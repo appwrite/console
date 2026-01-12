@@ -2,7 +2,6 @@
     import { Card } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { Container, ContainerButton } from '$lib/layout';
-    import { isCloud } from '$lib/system';
     import AppwriteLogoDark from '$lib/images/appwrite-logo-dark.svg';
     import AppwriteLogoLight from '$lib/images/appwrite-logo-light.svg';
     import { template } from './store';
@@ -24,10 +23,11 @@
     import { page } from '$app/state';
     import { capitalize } from '$lib/helpers/string';
     import { IconExternalLink } from '@appwrite.io/pink-icons-svelte';
-    import { resolvedProfile } from '$lib/profiles/index.svelte';
+    import { isBillingEnabled, resolvedProfile } from '$lib/profiles/index.svelte';
 
     $: buttonDisabled =
-        isCloud && isServiceLimited('functions', $organization?.billingPlan, $functionsList?.total);
+        isBillingEnabled &&
+        isServiceLimited('functions', $organization?.billingPlan, $functionsList?.total);
 </script>
 
 <Container>

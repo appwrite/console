@@ -2,11 +2,11 @@
     import { page } from '$app/state';
     import { Empty } from '$lib/components';
     import { CARD_LIMIT } from '$lib/constants';
-    import { isCloud } from '$lib/system';
     import CardPlanLimit from './cardPlanLimit.svelte';
     import { preferences } from '$lib/stores/preferences';
     import { isSmallViewport } from '$lib/stores/viewport';
     import { getServiceLimit, type PlanServices } from '$lib/stores/billing';
+    import { isBillingEnabled } from '$lib/profiles/index.svelte';
 
     export let disableEmpty = true;
     export let offset = 0;
@@ -28,7 +28,7 @@
     <slot />
 
     {#if total > 3 ? total < limit + offset : total % 2 !== 0}
-        {#if isCloud && serviceId && total >= planLimit}
+        {#if isBillingEnabled && serviceId && total >= planLimit}
             <CardPlanLimit {service} />
         {:else}
             <Empty on:click target={event} disabled={disableEmpty}>

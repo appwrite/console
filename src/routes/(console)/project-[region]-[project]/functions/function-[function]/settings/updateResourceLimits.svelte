@@ -11,10 +11,10 @@
     import Link from '$lib/elements/link.svelte';
     import { Alert } from '@appwrite.io/pink-svelte';
     import { upgradeURL } from '$lib/stores/billing';
-    import { isCloud } from '$lib/system';
     import { organization } from '$lib/stores/organization';
     import { page } from '$app/state';
     import { isFreePlan } from '$lib/helpers/billing';
+    import { isBillingEnabled } from '$lib/profiles/index.svelte';
 
     export let func: Models.Function;
     export let specs: Models.SpecificationList;
@@ -90,7 +90,7 @@
                 disabled={options.length < 1}
                 bind:value={specification}
                 {options} />
-            {#if isCloud && isFreePlan($organization?.billingPlan)}
+            {#if isBillingEnabled && isFreePlan($organization?.billingPlan)}
                 <Alert.Inline title="Customizing specs available with Pro or Scale plans">
                     Upgrade to Pro or Scale to adjust your CPU and RAM beyond the default.
                     <svelte:fragment slot="actions">
