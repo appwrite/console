@@ -61,7 +61,7 @@ export type AnalyticsResult = {
 
 // for derived dependencies!
 export type DependenciesResult = {
-    [K in keyof Omit<TerminologyResult, 'source' | 'type'>]: {
+    [K in keyof Omit<TerminologyResult, 'source' | 'type' | 'schema'>]: {
         singular: Dependencies;
         plural: Dependencies;
     };

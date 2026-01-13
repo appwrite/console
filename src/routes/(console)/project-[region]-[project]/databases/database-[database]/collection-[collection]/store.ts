@@ -20,21 +20,70 @@ export const sortState = writable<SortState>({
     direction: 'default'
 });
 
-export const noSqlDocument = writable<{
+export type NoSqlDocumentState = {
     show: boolean;
     document?: Models.Document | (object & { $id?: string });
     isNew?: boolean;
     loading?: boolean;
     documentId?: string /* for loading from a given id */;
     hasDataChanged?: boolean;
-}>({
-    show: false,
-    document: null,
-    isNew: false,
-    loading: false,
-    documentId: null,
-    hasDataChanged: false
-});
+    isDirty?: boolean;
+};
+
+const createNoSqlDocumentStore = () => {
+    const {
+        subscribe,
+        set,
+        update: baseUpdate
+    } = writable<NoSqlDocumentState>({
+        show: false,
+        document: null,
+        isNew: false,
+        loading: false,
+        documentId: null,
+        hasDataChanged: false,
+        isDirty: false
+    });
+
+    return {
+        subscribe,
+        set,
+        reset: () =>
+            set({
+                show: false,
+                document: null,
+                isNew: false,
+                loading: false,
+                documentId: null,
+                hasDataChanged: false,
+                isDirty: false
+            }),
+        create: (document: Models.Document | (object & { $id?: string })) =>
+            set({
+                show: true,
+                document,
+                isNew: true,
+                loading: false,
+                documentId: null,
+                hasDataChanged: false,
+                isDirty: true
+            }),
+        edit: (document: Models.Document, documentId?: string) =>
+            set({
+                show: true,
+                document,
+                isNew: false,
+                loading: false,
+                documentId: documentId ?? null,
+                hasDataChanged: false,
+                isDirty: false
+            }),
+        update: (partial: Partial<NoSqlDocumentState>) =>
+            baseUpdate((state) => ({ ...state, ...partial }))
+    };
+};
+
+export const noSqlDocument = createNoSqlDocumentStore();
 
 export const documentPermissionSheet = writable({
     show: false,

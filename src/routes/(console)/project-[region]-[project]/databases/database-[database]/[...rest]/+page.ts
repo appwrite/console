@@ -36,10 +36,7 @@ export const load: PageLoad = async ({ params, url }) => {
     const documentMatch = lastSegment.match(/^document-([^/]+)$/);
     if (documentMatch) {
         const documentId = documentMatch[1];
-        noSqlDocument.update((options) => ({
-            ...options,
-            documentId
-        }));
+        noSqlDocument.update({ documentId });
 
         const parentSegments = restSegments.slice(0, -1);
         const newPath = `${baseUrl}/${parentSegments.join('/')}`;

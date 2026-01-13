@@ -68,9 +68,17 @@
 
     $: collection = data.collection;
     $: documents = writable(data.documents);
-    $: if (documents) {
+    $: if ($documents) {
         paginatedDocuments.clear();
-        paginatedDocuments.setPage(1, $documents.documents);
+
+        // If we have a new document, add it at the start
+        if ($noSqlDocument.isDirty && $noSqlDocument.isNew) {
+            const tempDoc = $noSqlDocument.document as Models.DefaultDocument;
+            const docsWithTemp = [tempDoc, ...$documents.documents];
+            paginatedDocuments.setPage(1, docsWithTemp);
+        } else {
+            paginatedDocuments.setPage(1, $documents.documents);
+        }
     }
 
     const databaseId = page.params.database;
@@ -95,10 +103,9 @@
 
     async function loadRemoteDocument() {
         try {
-            $noSqlDocument.show = true;
-            $noSqlDocument.loading = true;
+            noSqlDocument.update({ show: true, loading: true });
             const documentId = $noSqlDocument.documentId;
-            $noSqlDocument.documentId = null; // reset for later!
+            noSqlDocument.update({ documentId: null }); // reset for later!
 
             const loadedDocument = await sdk
                 .forProject(page.params.region, page.params.project)
@@ -109,8 +116,7 @@
                 });
 
             if (loadedDocument) {
-                $noSqlDocument.isNew = false;
-                $noSqlDocument.document = loadedDocument;
+                noSqlDocument.edit(loadedDocument);
             }
         } catch (e) {
             markFirstDocumentSelected();
@@ -119,7 +125,7 @@
                 message: e.message
             });
         } finally {
-            $noSqlDocument.loading = false;
+            noSqlDocument.update({ loading: false });
         }
     }
 
@@ -412,20 +418,13 @@
             }
 
             await invalidate(Dependencies.DOCUMENTS);
-            noSqlDocument.update(() => {
-                return {
-                    show: false,
-                    isNew: false,
-                    document: {},
-                    hasDataChanged: false
-                };
-            });
+            noSqlDocument.reset();
 
             // re-render spreadsheet!
             spreadsheetRenderKey.set(hash(Date.now().toString()));
             const firstDocument = $documents?.documents?.[0];
             if (firstDocument) {
-                $noSqlDocument.document = firstDocument;
+                noSqlDocument.update({ document: firstDocument });
             }
         } catch (error) {
             addNotification({
@@ -526,6 +525,11 @@
             disabled: !$noSqlDocument.hasDataChanged,
             onClick: async () => await createOrUpdateDocument($noSqlDocument.document)
         }
+    }}
+    sideSheetStateCallbacks={{
+        onClose() {
+            noSqlDocument.reset();
+        }
     }}>
     {#key $spreadsheetRenderKey}
         <Spreadsheet.Root
@@ -595,11 +599,13 @@
                         {/each}
                     </Spreadsheet.Row.Base>
                 {:else}
+                    {@const selection =
+                        $noSqlDocument.isDirty && document.$id === $noSqlDocument.document?.$id
+                            ? 'disabled'
+                            : rowSelection}
                     <button
                         onclick={() => {
-                            $noSqlDocument.show = true;
-                            $noSqlDocument.isNew = false;
-                            $noSqlDocument.document = document;
+                            noSqlDocument.edit(document);
                         }}
                         style:cursor="pointer">
                         <Spreadsheet.Row.Base
@@ -607,7 +613,7 @@
                             {index}
                             id={document?.$id}
                             virtualItem={item}
-                            select={rowSelection}
+                            select={selection}
                             isSelected={$noSqlDocument?.document?.$id === document.$id}>
                             {#each $collectionColumns as { id: columnId } (columnId)}
                                 <Spreadsheet.Cell {root} isEditable={false} column={columnId}>
@@ -718,10 +724,9 @@
             loading={$noSqlDocument.loading}
             bind:data={$noSqlDocument.document}
             showHeaderActions={!$isSmallViewport}
-            onChange={(_, hasDataChanged) => {
-                $noSqlDocument.hasDataChanged = hasDataChanged;
-            }}
-            onSave={async (document) => await createOrUpdateDocument(document)} />
+            onCancel={() => noSqlDocument.reset()}
+            onSave={async (document) => await createOrUpdateDocument(document)}
+            onChange={(_, hasDataChanged) => noSqlDocument.update({ hasDataChanged })} />
     {/snippet}
 
     {#snippet sideSheetHeaderAction()}

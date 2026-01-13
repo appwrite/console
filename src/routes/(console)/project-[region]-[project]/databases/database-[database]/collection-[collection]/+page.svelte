@@ -17,7 +17,7 @@
         IconPlus,
         IconViewBoards
     } from '@appwrite.io/pink-icons-svelte';
-    import type { Models } from '@appwrite.io/console';
+    import { ID, type Models } from '@appwrite.io/console';
     import { expandTabs, randomDataModalState } from '$database/store';
     import { EmptySheet, EmptySheetCards } from '$database/(entity)';
     import {
@@ -26,10 +26,20 @@
     } from '$database/collection-[collection]/store';
     import { canWriteRows } from '$lib/stores/roles';
     import SpreadSheet from '$database/collection-[collection]/spreadsheet.svelte';
+    import { toLocaleDateTime } from '$lib/helpers/date';
 
     const { data }: PageProps = $props();
 
     let showImportCSV = $state(false);
+
+    function buildInitDoc() {
+        const now = new Date().toISOString();
+        return {
+            $id: ID.unique(),
+            $createdAt: toLocaleDateTime(now),
+            $updatedAt: toLocaleDateTime(now)
+        };
+    }
 
     async function onSelect(file: Models.File, localFile = false) {
         $isCollectionsCsvImportInProgress = true;
@@ -79,13 +89,7 @@
                             event="create_document"
                             on:click={() => {
                                 if (!$noSqlDocument.isNew) {
-                                    noSqlDocument.update(() => {
-                                        return {
-                                            show: true,
-                                            isNew: true,
-                                            document: {}
-                                        };
-                                    });
+                                    noSqlDocument.create(buildInitDoc());
                                 }
                             }}>
                             <Icon icon={IconPlus} slot="start" size="s" />
@@ -107,7 +111,14 @@
                 </Layout.Stack>
             </Layout.Stack>
             {#if $isSmallViewport}
-                <Button secondary event="create_document">
+                <Button
+                    secondary
+                    event="create_document"
+                    on:click={() => {
+                        if (!$noSqlDocument.isNew) {
+                            noSqlDocument.create(buildInitDoc());
+                        }
+                    }}>
                     <Icon icon={IconPlus} slot="start" size="s" />
                     Create document
                 </Button>
@@ -116,7 +127,7 @@
     </Container>
 
     <div class="databases-spreadsheet">
-        {#if data.documents.total}
+        {#if data.documents.total || $noSqlDocument.isDirty}
             <Divider />
 
             <SpreadSheet {data} />
@@ -147,13 +158,7 @@
                         title="Create documents"
                         subtitle="Create documents manually"
                         onClick={() => {
-                            if (!$noSqlDocument.isNew) {
-                                noSqlDocument.update(() => ({
-                                    show: true,
-                                    isNew: true,
-                                    document: {}
-                                }));
-                            }
+                            noSqlDocument.create(buildInitDoc());
                         }} />
 
                     <EmptySheetCards

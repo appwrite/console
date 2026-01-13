@@ -59,7 +59,7 @@
     import { onMount, onDestroy } from 'svelte';
     import Id, { truncateId } from '$lib/components/id.svelte';
     import { Icon, Layout, Skeleton, Spinner, Tooltip, Typography } from '@appwrite.io/pink-svelte';
-    import { IconCheck, IconDuplicate } from '@appwrite.io/pink-icons-svelte';
+    import { IconCheck, IconDuplicate, IconX } from '@appwrite.io/pink-icons-svelte';
     import { Button } from '$lib/elements/forms';
     import { copy } from '$lib/helpers/copy';
     import { isSmallViewport } from '$lib/stores/viewport';
@@ -92,6 +92,7 @@
         loading?: boolean;
         onChange?: (newData: JsonValue, hasChanged: boolean) => Promise<void> | void;
         onSave?: (newData: JsonValue) => Promise<void> | void;
+        onCancel?: () => void;
         readonly?: boolean;
         wrapLines?: boolean;
         errorInPlace?: boolean;
@@ -104,6 +105,7 @@
         data = $bindable(),
         onChange,
         onSave,
+        onCancel,
         isSaving = $bindable(false),
         loading = false,
         readonly = false,
@@ -145,8 +147,8 @@
     let lastParsePromise: Promise<ParseResult> | null = null;
 
     // Serialized data cache
-    let originalSerialized = '';
     let lastSerializedText = '';
+    let originalSerialized = $state('');
     let lastSerializedData: JsonValue | null = null;
 
     // Get $id from data
@@ -1164,6 +1166,22 @@
 
             {#if documentId}
                 <Layout.Stack direction="row" inline gap="s">
+                    {#if isNew && onCancel}
+                        <Tooltip placement="top">
+                            <Button
+                                icon
+                                secondary
+                                size="xs"
+                                class="icon-button"
+                                disabled={loading}
+                                on:click={onCancel}>
+                                <Icon icon={IconX} size="s" />
+                            </Button>
+
+                            <span slot="tooltip">Cancel</span>
+                        </Tooltip>
+                    {/if}
+
                     <Tooltip placement="top" disabled={!hasDataChanged}>
                         <Button
                             icon

@@ -10,12 +10,18 @@
         noSqlEditor,
         sideSheetHeaderAction,
         sideSheetOptions = null,
+        sideSheetStateCallbacks = null,
         showEditorSideSheet = $bindable(false)
     }: {
         children: Snippet;
         noSqlEditor?: Snippet;
         sideSheetHeaderAction?: Snippet;
         showEditorSideSheet?: boolean;
+        /* this sheet is only on mobile */
+        sideSheetStateCallbacks?: {
+            onOpen?: () => void;
+            onClose?: () => void;
+        };
         sideSheetOptions?: {
             sideSheetTitle?: string;
             submit?:
@@ -104,6 +110,16 @@
         });
     }
 
+    function manageStateCallbacks(isOpen: boolean) {
+        if (sideSheetStateCallbacks) {
+            if (isOpen) {
+                sideSheetStateCallbacks.onOpen?.();
+            } else {
+                sideSheetStateCallbacks.onClose?.();
+            }
+        }
+    }
+
     /** save grid sheet scroll for restore */
     export function saveGridSheetScroll(): void {
         if (initSpreadsheetGridContainer()) {
@@ -129,6 +145,8 @@
         resizeObserver?.disconnect();
         mutationObserver?.disconnect();
     });
+
+    $effect(() => manageStateCallbacks(showEditorSideSheet));
 </script>
 
 <div
@@ -148,6 +166,12 @@
                 noContentPadding
                 bind:show={showEditorSideSheet}
                 submit={sideSheetOptions?.submit}
+                cancel={{
+                    onClick: () => {
+                        // fires state callback.
+                        showEditorSideSheet = false;
+                    }
+                }}
                 title={sideSheetOptions?.sideSheetTitle ?? 'Edit document'}>
                 {@render noSqlEditor?.()}
 
