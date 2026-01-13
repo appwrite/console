@@ -10,6 +10,7 @@
         UpdateStatus
     } from '$database/(entity)';
     import type { PageProps } from './$types';
+    import DisplayName from './displayName.svelte';
 
     /* served from parent layout */
     const { data }: PageProps = $props();
@@ -51,6 +52,8 @@
             onChangeStatus={(enabled) => updateCollection({ enabled })} />
 
         <UpdateName entity={collection} onChangeName={(name) => updateCollection({ name })} />
+
+        <DisplayName />
 
         <UpdatePermissions
             entity={collection}

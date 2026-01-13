@@ -146,7 +146,14 @@
         mutationObserver?.disconnect();
     });
 
-    $effect(() => manageStateCallbacks(showEditorSideSheet));
+    let previousShowEditorSideSheet = showEditorSideSheet;
+
+    $effect(() => {
+        if (showEditorSideSheet !== previousShowEditorSideSheet) {
+            manageStateCallbacks(showEditorSideSheet);
+            previousShowEditorSideSheet = showEditorSideSheet;
+        }
+    });
 </script>
 
 <div

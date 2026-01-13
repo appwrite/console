@@ -26,8 +26,6 @@ export function isHTMLInputElement(el: unknown): el is HTMLInputElement {
     return el instanceof HTMLInputElement;
 }
 
-export type Prettify<T> = T & {};
-
 const columnTypes = [
     'string',
     'integer',
@@ -38,7 +36,8 @@ const columnTypes = [
     'enum',
     'point',
     'linestring',
-    'polygon'
+    'polygon',
+    'dynamic' /* a primitive or an object */
 ] as const;
 export type ColumnType = (typeof columnTypes)[number];
 export type Column = PinkColumn & {

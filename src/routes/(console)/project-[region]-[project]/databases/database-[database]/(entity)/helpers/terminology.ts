@@ -13,6 +13,7 @@ export type DatabaseType = 'legacy' | 'tablesdb' | 'documentsdb' | 'vectordb';
 export type RecordType = ImplementedDBTypes[keyof ImplementedDBTypes]['record'];
 
 export type Entity = Partial<Collection | Table> & {
+    schema: boolean;
     indexes?: Index[];
     fields?: (Attributes | Columns)[];
     recordSecurity?: Models.Collection['documentSecurity'] | Models.Table['rowSecurity'];
@@ -103,7 +104,8 @@ export function toSupportiveEntity(raw: Models.Collection | Models.Table): Entit
         ...raw,
         fields,
         recordSecurity,
-        indexes
+        indexes,
+        schema: !isTable /* not table, so considering schema less */
     } as Entity;
 }
 

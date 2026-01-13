@@ -32,7 +32,11 @@ type ConsolePreferencesStore = {
         [key: string]: ConsolePreferences['columns'];
     };
     displayNames?: {
-        [key: string]: TeamPreferences['names'];
+        [key: string]:
+            | TeamPreferences['names']
+            | {
+                  [key: string]: TeamPreferences['names'];
+              };
     };
     columnOrder?: {
         [key: string]: TeamPreferences['order'];
@@ -213,19 +217,31 @@ function createPreferences() {
                 return n;
             }),
 
-        deleteTableDetails: async (orgId: string, tableId: string) => {
+        // `databaseType` fallback for legacy cases.
+        deleteEntityDetails: async (
+            orgId: string,
+            entityId: string,
+            databaseType: string = 'tables'
+        ) => {
             // remove from account preferences
             const removeCustomTableColumns = updateAndSync((n) => {
-                n = ensureObjectProperty(n, 'tables');
-                delete n.tables[tableId];
+                n = ensureObjectProperty(n, databaseType);
+                delete n.tables[entityId];
                 return n;
             });
 
-            delete teamPreferences?.displayNames?.[tableId];
-            delete teamPreferences?.columnOrder?.[tableId];
-            delete teamPreferences?.columnWidths?.[tableId];
-            delete teamPreferences?.columnWidths?.[tableId + '#columns'];
-            delete teamPreferences?.columnWidths?.[tableId + '#indexes'];
+            delete teamPreferences?.columnOrder?.[entityId];
+            delete teamPreferences?.columnWidths?.[entityId];
+            delete teamPreferences?.columnWidths?.[entityId + '#columns'];
+            delete teamPreferences?.columnWidths?.[entityId + '#indexes'];
+
+            if (teamPreferences.displayNames?.[databaseType]?.[entityId]) {
+                // new structure
+                delete teamPreferences?.displayNames?.[databaseType]?.[entityId];
+            } else {
+                // legacy structure
+                delete teamPreferences?.displayNames?.[entityId];
+            }
 
             const removeTablePreferences = sdk.forConsole.teams.updatePrefs({
                 teamId: orgId,
@@ -237,18 +253,32 @@ function createPreferences() {
 
         loadTeamPrefs: loadTeamPreferences,
 
-        getDisplayNames: (tableId: string) => {
-            const names = teamPreferences?.displayNames?.[tableId];
+        getDisplayNames: (entityId: string, databaseType: string = null) => {
+            let names = teamPreferences?.displayNames?.[entityId];
+            if (databaseType) {
+                names = teamPreferences?.displayNames?.[databaseType]?.[entityId];
+            }
+
             return Array.isArray(names) && names.length > 0 ? names : ['$id'];
         },
 
         setDisplayNames: async (
             orgId: string,
-            tableId: string,
-            displayNames: TeamPreferences['names']
+            entityId: string,
+            displayNames: TeamPreferences['names'],
+            databaseType: string = null
         ) => {
             teamPreferences = ensureObjectProperty(teamPreferences, 'displayNames');
-            teamPreferences.displayNames[tableId] = displayNames;
+            if (!databaseType) {
+                // legacy!
+                teamPreferences.displayNames[entityId] = displayNames;
+            } else {
+                teamPreferences.displayNames = ensureObjectProperty(
+                    teamPreferences.displayNames,
+                    databaseType
+                );
+                teamPreferences.displayNames[databaseType][entityId] = displayNames;
+            }
 
             await sdk.forConsole.teams.updatePrefs({
                 teamId: orgId,

@@ -24,6 +24,7 @@
     import DualTimeView from '$lib/components/dualTimeView.svelte';
     import {
         IconCalendar,
+        IconCode,
         IconDotsHorizontal,
         IconDuplicate,
         IconFingerPrint
@@ -144,6 +145,8 @@
             paginatedDocuments.setPage(1, data.documents.documents);
         }
 
+        makeCollectionColumns();
+
         // documentId exists!
         if ($noSqlDocument.documentId) {
             await loadRemoteDocument();
@@ -154,6 +157,23 @@
 
     function makeCollectionColumns() {
         const selectedColumnsToHide = preferences.getCustomTableColumns(collectionId);
+
+        const customKeys = (
+            preferences.getDisplayNames(collectionId, data.database.type) ?? []
+        ).filter((name) => !name.startsWith('$'));
+
+        const customColumns: Column[] = customKeys.map((key) => ({
+            id: key,
+            title: key,
+            width: 225,
+            minimumWidth: 225,
+            draggable: false,
+            type: 'dynamic',
+            icon: IconCode /* fuzzy search based Icon later */,
+            isEditable: false,
+            hide: false
+        }));
+
         const staticColumns: Column[] = [
             {
                 id: '$id',
@@ -167,6 +187,7 @@
                 isPrimary: false,
                 hide: !!selectedColumnsToHide?.includes('$id')
             },
+            ...customColumns,
             {
                 id: '$createdAt',
                 title: '$createdAt',
@@ -505,10 +526,6 @@
 
     $: canShowDatetimePopover = true;
 
-    $: if ($documents.documents) {
-        makeCollectionColumns();
-    }
-
     $: totalPages = Math.ceil($documents.total / SPREADSHEET_PAGE_LIMIT) || 1;
 
     $: rowSelection =
@@ -645,6 +662,13 @@
                                                 </Button.Button>
                                             {/snippet}
                                         </SpreadsheetOptions>
+                                    {:else}
+                                        {@const value = document[columnId]}
+                                        {#if value}
+                                            <Typography.Text truncate>{value}</Typography.Text>
+                                        {:else}
+                                            <Badge variant="secondary" size="xs" content="N/A" />
+                                        {/if}
                                     {/if}
                                 </Spreadsheet.Cell>
                             {/each}
