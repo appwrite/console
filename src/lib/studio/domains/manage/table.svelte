@@ -108,27 +108,46 @@
             </Table.Row.Base>
         {/each}
     {:else if proxyRules && proxyRules.total > 0}
-        {#each proxyRules.rules as rule}
+        {#each proxyRules.rules as proxyRule}
+            {@const isRetryable =
+                proxyRule.status === 'created' || proxyRule.status === 'unverified'}
             <Table.Row.Base {root}>
                 <Table.Cell column="domain" {root}>
                     <Layout.Stack direction="row" gap="xs" alignItems="center">
-                        <Link external variant="quiet" href={`${$regionalProtocol}${rule.domain}`}>
+                        <Link
+                            external
+                            variant="quiet"
+                            href={`${$regionalProtocol}${proxyRule.domain}`}>
                             <Layout.Stack direction="row" gap="xxs" alignItems="center">
                                 <Typography.Text truncate>
-                                    {rule.domain}
+                                    {proxyRule.domain}
                                 </Typography.Text>
                                 <Icon size="xs" icon={IconExternalLink} />
                             </Layout.Stack>
                         </Link>
 
-                        {#if rule.status === 'verifying'}
-                            <Badge variant="secondary" content="Verifying" size="s" />
-                        {:else if rule.status !== 'verified'}
+                        {#if proxyRule.status !== 'verified'}
                             <Badge
-                                size="s"
-                                type="warning"
                                 variant="secondary"
-                                content="Verification failed" />
+                                type={proxyRule.status === 'verifying' ? undefined : 'error'}
+                                content={proxyRule.status === 'created'
+                                    ? 'Verification failed'
+                                    : proxyRule.status === 'verifying'
+                                      ? 'Generating certificate'
+                                      : 'Certificate generation failed'}
+                                size="xs" />
+                        {/if}
+                        {#if isRetryable}
+                            <Link
+                                size="s"
+                                variant="muted"
+                                on:click={(e) => {
+                                    e.preventDefault();
+                                    selectedProxyRule = proxyRule;
+                                    showRetry = true;
+                                }}>
+                                Retry
+                            </Link>
                         {/if}
                     </Layout.Stack>
                 </Table.Cell>
@@ -145,7 +164,7 @@
                         </Button>
 
                         <svelte:fragment slot="tooltip" let:toggle>
-                            {@render domainActions(rule, toggle)}
+                            {@render domainActions(proxyRule, toggle, isRetryable)}
                         </svelte:fragment>
                     </Popover>
                 </Table.Cell>
@@ -169,12 +188,12 @@
     <RetryDomainModal bind:show={showRetry} {selectedProxyRule} />
 {/if}
 
-{#snippet domainActions(rule, toggle)}
+{#snippet domainActions(rule, toggle, isRetryable)}
     <ActionMenu.Root>
         <ActionMenu.Item.Anchor href={`${$regionalProtocol}${rule.domain}`} external>
             Open domain
         </ActionMenu.Item.Anchor>
-        {#if rule.status !== 'verified' && rule.status !== 'verifying'}
+        {#if isRetryable}
             <ActionMenu.Item.Button
                 leadingIcon={IconRefresh}
                 on:click={() => {

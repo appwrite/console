@@ -18,7 +18,6 @@
     import { page } from '$app/state';
     import Wizard from '$lib/layout/wizard.svelte';
     import { writable } from 'svelte/store';
-    import { isASubdomain } from '$lib/helpers/tlds';
     import RecordTable from '$lib/components/domains/recordTable.svelte';
     import NameserverTable from '$lib/components/domains/nameserverTable.svelte';
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
@@ -32,43 +31,53 @@
         show = $bindable(false)
     }: {
         show: boolean;
-        rule: string;
+        rule?: Models.ProxyRule;
         domain: Models.Domain;
         onChangeDomain: () => void;
         onVerified?: () => void;
     } = $props();
 
-    const isSubDomain = $derived.by(() => isASubdomain(domain?.domain));
+    const showCNAMETab = $derived(
+        Boolean($regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME) &&
+            $regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME !== 'localhost'
+    );
+    const showATab = $derived(
+        !isCloud &&
+            Boolean($regionalConsoleVariables._APP_DOMAIN_TARGET_A) &&
+            $regionalConsoleVariables._APP_DOMAIN_TARGET_A !== '127.0.0.1'
+    );
+    const showAAAATab = $derived(
+        !isCloud &&
+            Boolean($regionalConsoleVariables._APP_DOMAIN_TARGET_AAAA) &&
+            $regionalConsoleVariables._APP_DOMAIN_TARGET_AAAA !== '::1'
+    );
+    const showNSTab = isCloud;
 
-    let verified = $state(false);
+    let selectedTab = $state<'cname' | 'nameserver' | 'a' | 'aaaa'>(getDefaultTab());
+    let verified: boolean | undefined = $state(undefined);
     let isSubmitting = $state(writable(false));
-    let selectedTab = $state<'cname' | 'nameserver' | 'a' | 'aaaa'>('nameserver');
 
     async function verify() {
         try {
-            if (selectedTab !== 'nameserver') {
-                const ruleData = await sdk
-                    .forProject(page.params.region, page.params.project)
-                    .proxy.updateRuleVerification({ ruleId: rule });
-
-                verified = ruleData.status === 'verified';
-            } else if (isCloud) {
-                const domainData = await sdk.forConsole.domains.get({
-                    domainId: domain.$id
-                });
-
-                verified = domainData.nameservers.toLowerCase() === 'appwrite';
+            if (isCloud) {
+                try {
+                    await sdk.forConsole.domains.updateNameservers({
+                        domainId: domain.$id
+                    });
+                } catch (error) {
+                    // Ignore error
+                }
             }
 
-            if (!verified) {
-                throw new Error(
-                    'Domain verification failed. Please check your domain settings or try again later'
-                );
-            }
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .proxy.updateRuleVerification({ ruleId: rule.$id });
+
+            verified = true;
 
             addNotification({
                 type: 'success',
-                message: 'Domain added successfully'
+                message: 'Domain verified successfully'
             });
 
             show = false;
@@ -89,24 +98,16 @@
         if (rule) {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .proxy.deleteRule({ ruleId: rule });
+                .proxy.deleteRule({ ruleId: rule.$id });
         }
 
         show = false;
         onChangeDomain();
     }
 
-    $effect(() => {
-        if ($regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME && isSubDomain) {
-            selectedTab = 'cname';
-        } else if (!isCloud && $regionalConsoleVariables._APP_DOMAIN_TARGET_A) {
-            selectedTab = 'a';
-        } else if (!isCloud && $regionalConsoleVariables._APP_DOMAIN_TARGET_AAAA) {
-            selectedTab = 'aaaa';
-        } else {
-            selectedTab = 'nameserver';
-        }
-    });
+    function getDefaultTab() {
+        return showCNAMETab ? 'cname' : showATab ? 'a' : showAAAATab ? 'aaaa' : 'nameserver';
+    }
 </script>
 
 {#if show}
@@ -123,7 +124,7 @@
                             <Icon icon={IconGlobeAlt} color="--fgcolor-neutral-primary" />
 
                             <Typography.Text variation="m-500" color="--fgcolor-neutral-primary">
-                                {domain?.domain}
+                                {rule?.domain}
                             </Typography.Text>
                         </Layout.Stack>
                         <Button secondary on:click={changeDomain}>Change</Button>
@@ -134,7 +135,7 @@
                     <Layout.Stack gap="xl">
                         <div>
                             <Tabs.Root variant="secondary" let:root>
-                                {#if isSubDomain && !!$regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME && $regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME !== 'localhost'}
+                                {#if showCNAMETab}
                                     <Tabs.Item.Button
                                         {root}
                                         on:click={() => (selectedTab = 'cname')}
@@ -142,7 +143,7 @@
                                         CNAME
                                     </Tabs.Item.Button>
                                 {/if}
-                                {#if isCloud}
+                                {#if showNSTab}
                                     <Tabs.Item.Button
                                         {root}
                                         on:click={() => (selectedTab = 'nameserver')}
@@ -150,7 +151,7 @@
                                         Nameservers
                                     </Tabs.Item.Button>
                                 {/if}
-                                {#if !isCloud && !!$regionalConsoleVariables._APP_DOMAIN_TARGET_A && $regionalConsoleVariables._APP_DOMAIN_TARGET_A !== '127.0.0.1'}
+                                {#if showATab}
                                     <Tabs.Item.Button
                                         {root}
                                         on:click={() => (selectedTab = 'a')}
@@ -158,7 +159,7 @@
                                         A
                                     </Tabs.Item.Button>
                                 {/if}
-                                {#if !isCloud && !!$regionalConsoleVariables._APP_DOMAIN_TARGET_AAAA && $regionalConsoleVariables._APP_DOMAIN_TARGET_AAAA !== '::1'}
+                                {#if showAAAATab}
                                     <Tabs.Item.Button
                                         {root}
                                         on:click={() => (selectedTab = 'aaaa')}
@@ -171,13 +172,17 @@
                         </div>
 
                         {#if selectedTab === 'nameserver'}
-                            <NameserverTable domain={domain?.domain} {verified} />
+                            <NameserverTable domain={rule?.domain} {verified} />
                         {:else}
                             <RecordTable
                                 {verified}
                                 service="sites"
                                 variant={selectedTab}
-                                domain={domain?.domain} />
+                                domain={rule?.domain}
+                                ruleStatus={rule?.status}
+                                onNavigateToNameservers={() => (selectedTab = 'nameserver')}
+                                onNavigateToA={() => (selectedTab = 'a')}
+                                onNavigateToAAAA={() => (selectedTab = 'aaaa')} />
                         {/if}
 
                         <Divider />
