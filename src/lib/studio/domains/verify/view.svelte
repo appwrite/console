@@ -64,7 +64,9 @@
                     await sdk.forConsole.domains.updateNameservers({
                         domainId: domain.$id
                     });
-                } catch (error) {}
+                } catch (error) {
+                    // Ignore error
+                }
             }
 
             await sdk
