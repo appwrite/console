@@ -1,6 +1,6 @@
 import { Dependencies } from '$lib/constants';
 import { Click, Submit } from '$lib/actions/analytics';
-import type { baseTerminology, DatabaseType } from './terminology';
+import { baseTerminology, type DatabaseType } from './terminology';
 
 export type TerminologyShape = {
     entity: string;

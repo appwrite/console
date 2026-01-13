@@ -20,7 +20,7 @@ export type DatabaseSdkResult = {
     delete: (params: { databaseId: string; databaseType?: DatabaseType }) => Promise<{}>;
 };
 
-export function useDatabasesSdk(
+export function useDatabaseSdk(
     regionOrPage: string | Page,
     projectOrTerminology: string | TerminologyResult,
     databaseType?: DatabaseType /* nullable for use at top `databases` level */

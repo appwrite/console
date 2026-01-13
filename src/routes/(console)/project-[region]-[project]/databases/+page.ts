@@ -7,7 +7,7 @@ import type { PageLoad, RouteParams } from './$types';
 import { isSelfHosted } from '$lib/system';
 import { isCloud } from '$lib/system';
 import type { Plan } from '$lib/sdk/billing';
-import { useDatabasesSdk } from '$database/(entity)';
+import { useDatabaseSdk } from '$database/(entity)';
 
 export const load: PageLoad = async ({ url, route, depends, params, parent }) => {
     depends(Dependencies.DATABASES);
@@ -50,8 +50,8 @@ async function fetchDatabasesAndBackups(
 ) {
     const backupsEnabled = currentPlan?.backupsEnabled ?? true;
 
-    const databasesSdk = useDatabasesSdk(params.region, params.project);
-    const databases = await databasesSdk.list({
+    const databaseSdk = useDatabaseSdk(params.region, params.project);
+    const databases = await databaseSdk.list({
         queries: [Query.limit(limit), Query.offset(offset), Query.orderDesc('$createdAt')],
         search: search || undefined
     });
@@ -61,7 +61,7 @@ async function fetchDatabasesAndBackups(
     await Promise.all(
         // TODO: backend should allow `Query.select` for perf!
         databases.databases.map(async ({ $id, type }) => {
-            const res = await databasesSdk.listEntities({
+            const res = await databaseSdk.listEntities({
                 databaseId: $id,
                 databaseType: type,
                 queries: [Query.limit(1), Query.orderDesc('')]

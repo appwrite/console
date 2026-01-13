@@ -20,7 +20,7 @@
     import { ID } from '@appwrite.io/console';
     import { showCreateBackup, showCreatePolicy } from './store';
     import { getProjectId } from '$lib/helpers/project';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Layout, Typography } from '@appwrite.io/pink-svelte';
     import { page } from '$app/state';
     import IconQuestionMarkCircle from './components/questionIcon.svelte';
@@ -113,7 +113,7 @@
 
             if (actualDay) message['monthlyInterval'] = actualDay;
 
-            trackEvent('submit_policy_submit', message);
+            trackEvent(Submit.DatabaseBackupPolicyCreate, message);
         });
     };
 
@@ -149,14 +149,12 @@
 
             await invalidate(Dependencies.BACKUPS);
             showFeedbackNotification();
-        } catch (err) {
-            addNotification({
-                type: 'error',
-                message: err.message
-            });
-        } finally {
+
             totalPolicies = [];
             $showCreatePolicy = false;
+        } catch (err) {
+            policyCreateError = err.message;
+            trackError(err, Submit.DatabaseBackupPolicyCreate);
         }
     };
 
