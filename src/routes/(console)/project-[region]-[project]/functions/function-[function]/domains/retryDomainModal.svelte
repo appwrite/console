@@ -13,13 +13,16 @@
     import { Divider, Tabs } from '@appwrite.io/pink-svelte';
     import NameserverTable from '$lib/components/domains/nameserverTable.svelte';
     import RecordTable from '$lib/components/domains/recordTable.svelte';
+    import { getApexDomain } from '$lib/helpers/tlds';
 
     let {
         show = $bindable(false),
-        selectedProxyRule
+        selectedProxyRule,
+        domainsList
     }: {
         show: boolean;
         selectedProxyRule: Models.ProxyRule;
+        domainsList?: Models.DomainsList;
     } = $props();
 
     const showCNAMETab = $derived(
@@ -40,43 +43,43 @@
 
     let selectedTab = $state<'cname' | 'nameserver' | 'a' | 'aaaa'>(getDefaultTab());
     let error = $state(null);
-    let verified = $state(false);
+    let verified: boolean | undefined = $state(undefined);
 
     function getDefaultTab() {
         return showCNAMETab ? 'cname' : showATab ? 'a' : showAAAATab ? 'aaaa' : 'nameserver';
     }
 
     async function retryProxyRule() {
+        error = null;
+
         try {
-            error = null;
-            const proxyRule = await sdk
+            const apexDomain = getApexDomain(selectedProxyRule.domain);
+            const domain = domainsList?.domains.find((d) => d.domain === apexDomain);
+            if (isCloud && domain) {
+                await sdk.forConsole.domains.updateNameservers({
+                    domainId: domain.$id
+                });
+            }
+        } catch (error) {
+            // Ignore error
+        }
+
+        try {
+            await sdk
                 .forProject(page.params.region, page.params.project)
                 .proxy.updateRuleVerification({ ruleId: selectedProxyRule.$id });
 
-            verified = proxyRule.status === 'verified';
+            verified = true;
+            addNotification({
+                type: 'success',
+                message: 'Domain verified successfully'
+            });
+
             await invalidate(Dependencies.FUNCTION_DOMAINS);
-
-            // This means domain verification using DNS records hasn't succeeded and the rule is still in initial state.
-            if (proxyRule.status === 'created') {
-                throw new Error(
-                    'Domain verification failed. Please check your domain settings or try again later'
-                );
-            }
-
-            if (verified) {
-                addNotification({
-                    type: 'success',
-                    message: `${selectedProxyRule.domain} has been verified`
-                });
-            } else {
-                addNotification({
-                    type: 'info',
-                    message: 'Verification in progress'
-                });
-            }
             show = false;
             trackEvent(Submit.DomainUpdateVerification);
         } catch (e) {
+            verified = false;
             error =
                 e.message ??
                 'Domain verification failed. Please check your domain settings or try again later';
@@ -130,7 +133,10 @@
         <Divider />
     </div>
     {#if selectedTab === 'nameserver'}
-        <NameserverTable domain={selectedProxyRule.domain} {verified} />
+        <NameserverTable
+            {verified}
+            domain={selectedProxyRule.domain}
+            ruleStatus={selectedProxyRule.status} />
     {:else}
         <RecordTable
             {verified}

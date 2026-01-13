@@ -227,7 +227,7 @@
 {/if}
 
 {#if showRetry}
-    <RetryDomainModal bind:show={showRetry} {selectedProxyRule} />
+    <RetryDomainModal bind:show={showRetry} {selectedProxyRule} domainsList={organizationDomains} />
 {/if}
 
 {#if showLogs}

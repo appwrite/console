@@ -11,7 +11,6 @@
     } from '@appwrite.io/pink-svelte';
     import { Button, Form } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
-    import { organization } from '$lib/stores/organization';
     import { addNotification } from '$lib/stores/notifications';
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
@@ -23,6 +22,7 @@
     import NameserverTable from '$lib/components/domains/nameserverTable.svelte';
     import RecordTable from '$lib/components/domains/recordTable.svelte';
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
+    import { getApexDomain } from '$lib/helpers/tlds.js';
 
     let { data } = $props();
 
@@ -54,41 +54,30 @@
     }
 
     async function verify() {
-        const isNewDomain =
-            data.domainsList.domains.find((rule) => rule.domain === data.proxyRule.domain) ===
-            undefined;
         try {
-            if (selectedTab !== 'nameserver') {
-                const ruleData = await sdk
-                    .forProject(page.params.region, page.params.project)
-                    .proxy.updateRuleVerification({ ruleId });
-                verified = ruleData.status === 'verified';
+            const apexDomain = getApexDomain(data.proxyRule.domain);
+            const domain = data.domainsList.domains.find((d) => d.domain === apexDomain);
 
-                // This means domain verification using DNS records hasn't succeeded and the rule is still in initial state.
-                if (ruleData.status === 'created') {
-                    throw new Error(
-                        'Domain verification failed. Please check your domain settings or try again later'
-                    );
-                }
-            } else if (isNewDomain && isCloud) {
-                const domainData = await sdk.forConsole.domains.create({
-                    teamId: $organization.$id,
-                    domain: data.proxyRule.domain
-                });
-                verified = domainData.nameservers.toLowerCase() === 'appwrite';
-            }
-
-            if (verified) {
-                addNotification({
-                    type: 'success',
-                    message: 'Domain added successfully'
-                });
-            } else {
-                addNotification({
-                    type: 'info',
-                    message: 'Verification in progress'
+            if (isCloud && domain) {
+                await sdk.forConsole.domains.updateNameservers({
+                    domainId: domain.$id
                 });
             }
+        } catch (error) {
+            // Ignore error
+        }
+
+        try {
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .proxy.updateRuleVerification({ ruleId });
+
+            verified = true;
+            addNotification({
+                type: 'success',
+                message: 'Domain verified successfully'
+            });
+
             await goto(routeBase);
             await invalidate(Dependencies.DOMAINS);
             await invalidate(Dependencies.FUNCTION_DOMAINS);
@@ -172,7 +161,10 @@
                         <Divider />
                     </div>
                     {#if selectedTab === 'nameserver'}
-                        <NameserverTable domain={data.proxyRule.domain} {verified} />
+                        <NameserverTable
+                            {verified}
+                            domain={data.proxyRule.domain}
+                            ruleStatus={data.proxyRule.status} />
                     {:else}
                         <RecordTable
                             {verified}
