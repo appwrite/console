@@ -60,7 +60,7 @@ export type DatabaseSdkResult = {
     }) => Promise<Record>;
 };
 
-export function useDatabasesSdk(
+export function useDatabaseSdk(
     regionOrPage: string | Page,
     projectOrTerminology: string | TerminologyResult,
     databaseType?: DatabaseType /* nullable for use at top `databases` level */

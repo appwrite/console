@@ -1,15 +1,15 @@
 import Header from './header.svelte';
 import type { LayoutLoad } from './$types';
 import { Dependencies } from '$lib/constants';
-import { Breadcrumbs, useDatabasesSdk } from '$database/(entity)';
+import { Breadcrumbs, useDatabaseSdk } from '$database/(entity)';
 
 export const load: LayoutLoad = async ({ params, depends, parent }) => {
     const { database } = await parent();
     depends(Dependencies.TABLE);
 
-    const databasesSdk = useDatabasesSdk(params.region, params.project, database.type);
+    const databaseSdk = useDatabaseSdk(params.region, params.project, database.type);
 
-    const table = await databasesSdk.getEntity({
+    const table = await databaseSdk.getEntity({
         databaseId: params.database,
         entityId: params.table
     });

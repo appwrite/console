@@ -20,11 +20,15 @@
 
     const { dependencies } = getTerminologies();
 
-    function getKeys(selected: Index | string[]): string[] {
+    function getKeys(selected: Index | string[] | null | undefined): string[] {
+        if (!selected) return [];
         return Array.isArray(selected) ? selected : [selected.key];
     }
 
     async function cleanup() {
+        // capture keys before resetting!
+        const keys = getKeys(selectedIndex);
+
         // reset selection!
         selectedIndex = Array.isArray(selectedIndex) ? [] : null;
 
@@ -35,9 +39,9 @@
         addNotification({
             type: 'success',
             message:
-                selectedKeys.length === 1
+                keys.length === 1
                     ? 'Index has been deleted'
-                    : `${selectedKeys.length} indexes have been deleted`
+                    : `${keys.length} indexes have been deleted`
         });
 
         // invalidate proper dependency.

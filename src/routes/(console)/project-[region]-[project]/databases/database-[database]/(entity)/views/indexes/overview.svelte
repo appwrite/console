@@ -6,11 +6,11 @@
     let {
         selectedIndex = null
     }: {
-        selectedIndex: Index;
+        selectedIndex: Index | null;
     } = $props();
 
     const { terminology } = getTerminologies();
-    const entityType = terminology.entity.title.singular;
+    const fieldLabel = terminology.field.title.singular;
 </script>
 
 <InputText
@@ -18,7 +18,7 @@
     id="key"
     label="Index key"
     placeholder="Enter key"
-    value={selectedIndex.key}
+    value={selectedIndex?.key ?? ''}
     readonly />
 
 <InputText
@@ -26,7 +26,7 @@
     id="type"
     label="Index type"
     placeholder="Select type"
-    value={selectedIndex.type}
+    value={selectedIndex?.type ?? ''}
     readonly />
 
 {#if selectedIndex?.fields?.length}
@@ -34,20 +34,20 @@
         <Layout.Stack direction="row">
             <InputText
                 required
-                label={i === 0 ? entityType : ''}
+                label={i === 0 ? fieldLabel : ''}
                 id={`value-${field}`}
                 value={field}
                 readonly />
             <InputText
                 required
                 label={i === 0 ? 'Order' : ''}
-                id={`value-${selectedIndex.orders[i]}`}
-                value={selectedIndex.orders[i]}
+                id={`value-${selectedIndex?.orders?.[i] ?? ''}`}
+                value={selectedIndex?.orders?.[i] ?? ''}
                 readonly />
             <InputText
                 required
                 label={i === 0 ? 'Length' : ''}
-                id={`value-${selectedIndex.lengths[i]}`}
+                id={`value-${selectedIndex?.lengths?.[i] ?? ''}`}
                 value={selectedIndex.lengths[i]?.toString() ?? null}
                 readonly />
         </Layout.Stack>

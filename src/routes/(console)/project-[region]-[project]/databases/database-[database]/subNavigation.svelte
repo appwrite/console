@@ -30,7 +30,7 @@
     import {
         type Entity,
         type EntityList,
-        useDatabasesSdk,
+        useDatabaseSdk,
         useTerminology
     } from '$database/(entity)';
     import { resolveRoute } from '$lib/stores/navigation';
@@ -40,7 +40,7 @@
 
     // terminologies
     const terminology = useTerminology(page);
-    const databasesSdk = useDatabasesSdk(page, terminology);
+    const databaseSdk = useDatabaseSdk(page, terminology);
 
     const entityTypePlural = terminology.entity.lower.plural;
     const entityTypeSingular = terminology.entity.lower.singular;
@@ -79,7 +79,7 @@
 
     async function loadEntities() {
         try {
-            entities = await databasesSdk.listEntities({
+            entities = await databaseSdk.listEntities({
                 databaseId: page.params.database,
                 queries: [Query.orderDesc(''), Query.limit(100)]
             });

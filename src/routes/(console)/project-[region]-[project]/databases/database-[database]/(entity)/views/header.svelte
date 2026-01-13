@@ -75,12 +75,12 @@
         <svelte:fragment slot="header">
             <Layout.Stack direction="row" alignContent="center" alignItems="center" inline>
                 <AnimatedTitle href={parentHref} collapsed={!$expandTabs}>
-                    {entity?.name}
+                    {entity.name}
                 </AnimatedTitle>
 
-                {#key entity?.$id}
-                    <Id value={entity?.$id} tooltipPlacement={$expandTabs ? undefined : 'right'}>
-                        {entity?.$id}
+                {#key entity.$id}
+                    <Id value={entity.$id} tooltipPlacement={$expandTabs ? undefined : 'right'}>
+                        {entity.$id}
                     </Id>
                 {/key}
             </Layout.Stack>

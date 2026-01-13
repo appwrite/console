@@ -8,7 +8,7 @@ import {
     useAnalytics,
     useDependencies,
     useTerminology,
-    useDatabasesSdk
+    useDatabaseSdk
 } from '$database/(entity)';
 
 const TERMINOLOGIES_KEY = Symbol('terminologies');
@@ -28,12 +28,12 @@ export function setTerminologies(page: Page) {
     setContext(TERMINOLOGIES_KEY, buildTerminologies(page));
 }
 
-function buildTerminologies(page: Page) {
+function buildTerminologies(page: Page): Terminologies {
     const terminology = useTerminology(page);
     return {
         terminology,
         analytics: useAnalytics(terminology),
         dependencies: useDependencies(terminology),
-        databasesSdk: useDatabasesSdk(page, terminology)
+        databaseSdk: useDatabaseSdk(page, terminology)
     };
 }
