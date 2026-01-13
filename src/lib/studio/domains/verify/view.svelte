@@ -180,7 +180,7 @@
                                 ruleStatus={rule?.status}
                                 onNavigateToNameservers={() => (selectedTab = 'nameserver')}
                                 onNavigateToA={() => (selectedTab = 'a')}
-                                onNavigateToAAAA={() => (selectedTab = 'aaaa')} /> />
+                                onNavigateToAAAA={() => (selectedTab = 'aaaa')} />
                         {/if}
 
                         <Divider />

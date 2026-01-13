@@ -326,7 +326,7 @@
                                                 ]} />
 
                                             {#if dailyCredits !== null}
-                                                <Typography.Caption>
+                                                <Typography.Caption variant="400">
                                                     {dailyCredits} daily and {monthlyCredits} monthly
                                                     credits
                                                 </Typography.Caption>
