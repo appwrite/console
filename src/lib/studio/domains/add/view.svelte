@@ -24,7 +24,7 @@
     }: {
         show: boolean;
         siteId: string;
-        onDomainAdded: (rule: string, domain: Models.Domain, verified: boolean) => void;
+        onDomainAdded: (rule: Models.ProxyRule, domain: Models.Domain, verified: boolean) => void;
     } = $props();
 
     let domainName = $state('');
@@ -84,9 +84,15 @@
                     siteId
                 });
 
-            const verified = rule?.status === 'verified';
-            onDomainAdded(rule.$id, domain, verified);
-            if (verified) await invalidate(Dependencies.SITES_DOMAINS);
+            const verified = rule?.status !== 'created';
+            if (verified) {
+                await invalidate(Dependencies.SITES_DOMAINS);
+                addNotification({
+                    type: 'success',
+                    message: 'Domain verified successfully'
+                });
+            }
+            onDomainAdded(rule, domain, verified);
 
             show = false;
         } catch (error) {

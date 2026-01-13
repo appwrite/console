@@ -33,7 +33,7 @@
         userId: string;
     } = $props();
 
-    const siteId = `project-${projectId}`;
+    const siteId = $derived(`project-${projectId}`);
     const isStage = sdk.forConsole.client.config.endpoint.includes('stage');
     let showAddDomainsWizard = $state(false);
     let showManageDomainsSheet = $state(false);
@@ -42,7 +42,7 @@
     );
 
     let showVerifyDomainsWizard = $state(false);
-    let ruleIdForVerification = $state(null);
+    let ruleForVerification = $state(null);
     let domainForVerification = $state(null);
 
     onMount(() => {
@@ -94,20 +94,29 @@
     bind:show={showAddDomainsWizard}
     onDomainAdded={(rule, domain, verified) => {
         invalidateSiteInfo();
-        if (!verified) {
-            ruleIdForVerification = rule;
+        if (verified) {
+            ruleForVerification = null;
+            domainForVerification = null;
+            showManageDomainsSheet = true;
+        } else {
+            ruleForVerification = rule;
             domainForVerification = domain;
             showVerifyDomainsWizard = true;
         }
     }} />
 
 <VerifyDomain
-    rule={ruleIdForVerification}
+    rule={ruleForVerification}
     domain={domainForVerification}
-    onVerified={invalidateSiteInfo}
+    onVerified={() => {
+        invalidateSiteInfo();
+        ruleForVerification = null;
+        domainForVerification = null;
+        showManageDomainsSheet = true;
+    }}
     bind:show={showVerifyDomainsWizard}
     onChangeDomain={() => {
-        ruleIdForVerification = null;
+        ruleForVerification = null;
         domainForVerification = null;
         showAddDomainsWizard = true;
     }} />
