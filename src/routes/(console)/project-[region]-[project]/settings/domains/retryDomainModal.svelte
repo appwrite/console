@@ -60,7 +60,7 @@
                     domainId: domain.$id
                 });
             }
-        } catch (error) {
+        } catch {
             // Ignore error
         }
 
