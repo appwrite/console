@@ -78,43 +78,37 @@
 
         <Layout.Stack gap="l">
             {#if data.recordList.total}
-                {#if $isSmallViewport}
-                    <Layout.Stack gap="s">
-                        <Layout.Stack direction="row" gap="s">
-                            <div style="flex: 1">
-                                <Popover let:toggle padding="none">
-                                    <Button secondary fullWidth on:click={toggle}
-                                        >Add preset</Button>
-                                    <svelte:fragment slot="tooltip" let:toggle>
-                                        <ActionMenu.Root>
-                                            {#each presets as preset}
-                                                <ActionMenu.Item.Button
-                                                    on:click={(e) => {
-                                                        toggle(e);
-                                                        selectedPreset = preset;
-                                                        showPresetModal = true;
-                                                    }}>{preset}</ActionMenu.Item.Button>
-                                            {/each}
-                                        </ActionMenu.Root>
-                                    </svelte:fragment>
-                                </Popover>
-                            </div>
-                            <Button
-                                secondary
-                                icon
-                                ariaLabel="Import zone file"
-                                on:click={() => (showImportModal = true)}>
+                <Layout.Stack direction="row" gap="s" alignItems="center" wrap="wrap">
+                    <div style:order={$isSmallViewport ? 2 : undefined}>
+                        <Button
+                            secondary
+                            icon={$isSmallViewport}
+                            ariaLabel={$isSmallViewport ? 'Import zone file' : undefined}
+                            on:click={() => (showImportModal = true)}>
+                            {#if $isSmallViewport}
                                 <Icon size="m" icon={IconUpload} />
-                            </Button>
-                            <Tooltip>
-                                <PinkButton.Button
-                                    variant="secondary"
-                                    icon
-                                    on:click={downloadRecords}>
-                                    <Icon icon={IconDownload} size="m" />
-                                </PinkButton.Button>
-                                <svelte:fragment slot="tooltip">Export as .txt</svelte:fragment>
-                            </Tooltip>
+                            {:else}
+                                <Icon icon={IconUpload} size="s" slot="start" />
+                                Import zone file
+                            {/if}
+                        </Button>
+                    </div>
+
+                    <div style:order={$isSmallViewport ? 3 : undefined}>
+                        <Tooltip>
+                            <PinkButton.Button variant="secondary" icon on:click={downloadRecords}>
+                                <Icon icon={IconDownload} size={$isSmallViewport ? 'm' : 's'} />
+                            </PinkButton.Button>
+                            <svelte:fragment slot="tooltip">Export as .txt</svelte:fragment>
+                        </Tooltip>
+                    </div>
+
+                    {#if !$isSmallViewport}
+                        <div style="flex: 1"></div>
+                    {/if}
+
+                    <div style:order={$isSmallViewport ? 4 : undefined}>
+                        {#if $isSmallViewport}
                             <Button
                                 secondary
                                 icon
@@ -122,71 +116,41 @@
                                 on:click={() => (showDisplaySettingsModal = true)}>
                                 <Icon icon={IconAdjustments} />
                             </Button>
-                        </Layout.Stack>
-                        <Button fullWidth on:click={() => (showCreate = true)}>
+                        {:else}
+                            <ViewSelector ui="new" view={View.Table} {columns} hideView />
+                        {/if}
+                    </div>
+
+                    <div
+                        style:order={$isSmallViewport ? 1 : undefined}
+                        style:flex={$isSmallViewport ? 1 : undefined}>
+                        <Popover let:toggle padding="none">
+                            <Button secondary fullWidth={$isSmallViewport} on:click={toggle}
+                                >Add preset</Button>
+                            <svelte:fragment slot="tooltip" let:toggle>
+                                <ActionMenu.Root>
+                                    {#each presets as preset}
+                                        <ActionMenu.Item.Button
+                                            on:click={(e) => {
+                                                toggle(e);
+                                                selectedPreset = preset;
+                                                showPresetModal = true;
+                                            }}>{preset}</ActionMenu.Item.Button>
+                                    {/each}
+                                </ActionMenu.Root>
+                            </svelte:fragment>
+                        </Popover>
+                    </div>
+
+                    <div
+                        style:order={$isSmallViewport ? 5 : undefined}
+                        style:width={$isSmallViewport ? '100%' : undefined}>
+                        <Button fullWidth={$isSmallViewport} on:click={() => (showCreate = true)}>
                             <Icon size="s" icon={IconPlus} slot="start" />
                             Create record
                         </Button>
-                    </Layout.Stack>
-                {:else}
-                    <Layout.Stack
-                        direction="row"
-                        gap="m"
-                        justifyContent="space-between"
-                        alignItems="center"
-                        wrap="wrap">
-                        <Layout.Stack
-                            direction="row"
-                            gap="s"
-                            alignItems="center"
-                            wrap="wrap"
-                            style="flex: 1">
-                            <Button secondary on:click={() => (showImportModal = true)}>
-                                <Icon icon={IconUpload} size="s" slot="start" />
-                                Import zone file
-                            </Button>
-                            <Tooltip>
-                                <PinkButton.Button
-                                    variant="secondary"
-                                    icon
-                                    on:click={downloadRecords}>
-                                    <Icon icon={IconDownload} size="s" />
-                                </PinkButton.Button>
-                                <svelte:fragment slot="tooltip">Export as .txt</svelte:fragment>
-                            </Tooltip>
-                        </Layout.Stack>
-                        <Layout.Stack
-                            direction="row"
-                            gap="s"
-                            alignItems="center"
-                            style="flex: 1; min-width: 250px; justify-content: flex-end;">
-                            <ViewSelector ui="new" view={View.Table} {columns} hideView />
-
-                            <Popover let:toggle padding="none">
-                                <Button secondary on:click={toggle}>Add preset</Button>
-                                <svelte:fragment slot="tooltip" let:toggle>
-                                    <ActionMenu.Root>
-                                        {#each presets as preset}
-                                            <ActionMenu.Item.Button
-                                                on:click={(e) => {
-                                                    toggle(e);
-                                                    selectedPreset = preset;
-                                                    showPresetModal = true;
-                                                }}>{preset}</ActionMenu.Item.Button>
-                                        {/each}
-                                    </ActionMenu.Root>
-                                </svelte:fragment>
-                            </Popover>
-
-                            <div>
-                                <Button on:click={() => (showCreate = true)}>
-                                    <Icon size="s" icon={IconPlus} slot="start" />
-                                    Create record
-                                </Button>
-                            </div>
-                        </Layout.Stack>
-                    </Layout.Stack>
-                {/if}
+                    </div>
+                </Layout.Stack>
                 <Table {data} />
             {:else}
                 <Card.Base padding="none">
