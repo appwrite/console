@@ -39,7 +39,7 @@
             if (verified) {
                 addNotification({
                     type: 'success',
-                    message: 'Domain verified'
+                    message: 'Domain verified successfully'
                 });
 
                 await goto(routeBase);
@@ -76,7 +76,7 @@
                 {#if verified === false}
                     <Badge
                         variant="secondary"
-                        type="warning"
+                        type="error"
                         size="xs"
                         content="Verification failed" />
                 {:else if verified === true}

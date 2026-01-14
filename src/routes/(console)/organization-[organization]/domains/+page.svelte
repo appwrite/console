@@ -93,7 +93,7 @@
                                         {#if !isDomainVerified(domain)}
                                             <Badge
                                                 variant="secondary"
-                                                type="warning"
+                                                type="error"
                                                 content="Not verified"
                                                 size="s" />
                                         {/if}

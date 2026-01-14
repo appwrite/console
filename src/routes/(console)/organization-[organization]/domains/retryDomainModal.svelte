@@ -36,7 +36,7 @@
                 show = false;
                 addNotification({
                     type: 'success',
-                    message: `${selectedDomain.domain} has been verified`
+                    message: 'Domain verified successfully'
                 });
             } else {
                 error =
