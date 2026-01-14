@@ -55,6 +55,8 @@
     }
 
     async function verify() {
+        verified = undefined;
+
         try {
             const apexDomain = getApexDomain(proxyRule.domain);
             const domain = data.domainsList.domains.find((d) => d.domain === apexDomain);
@@ -72,15 +74,15 @@
                 .forProject(page.params.region, page.params.project)
                 .proxy.updateRuleVerification({ ruleId });
 
-            verified = true;
+            await Promise.all([
+                invalidate(Dependencies.DOMAINS),
+                invalidate(Dependencies.SITES_DOMAINS)
+            ]);
+            await goto(routeBase);
             addNotification({
                 type: 'success',
                 message: 'Domain verified successfully'
             });
-
-            await goto(routeBase);
-            await invalidate(Dependencies.DOMAINS);
-            await invalidate(Dependencies.SITES_DOMAINS);
         } catch (error) {
             verified = false;
             isSubmitting.set(false);

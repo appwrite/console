@@ -45,7 +45,7 @@
             title: 'Domain',
             type: 'string',
             format: 'string',
-            width: { min: 300, max: 550 }
+            width: { min: 600 }
         },
         {
             id: 'updated',

@@ -115,7 +115,9 @@
         </svelte:fragment>
         <Table.Row.Base {root}>
             <Table.Cell column="type" {root}>{variant.toUpperCase()}</Table.Cell>
-            <Table.Cell column="name" {root}>{subdomain || '@'}</Table.Cell>
+            <Table.Cell column="name" {root}>
+                <InteractiveText variant="copy" isVisible text={subdomain || '@'} />
+            </Table.Cell>
             <Table.Cell column="value" {root}>
                 <InteractiveText variant="copy" isVisible text={setTarget()} />
             </Table.Cell>
@@ -139,16 +141,14 @@
         {#if variant === 'cname' && !subdomain}
             {#if isCloud}
                 <Alert.Inline>
-                    Since <Badge variant="secondary" size="s" content={domain} /> is an apex domain,
-                    CNAME record is only supported by certain providers. If yours doesn't, please verify
-                    using
+                    Since <Badge variant="secondary" size="s" content={domain} /> is an apex domain, CNAME
+                    record is only supported by certain providers. If yours doesn't, please verify using
                     <Link variant="muted" on:click={onNavigateToNameservers}>nameservers</Link> instead.
                 </Alert.Inline>
             {:else if aTabVisible || aaaaTabVisible}
                 <Alert.Inline>
-                    Since <Badge variant="secondary" size="s" content={domain} /> is an apex domain,
-                    CNAME record is only supported by certain providers. If yours doesn't, please verify
-                    using
+                    Since <Badge variant="secondary" size="s" content={domain} /> is an apex domain, CNAME
+                    record is only supported by certain providers. If yours doesn't, please verify using
                     {#if aTabVisible}
                         <Link variant="muted" on:click={onNavigateToA}>A record</Link>
                         {#if aaaaTabVisible}

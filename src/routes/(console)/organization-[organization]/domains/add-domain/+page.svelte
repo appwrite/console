@@ -28,11 +28,11 @@
             await invalidate(Dependencies.DOMAINS);
             const verified = domain.nameservers.toLowerCase() === 'appwrite';
             if (verified) {
+                await goto(backPage);
                 addNotification({
                     type: 'success',
                     message: 'Domain verified successfully'
                 });
-                await goto(backPage);
             }
         } catch (error) {
             addNotification({

@@ -51,6 +51,7 @@
 
     async function retryDomain() {
         error = null;
+        verified = undefined;
 
         try {
             const apexDomain = getApexDomain(selectedProxyRule.domain);
@@ -69,14 +70,12 @@
                 .forProject(page.params.region, page.params.project)
                 .proxy.updateRuleVerification({ ruleId: selectedProxyRule.$id });
 
-            verified = true;
+            await invalidate(Dependencies.DOMAINS);
+            show = false;
             addNotification({
                 type: 'success',
                 message: 'Domain verified successfully'
             });
-
-            await invalidate(Dependencies.DOMAINS);
-            show = false;
             trackEvent(Submit.DomainUpdateVerification);
         } catch (e) {
             verified = false;
