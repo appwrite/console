@@ -17,7 +17,7 @@
 
     const { data }: PageProps = $props();
 
-    const { databasesSdk, terminology } = getTerminologies();
+    const { databaseSdk, terminology } = getTerminologies();
     const entityTitle = terminology.entity.title;
     const entityLower = terminology.entity.lower;
 
@@ -76,7 +76,7 @@
         {#if data.view === 'grid'}
             <Grid {data} {terminology} bind:showCreate={$showCreateEntity} />
         {:else}
-            <Table {terminology} {databasesSdk} entities={data.entities} />
+            <Table {terminology} {databaseSdk} entities={data.entities} />
         {/if}
 
         <PaginationWithLimit

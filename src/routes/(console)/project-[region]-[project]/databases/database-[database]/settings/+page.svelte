@@ -27,14 +27,14 @@
     let errorType: 'error' | 'warning' | 'success' = $state('error');
     let showError: false | 'name' | 'email' | 'password' = $state(false);
 
-    const { databasesSdk, terminology } = getTerminologies();
+    const { databaseSdk, terminology } = getTerminologies();
 
     onMount(async () => {
         databaseName ??= database.name;
     });
 
     async function loadEntityCount() {
-        const { total } = await databasesSdk.listEntities({
+        const { total } = await databaseSdk.listEntities({
             databaseId: page.params.database,
             queries: [Query.limit(1)]
         });

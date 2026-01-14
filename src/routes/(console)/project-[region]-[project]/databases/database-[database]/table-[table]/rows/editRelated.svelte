@@ -42,7 +42,7 @@
     let workData = $state<Map<string, Writable<Models.Row>>>(new Map());
     let columnFormWrapper = $state<HTMLElement | null>(null);
 
-    const { databasesSdk } = getTerminologies();
+    const { databaseSdk } = getTerminologies();
 
     onMount(() => {
         if (rows && tableId) {
@@ -74,7 +74,7 @@
                     });
 
                 // cannot use page.data.entities!
-                relatedTable = await databasesSdk.getEntity({
+                relatedTable = await databaseSdk.getEntity({
                     databaseId,
                     entityId: tableId
                 });
@@ -93,7 +93,7 @@
                 });
 
                 if (missingTableIds.length > 0) {
-                    const tablesResponse = await databasesSdk.listEntities({
+                    const tablesResponse = await databaseSdk.listEntities({
                         databaseId,
                         queries: [
                             Query.equal('$id', missingTableIds),

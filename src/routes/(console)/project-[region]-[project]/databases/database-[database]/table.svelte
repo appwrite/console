@@ -23,17 +23,17 @@
     const {
         entities,
         terminology,
-        databasesSdk
+        databaseSdk
     }: {
         entities: EntityList;
         terminology: TerminologyResult;
-        databasesSdk: DatabaseSdkResult;
+        databaseSdk: DatabaseSdkResult;
     } = $props();
 
     const entitySingular = $derived(terminology.entity.lower.singular);
     async function onDelete(batchDelete: DeleteOperation): Promise<DeleteOperationState> {
         const result = await batchDelete((entityId) =>
-            databasesSdk.deleteEntity({
+            databaseSdk.deleteEntity({
                 databaseId: page.params.database,
                 entityId
             })

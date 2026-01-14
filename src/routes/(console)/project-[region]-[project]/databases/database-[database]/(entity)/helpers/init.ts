@@ -17,7 +17,7 @@ export type Terminologies = {
     analytics: AnalyticsResult;
     terminology: TerminologyResult;
     dependencies: DependenciesResult;
-    databasesSdk: DatabaseSdkResult;
+    databaseSdk: DatabaseSdkResult;
 };
 
 export function getTerminologies(): Terminologies {

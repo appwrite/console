@@ -62,8 +62,7 @@
 <Form onSubmit={updateDisplayName}>
     <CardGrid>
         <svelte:fragment slot="title">Display name</svelte:fragment>
-        Add up to 5 document keys to display in the spreadsheet and identify documents in the Appwrite
-        console. These keys will be shown as custom columns in your spreadsheet view.
+        Add up to 5 document fields to display as columns in the collection view.
 
         <svelte:fragment slot="aside">
             <Layout.Stack gap="s">
@@ -75,7 +74,7 @@
                         bind:tags={names} />
                 {/key}
                 <Input.Helper state="default">
-                    Maximum 5 document keys allowed. System keys are automatically filtered out.
+                    ID, createdAt, and updatedAt are always included and cannot be modified
                 </Input.Helper>
             </Layout.Stack>
         </svelte:fragment>

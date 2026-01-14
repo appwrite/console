@@ -26,7 +26,7 @@
 
     let showPermissionAlert = $state(true);
 
-    const { analytics, dependencies, terminology, databasesSdk } = getTerminologies();
+    const { analytics, dependencies, terminology, databaseSdk } = getTerminologies();
     const entityTerm = terminology.entity.lower.singular;
     const recordTerm = terminology.record.lower.singular;
 
@@ -41,7 +41,7 @@
         try {
             const { $databaseId: databaseId, $id: recordId, entityId } = toSupportiveRecord(record);
 
-            await databasesSdk.updateRecordPermissions({
+            await databaseSdk.updateRecordPermissions({
                 databaseId,
                 entityId,
                 recordId,

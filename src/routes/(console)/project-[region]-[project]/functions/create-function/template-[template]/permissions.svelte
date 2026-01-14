@@ -17,7 +17,7 @@
         });
 </script>
 
-<Fieldset legend="Permissions">
+<Fieldset legend="Security">
     <Layout.Stack gap="l">
         <Selector.Switch
             id="execute"

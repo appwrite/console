@@ -28,7 +28,7 @@
     const project = page.params.project;
     const databaseId = page.params.database;
 
-    const { databasesSdk, terminology } = getTerminologies();
+    const { databaseSdk, terminology } = getTerminologies();
 
     $: $registerCommands([
         {
@@ -144,7 +144,7 @@
     $noWidthTransition = true;
 
     async function createEntity(entityId: string, name: string) {
-        const entity = await databasesSdk.createEntity({
+        const entity = await databaseSdk.createEntity({
             databaseId,
             entityId,
             name

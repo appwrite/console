@@ -10,7 +10,7 @@
     import { IconPencil } from '@appwrite.io/pink-icons-svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { ID, type Models } from '@appwrite.io/console';
-    import { type DatabaseType, useDatabasesSdk } from '$database/(entity)';
+    import { type DatabaseType, useDatabaseSdk } from '$database/(entity)';
     import { isCloud } from '$lib/system';
     import { upgradeURL } from '$lib/stores/billing';
     import { currentPlan } from '$lib/stores/organization';
@@ -123,9 +123,9 @@
             databaseId ??= ID.unique();
 
             let database: Models.Database;
-            const databasesSdk = useDatabasesSdk(page.params.region, page.params.project);
+            const databaseSdk = useDatabaseSdk(page.params.region, page.params.project);
 
-            database = await databasesSdk.create(type, {
+            database = await databaseSdk.create(type, {
                 databaseId,
                 name: databaseName
             });
