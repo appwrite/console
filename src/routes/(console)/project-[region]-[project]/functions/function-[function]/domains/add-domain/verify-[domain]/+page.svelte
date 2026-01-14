@@ -44,6 +44,7 @@
     );
     const showNSTab = isCloud;
 
+    let proxyRule = $derived(data.proxyRule);
     let selectedTab = $state<'cname' | 'nameserver' | 'a' | 'aaaa'>(getDefaultTab());
     let routeBase = `${base}/project-${page.params.region}-${page.params.project}/functions/function-${page.params.function}/domains`;
     let verified: boolean | undefined = $state(undefined);
@@ -55,7 +56,7 @@
 
     async function verify() {
         try {
-            const apexDomain = getApexDomain(data.proxyRule.domain);
+            const apexDomain = getApexDomain(proxyRule.domain);
             const domain = data.domainsList.domains.find((d) => d.domain === apexDomain);
 
             if (isCloud && domain) {
@@ -68,7 +69,7 @@
         }
 
         try {
-            await sdk
+            proxyRule = await sdk
                 .forProject(page.params.region, page.params.project)
                 .proxy.updateRuleVerification({ ruleId });
 
@@ -97,7 +98,7 @@
                 .forProject(page.params.region, page.params.project)
                 .proxy.deleteRule({ ruleId });
         }
-        await goto(`${routeBase}/add-domain?domain=${data.proxyRule.domain}`);
+        await goto(`${routeBase}/add-domain?domain=${proxyRule.domain}`);
     }
 </script>
 
@@ -114,7 +115,7 @@
                         <Icon icon={IconGlobeAlt} color="--fgcolor-neutral-primary" />
 
                         <Typography.Text variation="m-500" color="--fgcolor-neutral-primary">
-                            {data.proxyRule.domain}
+                            {proxyRule.domain}
                         </Typography.Text>
                     </Layout.Stack>
                     <Button secondary on:click={back}>Change</Button>
@@ -163,15 +164,15 @@
                     {#if selectedTab === 'nameserver'}
                         <NameserverTable
                             {verified}
-                            domain={data.proxyRule.domain}
-                            ruleStatus={data.proxyRule.status} />
+                            domain={proxyRule.domain}
+                            ruleStatus={proxyRule.status} />
                     {:else}
                         <RecordTable
                             {verified}
                             service="functions"
                             variant={selectedTab}
-                            domain={data.proxyRule.domain}
-                            ruleStatus={data.proxyRule.status}
+                            domain={proxyRule.domain}
+                            ruleStatus={proxyRule.status}
                             onNavigateToNameservers={() => (selectedTab = 'nameserver')}
                             onNavigateToA={() => (selectedTab = 'a')}
                             onNavigateToAAAA={() => (selectedTab = 'aaaa')} />
