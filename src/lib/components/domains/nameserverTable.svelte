@@ -5,8 +5,8 @@
 
     let {
         domain,
-        verified = undefined,
-        ruleStatus = undefined
+        verified,
+        ruleStatus
     }: {
         domain: string;
         verified?: boolean;

@@ -14,10 +14,10 @@
 
     let {
         domain,
-        verified = undefined,
+        verified,
         variant,
         service = 'general',
-        ruleStatus = undefined,
+        ruleStatus,
         onNavigateToNameservers = () => {},
         onNavigateToA = () => {},
         onNavigateToAAAA = () => {}
