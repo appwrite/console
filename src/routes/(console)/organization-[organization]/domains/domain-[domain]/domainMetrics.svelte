@@ -13,11 +13,9 @@
         retryVerification: () => void;
     } = $props();
 
-    const isDomainVerified = $derived(domain.nameservers.toLowerCase() === 'appwrite');
-
     const metrics = $derived([
         {
-            value: isDomainVerified ? 'Verified' : 'Not verified',
+            value: domain.verified ? 'Verified' : 'Not verified',
             description: 'Status'
         },
         {
@@ -56,9 +54,9 @@
                     <Status
                         --font-size-s="var(--font-size-xs)"
                         label={metric.value.toString()}
-                        status={isDomainVerified ? 'complete' : 'pending'} />
+                        status={domain.verified ? 'complete' : 'pending'} />
 
-                    {#if !isDomainVerified}
+                    {#if !domain.verified}
                         <Link size="s" on:click={retryVerification}>Retry</Link>
                     {/if}
                 </Layout.Stack>
