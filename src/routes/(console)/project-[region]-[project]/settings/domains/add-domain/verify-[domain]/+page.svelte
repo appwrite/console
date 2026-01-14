@@ -160,7 +160,10 @@
                         <Divider />
                     </div>
                     {#if selectedTab === 'nameserver'}
-                        <NameserverTable domain={proxyRule.domain} {verified} />
+                        <NameserverTable
+                            {verified}
+                            domain={proxyRule.domain}
+                            ruleStatus={proxyRule.status} />
                     {:else}
                         <RecordTable
                             {verified}
