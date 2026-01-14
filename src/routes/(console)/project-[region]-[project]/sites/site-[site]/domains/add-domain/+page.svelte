@@ -114,7 +114,7 @@
             if (verified) {
                 addNotification({
                     type: 'success',
-                    message: 'Domain added successfully'
+                    message: 'Domain verified successfully'
                 });
                 await goto(routeBase);
             } else {
