@@ -3,7 +3,7 @@
     import { Container } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
     import { ImageFormat, Query, type Models } from '@appwrite.io/console';
-    import { Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { Layout, Typography, Canvas } from '@appwrite.io/pink-svelte';
     import { onMount } from 'svelte';
     import { CopyInput } from '$lib/components';
     import ImageGrid from './components/imageGrid.svelte';
@@ -14,6 +14,7 @@
         generateTransformationParams,
         type TransformationState
     } from '$lib/helpers/imageTransformations';
+    import type { CanvasObjectUnion } from '@appwrite.io/pink-svelte/dist/canvas/index.js'; // Import type explicitly if needed or infer
 
     // UI State
     let activeTab = $state<'design' | 'code'>('design');
@@ -52,15 +53,95 @@
     let appliedPresets = $state<Record<string, string>>({}); // fileId -> presetId
 
     // Canvas state
-    let canvasContainer = $state<HTMLDivElement>();
-    let imageElement = $state<HTMLImageElement>();
-    let isResizing = $state(false);
-    let resizeHandle = $state<string | null>(null);
-    let startX = $state(0);
-    let startY = $state(0);
-    let startWidth = $state(0);
-    let startHeight = $state(0);
     let focalPointOverlay = $state<string | null>(null);
+    let canvasCore = $state<any>(null);
+    let currentZoom = $state(1);
+
+    let canvasObjects = $state<CanvasObjectUnion[]>([]);
+
+    // Force selection of the main image and ensure handles are visible
+    $effect(() => {
+        if (canvasCore && selectedFile && canvasObjects.length > 0) {
+            // Use a small timeout to ensure the canvas has initialized properly
+            setTimeout(() => {
+                canvasCore.selectObject('main-image');
+            }, 0);
+        }
+    });
+
+    $effect(() => {
+        if (!canvasCore) return;
+        const unsubscribe = canvasCore.zoom.subscribe((z: number) => {
+            currentZoom = z;
+            zoom = Math.round(z * 100);
+        });
+        return unsubscribe;
+    });
+    // Sync init
+    $effect(() => {
+        if (selectedFile) {
+            const existing = canvasObjects.find((o) => o.id === 'main-image');
+            if (!existing) {
+                // Initialize
+                canvasObjects = [
+                    {
+                        id: 'main-image',
+                        type: 'image',
+                        x: 0,
+                        y: 0,
+                        width: transformationState.width || 700,
+                        height: transformationState.height || 438,
+                        rotation: transformationState.rotation || 0,
+                        src: previewUrl, // Use current preview URL
+                        alt: selectedFile.name,
+                        maintainAspectRatio: transformationState.aspectRatioLocked,
+                        selected: true,
+                        // Ensure optional props are set
+                        cropX: 0,
+                        cropY: 0
+                    }
+                ];
+                // Center the view on init
+                setTimeout(() => {
+                    canvasCore?.panTo(0, 0);
+                    canvasCore?.selectObject('main-image');
+                }, 100);
+            } else {
+                // Only update if dimensions drastically mismatch initial load (prevent loops)
+                // or if rotation changes from external source (like input)
+                // But wait, if we bind, we should let Canvas update objects.
+                // We should only push to objects if the user manually types in the inputs.
+                // The issue is distinguishing input change vs drag change.
+                // We can check document.activeElement?
+            }
+        }
+    });
+
+    // Update transformationState when canvasObjects change (drag/resize)
+    $effect(() => {
+        const obj = canvasObjects.find((o) => o.id === 'main-image');
+        if (obj) {
+            // Only update if not currently editing inputs?
+            // Actually, the binding should handle it if we are consistent.
+            transformationState.width = Math.round(obj.width);
+            transformationState.height = Math.round(obj.height);
+            if (obj.rotation !== undefined) transformationState.rotation = obj.rotation;
+        }
+    });
+
+    // When transformationState changes (e.g. user input), update canvas object
+    // We need to avoid loops.
+    $effect(() => {
+        const obj = canvasObjects.find((o) => o.id === 'main-image');
+        if (obj) {
+            if (obj.width !== transformationState.width) obj.width = transformationState.width;
+            if (obj.height !== transformationState.height) obj.height = transformationState.height;
+            if (obj.rotation !== transformationState.rotation)
+                obj.rotation = transformationState.rotation;
+            if (obj.maintainAspectRatio !== transformationState.aspectRatioLocked)
+                obj.maintainAspectRatio = transformationState.aspectRatioLocked;
+        }
+    });
 
     onMount(async () => {
         try {
@@ -104,9 +185,17 @@
                 .toString() + '&mode=admin';
     }
 
-    function getPreviewUrl(): string {
+    function getPreviewUrl(forCanvas = false): string {
         if (!selectedFile) return '';
         const params = generateTransformationParams(transformationState);
+
+        // For canvas preview, we want to omit width/height so the browser handles scaling
+        // This prevents "zooming"/flashing artifacts during resize drag
+        if (forCanvas) {
+            delete params.width;
+            delete params.height;
+        }
+
         const previewParams: any = {
             bucketId: selectedFile.bucketId,
             fileId: selectedFile.$id,
@@ -120,7 +209,8 @@
         );
     }
 
-    let previewUrl = $derived(getPreviewUrl());
+    let previewUrl = $derived(getPreviewUrl(true)); // For canvas
+    let downloadUrl = $derived(getPreviewUrl(false)); // For final output/code
 
     // Watch for file selection changes and apply presets
     let lastSelectedFileId = $state<string | null>(null);
@@ -141,8 +231,15 @@
     });
 
     function handleFocalPointClick(event: MouseEvent) {
-        if (!canvasContainer || !selectedFile || isResizing) return;
-        const rect = canvasContainer.getBoundingClientRect();
+        if (!selectedFile) return;
+
+        const target = event.target as HTMLElement;
+        if (target.closest('.resize-handle')) return;
+
+        const objectEl = target.closest('.canvas-object');
+        if (!objectEl) return;
+
+        const rect = objectEl.getBoundingClientRect();
         const x = event.clientX - rect.left;
         const y = event.clientY - rect.top;
         const width = rect.width;
@@ -165,55 +262,6 @@
         transformationState.gravity = point;
         focalPointOverlay = point;
         setTimeout(() => (focalPointOverlay = null), 1000);
-    }
-
-    function handleResizeStart(event: MouseEvent, handle: string) {
-        event.stopPropagation();
-        isResizing = true;
-        resizeHandle = handle;
-        startX = event.clientX;
-        startY = event.clientY;
-        startWidth = transformationState.width || 0;
-        startHeight = transformationState.height || 0;
-    }
-
-    function handleMouseMove(event: MouseEvent) {
-        if (!isResizing || !resizeHandle) return;
-        const dx = event.clientX - startX;
-        const dy = event.clientY - startY;
-        const scale = zoom / 100;
-
-        let newWidth = startWidth;
-        let newHeight = startHeight;
-
-        if (resizeHandle.includes('e')) {
-            newWidth = Math.max(1, startWidth + dx / scale);
-        }
-        if (resizeHandle.includes('w')) {
-            newWidth = Math.max(1, startWidth - dx / scale);
-        }
-        if (resizeHandle.includes('s')) {
-            newHeight = Math.max(1, startHeight + dy / scale);
-        }
-        if (resizeHandle.includes('n')) {
-            newHeight = Math.max(1, startHeight - dy / scale);
-        }
-
-        if (transformationState.aspectRatioLocked && transformationState.originalAspectRatio) {
-            if (resizeHandle.includes('e') || resizeHandle.includes('w')) {
-                newHeight = Math.round(newWidth / transformationState.originalAspectRatio);
-            } else {
-                newWidth = Math.round(newHeight * transformationState.originalAspectRatio);
-            }
-        }
-
-        transformationState.width = newWidth;
-        transformationState.height = newHeight;
-    }
-
-    function handleMouseUp() {
-        isResizing = false;
-        resizeHandle = null;
     }
 
     function handlePresetSelected(presetId: string | null) {
@@ -302,13 +350,13 @@
         <Layout.Stack gap="l">
             <!-- URL Input -->
             <div class="url-section">
-                <CopyInput label="" value={previewUrl} />
+                <CopyInput label="" value={downloadUrl} />
             </div>
 
             <!-- Main Editor Layout -->
             <div class="editor-layout">
                 <!-- Left Panel - Canvas -->
-                <div class="preview-section">
+                <div class="preview-section" style="--zoom: {currentZoom}">
                     <!-- Focal Point Label -->
                     <div class="focal-point-section">
                         <Typography.Text class="focal-point-label">
@@ -317,72 +365,61 @@
                     </div>
 
                     <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
-                    <div
-                        class="preview-container"
-                        bind:this={canvasContainer}
-                        role="button"
-                        tabindex="-1"
-                        onclick={handleFocalPointClick}
-                        onkeydown={(e) => {
-                            if (e.key === 'Enter' || e.key === ' ') {
-                                e.preventDefault();
-                                handleFocalPointClick(e as any);
+
+                    <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
+                    <Canvas.Root
+                        bind:this={canvasCore}
+                        settings={{
+                            canPan: true,
+                            canZoom: true,
+                            canSelect: true,
+                            grid: {
+                                dotColor: 'var(--color-neutral-20)',
+                                dotSize: 1,
+                                dotOpacity: 100
                             }
                         }}
-                        onmousemove={handleMouseMove}
-                        onmouseup={handleMouseUp}
-                        onmouseleave={handleMouseUp}
-                        style="cursor: crosshair;">
-                        <div class="preview-wrapper" style="transform: scale({zoom / 100});">
-                            <img
-                                bind:this={imageElement}
-                                src={previewUrl}
-                                alt={selectedFile.name}
-                                class="preview-image"
-                                draggable="false" />
-                            <!-- Grid overlay (rule of thirds) -->
-                            <div class="grid-overlay">
-                                <div class="grid-line grid-line-v" style="left: 33.33%;"></div>
-                                <div class="grid-line grid-line-v" style="left: 66.66%;"></div>
-                                <div class="grid-line grid-line-h" style="top: 33.33%;"></div>
-                                <div class="grid-line grid-line-h" style="top: 66.66%;"></div>
-                            </div>
-                            <!-- Focal point overlay -->
-                            {#if focalPointOverlay || transformationState.gravity}
-                                {@const pos = getFocalPointPosition()}
-                                <div
-                                    class="focal-overlay"
-                                    style="top: {pos.top}; left: {pos.left}; width: {pos.width}; height: {pos.height};">
-                                </div>
-                            {/if}
-                            <!-- Resize handles -->
-                            <div class="resize-handles">
-                                <button
-                                    type="button"
-                                    class="handle handle-nw"
-                                    onmousedown={(e) => handleResizeStart(e, 'nw')}
-                                    aria-label="Resize from top-left"
-                                    style="cursor: nwse-resize;"></button>
-                                <button
-                                    type="button"
-                                    class="handle handle-ne"
-                                    onmousedown={(e) => handleResizeStart(e, 'ne')}
-                                    aria-label="Resize from top-right"
-                                    style="cursor: nesw-resize;"></button>
-                                <button
-                                    type="button"
-                                    class="handle handle-sw"
-                                    onmousedown={(e) => handleResizeStart(e, 'sw')}
-                                    aria-label="Resize from bottom-left"
-                                    style="cursor: nesw-resize;"></button>
-                                <button
-                                    type="button"
-                                    class="handle handle-se"
-                                    onmousedown={(e) => handleResizeStart(e, 'se')}
-                                    aria-label="Resize from bottom-right"
-                                    style="cursor: nwse-resize;"></button>
-                            </div>
+                        showGrid={true}
+                        width="100%"
+                        height="100%"
+                        bind:objects={canvasObjects}>
+                        <!-- Main Objects Loop -->
+                        <div style="display: contents" onclick={handleFocalPointClick}>
+                            {#each canvasObjects as obj (obj.id)}
+                                {#if obj.type === 'image'}
+                                    <Canvas.Image object={obj} />
+                                {:else if obj.type === 'shape'}
+                                    <Canvas.Shape object={obj} />
+                                {/if}
+                            {/each}
                         </div>
+
+                        <!-- Focal Point Overlay (Manually positioned to match main-image) -->
+                        {#if focalPointOverlay || transformationState.gravity}
+                            {#each canvasObjects as obj (obj.id)}
+                                {#if obj.type === 'image' && obj.id === 'main-image'}
+                                    {@const pos = getFocalPointPosition()}
+                                    <div
+                                        class="focal-point-layer"
+                                        style="
+                                            position: absolute;
+                                            transform: translate3d({obj.x}px, {obj.y}px, 0);
+                                            width: {obj.width}px;
+                                            height: {obj.height}px;
+                                            pointer-events: none;
+                                            z-index: 5;
+                                        ">
+                                        <div
+                                            class="focal-overlay"
+                                            style="top: {pos.top}; left: {pos.left}; width: {pos.width}; height: {pos.height};">
+                                        </div>
+                                    </div>
+                                {/if}
+                            {/each}
+                        {/if}
+                    </Canvas.Root>
+
+                    <div class="overlay-controls">
                         <Typography.Text variant="m-400" class="dimensions-text">
                             {transformationState.width || 0} × {transformationState.height || 0}
                         </Typography.Text>
@@ -478,17 +515,6 @@
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
-    .preview-container {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        position: relative;
-        padding: 2rem;
-        overflow: auto;
-    }
-
     .preview-wrapper {
         position: relative;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
@@ -498,35 +524,8 @@
     .preview-image {
         display: block;
         max-width: 100%;
-        max-height: 70vh;
         border-radius: var(--border-radius-small);
         user-select: none;
-    }
-
-    .grid-overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        pointer-events: none;
-    }
-
-    .grid-line {
-        position: absolute;
-        background: rgba(255, 255, 255, 0.3);
-    }
-
-    .grid-line-v {
-        top: 0;
-        bottom: 0;
-        width: 1px;
-    }
-
-    .grid-line-h {
-        left: 0;
-        right: 0;
-        height: 1px;
     }
 
     .focal-overlay {
@@ -537,44 +536,39 @@
         transition: all 0.2s;
     }
 
-    .resize-handles {
+    .overlay-controls {
         position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
+        bottom: 1rem;
+        left: 1rem;
+        right: 1rem;
         pointer-events: none;
-    }
-
-    .handle {
-        position: absolute;
-        width: 12px;
-        height: 12px;
-        background: var(--color-primary-100);
-        border: 2px solid white;
-        border-radius: 50%;
-        pointer-events: all;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
         z-index: 10;
     }
 
-    .handle-nw {
-        top: -6px;
-        left: -6px;
+    /* Fallback styles for resize handles to ensure visibility */
+    /* Fallback styles for resize handles to ensure visibility */
+    :global(.resize-handle) {
+        width: 10px !important;
+        height: 10px !important;
+        background-color: var(--color-primary-100, #00d9ff) !important;
+        border: 1px solid blue !important;
+        z-index: 20 !important;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2) !important;
+        /* Inverse scale to keep constant size */
+        transform: scale(calc(1 / var(--zoom, 1))) !important;
+        transform-origin: center !important;
     }
 
-    .handle-ne {
-        top: -6px;
-        right: -6px;
+    :global(.resize-handle:hover) {
+        /* Scale up slightly from the base inverse scale */
+        transform: scale(calc(1.2 / var(--zoom, 1))) !important;
     }
 
-    .handle-sw {
-        bottom: -6px;
-        left: -6px;
-    }
-
-    .handle-se {
-        bottom: -6px;
-        right: -6px;
+    .overlay-controls > * {
+        pointer-events: auto;
     }
 
     /* svelte-ignore css_unused_selector */
@@ -609,11 +603,6 @@
         min-width: 40px;
         text-align: right;
         color: var(--color-neutral-70);
-    }
-
-    .handle {
-        border: none;
-        padding: 0;
     }
 
     .controls-section {
