@@ -6,8 +6,8 @@ export const SYSTEM_KEYS = new Set(['$id:', '$createdAt:', '$updatedAt:']);
 export const DEBOUNCE_DELAY = 200;
 export const LINTER_DELAY = 250;
 
-// regex patterns (compiled once for performance)
-export const UNQUOTED_KEY_REGEX = /([{,]\s*)([a-zA-Z_$][a-zA-Z0-9_$]*)\s*:/g;
+// regex patterns
+/* export const UNQUOTED_KEY_REGEX = /([{,]\s*)([a-zA-Z_$][a-zA-Z0-9_$]*)\s*:/g; */
 export const INDENT_REGEX = /^[\t ]*/;
 export const SCALAR_VALUE_REGEX =
     /:\s*(?:true|false|null|-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')\s*$/;

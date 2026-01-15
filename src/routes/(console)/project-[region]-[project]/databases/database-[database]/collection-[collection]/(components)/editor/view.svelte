@@ -29,10 +29,7 @@
         lineNumbers,
         highlightActiveLine,
         highlightActiveLineGutter,
-        Decoration,
-        type DecorationSet,
-        type ViewUpdate,
-        ViewPlugin
+        type ViewUpdate
     } from '@codemirror/view';
     import { history } from '@codemirror/commands';
     import {
@@ -49,8 +46,6 @@
     import {
         EditorState,
         EditorSelection,
-        Range,
-        StateField,
         Transaction,
         Compartment,
         type Extension
@@ -69,8 +64,13 @@
     import { customTheme, customSyntaxHighlighting } from './helpers/theme';
     import { createEditorKeymaps, secondaryKeymaps } from './helpers/keymaps';
     import {
+        createReadOnlyRangesField,
+        createReadOnlyLineField,
+        createReadOnlyRangesFilter,
+        nestedKeyPlugin
+    } from './extensions';
+    import {
         ALLOWED_DOLLAR_PROPS,
-        SYSTEM_KEYS,
         DEBOUNCE_DELAY,
         LINTER_DELAY,
         INDENT_REGEX,
@@ -78,7 +78,6 @@
         TRAILING_COMMA_REGEX,
         WHITESPACE_REGEX,
         WHITESPACE_ONLY_REGEX,
-        NESTED_KEY_REGEX,
         SKELETON_LINES,
         getIndent
     } from './helpers/constants';
@@ -263,31 +262,6 @@
         lastSerializedData = value;
         lastSerializedText = serialized;
         return serialized;
-    }
-
-    // Find ranges of system keys (lines starting with $id, $createdAt, $updatedAt)
-    // When isNew=true, skip all readonly range detection since we don't have timestamps yet
-    function findReadOnlyRanges(doc: Text): Array<{ from: number; to: number }> {
-        // When creating a new document, allow editing everything
-        if (isNew) return [];
-
-        const ranges: Array<{ from: number; to: number }> = [];
-        let found = 0;
-
-        for (let i = 1; i <= doc.lines; i++) {
-            const line = doc.line(i);
-            const lineText = line.text.trim();
-            for (const key of SYSTEM_KEYS) {
-                if (lineText.startsWith(key)) {
-                    ranges.push({ from: line.from, to: line.to });
-                    found++;
-                    break;
-                }
-            }
-            if (found === SYSTEM_KEYS.size) break;
-        }
-
-        return ranges;
     }
 
     // Preserve system key values when content changes
@@ -740,131 +714,9 @@
         return true;
     }
 
-    // Transaction filter to prevent edits on system key lines
-    function readOnlyRangesFilter(tr: Transaction) {
-        if (readonly || !tr.docChanged) return tr;
-        const ue = tr.annotation(Transaction.userEvent);
-        if (typeof ue === 'string' && ue.startsWith('appwrite:')) {
-            return tr;
-        }
-
-        const startDoc = tr.startState.doc;
-        const readOnlyRanges = tr.startState.field(readOnlyRangesField);
-        let blocked = false;
-        let fullReplace = false;
-
-        tr.changes.iterChanges((fromA: number, toA: number) => {
-            // Allow full-document replacement (Select All → Paste)
-            if (fromA === 0 && toA === startDoc.length) {
-                fullReplace = true;
-                return;
-            }
-
-            // Check if change overlaps with any read-only range
-            for (const range of readOnlyRanges) {
-                if (
-                    // treat line ranges as half-open [from, to)
-                    (fromA >= range.from && fromA < range.to) ||
-                    (toA > range.from && toA < range.to) ||
-                    (fromA < range.from && toA > range.to)
-                ) {
-                    blocked = true;
-                    break;
-                }
-            }
-        });
-
-        if (fullReplace) return tr;
-        // Block the transaction if it tries to edit a read-only range
-        return blocked ? [] : tr;
-    }
-
-    // Ranges field for read-only system lines (single source of truth)
-    const readOnlyRangesField = StateField.define<ReadonlyArray<{ from: number; to: number }>>({
-        create(state) {
-            return findReadOnlyRanges(state.doc);
-        },
-        update(value, tr) {
-            if (!tr.docChanged) return value;
-            return findReadOnlyRanges(tr.state.doc);
-        }
-    });
-
-    // State field to add decorations to read-only lines
-    const readOnlyLineField = StateField.define<DecorationSet>({
-        create(state) {
-            const decorations: Range<Decoration>[] = [];
-            const readOnlyRanges = state.field(readOnlyRangesField);
-
-            for (const range of readOnlyRanges) {
-                decorations.push(
-                    Decoration.line({
-                        class: 'cm-readOnlyLine'
-                    }).range(range.from)
-                );
-            }
-
-            return Decoration.set(decorations);
-        },
-        update(decorations, tr) {
-            if (!tr.docChanged) return decorations;
-
-            const newDecorations: Range<Decoration>[] = [];
-            const readOnlyRanges = tr.state.field(readOnlyRangesField);
-
-            for (const range of readOnlyRanges) {
-                newDecorations.push(
-                    Decoration.line({
-                        class: 'cm-readOnlyLine'
-                    }).range(range.from)
-                );
-            }
-
-            return Decoration.set(newDecorations);
-        },
-        provide: (f) => EditorView.decorations.from(f)
-    });
-
-    // ViewPlugin to highlight nested keys (4+ spaces) only in visible ranges
-    const nestedKeyPlugin = ViewPlugin.fromClass(
-        class {
-            decorations: DecorationSet;
-            constructor(view: EditorView) {
-                this.decorations = this.compute(view);
-            }
-            update(update: ViewUpdate) {
-                if (update.docChanged || update.viewportChanged) {
-                    this.decorations = this.compute(update.view);
-                }
-            }
-            compute(view: EditorView): DecorationSet {
-                const decos: Range<Decoration>[] = [];
-                for (const { from, to } of view.visibleRanges) {
-                    let line = view.state.doc.lineAt(from);
-                    while (line.from <= to) {
-                        const text = line.text;
-                        const m = text.match(NESTED_KEY_REGEX);
-                        if (m) {
-                            const leading = m[1];
-                            const key = m[2];
-                            const start = line.from + leading.length;
-                            const end = start + key.length;
-                            decos.push(
-                                Decoration.mark({ class: 'cm-nestedPropertyName' }).range(
-                                    start,
-                                    end
-                                )
-                            );
-                        }
-                        if (line.to >= to) break;
-                        line = view.state.doc.line(line.number + 1);
-                    }
-                }
-                return Decoration.set(decos);
-            }
-        },
-        { decorations: (v) => v.decorations }
-    );
+    // Create extension instances
+    const readOnlyRangesField = createReadOnlyRangesField(isNew);
+    const readOnlyLineField = createReadOnlyLineField(readOnlyRangesField);
 
     function parseWithCache(content: string): Promise<ParseResult> {
         if (lastParsePromise && content === lastParseContent) {
@@ -962,7 +814,9 @@
             closeBrackets(),
             linter(javascriptLinter, { delay: LINTER_DELAY }),
             readOnlyRangesField,
-            EditorState.transactionFilter.of(readOnlyRangesFilter),
+            EditorState.transactionFilter.of(
+                createReadOnlyRangesFilter(readOnlyRangesField, readonly)
+            ),
             readOnlyLineField,
             nestedKeyPlugin,
             highlightSelectionMatches(),

@@ -24,13 +24,12 @@
     import DualTimeView from '$lib/components/dualTimeView.svelte';
     import {
         IconCalendar,
-        IconCode,
         IconDotsHorizontal,
         IconDuplicate,
         IconFingerPrint
     } from '@appwrite.io/pink-icons-svelte';
     import { isSmallViewport, isTabletViewport } from '$lib/stores/viewport';
-    import { SpreadsheetContainer } from '$database/(entity)';
+    import { SpreadsheetContainer, useDatabaseSdk } from '$database/(entity)';
     import { copy } from '$lib/helpers/copy';
     import { writable } from 'svelte/store';
     import { pageToOffset } from '$lib/helpers/load';
@@ -84,6 +83,7 @@
 
     const databaseId = page.params.database;
     const collectionId = page.params.collection;
+    const databaseSdk = useDatabaseSdk(page.params.region, page.params.project, data.database.type);
 
     const emptyCellsLimit = $spreadsheetLoading
         ? 30
@@ -169,7 +169,6 @@
             minimumWidth: 225,
             draggable: false,
             type: 'dynamic',
-            icon: IconCode /* fuzzy search based Icon later */,
             isEditable: false,
             hide: !!selectedColumnsToHide?.includes(key)
         }));
@@ -273,24 +272,17 @@
 
         try {
             if (selectedDocumentForDelete) {
-                await sdk
-                    .forProject(page.params.region, page.params.project)
-                    .documentsDB.deleteDocument({
-                        databaseId,
-                        collectionId,
-                        documentId: selectedDocumentForDelete
-                    });
+                await databaseSdk.deleteRecord({
+                    databaseId,
+                    entityId: collectionId,
+                    recordId: selectedDocumentForDelete
+                });
             } else {
                 if (selectedDocuments.length) {
-                    const documentsSDK = sdk.forProject(
-                        page.params.region,
-                        page.params.project
-                    ).documentsDB;
-
                     for (const batch of chunks(selectedDocuments, 100)) {
-                        await documentsSDK.deleteDocuments({
+                        await databaseSdk.deleteRecords({
                             databaseId,
-                            collectionId,
+                            entityId: collectionId,
                             queries: [Query.equal('$id', batch)]
                         });
                     }
@@ -401,7 +393,6 @@
     // possibly for auto-save!
     async function createOrUpdateDocument(jsonValue: JsonValue) {
         const document = jsonValue as Models.Document;
-        const documentsDB = sdk.forProject(page.params.region, page.params.project).documentsDB;
 
         /**
          * remove dates because
@@ -412,10 +403,10 @@
         try {
             if ($noSqlDocument.isNew) {
                 // create
-                await documentsDB.createDocument({
+                await databaseSdk.createRecord({
                     databaseId,
-                    collectionId,
-                    documentId: $id,
+                    entityId: collectionId,
+                    recordId: $id,
                     data: documentWithoutDates ?? {}
                 });
 
@@ -426,10 +417,10 @@
                 });
             } else {
                 // update
-                await documentsDB.updateDocument({
+                await databaseSdk.updateRecord({
                     databaseId,
-                    collectionId,
-                    documentId: $id,
+                    entityId: collectionId,
+                    recordId: $id,
                     data: documentWithoutDates,
                     permissions: document.$permissions ?? []
                 });

@@ -34,6 +34,11 @@ export type EntityList = {
     entities: Entity[];
 };
 
+export type RecordList = {
+    total: number;
+    records: Record[];
+};
+
 export const baseTerminology = {
     /**
      * this is no longer used on console so

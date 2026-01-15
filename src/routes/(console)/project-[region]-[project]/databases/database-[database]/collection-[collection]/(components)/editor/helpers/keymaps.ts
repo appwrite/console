@@ -1,4 +1,4 @@
-import { searchKeymap } from '@codemirror/search';
+/*import { searchKeymap } from '@codemirror/search';*/
 import { closeBracketsKeymap } from '@codemirror/autocomplete';
 import type { EditorView, KeyBinding } from '@codemirror/view';
 import { defaultKeymap, historyKeymap, indentLess, indentMore } from '@codemirror/commands';
@@ -28,6 +28,13 @@ export function createEditorKeymaps(
         });
     }
 
+    // Disable search/replace for now!
+    keymaps.push({
+        key: 'Mod-f',
+        preventDefault: true,
+        run: () => true
+    });
+
     return keymaps;
 }
 
@@ -35,6 +42,6 @@ export function createEditorKeymaps(
 export const secondaryKeymaps = [
     ...closeBracketsKeymap,
     ...defaultKeymap,
-    ...searchKeymap,
+    /*...searchKeymap,*/
     ...historyKeymap
 ];
