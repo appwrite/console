@@ -171,7 +171,7 @@
             type: 'dynamic',
             icon: IconCode /* fuzzy search based Icon later */,
             isEditable: false,
-            hide: false
+            hide: !!selectedColumnsToHide?.includes(key)
         }));
 
         const staticColumns: Column[] = [
@@ -185,7 +185,8 @@
                 icon: IconFingerPrint,
                 isEditable: false,
                 isPrimary: false,
-                hide: !!selectedColumnsToHide?.includes('$id')
+                hide: false,
+                disable: true
             },
             ...customColumns,
             {
@@ -197,7 +198,8 @@
                 type: 'datetime',
                 icon: IconCalendar,
                 isEditable: false,
-                hide: !!selectedColumnsToHide?.includes('$createdAt')
+                hide: false,
+                disable: true
             },
             {
                 id: '$updatedAt',
@@ -208,7 +210,8 @@
                 type: 'datetime',
                 icon: IconCalendar,
                 isEditable: false,
-                hide: !!selectedColumnsToHide?.includes('$updatedAt')
+                hide: false,
+                disable: true
             },
             {
                 id: 'actions',

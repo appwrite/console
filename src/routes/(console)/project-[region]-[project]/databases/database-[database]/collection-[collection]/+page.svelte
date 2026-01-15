@@ -1,9 +1,10 @@
 <script lang="ts">
     import { hasPageQueries, queries } from '$lib/components/filters';
+    import ViewSelector from '$lib/components/viewSelector.svelte';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import { preferences } from '$lib/stores/preferences';
-    import { Icon, Layout, Divider } from '@appwrite.io/pink-svelte';
+    import { Icon, Layout, Divider, Tooltip } from '@appwrite.io/pink-svelte';
     import type { PageProps } from './$types';
     import FilePicker from '$lib/components/filePicker.svelte';
     import { page } from '$app/state';
@@ -22,15 +23,22 @@
     import { EmptySheet, EmptySheetCards } from '$database/(entity)';
     import {
         isCollectionsCsvImportInProgress,
-        noSqlDocument
+        noSqlDocument,
+        collectionColumns
     } from '$database/collection-[collection]/store';
     import { canWriteRows } from '$lib/stores/roles';
     import SpreadSheet from '$database/collection-[collection]/spreadsheet.svelte';
     import { toLocaleDateTime } from '$lib/helpers/date';
+    import CustomColumnsEditor from '$database/collection-[collection]/(components)/customColumnsEditor.svelte';
+    import { Modal } from '$lib/components';
 
     const { data }: PageProps = $props();
 
     let showImportCSV = $state(false);
+    let showCustomColumnsModal = $state(false);
+
+    let columnsError: string = $state(null);
+    let customColumnEditor: CustomColumnsEditor | null = $state(null);
 
     function buildInitDoc() {
         const now = new Date().toISOString();
@@ -76,38 +84,67 @@
     <Container expanded expandHeightButton style="background: var(--bgcolor-neutral-primary)">
         <Layout.Stack direction="column" gap="xl">
             <Layout.Stack direction="row" justifyContent="space-between">
-                <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
-                    <Button
-                        secondary
-                        event={Click.DatabaseImportCsv}
-                        on:click={() => (showImportCSV = true)}>
-                        Import CSV
-                    </Button>
-                    {#if !$isSmallViewport}
-                        <Button
-                            secondary
-                            event="create_document"
-                            on:click={() => {
-                                if (!$noSqlDocument.isNew) {
-                                    noSqlDocument.create(buildInitDoc());
-                                }
-                            }}>
-                            <Icon icon={IconPlus} slot="start" size="s" />
-                            Create document
-                        </Button>
+                <Layout.Stack direction="row" gap="s">
+                    <Tooltip>
+                        <div>
+                            <ViewSelector
+                                onlyIcon
+                                ui="new"
+                                hideView
+                                showAnyway
+                                isCustomTable
+                                view={data.view}
+                                columns={collectionColumns}
+                                onCustomOptionClick={() => (showCustomColumnsModal = true)} />
+                        </div>
 
+                        <svelte:fragment slot="tooltip">Columns</svelte:fragment>
+                    </Tooltip>
+                </Layout.Stack>
+                <Layout.Stack
+                    direction="row"
+                    alignItems="center"
+                    justifyContent="flex-end"
+                    style="padding-right: 40px;">
+                    <Layout.Stack
+                        gap="s"
+                        direction="row"
+                        alignItems="center"
+                        justifyContent="flex-end">
                         <Button
-                            icon
-                            size="s"
                             secondary
-                            class="small-button-dimensions"
-                            on:click={() => {
-                                $expandTabs = !$expandTabs;
-                                preferences.setKey('entityHeaderExpanded', $expandTabs);
-                            }}>
-                            <Icon icon={!$expandTabs ? IconChevronDown : IconChevronUp} size="s" />
+                            event={Click.DatabaseImportCsv}
+                            on:click={() => (showImportCSV = true)}>
+                            Import CSV
                         </Button>
-                    {/if}
+                        {#if !$isSmallViewport}
+                            <Button
+                                secondary
+                                event="create_document"
+                                on:click={() => {
+                                    if (!$noSqlDocument.isNew) {
+                                        noSqlDocument.create(buildInitDoc());
+                                    }
+                                }}>
+                                <Icon icon={IconPlus} slot="start" size="s" />
+                                Create document
+                            </Button>
+
+                            <Button
+                                icon
+                                size="s"
+                                secondary
+                                class="small-button-dimensions"
+                                on:click={() => {
+                                    $expandTabs = !$expandTabs;
+                                    preferences.setKey('entityHeaderExpanded', $expandTabs);
+                                }}>
+                                <Icon
+                                    icon={!$expandTabs ? IconChevronDown : IconChevronUp}
+                                    size="s" />
+                            </Button>
+                        {/if}
+                    </Layout.Stack>
                 </Layout.Stack>
             </Layout.Stack>
             {#if $isSmallViewport}
@@ -188,6 +225,37 @@
             imageWidth: 32
         }} />
 {/if}
+
+<Modal
+    title="Custom columns"
+    bind:error={columnsError}
+    bind:show={showCustomColumnsModal}
+    onSubmit={async () => {
+        await customColumnEditor?.updateDisplayNames();
+    }}>
+    <svelte:fragment slot="description">
+        Add up to 5 document fields to display as columns in the table view for easy identification.
+    </svelte:fragment>
+
+    <CustomColumnsEditor
+        inModal
+        bind:this={customColumnEditor}
+        databaseType={data.database.type}
+        collectionId={page.params.collection}
+        onSuccess={() => {
+            columnsError = null;
+            showCustomColumnsModal = false;
+        }}
+        onFailure={(error) => {
+            columnsError = error.message;
+        }} />
+
+    <svelte:fragment slot="footer">
+        <Button size="s" secondary on:click={() => (showCustomColumnsModal = false)}>Cancel</Button>
+
+        <Button size="s" submit disabled={customColumnEditor?.hasChanged()}>Update</Button>
+    </svelte:fragment>
+</Modal>
 
 <style>
     :global(.small-button-dimensions) {

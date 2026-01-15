@@ -47,6 +47,7 @@ export type Column = PinkColumn & {
     array?: boolean;
     format?: string;
     exclude?: boolean;
+    disable?: boolean;
     elements?: string[] | { value: string | number; label: string }[];
     encrypt?: boolean;
     icon?: ComponentType;

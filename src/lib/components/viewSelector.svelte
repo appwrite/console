@@ -22,6 +22,7 @@
         allowNoColumns?: boolean;
         showAnyway?: boolean;
         disableButton?: boolean;
+        onCustomOptionClick?: () => void;
     }
 
     let {
@@ -34,7 +35,8 @@
         hideColumns = false,
         allowNoColumns = false,
         showAnyway = false,
-        disableButton = false
+        disableButton = false,
+        onCustomOptionClick = null
     }: Props = $props();
 
     let showCountBadge = $state(false);
@@ -65,6 +67,7 @@
         {showAnyway}
         {isCustomTable}
         {allowNoColumns}
+        {onCustomOptionClick}
         onPreferencesUpdated={updateBadgeState}>
         {#snippet children(toggle, selectedColumnsNumber)}
             <Button.Button

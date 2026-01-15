@@ -3,84 +3,50 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Button, Form, InputTags } from '$lib/elements/forms';
-    import { symmetricDifference } from '$lib/helpers/array';
+    import { Button, Form } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { preferences } from '$lib/stores/preferences';
     import { page } from '$app/state';
-    import { Input, Layout } from '@appwrite.io/pink-svelte';
-    import { organization } from '$lib/stores/organization';
     import { getTerminologies } from '$database/(entity)';
+    import CustomColumnsEditor from '../(components)/customColumnsEditor.svelte';
 
     const collectionId = page.params.collection;
     const { terminology } = getTerminologies();
 
-    let names = $state<string[]>(
-        (preferences.getDisplayNames(collectionId, terminology.type) ?? []).filter(
-            (name) => !name.startsWith('$')
-        )
-    );
-
-    async function updateDisplayName() {
-        try {
-            // $state makes proxy,
-            // structuredClone doesn't work
-            const regularArray = [...names];
-
-            await preferences.setDisplayNames(
-                $organization.$id,
-                collectionId,
-                regularArray,
-                terminology.type
-            );
-
-            await invalidate(Dependencies.TEAM);
-            addNotification({
-                message: 'Display names have been updated',
-                type: 'success'
-            });
-            trackEvent(Submit.TableUpdateDisplayNames);
-        } catch (error) {
-            addNotification({
-                message: error.message,
-                type: 'error'
-            });
-            trackError(error, Submit.TableUpdateDisplayNames);
-        }
-    }
-
-    const isDisabled = $derived(
-        !symmetricDifference(
-            names,
-            (preferences.getDisplayNames(collectionId, terminology.type) ?? []).filter(
-                (name) => !name.startsWith('$')
-            )
-        ).length || names.length > 5
-    );
+    let customColumnsEditor: CustomColumnsEditor | null = $state(null);
 </script>
 
-<Form onSubmit={updateDisplayName}>
+<Form
+    onSubmit={async () => {
+        await customColumnsEditor?.updateDisplayNames();
+    }}>
     <CardGrid>
         <svelte:fragment slot="title">Display name</svelte:fragment>
         Add up to 5 document fields to display as columns in the collection view.
 
         <svelte:fragment slot="aside">
-            <Layout.Stack gap="s">
-                {#key names.length}
-                    <InputTags
-                        id="display-names"
-                        label="Document keys"
-                        placeholder="Enter document keys"
-                        bind:tags={names} />
-                {/key}
-                <Input.Helper state="default">
-                    ID, createdAt, and updatedAt are always included and cannot be modified
-                </Input.Helper>
-            </Layout.Stack>
+            <CustomColumnsEditor
+                {collectionId}
+                databaseType={terminology.type}
+                bind:this={customColumnsEditor}
+                onSuccess={async () => {
+                    await invalidate(Dependencies.TEAM);
+                    addNotification({
+                        message: 'Display names have been updated',
+                        type: 'success'
+                    });
+                    trackEvent(Submit.CollectionUpdateDisplayNames);
+                }}
+                onFailure={(error) => {
+                    addNotification({
+                        message: error.message,
+                        type: 'error'
+                    });
+                    trackError(error, Submit.CollectionUpdateDisplayNames);
+                }} />
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={isDisabled} submit>Update</Button>
+            <Button disabled={customColumnsEditor?.hasChanged()} submit>Update</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>
