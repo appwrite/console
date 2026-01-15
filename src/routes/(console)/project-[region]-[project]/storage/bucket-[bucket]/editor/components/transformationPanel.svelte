@@ -4,6 +4,7 @@
     import type { TransformationState } from '$lib/helpers/imageTransformations';
     import type { Preset } from './presetManager';
     import { createEventDispatcher } from 'svelte';
+    import { InputNumber, InputSelect } from '$lib/elements/forms';
 
     let {
         activeTab = $bindable('design'),
@@ -40,6 +41,11 @@
 
     const zoomOptions = [50, 75, 100, 125, 150, 200];
 
+    // Local values for dimension inputs so we can bind to InputNumber and
+    // still reuse the existing aspect-ratio logic.
+    let widthValue = $state(0);
+    let heightValue = $state(0);
+
     function handleFileSwitch(event: Event) {
         const select = event.target as HTMLSelectElement;
         const fileId = select.value;
@@ -72,13 +78,21 @@
         }
     }
 
-    function changeWidth(delta: number) {
-        handleWidthChange((transformationState.width || 0) + delta);
-    }
+    // Keep local dimension values in sync with transformation state
+    $effect(() => {
+        widthValue = transformationState.width || 0;
+        heightValue = transformationState.height || 0;
+    });
 
-    function changeHeight(delta: number) {
-        handleHeightChange((transformationState.height || 0) + delta);
-    }
+    // Apply aspect-ratio aware updates whenever the local values change
+    $effect(() => {
+        handleWidthChange(widthValue);
+    });
+
+    $effect(() => {
+        handleHeightChange(heightValue);
+    });
+
 
     function toggleAspectRatioLock() {
         transformationState.aspectRatioLocked = !transformationState.aspectRatioLocked;
@@ -97,28 +111,29 @@
     <!-- Header with file and preset selectors -->
     <div class="panel-header">
         <div class="file-selector">
-            <select
-                class="panel-select"
+            <InputSelect
+                id="storage-image-file"
+                placeholder=""
                 value={selectedFile?.$id || ''}
-                onchange={handleFileSwitch}>
-                {#each files as file}
-                    <option value={file.$id}
-                        >{file.name.length > 20
-                            ? file.name.substring(0, 20) + '...'
-                            : file.name}</option>
-                {/each}
-            </select>
+                options={files.map((file) => ({
+                    value: file.$id,
+                    label: file.name
+                }))}
+                on:change={handleFileSwitch} />
         </div>
         <div class="preset-selector">
-            <select
-                class="panel-select"
+            <InputSelect
+                id="storage-image-preset"
+                placeholder="None"
                 value={selectedPresetId || 'none'}
-                onchange={handlePresetSwitch}>
-                <option value="none">None</option>
-                {#each presets as preset}
-                    <option value={preset.id}>{preset.name}</option>
-                {/each}
-            </select>
+                options={[
+                    { value: 'none', label: 'None' },
+                    ...presets.map((preset) => ({
+                        value: preset.id,
+                        label: preset.name
+                    }))
+                ]}
+                on:change={handlePresetSwitch} />
         </div>
     </div>
 
@@ -156,39 +171,23 @@
                         <div class="dimensions-grid">
                             <!-- Width -->
                             <div class="input-group">
-                                <span class="input-prefix">W</span>
-                                <input
-                                    type="number"
-                                    class="panel-input"
-                                    value={transformationState.width || 0}
-                                    min="1"
-                                    max="4000"
-                                    oninput={(e) =>
-                                        handleWidthChange(parseInt(e.currentTarget.value) || 0)} />
-                                <div class="spinner-controls">
-                                    <button class="spinner-btn" onclick={() => changeWidth(1)}
-                                        >▲</button>
-                                    <button class="spinner-btn" onclick={() => changeWidth(-1)}
-                                        >▼</button>
-                                </div>
+                                <span class="dim-label">W</span>
+                                <InputNumber
+                                    id="storage-image-width"
+                                    placeholder=""
+                                    min={1}
+                                    max={4000}
+                                    bind:value={widthValue} />
                             </div>
                             <!-- Height -->
                             <div class="input-group">
-                                <span class="input-prefix">H</span>
-                                <input
-                                    type="number"
-                                    class="panel-input"
-                                    value={transformationState.height || 0}
-                                    min="1"
-                                    max="4000"
-                                    oninput={(e) =>
-                                        handleHeightChange(parseInt(e.currentTarget.value) || 0)} />
-                                <div class="spinner-controls">
-                                    <button class="spinner-btn" onclick={() => changeHeight(1)}
-                                        >▲</button>
-                                    <button class="spinner-btn" onclick={() => changeHeight(-1)}
-                                        >▼</button>
-                                </div>
+                                <span class="dim-label">H</span>
+                                <InputNumber
+                                    id="storage-image-height"
+                                    placeholder=""
+                                    min={1}
+                                    max={4000}
+                                    bind:value={heightValue} />
                             </div>
                             <!-- Lock -->
                             <button
@@ -224,16 +223,15 @@
 
                     <div class="control-row">
                         <Typography.Text variant="m-400" class="label-muted">Crop</Typography.Text>
-                        <select
-                            class="panel-select full-width"
+                        <InputSelect
+                            id="storage-image-crop"
+                            placeholder=""
                             value={transformationState.crop || 'none'}
-                            onchange={(e) => {
-                                transformationState.crop = (e.target as HTMLSelectElement).value;
-                            }}>
-                            {#each cropOptions as option}
-                                <option value={option.value}>{option.label}</option>
-                            {/each}
-                        </select>
+                            options={cropOptions}
+                            on:change={(e) => {
+                                const target = e.target as HTMLInputElement;
+                                transformationState.crop = target.value;
+                            }} />
                     </div>
                 </div>
             </Accordion>
@@ -441,7 +439,8 @@
         display: flex;
         flex-direction: column;
         background: var(--color-neutral-0);
-        border-left: 1px solid var(--color-border);
+        /* Let the outer editor layout own the border so the panel visually
+           attaches to the right edge like the databases spreadsheet layout. */
         height: 100%;
     }
 
@@ -567,53 +566,11 @@
         align-items: center;
     }
 
-    .input-prefix {
-        position: absolute;
-        left: 0.75rem;
-        color: var(--color-neutral-50);
+    .dim-label {
+        color: var(--color-neutral-70);
         font-size: var(--font-size-0);
         font-weight: 500;
-        pointer-events: none;
-    }
-
-    .dimensions-grid .panel-input {
-        padding-left: 2rem;
-        padding-right: 20px;
-    }
-
-    .spinner-controls {
-        position: absolute;
-        right: 2px;
-        top: 2px;
-        bottom: 2px;
-        display: flex;
-        flex-direction: column;
-        width: 16px;
-        border-left: 1px solid var(--color-border);
-        background: var(--color-neutral-5);
-        border-radius: 0 var(--border-radius-small) var(--border-radius-small) 0;
-    }
-
-    .spinner-btn {
-        flex: 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: none;
-        background: transparent;
-        font-size: 8px;
-        color: var(--color-neutral-50);
-        cursor: pointer;
-        padding: 0;
-    }
-
-    .spinner-btn:hover {
-        background: var(--color-neutral-10);
-        color: var(--color-neutral-100);
-    }
-
-    .spinner-btn:first-child {
-        border-bottom: 1px solid var(--color-border);
+        margin-right: 0.5rem;
     }
 
     .lock-btn {

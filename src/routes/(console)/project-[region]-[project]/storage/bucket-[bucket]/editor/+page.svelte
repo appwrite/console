@@ -268,9 +268,11 @@
 
         // For canvas preview, we want to omit width/height so the browser handles scaling
         // This prevents "zooming"/flashing artifacts during resize drag
+        // We also omit rotation so we can handle it instantly via CSS/transform
         if (forCanvas) {
             delete params.width;
             delete params.height;
+            delete params.rotation;
         }
 
         const previewParams: any = {
@@ -498,13 +500,30 @@
                                 {/if}
                             {/each}
                         {/if}
+
+                        <!-- Dimensions Badge (Attached to image) -->
+                        {#each canvasObjects as obj (obj.id)}
+                            {#if obj.type === 'image' && obj.id === 'main-image'}
+                                <div
+                                    class="dimensions-badge-container"
+                                    style="
+                                        position: absolute;
+                                        left: {obj.x + obj.width / 2}px;
+                                        top: {obj.y + obj.height + 12}px;
+                                        transform: translateX(-50%) scale(calc(1 / var(--zoom, 1)));
+                                        transform-origin: top center;
+                                        pointer-events: none;
+                                        z-index: 20;
+                                    ">
+                                    <span class="dimensions-text">
+                                        {Math.round(obj.width)} × {Math.round(obj.height)}
+                                    </span>
+                                </div>
+                            {/if}
+                        {/each}
                     </Canvas.Root>
 
                     <div class="overlay-controls">
-                        <Typography.Text variant="m-400" class="dimensions-text">
-                            {transformationState.width || 0} × {transformationState.height || 0}
-                        </Typography.Text>
-
                         <!-- Rotation slider -->
                         <!-- Rotation Slider (Visual Ruler Style) -->
                         <div class="rotation-slider">
@@ -518,11 +537,12 @@
                                     type="range"
                                     min="-180"
                                     max="180"
-                                    step="1"
+                                    step="0.1"
                                     bind:value={transformationState.rotation}
                                     class="slider" />
                             </div>
-                            <span class="rotation-text">{transformationState.rotation || 0}°</span>
+                            <span class="rotation-text"
+                                >{(transformationState.rotation || 0).toFixed(1)}°</span>
                         </div>
                     </div>
                 </div>
@@ -547,13 +567,6 @@
                                 fileId={selectedFile.$id} />
                         </div>
                     {/if}
-
-                    <!-- Save as Preset Button -->
-                    <div class="preset-actions">
-                        <button class="save-preset-btn" onclick={saveCurrentAsPreset}>
-                            Save as preset
-                        </button>
-                    </div>
                 </div>
             </div>
         </Layout.Stack>
@@ -609,19 +622,6 @@
         font-weight: 500;
     }
 
-    .preview-wrapper {
-        position: relative;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        transform-origin: center;
-    }
-
-    .preview-image {
-        display: block;
-        max-width: 100%;
-        border-radius: var(--border-radius-small);
-        user-select: none;
-    }
-
     .focal-overlay {
         position: absolute;
         background: rgba(59, 130, 246, 0.3);
@@ -633,13 +633,14 @@
     .overlay-controls {
         position: absolute;
         bottom: 1rem;
-        left: 1rem;
-        right: 1rem;
+        left: 0;
+        right: 0;
         pointer-events: none;
         display: flex;
-        justify-content: space-between;
+        justify-content: center; /* Center the rotation slider */
         align-items: flex-end;
         z-index: 10;
+        padding-bottom: 1rem;
     }
 
     /* Fallback styles for resize handles to ensure visibility */
@@ -667,7 +668,6 @@
 
     /* svelte-ignore css_unused_selector */
     .dimensions-text {
-        margin-top: 1rem;
         background: var(--color-neutral-10);
         color: var(--color-neutral-100);
         padding: 0.25rem 0.5rem;
@@ -675,7 +675,8 @@
         border: none;
         font-size: var(--font-size-0);
         font-family: var(--font-family-mono);
-        pointer-events: auto; /* Allow selecting text if needed */
+        white-space: nowrap;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
     .rotation-slider {
@@ -699,12 +700,12 @@
         border-radius: 999px;
         overflow: hidden;
         /* Figma gradient background for rotation bar */
-        background-image: linear-gradient(
+        background: linear-gradient(
             90deg,
             rgba(25, 25, 28, 0) 0%,
-            rgba(25, 25, 28, 0.8) 19.663%,
-            rgba(25, 25, 28, 1) 50.076%,
-            rgba(25, 25, 28, 0.8) 80.401%,
+            rgba(25, 25, 28, 0.8) 19.66%,
+            #19191c 50.08%,
+            rgba(25, 25, 28, 0.8) 80.4%,
             rgba(25, 25, 28, 0) 100%
         );
     }
@@ -778,29 +779,6 @@
         border-top: 1px solid var(--color-border);
         max-height: 400px;
         overflow-y: auto;
-    }
-
-    .preset-actions {
-        padding: 1rem;
-        border-top: 1px solid var(--color-border);
-        margin-top: auto;
-    }
-
-    .save-preset-btn {
-        width: 100%;
-        padding: 0.75rem;
-        background: var(--color-primary-100);
-        color: white;
-        border: none;
-        border-radius: var(--border-radius-small);
-        font-size: var(--font-size-0);
-        font-weight: 500;
-        cursor: pointer;
-        transition: background 0.2s;
-    }
-
-    .save-preset-btn:hover {
-        background: var(--color-primary-110);
     }
 
     @media (max-width: 1024px) {
