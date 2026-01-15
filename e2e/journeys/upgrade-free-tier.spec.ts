@@ -1,11 +1,7 @@
-import { test } from '@playwright/test';
-import { registerUserStep } from '../steps/account';
-import { createFreeProject } from '../steps/free-project';
+import { test } from '../fixtures/base';
 import { enterCreditCard } from '../steps/pro-project';
 
 test('upgrade - free tier', async ({ page }) => {
-    await registerUserStep(page);
-    await createFreeProject(page);
     await test.step('upgrade project', async () => {
         await page.getByRole('link', { name: 'Upgrade', exact: true }).click();
         await page.waitForURL(/\/organization-[^/]+\/change-plan/);

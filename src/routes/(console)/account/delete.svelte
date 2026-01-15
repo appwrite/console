@@ -16,7 +16,7 @@
             showDelete = false;
             addNotification({
                 type: 'success',
-                message: `Account was deleted `
+                message: 'Account was deleted'
             });
             trackEvent(Submit.AccountDelete);
         } catch (e) {

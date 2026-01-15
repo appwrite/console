@@ -49,7 +49,7 @@
     <svelte:fragment slot="aside">
         <BoxAvatar>
             <svelte:fragment slot="title">
-                <h6 class="u-bold u-trim-1" data-private>{$project.name}</h6>
+                <h6 class="u-bold u-trim-1" data-private data-project-name>{$project.name}</h6>
             </svelte:fragment>
             {#if isCloud && $projectRegion}
                 <p>Region: {$projectRegion.name}</p>
