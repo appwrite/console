@@ -101,10 +101,87 @@
                         cropY: 0
                     }
                 ];
-                // Center the view on init
+                // Initialize
+                canvasObjects = [
+                    {
+                        id: 'main-image',
+                        type: 'image',
+                        x: 0,
+                        y: 0,
+                        width: transformationState.width || 700,
+                        height: transformationState.height || 438,
+                        rotation: transformationState.rotation || 0,
+                        src: previewUrl, // Use current preview URL
+                        alt: selectedFile.name,
+                        maintainAspectRatio: transformationState.aspectRatioLocked,
+                        selected: true,
+                        // Ensure optional props are set
+                        cropX: 0,
+                        cropY: 0
+                    }
+                ];
+                // Center and zoom to fit view on init
                 setTimeout(() => {
-                    canvasCore?.panTo(0, 0);
-                    canvasCore?.selectObject('main-image');
+                    if (canvasCore) {
+                        // Get container dimensions (assuming it fills parent or use window fallback)
+                        // The canvasCore component binds to canvasEl, but we don't have direct access to it easily
+                        // unless we use document or assume a fixed size.
+                        // But wait, the preview section has a known size or fills the area.
+                        const container = document.querySelector('.preview-section');
+                        if (container) {
+                            const { width: containerWidth, height: containerHeight } =
+                                container.getBoundingClientRect();
+                            const imgWidth = transformationState.width || 700;
+                            const imgHeight = transformationState.height || 438;
+
+                            const padding = 40;
+                            const availableWidth = containerWidth - padding * 2;
+                            const availableHeight = containerHeight - padding * 2;
+
+                            const scaleX = availableWidth / imgWidth;
+                            const scaleY = availableHeight / imgHeight;
+                            const scale = Math.min(scaleX, scaleY, 1); // Don't zoom in more than 100% initially
+
+                            // Center the image (0,0 is center in Pink?) No, usually 0,0 is top-left or based on pan.
+                            // Pink canvas usually has (0,0) as origin. Pan offset translates the view.
+
+                            // To center:
+                            // The image is at 0,0 (its top-left).
+                            // We need to move the view so the image center aligns with container center.
+
+                            const imageCenterX = imgWidth / 2;
+                            const imageCenterY = imgHeight / 2;
+
+                            // Not 100% sure on Pink's coordinate system details without deeper check,
+                            // but generally centering involves panning.
+                            // However, let's just use the calculated zoom for now.
+
+                            canvasCore.zoomTo(scale, { duration: 0 });
+
+                            // Calculate pan to center
+                            const panX = (containerWidth - imgWidth * scale) / 2 / scale;
+                            const panY = (containerHeight - imgHeight * scale) / 2 / scale;
+                            // Wait, pink-svelte pan logic: newOffset = current + delta / zoom.
+                            // Let's just try centering on the image center.
+                            // Actually, let's look at panTo: viewOffset.set(newOffset).
+                            // transform = translate(offset.x * zoom, offset.y * zoom)
+
+                            // We want final transform to center the image.
+                            // Image is at 0,0 to w,h.
+                            // We want image midpoint (w/2, h/2) to comprise the view center.
+                            // View center is (containerW/2, containerH/2) in screen coords.
+
+                            // ScreenX = (ObjX + OffsetX) * Zoom
+                            // containerW/2 = (w/2 + OffsetX) * Zoom
+                            // OffsetX = (containerW/2) / Zoom - w/2
+
+                            const offsetX = containerWidth / 2 / scale - imgWidth / 2;
+                            const offsetY = containerHeight / 2 / scale - imgHeight / 2;
+
+                            canvasCore.panTo(offsetX, offsetY, { hard: true });
+                        }
+                        canvasCore.selectObject('main-image');
+                    }
                 }, 100);
             } else {
                 // Only update if dimensions drastically mismatch initial load (prevent loops)
@@ -209,7 +286,11 @@
         );
     }
 
-    let previewUrl = $derived(getPreviewUrl(true)); // For canvas
+    let previewUrl = $derived.by(() => {
+        const url = getPreviewUrl(true);
+        console.log('Preview URL update:', url);
+        return url;
+    }); // For canvas
     let downloadUrl = $derived(getPreviewUrl(false)); // For final output/code
 
     // Watch for file selection changes and apply presets
@@ -425,15 +506,23 @@
                         </Typography.Text>
 
                         <!-- Rotation slider -->
+                        <!-- Rotation Slider (Visual Ruler Style) -->
                         <div class="rotation-slider">
-                            <input
-                                type="range"
-                                min="0"
-                                max="360"
-                                bind:value={transformationState.rotation}
-                                class="slider" />
-                            <Typography.Text class="rotation-text"
-                                >{transformationState.rotation || 0}°</Typography.Text>
+                            <div class="slider-track">
+                                <!-- Visual Ticks -->
+                                <div class="ticks"></div>
+                                <!-- Center Mark -->
+                                <div class="center-tick"></div>
+                                <!-- Invisible Range Input -->
+                                <input
+                                    type="range"
+                                    min="-180"
+                                    max="180"
+                                    step="1"
+                                    bind:value={transformationState.rotation}
+                                    class="slider" />
+                            </div>
+                            <span class="rotation-text">{transformationState.rotation || 0}°</span>
                         </div>
                     </div>
                 </div>
@@ -508,11 +597,16 @@
         top: 1rem;
         left: 1rem;
         z-index: 10;
-        background: rgba(255, 255, 255, 0.9);
-        padding: 0.5rem 0.75rem;
-        border-radius: var(--border-radius-small);
+        background: var(--color-neutral-0);
+        padding: 0.5rem 1rem;
+        border-radius: 999px; /* Pill shape */
         pointer-events: none;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        box-shadow:
+            0 4px 6px -1px rgba(0, 0, 0, 0.1),
+            0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        border: 1px solid var(--color-border);
+        font-size: var(--font-size-0);
+        font-weight: 500;
     }
 
     .preview-wrapper {
@@ -533,7 +627,7 @@
         background: rgba(59, 130, 246, 0.3);
         border: 2px solid rgba(59, 130, 246, 0.6);
         pointer-events: none;
-        transition: all 0.2s;
+        /* No transition to ensure instant sync with resize */
     }
 
     .overlay-controls {
@@ -574,34 +668,99 @@
     /* svelte-ignore css_unused_selector */
     .dimensions-text {
         margin-top: 1rem;
-        background: var(--color-neutral-0);
-        padding: 0.5rem 0.75rem;
-        border-radius: var(--border-radius-small);
-        border: 1px solid var(--color-border);
+        background: var(--color-neutral-10);
+        color: var(--color-neutral-100);
+        padding: 0.25rem 0.5rem;
+        border-radius: 999px; /* Pill shape */
+        border: none;
+        font-size: var(--font-size-0);
+        font-family: var(--font-family-mono);
+        pointer-events: auto; /* Allow selecting text if needed */
     }
 
     .rotation-slider {
         margin-top: 1rem;
         display: flex;
+        flex-direction: column;
         align-items: center;
-        gap: 0.75rem;
+        gap: 0.25rem;
         width: 100%;
         max-width: 300px;
+        position: relative;
+    }
+
+    .slider-track {
+        position: relative;
+        width: 100%;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        overflow: hidden;
+        /* Figma gradient background for rotation bar */
+        background-image: linear-gradient(
+            90deg,
+            rgba(25, 25, 28, 0) 0%,
+            rgba(25, 25, 28, 0.8) 19.663%,
+            rgba(25, 25, 28, 1) 50.076%,
+            rgba(25, 25, 28, 0.8) 80.401%,
+            rgba(25, 25, 28, 0) 100%
+        );
+    }
+
+    /* Ticks generated via background gradient for performance */
+    .ticks {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 8px; /* Slightly taller */
+        transform: translateY(-50%);
+        /* Lighter ticks on top of dark gradient */
+        background-image: linear-gradient(to right, rgba(255, 255, 255, 0.7) 1px, transparent 1px);
+        background-size: 10px 100%; /* Spacing between ticks */
+        background-position: center;
+        -webkit-mask-image: linear-gradient(
+            to right,
+            transparent,
+            black 10%,
+            black 90%,
+            transparent
+        );
+        mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+        opacity: 0.9;
+    }
+
+    .center-tick {
+        position: absolute;
+        left: 50%;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background-color: var(--color-neutral-100, #333); /* Fallback */
+        transform: translateX(-50%);
+        height: 14px; /* Taller center tick */
+        top: 3px;
+        z-index: 5;
     }
 
     .slider {
-        flex: 1;
-        height: 4px;
-        border-radius: 2px;
-        background: var(--color-neutral-20);
-        outline: none;
-        accent-color: var(--color-primary-100);
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        opacity: 0; /* Invisible input on top */
+        cursor: grab;
+        z-index: 10;
+        margin: 0;
     }
 
-    /* svelte-ignore css_unused_selector */
+    .slider:active {
+        cursor: grabbing;
+    }
+
     .rotation-text {
-        min-width: 40px;
-        text-align: right;
+        font-size: var(--font-size-0);
         color: var(--color-neutral-70);
     }
 
