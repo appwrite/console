@@ -1,5 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
+    import { goto } from '$app/navigation';
     import { page } from '$app/state';
     import type { PageData } from './$types';
     import { showSubNavigation } from '$lib/stores/layout';
@@ -29,6 +30,14 @@
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { subNavigation } from '$lib/stores/database';
+    import TableContextMenu, { type TableAction } from './tableContextMenu.svelte';
+    import CopySnippetModal from '$lib/components/copySnippetModal.svelte';
+    import { addNotification } from '$lib/stores/notifications';
+    import { trackEvent, trackError, Submit } from '$lib/actions/analytics';
+    import { isCsvImportInProgress } from './table-[table]/store';
+    import FilePicker from '$lib/components/filePicker.svelte';
+
+    import { preferences } from '$lib/stores/preferences';
 
     const data = $derived(page.data) as PageData;
 
@@ -45,9 +54,24 @@
         tables: []
     });
 
-    const sortedTables = $derived.by(() =>
-        tables?.tables?.slice().sort((a, b) => a.name.localeCompare(b.name))
+    const pinnedTablesKey = $derived(`pinned_tables_${databaseId}`);
+    const pinnedTableIds = $derived(
+        ($preferences.miscellaneous?.[pinnedTablesKey]?.toString()?.split(',') ?? []).filter(
+            Boolean
+        )
     );
+
+    const sortedTables = $derived.by(() => {
+        return tables?.tables?.slice().sort((a, b) => {
+            const aPinned = pinnedTableIds.includes(a.$id);
+            const bPinned = pinnedTableIds.includes(b.$id);
+
+            if (aPinned && !bPinned) return -1;
+            if (!aPinned && bPinned) return 1;
+
+            return a.name.localeCompare(b.name);
+        });
+    });
 
     const selectedTable = $derived.by(() =>
         sortedTables?.find((table: Models.Table) => table.$id === tableId)
@@ -82,6 +106,89 @@
     function onResize() {
         if (openBottomSheet && !$isTabletViewport) {
             openBottomSheet = false;
+        }
+    }
+
+    let showCopySnippetModal = $state(false);
+    let showImportCSV = $state(false);
+    let selectedTableForAction = $state<Models.Table | null>(null);
+
+    async function onSelectFile(file: Models.File, localFile = false) {
+        if (!selectedTableForAction) return;
+
+        $isCsvImportInProgress = true;
+
+        try {
+            await sdk.forProject(region, project).migrations.createCSVImport({
+                bucketId: file.bucketId,
+                fileId: file.$id,
+                resourceId: `${databaseId}:${selectedTableForAction.$id}`,
+                internalFile: localFile
+            });
+
+            addNotification({
+                type: 'success',
+                message: 'Rows import from csv has started'
+            });
+
+            trackEvent(Submit.DatabaseImportCsv);
+        } catch (e) {
+            trackError(e, Submit.DatabaseImportCsv);
+            addNotification({
+                type: 'error',
+                message: e.message
+            });
+        } finally {
+            $isCsvImportInProgress = false;
+        }
+    }
+
+    async function handleTableAction(action: TableAction, table: Models.Table) {
+        selectedTableForAction = table;
+        switch (action) {
+            case 'copy-snippet':
+                showCopySnippetModal = true;
+                break;
+            case 'upload-csv':
+                showImportCSV = true;
+                break;
+            case 'copy-url':
+                await navigator.clipboard.writeText(
+                    `${window.location.origin}${base}/project-${region}-${project}/databases/database-${databaseId}/table-${table.$id}`
+                );
+                addNotification({
+                    type: 'success',
+                    message: 'URL copied to clipboard'
+                });
+                break;
+            case 'copy-json':
+                await navigator.clipboard.writeText(JSON.stringify(table, null, 2));
+                addNotification({
+                    type: 'success',
+                    message: 'JSON copied to clipboard'
+                });
+                break;
+            case 'pin': {
+                const isPinned = pinnedTableIds.includes(table.$id);
+                const newPinnedIds = isPinned
+                    ? pinnedTableIds.filter((id) => id !== table.$id)
+                    : [...pinnedTableIds, table.$id];
+                await preferences.setKey(pinnedTablesKey, newPinnedIds.join(','));
+                addNotification({
+                    type: 'success',
+                    message: `Table ${isPinned ? 'unpinned' : 'pinned'}`
+                });
+                break;
+            }
+            case 'permissions':
+                await goto(
+                    `${base}/project-${region}-${project}/databases/database-${databaseId}/table-${table.$id}/settings`
+                );
+                break;
+            case 'delete':
+                break;
+            default:
+                break;
         }
     }
 </script>
@@ -122,23 +229,27 @@
                             {@const isLast = index === sortedTables.length - 1}
 
                             <Layout.Stack gap="s" direction="row" alignItems="center">
-                                <li
-                                    class:is-last={isLast}
-                                    class:is-first={isFirst}
-                                    class:is-selected={isSelected}>
-                                    <a
-                                        class="u-padding-block-8 u-padding-inline-end-4 u-padding-inline-start-8 u-flex u-cross-center u-gap-8"
-                                        {href}>
-                                        <Icon
-                                            icon={IconTable}
-                                            size="s"
-                                            color={isSelected
-                                                ? '--fgcolor-neutral-tertiary'
-                                                : '--fgcolor-neutral-weak'} />
-                                        <span class="text table-name" data-private
-                                            >{table.name}</span>
-                                    </a>
-                                </li>
+                                <TableContextMenu
+                                    onSelect={(action) => handleTableAction(action, table)}
+                                    isPinned={pinnedTableIds.includes(table.$id)}>
+                                    <li
+                                        class:is-last={isLast}
+                                        class:is-first={isFirst}
+                                        class:is-selected={isSelected}>
+                                        <a
+                                            class="u-padding-block-8 u-padding-inline-end-4 u-padding-inline-start-8 u-flex u-cross-center u-gap-8"
+                                            {href}>
+                                            <Icon
+                                                icon={IconTable}
+                                                size="s"
+                                                color={isSelected
+                                                    ? '--fgcolor-neutral-tertiary'
+                                                    : '--fgcolor-neutral-weak'} />
+                                            <span class="text table-name" data-private
+                                                >{table.name}</span>
+                                        </a>
+                                    </li>
+                                </TableContextMenu>
                             </Layout.Stack>
                         {/each}
                     </ul>
@@ -252,6 +363,26 @@
                       }
                     : undefined
         }}></BottomSheet.Menu>
+{/if}
+
+<CopySnippetModal
+    bind:show={showCopySnippetModal}
+    row={null}
+    {databaseId}
+    collectionId={selectedTableForAction?.$id ?? ''} />
+
+{#if showImportCSV}
+    <FilePicker
+        onSelect={onSelectFile}
+        showLocalFileBucket
+        localFileBucketTitle="Upload CSV file"
+        mimeTypeQuery="text/"
+        allowedExtension="csv"
+        bind:show={showImportCSV}
+        gridImageDimensions={{
+            imageHeight: 32,
+            imageWidth: 32
+        }} />
 {/if}
 
 <style lang="scss">
