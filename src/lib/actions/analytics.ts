@@ -198,7 +198,16 @@ export enum Click {
     WebsiteOpenClick = 'click_open_website',
     CopyPromptStarterKitClick = 'click_copy_prompt_starter_kit',
     OpenInCursorClick = 'click_open_in_cursor',
-    OpenInLovableClick = 'click_open_in_lovable'
+    OpenInLovableClick = 'click_open_in_lovable',
+    RowCopyUrl = 'click_row_copy_url',
+    RowCopyJson = 'click_row_copy_json',
+    RowCopySnippet = 'click_row_copy_snippet',
+    RowContextMenuOpen = 'click_row_context_menu_open',
+    RowUpdate = 'click_row_update',
+    RowDuplicate = 'click_row_duplicate',
+    RowDelete = 'click_row_delete',
+    RowPermissions = 'click_row_permissions',
+    RowActivity = 'click_row_activity'
 }
 
 export enum Submit {
