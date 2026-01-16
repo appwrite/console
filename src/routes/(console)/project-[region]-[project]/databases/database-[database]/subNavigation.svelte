@@ -24,7 +24,7 @@
         IconTable
     } from '@appwrite.io/pink-icons-svelte';
     import { isTabletViewport } from '$lib/stores/viewport';
-    import { BottomSheet } from '$lib/components';
+    import { BottomSheet, Confirm } from '$lib/components';
     import Button from '$lib/elements/forms/button.svelte';
     import { type Models, Query } from '@appwrite.io/console';
     import { sdk } from '$lib/stores/sdk';
@@ -38,6 +38,7 @@
     import FilePicker from '$lib/components/filePicker.svelte';
 
     import { preferences } from '$lib/stores/preferences';
+    import { organization } from '$lib/stores/organization';
 
     const data = $derived(page.data) as PageData;
 
@@ -143,6 +144,38 @@
         }
     }
 
+    let showDelete = $state(false);
+    let deleteError = $state<string | undefined>();
+
+    async function deleteTable() {
+        if (!selectedTableForAction) return;
+        try {
+            await sdk.forProject(region, project).tablesDB.deleteTable({
+                databaseId,
+                tableId: selectedTableForAction.$id
+            });
+
+            showDelete = false;
+            subNavigation.update();
+
+            addNotification({
+                type: 'success',
+                message: `${selectedTableForAction.name} has been deleted`
+            });
+
+            trackEvent(Submit.TableDelete);
+
+            await preferences.deleteTableDetails($organization.$id, selectedTableForAction.$id);
+
+            if (tableId === selectedTableForAction.$id) {
+                await goto(`${base}/project-${region}-${project}/databases/database-${databaseId}`);
+            }
+        } catch (e) {
+            deleteError = e.message;
+            trackError(e, Submit.TableDelete);
+        }
+    }
+
     async function handleTableAction(action: TableAction, table: Models.Table) {
         selectedTableForAction = table;
         switch (action) {
@@ -186,6 +219,7 @@
                 );
                 break;
             case 'delete':
+                showDelete = true;
                 break;
             default:
                 break;
@@ -384,6 +418,17 @@
             imageWidth: 32
         }} />
 {/if}
+
+<Confirm
+    confirmDeletion
+    onSubmit={deleteTable}
+    title="Delete table"
+    bind:open={showDelete}
+    bind:error={deleteError}>
+    <Typography.Text>
+        Are you sure you want to delete <b>{selectedTableForAction?.name}</b>?
+    </Typography.Text>
+</Confirm>
 
 <style lang="scss">
     .list-container {
