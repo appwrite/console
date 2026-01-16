@@ -121,7 +121,7 @@
     </svelte:fragment>
     <svelte:fragment slot="footer">
         <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
-            {#if ['processing', 'building', 'finalizing'].includes(effectiveStatus)}
+            {#if ['processing', 'building'].includes(effectiveStatus)}
                 <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
                     Deployment will continue in the background
                 </Typography.Text>

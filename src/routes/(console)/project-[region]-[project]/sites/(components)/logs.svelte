@@ -6,7 +6,6 @@
             case 'ready':
                 return 'success';
             case 'building':
-            case 'finalizing':
                 return 'warning';
             case 'processing':
                 return undefined;
