@@ -23,6 +23,8 @@
     import { logStatusConverter } from './store';
     import { LogsRequest, LogsResponse } from '$lib/components/logs';
     import { timer } from '$lib/actions/timer';
+    import { getEffectiveExecutionStatus } from '$lib/helpers/executionTimeout';
+    import { func } from '../store';
 
     export let selectedLogId: string;
     export let logs: Models.Execution[];
@@ -47,6 +49,7 @@
     }
 
     $: selectedLog = logs?.find((log) => log.$id === selectedLogId);
+    $: effectiveStatus = selectedLog ? getEffectiveExecutionStatus(selectedLog, $func) : null;
     $: isFirstLog = logs.findIndex((log) => log.$id === selectedLogId) === 0;
     $: isLastLog = logs.findIndex((log) => log.$id === selectedLogId) === logs.length - 1;
 
@@ -113,12 +116,12 @@
 
                                 <Tooltip
                                     disabled={!selectedLog?.scheduledAt ||
-                                        selectedLog.status !== ExecutionStatus.Scheduled}
+                                        effectiveStatus !== ExecutionStatus.Scheduled}
                                     maxWidth="400px">
                                     <div>
                                         <Status
-                                            status={logStatusConverter(selectedLog.status)}
-                                            label={capitalize(selectedLog.status)}>
+                                            status={logStatusConverter(effectiveStatus)}
+                                            label={capitalize(effectiveStatus)}>
                                         </Status>
                                     </div>
                                     <span slot="tooltip">
@@ -141,7 +144,7 @@
                                     Duration
                                 </Typography.Text>
                                 <Typography.Text variant="m-400">
-                                    {#if ['processing', 'waiting'].includes(selectedLog.status)}
+                                    {#if ['processing', 'waiting'].includes(effectiveStatus)}
                                         <span use:timer={{ start: selectedLog.$createdAt }}></span>
                                     {:else}
                                         {calculateTime(selectedLog.duration)}
