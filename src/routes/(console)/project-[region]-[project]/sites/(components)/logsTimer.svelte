@@ -13,7 +13,7 @@
 </script>
 
 <Layout.Stack direction="row" alignItems="center" inline>
-    {#if ['processing', 'building'].includes(effectiveStatus)}
+    {#if ['processing', 'building', 'finalizing'].includes(effectiveStatus)}
         <Typography.Code color="--fgcolor-neutral-secondary">
             <Layout.Stack direction="row" alignItems="center" inline>
                 <p use:timer={{ start: deployment.$createdAt }}></p>

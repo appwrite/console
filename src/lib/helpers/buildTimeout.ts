@@ -33,6 +33,13 @@ export function getEffectiveBuildStatus(
         return 'failed';
     }
 
+    const isReady = originalStatus === 'ready';
+    const hasScreenshot = deployment.screenshotLight && deployment.screenshotDark;
+
+    if (isReady && !hasScreenshot) {
+        return 'finalizing';
+    }
+
     return originalStatus;
 }
 
