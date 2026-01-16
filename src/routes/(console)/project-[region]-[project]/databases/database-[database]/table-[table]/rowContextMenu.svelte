@@ -19,7 +19,7 @@
     export let onSelect: (action: RowCellAction) => void;
 
     const {
-        elements: { menu, trigger, item, separator },
+        elements: { menu, trigger, item },
         builders: { createSubmenu }
     } = createContextMenu({
         positioning: {
@@ -79,14 +79,9 @@
     <Card.Base padding="none">
         <div class="action-menu-root">
             <ActionMenu.Root>
-                {#each menuItems as menuItem, index}
+                {#each menuItems as menuItem}
                     {#if menuItem.divider}
-                        {@const isLastDivider = index === menuItems.length - 2}
-                        <div
-                            use:melt={$separator}
-                            style:margin-inline="-1rem"
-                            style:padding-block-start="0.5rem"
-                            style:padding-block-end={isLastDivider ? '0.25rem' : '0.5rem'}>
+                        <div style:padding-block="0.25rem">
                             <Divider />
                         </div>
                     {:else if menuItem.subMenu === 'copy'}
