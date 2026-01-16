@@ -42,8 +42,10 @@
         expandTabs,
         databaseRelatedRowSheetOptions,
         rowPermissionSheet,
+        rowCopySnippetSheet,
         type Columns
     } from './store';
+    import CopySnippetModal from '$lib/components/copySnippetModal.svelte';
     import type { Column, ColumnType } from '$lib/helpers/types';
     import {
         Alert,
@@ -616,24 +618,9 @@
             }
 
             if (action === 'copy-snippet') {
-                const snippet = `const result = await databases.getDocument(
-    '${databaseId}', // databaseId
-    '${tableId}', // collectionId
-    '${row.$id}', // documentId
-);`;
-                try {
-                    await copy(snippet);
-                    trackEvent(Click.RowCopySnippet, { source });
-                    addNotification({
-                        type: 'success',
-                        message: 'Code snippet copied'
-                    });
-                } catch (e) {
-                    addNotification({
-                        type: 'error',
-                        message: e.message
-                    });
-                }
+                trackEvent(Click.RowCopySnippet, { source });
+                $rowCopySnippetSheet.row = row;
+                $rowCopySnippetSheet.show = true;
             }
 
             if (action === 'delete') {
@@ -1352,6 +1339,12 @@
         irreversible.
     </p>
 </Confirm>
+
+<CopySnippetModal
+    bind:show={$rowCopySnippetSheet.show}
+    row={$rowCopySnippetSheet.row}
+    {databaseId}
+    collectionId={tableId} />
 
 <style lang="scss">
     .floating-action-bar {

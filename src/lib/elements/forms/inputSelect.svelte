@@ -20,6 +20,7 @@
         badge?: string;
     }[];
     export let leadingIcon: ComponentType | undefined = undefined;
+    export let showLabel: boolean = true;
 
     let error: string;
 
@@ -47,6 +48,7 @@
 <Input.Select
     {id}
     {label}
+    {showLabel}
     {options}
     {optionalText}
     {placeholder}
