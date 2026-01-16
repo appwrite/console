@@ -15,7 +15,7 @@ function isExecutionTimedOut(createdAt: string, status: string, timeoutSeconds: 
     const created = new Date(createdAt);
     const elapsedSeconds = Math.floor((Date.now() - created.getTime()) / 1000);
 
-    return elapsedSeconds > timeoutSeconds;
+    return elapsedSeconds >= timeoutSeconds;
 }
 
 /**
