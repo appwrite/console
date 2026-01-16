@@ -144,7 +144,7 @@
                                     Duration
                                 </Typography.Text>
                                 <Typography.Text variant="m-400">
-                                    {#if ['processing', 'waiting'].includes(effectiveStatus)}
+                                    {#if ['processing', 'waiting'].includes(selectedLog.status)}
                                         <span use:timer={{ start: selectedLog.$createdAt }}></span>
                                     {:else}
                                         {calculateTime(selectedLog.duration)}
