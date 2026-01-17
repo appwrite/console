@@ -27,9 +27,9 @@ export async function checkForDatabaseBackupPolicies(
 
     if (isCloud && backupsEnabled) {
         try {
-            const policies = await sdk
-                .forProject(region, projectId)
-                .backups.listPolicies([Query.limit(1), Query.equal('resourceId', database.$id)]);
+            const policies = await sdk.forProject(region, projectId).backups.listPolicies({
+                queries: [Query.limit(1), Query.equal('resourceId', database.$id)]
+            });
 
             total = policies.total;
         } catch (e) {

@@ -24,8 +24,12 @@ export const load: PageLoad = async ({ params, url, route, depends, parent }) =>
     const archivedPage =
         Number.isFinite(archivedPageRaw) && archivedPageRaw > 0 ? archivedPageRaw : 1;
     const archivedOffset = pageToOffset(archivedPage, limit);
-    const common = [Query.equal('teamId', params.organization)];
-    const active = isCloud
+
+    const searchQueries = search
+        ? [Query.or([Query.search('search', search), Query.contains('labels', search)])]
+        : [];
+    const commonQueries = [Query.equal('teamId', params.organization)];
+    const activeQueries = isCloud
         ? [Query.or([Query.equal('status', 'active'), Query.isNull('status')])]
         : [];
 
@@ -35,10 +39,10 @@ export const load: PageLoad = async ({ params, url, route, depends, parent }) =>
                 Query.offset(offset),
                 Query.limit(limit),
                 Query.orderDesc(''),
-                ...common,
-                ...active
-            ],
-            search: search || undefined
+                ...commonQueries,
+                ...searchQueries,
+                ...activeQueries
+            ]
         }),
         isCloud
             ? sdk.forConsole.projects.list({
@@ -46,20 +50,18 @@ export const load: PageLoad = async ({ params, url, route, depends, parent }) =>
                       Query.offset(archivedOffset),
                       Query.limit(limit),
                       Query.orderDesc(''),
-                      ...common,
+                      ...commonQueries,
+                      ...searchQueries,
                       Query.equal('status', 'archived')
-                  ],
-                  search: search || undefined
+                  ]
               })
             : Promise.resolve({ projects: [], total: 0 }),
         sdk.forConsole.projects.list({
-            queries: [...common, ...active],
-            search: search || undefined
+            queries: [...commonQueries, ...activeQueries, ...searchQueries]
         }),
         isCloud
             ? sdk.forConsole.projects.list({
-                  queries: [...common, Query.equal('status', 'archived')],
-                  search: search || undefined
+                  queries: [...commonQueries, ...searchQueries, Query.equal('status', 'archived')]
               })
             : Promise.resolve({ projects: [], total: 0 })
     ]);

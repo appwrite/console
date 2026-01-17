@@ -170,7 +170,7 @@
 
 <Container>
     <Layout.Stack direction="row" justifyContent="space-between" class="common-section">
-        <SearchQuery bind:this={searchQuery} placeholder="Search by name or ID" />
+        <SearchQuery bind:this={searchQuery} placeholder="Search by name, label, or ID" />
 
         {#if $canWriteProjects}
             {#if projectCreationDisabled && reachedProjectLimit}

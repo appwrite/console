@@ -41,11 +41,7 @@
     let { data } = $props();
 
     let effectiveStatus = $derived(
-        getEffectiveBuildStatus(
-            data.deployment.status,
-            data.deployment.$createdAt,
-            $regionalConsoleVariables
-        )
+        getEffectiveBuildStatus(data.deployment, $regionalConsoleVariables)
     );
     let showDelete = $state(false);
     let showCancel = $state(false);

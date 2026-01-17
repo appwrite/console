@@ -15,10 +15,9 @@
     import { addNotification } from '$lib/stores/notifications';
     import { invalidate } from '$app/navigation';
     import { calculateSize } from '$lib/helpers/sizeConvertion';
-    import { ID } from '@appwrite.io/console';
+    import { ID, type Models } from '@appwrite.io/console';
     import { columns } from './store';
     import { database } from '../store';
-    import type { BackupArchive, BackupPolicy } from '$lib/sdk/backups';
     import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { copy } from '$lib/helpers/copy';
     import { LabelCard } from '$lib/components/index.js';
@@ -53,7 +52,7 @@
     } = $props();
 
     let showDelete = $state(false);
-    let selectedBackup: BackupArchive | null = $state(null);
+    let selectedBackup: Models.BackupArchive | null = $state(null);
 
     let showDropdown = [];
 
@@ -87,15 +86,15 @@
         );
     });
 
-    function getPolicyDetails(policyId: string | null): BackupPolicy | null {
+    function getPolicyDetails(policyId: string | null): Models.BackupPolicy | null {
         return data.policies.policies.find((policy) => policy.$id === policyId);
     }
 
-    function getCleanBackupName(backup: BackupArchive): string {
+    function getCleanBackupName(backup: Models.BackupArchive): string {
         return toLocaleDateTime(backup.$createdAt).replaceAll(',', '');
     }
 
-    function getBackupStatus(backup: BackupArchive) {
+    function getBackupStatus(backup: Models.BackupArchive) {
         switch (backup.status) {
             case 'pending':
                 return 'pending';
@@ -115,7 +114,7 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .backups.deleteArchive(archiveId);
+                .backups.deleteArchive({ archiveId });
 
             addNotification({
                 type: 'success',
@@ -135,7 +134,9 @@
 
     async function deleteBackups(batchDelete: DeleteOperation): Promise<DeleteOperationState> {
         const result = await batchDelete((archiveId) =>
-            sdk.forProject(page.params.region, page.params.project).backups.deleteArchive(archiveId)
+            sdk
+                .forProject(page.params.region, page.params.project)
+                .backups.deleteArchive({ archiveId })
         );
 
         try {
@@ -160,12 +161,12 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .backups.createRestoration(
-                    selectedBackup.$id,
-                    ['databases'],
-                    newDatabaseInfo.id ?? ID.unique(),
-                    newDatabaseInfo.name
-                );
+                .backups.createRestoration({
+                    archiveId: selectedBackup.$id,
+                    services: ['databases'],
+                    newResourceId: newDatabaseInfo.id ?? ID.unique(),
+                    newResourceName: newDatabaseInfo.name
+                });
             await invalidate(Dependencies.BACKUPS);
 
             addNotification({

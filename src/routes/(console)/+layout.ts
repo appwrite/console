@@ -18,7 +18,7 @@ export const load: LayoutLoad = async ({ depends, parent }) => {
         sdk.forConsole.account.getPrefs(),
         isCloud ? sdk.forConsole.billing.getPlansInfo() : null,
         fetch(`${endpoint}/health/version`, {
-            headers: { 'X-Appwrite-Project': project }
+            headers: { 'X-Appwrite-Project': project as string }
         }).then((response) => response.json() as { version?: string }),
         sdk.forConsole.console.variables()
     ]);

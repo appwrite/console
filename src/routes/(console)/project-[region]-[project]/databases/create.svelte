@@ -61,16 +61,14 @@
         const totalPoliciesPromise = totalPolicies.map((policy) => {
             cronExpression(policy);
 
-            return sdk
-                .forProject(page.params.region, page.params.project)
-                .backups.createPolicy(
-                    ID.unique(),
-                    ['databases'],
-                    policy.retained,
-                    policy.schedule,
-                    policy.label,
-                    resourceId
-                );
+            return sdk.forProject(page.params.region, page.params.project).backups.createPolicy({
+                policyId: ID.unique(),
+                services: ['databases'],
+                retention: policy.retained,
+                schedule: policy.schedule,
+                name: policy.label,
+                resourceId
+            });
         });
 
         await Promise.all(totalPoliciesPromise);
