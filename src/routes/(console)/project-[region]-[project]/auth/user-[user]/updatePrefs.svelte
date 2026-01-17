@@ -13,7 +13,7 @@
     import { page } from '$app/state';
     import deepEqual from 'deep-equal';
 
-    type PrefRow = { id: string; key: string; value: string };
+    type PrefRow = { key: string; value: string };
 
     function normalize(entries: [string, string][] | PrefRow[]): [string, string][] {
         return entries
@@ -31,10 +31,9 @@
 
     let prefs: PrefRow[] = null;
     let arePrefsDisabled = true;
-    let nextId = 0;
 
     function createPrefRow(key = '', value = ''): PrefRow {
-        return { id: `pref-${nextId++}`, key, value };
+        return { key, value };
     }
 
     onMount(async () => {
@@ -81,7 +80,7 @@
         Add custom user preferences to share them across devices and sessions.
         <svelte:fragment slot="aside">
             {#if prefs}
-                {#each prefs as pref, index (pref.id)}
+                {#each prefs as pref, index (index)}
                     <Layout.Stack direction="row" alignItems="flex-end">
                         <InputText
                             id={`key-${index}`}
@@ -121,15 +120,14 @@
             <div>
                 <Button
                     secondary
-                    disabled={prefs?.length &&
-                    prefs[prefs.length - 1].key &&
-                    prefs[prefs.length - 1].value
-                        ? false
-                        : true}
-                    on:click={() => {
-                        if (prefs[prefs.length - 1].key && prefs[prefs.length - 1].value) {
-                            prefs = [...prefs, createPrefRow()];
-                        }
+                    disabled={
+                        !!prefs &&
+                        prefs.length > 0 &&
+                        !(prefs[prefs.length - 1].key && prefs[prefs.length - 1].value)
+                    }
+                     on:click={() => {
+                        if (!prefs) return;
+                        prefs = [...prefs, createPrefRow()];
                     }}>
                     <Icon icon={IconPlus} slot="start" size="s" />
                     Add preference
