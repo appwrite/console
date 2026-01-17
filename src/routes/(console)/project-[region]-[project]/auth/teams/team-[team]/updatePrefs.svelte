@@ -11,32 +11,47 @@
     import { Icon, Layout } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { page } from '$app/state';
+    import deepEqual from 'deep-equal';
 
-    $: if (prefs) {
-        if (JSON.stringify(prefs) !== JSON.stringify(Object.entries($team.prefs))) {
-            if (!!prefs[prefs.length - 1][0] && !!prefs[prefs.length - 1][1]) {
-                arePrefsDisabled = false;
-            } else {
-                arePrefsDisabled = true;
-            }
-        } else {
-            arePrefsDisabled = true;
-        }
+    type PrefRow = { key: string; value: string };
+
+    function normalize(entries: [string, string][] | PrefRow[]): [string, string][] {
+        return entries
+            .map(item => Array.isArray(item) ? item : [item.key, item.value])
+            .filter(([k, v]: [string, string]) => k.trim() && v.trim())
+            .sort(([a]: [string, string], [b]: [string, string]) => a.localeCompare(b));
     }
 
-    let prefs: [string, string][] = null;
+    $: if (prefs) {
+        const currentNormalized = normalize(prefs);
+        const originalNormalized = normalize(Object.entries($team.prefs as Record<string, string>));
+
+        arePrefsDisabled = deepEqual(currentNormalized, originalNormalized);
+    }
+
+    let prefs: PrefRow[] = null;
     let arePrefsDisabled = true;
 
+    function createPrefRow(key = '', value = ''): PrefRow {
+        return {key, value };
+    }
+
     onMount(async () => {
-        prefs = Object.entries($team.prefs as Record<string, string>);
-        if (!prefs?.length) {
-            prefs.push(['', '']);
-        }
+        const entries = Object.entries($team.prefs as Record<string, string>);
+        prefs = entries.length > 0
+            ? entries.map(([key, value]) => createPrefRow(key, value))
+            : [createPrefRow()];
     });
 
     async function updatePrefs() {
         try {
-            let updatedPrefs = Object.fromEntries(prefs);
+            const sanitizedPrefs = prefs.filter(
+                pref => pref.key.trim() !== '' && pref.value.trim() !== ''
+            );
+
+            const updatedPrefs = sanitizedPrefs.length === 0
+                ? {}
+                : Object.fromEntries(sanitizedPrefs.map(pref => [pref.key, pref.value]));
 
             await sdk
                 .forProject(page.params.region, page.params.project)
@@ -66,32 +81,36 @@
         they can easily be shared across members.
         <svelte:fragment slot="aside">
             {#if prefs}
-                {#each prefs as [key, value], index}
+                {#each prefs as pref, index (index)}
                     <Layout.Stack direction="row" alignItems="flex-end">
                         <InputText
                             id={`key-${index}`}
-                            bind:value={key}
+                            value={pref.key}
+                            on:input={(e) => {
+                                prefs[index].key = e.target.value;
+                                prefs = [...prefs];
+                            }}
                             placeholder="Enter key"
                             label={index === 0 ? 'Key' : undefined}
                             required />
                         <Layout.Stack direction="row" alignItems="flex-end" gap="xs">
                             <InputText
                                 id={`value-${index}`}
-                                bind:value
+                                value={pref.value}
+                                on:input={(e) => {
+                                    prefs[index].value = e.target.value;
+                                    prefs = [...prefs];
+                                }}
                                 placeholder="Enter value"
                                 label={index === 0 ? 'Value' : undefined}
                                 required />
                             <Button
                                 icon
                                 compact
-                                disabled={(!key || !value) && index === 0}
+                                disabled={(!pref.key || !pref.value) && index === 0}
                                 on:click={() => {
-                                    if (index === 0 && prefs?.length === 1) {
-                                        prefs = [['', '']];
-                                    } else {
                                         prefs.splice(index, 1);
-                                        prefs = prefs;
-                                    }
+                                    prefs = [...prefs];
                                 }}>
                                 <span class="icon-x" aria-hidden="true"></span>
                             </Button>
@@ -102,16 +121,14 @@
             <div>
                 <Button
                     secondary
-                    disabled={prefs?.length &&
-                    prefs[prefs.length - 1][0] &&
-                    prefs[prefs.length - 1][1]
-                        ? false
-                        : true}
-                    on:click={() => {
-                        if (prefs[prefs.length - 1][0] && prefs[prefs.length - 1][1]) {
-                            prefs.push(['', '']);
-                            prefs = prefs;
-                        }
+                    disabled={
+                        !!prefs &&
+                        prefs.length > 0 &&
+                        !(prefs[prefs.length - 1].key && prefs[prefs.length - 1].value)
+                    }
+                     on:click={() => {
+                        if (!prefs) return;
+                        prefs = [...prefs, createPrefRow()];
                     }}>
                     <Icon icon={IconPlus} slot="start" size="s" />
                     Add preference
