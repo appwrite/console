@@ -16,7 +16,7 @@
         | 'activity'
         | 'copy-url'
         | 'copy-json'
-        // | 'copy-snippet'
+        | 'copy-snippet'
         | 'delete';
 </script>
 

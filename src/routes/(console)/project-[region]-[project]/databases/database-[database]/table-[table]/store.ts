@@ -189,6 +189,11 @@ export const rowPermissionSheet = writable({
     row: null as Models.Row
 });
 
+export const rowCopySnippetSheet = writable({
+    show: false,
+    row: null as Models.Row
+});
+
 export const expandTabs = writable(null);
 export const spreadsheetRenderKey = writable('initial');
 
