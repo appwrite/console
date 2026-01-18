@@ -47,7 +47,7 @@
         invoiceList = await sdk.forConsole.billing.listInvoices(page.params.organization, [
             Query.orderDesc('$createdAt'),
             Query.limit(limit),
-            Query.offset(offset + 1)
+            Query.offset(offset)
         ]);
 
         isLoadingInvoices = false;
