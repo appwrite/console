@@ -5,7 +5,6 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import CustomId from '$lib/components/customId.svelte';
     import { Button, Form, InputSelect } from '$lib/elements/forms';
-    import type { AllowedRegions } from '$lib/sdk/billing.js';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { isCloud } from '$lib/system';
@@ -24,6 +23,7 @@
     import { filterRegions } from '$lib/helpers/regions';
     import { loadAvailableRegions } from '$routes/(console)/regions';
     import { regions as regionsStore } from '$lib/stores/organization';
+    import type { AllowedRegions } from '$lib/sdk/billing';
 
     let { data } = $props();
 

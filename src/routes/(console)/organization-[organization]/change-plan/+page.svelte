@@ -1,6 +1,6 @@
 <script lang="ts">
     import { afterNavigate, goto, invalidate } from '$app/navigation';
-    import { base } from '$app/paths';
+    import { resolve } from '$app/paths';
     import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { PlanComparisonBox, PlanSelection, SelectPaymentMethod } from '$lib/components/billing';
@@ -9,8 +9,11 @@
     import { Button, Form, InputSelect, InputTags, InputTextarea } from '$lib/elements/forms';
     import { formatCurrency } from '$lib/helpers/numbers.js';
     import { Wizard } from '$lib/layout';
-    import { type Coupon, type PaymentMethodData } from '$lib/sdk/billing';
-    import { isOrganization, plansInfo, tierToPlan } from '$lib/stores/billing';
+    import {
+        plansInfo,
+        billingIdToPlan,
+        isPaymentAuthenticationRequired
+    } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { currentPlan, organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
@@ -33,16 +36,15 @@
     import EstimatedTotalBox from '$lib/components/billing/estimatedTotalBox.svelte';
     import OrganizationUsageLimits from '$lib/components/organizationUsageLimits.svelte';
     import { Query } from '@appwrite.io/console';
-    import type { OrganizationUsage } from '$lib/sdk/billing';
     import type { Models } from '@appwrite.io/console';
     import { toLocaleDate } from '$lib/helpers/date';
 
     export let data;
 
-    let selectedCoupon: Partial<Coupon> = null;
+    let selectedCoupon: Partial<Models.Coupon> = null;
 
-    let selectedPlan: BillingPlan = data.plan as BillingPlan;
-    let previousPage: string = base;
+    let selectedPlan = data.plan;
+    let previousPage: string = resolve('/');
     let showExitModal = false;
     let formComponent: Form;
     let usageLimitsComponent:
@@ -60,14 +62,15 @@
     let showCreditModal = false;
     let feedbackDowngradeReason: string;
     let feedbackMessage: string;
-    let orgUsage: OrganizationUsage;
+    let orgUsage: Models.UsageOrganization;
     let allProjects: { projects: Models.Project[] } | undefined;
 
     $: paymentMethods = null;
 
     $: paymentMethodId =
         data.organization.paymentMethodId ??
-        paymentMethods?.paymentMethods?.find((method: PaymentMethodData) => !!method?.last4)?.$id;
+        paymentMethods?.paymentMethods?.find((method: Models.PaymentMethod) => !!method?.last4)
+            ?.$id;
 
     afterNavigate(({ from }) => {
         previousPage = from?.url?.pathname || previousPage;
@@ -79,15 +82,17 @@
         const couponCode = params.get('code');
         if (couponCode) {
             try {
-                selectedCoupon = await sdk.forConsole.billing.getCouponAccount(couponCode);
+                selectedCoupon = await sdk.forConsole.account.getCoupon({
+                    couponId: couponCode
+                });
             } catch {
                 selectedCoupon = { code: null, status: null, credits: null };
             }
         }
 
         const plan = params.get('plan');
-        if (plan && plan in BillingPlan) {
-            selectedPlan = plan as BillingPlan;
+        if (plan) {
+            selectedPlan = plan;
         }
 
         if (params.get('type') === 'payment_confirmed') {
@@ -100,7 +105,9 @@
             $currentPlan?.$id === BillingPlan.SCALE ? BillingPlan.SCALE : BillingPlan.PRO;
 
         try {
-            orgUsage = await sdk.forConsole.billing.listUsage(data.organization.$id);
+            orgUsage = await sdk.forConsole.organizations.getUsage({
+                organizationId: data.organization.$id
+            });
         } catch {
             orgUsage = undefined;
         }
@@ -119,7 +126,7 @@
     });
 
     async function loadPaymentMethods() {
-        paymentMethods = await sdk.forConsole.billing.listPaymentMethods();
+        paymentMethods = await sdk.forConsole.account.listPaymentMethods();
         return paymentMethods;
     }
 
@@ -156,11 +163,11 @@
     async function downgrade() {
         try {
             // 1) update the plan first
-            await sdk.forConsole.billing.updatePlan(
-                data.organization.$id,
-                selectedPlan,
+            await sdk.forConsole.organizations.updatePlan({
+                organizationId: data.organization.$id,
+                billingPlan: selectedPlan,
                 paymentMethodId
-            );
+            });
 
             // 2) If the target plan has a project limit, apply selected projects now
             const targetProjectsLimit = $plansInfo?.get(selectedPlan)?.projects ?? 0;
@@ -168,10 +175,10 @@
                 const selected = usageLimitsComponent.getSelectedProjects();
                 if (selected?.length) {
                     try {
-                        await sdk.forConsole.billing.updateSelectedProjects(
-                            data.organization.$id,
-                            selected
-                        );
+                        await sdk.forConsole.organizations.updateProjects({
+                            organizationId: data.organization.$id,
+                            projects: selected
+                        });
                     } catch (projectError) {
                         console.warn('Project selection failed after plan update:', projectError);
                     }
@@ -188,7 +195,7 @@
             });
 
             trackEvent(Submit.OrganizationDowngrade, {
-                plan: tierToPlan(selectedPlan)?.name
+                plan: billingIdToPlan(selectedPlan)?.name
             });
         } catch (e) {
             addNotification({
@@ -201,8 +208,12 @@
 
     async function validate(organizationId: string, invites: string[]) {
         try {
-            let org = await sdk.forConsole.billing.validateOrganization(organizationId, invites);
-            if (isOrganization(org)) {
+            let org = await sdk.forConsole.organizations.validatePayment({
+                organizationId,
+                invites
+            });
+
+            if (!isPaymentAuthenticationRequired(org)) {
                 await invalidate(Dependencies.ACCOUNT);
                 await invalidate(Dependencies.ORGANIZATION);
 
@@ -213,7 +224,7 @@
                 });
 
                 trackEvent(Submit.OrganizationUpgrade, {
-                    plan: tierToPlan(selectedPlan)?.name
+                    plan: billingIdToPlan(selectedPlan)?.name
                 });
             }
         } catch (e) {
@@ -235,18 +246,17 @@
                         !data?.members?.memberships?.find((m) => m.userEmail === collaborator)
                 );
             }
-            const org = await sdk.forConsole.billing.updatePlan(
-                data.organization.$id,
-                selectedPlan,
+            const org = await sdk.forConsole.organizations.updatePlan({
+                organizationId: data.organization.$id,
+                billingPlan: selectedPlan,
                 paymentMethodId,
-                undefined,
-                selectedCoupon?.code,
-                newCollaborators,
-                billingBudget,
-                taxId ? taxId : null
-            );
+                couponId: selectedCoupon?.code,
+                invites: newCollaborators,
+                budget: billingBudget,
+                taxId: taxId ? taxId : null
+            });
 
-            if (!isOrganization(org) && org.status == 402) {
+            if (isPaymentAuthenticationRequired(org)) {
                 let clientSecret = org.clientSecret;
                 let params = new URLSearchParams();
                 for (const [key, value] of page.url.searchParams.entries()) {
@@ -255,19 +265,23 @@
                     }
                 }
                 params.append('type', 'payment_confirmed');
-                params.append('id', org.teamId);
+                params.append('id', org.organizationId);
                 params.append('invites', collaborators.join(','));
                 params.append('plan', selectedPlan);
-                await confirmPayment(
-                    '',
+
+                const resolvedUrl = resolve('/(console)/organization-[organization]/change-plan', {
+                    organization: org.organizationId
+                });
+
+                await confirmPayment({
                     clientSecret,
                     paymentMethodId,
-                    base + '/change-plan?' + params.toString()
-                );
-                await validate(org.teamId, collaborators);
+                    route: `${resolvedUrl}?${params.toString()}`
+                });
+                await validate(org.organizationId, collaborators);
             }
 
-            if (isOrganization(org)) {
+            if (!isPaymentAuthenticationRequired(org)) {
                 /**
                  * Reload on upgrade (e.g. Free → Paid)
                  */
@@ -283,7 +297,7 @@
                 });
 
                 trackEvent(Submit.OrganizationUpgrade, {
-                    plan: tierToPlan(selectedPlan)?.name
+                    plan: billingIdToPlan(selectedPlan)?.name
                 });
             }
         } catch (e) {
@@ -367,11 +381,12 @@
                         {:else if selectedPlan === BillingPlan.FREE}
                             <Alert.Inline
                                 status="error"
-                                title={`Your organization will switch to ${tierToPlan(selectedPlan).name} plan on ${toLocaleDate(
+                                title={`Your organization will switch to ${billingIdToPlan(selectedPlan).name} plan on ${toLocaleDate(
                                     $organization.billingNextInvoiceDate
                                 )}`}>
-                                You will retain access to {tierToPlan($organization.billingPlan)
-                                    .name} plan features until your billing period ends. After that,
+                                You will retain access to {billingIdToPlan(
+                                    $organization.billingPlan
+                                ).name} plan features until your billing period ends. After that,
                                 <span class="u-bold"
                                     >all team members except the owner will be removed,</span>
                                 and service disruptions may occur if usage exceeds Free plan limits.

@@ -1,12 +1,12 @@
 <script lang="ts">
-    import type { PaymentMethodData } from '$lib/sdk/billing';
-    import { Badge, Layout, Link, Popover, Table } from '@appwrite.io/pink-svelte';
-    import CreditCardBrandImage from './creditCardBrandImage.svelte';
+    import type { Models } from '@appwrite.io/console';
     import type { TableRootProp } from '$lib/helpers/types';
+    import CreditCardBrandImage from './creditCardBrandImage.svelte';
+    import { Badge, Layout, Link, Popover, Table } from '@appwrite.io/pink-svelte';
 
     export let root: TableRootProp;
-    export let paymentMethod: PaymentMethodData;
     export let isBackup: boolean = false;
+    export let paymentMethod: Models.PaymentMethod;
 </script>
 
 <Table.Cell column="cc" {root}>

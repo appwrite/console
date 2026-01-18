@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Container } from '$lib/layout';
     import { CardGrid, Card, ProgressBarBig } from '$lib/components';
-    import { showUsageRatesModal, tierToPlan, upgradeURL } from '$lib/stores/billing';
+    import { showUsageRatesModal, billingIdToPlan, upgradeURL } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { Button } from '$lib/elements/forms';
     import { bytesToSize, humanFileSize, mbSecondsToGBHours } from '$lib/helpers/sizeConvertion';
@@ -45,7 +45,7 @@
     ];
 
     const tier = data?.currentInvoice?.plan ?? $organization?.billingPlan;
-    const plan = tierToPlan(tier).name;
+    const plan = billingIdToPlan(tier).name;
 </script>
 
 <Container>

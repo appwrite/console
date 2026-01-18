@@ -35,7 +35,7 @@
         Tooltip
     } from '@appwrite.io/pink-svelte';
     import { BillingPlan } from '$lib/constants';
-    import { tierToPlan } from '$lib/stores/billing';
+    import { billingIdToPlan } from '$lib/stores/billing';
 
     export let data;
 
@@ -92,7 +92,7 @@
                 {$organization?.billingPlan === BillingPlan.FREE
                     ? 'Upgrade to add more members'
                     : `You've reached the members limit for the ${
-                          tierToPlan($organization?.billingPlan)?.name
+                          billingIdToPlan($organization?.billingPlan)?.name
                       } plan`}
             </div>
         </Tooltip>

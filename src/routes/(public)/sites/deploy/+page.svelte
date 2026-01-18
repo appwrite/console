@@ -6,7 +6,6 @@
     import CustomId from '$lib/components/customId.svelte';
     import { SvgIcon } from '$lib/components/index.js';
     import { Button, Form, InputSelect } from '$lib/elements/forms';
-    import type { AllowedRegions } from '$lib/sdk/billing.js';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { getFrameworkIcon } from '$lib/stores/sites.js';
@@ -28,6 +27,7 @@
     import { filterRegions } from '$lib/helpers/regions';
     import { loadAvailableRegions } from '$routes/(console)/regions';
     import { regions as regionsStore } from '$lib/stores/organization';
+    import type { AllowedRegions } from '$lib/sdk/billing';
 
     let { data } = $props();
 

@@ -6,7 +6,6 @@ import { timeFromNow } from '$lib/helpers/date';
 import type { PageLoad, RouteParams } from './$types';
 import { isSelfHosted } from '$lib/system';
 import { isCloud } from '$lib/system';
-import type { Plan } from '$lib/sdk/billing';
 
 export const load: PageLoad = async ({ url, route, depends, params, parent }) => {
     depends(Dependencies.DATABASES);
@@ -45,7 +44,7 @@ async function fetchDatabasesAndBackups(
     offset: number,
     params: RouteParams,
     search?: string | undefined,
-    currentPlan?: Plan
+    currentPlan?: Models.BillingPlan
 ) {
     const backupsEnabled = currentPlan?.backupsEnabled ?? true;
 

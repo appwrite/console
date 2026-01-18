@@ -5,10 +5,8 @@
     import { CardGrid, CreditCardBrandImage, CreditCardInfo } from '$lib/components';
     import { BillingPlan, Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
-    import { type Organization } from '$lib/stores/organization';
     import { Button } from '$lib/elements/forms';
     import { hasStripePublicKey, isCloud } from '$lib/system';
-    import type { PaymentList, PaymentMethodData } from '$lib/sdk/billing';
     import DeleteOrgPayment from './deleteOrgPayment.svelte';
     import ReplaceCard from './replaceCard.svelte';
     import EditPaymentModal from '$routes/(console)/account/payments/editPaymentModal.svelte';
@@ -33,25 +31,41 @@
         IconSwitchHorizontal,
         IconTrash
     } from '@appwrite.io/pink-icons-svelte';
+    import type { Models } from '@appwrite.io/console';
 
-    export let methods: PaymentList;
-    export let organization: Organization;
+    let {
+        organization,
+        paymentMethods,
+        backupMethod,
+        primaryMethod
+    }: {
+        organization: Models.Organization;
+        paymentMethods: Models.PaymentMethodList;
+        backupMethod?: Models.PaymentMethod;
+        primaryMethod?: Models.PaymentMethod;
+    } = $props();
 
-    export let backupMethod: PaymentMethodData;
-    export let primaryMethod: PaymentMethodData;
+    let showEdit = $state(false);
+    let showDelete = $state(false);
+    let showPayment = $state(false);
+    let showReplace = $state(false);
+    let isSelectedBackup = $state(false);
 
-    let showPayment = false;
-    let showEdit = false;
-    let showDelete = false;
-    let showReplace = false;
-    let isSelectedBackup = false;
+    const hasPaymentError = $derived.by(() => {
+        return (
+            primaryMethod?.lastError ||
+            primaryMethod?.expired ||
+            backupMethod?.lastError ||
+            backupMethod?.expired
+        );
+    });
 
     async function addPaymentMethod(paymentMethodId: string) {
         try {
-            await sdk.forConsole.billing.setOrganizationPaymentMethod(
-                organization.$id,
+            await sdk.forConsole.organizations.setDefaultPaymentMethod({
+                organizationId: organization.$id,
                 paymentMethodId
-            );
+            });
             addNotification({
                 type: 'success',
                 message: `A new payment method has been added to ${organization.name}`
@@ -69,10 +83,10 @@
 
     async function addBackupPaymentMethod(paymentMethodId: string) {
         try {
-            await sdk.forConsole.billing.setOrganizationPaymentMethodBackup(
-                organization.$id,
+            await sdk.forConsole.organizations.setBackupPaymentMethod({
+                organizationId: organization.$id,
                 paymentMethodId
-            );
+            });
             addNotification({
                 type: 'success',
                 message: `A new payment method has been added to ${organization.name}`
@@ -87,15 +101,11 @@
         }
     }
 
-    $: if (!showReplace) {
-        isSelectedBackup = false;
-    }
-
-    $: hasPaymentError =
-        primaryMethod?.lastError ||
-        primaryMethod?.expired ||
-        backupMethod?.lastError ||
-        backupMethod?.expired;
+    $effect(() => {
+        if (!showReplace) {
+            isSelectedBackup = false;
+        }
+    });
 </script>
 
 <CardGrid overflow={false}>
@@ -200,7 +210,7 @@
                 {/if}
             </Table.Root>
             {#if !organization?.backupPaymentMethodId}
-                {@const filteredPaymentMethods = methods.paymentMethods.filter(
+                {@const filteredPaymentMethods = paymentMethods.paymentMethods.filter(
                     (o) => !!o.last4 && o.$id !== organization?.paymentMethodId
                 )}
                 <div>
@@ -228,7 +238,7 @@
                             </Tooltip>
                         </Layout.Stack>
                         <ActionMenu.Root slot="tooltip" let:toggle>
-                            {#if methods.total}
+                            {#if paymentMethods.total}
                                 {#each filteredPaymentMethods as paymentMethod}
                                     <ActionMenu.Item.Button
                                         on:click={() => addBackupPaymentMethod(paymentMethod?.$id)}>
@@ -254,7 +264,7 @@
                 </div>
             {/if}
         {:else}
-            {@const filteredPaymentMethods = methods.paymentMethods.filter(
+            {@const filteredPaymentMethods = paymentMethods.paymentMethods.filter(
                 (o) => !!o.last4 && o.$id !== organization?.backupPaymentMethodId
             )}
             <Card.Base>
@@ -264,7 +274,7 @@
                             <Icon icon={IconPlus} size="s" />
                         </Button>
                         <ActionMenu.Root slot="tooltip" let:toggle>
-                            {#if methods.total}
+                            {#if paymentMethods.total}
                                 {#each filteredPaymentMethods as paymentMethod}
                                     <ActionMenu.Item.Button
                                         on:click={() => addPaymentMethod(paymentMethod?.$id)}>
@@ -311,12 +321,17 @@
         selectedPaymentMethod={isSelectedBackup ? backupMethod : primaryMethod} />
 {/if}
 {#if isCloud && hasStripePublicKey}
-    <ReplaceCard {organization} {methods} bind:show={showReplace} isBackup={isSelectedBackup} />
+    <ReplaceCard
+        {organization}
+        methods={paymentMethods}
+        bind:show={showReplace}
+        isBackup={isSelectedBackup} />
 {/if}
 {#if showDelete && isCloud && hasStripePublicKey}
     {@const hasOtherMethod = isSelectedBackup
         ? !!organization?.paymentMethodId
         : !!organization?.backupPaymentMethodId}
+
     <DeleteOrgPayment
         bind:showDelete
         {hasOtherMethod}

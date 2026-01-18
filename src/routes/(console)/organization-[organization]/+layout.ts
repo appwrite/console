@@ -11,10 +11,8 @@ import ProjectsAtRisk from '$lib/components/billing/alerts/projectsAtRisk.svelte
 import { get } from 'svelte/store';
 import { preferences } from '$lib/stores/preferences';
 import { defaultRoles, defaultScopes } from '$lib/constants';
-import type { Plan } from '$lib/sdk/billing';
 import { loadAvailableRegions } from '$routes/(console)/regions';
-import type { Organization } from '$lib/stores/organization';
-import { Platform } from '@appwrite.io/console';
+import { type Models, Platform } from '@appwrite.io/console';
 import { resolve } from '$app/paths';
 
 export const load: LayoutLoad = async ({ params, depends, parent }) => {
@@ -28,13 +26,18 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
 
     let roles = isCloud ? [] : defaultRoles;
     let scopes = isCloud ? [] : defaultScopes;
-    let currentPlan: Plan = null;
+    let currentPlan: Models.BillingPlan | null = null;
 
     try {
         if (isCloud) {
             [{ roles, scopes }, currentPlan] = await Promise.all([
-                sdk.forConsole.billing.getRoles(params.organization),
-                sdk.forConsole.billing.getOrganizationPlan(params.organization)
+                sdk.forConsole.organizations.getScopes({
+                    organizationId: params.organization
+                }),
+
+                sdk.forConsole.organizations.getPlan({
+                    organizationId: params.organization
+                })
             ]);
 
             if (scopes.includes('billing.read')) {
@@ -47,7 +50,9 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
         }
 
         const [org, members, countryList, locale] = await Promise.all([
-            sdk.forConsole.teams.get({ teamId: params.organization }) as Promise<Organization>,
+            sdk.forConsole.teams.get({
+                teamId: params.organization
+            }) as Promise<Models.Organization>,
             sdk.forConsole.teams.listMemberships({ teamId: params.organization }),
             sdk.forConsole.locale.listCountries(),
             sdk.forConsole.locale.get(),
@@ -94,7 +99,7 @@ async function checkPlatformAndRedirect(
 ) {
     // check if preloaded
     let requestedOrg = organizations.teams.find((team) => team.$id === params.organization) as
-        | Organization
+        | Models.Organization
         | undefined;
 
     // not found, load!
@@ -102,7 +107,7 @@ async function checkPlatformAndRedirect(
         try {
             requestedOrg = (await sdk.forConsole.teams.get({
                 teamId: params.organization
-            })) as Organization;
+            })) as Models.Organization;
         } catch (e) {
             return null;
         }
@@ -133,7 +138,7 @@ async function checkPlatformAndRedirect(
                 // check if exists and is valid
                 const orgFromPrefs = (await sdk.forConsole.teams.get({
                     teamId: orgIdInPrefs
-                })) as Organization;
+                })) as Models.Organization;
 
                 // exists and is valid, redirect
                 redirect(

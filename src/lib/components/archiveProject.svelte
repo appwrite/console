@@ -38,23 +38,21 @@
     import { isSmallViewport } from '$lib/stores/viewport';
     import { isCloud } from '$lib/system';
     import { regions as regionsStore } from '$lib/stores/organization';
-    import type { Organization } from '$lib/stores/organization';
-    import type { Plan } from '$lib/sdk/billing';
 
     // props
     interface Props {
+        currentPlan: Models.BillingPlan;
+        organization: Models.Organization;
         projectsToArchive: Models.Project[];
-        organization: Organization;
-        currentPlan: Plan;
         archivedTotalOverall: number;
         archivedOffset: number;
         limit: number;
     }
 
     let {
-        projectsToArchive,
-        organization,
         currentPlan,
+        organization,
+        projectsToArchive,
         archivedTotalOverall,
         archivedOffset,
         limit

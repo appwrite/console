@@ -12,23 +12,25 @@
     import { toLocaleDate } from '$lib/helpers/date';
     import { isCloud } from '$lib/system';
     import { formatCurrency } from '$lib/helpers/numbers';
-    import { tierToPlan } from '$lib/stores/billing';
+    import { billingIdToPlan } from '$lib/stores/billing';
     import { Table, Tabs, Alert } from '@appwrite.io/pink-svelte';
     import DeleteOrganizationEstimation from './deleteOrganizationEstimation.svelte';
-    import type { EstimationDeleteOrganization, InvoiceList } from '$lib/sdk/billing';
+    import type { Models } from '@appwrite.io/console';
 
     export let showDelete = false;
-    export let invoices: InvoiceList;
+    export let invoices: Models.InvoiceList;
 
     let error: string = null;
     let selectedTab = 'projects';
     let organizationName: string = null;
-    let estimation: EstimationDeleteOrganization;
+    let estimation: Models.EstimationDeleteOrganization;
 
     async function deleteOrg() {
         try {
             if (isCloud) {
-                await sdk.forConsole.billing.deleteOrganization($organization.$id);
+                await sdk.forConsole.organizations.delete({
+                    organizationId: $organization.$id
+                });
             } else {
                 await sdk.forConsole.teams.delete({
                     teamId: $organization.$id
@@ -82,9 +84,9 @@
         if (isCloud) {
             try {
                 error = '';
-                estimation = await sdk.forConsole.billing.estimationDeleteOrganization(
-                    $organization.$id
-                );
+                estimation = await sdk.forConsole.organizations.estimationDeleteOrganization({
+                    organizationId: $organization.$id
+                });
             } catch (e) {
                 error = e.message;
             }
@@ -97,7 +99,7 @@
         <Alert.Inline
             status="warning"
             title={`You have a pending ${formatCurrency(upcomingInvoice.grossAmount)} invoice for your
-        ${tierToPlan(upcomingInvoice.plan).name} plan`}>
+        ${billingIdToPlan(upcomingInvoice.plan).name} plan`}>
             By proceeding, your invoice will be processed within the hour. Upon successful payment,
             your organization will be deleted.
         </Alert.Inline>
@@ -112,7 +114,8 @@
             <b>This action is irreversible</b>.
         {/if}
     </p>
-    {#if estimation && (estimation.unpaidInvoices.length > 0 || estimation.grossAmount > 0)}
+    <!-- has estimation, has unpaid invoices, any of the invoices' gross amount is > 0   -->
+    {#if estimation && (estimation.unpaidInvoices.length > 0 || estimation.unpaidInvoices.some((invoice) => invoice.grossAmount > 0))}
         <DeleteOrganizationEstimation {estimation} />
     {:else}
         {#if $projects.total > 0}

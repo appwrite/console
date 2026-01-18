@@ -1,7 +1,6 @@
 import { writable } from 'svelte/store';
 import type { Component } from 'svelte';
 import type { Models } from '@appwrite.io/console';
-import type { Organization } from '$lib/stores/organization';
 import type { NotificationCoolOffOptions } from '$lib/helpers/notifications';
 
 export type BottomModalAlertAction = {
@@ -10,7 +9,7 @@ export type BottomModalAlertAction = {
     background?: Record<'light' | 'dark', string> | string;
     backgroundHover?: Record<'light' | 'dark', string> | string;
     hideOnClick?: boolean;
-    link: (ctx: { organization: Organization; project: Models.Project }) => string;
+    link: (ctx: { organization: Models.Organization; project: Models.Project }) => string;
     external?: boolean;
 };
 
