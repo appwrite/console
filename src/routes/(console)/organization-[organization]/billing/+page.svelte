@@ -38,7 +38,7 @@
     onMount(async () => {
         if (page.url.searchParams.has('type')) {
             if (page.url.searchParams.get('type') === 'upgrade') {
-                goto($upgradeURL);
+                await goto($upgradeURL);
             }
 
             if (
@@ -139,34 +139,34 @@
     {/if}
     {#if $useNewPricingModal}
         <PlanSummary
-            availableCredit={data?.availableCredit}
-            currentPlan={data?.currentPlan}
-            nextPlan={data?.nextPlan}
-            currentAggregation={data?.billingAggregation}
-            limit={data?.limit}
-            offset={data?.offset} />
+            availableCredit={data.availableCredit}
+            currentPlan={data.currentPlan}
+            nextPlan={data.nextPlan}
+            currentAggregation={data.billingAggregation}
+            limit={data.limit}
+            offset={data.offset} />
     {:else}
         <PlanSummaryOld
-            availableCredit={data?.availableCredit}
-            currentPlan={data?.currentPlan}
-            currentAggregation={data?.billingAggregation}
-            currentInvoice={data?.billingInvoice} />
+            availableCredit={data.availableCredit}
+            currentPlan={data.currentPlan}
+            currentAggregation={data.billingAggregation}
+            currentInvoice={data.billingInvoice} />
     {/if}
     <PaymentHistory />
 
     <PaymentMethods
-        methods={data?.paymentMethods}
-        organization={data?.organization}
+        organization={data.organization}
+        paymentMethods={data.paymentMethods}
         backupMethod={data.backupPaymentMethod}
         primaryMethod={data.primaryPaymentMethod} />
 
     <BillingAddress
-        organization={data?.organization}
-        billingAddress={data?.billingAddress}
-        locale={data?.locale}
-        countryList={data?.countryList} />
+        locale={data.locale}
+        countryList={data.countryList}
+        organization={data.organization}
+        billingAddress={data.billingAddress} />
     <TaxId />
-    <BudgetCap organization={data?.organization} currentPlan={data?.currentPlan} />
+    <BudgetCap organization={data.organization} currentPlan={data.currentPlan} />
     <AvailableCredit areCreditsSupported={data.areCreditsSupported} />
 </Container>
 
