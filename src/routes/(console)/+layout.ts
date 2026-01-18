@@ -59,7 +59,7 @@ export const load: LayoutLoad = async ({ depends, parent }) => {
     }
 
     // just in case!
-    plansInfoStore.set(plansInfo);
+    plansInfoStore.set(fallbackPlansInfoArray);
 
     return {
         roles: [],
