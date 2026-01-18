@@ -14,10 +14,10 @@
 
     let {
         domain,
-        verified = undefined,
+        verified,
         variant,
         service = 'general',
-        ruleStatus = undefined,
+        ruleStatus,
         onNavigateToNameservers = () => {},
         onNavigateToA = () => {},
         onNavigateToAAAA = () => {}
@@ -115,7 +115,9 @@
         </svelte:fragment>
         <Table.Row.Base {root}>
             <Table.Cell column="type" {root}>{variant.toUpperCase()}</Table.Cell>
-            <Table.Cell column="name" {root}>{subdomain || '@'}</Table.Cell>
+            <Table.Cell column="name" {root}>
+                <InteractiveText variant="copy" isVisible text={subdomain || '@'} />
+            </Table.Cell>
             <Table.Cell column="value" {root}>
                 <InteractiveText variant="copy" isVisible text={setTarget()} />
             </Table.Cell>
