@@ -35,8 +35,7 @@
 
             await Promise.all([invalidate(Dependencies.DOMAIN), invalidate(Dependencies.DOMAINS)]);
 
-            const verified = domain?.nameservers.toLowerCase() === 'appwrite';
-            if (!verified) {
+            if (!domain.verified) {
                 throw new Error(
                     'Domain verification failed. Please check your domain settings or try again later'
                 );

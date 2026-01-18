@@ -26,8 +26,7 @@
             });
 
             await invalidate(Dependencies.DOMAINS);
-            const verified = domain.nameservers.toLowerCase() === 'appwrite';
-            if (verified) {
+            if (domain.verified) {
                 await goto(backPage);
                 addNotification({
                     type: 'success',

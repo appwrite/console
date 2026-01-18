@@ -39,10 +39,6 @@
     let showDelete = false;
     let showRetry = false;
     let selectedDomain: Models.Domain = null;
-
-    const isDomainVerified = (domain: Models.Domain) => {
-        return domain.nameservers.toLowerCase() === 'appwrite';
-    };
 </script>
 
 <Container>
@@ -90,7 +86,7 @@
                                                 {domain.domain}
                                             </Typography.Text>
                                         </Link>
-                                        {#if !isDomainVerified(domain)}
+                                        {#if !domain.verified}
                                             <Badge
                                                 variant="secondary"
                                                 type="error"
@@ -132,7 +128,7 @@
 
                                 <svelte:fragment slot="tooltip" let:toggle>
                                     <ActionMenu.Root>
-                                        {#if !isDomainVerified(domain)}
+                                        {#if !domain.verified}
                                             <ActionMenu.Item.Button
                                                 leadingIcon={IconRefresh}
                                                 on:click={(e) => {
