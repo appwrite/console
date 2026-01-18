@@ -53,12 +53,11 @@
     import type { Text } from '@codemirror/state';
     import { onMount, onDestroy } from 'svelte';
     import Id, { truncateId } from '$lib/components/id.svelte';
-    import { Icon, Layout, Skeleton, Spinner, Tooltip, Typography } from '@appwrite.io/pink-svelte';
-    import { IconCheck, IconDuplicate, IconX } from '@appwrite.io/pink-icons-svelte';
+    import { Icon, Layout, Skeleton, Tooltip } from '@appwrite.io/pink-svelte';
+    import { IconDuplicate, IconX } from '@appwrite.io/pink-icons-svelte';
     import { Button } from '$lib/elements/forms';
     import { copy } from '$lib/helpers/copy';
     import { isSmallViewport } from '$lib/stores/viewport';
-    import { slide } from 'svelte/transition';
 
     import { parse } from './validators/json5';
     import { customTheme, customSyntaxHighlighting } from './helpers/theme';
@@ -73,6 +72,7 @@
         ALLOWED_DOLLAR_PROPS,
         DEBOUNCE_DELAY,
         LINTER_DELAY,
+        AUTOSAVE_DELAY,
         INDENT_REGEX,
         SCALAR_VALUE_REGEX,
         TRAILING_COMMA_REGEX,
@@ -83,6 +83,8 @@
     } from './helpers/constants';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { ID } from '@appwrite.io/console';
+    import { Error as ErrorSonner, Save as SavingSonner } from '../sonners';
+    import { sleep } from '$lib/helpers/promises';
 
     interface Props {
         isNew?: boolean;
@@ -119,13 +121,17 @@
     let editorView: EditorView | null = null;
     let errorMessage = $state<string | null>(null);
     let changeTimer: ReturnType<typeof setTimeout> | null = null; // debounce timer for parse + onChange
+    let autoSaveTimer: ReturnType<typeof setTimeout> | null = null; // debounce timer for auto-save
     let tooltipTimer: ReturnType<typeof setTimeout> | null = null; // timer for tooltip message reset
     let pendingCanonicalize = false; // set when a full-document replace (paste-all) occurs
     let lastExpectedContent = ''; // track latest serialized data to avoid spurious rewrites
     let lastDocId: string | null = null; // track current document identity for history reset
     let baseExtensions: Extension[] = []; // cached extension set to rebuild state on doc switch
-    const readOnlyCompartment = new Compartment();
+
+    let saveSonnerState: 'saving' | 'saved' | null = $state(null);
+
     const wrapCompartment = new Compartment();
+    const readOnlyCompartment = new Compartment();
 
     let tooltipMessage = $state('Copy document');
 
@@ -792,6 +798,10 @@
         }
 
         await onSave?.(dataToSave);
+
+        // update after save completes
+        originalData = $state.snapshot(data);
+
         isSaving = false;
     }
 
@@ -861,6 +871,12 @@
                     changeTimer = null;
                 }
 
+                // Clear auto-save timer when user starts typing again
+                if (autoSaveTimer) {
+                    clearTimeout(autoSaveTimer);
+                    autoSaveTimer = null;
+                }
+
                 changeTimer = setTimeout(async () => {
                     const state = update.view.state;
                     const newContent = state.doc.toString();
@@ -880,6 +896,27 @@
                     data = parsed;
                     onChange?.(parsed, hasDataChanged);
                     lastExpectedContent = serializeData(parsed);
+
+                    // Check if this was a manual edit (not undo) and trigger auto-save
+                    const isUndoOrRedo = update.transactions.some(
+                        (tr) =>
+                            tr.annotation(Transaction.userEvent) === 'undo' ||
+                            tr.annotation(Transaction.userEvent) === 'redo'
+                    );
+
+                    if (!isUndoOrRedo && !$isSmallViewport && hasDataChanged && onSave) {
+                        // Clear existing auto-save timer
+                        if (autoSaveTimer) {
+                            clearTimeout(autoSaveTimer);
+                            autoSaveTimer = null;
+                        }
+
+                        // Set new auto-save timer
+                        autoSaveTimer = setTimeout(() => {
+                            handleSave();
+                            autoSaveTimer = null;
+                        }, AUTOSAVE_DELAY);
+                    }
                 }, DEBOUNCE_DELAY);
             }),
             readOnlyCompartment.of(EditorState.readOnly.of(readonly))
@@ -900,6 +937,10 @@
         if (changeTimer) {
             clearTimeout(changeTimer);
             changeTimer = null;
+        }
+        if (autoSaveTimer) {
+            clearTimeout(autoSaveTimer);
+            autoSaveTimer = null;
         }
         if (tooltipTimer) {
             clearTimeout(tooltipTimer);
@@ -926,7 +967,8 @@
     $effect(() => {
         if (!editorView) return;
 
-        // Detect document switch
+        const expectedContent = serializeData(data);
+
         if (documentId !== lastDocId) {
             lastDocId = documentId;
             lastParseContent = '';
@@ -939,9 +981,8 @@
             if (!isNew) {
                 // Capture original data snapshot when switching documents
                 originalData = $state.snapshot(data);
-                const expected = serializeData(data);
 
-                lastExpectedContent = expected;
+                lastExpectedContent = expectedContent;
 
                 if (changeTimer) {
                     clearTimeout(changeTimer);
@@ -951,7 +992,10 @@
                 pendingCanonicalize = false;
                 isUpdatingFromEditor = true;
 
-                const newState = EditorState.create({ doc: expected, extensions: baseExtensions });
+                const newState = EditorState.create({
+                    doc: expectedContent,
+                    extensions: baseExtensions
+                });
                 editorView.setState(newState);
                 queueMicrotask(() => (isUpdatingFromEditor = false));
                 return;
@@ -959,12 +1003,15 @@
         }
 
         // Only react when the external data actually changed
-        const expectedContent = serializeData(data);
         if (expectedContent === lastExpectedContent) return;
         lastExpectedContent = expectedContent;
 
         const currentContent = editorView.state.doc.toString();
         if (currentContent !== expectedContent) {
+            if (!isUpdatingFromEditor && hasDataChanged) {
+                return;
+            }
+
             isUpdatingFromEditor = true;
             editorView.dispatch({
                 changes: { from: 0, to: currentContent.length, insert: expectedContent },
@@ -995,6 +1042,19 @@
     $effect(() => {
         originalSerialized = serializeData(originalData);
     });
+
+    $effect(() => {
+        if (isSaving) {
+            saveSonnerState = 'saving';
+        } else if (saveSonnerState === 'saving') {
+            saveSonnerState = 'saved';
+            sleep(AUTOSAVE_DELAY).then(() => {
+                if (saveSonnerState === 'saved') {
+                    saveSonnerState = null;
+                }
+            });
+        }
+    });
 </script>
 
 <div class="editor-container" class:loading>
@@ -1011,12 +1071,6 @@
                     </div>
                 {/if}
             </Layout.Stack>
-
-            {#if errorMessage && !$isSmallViewport && !loading}
-                <div class="editor-header">
-                    <span class="error-message">{errorMessage}</span>
-                </div>
-            {/if}
 
             {#if documentId}
                 <Layout.Stack direction="row" inline gap="s">
@@ -1035,24 +1089,6 @@
                             <span slot="tooltip">Cancel</span>
                         </Tooltip>
                     {/if}
-
-                    <Tooltip placement="top" disabled={!hasDataChanged}>
-                        <Button
-                            icon
-                            secondary
-                            size="xs"
-                            disabled={!hasDataChanged}
-                            class="icon-button"
-                            on:click={handleSave}>
-                            {#if isSaving}
-                                <Spinner size="s" />
-                            {:else}
-                                <Icon icon={IconCheck} size="s" />
-                            {/if}
-                        </Button>
-
-                        <span slot="tooltip">Save</span>
-                    </Tooltip>
 
                     <Tooltip placement="top">
                         <Button
@@ -1083,13 +1119,6 @@
         </div>
     {/if}
 
-    {#if errorMessage && $isSmallViewport && !loading}
-        <div class="editor-header mobile" transition:slide={{ duration: 150 }}>
-            <Typography.Caption variant="500" color="--fgcolor-neutral-primary"
-                >{errorMessage}</Typography.Caption>
-        </div>
-    {/if}
-
     {#if loading}
         <div class="cm-editor-skeleton">
             <div class="cm-gutters-skeleton">
@@ -1115,6 +1144,12 @@
 
     <div bind:this={editorContainer} class="cm-editor-wrapper" class:loading></div>
 </div>
+
+{#if errorMessage && !loading}
+    <ErrorSonner error={errorMessage} />
+{/if}
+
+<SavingSonner state={saveSonnerState} />
 
 <style lang="scss">
     .editor-container {
@@ -1177,20 +1212,6 @@
         padding: 0 var(--space-4);
         background: var(--bgcolor-neutral-secondary);
         border-bottom: 1px solid var(--border-neutral);
-
-        &.mobile {
-            background: var(--bgcolor-error-weak);
-        }
-
-        .error-message {
-            color: var(--fgcolor-error);
-            font-family: var(--font-family-code);
-            font-size: 13px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            flex: 1;
-        }
 
         :global(.icon-button),
         :global(.id-tag-button-wrapper button) {

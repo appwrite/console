@@ -400,6 +400,9 @@
          */
         const { $createdAt, $updatedAt, $id, ...documentWithoutDates } = document;
 
+        // Set isSaving to trigger the sonner in the editor
+        noSqlDocument.update({ isSaving: true });
+
         try {
             if ($noSqlDocument.isNew) {
                 // create
@@ -411,10 +414,6 @@
                 });
 
                 trackEvent(Submit.DocumentCreate);
-                addNotification({
-                    message: 'Document has been created',
-                    type: 'success'
-                });
             } else {
                 // update
                 await databaseSdk.updateRecord({
@@ -426,14 +425,10 @@
                 });
 
                 trackEvent(Submit.DocumentUpdate);
-                addNotification({
-                    message: 'Document has been updated',
-                    type: 'success'
-                });
             }
 
             await invalidate(Dependencies.DOCUMENTS);
-            noSqlDocument.reset();
+            noSqlDocument.reset({ show: true });
 
             // re-render spreadsheet!
             spreadsheetRenderKey.set(hash(Date.now().toString()));
@@ -447,6 +442,8 @@
                 type: 'error'
             });
             trackError(error, Submit.DocumentUpdate);
+        } finally {
+            noSqlDocument.update({ isSaving: false });
         }
     }
 
@@ -534,7 +531,10 @@
         submit: {
             text: 'Update',
             disabled: !$noSqlDocument.hasDataChanged,
-            onClick: async () => await createOrUpdateDocument($noSqlDocument.document)
+            onClick: async () => {
+                await createOrUpdateDocument($noSqlDocument.document);
+                return true;
+            }
         }
     }}
     sideSheetStateCallbacks={{
@@ -741,6 +741,7 @@
             isNew={$noSqlDocument.isNew}
             loading={$noSqlDocument.loading}
             bind:data={$noSqlDocument.document}
+            bind:isSaving={$noSqlDocument.isSaving}
             showHeaderActions={!$isSmallViewport}
             onCancel={() => noSqlDocument.reset()}
             onSave={async (document) => await createOrUpdateDocument(document)}

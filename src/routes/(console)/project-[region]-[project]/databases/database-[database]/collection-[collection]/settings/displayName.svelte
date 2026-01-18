@@ -7,27 +7,27 @@
     import { addNotification } from '$lib/stores/notifications';
     import { page } from '$app/state';
     import { getTerminologies } from '$database/(entity)';
-    import CustomColumnsEditor from '../(components)/customColumnsEditor.svelte';
+    import ColumnDisplayNameInput from '../(components)/inputs/displayName.svelte';
 
     const collectionId = page.params.collection;
     const { terminology } = getTerminologies();
 
-    let customColumnsEditor: CustomColumnsEditor | null = $state(null);
+    let columnDisplayNameInput: ColumnDisplayNameInput | null = $state(null);
 </script>
 
 <Form
     onSubmit={async () => {
-        await customColumnsEditor?.updateDisplayNames();
+        await columnDisplayNameInput?.updateDisplayNames();
     }}>
     <CardGrid>
-        <svelte:fragment slot="title">Display name</svelte:fragment>
+        <svelte:fragment slot="title">Custom columns</svelte:fragment>
         Add up to 5 document fields to display as columns in the collection view.
 
         <svelte:fragment slot="aside">
-            <CustomColumnsEditor
+            <ColumnDisplayNameInput
                 {collectionId}
                 databaseType={terminology.type}
-                bind:this={customColumnsEditor}
+                bind:this={columnDisplayNameInput}
                 onSuccess={async () => {
                     await invalidate(Dependencies.TEAM);
                     addNotification({
@@ -46,7 +46,7 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={customColumnsEditor?.hasChanged()} submit>Update</Button>
+            <Button disabled={columnDisplayNameInput?.hasChanged()} submit>Update</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>

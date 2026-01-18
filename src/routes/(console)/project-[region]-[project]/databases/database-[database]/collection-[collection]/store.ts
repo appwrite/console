@@ -28,6 +28,7 @@ export type NoSqlDocumentState = {
     documentId?: string /* for loading from a given id */;
     hasDataChanged?: boolean;
     isDirty?: boolean;
+    isSaving?: boolean;
 };
 
 const createNoSqlDocumentStore = () => {
@@ -42,21 +43,23 @@ const createNoSqlDocumentStore = () => {
         loading: false,
         documentId: null,
         hasDataChanged: false,
-        isDirty: false
+        isDirty: false,
+        isSaving: false
     });
 
     return {
         subscribe,
         set,
-        reset: () =>
+        reset: (config?: { show?: boolean }) =>
             set({
-                show: false,
+                show: config?.show ?? false,
                 document: null,
                 isNew: false,
                 loading: false,
                 documentId: null,
                 hasDataChanged: false,
                 isDirty: false
+                // isSaving: false
             }),
         create: (document: Models.Document | (object & { $id?: string })) =>
             set({
@@ -66,7 +69,8 @@ const createNoSqlDocumentStore = () => {
                 loading: false,
                 documentId: null,
                 hasDataChanged: false,
-                isDirty: true
+                isDirty: true,
+                isSaving: false
             }),
         edit: (document: Models.Document, documentId?: string) =>
             set({
@@ -76,7 +80,8 @@ const createNoSqlDocumentStore = () => {
                 loading: false,
                 documentId: documentId ?? null,
                 hasDataChanged: false,
-                isDirty: false
+                isDirty: false,
+                isSaving: false
             }),
         update: (partial: Partial<NoSqlDocumentState>) =>
             baseUpdate((state) => ({ ...state, ...partial }))

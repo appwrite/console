@@ -65,7 +65,7 @@
             <InputTags
                 bind:tags={names}
                 id="custom-columns-{collectionId}"
-                placeholder="Enter document keys"
+                placeholder="Enter fields"
                 label={inModal ? null : 'Fields to display'} />
         {/key}
 

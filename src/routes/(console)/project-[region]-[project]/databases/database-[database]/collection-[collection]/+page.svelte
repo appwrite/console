@@ -29,7 +29,7 @@
     import { canWriteRows } from '$lib/stores/roles';
     import SpreadSheet from '$database/collection-[collection]/spreadsheet.svelte';
     import { toLocaleDateTime } from '$lib/helpers/date';
-    import CustomColumnsEditor from '$database/collection-[collection]/(components)/customColumnsEditor.svelte';
+    import ColumnDisplayNameInput from '$database/collection-[collection]/(components)/inputs/displayName.svelte';
     import { Modal } from '$lib/components';
 
     const { data }: PageProps = $props();
@@ -38,7 +38,7 @@
     let showCustomColumnsModal = $state(false);
 
     let columnsError: string = $state(null);
-    let customColumnEditor: CustomColumnsEditor | null = $state(null);
+    let columnDisplayNameInput: ColumnDisplayNameInput | null = $state(null);
 
     function buildInitDoc() {
         const now = new Date().toISOString();
@@ -231,15 +231,15 @@
     bind:error={columnsError}
     bind:show={showCustomColumnsModal}
     onSubmit={async () => {
-        await customColumnEditor?.updateDisplayNames();
+        await columnDisplayNameInput?.updateDisplayNames();
     }}>
     <svelte:fragment slot="description">
         Add up to 5 document fields to display as columns in the table view for easy identification.
     </svelte:fragment>
 
-    <CustomColumnsEditor
+    <ColumnDisplayNameInput
         inModal
-        bind:this={customColumnEditor}
+        bind:this={columnDisplayNameInput}
         databaseType={data.database.type}
         collectionId={page.params.collection}
         onSuccess={() => {
@@ -253,7 +253,7 @@
     <svelte:fragment slot="footer">
         <Button size="s" secondary on:click={() => (showCustomColumnsModal = false)}>Cancel</Button>
 
-        <Button size="s" submit disabled={customColumnEditor?.hasChanged()}>Update</Button>
+        <Button size="s" submit disabled={columnDisplayNameInput?.hasChanged()}>Update</Button>
     </svelte:fragment>
 </Modal>
 
