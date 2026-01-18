@@ -11,7 +11,7 @@ import { get, writable } from 'svelte/store';
 import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
 import { addNotification } from './notifications';
 import { organization } from './organization';
-import { base } from '$app/paths';
+import { resolve } from '$app/paths';
 import { ThemeDarkCloud, ThemeLightCloud } from '$themes';
 import Color from 'color';
 import type { Models } from '@appwrite.io/console';
@@ -186,15 +186,20 @@ export async function setPaymentMethod(providerMethodId: string, name: string, s
     }
 }
 
-export async function confirmPayment(
-    orgId: string,
-    clientSecret: string,
-    paymentMethodId: string,
-    route?: string
-) {
+export async function confirmPayment(config: {
+    clientSecret: string;
+    paymentMethodId: string;
+    orgId?: string;
+    route?: string;
+}) {
+    const { clientSecret, paymentMethodId, orgId, route } = config;
+
     try {
-        const url =
-            window.location.origin + (route ? route : `${base}/organization-${orgId}/billing`);
+        const resolvedUrl = resolve('/(console)/organization-[organization]/billing', {
+            organization: orgId
+        });
+
+        const url = window.location.origin + (route ? route : resolvedUrl);
 
         const paymentMethod = await sdk.forConsole.account.getPaymentMethod({ paymentMethodId });
 
@@ -205,6 +210,7 @@ export async function confirmPayment(
                 payment_method: paymentMethod.providerMethodId
             }
         });
+
         if (error) {
             throw error.message;
         }

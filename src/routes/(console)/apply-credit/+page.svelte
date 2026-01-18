@@ -1,6 +1,6 @@
 <script lang="ts">
     import { afterNavigate, goto, invalidate } from '$app/navigation';
-    import { base } from '$app/paths';
+    import { base, resolve } from '$app/paths';
     import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CreditsApplied, SelectPaymentMethod } from '$lib/components/billing';
@@ -178,12 +178,13 @@
                     }
                 }
                 params.append('invites', collaborators.join(','));
-                await confirmPayment(
-                    '',
+                const resolvedUrl = resolve('/(console)/apply-credit');
+
+                await confirmPayment({
                     clientSecret,
                     paymentMethodId,
-                    `${base}/apply-credit?${params}`
-                );
+                    route: `${resolvedUrl}?${params}`
+                });
 
                 org = await sdk.forConsole.organizations.validatePayment({
                     organizationId: org.organizationId,

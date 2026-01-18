@@ -34,16 +34,32 @@
     import type { Models } from '@appwrite.io/console';
     import { currentPlan } from '$lib/stores/organization';
 
-    export let organization: Models.Organization;
-    export let methods: Models.PaymentMethodList;
-    export let backupMethod: Models.PaymentMethod;
-    export let primaryMethod: Models.PaymentMethod;
+    let {
+        organization,
+        paymentMethods,
+        backupMethod,
+        primaryMethod
+    }: {
+        organization: Models.Organization;
+        paymentMethods: Models.PaymentMethodList;
+        backupMethod?: Models.PaymentMethod;
+        primaryMethod?: Models.PaymentMethod;
+    } = $props();
 
-    let showEdit = false;
-    let showDelete = false;
-    let showPayment = false;
-    let showReplace = false;
-    let isSelectedBackup = false;
+    let showEdit = $state(false);
+    let showDelete = $state(false);
+    let showPayment = $state(false);
+    let showReplace = $state(false);
+    let isSelectedBackup = $state(false);
+
+    const hasPaymentError = $derived.by(() => {
+        return (
+            primaryMethod?.lastError ||
+            primaryMethod?.expired ||
+            backupMethod?.lastError ||
+            backupMethod?.expired
+        );
+    });
 
     async function addPaymentMethod(paymentMethodId: string) {
         try {
@@ -86,15 +102,11 @@
         }
     }
 
-    $: if (!showReplace) {
-        isSelectedBackup = false;
-    }
-
-    $: hasPaymentError =
-        primaryMethod?.lastError ||
-        primaryMethod?.expired ||
-        backupMethod?.lastError ||
-        backupMethod?.expired;
+    $effect(() => {
+        if (!showReplace) {
+            isSelectedBackup = false;
+        }
+    });
 </script>
 
 <CardGrid overflow={false}>
@@ -199,7 +211,7 @@
                 {/if}
             </Table.Root>
             {#if !organization?.backupPaymentMethodId}
-                {@const filteredPaymentMethods = methods.paymentMethods.filter(
+                {@const filteredPaymentMethods = paymentMethods.paymentMethods.filter(
                     (o) => !!o.last4 && o.$id !== organization?.paymentMethodId
                 )}
                 <div>
@@ -227,7 +239,7 @@
                             </Tooltip>
                         </Layout.Stack>
                         <ActionMenu.Root slot="tooltip" let:toggle>
-                            {#if methods.total}
+                            {#if paymentMethods.total}
                                 {#each filteredPaymentMethods as paymentMethod}
                                     <ActionMenu.Item.Button
                                         on:click={() => addBackupPaymentMethod(paymentMethod?.$id)}>
@@ -253,7 +265,7 @@
                 </div>
             {/if}
         {:else}
-            {@const filteredPaymentMethods = methods.paymentMethods.filter(
+            {@const filteredPaymentMethods = paymentMethods.paymentMethods.filter(
                 (o) => !!o.last4 && o.$id !== organization?.backupPaymentMethodId
             )}
             <Card.Base>
@@ -263,7 +275,7 @@
                             <Icon icon={IconPlus} size="s" />
                         </Button>
                         <ActionMenu.Root slot="tooltip" let:toggle>
-                            {#if methods.total}
+                            {#if paymentMethods.total}
                                 {#each filteredPaymentMethods as paymentMethod}
                                     <ActionMenu.Item.Button
                                         on:click={() => addPaymentMethod(paymentMethod?.$id)}>
@@ -310,7 +322,11 @@
         selectedPaymentMethod={isSelectedBackup ? backupMethod : primaryMethod} />
 {/if}
 {#if isCloud && hasStripePublicKey}
-    <ReplaceCard {organization} {methods} bind:show={showReplace} isBackup={isSelectedBackup} />
+    <ReplaceCard
+        {organization}
+        methods={paymentMethods}
+        bind:show={showReplace}
+        isBackup={isSelectedBackup} />
 {/if}
 {#if showDelete && isCloud && hasStripePublicKey}
     {@const hasOtherMethod = isSelectedBackup

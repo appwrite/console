@@ -2,31 +2,39 @@ import { sdk } from '$lib/stores/sdk';
 import { isCloud } from '$lib/system';
 import type { LayoutLoad } from './$types';
 import { Dependencies } from '$lib/constants';
+import { Platform, Query } from '@appwrite.io/console';
+import { makePlansMap } from '$lib/helpers/billing';
 import { plansInfo as plansInfoStore } from '$lib/stores/billing';
-import { type Models, Platform, Query } from '@appwrite.io/console';
 
 export const load: LayoutLoad = async ({ depends, parent }) => {
-    const { organizations } = await parent();
+    const { organizations, plansInfo } = await parent();
 
     depends(Dependencies.RUNTIMES);
     depends(Dependencies.CONSOLE_VARIABLES);
     depends(Dependencies.ORGANIZATION);
 
     const { endpoint, project } = sdk.forConsole.client.config;
+
+    const plansArrayPromise =
+        plansInfo || !isCloud
+            ? null
+            : sdk.forConsole.console.getPlans({
+                  platform: Platform.Appwrite
+              });
+
     const [preferences, plansArray, versionData, consoleVariables] = await Promise.all([
         sdk.forConsole.account.getPrefs(),
-        isCloud
-            ? sdk.forConsole.console.getPlans({
-                  platform: Platform.Appwrite
-              })
-            : null,
+        plansArrayPromise,
         fetch(`${endpoint}/health/version`, {
             headers: { 'X-Appwrite-Project': project as string }
         }).then((response) => response.json() as { version?: string }),
         sdk.forConsole.console.variables()
     ]);
 
-    const plansInfo = toPlanMap(plansArray);
+    let fallbackPlansInfoArray = plansInfo;
+    if (!fallbackPlansInfoArray) {
+        fallbackPlansInfoArray = makePlansMap(plansArray);
+    }
 
     const currentOrgId =
         preferences.organization ??
@@ -50,30 +58,18 @@ export const load: LayoutLoad = async ({ depends, parent }) => {
         }
     }
 
+    // just in case!
     plansInfoStore.set(plansInfo);
 
     return {
-        plansInfo,
         roles: [],
         scopes: [],
         preferences,
         currentOrgId,
         organizations,
         consoleVariables,
-        version: versionData?.version ?? null,
-        allProjectsCount: projectsCount
+        allProjectsCount: projectsCount,
+        plansInfo: fallbackPlansInfoArray,
+        version: versionData?.version ?? null
     };
 };
-
-function toPlanMap(plansArray: Models.BillingPlanList | null): Map<string, Models.BillingPlan> {
-    const map = new Map<string, Models.BillingPlan>();
-    if (!plansArray?.plans.length) return map;
-
-    const plans = plansArray.plans;
-    for (let i = 0; i < plans.length; i++) {
-        const plan = plans[i];
-        map.set(plan.$id, plan);
-    }
-
-    return map;
-}

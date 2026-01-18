@@ -42,10 +42,10 @@ export const load: PageLoad = async ({ parent }) => {
                         organization: org
                     };
                 } else {
-                    const e = new Error(org.message, {
+                    const error = new Error(org.message, {
                         cause: org
                     });
-                    trackError(e, Submit.OrganizationCreate);
+                    trackError(error, Submit.OrganizationCreate);
                 }
             } else {
                 return {

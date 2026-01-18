@@ -13,7 +13,7 @@ export const load: PageLoad = async ({ parent, depends, url, route }) => {
 
     if (!scopes.includes('billing.read')) {
         return redirect(
-            301,
+            302,
             resolve('/(console)/organization-[organization]', {
                 organization: organization.$id
             })
