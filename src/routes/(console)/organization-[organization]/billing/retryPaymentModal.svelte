@@ -19,7 +19,7 @@
     import { onMount } from 'svelte';
     import { getApiEndpoint, sdk } from '$lib/stores/sdk';
     import { formatCurrency } from '$lib/helpers/numbers';
-    import { base } from '$app/paths';
+    import { resolve } from '$app/paths';
     import type { PaymentMethod as StripePaymentMethod } from '@stripe/stripe-js';
     import type { Models } from '@appwrite.io/console';
 
@@ -117,12 +117,16 @@
 
             if (status !== 'succeeded' && status !== 'cancelled') {
                 // probably still pending, confirm via stripe!
-                await confirmPayment(
-                    $organization.$id,
+                const resolvedUrl = resolve('/(console)/organization-[organization]/billing', {
+                    organization: $organization.$id
+                });
+
+                await confirmPayment({
                     clientSecret,
-                    paymentMethodId ? paymentMethodId : $organization.paymentMethodId,
-                    `${base}/organization-${$organization.$id}/billing?type=validate-invoice&invoice=${invoice.$id}`
-                );
+                    paymentMethodId: paymentMethodId ?? $organization.paymentMethodId,
+                    orgId: $organization.$id,
+                    route: `${resolvedUrl}?type=validate-invoice&invoice=${invoice.$id}`
+                });
 
                 await sdk.forConsole.organizations.validateInvoice({
                     organizationId: $organization.$id,

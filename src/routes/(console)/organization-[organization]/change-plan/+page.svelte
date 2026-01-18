@@ -1,6 +1,6 @@
 <script lang="ts">
     import { afterNavigate, goto, invalidate } from '$app/navigation';
-    import { base, resolve } from '$app/paths';
+    import { resolve } from '$app/paths';
     import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { PlanComparisonBox, PlanSelection, SelectPaymentMethod } from '$lib/components/billing';
@@ -268,12 +268,16 @@
                 params.append('id', org.organizationId);
                 params.append('invites', collaborators.join(','));
                 params.append('plan', selectedPlan);
-                await confirmPayment(
-                    '',
+
+                const resolvedUrl = resolve('/(console)/organization-[organization]/change-plan', {
+                    organization: org.organizationId
+                });
+
+                await confirmPayment({
                     clientSecret,
                     paymentMethodId,
-                    base + '/change-plan?' + params.toString()
-                );
+                    route: `${resolvedUrl}?${params.toString()}`
+                });
                 await validate(org.organizationId, collaborators);
             }
 

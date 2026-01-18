@@ -1,6 +1,6 @@
 <script lang="ts">
     import { afterNavigate, goto, invalidate, preloadData } from '$app/navigation';
-    import { base, resolve } from '$app/paths';
+    import { resolve } from '$app/paths';
     import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { PlanComparisonBox, PlanSelection, SelectPaymentMethod } from '$lib/components/billing';
@@ -85,6 +85,15 @@
         }
     });
 
+    async function preloadAndNavigate(organizationId: string) {
+        const resolvedUrl = resolve('/(console)/organization-[organization]', {
+            organization: organizationId
+        });
+
+        await preloadData(resolvedUrl);
+        await goto(resolvedUrl);
+    }
+
     async function validate(organizationId: string, invites: string[]) {
         try {
             const org = await sdk.forConsole.organizations.validatePayment({
@@ -93,8 +102,7 @@
             });
 
             if (!isPaymentAuthenticationRequired(org)) {
-                await preloadData(`${base}/console/organization-${org.$id}`);
-                await goto(`${base}/console/organization-${org.$id}`);
+                await preloadAndNavigate(org.$id);
                 addNotification({
                     type: 'success',
                     message: `${org.name ?? 'Organization'} has been created`
@@ -142,12 +150,14 @@
                         }
                     }
                     params.append('invites', collaborators.join(','));
-                    await confirmPayment(
-                        '',
+                    const resolvedUrl = resolve('/(console)/create-organization');
+
+                    await confirmPayment({
                         clientSecret,
                         paymentMethodId,
-                        `${base}/create-organization?${params}`
-                    );
+                        route: `${resolvedUrl}?${params}`
+                    });
+
                     await validate(org.organizationId, collaborators);
                 }
             }
@@ -160,8 +170,7 @@
 
             if (!isPaymentAuthenticationRequired(org)) {
                 await invalidate(Dependencies.ACCOUNT);
-                await preloadData(`${base}/organization-${org.$id}`);
-                await goto(`${base}/organization-${org.$id}`);
+                await preloadAndNavigate(org.$id);
                 addNotification({
                     type: 'success',
                     message: `${org.name ?? 'Organization'} has been created`

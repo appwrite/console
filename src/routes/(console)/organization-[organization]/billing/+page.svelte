@@ -51,12 +51,12 @@
                     invoiceId
                 });
 
-                await confirmPayment(
-                    organization.$id,
-                    invoice.clientSecret,
-                    organization.paymentMethodId,
-                    `${baseUrl}?type=validate-invoice&invoice=${invoice.$id}`
-                );
+                await confirmPayment({
+                    clientSecret: invoice.clientSecret,
+                    paymentMethodId: organization.paymentMethodId,
+                    orgId: organization.$id,
+                    route: `${baseUrl}?type=validate-invoice&invoice=${invoice.$id}`
+                });
             }
 
             if (
@@ -87,7 +87,11 @@
         }
         if (page.url.searchParams.has('clientSecret')) {
             const clientSecret = page.url.searchParams.get('clientSecret');
-            await confirmPayment(organization.$id, clientSecret, organization.paymentMethodId);
+            await confirmPayment({
+                clientSecret,
+                paymentMethodId: organization.paymentMethodId,
+                orgId: organization.$id
+            });
         }
     });
 </script>
