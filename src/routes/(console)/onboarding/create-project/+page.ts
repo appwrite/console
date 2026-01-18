@@ -24,14 +24,16 @@ export const load: PageLoad = async ({ parent }) => {
     if (!organizations?.total) {
         try {
             if (isCloud) {
+                const starterPlan = getBasePlanFromGroup(BillingPlanGroup.Starter);
+
                 const org = await sdk.forConsole.organizations.create({
                     organizationId: ID.unique(),
                     name: 'Personal projects',
-                    billingPlan: getBasePlanFromGroup(BillingPlanGroup.Starter).$id
+                    billingPlan: starterPlan.$id
                 });
 
                 trackEvent(Submit.OrganizationCreate, {
-                    plan: getBasePlanFromGroup(BillingPlanGroup.Starter)?.name,
+                    plan: starterPlan?.name,
                     budget_cap_enabled: false,
                     members_invited: 0
                 });
@@ -42,10 +44,10 @@ export const load: PageLoad = async ({ parent }) => {
                         organization: org
                     };
                 } else {
-                    const e = new Error(org.message, {
+                    const error = new Error(org.message, {
                         cause: org
                     });
-                    trackError(e, Submit.OrganizationCreate);
+                    trackError(error, Submit.OrganizationCreate);
                 }
             } else {
                 return {

@@ -4,6 +4,7 @@ import type { LayoutLoad } from './$types';
 import { Dependencies } from '$lib/constants';
 import { Platform, Query } from '@appwrite.io/console';
 import { makePlansMap } from '$lib/helpers/billing';
+import { plansInfo as plansInfoStore } from '$lib/stores/billing';
 
 export const load: LayoutLoad = async ({ depends, parent }) => {
     const { organizations, plansInfo } = await parent();
@@ -56,6 +57,9 @@ export const load: LayoutLoad = async ({ depends, parent }) => {
             projectsCount = 0;
         }
     }
+
+    // just in case!
+    plansInfoStore.set(plansInfo);
 
     return {
         roles: [],

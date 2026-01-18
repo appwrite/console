@@ -67,9 +67,9 @@ export const addressList = derived(
     page,
     ($page) => $page.data.addressList as Models.BillingAddressList
 );
-export const plansInfo = derived(page, ($page) => $page.data.plansInfo as BillingPlansMap);
-export const daysLeftInTrial = writable<number>(0);
 export const readOnly = writable<boolean>(false);
+export const daysLeftInTrial = writable<number>(0);
+export const plansInfo = writable<BillingPlansMap>(new Map());
 
 export const showBudgetAlert = derived(
     page,
@@ -77,7 +77,7 @@ export const showBudgetAlert = derived(
 );
 
 function getPlansInfoStore(): BillingPlansMap | null {
-    return get(plansInfo) ?? get(page).data.plansInfo ?? null;
+    return get(plansInfo) ?? get(page).data?.plansInfo ?? null;
 }
 
 export function getRoleLabel(role: string) {

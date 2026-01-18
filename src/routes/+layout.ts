@@ -13,6 +13,7 @@ import { isCloud, VARS } from '$lib/system';
 import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
 import { getTeamOrOrganizationList } from '$lib/stores/organization';
 import { makePlansMap } from '$lib/helpers/billing';
+import { plansInfo as plansInfoStore } from '$lib/stores/billing';
 
 export const ssr = false;
 
@@ -41,6 +42,7 @@ export const load: LayoutLoad = async ({ depends, url, route }) => {
         }
 
         const plansInfo = await getPlatformPlans();
+        plansInfoStore.set(plansInfo);
 
         return {
             plansInfo,
