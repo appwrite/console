@@ -16,7 +16,9 @@
         if (page.url.searchParams.has('clientSecret')) {
             const clientSecret = page.url.searchParams.get('clientSecret');
             const paymentMethodId = page.url.searchParams.get('paymentMethodId');
-            await confirmPayment({ clientSecret, paymentMethodId });
+            if (clientSecret && paymentMethodId) {
+                await confirmPayment({ clientSecret, paymentMethodId });
+            }
         }
     });
 </script>

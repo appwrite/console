@@ -24,7 +24,7 @@
     import type { Models } from '@appwrite.io/console';
 
     export let show = false;
-    export let invoice: Models.Invoice;
+    export let invoice: Models.Invoice | null = null;
 
     let name: string;
     let state: string = '';
