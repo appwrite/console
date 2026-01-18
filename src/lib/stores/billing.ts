@@ -76,19 +76,23 @@ export const showBudgetAlert = derived(
     ($page) => ($page.data.organization?.billingLimits.budgetLimit ?? 0) >= 100
 );
 
+function getPlansInfoStore(): BillingPlansMap | null {
+    return get(plansInfo) ?? get(page).data.plansInfo ?? null;
+}
+
 export function getRoleLabel(role: string) {
     return roles.find((r) => r.value === role)?.label ?? role;
 }
 
 export function planHasGroup(billingPlanId: string, group: BillingPlanGroup) {
-    const plansInfoStore = get(plansInfo);
-    return plansInfoStore.get(billingPlanId)?.group === group;
+    const plansInfoStore = getPlansInfoStore();
+    return plansInfoStore?.get(billingPlanId)?.group === group;
 }
 
 export function getBasePlanFromGroup(billingPlanGroup: BillingPlanGroup): Models.BillingPlan {
-    const plansInfoStore = get(plansInfo);
+    const plansInfoStore = getPlansInfoStore();
 
-    const proPlans = Array.from(plansInfoStore.values()).filter(
+    const proPlans = Array.from(plansInfoStore?.values()).filter(
         (plan) => plan.group === billingPlanGroup
     );
 
@@ -96,8 +100,8 @@ export function getBasePlanFromGroup(billingPlanGroup: BillingPlanGroup): Models
 }
 
 export function billingIdToPlan(billingId: string): Models.BillingPlan {
-    const plansInfoStore = get(plansInfo);
-    if (plansInfoStore.has(billingId)) {
+    const plansInfoStore = getPlansInfoStore();
+    if (plansInfoStore?.has(billingId)) {
         return plansInfoStore.get(billingId);
     } else {
         // fallback to PRO group's 1st item.
