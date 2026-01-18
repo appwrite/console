@@ -93,9 +93,9 @@
                                         {#if !isDomainVerified(domain)}
                                             <Badge
                                                 variant="secondary"
-                                                type="warning"
+                                                type="error"
                                                 content="Not verified"
-                                                size="s" />
+                                                size="xs" />
                                         {/if}
                                     </Layout.Stack>
                                 {:else if column.id === 'registrar'}
