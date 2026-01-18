@@ -1,6 +1,6 @@
 <script lang="ts">
     import { MessagingProviderType, type Models } from '@appwrite.io/console';
-    import { CardGrid, Empty, PaginationInline, EmptySearch } from '$lib/components';
+    import { CardGrid, Empty, PaginationInline } from '$lib/components';
     import { onMount } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
     import { invalidate } from '$app/navigation';
@@ -12,8 +12,17 @@
     import UserTargetsModal from '../userTargetsModal.svelte';
     import { isValueOfStringEnum } from '$lib/helpers/types';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
-    import { Alert, Icon, Layout, Table, Typography } from '@appwrite.io/pink-svelte';
+    import {
+        Alert,
+        Card,
+        Empty as PinkEmpty,
+        Icon,
+        Layout,
+        Table,
+        Typography
+    } from '@appwrite.io/pink-svelte';
     import { page } from '$app/state';
+    import { Link } from '$lib/elements';
 
     export let message: Models.Message & { data: Record<string, unknown> };
     export let selectedTargetsById: Record<string, Models.Target>;
@@ -207,17 +216,17 @@
             {:else if isDraft}
                 <Empty on:click={() => (showTargets = true)}>Add a target</Empty>
             {:else if !sum && !hasDeletedUsers}
-                <EmptySearch hidePagination>
-                    <div class="u-text-center">
-                        No targets have been selected.
-                        <p>
-                            Need a hand? Check out our <Button
-                                href="https://appwrite.io/docs/products/messaging/targets">
-                                documentation</Button
+                <Card.Base padding="none">
+                    <PinkEmpty type="secondary" title="No targets were selected">
+                        <svelte:fragment slot="description">
+                            Need a hand? Check out our <Link
+                                variant="muted"
+                                href="https://appwrite.io/docs/products/messaging/targets"
+                                external>documentation</Link
                             >.
-                        </p>
-                    </div>
-                </EmptySearch>
+                        </svelte:fragment>
+                    </PinkEmpty>
+                </Card.Base>
             {/if}
         </svelte:fragment>
         <svelte:fragment slot="actions">
