@@ -2,23 +2,18 @@
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
-    import { plansInfo } from '$lib/stores/billing';
-    import { abbreviateNumber, formatCurrency, isWithinSafeRange } from '$lib/helpers/numbers';
-    import { BillingPlan } from '$lib/constants';
     import { Table, Typography } from '@appwrite.io/pink-svelte';
-    import type { Models } from '@appwrite.io/console';
+    import { BillingPlanGroup, type Models } from '@appwrite.io/console';
+    import { abbreviateNumber, formatCurrency, isWithinSafeRange } from '$lib/helpers/numbers';
 
     export let show = false;
     export let org: Models.Organization;
-
-    let plan: Models.BillingPlan;
-    $: plan = $plansInfo?.get(org.billingPlan);
 
     $: nextDate = org?.name
         ? new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1).toString()
         : org?.billingNextInvoiceDate;
 
-    $: isFree = org.billingPlan === BillingPlan.FREE;
+    $: isFree = org.billingPlanDetails.group === BillingPlanGroup.Starter;
 
     // equal or above means unlimited!
     const getCorrectSeatsCountValue = (count: number): string | number => {
@@ -28,22 +23,22 @@
     };
 
     function getPlanLimit(key: string): number | false {
-        return plan[key] || false;
+        return org.billingPlanDetails[key] || false;
     }
 </script>
 
 <Modal bind:show title="Usage rates">
     {#if isFree}
         <Typography.Text>
-            Usage on the {$plansInfo?.get(BillingPlan.FREE).name} plan is limited for the following resources.
-            Next billing period: {toLocaleDate(nextDate)}.
+            Usage on the {org.billingPlanDetails.name} plan is limited for the following resources. Next
+            billing period: {toLocaleDate(nextDate)}.
         </Typography.Text>
-    {:else if org.billingPlan === BillingPlan.PRO}
+    {:else if org.billingPlanDetails.group === BillingPlanGroup.Pro}
         <Typography.Text>
             Usage on the Pro plan will be charged at the end of each billing period at the following
             rates. Next billing period: {toLocaleDate(nextDate)}.
         </Typography.Text>
-    {:else if org.billingPlan === BillingPlan.SCALE}
+    {:else if org.billingPlanDetails.group === BillingPlanGroup.Scale}
         <Typography.Text>
             Usage on the Scale plan will be charged at the end of each billing period at the
             following rates. Next billing period: {toLocaleDate(nextDate)}.
@@ -57,7 +52,7 @@
             <Table.Header.Cell column="limit" {root}>Limit</Table.Header.Cell>
             <Table.Header.Cell column="rate" {root}>Rate</Table.Header.Cell>
         </svelte:fragment>
-        {#each Object.values(plan.addons) as addon}
+        {#each Object.values(org.billingPlanDetails.addons) as addon}
             <Table.Row.Base {root}>
                 <Table.Cell column="resource" {root}>{addon.invoiceDesc}</Table.Cell>
                 <Table.Cell column="limit" {root}>
@@ -70,7 +65,7 @@
                 {/if}
             </Table.Row.Base>
         {/each}
-        {#each Object.entries(plan.usage) as [key, usage]}
+        {#each Object.entries(org.billingPlanDetails.usage) as [key, usage]}
             {@const limit = getPlanLimit(key)}
             {@const show = limit !== false}
             {#if show}

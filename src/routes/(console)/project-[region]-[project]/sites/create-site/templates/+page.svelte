@@ -139,7 +139,7 @@
                 hasLimit
                 gap="m"
                 bind:offset>
-                {#snippet children(paginatedItems: typeof data.templates)}
+                {#snippet children(paginatedItems)}
                     <Layout.Grid columns={3} columnsXS={2} columnsXXS={1}>
                         {#each paginatedItems as template (template.name)}
                             {@const templateFrameworks = template.frameworks.map((t) => t.name)}

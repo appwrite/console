@@ -5,14 +5,18 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { PlanComparisonBox, PlanSelection, SelectPaymentMethod } from '$lib/components/billing';
     import ValidateCreditModal from '$lib/components/billing/validateCreditModal.svelte';
-    import { BillingPlan, Dependencies } from '$lib/constants';
+    import { Dependencies } from '$lib/constants';
     import { Button, Form, InputTags, InputText } from '$lib/elements/forms';
     import { Wizard } from '$lib/layout';
-    import { billingIdToPlan, isPaymentAuthenticationRequired } from '$lib/stores/billing';
+    import {
+        billingIdToPlan,
+        getBasePlanFromGroup,
+        isPaymentAuthenticationRequired
+    } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { confirmPayment } from '$lib/stores/stripe';
-    import { ID, type Models } from '@appwrite.io/console';
+    import { BillingPlanGroup, ID, type Models } from '@appwrite.io/console';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { Divider, Fieldset, Icon, Layout, Link, Typography } from '@appwrite.io/pink-svelte';
     import { writable } from 'svelte/store';
@@ -64,7 +68,7 @@
         if (page.url.searchParams.has('plan')) {
             const plan = page.url.searchParams.get('plan');
             if (plan) {
-                selectedPlan = plan;
+                selectedPlan = billingIdToPlan(plan);
             }
         }
 
@@ -72,7 +76,7 @@
             data?.hasFreeOrganizations ||
             (page.url.searchParams.has('type') && page.url.searchParams.get('type') === 'createPro')
         ) {
-            selectedPlan = BillingPlan.PRO;
+            selectedPlan = getBasePlanFromGroup(BillingPlanGroup.Pro);
         }
 
         if (page.url.searchParams.has('type')) {
@@ -121,17 +125,17 @@
         try {
             let org: Models.Organization | Models.PaymentAuthentication;
 
-            if (selectedPlan === BillingPlan.FREE) {
+            if (selectedPlan.group === BillingPlanGroup.Starter) {
                 org = await sdk.forConsole.organizations.create({
                     organizationId: ID.unique(),
                     name: name,
-                    billingPlan: BillingPlan.FREE
+                    billingPlan: getBasePlanFromGroup(BillingPlanGroup.Starter).$id
                 });
             } else {
                 org = await sdk.forConsole.organizations.create({
                     organizationId: ID.unique(),
                     name,
-                    billingPlan: selectedPlan,
+                    billingPlan: selectedPlan.$id,
                     paymentMethodId,
                     couponId: selectedCoupon?.code,
                     invites: collaborators,
@@ -163,7 +167,7 @@
             }
 
             trackEvent(Submit.OrganizationCreate, {
-                plan: billingIdToPlan(selectedPlan)?.name,
+                plan: selectedPlan.name,
                 budget_cap_enabled: billingBudget !== null,
                 members_invited: collaborators?.length
             });
@@ -215,11 +219,12 @@
 
                     <PlanSelection
                         isNewOrg
-                        bind:billingPlan={selectedPlan}
+                        bind:selectedBillingPlan={selectedPlan}
                         anyOrgFree={data.hasFreeOrganizations} />
                 </Layout.Stack>
             </Fieldset>
-            {#if selectedPlan !== BillingPlan.FREE}
+
+            {#if selectedPlan.supportsCredits}
                 <Fieldset legend="Payment">
                     <Layout.Stack gap="s" alignItems="flex-start">
                         <SelectPaymentMethod
@@ -256,7 +261,7 @@
         </Layout.Stack>
     </Form>
     <svelte:fragment slot="aside">
-        {#if selectedPlan !== BillingPlan.FREE}
+        {#if selectedPlan.supportsCredits}
             <EstimatedTotalBox
                 billingPlan={selectedPlan}
                 {collaborators}

@@ -25,13 +25,11 @@ export const load: PageLoad = async ({ parent }) => {
         try {
             if (isCloud) {
                 const starterPlan = getBasePlanFromGroup(BillingPlanGroup.Starter);
-
                 const org = await sdk.forConsole.organizations.create({
                     organizationId: ID.unique(),
                     name: 'Personal projects',
                     billingPlan: starterPlan.$id
                 });
-
                 trackEvent(Submit.OrganizationCreate, {
                     plan: starterPlan?.name,
                     budget_cap_enabled: false,

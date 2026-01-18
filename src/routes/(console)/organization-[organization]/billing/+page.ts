@@ -3,7 +3,7 @@ import { isCloud } from '$lib/system';
 import { sdk } from '$lib/stores/sdk';
 import { redirect } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
-import { BillingPlan, DEFAULT_BILLING_PROJECTS_LIMIT, Dependencies } from '$lib/constants';
+import { DEFAULT_BILLING_PROJECTS_LIMIT, Dependencies } from '$lib/constants';
 
 import type { Models } from '@appwrite.io/console';
 import { getLimit, getPage, pageToOffset } from '$lib/helpers/load';
@@ -68,11 +68,7 @@ export const load: PageLoad = async ({ parent, depends, url, route }) => {
         // ignore error
     }
 
-    const areCreditsSupported = isCloud
-        ? (currentPlan?.supportsCredits ??
-          (organization.billingPlan !== BillingPlan.FREE &&
-              organization?.billingPlan !== BillingPlan.GITHUB_EDUCATION))
-        : false;
+    const areCreditsSupported = isCloud ? currentPlan?.supportsCredits : false;
 
     const [paymentMethods, addressList, billingAddress, availableCredit, billingPlanDowngrade] =
         await Promise.all([

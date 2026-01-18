@@ -1,6 +1,5 @@
 <script lang="ts">
     import { page } from '$app/state';
-    import { BillingPlan } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { organization } from '$lib/stores/organization';
     import { HeaderAlert } from '$lib/layout';
@@ -18,14 +17,14 @@
 </script>
 
 {#if $showPolicyAlert && isCloud && $organization?.$id && page.url.pathname.match(/\/databases\/database-[^/]+$/)}
-    {@const isFreePlan = $organization?.billingPlan === BillingPlan.FREE}
+    {@const areBackupsAvailable = $organization?.billingPlanDetails.backupsEnabled}
 
-    {@const subtitle = isFreePlan
+    {@const subtitle = !areBackupsAvailable
         ? 'Upgrade your plan to ensure your data stays safe and backed up'
         : 'Protect your data by quickly adding a backup policy'}
 
-    {@const ctaText = isFreePlan ? 'Upgrade plan' : 'Create policy'}
-    {@const ctaURL = isFreePlan ? $upgradeURL : `${page.url.pathname}/backups`}
+    {@const ctaText = !areBackupsAvailable ? 'Upgrade plan' : 'Create policy'}
+    {@const ctaURL = !areBackupsAvailable ? $upgradeURL : `${page.url.pathname}/backups`}
 
     <HeaderAlert type="warning" title="Your database has no backup policy">
         <svelte:fragment>{subtitle}</svelte:fragment>
@@ -35,7 +34,7 @@
                     href={ctaURL}
                     secondary
                     fullWidthMobile
-                    event={isFreePlan ? 'backup_banner_upgrade' : 'backup_banner_add'}>
+                    event={!areBackupsAvailable ? 'backup_banner_upgrade' : 'backup_banner_add'}>
                     <span class="text">{ctaText}</span>
                 </Button>
 
