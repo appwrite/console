@@ -88,12 +88,8 @@ export function planHasGroup(billingPlanId: string, group: BillingPlanGroup) {
 export function getBasePlanFromGroup(billingPlanGroup: BillingPlanGroup): Models.BillingPlan {
     const plansInfoStore = get(plansInfo);
 
-    // hot fix for now, starter doesn't have a group atm.
-    const correctBillingPlanGroup =
-        billingPlanGroup === BillingPlanGroup.Starter ? null : billingPlanGroup;
-
     const proPlans = Array.from(plansInfoStore.values()).filter(
-        (plan) => plan.group === correctBillingPlanGroup
+        (plan) => plan.group === billingPlanGroup
     );
 
     return proPlans.sort((a, b) => a.order - b.order)[0];
@@ -530,12 +526,14 @@ export function checkForMarkedForDeletion(org: Models.Organization) {
 }
 
 export async function checkForMissingPaymentMethod() {
+    const starterPlan = getBasePlanFromGroup(BillingPlanGroup.Starter);
+
     const orgs = await sdk.forConsole.organizations.list({
         queries: [
-            Query.notEqual('billingPlan', getBasePlanFromGroup(BillingPlanGroup.Starter).$id),
             Query.isNull('paymentMethodId'),
             Query.isNull('backupPaymentMethodId'),
-            Query.equal('platform', Platform.Appwrite)
+            Query.equal('platform', Platform.Appwrite),
+            Query.notEqual('billingPlan', starterPlan.$id)
         ]
     });
 
