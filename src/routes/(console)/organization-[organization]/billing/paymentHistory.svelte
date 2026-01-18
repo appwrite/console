@@ -28,6 +28,7 @@
         IconExternalLink,
         IconRefresh
     } from '@appwrite.io/pink-icons-svelte';
+    import { addNotification } from '$lib/stores/notifications';
 
     let limit = $state(5);
     let offset = $state(0);
@@ -44,13 +45,20 @@
 
     async function loadInvoices() {
         isLoadingInvoices = true;
-        invoiceList = await sdk.forConsole.billing.listInvoices(page.params.organization, [
-            Query.orderDesc('$createdAt'),
-            Query.limit(limit),
-            Query.offset(offset)
-        ]);
-
-        isLoadingInvoices = false;
+        try {
+            invoiceList = await sdk.forConsole.billing.listInvoices(page.params.organization, [
+                Query.orderDesc('$createdAt'),
+                Query.limit(limit),
+                Query.offset(offset)
+            ]);
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
+        } finally {
+            isLoadingInvoices = false;
+        }
     }
 
     function retryPayment(invoice: Invoice) {
