@@ -123,7 +123,7 @@ export function planHasGroup(
 export function getBasePlanFromGroup(billingPlanGroup: BillingPlanGroup): Models.BillingPlan {
     const plansInfoStore = getPlansInfoStore();
 
-    const proPlans = Array.from(plansInfoStore?.values()).filter(
+    const proPlans = Array.from(plansInfoStore.values()).filter(
         (plan) => plan.group === billingPlanGroup
     );
 
