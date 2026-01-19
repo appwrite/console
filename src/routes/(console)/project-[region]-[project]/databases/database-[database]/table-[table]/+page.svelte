@@ -172,7 +172,7 @@
                     direction="row"
                     alignItems="center"
                     justifyContent="flex-end"
-                    style="padding-right: 40px;">
+                    style="padding-right: {$isSmallViewport ? '0' : '40px'};">
                     <Layout.Stack
                         gap="s"
                         direction="row"

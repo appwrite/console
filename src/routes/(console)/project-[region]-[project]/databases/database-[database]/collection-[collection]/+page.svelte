@@ -8,7 +8,6 @@
     import type { PageProps } from './$types';
     import FilePicker from '$lib/components/filePicker.svelte';
     import { page } from '$app/state';
-    import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
     import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { isSmallViewport } from '$lib/stores/viewport';
@@ -22,7 +21,7 @@
     import { expandTabs, randomDataModalState } from '$database/store';
     import { EmptySheet, EmptySheetCards } from '$database/(entity)';
     import {
-        isCollectionsCsvImportInProgress,
+        isCollectionsJsonImportInProgress,
         noSqlDocument,
         collectionColumns
     } from '$database/collection-[collection]/store';
@@ -34,7 +33,7 @@
 
     const { data }: PageProps = $props();
 
-    let showImportCSV = $state(false);
+    let showImportJson = $state(false);
     let showCustomColumnsModal = $state(false);
 
     let columnsError: string = $state(null);
@@ -50,32 +49,34 @@
     }
 
     async function onSelect(file: Models.File, localFile = false) {
-        $isCollectionsCsvImportInProgress = true;
+        $isCollectionsJsonImportInProgress = true;
+
+        console.log(file, localFile);
 
         try {
-            await sdk
+            /*await sdk
                 .forProject(page.params.region, page.params.project)
-                .migrations.createCSVImport({
+                .migrations.createJSONImport({
                     bucketId: file.bucketId,
                     fileId: file.$id,
                     resourceId: `${page.params.database}:${page.params.collection}`,
                     internalFile: localFile
-                });
+                });*/
 
             addNotification({
                 type: 'success',
-                message: 'Documents import from csv has started'
+                message: 'Documents import from JSON has started'
             });
 
-            trackEvent(Submit.DatabaseImportCsv);
+            trackEvent(Submit.DatabaseImportJSON);
         } catch (e) {
-            trackError(e, Submit.DatabaseImportCsv);
+            trackError(e, Submit.DatabaseImportJSON);
             addNotification({
                 type: 'error',
                 message: e.message
             });
         } finally {
-            $isCollectionsCsvImportInProgress = false;
+            $isCollectionsJsonImportInProgress = false;
         }
     }
 </script>
@@ -95,6 +96,7 @@
                                 isCustomTable
                                 view={data.view}
                                 columns={collectionColumns}
+                                disableButton={data.documents.total === 0}
                                 onCustomOptionClick={() => (showCustomColumnsModal = true)} />
                         </div>
 
@@ -105,7 +107,7 @@
                     direction="row"
                     alignItems="center"
                     justifyContent="flex-end"
-                    style="padding-right: 40px;">
+                    style="padding-right: {$isSmallViewport ? '0' : '40px'};">
                     <Layout.Stack
                         gap="s"
                         direction="row"
@@ -113,9 +115,10 @@
                         justifyContent="flex-end">
                         <Button
                             secondary
-                            event={Click.DatabaseImportCsv}
-                            on:click={() => (showImportCSV = true)}>
-                            Import CSV
+                            disabled
+                            event={Click.DatabaseImportJson}
+                            on:click={() => (showImportJson = true)}>
+                            Import JSON
                         </Button>
                         {#if !$isSmallViewport}
                             <Button
@@ -211,15 +214,14 @@
     </div>
 {/key}
 
-{#if showImportCSV}
-    <!-- CSVs can be text/plain or text/csv sometimes! -->
+{#if showImportJson}
     <FilePicker
         {onSelect}
         showLocalFileBucket
-        localFileBucketTitle="Upload CSV file"
-        mimeTypeQuery="text/"
-        allowedExtension="csv"
-        bind:show={showImportCSV}
+        localFileBucketTitle="Upload JSON file"
+        mimeTypeQuery="application/json,.json"
+        allowedExtension="json"
+        bind:show={showImportJson}
         gridImageDimensions={{
             imageHeight: 32,
             imageWidth: 32

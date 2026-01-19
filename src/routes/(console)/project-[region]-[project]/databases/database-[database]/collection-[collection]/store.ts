@@ -9,7 +9,7 @@ import { createSparsePagedDataStore } from '@appwrite.io/pink-svelte';
 export const indexes = derived(page, ($page) => $page.data.collection.indexes as Models.Index[]);
 
 export const collectionColumns = writable<Column[]>([]);
-export const isCollectionsCsvImportInProgress = writable(false);
+export const isCollectionsJsonImportInProgress = writable(false);
 
 export const paginatedDocumentsLoading = writable(false);
 export const paginatedDocuments =
