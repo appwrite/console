@@ -89,7 +89,7 @@
     }
 
     function onGithubAuth() {
-        const success = buildOAuthSuccessUrl({
+        const successUrl = buildOAuthSuccessUrl({
             pageUrl: page.url,
             basePath: base,
             origin: window.location.origin,
@@ -98,7 +98,7 @@
 
         sdk.forConsole.account.createOAuth2Session({
             provider: OAuthProvider.Github,
-            success,
+            success: successUrl,
             failure: window.location.origin,
             scopes: ['read:user', 'user:email']
         });
