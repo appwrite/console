@@ -398,10 +398,21 @@
         return afterCursor.includes('"') || afterCursor.includes(',');
     }
 
+    function isPasteTransaction(tr: Transaction): boolean {
+        return tr.annotation(Transaction.userEvent)?.startsWith('input.paste') ?? false;
+    }
+
+    function isPasteUpdate(update: ViewUpdate): boolean {
+        return update.transactions.some(isPasteTransaction);
+    }
+
     // Auto-complete key with empty string: `key:` -> `key: "",` with cursor between quotes
     function maybeAutoCompleteKeyValue(update: ViewUpdate): boolean {
         const doc = update.state.doc;
         let did = false;
+
+        const isPaste = isPasteUpdate(update);
+        if (isPaste) return false;
 
         update.changes.iterChanges(
             (fromA: number, toA: number, fromB: number, toB: number, inserted: Text) => {
@@ -1003,9 +1014,7 @@
                 if (!update.docChanged || readonly) return;
 
                 // Check if this is manual typing (not paste, undo, or programmatic)
-                const isPaste = update.transactions.some((tr) =>
-                    tr.annotation(Transaction.userEvent)?.startsWith('input.paste')
-                );
+                const isPaste = isPasteUpdate(update);
                 const isManualInput = !isPaste && !isUpdatingFromEditor;
 
                 if (isNew && isManualInput && !hasSuggestionsBeenShown) {

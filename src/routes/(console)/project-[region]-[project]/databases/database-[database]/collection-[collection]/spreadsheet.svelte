@@ -38,6 +38,7 @@
     import { chunks } from '$lib/helpers/array';
     import { mapToQueryParams } from '$lib/components/filters/store';
     import { expandTabs, buildWildcardEntitiesQuery } from '$database/store';
+    import { setupUnsavedChangesGuard } from '$lib/helpers/unsavedChanges';
     import {
         collectionColumns,
         documentActivitySheet,
@@ -529,7 +530,25 @@
             : [];
 
     $: showSuggestions = $noSqlDocument.isNew && suggestedAttributes.length > 0;
+
+    const hasUnsavedChanges = () =>
+        Boolean(
+            $noSqlDocument?.show &&
+                ($noSqlDocument?.hasDataChanged ||
+                    ($noSqlDocument?.isNew && $noSqlDocument?.isDirty))
+        );
+
+    const { beforeUnload } = setupUnsavedChangesGuard({
+        hasUnsavedChanges,
+        onConfirmNavigate: () => noSqlDocument.reset({ show: false }),
+        shouldBlockNavigation: (navigation) => {
+            const nextPath = navigation.to?.url?.pathname;
+            return Boolean(nextPath && nextPath !== page.url.pathname);
+        }
+    });
 </script>
+
+<svelte:window on:beforeunload={beforeUnload} />
 
 <SpreadsheetContainer
     bind:this={spreadsheetContainer}
@@ -622,11 +641,16 @@
                         $noSqlDocument.isDirty && document.$id === $noSqlDocument.document?.$id
                             ? 'disabled'
                             : rowSelection}
+                    {@const isUnsavedRow =
+                        $noSqlDocument.isNew &&
+                        $noSqlDocument.isDirty &&
+                        document.$id === $noSqlDocument.document?.$id}
                     <button
                         onclick={() => {
+                            if (isUnsavedRow) return;
                             noSqlDocument.edit(document);
                         }}
-                        style:cursor="pointer">
+                        style:cursor={isUnsavedRow ? 'default' : 'pointer'}>
                         <Spreadsheet.Row.Base
                             {root}
                             {index}
@@ -645,25 +669,33 @@
                                             time={document[columnId]}
                                             canShowPopover={canShowDatetimePopover} />
                                     {:else if columnId === 'actions'}
-                                        <SpreadsheetOptions
-                                            type="row"
-                                            onSelect={(option) => {
-                                                onSelectSheetOption(option, document);
-                                            }}
-                                            onVisibilityChanged={(visible) => {
-                                                canShowDatetimePopover = !visible;
-                                            }}>
-                                            {#snippet children(toggle)}
-                                                <Button.Button
-                                                    icon
-                                                    variant="extra-compact"
-                                                    on:click={toggle}>
-                                                    <Icon
-                                                        icon={IconDotsHorizontal}
-                                                        color="--fgcolor-neutral-primary" />
-                                                </Button.Button>
-                                            {/snippet}
-                                        </SpreadsheetOptions>
+                                        {#if isUnsavedRow}
+                                            <Button.Button icon variant="extra-compact" disabled>
+                                                <Icon
+                                                    icon={IconDotsHorizontal}
+                                                    color="--fgcolor-neutral-primary" />
+                                            </Button.Button>
+                                        {:else}
+                                            <SpreadsheetOptions
+                                                type="row"
+                                                onSelect={(option) => {
+                                                    onSelectSheetOption(option, document);
+                                                }}
+                                                onVisibilityChanged={(visible) => {
+                                                    canShowDatetimePopover = !visible;
+                                                }}>
+                                                {#snippet children(toggle)}
+                                                    <Button.Button
+                                                        icon
+                                                        variant="extra-compact"
+                                                        on:click={toggle}>
+                                                        <Icon
+                                                            icon={IconDotsHorizontal}
+                                                            color="--fgcolor-neutral-primary" />
+                                                    </Button.Button>
+                                                {/snippet}
+                                            </SpreadsheetOptions>
+                                        {/if}
                                     {:else}
                                         {@const value = document[columnId]}
                                         {#if value}
@@ -753,7 +785,14 @@
             showHeaderActions={!$isSmallViewport}
             {showSuggestions}
             {suggestedAttributes}
-            onCancel={() => noSqlDocument.reset()}
+            onCancel={() => {
+                const firstDocument = $documents?.documents?.[0];
+                if (firstDocument) {
+                    noSqlDocument.edit(firstDocument);
+                } else {
+                    noSqlDocument.reset({ show: false });
+                }
+            }}
             onSave={async (document) => await createOrUpdateDocument(document)}
             onChange={(_, hasDataChanged) => noSqlDocument.update({ hasDataChanged })} />
     {/snippet}

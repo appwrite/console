@@ -94,6 +94,8 @@
 
     onMount(async () => {
         if (spreadsheetContainer) {
+            requestAnimationFrame(updateOverlayHeight);
+
             resizeObserver = new ResizeObserver(debouncedUpdateOverlayHeight);
             resizeObserver.observe(spreadsheetContainer);
 
