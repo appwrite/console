@@ -533,9 +533,7 @@
 
     const hasUnsavedChanges = () =>
         Boolean(
-            $noSqlDocument?.show &&
-                ($noSqlDocument?.hasDataChanged ||
-                    ($noSqlDocument?.isNew && $noSqlDocument?.isDirty))
+            $noSqlDocument?.hasDataChanged || ($noSqlDocument?.isNew && $noSqlDocument?.isDirty)
         );
 
     const { beforeUnload } = setupUnsavedChangesGuard({
