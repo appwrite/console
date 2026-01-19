@@ -23,7 +23,7 @@
                     <Layout.Stack direction="row" inline gap="xxxs" style="height: fit-content">
                         <Badge content="⌘" variant="secondary" size="xs" />
 
-                        <Badge content="K" variant="secondary" size="xs" />
+                        <Badge content="A" variant="secondary" size="xs" />
                     </Layout.Stack>
 
                     for suggestions

@@ -33,7 +33,7 @@
     } from '@codemirror/language';
     import { highlightSelectionMatches } from '@codemirror/search';
     import { closeBrackets } from '@codemirror/autocomplete';
-    import { type Diagnostic, linter } from '@codemirror/lint';
+    import { forEachDiagnostic, type Diagnostic, linter } from '@codemirror/lint';
     import {
         EditorState,
         EditorSelection,
@@ -57,6 +57,7 @@
         createReadOnlyLineField,
         createReadOnlyRangesFilter,
         createNestedKeyPlugin,
+        createDuplicateKeyLinter,
         createSystemFieldStylePlugin
     } from './extensions';
     import {
@@ -64,6 +65,7 @@
         DEBOUNCE_DELAY,
         LINTER_DELAY,
         AUTOSAVE_DELAY,
+        SUGGESTIONS_HIDE_DELAY,
         INDENT_REGEX,
         SCALAR_VALUE_REGEX,
         TRAILING_COMMA_REGEX,
@@ -116,9 +118,11 @@
 
     let editorView: EditorView | null = null;
     let errorMessage = $state<string | null>(null);
+    let warningMessage = $state<string | null>(null);
     let changeTimer: ReturnType<typeof setTimeout> | null = null; // debounce timer for parse + onChange
     let autoSaveTimer: ReturnType<typeof setTimeout> | null = null; // debounce timer for auto-save
     let tooltipTimer: ReturnType<typeof setTimeout> | null = null; // timer for tooltip message reset
+    let suggestionsHideTimer: ReturnType<typeof setTimeout> | null = null; // timer to auto-hide suggestions
     let pendingCanonicalize = false; // set when a full-document replace (paste-all) occurs
     let lastExpectedContent = ''; // track latest serialized data to avoid spurious rewrites
     let lastDocId: string | null = null; // track current document identity for history reset
@@ -128,6 +132,7 @@
 
     let hasUserContent = $state(false);
     let hasStartedEditing = $state(false);
+    let hasSuggestionsBeenShown = $state(false); // Track if suggestions were already shown for this document
 
     const wrapCompartment = new Compartment();
     const readOnlyCompartment = new Compartment();
@@ -373,6 +378,62 @@
             });
             did = true;
         });
+        return did;
+    }
+
+    // Check if line is a valid key for auto-completion
+    function isValidKeyForAutoComplete(lineText: string, cursorOffset: number): boolean {
+        // skip system fields (starting with $)
+        if (lineText.trimStart().startsWith('$')) return false;
+
+        // pattern: key name followed by colon at end
+        const beforeCursor = lineText.slice(0, cursorOffset);
+        const match = /([A-Za-z_$][A-Za-z0-9_$]*)\s*:\s*$/.exec(beforeCursor);
+        return match !== null;
+    }
+
+    // Check if line already has completion artifacts
+    function lineHasCompletion(lineText: string, cursorOffset: number): boolean {
+        const afterCursor = lineText.slice(cursorOffset);
+        return afterCursor.includes('"') || afterCursor.includes(',');
+    }
+
+    // Auto-complete key with empty string: `key:` -> `key: "",` with cursor between quotes
+    function maybeAutoCompleteKeyValue(update: ViewUpdate): boolean {
+        const doc = update.state.doc;
+        let did = false;
+
+        update.changes.iterChanges(
+            (fromA: number, toA: number, fromB: number, toB: number, inserted: Text) => {
+                if (did) return;
+
+                // Only trigger on insertion (not deletion)
+                if (toA >= fromA && toB <= fromB) return;
+
+                // Check if `:` was just typed
+                const insertedText = inserted.toString();
+                if (!insertedText.endsWith(':')) return;
+
+                const line = doc.lineAt(toB);
+                const lineText = line.text;
+                const cursorOffset = toB - line.from;
+
+                // Validate line is suitable for auto-completion
+                if (!isValidKeyForAutoComplete(lineText, cursorOffset)) return;
+                if (lineHasCompletion(lineText, cursorOffset)) return;
+
+                // Insert space, empty quotes, and comma
+                const replacement = ' "",';
+                const cursorPos = toB + 2; // Position cursor between the quotes
+
+                update.view.dispatch({
+                    changes: { from: toB, to: toB, insert: replacement },
+                    selection: EditorSelection.cursor(cursorPos),
+                    userEvent: 'input'
+                });
+                did = true;
+            }
+        );
         return did;
     }
 
@@ -734,6 +795,25 @@
         return keys.some((key) => !systemKeys.has(key));
     }
 
+    function getLintWarningSummary(state: EditorState): {
+        message: string | null;
+        hasWarning: boolean;
+    } {
+        let message: string | null = null;
+        let count = 0;
+        forEachDiagnostic(state, (diagnostic) => {
+            if (diagnostic.severity === 'warning') {
+                count += 1;
+                if (!message) {
+                    message = diagnostic.message;
+                }
+            }
+        });
+        if (count === 0) return { message: null, hasWarning: false };
+        if (count === 1) return { message, hasWarning: true };
+        return { message: 'Duplicate keys detected', hasWarning: true };
+    }
+
     const baseJson5Linter = json5ParseLinter();
 
     // JSON5 linter using the parse cache; preserves errorInPlace behavior.
@@ -790,11 +870,21 @@
 
         // Hide the suggestions bar after applying
         hasStartedEditing = false;
+        hasSuggestionsBeenShown = true;
+
+        // Clear the auto-hide timer
+        if (suggestionsHideTimer) {
+            clearTimeout(suggestionsHideTimer);
+            suggestionsHideTimer = null;
+        }
     }
 
     // Handle save logic - called from both button and keyboard shortcut
     async function handleSave(): Promise<void> {
         if (!hasDataChanged) return;
+        const parseCache = editorView?.state.field(json5ParseCache, false);
+        if (parseCache?.err || errorMessage) return;
+        if (editorView && getLintWarningSummary(editorView.state).hasWarning) return;
 
         isSaving = true;
 
@@ -838,6 +928,7 @@
             ),
             readOnlyLineField,
             createNestedKeyPlugin(),
+            createDuplicateKeyLinter({ delay: LINTER_DELAY }),
             createSystemFieldStylePlugin(() => isNew && !hasUserContent),
             highlightSelectionMatches(),
             // Clear selection after fold/unfold to prevent split highlighting
@@ -855,7 +946,7 @@
             keymap.of(
                 createEditorKeymaps(insertNewlineKeepIndent, ctrlSave ? handleSave : undefined)
             ),
-            // Add Cmd+K for applying suggestions
+            // Add Cmd+A for applying suggestions and Esc to hide
             keymap.of([
                 {
                     key: 'Mod-=',
@@ -873,11 +964,26 @@
                     run: foldAll
                 },
                 {
-                    key: 'Mod-k',
+                    key: 'Mod-a',
                     preventDefault: true,
                     run: () => {
                         if (showSuggestions && hasStartedEditing) {
                             applySuggestedAttributes();
+                            return true;
+                        }
+                        return false;
+                    }
+                },
+                {
+                    key: 'Escape',
+                    run: () => {
+                        if (showSuggestions && hasStartedEditing) {
+                            hasStartedEditing = false;
+                            hasSuggestionsBeenShown = true;
+                            if (suggestionsHideTimer) {
+                                clearTimeout(suggestionsHideTimer);
+                                suggestionsHideTimer = null;
+                            }
                             return true;
                         }
                         return false;
@@ -890,10 +996,32 @@
             customTheme,
             wrapCompartment.of(wrapLines ? EditorView.lineWrapping : []),
             EditorView.updateListener.of((update) => {
+                if (update.docChanged || update.transactions.some((tr) => tr.effects.length > 0)) {
+                    const summary = getLintWarningSummary(update.state);
+                    warningMessage = summary.message;
+                }
                 if (!update.docChanged || readonly) return;
 
-                if (isNew && !isUpdatingFromEditor) {
+                // Check if this is manual typing (not paste, undo, or programmatic)
+                const isPaste = update.transactions.some((tr) =>
+                    tr.annotation(Transaction.userEvent)?.startsWith('input.paste')
+                );
+                const isManualInput = !isPaste && !isUpdatingFromEditor;
+
+                if (isNew && isManualInput && !hasSuggestionsBeenShown) {
                     hasStartedEditing = true;
+
+                    if (showSuggestions) {
+                        if (suggestionsHideTimer) {
+                            clearTimeout(suggestionsHideTimer);
+                        }
+
+                        suggestionsHideTimer = setTimeout(() => {
+                            hasStartedEditing = false;
+                            hasSuggestionsBeenShown = true;
+                            suggestionsHideTimer = null;
+                        }, SUGGESTIONS_HIDE_DELAY);
+                    }
 
                     const parseCache = update.state.field(json5ParseCache, false);
                     if (!parseCache?.err && parseCache?.obj !== undefined) {
@@ -901,7 +1029,12 @@
                     }
                 }
 
-                // First, expand `: {}` / `: []` patterns when they appear
+                // First, auto-complete `key:` to `key: "",`
+                if (!isUpdatingFromEditor && maybeAutoCompleteKeyValue(update)) {
+                    return;
+                }
+
+                // Then, expand `: {}` / `: []` patterns when they appear
                 if (!isUpdatingFromEditor && maybeExpandEmptyLiteral(update)) {
                     return;
                 }
@@ -962,7 +1095,17 @@
 
                         // Set new auto-save timer
                         autoSaveTimer = setTimeout(() => {
-                            // handleSave();
+                            const parseCache = editorView?.state.field(json5ParseCache, false);
+                            if (parseCache?.err || errorMessage) {
+                                autoSaveTimer = null;
+                                return;
+                            }
+                            if (editorView && getLintWarningSummary(editorView.state).hasWarning) {
+                                autoSaveTimer = null;
+                                return;
+                            }
+
+                            handleSave();
                             autoSaveTimer = null;
                         }, AUTOSAVE_DELAY);
                     }
@@ -995,6 +1138,10 @@
             clearTimeout(tooltipTimer);
             tooltipTimer = null;
         }
+        if (suggestionsHideTimer) {
+            clearTimeout(suggestionsHideTimer);
+            suggestionsHideTimer = null;
+        }
         lastSerializedData = null;
         lastSerializedText = '';
         editorView?.destroy();
@@ -1008,6 +1155,7 @@
             generatedId = ID.unique();
             hasStartedEditing = false; // Reset editing flag for new document
             hasUserContent = false;
+            hasSuggestionsBeenShown = false; // Reset suggestions shown flag for new document
         }
         wasNew = isNew;
     });
@@ -1023,6 +1171,7 @@
             lastSerializedData = null;
             lastSerializedText = '';
             hasUserContent = false;
+            hasSuggestionsBeenShown = false; // Reset suggestions shown flag when switching documents
 
             // Capture original data snapshot when switching documents
             originalData = $state.snapshot(data);
@@ -1198,8 +1347,10 @@
     {/if}
 </div>
 
-{#if errorMessage && !loading}
-    <ErrorSonner error={errorMessage} />
+{#if !loading && (errorMessage || warningMessage)}
+    <ErrorSonner
+        message={errorMessage ?? warningMessage}
+        severity={errorMessage ? 'error' : 'warning'} />
 {/if}
 
 <SavingSonner state={saveSonnerState} />

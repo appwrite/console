@@ -3,13 +3,17 @@
     import { IconExclamationCircle } from '@appwrite.io/pink-icons-svelte';
 
     let {
-        error
+        message,
+        severity = 'error'
     }: {
-        error: string;
+        message: string;
+        severity?: 'error' | 'warning';
     } = $props();
+
+    const iconColor = $derived(severity === 'warning' ? '--fgcolor-warning' : '--fgcolor-error');
 </script>
 
-{#if error}
+{#if message}
     <div class="floating-action-bar">
         <FloatingActionBar>
             <svelte:fragment slot="start">
@@ -19,10 +23,10 @@
                     direction="row"
                     alignItems="center"
                     style="width: max-content;">
-                    <Icon icon={IconExclamationCircle} color="--fgcolor-error" />
+                    <Icon icon={IconExclamationCircle} color={iconColor} />
 
-                    <div class="error-message">
-                        {error}
+                    <div class="sonner-message">
+                        {message}
                     </div>
                 </Layout.Stack>
             </svelte:fragment>
@@ -48,7 +52,7 @@
         }
     }
 
-    .error-message {
+    .sonner-message {
         flex: 1;
         font-size: 13px;
         overflow: hidden;
