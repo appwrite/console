@@ -5,7 +5,7 @@ type BuildOAuthSuccessUrlParams = {
     isStudio: boolean;
 };
 
-const STUDIO_PROMPT_KEY = 'studioPrompt';
+export const STUDIO_PROMPT_KEY = 'studioPrompt';
 const ABSOLUTE_URL = /^[a-zA-Z][a-zA-Z\d+.-]*:/;
 
 function isAbsoluteUrl(value: string): boolean {
