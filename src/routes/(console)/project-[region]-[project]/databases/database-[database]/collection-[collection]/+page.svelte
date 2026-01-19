@@ -37,6 +37,7 @@
     let showCustomColumnsModal = $state(false);
 
     let columnsError: string = $state(null);
+    let spreadsheet: SpreadSheet | null = $state(null);
     let columnDisplayNameInput: ColumnDisplayNameInput | null = $state(null);
 
     function buildInitDoc() {
@@ -170,7 +171,7 @@
         {#if data.documents.total || $noSqlDocument.isDirty}
             <Divider />
 
-            <SpreadSheet {data} />
+        <SpreadSheet bind:this={spreadsheet} {data} />
         {:else if $hasPageQueries}
             <EmptySheet
                 mode="records-filtered"
@@ -247,6 +248,7 @@
         onSuccess={() => {
             columnsError = null;
             showCustomColumnsModal = false;
+            spreadsheet?.refreshColumns?.();
         }}
         onFailure={(error) => {
             columnsError = error.message;

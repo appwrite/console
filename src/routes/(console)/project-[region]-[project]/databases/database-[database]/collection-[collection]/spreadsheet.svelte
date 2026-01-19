@@ -157,6 +157,10 @@
         }
     });
 
+    export function refreshColumns() {
+        makeCollectionColumns();
+    }
+
     function makeCollectionColumns() {
         const selectedColumnsToHide = preferences.getCustomTableColumns(collectionId);
 
