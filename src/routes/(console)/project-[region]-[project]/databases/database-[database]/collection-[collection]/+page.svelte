@@ -171,7 +171,7 @@
         {#if data.documents.total || $noSqlDocument.isDirty}
             <Divider />
 
-        <SpreadSheet bind:this={spreadsheet} {data} />
+            <SpreadSheet bind:this={spreadsheet} {data} />
         {:else if $hasPageQueries}
             <EmptySheet
                 mode="records-filtered"

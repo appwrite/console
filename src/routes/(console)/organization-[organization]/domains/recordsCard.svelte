@@ -39,7 +39,7 @@
             if (verified) {
                 addNotification({
                     type: 'success',
-                    message: 'Domain verified'
+                    message: 'Domain verified successfully'
                 });
 
                 await goto(routeBase);
@@ -76,7 +76,7 @@
                 {#if verified === false}
                     <Badge
                         variant="secondary"
-                        type="warning"
+                        type="error"
                         size="xs"
                         content="Verification failed" />
                 {:else if verified === true}
@@ -84,8 +84,8 @@
                 {/if}
             </Layout.Stack>
             <Typography.Text variant="m-400">
-                Add the following nameservers on your DNS provider. Note that changes may take up to
-                48 hours to propagate fully.
+                Add the following nameservers on your DNS provider. Note that DNS changes may take
+                up to 48 hours to propagate fully.
             </Typography.Text>
         </Layout.Stack>
 
