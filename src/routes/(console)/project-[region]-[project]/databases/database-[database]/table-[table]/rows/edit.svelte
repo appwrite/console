@@ -8,7 +8,7 @@
     import type { Models } from '@appwrite.io/console';
     import { Dependencies } from '$lib/constants';
     import { invalidate } from '$app/navigation';
-    import { table, type Columns, PROHIBITED_ROW_KEYS } from '../store';
+    import { type Columns, PROHIBITED_ROW_KEYS } from '../store';
     import ColumnItem from './columns/columnItem.svelte';
     import {
         buildWildcardColumnsQuery,
@@ -18,18 +18,18 @@
     } from './store';
     import { Layout, Skeleton } from '@appwrite.io/pink-svelte';
     import { deepClone } from '$lib/helpers/object';
+    import { type Entity, toRelationalField } from '$database/(entity)';
     import deepEqual from 'deep-equal';
     import { onMount } from 'svelte';
 
-    const tableId = page.params.table;
-    const databaseId = page.params.database;
-
     let {
+        table,
         row = $bindable(),
         rowId = $bindable(null),
         autoFocus = true,
         disabled = $bindable(true)
     }: {
+        table: Entity;
         row?: Models.Row | null;
         rowId?: string | null;
         autoFocus?: boolean;
@@ -65,10 +65,10 @@
 
         try {
             row = await sdk.forProject(page.params.region, page.params.project).tablesDB.getRow({
-                databaseId,
-                tableId,
+                databaseId: table.databaseId,
+                tableId: table.$id,
                 rowId,
-                queries: buildWildcardColumnsQuery($table)
+                queries: buildWildcardColumnsQuery(table)
             });
         } catch (error) {
             addNotification({
@@ -143,8 +143,8 @@
 
         try {
             await sdk.forProject(page.params.region, page.params.project).tablesDB.updateRow({
-                databaseId,
-                tableId,
+                databaseId: table.databaseId,
+                tableId: table.$id,
                 rowId: row.$id,
                 data: $work,
                 permissions: $work.$permissions
@@ -166,12 +166,12 @@
     }
 
     $effect(() => {
-        if (!work || !row || !$table?.columns?.length) {
+        if (!work || !row || !table?.fields?.length) {
             disabled = true;
             return;
         }
 
-        disabled = $table.columns.every((column) => compareColumns(column, $work, row));
+        disabled = table.fields.every((column: Columns) => compareColumns(column, $work, row));
     });
 
     function focusFirstInput() {
@@ -191,16 +191,16 @@
     <div style:margin-block="" style:margin-inline-end="2.25rem">
         <Skeleton variant="line" height={40} width="auto" />
     </div>
-{:else if $table.columns?.length && work}
+{:else if table.fields?.length && work}
     <div bind:this={columnFormWrapper}>
         <Layout.Stack direction="column" gap="xl">
-            {#each $table.columns as column}
+            {#each table.fields as column}
                 {@const label = column.key}
                 <ColumnItem
-                    {column}
                     {label}
                     editing
                     formValues={$work}
+                    column={toRelationalField(column)}
                     onUpdateFormValues={updateRowData} />
             {/each}
         </Layout.Stack>

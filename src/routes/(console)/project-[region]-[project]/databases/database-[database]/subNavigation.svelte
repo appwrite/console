@@ -1,10 +1,9 @@
 <script lang="ts">
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import type { PageData } from './$types';
     import { showSubNavigation } from '$lib/stores/layout';
     import { bannerSpacing } from '$lib/layout/headerAlert.svelte';
-    import { showCreateTable, databaseSubNavigationItems } from './store';
+    import { showCreateEntity, databaseSubNavigationItems, buildEntityRoute } from './store';
 
     import {
         Icon,
@@ -25,35 +24,45 @@
     import { isTabletViewport } from '$lib/stores/viewport';
     import { BottomSheet } from '$lib/components';
     import Button from '$lib/elements/forms/button.svelte';
-    import { type Models, Query } from '@appwrite.io/console';
-    import { sdk } from '$lib/stores/sdk';
+    import { Query } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { subNavigation } from '$lib/stores/database';
+    import {
+        type Entity,
+        type EntityList,
+        useDatabaseSdk,
+        useTerminology
+    } from '$database/(entity)';
+    import { resolveRoute } from '$lib/stores/navigation';
+    import { withPath } from '$lib/stores/navigation.js';
 
     const data = $derived(page.data) as PageData;
 
-    const region = $derived(page.params.region);
-    const project = $derived(page.params.project);
-    const tableId = $derived(page.params.table);
-    const databaseId = $derived(page.params.database);
+    // terminologies
+    const terminology = useTerminology(page);
+    const databaseSdk = useDatabaseSdk(page, terminology);
 
-    let openBottomSheet = $state(false);
+    const entityTypePlural = terminology.entity.lower.plural;
+    const entityTypeSingular = terminology.entity.lower.singular;
+
+    const entityId = $derived(page.params[entityTypeSingular]);
+
     let loading = $state(true);
+    let openBottomSheet = $state(false);
 
-    let tables = $state<Models.TableList>({
-        total: 0,
-        tables: []
-    });
+    let entities = $state<EntityList>({ total: 0, entities: [] });
 
-    const sortedTables = $derived.by(() =>
-        tables?.tables?.slice().sort((a, b) => a.name.localeCompare(b.name))
+    const sortedEntities = $derived.by(() =>
+        entities?.entities?.slice().sort((a, b) => a.name.localeCompare(b.name))
     );
 
-    const selectedTable = $derived.by(() =>
-        sortedTables?.find((table: Models.Table) => table.$id === tableId)
+    const selectedEntity = $derived.by(() =>
+        sortedEntities?.find((entity: Entity) => entity.$id === entityId)
     );
 
-    const isTablesScreen = $derived(page.route.id.endsWith('table-[table]'));
+    const isEntitiesScreen = $derived(
+        page.route.id.endsWith(`${entityTypeSingular}-[${entityTypeSingular}]`)
+    );
 
     const isMainDatabaseScreen = $derived(page.route.id.endsWith('database-[database]'));
 
@@ -61,12 +70,17 @@
     // 70.5px is the size of the container of the banner holder and not just the banner!
     // Needed because things vary a bit much on how different browsers treat bottom layouts.
     const bottomNavOffset = $derived($bannerSpacing ? '70.5px' : '0px');
-    const tableContentPadding = $derived($bannerSpacing ? '210px' : '140px');
+    const entityContentPadding = $derived($bannerSpacing ? '210px' : '140px');
 
-    async function loadTables() {
+    const databaseBaseRoute = resolveRoute(
+        '/(console)/project-[region]-[project]/databases/database-[database]',
+        page.params
+    );
+
+    async function loadEntities() {
         try {
-            tables = await sdk.forProject(region, project).tablesDB.listTables({
-                databaseId: databaseId,
+            entities = await databaseSdk.listEntities({
+                databaseId: page.params.database,
                 queries: [Query.orderDesc(''), Query.limit(100)]
             });
         } finally {
@@ -75,8 +89,8 @@
     }
 
     onMount(() => {
-        loadTables();
-        return subNavigation.subscribe(loadTables);
+        loadEntities();
+        return subNavigation.subscribe(loadEntities);
     });
 
     function onResize() {
@@ -92,14 +106,14 @@
     <Sidebar.Base state="open" resizable={false}>
         <section class="list-container" slot="top" style:width="100%">
             <a
-                class:is-selected={!isTablesScreen}
-                href={`${base}/project-${region}-${project}/databases/database-${databaseId}`}
+                href={databaseBaseRoute}
+                class:is-selected={!isEntitiesScreen}
                 class="database-name u-flex u-cross-center body-text-2 u-gap-8 is-not-mobile u-padding-block-8 u-padding-inline-start-4">
                 <Icon icon={IconDatabase} size="s" color="--fgcolor-neutral-weak" />
 
                 {data.database?.name}
             </a>
-            <div class="table-content" style:padding-bottom={tableContentPadding}>
+            <div class="entity-content" style:padding-bottom={entityContentPadding}>
                 {#if loading}
                     <ul class="drop-list u-margin-inline-start-8 u-margin-block-start-4">
                         {#each Array(2) as _}
@@ -113,13 +127,16 @@
                             </Layout.Stack>
                         {/each}
                     </ul>
-                {:else if tables?.total}
+                {:else if entities?.total}
                     <ul class="drop-list u-margin-inline-start-8 u-margin-block-start-4">
-                        {#each sortedTables as table, index}
-                            {@const href = `${base}/project-${region}-${project}/databases/database-${databaseId}/table-${table.$id}`}
-                            {@const isSelected = tableId === table.$id}
+                        {#each sortedEntities as entity, index}
                             {@const isFirst = index === 0}
-                            {@const isLast = index === sortedTables.length - 1}
+                            {@const isSelected = entityId === entity.$id}
+                            {@const isLast = index === sortedEntities.length - 1}
+                            {@const href = withPath(
+                                databaseBaseRoute,
+                                `/${entityTypeSingular}-${entity.$id}`
+                            )}
 
                             <Layout.Stack gap="s" direction="row" alignItems="center">
                                 <li
@@ -135,8 +152,8 @@
                                             color={isSelected
                                                 ? '--fgcolor-neutral-tertiary'
                                                 : '--fgcolor-neutral-weak'} />
-                                        <span class="text table-name" data-private
-                                            >{table.name}</span>
+                                        <span class="text entity-name" data-private
+                                            >{entity.name}</span>
                                     </a>
                                 </li>
                             </Layout.Stack>
@@ -153,7 +170,7 @@
                                 style:border-left="1px solid var(--border-neutral, #ededf0)"
                                 style:height="1rem">
                             </div>
-                            No tables yet
+                            No {entityTypePlural} yet
                         </Layout.Stack>
                     </div>
                 {/if}
@@ -166,10 +183,10 @@
                     <Button
                         compact
                         on:click={() => {
-                            $showCreateTable = true;
+                            $showCreateEntity = true;
                             $showSubNavigation = false;
                         }}>
-                        Create table
+                        Create {entityTypeSingular}
                     </Button>
                 </Layout.Stack>
             </div>
@@ -183,7 +200,7 @@
                     style="margin-inline-start: -1.25rem"
                     class="drop-list bottom-nav u-margin-block-start-4">
                     {#each databaseSubNavigationItems as action}
-                        {@const href = `${base}/project-${region}-${project}/databases/database-${databaseId}/${action.href}`}
+                        {@const href = withPath(databaseBaseRoute, `/${action.href}`)}
 
                         <Layout.Stack gap="s" direction="row" alignItems="center">
                             <li class="bottom-nav-item">
@@ -194,7 +211,7 @@
                                         size="s"
                                         icon={action.icon}
                                         color="--fgcolor-neutral-weak" />
-                                    <span class="text table-name">{action.title}</span>
+                                    <span class="text entity-name">{action.title}</span>
                                 </a>
                             </li>
                         </Layout.Stack>
@@ -208,9 +225,7 @@
         <div slot="left">
             <Layout.Stack direction="row" alignItems="center" gap="s">
                 <Icon icon={IconDatabase} size="s" color="--neutral-300" />
-                <Link.Anchor
-                    href={`${base}/project-${region}-${project}/databases/database-${databaseId}`}
-                    variant="quiet-muted">
+                <Link.Anchor href={databaseBaseRoute} variant="quiet-muted">
                     {data.database.name}
                 </Link.Anchor>
 
@@ -218,7 +233,7 @@
 
                 <Button text extraCompact on:click={() => (openBottomSheet = !openBottomSheet)}>
                     <Typography.Text variant="m-400">
-                        {selectedTable?.name}
+                        {selectedEntity?.name}
                     </Typography.Text>
                     <Icon icon={IconChevronDown} size="s" />
                 </Button>
@@ -231,22 +246,22 @@
         bind:isOpen={openBottomSheet}
         menu={{
             top: {
-                items: sortedTables.slice(0, 10).map((table) => {
+                items: sortedEntities.slice(0, 10).map((entity) => {
                     return {
-                        name: table.name,
+                        name: entity.name,
                         leadingIcon: IconTable,
-                        href: `${base}/project-${region}-${project}/databases/database-${databaseId}/table-${table.$id}`
+                        href: buildEntityRoute(page, entityTypeSingular, entity.$id)
                     };
                 })
             },
             bottom:
-                sortedTables.length > 10
+                sortedEntities.length > 10
                     ? {
                           items: [
                               {
-                                  name: 'All tables',
+                                  name: `All ${entityTypePlural}`,
                                   leadingIcon: IconTable,
-                                  href: `${base}/project-${region}-${project}/databases/database-${databaseId}`
+                                  href: databaseBaseRoute
                               }
                           ]
                       }
@@ -274,7 +289,7 @@
         }
     }
 
-    .table-content {
+    .entity-content {
         flex: 1;
         overflow-y: auto;
         overflow-x: hidden;
@@ -364,7 +379,7 @@
             }
         }
 
-        .table-name {
+        .entity-name {
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;

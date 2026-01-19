@@ -17,7 +17,7 @@
     import { SortButton } from '$lib/components';
     import { expandTabs, columnsOrder, columnsWidth, reorderItems } from '../table-[table]/store';
     import { preferences } from '$lib/stores/preferences';
-    import SpreadsheetContainer from '../table-[table]/layout/spreadsheet.svelte';
+    import { SpreadsheetContainer } from '$database/(entity)';
     import { onDestroy, onMount, tick } from 'svelte';
     import { sdk, realtime, type RealtimeResponse } from '$lib/stores/sdk';
     import { page } from '$app/state';

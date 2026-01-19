@@ -1,28 +1,37 @@
 <script lang="ts">
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Breadcrumbs } from '$lib/layout';
-    import { organization } from '$lib/stores/organization';
-    import { database } from './store';
+    import { resolveRoute } from '$lib/stores/navigation';
+    import { type Organization } from '$lib/stores/organization';
 
-    $: breadcrumbs = [
+    const params = $derived(page.params);
+    const project = $derived(page.data.project);
+    const database = $derived(page.data.database);
+    const organization = $derived(page.data.organization) as Organization;
+
+    const breadcrumbs = $derived([
         {
-            href: `${base}/organization-${$organization.$id}`,
-            title: $organization.name
+            href: resolveRoute('/(console)/organization-[organization]', {
+                organization: organization?.$id ?? project.teamId
+            }),
+            title: organization.name
         },
         {
-            href: `${base}/project-${page.params.region}-${page.params.project}`,
-            title: page.data.project.name
+            href: resolveRoute('/(console)/project-[region]-[project]', params),
+            title: project.name
         },
         {
-            href: `${base}/project-${page.params.region}-${page.params.project}/databases`,
+            href: resolveRoute('/(console)/project-[region]-[project]/databases', params),
             title: 'Databases'
         },
         {
-            href: `${base}/project-${page.params.region}-${page.params.project}/databases/database-${$database.$id}`,
-            title: $database.name
+            href: resolveRoute(
+                '/(console)/project-[region]-[project]/databases/database-[database]',
+                params
+            ),
+            title: database.name
         }
-    ];
+    ]);
 </script>
 
 <Breadcrumbs {breadcrumbs} />

@@ -1,23 +1,66 @@
 <script lang="ts">
+    import { page } from '$app/state';
+    import { sdk } from '$lib/stores/sdk';
     import { Container } from '$lib/layout';
-    import { table } from '../store';
-    import DangerZone from './dangerZone.svelte';
     import DisplayName from './displayName.svelte';
-    import UpdateName from './updateName.svelte';
-    import UpdatePermissions from './updatePermissions.svelte';
-    import UpdateSecurity from './updateSecurity.svelte';
-    import UpdateStatus from './updateStatus.svelte';
+    import {
+        DangerZone,
+        UpdateName,
+        UpdatePermissions,
+        UpdateSecurity,
+        UpdateStatus
+    } from '$database/(entity)';
+    import type { PageProps } from './$types';
+
+    /* served from parent layout */
+    const { data }: PageProps = $props();
+
+    const table = $derived(data.table);
+
+    const params = $derived.by(() => {
+        return {
+            name: table.name,
+            tableId: page.params.table,
+            databaseId: page.params.database
+        };
+    });
+
+    async function deleteTable() {
+        await sdk
+            .forProject(page.params.region, page.params.project)
+            .tablesDB.deleteTable({ ...params });
+    }
+
+    async function updateTable(
+        updates: Partial<{
+            name: string;
+            enabled: boolean;
+            permissions: string[];
+            rowSecurity: boolean;
+        }>
+    ) {
+        await sdk
+            .forProject(page.params.region, page.params.project)
+            .tablesDB.updateTable({ ...params, ...updates });
+    }
 </script>
 
 <div class="wide-screen-wrapper databases-spreadsheet">
     <Container expanded slotSpacing databasesScreen>
-        {#if $table}
-            <UpdateStatus />
-            <UpdateName />
-            <DisplayName />
-            <UpdatePermissions />
-            <UpdateSecurity />
-            <DangerZone />
-        {/if}
+        <UpdateStatus entity={table} onChangeStatus={(enabled) => updateTable({ enabled })} />
+
+        <UpdateName entity={table} onChangeName={(name) => updateTable({ name })} />
+
+        <DisplayName />
+
+        <UpdatePermissions
+            entity={table}
+            onChangePermissions={(permissions) => updateTable({ permissions })} />
+
+        <UpdateSecurity
+            entity={table}
+            onChangeSecurity={(rowSecurity) => updateTable({ rowSecurity })} />
+
+        <DangerZone entity={table} onDelete={deleteTable} />
     </Container>
 </div>

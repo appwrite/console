@@ -23,7 +23,6 @@
     import { type RealtimeResponse, realtime, sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import {
-        table,
         columnsOrder,
         databaseColumnSheetOptions,
         databaseRowSheetOptions,
@@ -36,16 +35,15 @@
         expandTabs,
         databaseRelatedRowSheetOptions,
         rowPermissionSheet,
-        isWaterfallFromFaker,
-        type Columns
+        type Columns,
+        isWaterfallFromFaker
     } from './store';
     import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import CreateColumn from './createColumn.svelte';
     import { CreateColumnPanel } from '$lib/commandCenter/panels';
-    import { database, showCreateTable } from '../store';
+    import { showCreateEntity } from '../store';
     import { project } from '../../../store';
     import { page } from '$app/state';
-    import { base } from '$app/paths';
     import { canWriteTables } from '$lib/stores/roles';
     import {
         IconChevronDown,
@@ -55,7 +53,7 @@
         IconPlus,
         IconPuzzle
     } from '@appwrite.io/pink-icons-svelte';
-    import SideSheet from './layout/sidesheet.svelte';
+    import { type Field, SideSheet, useTerminology } from '$database/(entity)';
     import EditRow from './rows/edit.svelte';
     import EditRelatedRow from './rows/editRelated.svelte';
     import EditColumn from './columns/edit.svelte';
@@ -63,20 +61,25 @@
     import EditRowPermissions from './rows/editPermissions.svelte';
     import { Dialog, Layout, Typography, Selector, Icon } from '@appwrite.io/pink-svelte';
     import { Button, Seekbar } from '$lib/elements/forms';
-    import { generateFakeRecords, generateColumns } from '$lib/helpers/faker';
+    import { generateFakeRecords, generateFields } from '$lib/helpers/faker';
     import { addNotification } from '$lib/stores/notifications';
-    import CreateIndex from './indexes/createIndex.svelte';
     import { hash } from '$lib/helpers/string';
     import { preferences } from '$lib/stores/preferences';
     import { buildRowUrl, isRelationship } from './rows/store';
     import { chunks } from '$lib/helpers/array';
     import { Submit, trackEvent } from '$lib/actions/analytics';
 
+    import type { LayoutData } from './$types';
+
+    import { CreateIndex } from '$database/(entity)';
+    import { resolveRoute, withPath } from '$lib/stores/navigation';
     import { isTabletViewport } from '$lib/stores/viewport';
     import { showColumnsSuggestionsModal } from '../(suggestions)';
     import IndexesSuggestions from '../(suggestions)/indexes.svelte';
     import ColumnsSuggestions from '../(suggestions)/columns.svelte';
     import { setupColumnObserver } from '../(observer)/columnObserver';
+
+    export let data: LayoutData;
 
     let editRow: EditRow;
     let editRelatedRow: EditRelatedRow;
@@ -90,6 +93,9 @@
     let createColumn: CreateColumn;
     let selectedOption: Option['name'] = 'String';
     let createMoreColumns = false;
+
+    /* terminology */
+    const { type: databaseType } = useTerminology(page);
 
     let columnCreationHandler: ((response: RealtimeResponse) => void) | null = null;
 
@@ -120,6 +126,12 @@
         };
     };
 
+    $: table = data.table;
+    $: basePath = resolveRoute(
+        '/(console)/project-[region]-[project]/databases/database-[database]/table-[table]',
+        page.params
+    );
+
     onMount(() => {
         expandTabs.set(preferences.getKey('tableHeaderExpanded', true));
 
@@ -139,8 +151,8 @@
     $: $registerCommands([
         {
             label: 'Create row',
-            keys: page.url.pathname.endsWith($table.$id) ? ['t'] : ['t', 'd'],
-            callback: () => ($showCreateTable = true),
+            keys: page.url.pathname.endsWith(table?.$id) ? ['t'] : ['t', 'd'],
+            callback: () => ($showCreateEntity = true),
             icon: IconPlus,
             group: 'rows'
         },
@@ -158,20 +170,16 @@
             label: 'Go to rows',
             keys: ['g', 'd'],
             callback() {
-                goto(
-                    `${base}/project-${page.params.region}-${page.params.project}/databases/database-${$database?.$id}/table-${$table?.$id}`
-                );
+                goto(basePath);
             },
-            disabled: page.url.pathname.endsWith($table.$id),
+            disabled: page.url.pathname.endsWith(table?.$id),
             group: 'tables'
         },
         {
             label: 'Go to columns',
             keys: ['g', 'a'],
             callback() {
-                goto(
-                    `${base}/project-${page.params.region}-${page.params.project}/databases/database-${$database?.$id}/table-${$table?.$id}/columns`
-                );
+                goto(withPath(basePath, '/columns'));
             },
             disabled: page.url.pathname.endsWith('columns'),
             group: 'tables'
@@ -180,9 +188,7 @@
             label: 'Go to indexes',
             keys: ['g', 'i'],
             callback() {
-                goto(
-                    `${base}/project-${page.params.region}-${page.params.project}/databases/database-${$database?.$id}/table-${$table?.$id}/indexes`
-                );
+                goto(withPath(basePath, '/indexes'));
             },
             disabled: page.url.pathname.endsWith('indexes'),
             group: 'tables'
@@ -191,9 +197,7 @@
             label: 'Go to activity',
             keys: ['g', 'c'],
             callback() {
-                goto(
-                    `${base}/project-${page.params.region}-${page.params.project}/databases/database-${$database?.$id}/table-${$table?.$id}/activity`
-                );
+                goto(withPath(basePath, '/activity'));
             },
             disabled: page.url.pathname.endsWith('activity'),
             group: 'tables'
@@ -202,9 +206,7 @@
             label: 'Go to usage',
             keys: ['g', 'u'],
             callback() {
-                goto(
-                    `${base}/project-${page.params.region}-${page.params.project}/databases/database-${$database?.$id}/table-${$table?.$id}/usage`
-                );
+                goto(withPath(basePath, '/usage'));
             },
             disabled: page.url.pathname.endsWith('usage'),
             group: 'tables'
@@ -213,19 +215,15 @@
             label: 'Go to settings',
             keys: ['g', 's'],
             callback() {
-                goto(
-                    `${base}/project-${page.params.region}-${page.params.project}/databases/database-${$database?.$id}/table-${$table?.$id}/settings`
-                );
+                goto(withPath(basePath, '/settings'));
             },
             disabled: page.url.pathname.endsWith('settings') || !$canWriteTables,
             group: 'tables'
         },
         {
             label: 'Display Name',
-            async callback() {
-                await goto(
-                    `${base}/project-${$project.region}-${$project.$id}/databases/database-${$database.$id}/table-${$table.$id}/settings#display-name`
-                );
+            callback() {
+                goto(withPath(basePath, '/settings#display-name'));
             },
             group: 'tables',
             disabled:
@@ -236,10 +234,8 @@
         },
         {
             label: 'Permissions',
-            async callback() {
-                await goto(
-                    `${base}/project-${$project.region}-${$project.$id}/databases/database-${$database.$id}/table-${$table.$id}/settings#permissions`
-                );
+            callback() {
+                goto(withPath(basePath, '/settings#permissions'));
             },
             group: 'tables',
             disabled:
@@ -250,10 +246,8 @@
         },
         {
             label: 'Row security',
-            async callback() {
-                await goto(
-                    `${base}/project-${$project.region}-${$project.$id}/databases/database-${$database.$id}/table-${$table.$id}/settings#row-security`
-                );
+            callback() {
+                goto(withPath(basePath, '/settings#row-security'));
             },
             group: 'tables',
             disabled:
@@ -287,9 +281,12 @@
         $spreadsheetLoading = true;
         $randomDataModalState.show = false;
 
-        let columns = page.data.table.columns as Columns[];
-        const hasAnyRelationships = columns.some((column) => isRelationship(column));
-        const filteredColumns = columns.filter((col) => col.type !== 'relationship');
+        let columns: Field[] = [];
+        const currentFields = table.fields;
+        const hasAnyRelationships = currentFields.some((field: Field) => isRelationship(field));
+        const filteredColumns = currentFields.filter(
+            (field: Field) => field.type !== 'relationship'
+        );
 
         if (!filteredColumns.length) {
             try {
@@ -301,7 +298,13 @@
 
                 columnCreationHandler = handler;
 
-                columns = await generateColumns($project, page.params.database, page.params.table);
+                columns = await generateFields(
+                    $project,
+                    page.params.database,
+                    page.params.table,
+                    databaseType
+                );
+
                 startWaiting(columns.length);
                 await waitPromise;
 
@@ -319,6 +322,8 @@
             } finally {
                 columnCreationHandler = null;
             }
+        } else {
+            columns = currentFields as Columns[];
         }
 
         let rowIds = [];
@@ -383,7 +388,7 @@
 </script>
 
 <svelte:head>
-    <title>{$table?.name ?? 'Table'} - Appwrite</title>
+    <title>{table?.name ?? 'Table'} - Appwrite</title>
 </svelte:head>
 
 <slot />
@@ -502,6 +507,7 @@
 
     {#key currentRowId}
         <EditRow
+            {table}
             bind:this={editRow}
             bind:row={$databaseRowSheetOptions.row}
             bind:rowId={$databaseRowSheetOptions.rowId}
@@ -537,9 +543,23 @@
         }
     }}>
     <CreateIndex
+        entity={table}
         bind:this={createIndex}
         bind:showCreateIndex={$showCreateIndexSheet.show}
-        externalColumnKey={$showCreateIndexSheet.column} />
+        externalFieldKey={$showCreateIndexSheet.column}
+        onCreateIndex={async (index) => {
+            await sdk.forProject(page.params.region, page.params.project).tablesDB.createIndex({
+                databaseId: page.params.database,
+                tableId: page.params.table,
+                key: index.key,
+                type: index.type,
+                columns: index.fields,
+                lengths: index.lengths,
+                orders: index.orders
+            });
+
+            await invalidate(Dependencies.TABLE);
+        }} />
 </SideSheet>
 
 <SideSheet
@@ -552,6 +572,7 @@
         onClick: async () => editRowPermissions?.updatePermissions()
     }}>
     <EditRowPermissions
+        {table}
         bind:this={editRowPermissions}
         bind:row={$rowPermissionSheet.row}
         bind:arePermsDisabled={editRowPermissionsDisabled} />
@@ -581,7 +602,7 @@
 
 <ColumnsSuggestions bind:show={$showColumnsSuggestionsModal} />
 
-<IndexesSuggestions />
+<IndexesSuggestions {table} />
 
 <style lang="scss">
     // not the best solution but needed!

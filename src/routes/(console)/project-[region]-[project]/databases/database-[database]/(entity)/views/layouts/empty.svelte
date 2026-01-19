@@ -11,27 +11,21 @@
     import { isSmallViewport, isTabletViewport } from '$lib/stores/viewport';
     import { SortButton } from '$lib/components';
     import type { Column } from '$lib/helpers/types';
-    import {
-        tableColumns,
-        columnsOrder,
-        showCreateColumnSheet,
-        spreadsheetLoading,
-        expandTabs
-    } from '../store';
-    import SpreadsheetContainer from './spreadsheet.svelte';
+    import { SpreadsheetContainer } from '$database/(entity)';
     import { onDestroy, onMount, type Snippet } from 'svelte';
     import { debounce } from '$lib/helpers/debounce';
-    import { columnOptions } from '../columns/store';
+    import { expandTabs, spreadsheetLoading } from '$database/table-[table]/store';
 
     type Mode = 'rows' | 'rows-filtered' | 'indexes';
 
     const {
         mode,
-        customColumns = [],
         title,
-        subtitle,
         actions,
-        showActions
+        subtitle,
+        showActions = true,
+        customColumns = [],
+        onOpenCreateColumn
     } = $props<{
         mode: Mode;
         customColumns?: Column[];
@@ -39,6 +33,7 @@
         subtitle?: Snippet;
         actions?: Snippet;
         showActions?: boolean;
+        onOpenCreateColumn?: () => Promise<void> | void;
     }>();
 
     let spreadsheetContainer: HTMLElement;
@@ -116,7 +111,6 @@
         customColumns.map((col: Column) => ({
             ...col,
             hide: false,
-            icon: columnOptions.find((colOpt) => colOpt.type === col?.type)?.icon,
             ...baseColProps
         }));
 
@@ -272,10 +266,7 @@
                                 variant="extra-compact"
                                 onclick={() => {
                                     if (mode === 'rows') {
-                                        $showCreateColumnSheet.show = true;
-                                        $showCreateColumnSheet.title = 'Create column';
-                                        $showCreateColumnSheet.columns = $tableColumns;
-                                        $showCreateColumnSheet.columnsOrder = $columnsOrder;
+                                        onOpenCreateColumn?.();
                                     }
                                 }}>
                                 <Icon icon={IconPlus} color="--fgcolor-neutral-primary" />
