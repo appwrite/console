@@ -17,6 +17,7 @@
     } from '$lib/elements/forms';
     import { logout } from '$lib/helpers/logout';
     import { sdk } from '$lib/stores/sdk';
+    import { buildOAuthSuccessUrl } from '$lib/helpers/oauth';
     import { isCloud } from '$lib/system';
     import { ID, OAuthProvider } from '@appwrite.io/console';
     import { Layout, Typography } from '@appwrite.io/pink-svelte';
@@ -24,7 +25,7 @@
     import BGDark from './bg_dark.jpg';
     import BGLight from './bg_light.jpg';
     import { app } from '$lib/stores/app.js';
-    import { resolvedProfile } from '$lib/profiles/index.svelte';
+    import { ProfileMode, resolvedProfile } from '$lib/profiles/index.svelte';
 
     export let data;
 
@@ -88,20 +89,16 @@
     }
 
     function onGithubAuth() {
-        let url = window.location.origin;
+        const success = buildOAuthSuccessUrl({
+            pageUrl: page.url,
+            basePath: base,
+            origin: window.location.origin,
+            isStudio: resolvedProfile.id === ProfileMode.STUDIO
+        });
 
-        if (page.url.searchParams) {
-            const redirect = page.url.searchParams.get('redirect');
-            page.url.searchParams.delete('redirect');
-            if (redirect) {
-                url = `${redirect}${page.url.search}`;
-            } else {
-                url = `${base}${page.url.search ?? ''}`;
-            }
-        }
         sdk.forConsole.account.createOAuth2Session({
             provider: OAuthProvider.Github,
-            success: window.location.origin + url,
+            success,
             failure: window.location.origin,
             scopes: ['read:user', 'user:email']
         });
