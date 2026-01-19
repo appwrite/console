@@ -3,8 +3,7 @@ import { sdk } from '$lib/stores/sdk';
 import { getLimit, getPage, pageToOffset } from '$lib/helpers/load';
 import { CARD_LIMIT } from '$lib/constants';
 import type { PageLoad } from './$types';
-import { isCloud } from '$lib/system';
-import { resolvedProfile } from '$lib/profiles/index.svelte';
+import { isBillingEnabled, resolvedProfile } from '$lib/profiles/index.svelte';
 
 export const load: PageLoad = async ({ url, route }) => {
     const page = getPage(url);
@@ -15,10 +14,10 @@ export const load: PageLoad = async ({ url, route }) => {
         Query.offset(offset),
         Query.limit(limit),
         Query.orderDesc(''),
-        ...(isCloud ? [Query.equal('platform', resolvedProfile.organizationPlatform)] : [])
+        ...(isBillingEnabled ? [Query.equal('platform', resolvedProfile.organizationPlatform)] : [])
     ];
 
-    const organizations = !isCloud
+    const organizations = !isBillingEnabled
         ? await sdk.forConsole.teams.list({ queries })
         : await sdk.forConsole.billing.listOrganization(queries);
 

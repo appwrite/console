@@ -1,11 +1,10 @@
 import { sdk } from '$lib/stores/sdk';
-import { isCloud } from '$lib/system';
 import type { LayoutLoad } from './$types';
 import { Query } from '@appwrite.io/console';
 import type { Tier } from '$lib/stores/billing';
 import type { Plan, PlanList } from '$lib/sdk/billing';
 import { Dependencies } from '$lib/constants';
-import { resolvedProfile } from '$lib/profiles/index.svelte';
+import { isBillingEnabled, resolvedProfile } from '$lib/profiles/index.svelte';
 
 export const load: LayoutLoad = async ({ depends, parent }) => {
     const { organizations } = await parent();
@@ -17,7 +16,7 @@ export const load: LayoutLoad = async ({ depends, parent }) => {
     const { endpoint, project } = sdk.forConsole.client.config;
     const [preferences, plansArray, versionData, consoleVariables] = await Promise.all([
         sdk.forConsole.account.getPrefs(),
-        isCloud ? sdk.forConsole.billing.listPlans() : null,
+        isBillingEnabled ? sdk.forConsole.billing.listPlans() : null,
         fetch(`${endpoint}/health/version`, {
             headers: { 'X-Appwrite-Project': project }
         }).then((response) => response.json() as { version?: string }),

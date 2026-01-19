@@ -17,7 +17,7 @@
     import { showCreateBackup, showCreatePolicy } from './backups/store';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { currentPlan } from '$lib/stores/organization';
-    import { isCloud } from '$lib/system';
+    import { isBillingEnabled } from '$lib/profiles/index.svelte';
     import { noWidthTransition } from '$lib/stores/sidebar';
     import { resolvedProfile } from '$lib/profiles/index.svelte';
     import { getPageTitle } from '../../store';
@@ -55,7 +55,7 @@
             group: 'databases',
             icon: IconPlus,
             rank: page.url.pathname.endsWith('backups') ? 10 : 0,
-            disabled: !isCloud || !$currentPlan?.backupsEnabled
+            disabled: !isBillingEnabled || !$currentPlan?.backupsEnabled
         },
         {
             label: 'Create manual backup',
@@ -71,7 +71,7 @@
             group: 'databases',
             icon: IconPlus,
             rank: page.url.pathname.endsWith('backups') ? 10 : 0,
-            disabled: !isCloud || !$currentPlan?.backupsEnabled
+            disabled: !isBillingEnabled || !$currentPlan?.backupsEnabled
         },
         {
             label: 'Go to tables',

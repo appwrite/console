@@ -50,14 +50,13 @@
     import { logout } from '$lib/helpers/logout';
     import { app } from '$lib/stores/app';
     import { isTabletViewport, isSmallViewport } from '$lib/stores/viewport';
-    import { isCloud } from '$lib/system.js';
     import { user } from '$lib/stores/user';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { beforeNavigate } from '$app/navigation';
     import { page } from '$app/state';
     import type { Models } from '@appwrite.io/console';
     import { organization } from '$lib/stores/organization';
-    import { resolvedProfile } from '$lib/profiles/index.svelte';
+    import { isBillingEnabled, resolvedProfile } from '$lib/profiles/index.svelte';
     import { headerAlert } from '$lib/stores/headerAlert';
     import ProgressBar from './progressbar/ProgressBar.svelte';
     import { resolve } from '$app/paths';
@@ -196,7 +195,7 @@
     <div slot="right" class="only-desktop" style:--border-width-s="1px">
         <div class="right">
             <Layout.Stack gap="l" direction="row" alignItems="center">
-                {#if isCloud && currentOrg?.showUpgrade}
+                {#if isBillingEnabled && currentOrg?.showUpgrade}
                     <Button.Anchor
                         size="s"
                         variant="primary"

@@ -2,8 +2,9 @@
     import { realtime } from '$lib/stores/sdk';
     import { type Payload } from '@appwrite.io/console';
     import { onMount } from 'svelte';
-    import { isCloud, isSelfHosted } from '$lib/system';
+    import { isSelfHosted } from '$lib/system';
     import { organization } from '$lib/stores/organization';
+    import { isBillingEnabled } from '$lib/profiles/index.svelte';
     import { Dependencies } from '$lib/constants';
     import type { BackupArchive, BackupRestoration } from '$lib/sdk/backups';
     import { goto, invalidate } from '$app/navigation';
@@ -126,7 +127,7 @@
 
     onMount(() => {
         // fast path: don't subscribe if org is on a free plan or is self-hosted.
-        if (isSelfHosted || (isCloud && isFreePlan($organization?.billingPlan))) return;
+        if (isSelfHosted || (isBillingEnabled && isFreePlan($organization?.billingPlan))) return;
 
         return realtime.forProject(page.params.region, 'console', (response) => {
             if (!response.channels.includes(`projects.${getProjectId()}`)) return;

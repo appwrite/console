@@ -12,8 +12,9 @@
     import { realtime, sdk } from '$lib/stores/sdk';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import { isCloud, isSelfHosted } from '$lib/system';
+    import { isSelfHosted } from '$lib/system';
     import { currentPlan } from '$lib/stores/organization';
+    import { isBillingEnabled } from '$lib/profiles/index.svelte';
     import { onMount } from 'svelte';
     import { feedback } from '$lib/stores/feedback';
     import { cronExpression, type UserBackupPolicy } from '$lib/helpers/backups';
@@ -27,7 +28,7 @@
 
     let policyCreateError: string;
     let totalPolicies: UserBackupPolicy[] = [];
-    let isDisabled = isSelfHosted || (isCloud && !$currentPlan.backupsEnabled);
+    let isDisabled = isSelfHosted || (isBillingEnabled && !$currentPlan.backupsEnabled);
 
     export let data: PageData;
 

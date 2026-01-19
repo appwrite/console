@@ -12,17 +12,17 @@
     import EmptyLightTablet from '$lib/images/backups/upgrade/backups-tablet-light.png';
 
     import { upgradeURL } from '$lib/stores/billing';
-    import { isCloud } from '$lib/system';
+    import { isSelfHosted } from '$lib/system';
     import { Card, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { resolvedProfile } from '$lib/profiles/index.svelte';
 
-    const title = isCloud
-        ? 'Backups are available on paid plans'
-        : `Database Backups are available on ${resolvedProfile.platform} Cloud`;
+    const title = isSelfHosted
+        ? `Database Backups are available on ${resolvedProfile.platform} Cloud`
+        : 'Backups are available on paid plans';
 
-    const message = isCloud
-        ? `Upgrade now to unlock ${resolvedProfile.platform}'s backups.`
-        : `Sign up now to access ${resolvedProfile.platform}'s backups.`;
+    const message = isSelfHosted
+        ? `Sign up now to access ${resolvedProfile.platform}'s backups.`
+        : `Upgrade now to unlock ${resolvedProfile.platform}'s backups.`;
 
     const isDark = $app.themeInUse === 'dark';
 
@@ -77,17 +77,17 @@
 
                 <span class="is-only-mobile-button">
                     <Button
-                        external={!isCloud}
-                        href={isCloud ? $upgradeURL : 'https://cloud.appwrite.io/register'}>
-                        {isCloud ? 'Upgrade plan' : 'Sign up'}
+                        external={isSelfHosted}
+                        href={isSelfHosted ? 'https://cloud.appwrite.io/register' : $upgradeURL}>
+                        {isSelfHosted ? 'Sign up' : 'Upgrade plan'}
                     </Button>
                 </span>
             </Layout.Stack>
             <div class="is-not-mobile">
                 <Button
-                    external={!isCloud}
-                    href={isCloud ? $upgradeURL : 'https://cloud.appwrite.io/register'}>
-                    {isCloud ? 'Upgrade plan' : 'Sign up'}
+                    external={isSelfHosted}
+                    href={isSelfHosted ? 'https://cloud.appwrite.io/register' : $upgradeURL}>
+                    {isSelfHosted ? 'Sign up' : 'Upgrade plan'}
                 </Button>
             </div>
         </div>

@@ -2,7 +2,7 @@
     import { goto } from '$app/navigation';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { getServiceLimit, upgradeURL, type PlanServices } from '$lib/stores/billing';
-    import { isCloud } from '$lib/system';
+    import { isBillingEnabled } from '$lib/profiles/index.svelte';
     import { Button } from '../forms';
 
     let tableBody: HTMLDivElement;
@@ -31,7 +31,7 @@
 <div class="table-tbody" role="rowgroup" bind:this={tableBody}>
     <slot />
 </div>
-{#if isCloud && limitReached && service}
+{#if isBillingEnabled && limitReached && service}
     <tr class="table-row">
         <td class="table-col" width="100%" colspan={columns}>
             <span class="u-flex u-gap-24 u-main-center u-cross-center">

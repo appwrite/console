@@ -10,7 +10,7 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { currentPlan } from '$lib/stores/organization';
-    import { isCloud, isSelfHosted } from '$lib/system';
+    import { isSelfHosted } from '$lib/system';
     import MockNumbersLight from './mock-numbers-light.png';
     import MockNumbersDark from './mock-numbers-dark.png';
     import EmptyCardImageCloud from '$lib/components/emptyCardImageCloud.svelte';
@@ -19,7 +19,7 @@
     import type { Models } from '@appwrite.io/console';
     import { Icon, Input, Layout, Link, Tooltip } from '@appwrite.io/pink-svelte';
     import { IconPlus, IconRefresh } from '@appwrite.io/pink-icons-svelte';
-    import { resolvedProfile } from '$lib/profiles/index.svelte';
+    import { isBillingEnabled, resolvedProfile } from '$lib/profiles/index.svelte';
 
     let numbers: Models.MockNumber[] = $project?.authMockNumbers ?? [];
     let initialNumbers = [];
@@ -28,7 +28,7 @@
     $: isSubmitDisabled = JSON.stringify(numbers) === JSON.stringify(initialNumbers);
 
     let isComponentDisabled: boolean =
-        isSelfHosted || (isCloud && !$currentPlan.supportsMockNumbers);
+        isSelfHosted || (isBillingEnabled && !$currentPlan.supportsMockNumbers);
 
     let emptyStateTitle: string = isSelfHosted
         ? `Available on ${resolvedProfile.platform} Cloud`
@@ -141,7 +141,7 @@
                             secondary
                             fullWidth
                             external={isSelfHosted}
-                            href={isCloud ? $upgradeURL : 'https://cloud.appwrite.io/register'}
+                            href={isSelfHosted ? 'https://cloud.appwrite.io/register' : $upgradeURL}
                             on:click={() => {
                                 trackEvent(Click.CloudSignupClick, {
                                     from: 'button',

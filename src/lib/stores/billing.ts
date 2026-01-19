@@ -22,7 +22,7 @@ import type {
     Plan,
     PlansMap
 } from '$lib/sdk/billing';
-import { isCloud } from '$lib/system';
+import { isBillingEnabled } from '$lib/profiles/index.svelte';
 import { activeHeaderAlert, orgMissingPaymentMethod } from '$routes/(console)/store';
 import { AppwriteException, Query } from '@appwrite.io/console';
 import { derived, get, writable } from 'svelte/store';
@@ -159,7 +159,7 @@ export function getServiceLimit(
     tier: Tier | CloudSdkBillingPlan = null,
     plan?: Plan
 ): number {
-    if (!isCloud) return 0;
+    if (!isBillingEnabled) return 0;
     if (!serviceId) return 0;
 
     plan ??= get(currentPlan);
@@ -191,7 +191,7 @@ export const failedInvoice = cachedStore<
 >('failedInvoice', function ({ set }) {
     return {
         load: async (orgId) => {
-            if (!isCloud) set(null);
+            if (!isBillingEnabled) set(null);
             if (!get(canSeeBilling)) set(null);
             const failedInvoices = await sdk.forConsole.billing.listInvoices(orgId, [
                 Query.equal('status', 'failed')
@@ -314,7 +314,7 @@ export function calculateTrialDay(org: Organization) {
 }
 
 export async function checkForProjectsLimit(org: Organization, orgProjectCount?: number) {
-    if (!isCloud) return;
+    if (!isBillingEnabled) return;
     if (!org) return;
 
     const plan = await sdk.forConsole.billing.getOrganizationPlan(org.$id);

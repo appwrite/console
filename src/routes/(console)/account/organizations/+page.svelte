@@ -13,6 +13,7 @@
     import { sdk } from '$lib/stores/sdk';
     import type { PageData } from './$types';
     import { isCloud } from '$lib/system';
+    import { isBillingEnabled } from '$lib/profiles/index.svelte';
     import { Badge, Skeleton } from '@appwrite.io/pink-svelte';
     import type { Models } from '@appwrite.io/console';
     import type { Organization } from '$lib/stores/organization';
@@ -85,7 +86,7 @@
     function isCloudOrg(
         data: Partial<Models.TeamList<Models.Preferences>> | Organization
     ): data is Organization {
-        return isCloud && 'billingPlan' in data;
+        return isBillingEnabled && 'billingPlan' in data;
     }
 
     function createOrg() {

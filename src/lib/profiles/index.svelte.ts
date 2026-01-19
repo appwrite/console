@@ -44,6 +44,7 @@ export type Profile = {
     showConnectProjectOnToolbar: boolean;
     showProgressBar: boolean;
     showCreateOrganization: boolean;
+    billing: boolean;
     services: {
         'get-started': boolean;
         overview: boolean;
@@ -109,6 +110,7 @@ export const base: Profile = {
     showConnectProjectOnToolbar: true,
     showProgressBar: true,
     showCreateOrganization: true,
+    billing: true,
     services: {
         'get-started': true,
         overview: true,
@@ -205,6 +207,7 @@ export const studio: Profile = {
     showConnectProjectOnToolbar: false,
     showProgressBar: false,
     showCreateOrganization: false,
+    billing: false,
     services: {
         'get-started': false,
         overview: false,
@@ -254,3 +257,5 @@ export const studio: Profile = {
 };
 
 export const resolvedProfile = env.PUBLIC_CONSOLE_PROFILE === 'studio' ? studio : base;
+
+export const isBillingEnabled = isCloud && resolvedProfile.billing;

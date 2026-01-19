@@ -10,7 +10,7 @@ import PaymentFailed from '$lib/components/billing/alerts/paymentFailed.svelte';
 import { loadAvailableRegions } from '$routes/(console)/regions';
 import type { Organization } from '$lib/stores/organization';
 import { redirect } from '@sveltejs/kit';
-import { resolvedProfile } from '$lib/profiles/index.svelte';
+import { isBillingEnabled, resolvedProfile } from '$lib/profiles/index.svelte';
 import { resolve } from '$app/paths';
 
 function checkServiceAccess(routeId: string | null, params: { region: string; project: string }) {
@@ -55,7 +55,7 @@ export const load: LayoutLoad = async ({ params, route, depends, parent }) => {
             ? (sdk.forConsole.teams.get({ teamId: project.teamId }) as Promise<Organization>)
             : organization,
         sdk.forConsoleIn(project.region).console.variables(),
-        isCloud ? sdk.forConsole.billing.getRoles(project.teamId) : null,
+        isBillingEnabled ? sdk.forConsole.billing.getRoles(project.teamId) : null,
 
         loadAvailableRegions(project.teamId)
     ]);
@@ -77,7 +77,7 @@ export const load: LayoutLoad = async ({ params, route, depends, parent }) => {
     // out of promise.all because we filter orgs based on platform now!
     const organizationPlan = includedInBasePlans
         ? plansInfo.get(organization?.billingPlan)
-        : isCloud
+        : isBillingEnabled
           ? await sdk.forConsole.billing.getOrganizationPlan(organization?.$id)
           : null;
 
@@ -96,7 +96,7 @@ export const load: LayoutLoad = async ({ params, route, depends, parent }) => {
     // should be awaited for `displayNames`!
     await preferences.loadTeamPrefs(project.teamId);
 
-    if (isCloud && scopes.includes('billing.read')) {
+    if (isBillingEnabled && scopes.includes('billing.read')) {
         loadFailedInvoices(project.teamId);
     }
 

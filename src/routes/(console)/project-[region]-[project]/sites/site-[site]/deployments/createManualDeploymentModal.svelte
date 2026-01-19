@@ -9,10 +9,10 @@
     import type { Models } from '@appwrite.io/console';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { Icon, Layout, Tooltip, Typography, Upload } from '@appwrite.io/pink-svelte';
-    import { isCloud } from '$lib/system';
     import { currentPlan } from '$lib/stores/organization';
     import { consoleVariables } from '$routes/(console)/store';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
+    import { isBillingEnabled } from '$lib/profiles/index.svelte';
 
     export let show = false;
     export let site: Models.Site;
@@ -21,7 +21,7 @@
     let error: string = '';
 
     $: maxSize =
-        isCloud && $currentPlan
+        isBillingEnabled && $currentPlan
             ? $currentPlan.deploymentSize * 1000000
             : $consoleVariables._APP_COMPUTE_SIZE_LIMIT; // already in MB
 

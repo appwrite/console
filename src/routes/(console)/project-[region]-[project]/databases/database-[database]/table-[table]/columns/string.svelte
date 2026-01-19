@@ -39,9 +39,9 @@
 </script>
 
 <script lang="ts">
-    import { isCloud } from '$lib/system';
     import { upgradeURL } from '$lib/stores/billing';
     import { currentPlan } from '$lib/stores/organization';
+    import { isBillingEnabled } from '$lib/profiles/index.svelte';
     import { createConservative } from '$lib/helpers/stores';
     import { ActionMenu, Selector } from '@appwrite.io/pink-svelte';
     import RequiredArrayCheckboxes from './requiredArrayCheckboxes.svelte';
@@ -84,7 +84,7 @@
     $: handleDefaultState($required || $array);
 
     // Check plan on cloud, always allow on self-hosted
-    $: supportsStringEncryption = isCloud ? $currentPlan?.databasesAllowEncrypt : true;
+    $: supportsStringEncryption = isBillingEnabled ? $currentPlan?.databasesAllowEncrypt : true;
 
     $: if (autoIncreaseSize && data.encrypt && data.size < 150) {
         data.size = 150;
