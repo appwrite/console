@@ -3,7 +3,7 @@
     import { isCloud } from '$lib/system';
     import IconAI from './icon/ai.svelte';
     import { slide } from 'svelte/transition';
-    import { tableColumnSuggestions } from './store';
+    import { entityColumnSuggestions } from './store';
     import { getTerminologies } from '$database/(entity)';
     import { Button, InputTextarea } from '$lib/elements/forms';
     import { Card, Layout, Selector, Typography } from '@appwrite.io/pink-svelte';
@@ -16,7 +16,7 @@
 
     onMount(() => {
         if (featureActive) {
-            $tableColumnSuggestions.enabled = true;
+            $entityColumnSuggestions.enabled = true;
         }
     });
 
@@ -25,6 +25,7 @@
 
     const type = terminology.type;
     const field = terminology.field.lower;
+    const record = terminology.record.lower;
     const entity = terminology.entity.lower.singular;
 
     const title = $derived.by(() => {
@@ -45,14 +46,8 @@
         const isDocs = type === 'documentsdb';
 
         if (featureActive) {
-            if (isModal) {
-                return isDocs
-                    ? `Use AI to generate sample documents`
-                    : `Use AI to suggest useful ${field.plural}`;
-            }
-
             return isDocs
-                ? `Enable AI to generate sample documents based on your ${entity} name`
+                ? `Enable AI to generate sample ${record.plural} based on your ${entity} name`
                 : `Enable AI to suggest useful ${field.plural} based on your ${entity} name`;
         }
 
@@ -81,7 +76,7 @@
                     <Selector.Switch
                         id="suggestions"
                         label={undefined}
-                        bind:checked={$tableColumnSuggestions.enabled} />
+                        bind:checked={$entityColumnSuggestions.enabled} />
                 </div>
             {/if}
         </Layout.Stack>
@@ -95,13 +90,13 @@
         {/if}
 
         <!-- just being safe with extra guard! -->
-        {#if $tableColumnSuggestions.enabled && featureActive}
+        {#if $entityColumnSuggestions.enabled && featureActive}
             <div class="context-input" transition:slide={{ duration: 200 }}>
                 <InputTextarea
                     id="context"
                     rows={3}
                     maxlength={255}
-                    bind:value={$tableColumnSuggestions.context}
+                    bind:value={$entityColumnSuggestions.context}
                     placeholder="Optional: Add context to improve suggestions" />
             </div>
         {/if}

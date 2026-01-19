@@ -2,14 +2,14 @@ import { writable } from 'svelte/store';
 import { IndexType } from '@appwrite.io/console';
 import { columnOptions } from '../table-[table]/columns/store';
 
-export type TableColumnSuggestions = {
+export type EntityColumnSuggestions = {
     force: boolean;
     enabled: boolean;
     thinking: boolean;
     context?: string | undefined;
 
     /* for safety when in tables page */
-    table?: {
+    entity?: {
         id: string;
         name: string;
     };
@@ -44,11 +44,11 @@ export type SuggestedIndexSchema = {
     lengths?: number[] | undefined;
 };
 
-export const tableColumnSuggestions = writable<TableColumnSuggestions>({
+export const entityColumnSuggestions = writable<EntityColumnSuggestions>({
     enabled: false,
     context: null,
     thinking: false,
-    table: null,
+    entity: null,
     force: false
 });
 

@@ -38,7 +38,7 @@
     import { EmptySheet, EmptySheetCards, type Field } from '$database/(entity)';
     import {
         Empty as SuggestionsEmptySheet,
-        tableColumnSuggestions,
+        entityColumnSuggestions,
         showColumnsSuggestionsModal
     } from '$database/(suggestions)';
     import { expandTabs, randomDataModalState } from '$database/store';
@@ -97,9 +97,9 @@
     $: canShowSuggestionsSheet =
         // enabled, has table details
         // and it matches current table
-        $tableColumnSuggestions.enabled &&
-        $tableColumnSuggestions.table &&
-        $tableColumnSuggestions.table.id === page.params.table;
+        $entityColumnSuggestions.enabled &&
+        $entityColumnSuggestions.entity &&
+        $entityColumnSuggestions.entity.id === page.params.table;
 
     $: disableButton = canShowSuggestionsSheet;
 
@@ -249,7 +249,7 @@
     </Container>
 
     <div class="databases-spreadsheet">
-        {#if hasColumns && hasValidColumns && $tableColumnSuggestions.force !== true}
+        {#if hasColumns && hasValidColumns && $entityColumnSuggestions.force !== true}
             {#if data.rows.total}
                 <Divider />
                 <SpreadSheet {data} bind:showRowCreateSheet={$showRowCreateSheet} />

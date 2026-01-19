@@ -105,7 +105,6 @@ function generateDefaultRecord(
 
 export function generateFakeRecords(
     count: number,
-    type: DatabaseType = 'tablesdb',
     field?: Field[]
 ): {
     ids: string[];
@@ -130,7 +129,7 @@ export function generateFakeRecords(
             string | number | boolean | Array<string | number | boolean | NestedNumberArray>
         >;
 
-        if (type === 'documentsdb' || filteredColumns.length === 0) {
+        if (filteredColumns.length === 0) {
             record = generateDefaultRecord(id);
         } else {
             record = { $id: id };

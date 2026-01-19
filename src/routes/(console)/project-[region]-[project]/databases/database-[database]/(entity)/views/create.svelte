@@ -8,7 +8,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import {
         Input as SuggestionsInput,
-        tableColumnSuggestions
+        entityColumnSuggestions
     } from '$database/(suggestions)/index';
 
     import { getTerminologies } from '../helpers';
@@ -41,12 +41,12 @@
     function enableThinkingModeForSuggestions(id: string, name: string) {
         if (!useSuggestions) return;
 
-        if ($tableColumnSuggestions.enabled) {
+        if ($entityColumnSuggestions.enabled) {
             // if enabled, trigger thinking mode!
-            tableColumnSuggestions.update((store) => ({
+            entityColumnSuggestions.update((store) => ({
                 ...store,
                 thinking: true,
-                table: {
+                entity: {
                     id,
                     name
                 }
@@ -116,10 +116,10 @@
 
     $effect(() => {
         // reset is OK here, we don't have to check for entity type!
-        if (show && isOnEntitiesPage && $tableColumnSuggestions.table) {
-            tableColumnSuggestions.update((store) => ({
+        if (show && isOnEntitiesPage && $entityColumnSuggestions.entity) {
+            entityColumnSuggestions.update((store) => ({
                 ...store,
-                table: null
+                entity: null
             }));
         }
     });

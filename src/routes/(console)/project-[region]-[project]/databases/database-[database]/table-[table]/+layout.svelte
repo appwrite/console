@@ -338,11 +338,7 @@
 
         let rowIds = [];
         try {
-            const { rows, ids } = generateFakeRecords(
-                $randomDataModalState.value,
-                'tablesdb',
-                columns
-            );
+            const { rows, ids } = generateFakeRecords($randomDataModalState.value, columns);
 
             rowIds = ids;
             const tablesSDK = sdk.forProject(page.params.region, page.params.project).tablesDB;

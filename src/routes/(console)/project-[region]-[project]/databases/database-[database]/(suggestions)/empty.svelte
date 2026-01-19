@@ -27,7 +27,7 @@
         type ColumnInput,
         mapSuggestedColumns,
         type SuggestedColumnSchema,
-        tableColumnSuggestions,
+        entityColumnSuggestions,
         basicColumnOptions,
         mockSuggestions,
         showIndexesSuggestions
@@ -607,27 +607,27 @@
     });
 
     function resetSuggestionsStore(fullReset: boolean = true) {
-        if ($tableColumnSuggestions.table?.id !== page.params.table) {
+        if ($entityColumnSuggestions.entity?.id !== page.params.table) {
             return;
         }
 
         if (fullReset) {
             // these are referenced in
             // `table-[table]/+page.svelte`
-            $tableColumnSuggestions.table = null;
-            $tableColumnSuggestions.force = false;
-            $tableColumnSuggestions.enabled = false;
+            $entityColumnSuggestions.entity = null;
+            $entityColumnSuggestions.force = false;
+            $entityColumnSuggestions.enabled = false;
         }
 
-        $tableColumnSuggestions.context = null;
-        $tableColumnSuggestions.thinking = false;
+        $entityColumnSuggestions.context = null;
+        $entityColumnSuggestions.thinking = false;
 
         // reset selection!
         resetSelectedColumn();
     }
 
     async function suggestColumns() {
-        $tableColumnSuggestions.thinking = true;
+        $entityColumnSuggestions.thinking = true;
 
         await tick();
         scrollToFirstCustomColumn();
@@ -651,7 +651,7 @@
                     .console.suggestColumns({
                         databaseId: page.params.database,
                         tableId: page.params.table,
-                        context: $tableColumnSuggestions.context ?? undefined,
+                        context: $entityColumnSuggestions.context ?? undefined,
                         min: 6
                     })) as unknown as {
                     total: number;
@@ -659,7 +659,7 @@
                 };
             }
 
-            const tableName = $tableColumnSuggestions.table?.name ?? undefined;
+            const tableName = $entityColumnSuggestions.entity?.name ?? undefined;
             trackEvent(Submit.ColumnSuggestions, {
                 tableName,
                 total: suggestedColumns.total
@@ -1298,7 +1298,7 @@
     role="none"
     bind:this={spreadsheetContainer}
     class:custom-columns={customColumns.length > 0}
-    class:thinking={$tableColumnSuggestions.thinking}
+    class:thinking={$entityColumnSuggestions.thinking}
     class="databases-spreadsheet spreadsheet-container-outer"
     style:--overlay-icon-color="#fd366e99"
     style:--non-overlay-icon-color="--fgcolor-neutral-weak"
@@ -1309,7 +1309,7 @@
             bind:this={rangeOverlayEl}
             class="columns-range-overlay"
             class:no-transition={hasTransitioned && customColumns.length > 0}
-            class:thinking={$tableColumnSuggestions.thinking || creatingColumns}>
+            class:thinking={$entityColumnSuggestions.thinking || creatingColumns}>
             <div class="inner-glow-wrapper">
                 {@render edgeGradients('left')}
                 {@render edgeGradients('right')}
@@ -1599,7 +1599,7 @@
         data-collapsed-tabs={!$expandTabs}>
     </div>
 
-    {#if $tableColumnSuggestions.thinking}
+    {#if $entityColumnSuggestions.thinking}
         <div class="floating-action-wrapper">
             <FloatingActionBar>
                 <svelte:fragment slot="start">
@@ -1775,7 +1775,7 @@
                 !isInlineEditing &&
                 !$isTabletViewport &&
                 !$isSmallViewport &&
-                !$tableColumnSuggestions.thinking &&
+                !$entityColumnSuggestions.thinking &&
                 !creatingColumns &&
                 hoveredColumnId !== column.id
             ) {

@@ -34,7 +34,20 @@
         documentActivitySheet,
         documentPermissionSheet
     } from '$database/collection-[collection]/store';
-    import { SideSheet, EditRecordPermissions, RecordActivity } from '$database/(entity)';
+    import {
+        SideSheet,
+        EditRecordPermissions,
+        RecordActivity,
+        type Field
+    } from '$database/(entity)';
+    import {
+        entityColumnSuggestions,
+        type ColumnInput,
+        mapSuggestedColumns,
+        mockSuggestions
+    } from '$database/(suggestions)';
+    import { VARS } from '$lib/system';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
 
     export let data: LayoutData;
 
@@ -58,17 +71,17 @@
         // set faker method.
         $randomDataModalState.onSubmit = async () => await createFakeData();
 
+        if (
+            $entityColumnSuggestions.enabled &&
+            $entityColumnSuggestions.thinking &&
+            $entityColumnSuggestions.entity?.id === collection.$id
+        ) {
+            createSampleDocuments();
+        }
+
         return realtime.forProject(page.params.region, ['project', 'console'], (response) => {
             if (response.events.includes('documentsdb.*.collections.*.indexes.*')) {
-                // don't invalidate when -
-                // 1. from faker
-                // 2. ai indexes creation
-                // 3. ai columns creation
-                if (
-                    !isWaterfallFromFaker /*&&
-                    !$showIndexesSuggestions &&
-                    !$tableColumnSuggestions.table*/
-                ) {
+                if (!isWaterfallFromFaker && !$entityColumnSuggestions.entity) {
                     invalidate(Dependencies.COLLECTION);
                 }
             }
@@ -173,6 +186,89 @@
         indexes: 700
     });
 
+    async function createSampleDocuments() {
+        $spreadsheetLoading = true;
+        isWaterfallFromFaker = true;
+
+        let suggestedColumns: { total: number; columns: ColumnInput[] } = {
+            total: 0,
+            columns: []
+        };
+
+        try {
+            if (VARS.MOCK_AI_SUGGESTIONS) {
+                await sleep(1250);
+                suggestedColumns = mockSuggestions;
+            } else {
+                suggestedColumns = (await sdk
+                    .forProject(page.params.region, page.params.project)
+                    .console.suggestColumns({
+                        databaseId: page.params.database,
+                        tableId: page.params.collection,
+                        context: $entityColumnSuggestions.context ?? undefined,
+                        min: 6
+                    })) as unknown as {
+                    total: number;
+                    columns: ColumnInput[];
+                };
+            }
+
+            const collectionName = $entityColumnSuggestions.entity?.name ?? undefined;
+            trackEvent(Submit.ColumnSuggestions, {
+                collectionName,
+                total: suggestedColumns.total
+            });
+
+            const mappedColumns = mapSuggestedColumns(suggestedColumns.columns);
+            const fields = mappedColumns.map((col) => ({
+                key: col.key,
+                type: col.type,
+                required: col.required,
+                array: col.array,
+                size: col.size,
+                min: col.min,
+                max: col.max,
+                format: col.format,
+                elements: col.elements,
+                status: 'available'
+            })) as Field[];
+
+            // TODO: @itznotabug - maybe we should show a seekbar
+            const { rows } = generateFakeRecords(100, fields);
+
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .documentsDB.createDocuments({
+                    databaseId: page.params.database,
+                    collectionId: page.params.collection,
+                    documents: rows
+                });
+
+            addNotification({
+                type: 'success',
+                message: 'Sample data added successfully with AI-suggested attributes'
+            });
+
+            await invalidate(Dependencies.DOCUMENTS);
+        } catch (e) {
+            addNotification({
+                type: 'error',
+                message: e.message
+            });
+            trackError(e, Submit.ColumnSuggestions);
+        } finally {
+            // Reset suggestion state
+            entityColumnSuggestions.update((store) => ({
+                ...store,
+                thinking: false,
+                entity: null
+            }));
+
+            $spreadsheetLoading = false;
+            isWaterfallFromFaker = false;
+        }
+    }
+
     async function createFakeData() {
         isWaterfallFromFaker = true;
 
@@ -184,7 +280,7 @@
 
         let documentIds = [];
         try {
-            const { rows, ids } = generateFakeRecords($randomDataModalState.value, 'documentsdb');
+            const { rows, ids } = generateFakeRecords($randomDataModalState.value);
 
             documentIds = ids;
 

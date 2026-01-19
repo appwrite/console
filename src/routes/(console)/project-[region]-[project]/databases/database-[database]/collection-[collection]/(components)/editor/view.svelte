@@ -3,16 +3,6 @@
     export type JsonObject = { [key: string]: JsonValue };
     export type JsonArray = JsonValue[];
 
-    type ParseResult =
-        | {
-              ok: true;
-              value: JsonValue;
-          }
-        | {
-              ok: false;
-              error: unknown;
-          };
-
     type Hit = {
         key: string;
         valueFrom: number;
@@ -36,12 +26,13 @@
         bracketMatching,
         foldGutter,
         foldEffect,
+        foldAll,
+        unfoldAll,
         indentOnInput,
         indentUnit
     } from '@codemirror/language';
     import { highlightSelectionMatches } from '@codemirror/search';
     import { closeBrackets } from '@codemirror/autocomplete';
-    import { javascript } from '@codemirror/lang-javascript';
     import { type Diagnostic, linter } from '@codemirror/lint';
     import {
         EditorState,
@@ -59,14 +50,14 @@
     import { copy } from '$lib/helpers/copy';
     import { isSmallViewport } from '$lib/stores/viewport';
 
-    import { parse } from './validators/json5';
     import { customTheme, customSyntaxHighlighting } from './helpers/theme';
     import { createEditorKeymaps, secondaryKeymaps } from './helpers/keymaps';
     import {
         createReadOnlyRangesField,
         createReadOnlyLineField,
         createReadOnlyRangesFilter,
-        nestedKeyPlugin
+        createNestedKeyPlugin,
+        createSystemFieldStylePlugin
     } from './extensions';
     import {
         ALLOWED_DOLLAR_PROPS,
@@ -83,8 +74,9 @@
     } from './helpers/constants';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { ID } from '@appwrite.io/console';
-    import { Error as ErrorSonner, Save as SavingSonner } from '../sonners';
+    import { Suggestions, Error as ErrorSonner, Save as SavingSonner } from '../sonners';
     import { sleep } from '$lib/helpers/promises';
+    import { json5, json5ParseCache, json5ParseLinter } from 'codemirror-json5';
 
     interface Props {
         isNew?: boolean;
@@ -99,6 +91,8 @@
         errorInPlace?: boolean;
         ctrlSave?: boolean;
         showHeaderActions?: boolean;
+        showSuggestions?: boolean;
+        suggestedAttributes?: string[];
     }
 
     let {
@@ -113,7 +107,9 @@
         wrapLines = true,
         errorInPlace = true,
         ctrlSave = false,
-        showHeaderActions = true
+        showHeaderActions = true,
+        showSuggestions = false,
+        suggestedAttributes = []
     }: Props = $props();
 
     let editorContainer: HTMLDivElement = $state(null);
@@ -129,6 +125,9 @@
     let baseExtensions: Extension[] = []; // cached extension set to rebuild state on doc switch
 
     let saveSonnerState: 'saving' | 'saved' | null = $state(null);
+
+    let hasUserContent = $state(false);
+    let hasStartedEditing = $state(false);
 
     const wrapCompartment = new Compartment();
     const readOnlyCompartment = new Compartment();
@@ -146,10 +145,6 @@
 
     // Generate a stable ID once for new documents
     let generatedId = $state(ID.unique());
-
-    // Content cache
-    let lastParseContent = '';
-    let lastParsePromise: Promise<ParseResult> | null = null;
 
     // Serialized data cache
     let lastSerializedText = '';
@@ -724,63 +719,77 @@
     const readOnlyRangesField = createReadOnlyRangesField(isNew);
     const readOnlyLineField = createReadOnlyLineField(readOnlyRangesField);
 
-    function parseWithCache(content: string): Promise<ParseResult> {
-        if (lastParsePromise && content === lastParseContent) {
-            return lastParsePromise;
-        }
-
-        lastParseContent = content;
-        lastParsePromise = (async () => {
-            try {
-                const value = await parse<JsonValue>(content);
-                return { ok: true, value };
-            } catch (error) {
-                return { ok: false, error };
-            }
-        })();
-
-        return lastParsePromise;
+    // Check if document has user-added content beyond system fields
+    function hasCustomContent(parsed: JsonValue): boolean {
+        if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return false;
+        const keys = Object.keys(parsed as JsonObject);
+        const systemKeys = new Set([
+            '$id',
+            '$createdAt',
+            '$updatedAt',
+            '$collectionId',
+            '$databaseId',
+            '$permissions'
+        ]);
+        return keys.some((key) => !systemKeys.has(key));
     }
 
-    function isParseError(result: ParseResult): result is { ok: false; error: unknown } {
-        return !result.ok;
-    }
+    const baseJson5Linter = json5ParseLinter();
 
-    // Safe parse variant that indicates success without mutating editor on failure
-    async function tryParseEditorContent(
-        content: string
-    ): Promise<{ ok: boolean; value: JsonValue }> {
-        const result = await parseWithCache(content);
-        if (!isParseError(result)) {
-            return result;
-        }
-
-        return { ok: false, value: data };
-    }
-
-    // JavaScript linter to validate syntax (JSON5-based; precise squiggle when errorInPlace)
-    async function javascriptLinter(view: { state: { doc: Text } }): Promise<Diagnostic[]> {
+    // JSON5 linter using the parse cache; preserves errorInPlace behavior.
+    async function json5Linter(view: EditorView): Promise<Diagnostic[]> {
         if (isUpdatingFromEditor) return [];
-        const content = view.state.doc.toString();
-        const result = await parseWithCache(content);
-        if (!isParseError(result)) {
+        const result = await baseJson5Linter(view);
+        if (!result.length) {
             errorMessage = null;
             return [];
         }
-        const errorMsg =
-            result.error instanceof Error ? result.error.message : String(result.error);
+        const errorMsg = (result[0]?.message || 'Syntax error').replace(/^JSON5:\s*/i, '');
         errorMessage = errorMsg;
-        const diags = (
-            result.error && typeof result.error === 'object' && 'diagnostics' in result.error
-                ? (result.error as { diagnostics?: { from: number; to: number }[] }).diagnostics
-                : undefined
-        ) as { from: number; to: number }[] | undefined;
-        if (diags && diags.length && errorInPlace) {
-            const { from, to } = diags[0];
-            return [{ from, to, severity: 'error', message: errorMsg }];
+        if (errorInPlace) {
+            return result;
         }
         // Fallback to full-doc underline
-        return [{ from: 0, to: content.length, severity: 'error', message: errorMsg }];
+        return [{ from: 0, to: view.state.doc.length, severity: 'error', message: errorMsg }];
+    }
+
+    // Apply suggested attributes to the document
+    function applySuggestedAttributes() {
+        if (!editorView || !isNew || suggestedAttributes.length === 0) {
+            return;
+        }
+
+        // Create an object with suggested attributes as empty strings
+        const suggestedObject: Record<string, string> = {};
+        for (const attr of suggestedAttributes) {
+            suggestedObject[attr] = '';
+        }
+
+        // Merge with existing data (keeping system fields)
+        const updatedData = {
+            ...(typeof data === 'object' && data !== null && !Array.isArray(data) ? data : {}),
+            ...suggestedObject
+        };
+
+        // Update the data
+        data = updatedData;
+
+        // Manually update the editor content
+        const newContent = serializeData(updatedData);
+
+        if (editorView) {
+            // Save current cursor position
+            const currentSelection = editorView.state.selection.main;
+            const currentContent = editorView.state.doc.toString();
+
+            editorView.dispatch({
+                changes: { from: 0, to: currentContent.length, insert: newContent },
+                selection: { anchor: currentSelection.anchor, head: currentSelection.head }
+            });
+        }
+
+        // Hide the suggestions bar after applying
+        hasStartedEditing = false;
     }
 
     // Handle save logic - called from both button and keyboard shortcut
@@ -822,13 +831,14 @@
             history(),
             bracketMatching(),
             closeBrackets(),
-            linter(javascriptLinter, { delay: LINTER_DELAY }),
+            linter(json5Linter, { delay: LINTER_DELAY }),
             readOnlyRangesField,
             EditorState.transactionFilter.of(
                 createReadOnlyRangesFilter(readOnlyRangesField, readonly)
             ),
             readOnlyLineField,
-            nestedKeyPlugin,
+            createNestedKeyPlugin(),
+            createSystemFieldStylePlugin(() => isNew && !hasUserContent),
             highlightSelectionMatches(),
             // Clear selection after fold/unfold to prevent split highlighting
             EditorView.updateListener.of((update) => {
@@ -845,13 +855,52 @@
             keymap.of(
                 createEditorKeymaps(insertNewlineKeepIndent, ctrlSave ? handleSave : undefined)
             ),
+            // Add Cmd+K for applying suggestions
+            keymap.of([
+                {
+                    key: 'Mod-=',
+                    preventDefault: true,
+                    run: unfoldAll
+                },
+                {
+                    key: 'Mod-+',
+                    preventDefault: true,
+                    run: unfoldAll
+                },
+                {
+                    key: 'Mod--',
+                    preventDefault: true,
+                    run: foldAll
+                },
+                {
+                    key: 'Mod-k',
+                    preventDefault: true,
+                    run: () => {
+                        if (showSuggestions && hasStartedEditing) {
+                            applySuggestedAttributes();
+                            return true;
+                        }
+                        return false;
+                    }
+                }
+            ]),
             keymap.of(secondaryKeymaps),
-            javascript(),
+            json5(),
             customSyntaxHighlighting,
             customTheme,
             wrapCompartment.of(wrapLines ? EditorView.lineWrapping : []),
             EditorView.updateListener.of((update) => {
                 if (!update.docChanged || readonly) return;
+
+                if (isNew && !isUpdatingFromEditor) {
+                    hasStartedEditing = true;
+
+                    const parseCache = update.state.field(json5ParseCache, false);
+                    if (!parseCache?.err && parseCache?.obj !== undefined) {
+                        hasUserContent = hasCustomContent(parseCache.obj as JsonValue);
+                    }
+                }
+
                 // First, expand `: {}` / `: []` patterns when they appear
                 if (!isUpdatingFromEditor && maybeExpandEmptyLiteral(update)) {
                     return;
@@ -879,13 +928,13 @@
 
                 changeTimer = setTimeout(async () => {
                     const state = update.view.state;
-                    const newContent = state.doc.toString();
-                    const res = await tryParseEditorContent(newContent);
-                    if (!res.ok) {
+                    const parseCache = state.field(json5ParseCache, false);
+
+                    if (!parseCache || parseCache.err || parseCache.obj === undefined) {
                         return; // linter will surface the error
                     }
 
-                    const parsed = preserveSystemValues(res.value);
+                    const parsed = preserveSystemValues(parseCache.obj as JsonValue);
 
                     if (pendingCanonicalize) {
                         // Patch only top-level $ system fields in-place to avoid reflow
@@ -913,7 +962,7 @@
 
                         // Set new auto-save timer
                         autoSaveTimer = setTimeout(() => {
-                            handleSave();
+                            // handleSave();
                             autoSaveTimer = null;
                         }, AUTOSAVE_DELAY);
                     }
@@ -946,8 +995,6 @@
             clearTimeout(tooltipTimer);
             tooltipTimer = null;
         }
-        lastParseContent = '';
-        lastParsePromise = null;
         lastSerializedData = null;
         lastSerializedText = '';
         editorView?.destroy();
@@ -959,6 +1006,8 @@
         if (isNew && !wasNew) {
             originalData = $state.snapshot(data);
             generatedId = ID.unique();
+            hasStartedEditing = false; // Reset editing flag for new document
+            hasUserContent = false;
         }
         wasNew = isNew;
     });
@@ -971,35 +1020,31 @@
 
         if (documentId !== lastDocId) {
             lastDocId = documentId;
-            lastParseContent = '';
-            lastParsePromise = null;
             lastSerializedData = null;
             lastSerializedText = '';
+            hasUserContent = false;
 
-            // For existing documents only:
-            // capture snapshot and reset editor state/history
-            if (!isNew) {
-                // Capture original data snapshot when switching documents
-                originalData = $state.snapshot(data);
+            // Capture original data snapshot when switching documents
+            originalData = $state.snapshot(data);
 
-                lastExpectedContent = expectedContent;
+            lastExpectedContent = expectedContent;
 
-                if (changeTimer) {
-                    clearTimeout(changeTimer);
-                    changeTimer = null;
-                }
-
-                pendingCanonicalize = false;
-                isUpdatingFromEditor = true;
-
-                const newState = EditorState.create({
-                    doc: expectedContent,
-                    extensions: baseExtensions
-                });
-                editorView.setState(newState);
-                queueMicrotask(() => (isUpdatingFromEditor = false));
-                return;
+            if (changeTimer) {
+                clearTimeout(changeTimer);
+                changeTimer = null;
             }
+
+            pendingCanonicalize = false;
+            isUpdatingFromEditor = true;
+
+            // Reset editor state and history for both new and existing documents
+            const newState = EditorState.create({
+                doc: expectedContent,
+                extensions: baseExtensions
+            });
+            editorView.setState(newState);
+            queueMicrotask(() => (isUpdatingFromEditor = false));
+            return;
         }
 
         // Only react when the external data actually changed
@@ -1143,6 +1188,14 @@
     {/if}
 
     <div bind:this={editorContainer} class="cm-editor-wrapper" class:loading></div>
+
+    {#if showSuggestions && hasStartedEditing}
+        <div
+            class="suggestions-wrapper"
+            style="position: absolute; top: 205px; left: 205px; z-index: 50;">
+            <Suggestions show={showSuggestions} />
+        </div>
+    {/if}
 </div>
 
 {#if errorMessage && !loading}
@@ -1157,6 +1210,7 @@
         height: 100%;
         overflow: hidden;
         flex-direction: column;
+        position: relative;
 
         &.loading {
             overflow: visible;
@@ -1311,6 +1365,14 @@
         :global(.cm-propertyName) {
             color: var(--fgcolor-neutral-primary) !important;
             font-weight: 500;
+        }
+
+        // System fields muted styling (when suggestions are showing)
+        // Must come after .cm-propertyName to override
+        :global(.cm-system-field-muted),
+        :global(.cm-system-field-muted.cm-propertyName),
+        :global(.cm-system-field-muted .cm-propertyName) {
+            color: var(--fgcolor-neutral-tertiary, #97979b) !important;
         }
 
         // All value-level tokens use mint color (strings, numbers, etc.)

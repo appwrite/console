@@ -5,4 +5,4 @@ export {
     createReadOnlyRangesFilter
 } from './readonly';
 
-export { nestedKeyPlugin } from './highlighting';
+export { createNestedKeyPlugin, createSystemFieldStylePlugin } from './highlighting';

@@ -63,6 +63,7 @@
         type HeaderCellAction,
         type RowCellAction
     } from '$database/(entity)';
+    import { fuzzySearchKeys } from '$lib/helpers/search';
 
     export let data: PageData;
 
@@ -521,6 +522,13 @@
 
     $: rowSelection =
         !$spreadsheetLoading && !$paginatedDocumentsLoading ? true : ('disabled' as const);
+
+    $: suggestedAttributes =
+        $noSqlDocument.isNew && $documents?.documents
+            ? (fuzzySearchKeys($documents.documents, { minOccurrences: 2 }) ?? [])
+            : [];
+
+    $: showSuggestions = $noSqlDocument.isNew && suggestedAttributes.length > 0;
 </script>
 
 <SpreadsheetContainer
@@ -743,6 +751,8 @@
             bind:data={$noSqlDocument.document}
             bind:isSaving={$noSqlDocument.isSaving}
             showHeaderActions={!$isSmallViewport}
+            {showSuggestions}
+            {suggestedAttributes}
             onCancel={() => noSqlDocument.reset()}
             onSave={async (document) => await createOrUpdateDocument(document)}
             onChange={(_, hasDataChanged) => noSqlDocument.update({ hasDataChanged })} />
