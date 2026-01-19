@@ -4,13 +4,14 @@
     import { Button, Form, InputEmail, InputPassword } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
+    import { buildOAuthSuccessUrl } from '$lib/helpers/oauth';
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { page } from '$app/state';
     import { redirectTo } from '$routes/store';
     import { user } from '$lib/stores/user';
     import { Layout } from '@appwrite.io/pink-svelte';
-    import { Logins, resolvedProfile } from '$lib/profiles/index.svelte';
+    import { Logins, ProfileMode, resolvedProfile } from '$lib/profiles/index.svelte';
     import type { OAuthProvider } from '@appwrite.io/console';
     import type { PageProps } from './$types.js';
 
@@ -71,20 +72,17 @@
 
     function onOauthLogin(config: { provider: OAuthProvider; scopes: string[] }) {
         clearAuthToken();
-        let url = window.location.origin;
 
-        if (page.url.searchParams) {
-            const redirect = page.url.searchParams.get('redirect');
-            page.url.searchParams.delete('redirect');
-            if (redirect) {
-                url = `${redirect}${page.url.search}`;
-            } else {
-                url = `${base}${page.url.search ?? ''}`;
-            }
-        }
+        const successUrl = buildOAuthSuccessUrl({
+            pageUrl: page.url,
+            basePath: base,
+            origin: window.location.origin,
+            isStudio: resolvedProfile.id === ProfileMode.STUDIO
+        });
+
         sdk.forConsole.account.createOAuth2Session({
             provider: config.provider,
-            success: window.location.origin + url,
+            success: successUrl,
             failure: window.location.origin,
             scopes: config.scopes
         });

@@ -26,6 +26,7 @@
     import { feedback } from '$lib/stores/feedback';
     import { ProfileMode, resolvedProfile } from '$lib/profiles/index.svelte';
     import { CDN_CSS_URL, CDN_URL } from '$lib/studio/studio-widget';
+    import { STUDIO_PROMPT_KEY } from '$lib/helpers/oauth';
 
     function resolveTheme(theme: AppStore['themeInUse']) {
         switch (theme) {
@@ -45,16 +46,16 @@
         const promptParam = currentUrl.searchParams.get('prompt');
 
         if (promptParam) {
-            sessionStorage.setItem('studioPrompt', promptParam);
+            sessionStorage.setItem(STUDIO_PROMPT_KEY, promptParam);
             return;
         }
 
-        const storedPrompt = sessionStorage.getItem('studioPrompt');
+        const storedPrompt = sessionStorage.getItem(STUDIO_PROMPT_KEY);
         if (!storedPrompt) return;
 
         currentUrl.searchParams.set('prompt', storedPrompt);
         await goto(currentUrl.toString(), { replaceState: true, noScroll: true });
-        sessionStorage.removeItem('studioPrompt');
+        sessionStorage.removeItem(STUDIO_PROMPT_KEY);
     }
 
     onMount(async () => {
