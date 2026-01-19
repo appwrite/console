@@ -1,6 +1,6 @@
+import kleur from 'kleur';
 import { fileURLToPath } from 'url';
 import { build, loadEnv } from 'vite';
-import kleur from 'kleur';
 
 const { bold, yellow } = kleur;
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
