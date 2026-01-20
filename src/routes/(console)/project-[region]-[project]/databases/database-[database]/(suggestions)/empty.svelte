@@ -1877,38 +1877,6 @@
     </div>
 {/snippet}
 
-<!--{#snippet countdownProgress()}-->
-<!--    {@const COUNTDOWN_DURATION = 10000}-->
-
-<!--    <div class="countdown-wrapper" style="padding-bottom: 0;">-->
-<!--        <svg-->
-<!--            xmlns="http://www.w3.org/2000/svg"-->
-<!--            width={`var(&#45;&#45;icon-size-s)`}-->
-<!--            height={`var(&#45;&#45;icon-size-s)`}-->
-<!--            viewBox="0 0 24 24"-->
-<!--            fill="none"-->
-<!--            style="transform: rotate(-90deg)">-->
-<!--            &lt;!&ndash; Background circle &ndash;&gt;-->
-<!--            <path-->
-<!--                opacity="0.2"-->
-<!--                d="M24 12C24 18.6274 18.6274 24 12 24C5.37258 24 0 18.6274 0 12C0 5.37258 5.37258 0 12 0C18.6274 0 24 5.37258 24 12ZM2.4 12C2.4 17.3019 6.69807 21.6 12 21.6C17.3019 21.6 21.6 17.3019 21.6 12C21.6 6.69807 17.3019 2.4 12 2.4C6.69807 2.4 2.4 6.69807 2.4 12Z"-->
-<!--                fill="#56565C" />-->
-<!--            &lt;!&ndash; Progress circle &ndash;&gt;-->
-<!--            <circle-->
-<!--                cx="12"-->
-<!--                cy="12"-->
-<!--                r="10.8"-->
-<!--                fill="none"-->
-<!--                stroke="#56565C"-->
-<!--                stroke-width="2.4"-->
-<!--                stroke-dasharray="67.858"-->
-<!--                stroke-dashoffset="0"-->
-<!--                class="countdown-circle"-->
-<!--                style="animation-duration: {COUNTDOWN_DURATION}ms" />-->
-<!--        </svg>-->
-<!--    </div>-->
-<!--{/snippet}-->
-
 <style lang="scss">
     .spreadsheet-container-outer {
         width: 100%;
