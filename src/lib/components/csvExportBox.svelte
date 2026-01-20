@@ -92,6 +92,17 @@
             case 'completed':
                 if (downloadUrl) {
                     downloadExportedFile(downloadUrl);
+                    addNotification({
+                        type: 'success',
+                        message: `Export completed`,
+                        timeout: 10000,
+                        buttons: [
+                            {
+                                name: 'Download',
+                                method: () => downloadExportedFile(downloadUrl)
+                            }
+                        ]
+                    });
                 }
                 break;
             case 'failed':
