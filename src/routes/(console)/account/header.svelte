@@ -33,6 +33,11 @@
             title: 'Organizations',
             event: 'organizations',
             hasChildren: true
+        },
+        {
+            href: `${path}/alerts`,
+            title: 'Alerts',
+            event: 'alerts',
         }
     ];
 
