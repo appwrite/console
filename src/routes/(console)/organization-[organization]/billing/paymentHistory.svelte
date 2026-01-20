@@ -28,6 +28,7 @@
         IconExternalLink,
         IconRefresh
     } from '@appwrite.io/pink-icons-svelte';
+    import { addNotification } from '$lib/stores/notifications';
 
     let limit = $state(5);
     let offset = $state(0);
@@ -40,29 +41,24 @@
     const endpoint = getApiEndpoint();
     const hasPaymentError = $derived(invoiceList?.invoices.some((invoice) => invoice?.lastError));
 
-    /**
-     * Special case handling for the first page!
-     *
-     * As per Damodar - `there is some logic to **hide current cycle invoice** in the endpoint`.
-     *
-     * Due to this, the first page always loads `limit - 1` invoices which is inconsistent!
-     * Therefore, we load `limit + 1` to counter that so the returned invoices are consistent.
-     */
-    onMount(() => request(true));
+    onMount(loadInvoices);
 
-    async function request(patchQuery: boolean = false) {
+    async function loadInvoices() {
         isLoadingInvoices = true;
-        invoiceList = await sdk.forConsole.billing.listInvoices(page.params.organization, [
-            Query.orderDesc('$createdAt'),
-
-            // first page extra must have an extra limit!
-            Query.limit(patchQuery ? limit + 1 : limit),
-
-            // so an invoice isn't repeated on 2nd page!
-            Query.offset(patchQuery ? offset : offset + 1)
-        ]);
-
-        isLoadingInvoices = false;
+        try {
+            invoiceList = await sdk.forConsole.billing.listInvoices(page.params.organization, [
+                Query.orderDesc('$createdAt'),
+                Query.limit(limit),
+                Query.offset(offset)
+            ]);
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
+        } finally {
+            isLoadingInvoices = false;
+        }
     }
 
     function retryPayment(invoice: Invoice) {
@@ -73,7 +69,7 @@
     $effect(() => {
         if (page.url.searchParams.get('type') === 'validate-invoice') {
             window.history.replaceState({}, '', page.url.pathname);
-            request();
+            loadInvoices();
         }
     });
 
@@ -85,7 +81,7 @@
     ]);
 </script>
 
-<CardGrid>
+<CardGrid overflow={false}>
     <svelte:fragment slot="title">Payment history</svelte:fragment>
     Transaction history for this organization. Download invoices for more details about your payments.
     <svelte:fragment slot="aside">
@@ -197,7 +193,7 @@
                         hidePages
                         bind:offset
                         total={invoiceList.total}
-                        on:change={() => request()} />
+                        on:change={loadInvoices} />
                 </Layout.Stack>
             {/if}
         {:else}

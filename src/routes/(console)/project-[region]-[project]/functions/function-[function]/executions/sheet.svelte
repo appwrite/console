@@ -1,6 +1,7 @@
 <script lang="ts">
     import Button from '$lib/elements/forms/button.svelte';
     import type { Models } from '@appwrite.io/console';
+    import { ExecutionStatus } from '@appwrite.io/console';
     import { IconChevronDown, IconChevronUp } from '@appwrite.io/pink-icons-svelte';
     import { calculateTime } from '$lib/helpers/timeConversion';
     import {
@@ -22,6 +23,8 @@
     import { logStatusConverter } from './store';
     import { LogsRequest, LogsResponse } from '$lib/components/logs';
     import { timer } from '$lib/actions/timer';
+    import { getEffectiveExecutionStatus } from '$lib/helpers/executionTimeout';
+    import { func } from '../store';
 
     export let selectedLogId: string;
     export let logs: Models.Execution[];
@@ -46,6 +49,7 @@
     }
 
     $: selectedLog = logs?.find((log) => log.$id === selectedLogId);
+    $: effectiveStatus = selectedLog ? getEffectiveExecutionStatus(selectedLog, $func) : null;
     $: isFirstLog = logs.findIndex((log) => log.$id === selectedLogId) === 0;
     $: isLastLog = logs.findIndex((log) => log.$id === selectedLogId) === logs.length - 1;
 
@@ -112,12 +116,12 @@
 
                                 <Tooltip
                                     disabled={!selectedLog?.scheduledAt ||
-                                        selectedLog.status !== 'scheduled'}
+                                        effectiveStatus !== ExecutionStatus.Scheduled}
                                     maxWidth="400px">
                                     <div>
                                         <Status
-                                            status={logStatusConverter(selectedLog.status)}
-                                            label={capitalize(selectedLog.status)}>
+                                            status={logStatusConverter(effectiveStatus)}
+                                            label={capitalize(effectiveStatus)}>
                                         </Status>
                                     </div>
                                     <span slot="tooltip">

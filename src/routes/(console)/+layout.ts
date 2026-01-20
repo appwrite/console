@@ -18,7 +18,7 @@ export const load: LayoutLoad = async ({ depends, parent }) => {
         sdk.forConsole.account.getPrefs(),
         isCloud ? sdk.forConsole.billing.getPlansInfo() : null,
         fetch(`${endpoint}/health/version`, {
-            headers: { 'X-Appwrite-Project': project }
+            headers: { 'X-Appwrite-Project': project as string }
         }).then((response) => response.json() as { version?: string }),
         sdk.forConsole.console.variables()
     ]);
@@ -35,7 +35,11 @@ export const load: LayoutLoad = async ({ depends, parent }) => {
         try {
             projectsCount = (
                 await sdk.forConsole.projects.list({
-                    queries: [Query.equal('teamId', currentOrgId), Query.limit(1)]
+                    queries: [
+                        Query.equal('teamId', currentOrgId),
+                        Query.limit(1),
+                        Query.select(['$id'])
+                    ]
                 })
             ).total;
         } catch (e) {

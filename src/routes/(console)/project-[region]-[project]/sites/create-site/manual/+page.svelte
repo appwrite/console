@@ -1,6 +1,6 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
-    import { base } from '$app/paths';
+    import { base, resolve } from '$app/paths';
     import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Button, Form } from '$lib/elements/forms';
@@ -21,6 +21,7 @@
     import { isCloud } from '$lib/system';
     import { currentPlan } from '$lib/stores/organization';
     import Domain from '../domain.svelte';
+    import { uploader } from '$lib/stores/uploader';
 
     export let data;
     let showExitModal = false;
@@ -50,6 +51,8 @@
     $: readableMaxSize = humanFileSize(maxSize);
 
     async function create() {
+        let site: Models.Site | null = null;
+
         try {
             if (!domainIsValid) {
                 addNotification({
@@ -63,7 +66,7 @@
             const buildRuntime = Object.values(BuildRuntime).find(
                 (f) => f === framework.buildRuntime
             );
-            let site = await sdk.forProject(page.params.region, page.params.project).sites.create({
+            site = await sdk.forProject(page.params.region, page.params.project).sites.create({
                 siteId: id || ID.unique(),
                 name,
                 framework: fr,
@@ -90,26 +93,42 @@
             );
             await Promise.all(promises);
 
-            const deployment = await sdk
-                .forProject(page.params.region, page.params.project)
-                .sites.createDeployment({
-                    siteId: site.$id,
-                    code: files[0],
-                    activate: true,
-                    installCommand: installCommand || undefined,
-                    buildCommand: buildCommand || undefined,
-                    outputDirectory: outputDirectory || undefined
-                });
+            const promise = uploader.uploadSiteDeployment({
+                siteId: site.$id,
+                code: files[0],
+                buildCommand: buildCommand || undefined,
+                installCommand: installCommand || undefined,
+                outputDirectory: outputDirectory || undefined
+            });
 
+            addNotification({
+                message: 'Deployment upload started',
+                type: 'success'
+            });
             trackEvent(Submit.SiteCreate, {
                 source: 'manual',
                 framework: framework.key
             });
 
-            await goto(
-                `${base}/project-${page.params.region}-${page.params.project}/sites/create-site/deploying?site=${site.$id}&deployment=${deployment.$id}`
-            );
+            await promise;
+            const upload = $uploader.files.find((f) => f.resourceId === site.$id);
+
+            if (upload?.status === 'success') {
+                const deploymentId = upload.$id;
+                const resolvedPath = resolve(
+                    `/(console)/project-[region]-[project]/sites/create-site/deploying`,
+                    {
+                        region: page.params.region,
+                        project: page.params.project
+                    }
+                );
+                await goto(`${resolvedPath}?site=${site.$id}&deployment=${deploymentId}`);
+            }
         } catch (e) {
+            const upload = $uploader.files.find((f) => f.resourceId === site?.$id);
+            if (upload) {
+                uploader.removeFromQueue(upload.$id);
+            }
             addNotification({
                 type: 'error',
                 message: e.message
@@ -174,24 +193,21 @@
                     on:invalid={handleInvalid}>
                     <Layout.Stack alignItems="center" gap="s">
                         <Layout.Stack alignItems="center" gap="s">
-                            <Layout.Stack
-                                alignItems="center"
-                                justifyContent="center"
-                                direction="row"
-                                gap="s">
-                                <Typography.Text variant="l-500">
-                                    Drag and drop file here or click to upload
-                                </Typography.Text>
-                                <Tooltip>
+                            <Layout.Stack alignItems="center" justifyContent="center" inline>
+                                <Typography.Text variant="l-500" align="center" inline>
+                                    Drag and drop file here or click to upload;
                                     <Layout.Stack
+                                        style="display: inline-flex; vertical-align: middle;"
+                                        inline
                                         alignItems="center"
-                                        justifyContent="center"
-                                        inline>
-                                        <Icon icon={IconInfo} size="s" />
+                                        justifyContent="center">
+                                        <Tooltip>
+                                            <Icon icon={IconInfo} size="s" />
+                                            <svelte:fragment slot="tooltip"
+                                                >Only .tar.gz files allowed</svelte:fragment>
+                                        </Tooltip>
                                     </Layout.Stack>
-                                    <svelte:fragment slot="tooltip"
-                                        >Only .tar.gz files allowed</svelte:fragment>
-                                </Tooltip>
+                                </Typography.Text>
                             </Layout.Stack>
                             {#if maxSize > 0}
                                 <Typography.Caption variant="400"

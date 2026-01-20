@@ -7,8 +7,7 @@
     import { ID } from '@appwrite.io/console';
     import { createEventDispatcher } from 'svelte';
     import { isCloud } from '$lib/system';
-    import { BillingPlan } from '$lib/constants';
-    import { organization } from '$lib/stores/organization';
+    import { currentPlan } from '$lib/stores/organization';
     import { upgradeURL } from '$lib/stores/billing';
     import CreatePolicy from './database-[database]/backups/createPolicy.svelte';
     import { cronExpression, type UserBackupPolicy } from '$lib/helpers/backups';
@@ -62,16 +61,14 @@
         const totalPoliciesPromise = totalPolicies.map((policy) => {
             cronExpression(policy);
 
-            return sdk
-                .forProject(page.params.region, page.params.project)
-                .backups.createPolicy(
-                    ID.unique(),
-                    ['databases'],
-                    policy.retained,
-                    policy.schedule,
-                    policy.label,
-                    resourceId
-                );
+            return sdk.forProject(page.params.region, page.params.project).backups.createPolicy({
+                policyId: ID.unique(),
+                services: ['databases'],
+                retention: policy.retained,
+                schedule: policy.schedule,
+                name: policy.label,
+                resourceId
+            });
         });
 
         await Promise.all(totalPoliciesPromise);
@@ -132,7 +129,7 @@
     <CustomId bind:show={showCustomId} name="Database" bind:id autofocus={false} />
 
     {#if isCloud}
-        {#if $organization?.billingPlan === BillingPlan.FREE}
+        {#if !$currentPlan?.backupsEnabled}
             <Alert.Inline title="This database won't be backed up" status="warning">
                 Upgrade your plan to ensure your data stays safe and backed up.
                 <svelte:fragment slot="actions">

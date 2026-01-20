@@ -53,7 +53,7 @@
         {/if}
 
         <PaginationWithLimit
-            name="Databases"
+            name="Buckets"
             limit={data.limit}
             offset={data.offset}
             total={data.buckets.total} />

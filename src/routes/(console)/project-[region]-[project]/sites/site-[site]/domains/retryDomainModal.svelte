@@ -10,54 +10,75 @@
     import { Divider, Tabs } from '@appwrite.io/pink-svelte';
     import { isCloud } from '$lib/system';
     import { page } from '$app/state';
-    import { isASubdomain } from '$lib/helpers/tlds';
     import NameserverTable from '$lib/components/domains/nameserverTable.svelte';
     import RecordTable from '$lib/components/domains/recordTable.svelte';
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
+    import { getApexDomain } from '$lib/helpers/tlds';
 
     let {
         show = $bindable(false),
-        selectedProxyRule
+        selectedProxyRule,
+        domainsList
     }: {
         show: boolean;
         selectedProxyRule: Models.ProxyRule;
+        domainsList?: Models.DomainsList;
     } = $props();
 
-    const isSubDomain = $derived.by(() => isASubdomain(selectedProxyRule?.domain));
+    const showCNAMETab = $derived(
+        Boolean($regionalConsoleVariables._APP_DOMAIN_SITES) &&
+            $regionalConsoleVariables._APP_DOMAIN_SITES !== 'localhost'
+    );
+    const showATab = $derived(
+        !isCloud &&
+            Boolean($regionalConsoleVariables._APP_DOMAIN_TARGET_A) &&
+            $regionalConsoleVariables._APP_DOMAIN_TARGET_A !== '127.0.0.1'
+    );
+    const showAAAATab = $derived(
+        !isCloud &&
+            Boolean($regionalConsoleVariables._APP_DOMAIN_TARGET_AAAA) &&
+            $regionalConsoleVariables._APP_DOMAIN_TARGET_AAAA !== '::1'
+    );
+    const showNSTab = isCloud;
 
-    let selectedTab = $state<'cname' | 'nameserver' | 'a' | 'aaaa'>('nameserver');
-
-    $effect(() => {
-        if ($regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME && isSubDomain) {
-            selectedTab = 'cname';
-        } else if (!isCloud && $regionalConsoleVariables._APP_DOMAIN_TARGET_A) {
-            selectedTab = 'a';
-        } else if (!isCloud && $regionalConsoleVariables._APP_DOMAIN_TARGET_AAAA) {
-            selectedTab = 'aaaa';
-        } else {
-            selectedTab = 'nameserver';
-        }
-    });
-
+    let selectedTab = $state<'cname' | 'nameserver' | 'a' | 'aaaa'>(getDefaultTab());
     let error = $state(null);
-    let verified = $state(false);
+    let verified: boolean | undefined = $state(undefined);
+
+    function getDefaultTab() {
+        return showCNAMETab ? 'cname' : showATab ? 'a' : showAAAATab ? 'aaaa' : 'nameserver';
+    }
 
     async function retryDomain() {
+        error = null;
+        verified = undefined;
+
         try {
-            const domain = await sdk
+            const apexDomain = getApexDomain(selectedProxyRule.domain);
+            const domain = domainsList?.domains.find((d) => d.domain === apexDomain);
+            if (isCloud && domain) {
+                await sdk.forConsole.domains.updateNameservers({
+                    domainId: domain.$id
+                });
+            }
+        } catch {
+            // Ignore error
+        }
+
+        try {
+            selectedProxyRule = await sdk
                 .forProject(page.params.region, page.params.project)
                 .proxy.updateRuleVerification({ ruleId: selectedProxyRule.$id });
 
-            show = false;
-            verified = domain.status === 'verified';
             await invalidate(Dependencies.SITES_DOMAINS);
-
+            show = false;
             addNotification({
                 type: 'success',
-                message: `${selectedProxyRule.domain} has been verified`
+                message: 'Domain verified successfully'
             });
             trackEvent(Submit.DomainUpdateVerification);
         } catch (e) {
+            verified = false;
             error =
                 e.message ??
                 'Domain verification failed. Please check your domain settings or try again later';
@@ -75,7 +96,7 @@
 <Modal title="Retry verification" bind:show onSubmit={retryDomain} bind:error>
     <div>
         <Tabs.Root variant="secondary" let:root>
-            {#if isSubDomain && !!$regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME && $regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME !== 'localhost'}
+            {#if showCNAMETab}
                 <Tabs.Item.Button
                     {root}
                     on:click={() => (selectedTab = 'cname')}
@@ -83,7 +104,7 @@
                     CNAME
                 </Tabs.Item.Button>
             {/if}
-            {#if isCloud}
+            {#if showNSTab}
                 <Tabs.Item.Button
                     {root}
                     on:click={() => (selectedTab = 'nameserver')}
@@ -91,7 +112,7 @@
                     Nameservers
                 </Tabs.Item.Button>
             {/if}
-            {#if !isCloud && !!$regionalConsoleVariables._APP_DOMAIN_TARGET_A && $regionalConsoleVariables._APP_DOMAIN_TARGET_A !== '127.0.0.1'}
+            {#if showATab}
                 <Tabs.Item.Button
                     {root}
                     on:click={() => (selectedTab = 'a')}
@@ -99,7 +120,7 @@
                     A
                 </Tabs.Item.Button>
             {/if}
-            {#if !isCloud && !!$regionalConsoleVariables._APP_DOMAIN_TARGET_AAAA && $regionalConsoleVariables._APP_DOMAIN_TARGET_AAAA !== '::1'}
+            {#if showAAAATab}
                 <Tabs.Item.Button
                     {root}
                     on:click={() => (selectedTab = 'aaaa')}
@@ -111,13 +132,20 @@
         <Divider />
     </div>
     {#if selectedTab === 'nameserver'}
-        <NameserverTable domain={selectedProxyRule.domain} {verified} />
+        <NameserverTable
+            {verified}
+            domain={selectedProxyRule.domain}
+            ruleStatus={selectedProxyRule.status} />
     {:else}
         <RecordTable
             {verified}
             service="sites"
             variant={selectedTab}
-            domain={selectedProxyRule.domain} />
+            domain={selectedProxyRule.domain}
+            ruleStatus={selectedProxyRule.status}
+            onNavigateToNameservers={() => (selectedTab = 'nameserver')}
+            onNavigateToA={() => (selectedTab = 'a')}
+            onNavigateToAAAA={() => (selectedTab = 'aaaa')} />
     {/if}
 
     <svelte:fragment slot="footer">

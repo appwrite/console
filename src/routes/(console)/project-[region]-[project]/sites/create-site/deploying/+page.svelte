@@ -1,43 +1,87 @@
 <script lang="ts">
     import { Wizard } from '$lib/layout';
-    import { base } from '$app/paths';
+    import { base, resolve } from '$app/paths';
     import { page } from '$app/state';
     import { Fieldset, Card, Layout, Tag, Typography } from '@appwrite.io/pink-svelte';
     import Button from '$lib/elements/forms/button.svelte';
     import Aside from '../aside.svelte';
     import Logs from '../../(components)/logs.svelte';
     import { Copy, SvgIcon } from '$lib/components';
-    import { sdk } from '$lib/stores/sdk';
+    import { realtime } from '$lib/stores/sdk';
     import { goto } from '$app/navigation';
     import { onMount } from 'svelte';
     import { getFrameworkIcon } from '$lib/stores/sites';
-    import type { Models, RealtimeResponseEvent } from '@appwrite.io/console';
+    import type { Models } from '@appwrite.io/console';
+    import { getEffectiveBuildStatus } from '$lib/helpers/buildTimeout';
+    import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
 
     let { data } = $props();
 
     let deployment = $state(data.deployment);
+    let skipScreenshotTimeout: ReturnType<typeof setTimeout> | null = $state(null);
+
+    let effectiveStatus = $derived(getEffectiveBuildStatus(deployment, $regionalConsoleVariables));
 
     onMount(() => {
-        return sdk
-            .forConsoleIn(page.params.region)
-            .client.subscribe(
-                'console',
-                async (response: RealtimeResponseEvent<Models.Deployment>) => {
-                    if (
-                        response.events.includes(
-                            `sites.${data.site.$id}.deployments.${data.deployment.$id}.update`
-                        )
-                    ) {
-                        deployment = response.payload;
-                        if (response.payload.status === 'ready') {
-                            goto(
-                                `${base}/project-${page.params.region}-${page.params.project}/sites/create-site/finish?site=${data.site.$id}`
-                            );
+        const timeoutCleanup = () => {
+            if (skipScreenshotTimeout) {
+                clearTimeout(skipScreenshotTimeout);
+                skipScreenshotTimeout = null;
+            }
+        };
+
+        const realtimeUnsubscribe = realtime.forConsole(
+            page.params.region,
+            'console',
+            async (response) => {
+                if (
+                    response.events.includes(
+                        `sites.${data.site.$id}.deployments.${data.deployment.$id}.update`
+                    )
+                ) {
+                    deployment = response.payload as Models.Deployment;
+
+                    const isReady = deployment.status === 'ready';
+
+                    const isFinished =
+                        isReady && deployment.screenshotLight && deployment.screenshotDark;
+
+                    // Fallback mechanism
+                    // If ready but not finished for over 30 seconds, go anyway
+                    if (isReady && !skipScreenshotTimeout) {
+                        skipScreenshotTimeout = setTimeout(async () => {
+                            goToFinishScreen();
+                        }, 30000);
+                    }
+
+                    if (isReady && isFinished) {
+                        if (skipScreenshotTimeout) {
+                            clearTimeout(skipScreenshotTimeout);
+                            skipScreenshotTimeout = null;
                         }
+
+                        goToFinishScreen();
                     }
                 }
-            );
+            }
+        );
+
+        return () => {
+            realtimeUnsubscribe();
+            timeoutCleanup();
+        };
     });
+
+    async function goToFinishScreen() {
+        const resolvedUrl = resolve(
+            '/(console)/project-[region]-[project]/sites/create-site/finish',
+            {
+                region: page.params.region,
+                project: page.params.project
+            }
+        );
+        await goto(`${resolvedUrl}?site=${data.site.$id}`);
+    }
 </script>
 
 <Wizard
@@ -77,7 +121,7 @@
     </svelte:fragment>
     <svelte:fragment slot="footer">
         <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
-            {#if ['processing', 'building'].includes(data.deployment.status)}
+            {#if ['processing', 'building', 'finalizing'].includes(effectiveStatus)}
                 <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
                     Deployment will continue in the background
                 </Typography.Text>

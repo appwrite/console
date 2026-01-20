@@ -17,6 +17,7 @@
     import { ThemeDark, ThemeLight, ThemeDarkCloud, ThemeLightCloud } from '../themes';
     import { isSmallViewport, updateViewport } from '$lib/stores/viewport';
     import { feedback } from '$lib/stores/feedback';
+    import '$lib/profiles/css/base.css';
 
     function resolveTheme(theme: AppStore['themeInUse']) {
         switch (theme) {
@@ -287,6 +288,11 @@
                 }
             }
         }
+    }
+
+    /* Fix when no vertical scrollbar is present, some environments reserve a gutter by default */
+    html {
+        scrollbar-gutter: auto !important;
     }
 
     /* TODO: remove this block once Pink V2 is incorporated */

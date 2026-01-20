@@ -5,7 +5,6 @@
     import { isCloud, isSelfHosted } from '$lib/system';
     import { organization } from '$lib/stores/organization';
     import { BillingPlan, Dependencies } from '$lib/constants';
-    import type { BackupArchive, BackupRestoration } from '$lib/sdk/backups';
     import { goto, invalidate } from '$app/navigation';
     import { page } from '$app/state';
     import { addNotification } from '$lib/stores/notifications';
@@ -13,10 +12,11 @@
     import { getProjectId } from '$lib/helpers/project';
     import { toLocaleDate } from '$lib/helpers/date';
     import { Typography } from '@appwrite.io/pink-svelte';
+    import { type Models } from '@appwrite.io/console';
 
     const backupRestoreItems: {
-        archives: Map<string, BackupArchive>;
-        restorations: Map<string, BackupRestoration>;
+        archives: Map<string, Models.BackupArchive>;
+        restorations: Map<string, Models.BackupRestoration>;
     } = {
         archives: new Map(),
         restorations: new Map()
@@ -117,7 +117,7 @@
         if (which === 'restorations') lastDatabaseRestorationId = null;
     }
 
-    function backupName(item: BackupArchive | BackupRestoration, key: string) {
+    function backupName(item: Models.BackupArchive | Models.BackupRestoration, key: string) {
         const column = key === 'archives' ? '$createdAt' : 'startedAt';
 
         return toLocaleDate(item[column]);
@@ -125,20 +125,18 @@
 
     onMount(() => {
         // fast path: don't subscribe if org is on a free plan or is self-hosted.
-        if (isSelfHosted || (isCloud && $organization.billingPlan === BillingPlan.FREE)) return;
+        if (isSelfHosted || (isCloud && $organization?.billingPlan === BillingPlan.FREE)) return;
 
-        return realtime
-            .forProject(page.params.region, page.params.project)
-            .subscribe('console', (response) => {
-                if (!response.channels.includes(`projects.${getProjectId()}`)) return;
+        return realtime.forProject(page.params.region, 'console', (response) => {
+            if (!response.channels.includes(`projects.${getProjectId()}`)) return;
 
-                if (
-                    response.events.includes('archives.*') ||
-                    response.events.includes('restorations.*')
-                ) {
-                    updateOrAddItem(response.payload);
-                }
-            });
+            if (
+                response.events.includes('archives.*') ||
+                response.events.includes('restorations.*')
+            ) {
+                updateOrAddItem(response.payload);
+            }
+        });
     });
 </script>
 
