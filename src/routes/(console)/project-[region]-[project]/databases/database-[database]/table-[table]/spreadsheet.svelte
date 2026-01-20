@@ -160,9 +160,13 @@
 
     function setupColumns() {
         const order = preferences.getColumnOrder(tableId);
-        const systemColumns = new Set(['$id', '$createdAt', '$updatedAt', 'actions']);
+        const systemColumns = new Set(['$id', 'actions']);
 
-        const validColumnKeys = new Set($table.columns.map((col) => col.key));
+        const validColumnKeys = new Set([
+            ...$table.columns.map((col) => col.key),
+            '$createdAt', /* allowed for reordering */
+            '$updatedAt' /* allowed for reordering */
+        ]);
 
         const seen = new Set<string>();
         const cleanOrder = order.filter((columnId) => {
@@ -242,17 +246,13 @@
             }
         ];
 
-        const actionsColumn = staticColumns[3];
+        const fixedLeftColumn = staticColumns[0];
+        const fixedRightColumn = staticColumns[3];
 
-        const reorderedBaseColumns = reorderItems(baseColumns, $columnsOrder);
+        const reorderableColumns = [...baseColumns, staticColumns[1], staticColumns[2]];
+        const reorderedColumns = reorderItems(reorderableColumns, $columnsOrder);
 
-        const finalColumns = [
-            staticColumns[0],
-            ...reorderedBaseColumns,
-            staticColumns[1],
-            staticColumns[2],
-            actionsColumn
-        ];
+        const finalColumns = [fixedLeftColumn, ...reorderedColumns, fixedRightColumn];
 
         tableColumns.set(finalColumns);
     }
