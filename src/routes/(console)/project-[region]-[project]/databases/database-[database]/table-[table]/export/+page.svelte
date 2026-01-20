@@ -64,7 +64,7 @@
                 table: page.params.table
             }
         );
-        return queryParam ? `${url}?query=${queryParam}` : url;
+        return queryParam ? `${url}?query=${encodeURIComponent(queryParam)}` : url;
     });
 
     function removeLocalFilter(tag: TagValue) {
