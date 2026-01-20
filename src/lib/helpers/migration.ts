@@ -24,12 +24,11 @@ export function calculatePercentage(statusCounters: Record<string, Counter>): nu
     );
 
     const res = Math.round(
-        (totalCounter.done / (totalCounter.done + totalCounter.processing)) * 100
+        Math.min(
+            100,
+            Math.max(0, (totalCounter.done / (totalCounter.done + totalCounter.processing)) * 100)
+        )
     );
 
-    if (Number.isNaN(res)) return 0;
-    if (res > 100) return 100;
-    if (res < 0) return 0;
-
-    return res;
+    return Number.isNaN(res) ? 0 : res;
 }
