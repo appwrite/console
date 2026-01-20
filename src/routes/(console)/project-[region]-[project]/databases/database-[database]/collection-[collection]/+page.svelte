@@ -17,7 +17,7 @@
         IconPlus,
         IconViewBoards
     } from '@appwrite.io/pink-icons-svelte';
-    import { ID, type Models } from '@appwrite.io/console';
+    import { type Models } from '@appwrite.io/console';
     import { expandTabs, randomDataModalState } from '$database/store';
     import { EmptySheet, EmptySheetCards } from '$database/(entity)';
     import {
@@ -27,9 +27,9 @@
     } from '$database/collection-[collection]/store';
     import { canWriteRows } from '$lib/stores/roles';
     import SpreadSheet from '$database/collection-[collection]/spreadsheet.svelte';
-    import { toLocaleDateTime } from '$lib/helpers/date';
     import ColumnDisplayNameInput from '$database/collection-[collection]/(components)/inputs/displayName.svelte';
     import { Modal } from '$lib/components';
+    import { buildInitDoc } from './+layout.svelte';
 
     const { data }: PageProps = $props();
 
@@ -39,15 +39,6 @@
     let columnsError: string = $state(null);
     let spreadsheet: SpreadSheet | null = $state(null);
     let columnDisplayNameInput: ColumnDisplayNameInput | null = $state(null);
-
-    function buildInitDoc() {
-        const now = new Date().toISOString();
-        return {
-            $id: ID.unique(),
-            $createdAt: toLocaleDateTime(now),
-            $updatedAt: toLocaleDateTime(now)
-        };
-    }
 
     async function onSelect(file: Models.File, localFile = false) {
         $isCollectionsJsonImportInProgress = true;

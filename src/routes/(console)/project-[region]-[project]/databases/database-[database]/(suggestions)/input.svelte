@@ -5,13 +5,16 @@
     import { slide } from 'svelte/transition';
     import { entityColumnSuggestions } from './store';
     import { getTerminologies } from '$database/(entity)';
-    import { Button, InputTextarea } from '$lib/elements/forms';
+    import { randomDataModalState } from '$database/store';
+    import { Button, InputTextarea, Seekbar } from '$lib/elements/forms';
     import { Card, Layout, Selector, Typography } from '@appwrite.io/pink-svelte';
 
     const {
-        isModal = false
+        isModal = false,
+        showSampleCountPicker = false
     }: {
         isModal?: boolean;
+        showSampleCountPicker?: boolean;
     } = $props();
 
     onMount(() => {
@@ -92,12 +95,27 @@
         <!-- just being safe with extra guard! -->
         {#if $entityColumnSuggestions.enabled && featureActive}
             <div class="context-input" transition:slide={{ duration: 200 }}>
-                <InputTextarea
-                    id="context"
-                    rows={3}
-                    maxlength={255}
-                    bind:value={$entityColumnSuggestions.context}
-                    placeholder="Optional: Add context to improve suggestions" />
+                <Layout.Stack gap="xl">
+                    <InputTextarea
+                        id="context"
+                        rows={3}
+                        maxlength={255}
+                        bind:value={$entityColumnSuggestions.context}
+                        placeholder="Optional: Add context to improve suggestions" />
+
+                    {#if showSampleCountPicker}
+                        <Layout.Stack gap="m" style="margin-block-end: var(--space-4, 8px);">
+                            <Typography.Text>
+                                Select how many random documents to generate for testing.
+                            </Typography.Text>
+
+                            <Seekbar
+                                max={100}
+                                breakpointCount={5}
+                                bind:value={$randomDataModalState.value} />
+                        </Layout.Stack>
+                    {/if}
+                </Layout.Stack>
             </div>
         {/if}
     </Layout.Stack>

@@ -152,7 +152,7 @@
         }} />
 
     {#if useSuggestions}
-        <SuggestionsInput />
+        <SuggestionsInput showSampleCountPicker={terminology.type === 'documentsdb'} />
     {/if}
 
     <svelte:fragment slot="footer">

@@ -1,10 +1,21 @@
 <script lang="ts" context="module">
     import { writable } from 'svelte/store';
+    import { ID } from '@appwrite.io/console';
+    import { toLocaleDateTime } from '$lib/helpers/date';
 
     const showCreateIndex = writable(false);
     export const initCreateIndex = () => {
         showCreateIndex.set(true);
     };
+
+    export function buildInitDoc() {
+        const now = new Date().toISOString();
+        return {
+            $id: ID.unique(),
+            $createdAt: toLocaleDateTime(now),
+            $updatedAt: toLocaleDateTime(now)
+        };
+    }
 </script>
 
 <script lang="ts">
@@ -32,7 +43,8 @@
     import { hash } from '$lib/helpers/string';
     import {
         documentActivitySheet,
-        documentPermissionSheet
+        documentPermissionSheet,
+        noSqlDocument
     } from '$database/collection-[collection]/store';
     import {
         SideSheet,
@@ -94,7 +106,7 @@
             label: 'Create documents',
             keys: page.url.pathname.endsWith(collection?.$id) ? ['d'] : ['d', 'c'],
             callback: () => {
-                // TODO: later
+                noSqlDocument.create(buildInitDoc());
             },
             icon: IconPlus,
             group: 'documents'
@@ -233,8 +245,7 @@
                 status: 'available'
             })) as Field[];
 
-            // TODO: @itznotabug - maybe we should show a seekbar
-            const { rows } = generateFakeRecords(100, fields);
+            const { rows } = generateFakeRecords($randomDataModalState.value, fields);
 
             await sdk
                 .forProject(page.params.region, page.params.project)
