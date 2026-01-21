@@ -26,57 +26,21 @@
     }: { columns: Writable<Column[]> | undefined; analyticsSource?: string } = $props();
 
     function parseTagParts(tagString: string): { text: string; operator: boolean }[] {
-        const parts: { text: string; operator: boolean }[] = [];
-        const regex = /\*\*(.*?)\*\*/g;
-        let match;
-        let lastIndex = 0;
-        const matches: Array<{ text: string; index: number; endIndex: number }> = [];
-
-        // find all bold matches
-        while ((match = regex.exec(tagString)) !== null) {
-            matches.push({
-                text: match[1],
-                index: match.index,
-                endIndex: regex.lastIndex
-            });
-        }
-
-        // Build parts array
-        for (let i = 0; i < matches.length; i++) {
-            const currentMatch = matches[i];
-
-            // Add text before this match (operators, etc.)
-            if (lastIndex < currentMatch.index) {
-                const beforeText = tagString.substring(lastIndex, currentMatch.index).trim();
-                if (beforeText) {
-                    parts.push(
-                        ...beforeText
-                            .split(/\s+/)
-                            .filter(Boolean)
-                            .map((t) => ({ text: t, operator: true }))
-                    );
-                }
-            }
-
-            // Add the bold text itself
-            parts.push({ text: currentMatch.text, operator: false });
-            lastIndex = currentMatch.endIndex;
-        }
-
-        // Add any remaining text after last match
-        if (lastIndex < tagString.length) {
-            const remaining = tagString.substring(lastIndex).trim();
-            if (remaining) {
-                parts.push(
-                    ...remaining
+        return tagString
+            .split(/\*\*(.*?)\*\*/)
+            .map((part, index) => {
+                // Even indices are outside bold (operators), odd indices are inside bold (values)
+                if (index % 2 === 0) {
+                    return part
                         .split(/\s+/)
                         .filter(Boolean)
-                        .map((t) => ({ text: t, operator: true }))
-                );
-            }
-        }
-
-        return parts.filter((p) => Boolean(p.text));
+                        .map((t) => ({ text: t, operator: true }));
+                } else {
+                    return [{ text: part, operator: false }];
+                }
+            })
+            .flat()
+            .filter((p) => Boolean(p.text));
     }
 
     function firstBoldText(tagString: string): string | null {
