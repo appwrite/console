@@ -292,12 +292,14 @@ export type OrganizationUsage = {
     databasesReads: Array<Models.Metric>;
     databasesWrites: Array<Models.Metric>;
     imageTransformations: Array<Models.Metric>;
+    screenshotsGenerated: Array<Models.Metric>;
     executionsTotal: number;
     filesStorageTotal: number;
     buildsStorageTotal: number;
     databasesReadsTotal: number;
     databasesWritesTotal: number;
     imageTransformationsTotal: number;
+    screenshotsGeneratedTotal: number;
     deploymentsStorageTotal: number;
     executionsMBSecondsTotal: number;
     buildsMBSecondsTotal: number;
@@ -316,6 +318,7 @@ export type OrganizationUsage = {
         authPhoneTotal: number;
         authPhoneEstimate: number;
         imageTransformations: number;
+        screenshotsGenerated: number;
     }>;
     authPhoneTotal: number;
     authPhoneEstimate: number;
@@ -384,6 +387,7 @@ export type Plan = {
     bandwidth: number;
     storage: number;
     imageTransformations: number;
+    screenshotsGenerated: number;
     webhooks: number;
     users: number;
     teams: number;
@@ -411,6 +415,7 @@ export type Plan = {
         databasesWrites: AdditionalResource;
         GBHours: AdditionalResource;
         imageTransformations: AdditionalResource;
+        screenshotsGenerated: AdditionalResource;
     };
     addons: {
         seats: PlanAddon;
