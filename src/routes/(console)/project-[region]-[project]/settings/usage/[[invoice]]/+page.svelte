@@ -253,7 +253,7 @@
                     <div class="u-flex u-main-space-between">
                         <p>
                             <span class="heading-level-4">{current}</span>
-                            <span class="body-text-1 u-bold">Transformations</span>
+                            <span class="body-text-1 u-bold">Screenshots generated</span>
                         </p>
                     </div>
                 </div>
