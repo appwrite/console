@@ -12,19 +12,15 @@
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { page } from '$app/state';
     import deepEqual from 'deep-equal';
+    import type { PrefRow } from '$lib/helpers/prefs';
+    import { normalizePrefs, createPrefRow, isAddDisabled, sanitizePrefs } from '$lib/helpers/prefs';
 
-    type PrefRow = { key: string; value: string };
-
-    function normalize(entries: [string, string][] | PrefRow[]): [string, string][] {
-        return entries
-            .map(item => Array.isArray(item) ? item : [item.key, item.value])
-            .filter(([k, v]: [string, string]) => k.trim() && v.trim())
-            .sort(([a]: [string, string], [b]: [string, string]) => a.localeCompare(b));
-    }
 
     $: if (prefs) {
-        const currentNormalized = normalize(prefs);
-        const originalNormalized = normalize(Object.entries($team.prefs as Record<string, string>));
+        const currentNormalized = normalizePrefs(prefs);
+        const originalNormalized = normalizePrefs(
+            Object.entries($team.prefs as Record<string, string>)
+        );
 
         arePrefsDisabled = deepEqual(currentNormalized, originalNormalized);
     }
@@ -32,26 +28,22 @@
     let prefs: PrefRow[] = null;
     let arePrefsDisabled = true;
 
-    function createPrefRow(key = '', value = ''): PrefRow {
-        return {key, value };
-    }
-
     onMount(async () => {
         const entries = Object.entries($team.prefs as Record<string, string>);
-        prefs = entries.length > 0
-            ? entries.map(([key, value]) => createPrefRow(key, value))
-            : [createPrefRow()];
+        prefs =
+            entries.length > 0
+                ? entries.map(([key, value]) => createPrefRow(key, value))
+                : [createPrefRow()];
     });
 
     async function updatePrefs() {
         try {
-            const sanitizedPrefs = prefs.filter(
-                pref => pref.key.trim() !== '' && pref.value.trim() !== ''
-            );
+            const sanitizedPrefs = sanitizePrefs(prefs);
 
-            const updatedPrefs = sanitizedPrefs.length === 0
-                ? {}
-                : Object.fromEntries(sanitizedPrefs.map(pref => [pref.key, pref.value]));
+            const updatedPrefs =
+                sanitizedPrefs.length === 0
+                    ? {}
+                    : Object.fromEntries(sanitizedPrefs.map((pref) => [pref.key, pref.value]));
 
             await sdk
                 .forProject(page.params.region, page.params.project)
@@ -87,7 +79,7 @@
                             id={`key-${index}`}
                             value={pref.key}
                             on:input={(e) => {
-                                prefs[index].key = e.target.value;
+                                prefs[index].key = (e.target as HTMLInputElement).value;
                                 prefs = [...prefs];
                             }}
                             placeholder="Enter key"
@@ -98,7 +90,7 @@
                                 id={`value-${index}`}
                                 value={pref.value}
                                 on:input={(e) => {
-                                    prefs[index].value = e.target.value;
+                                    prefs[index].value = (e.target as HTMLInputElement).value;
                                     prefs = [...prefs];
                                 }}
                                 placeholder="Enter value"
@@ -109,7 +101,7 @@
                                 compact
                                 disabled={(!pref.key || !pref.value) && index === 0}
                                 on:click={() => {
-                                        prefs.splice(index, 1);
+                                    prefs.splice(index, 1);
                                     prefs = [...prefs];
                                 }}>
                                 <span class="icon-x" aria-hidden="true"></span>
@@ -121,12 +113,8 @@
             <div>
                 <Button
                     secondary
-                    disabled={
-                        !!prefs &&
-                        prefs.length > 0 &&
-                        !(prefs[prefs.length - 1].key && prefs[prefs.length - 1].value)
-                    }
-                     on:click={() => {
+                    disabled={isAddDisabled(prefs)}
+                    on:click={() => {
                         if (!prefs) return;
                         prefs = [...prefs, createPrefRow()];
                     }}>
