@@ -16,7 +16,8 @@
         | 'authPhoneTotal'
         | 'databasesReads'
         | 'databasesWrites'
-        | 'imageTransformations';
+        | 'imageTransformations'
+        | 'screenshotsGenerated';
 
     type Estimate = 'authPhoneEstimate';
 
