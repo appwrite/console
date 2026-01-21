@@ -384,6 +384,7 @@ export type Plan = {
     bandwidth: number;
     storage: number;
     imageTransformations: number;
+    screenshotsGenerated: number;
     webhooks: number;
     users: number;
     teams: number;
