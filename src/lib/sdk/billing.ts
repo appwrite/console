@@ -298,6 +298,7 @@ export type OrganizationUsage = {
     databasesReadsTotal: number;
     databasesWritesTotal: number;
     imageTransformationsTotal: number;
+    screenshotsGeneratedTotal: number;
     deploymentsStorageTotal: number;
     executionsMBSecondsTotal: number;
     buildsMBSecondsTotal: number;
@@ -316,6 +317,7 @@ export type OrganizationUsage = {
         authPhoneTotal: number;
         authPhoneEstimate: number;
         imageTransformations: number;
+        screenshotsGenerated: number;
     }>;
     authPhoneTotal: number;
     authPhoneEstimate: number;
