@@ -104,7 +104,13 @@
                                             <Typography.Text color="--fgcolor-neutral-secondary"
                                                 >{part.text}</Typography.Text>
                                         {:else}
-                                            {capitalize(part.text)}
+                                            <Typography.Text
+                                                variant="m-500"
+                                                color="--fgcolor-neutral-secondary"
+                                                >{part.text
+                                                    .split(' or ')
+                                                    .map((t) => capitalize(t))
+                                                    .join(' or ')}</Typography.Text>
                                         {/if}
                                     </span>
                                     <svelte:fragment slot="menu">
