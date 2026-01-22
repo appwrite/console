@@ -23,6 +23,11 @@
     let isSubmitting = $state(false);
     let error = $state<string | null>(null);
 
+    $: if (!show) {
+        selectedState = '';
+        error = null;
+    }
+
     async function handleSubmit() {
         if (!selectedState) {
             error = 'Please select a state';
