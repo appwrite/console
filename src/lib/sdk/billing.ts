@@ -1408,7 +1408,7 @@ export class Billing {
     }
 
     async listRegions(organizationId: string): Promise<Models.ConsoleRegionList> {
-        const path = `/console/regions`;
+        const path = `/organizations/${organizationId}/regions`;
         const params = {
             organizationId
         };
