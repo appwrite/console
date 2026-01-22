@@ -23,10 +23,12 @@
     let isSubmitting = $state(false);
     let error = $state<string | null>(null);
 
-    $: if (!show) {
-        selectedState = '';
-        error = null;
-    }
+    $effect(() => {
+        if (!show) {
+            selectedState = '';
+            error = null;
+        }
+    });
 
     async function handleSubmit() {
         if (!selectedState) {
