@@ -9,6 +9,7 @@
     import DeletePaymentModal from './deletePaymentModal.svelte';
     import { hasStripePublicKey, isCloud } from '$lib/system';
     import PaymentModal from '$lib/components/billing/paymentModal.svelte';
+    import UpdateStateModal from '$lib/components/billing/updateStateModal.svelte';
     import {
         IconDotsHorizontal,
         IconInfo,
@@ -33,6 +34,8 @@
     let selectedLinkedOrgs: Organization[] = [];
     let showDelete = false;
     let showEdit = false;
+    let showUpdateState = false;
+    let paymentMethodNeedingState: PaymentMethodData | null = null;
     let isLinked = false;
 
     $: orgList = $organizationList.teams as unknown as Organization[];
@@ -49,6 +52,27 @@
     );
     $: hasLinkedOrgs = filteredMethods.some((method) => linkedMethodIds.has(method.$id));
     $: hasPaymentError = filteredMethods.some((method) => method?.lastError || method?.expired);
+
+    // Check for US payment methods without state
+    $: {
+        if ($paymentMethods?.paymentMethods && !showUpdateState && !paymentMethodNeedingState) {
+            const usMethodWithoutState = $paymentMethods.paymentMethods.find(
+                (method: PaymentMethodData) =>
+                    method?.country?.toLowerCase() === 'us' &&
+                    (!method.state || method.state.trim() === '') &&
+                    !!method.last4
+            );
+            if (usMethodWithoutState) {
+                paymentMethodNeedingState = usMethodWithoutState;
+                showUpdateState = true;
+            }
+        }
+    }
+
+    // Reset when modal is closed
+    $: if (!showUpdateState && paymentMethodNeedingState) {
+        paymentMethodNeedingState = null;
+    }
 </script>
 
 <CardGrid overflow={false}>
@@ -169,4 +193,7 @@
         method={selectedMethod.$id}
         bind:showDelete
         linkedOrgs={selectedLinkedOrgs} />
+{/if}
+{#if showUpdateState && paymentMethodNeedingState && isCloud && hasStripePublicKey}
+    <UpdateStateModal bind:show={showUpdateState} paymentMethod={paymentMethodNeedingState} />
 {/if}

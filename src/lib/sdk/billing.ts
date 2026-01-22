@@ -22,6 +22,7 @@ export type PaymentMethodData = {
     name: string;
     mandateId?: string;
     lastError?: string;
+    state?: string;
 };
 
 export type PaymentList = {
