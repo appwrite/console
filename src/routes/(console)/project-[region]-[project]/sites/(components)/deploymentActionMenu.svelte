@@ -57,6 +57,9 @@
                 deployment,
                 $regionalConsoleVariables
             )}
+            {@const actualStatus = deployment.status}
+            {@const statusForActions =
+                effectiveStatus === 'finalizing' ? actualStatus : effectiveStatus}
             {#if !inCard}
                 <Tooltip disabled={selectedDeployment?.sourceSize !== 0} placement={'bottom'}>
                     <div>
@@ -76,7 +79,7 @@
                     <div slot="tooltip">Source is empty</div>
                 </Tooltip>
             {/if}
-            {#if effectiveStatus === 'ready' && deployment?.$id !== activeDeployment}
+            {#if statusForActions === 'ready' && deployment?.$id !== activeDeployment}
                 <ActionMenu.Item.Button
                     leadingIcon={IconLightningBolt}
                     on:click={(e) => {
@@ -88,7 +91,7 @@
                     Activate
                 </ActionMenu.Item.Button>
             {/if}
-            {#if effectiveStatus === 'ready' || effectiveStatus === 'failed' || effectiveStatus === 'building'}
+            {#if statusForActions === 'ready' || statusForActions === 'failed' || statusForActions === 'building'}
                 <SubMenu>
                     <ActionMenu.Root noPadding>
                         <ActionMenu.Item.Button
@@ -107,7 +110,7 @@
                             </ActionMenu.Item.Anchor>
 
                             <ActionMenu.Item.Anchor
-                                disabled={effectiveStatus !== 'ready'}
+                                disabled={statusForActions !== 'ready'}
                                 on:click={toggle}
                                 href={getOutputDownload(deployment.$id)}
                                 external>
