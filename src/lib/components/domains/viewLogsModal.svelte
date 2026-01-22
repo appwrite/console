@@ -67,7 +67,13 @@
     });
 </script>
 
-<Modal title="Certificate logs" size="m" bind:show bind:error onSubmit={retryDomain} hideFooter={selectedProxyRule.status !== ProxyRuleStatus.Unverified}>
+<Modal
+    title="Certificate logs"
+    size="m"
+    bind:show
+    bind:error
+    onSubmit={retryDomain}
+    hideFooter={selectedProxyRule.status !== ProxyRuleStatus.Unverified}>
     <Logs logs={selectedProxyRule.logs} theme={$app.themeInUse} showScrollButton height="250px" />
     <svelte:fragment slot="footer">
         {#if selectedProxyRule.status === ProxyRuleStatus.Unverified}
