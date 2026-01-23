@@ -1,5 +1,14 @@
+<script module lang="ts">
+    export type CreateIndexesCallbackType = {
+        key: string;
+        type: IndexType;
+        fields: string[];
+        lengths: (number | null)[];
+        orders: string[];
+    };
+</script>
+
 <script lang="ts">
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import { goto, invalidate } from '$app/navigation';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
@@ -7,45 +16,56 @@
     import { Button, InputNumber, InputSelect, InputText } from '$lib/elements/forms';
     import { remove } from '$lib/helpers/array';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdk } from '$lib/stores/sdk';
-    import { IndexType } from '@appwrite.io/console';
-    import { isRelationship, isSpatialType } from '../rows/store';
-    import { table, indexes } from '../store';
+    import { isRelationship, isSpatialType } from '$database/table-[table]/rows/store';
     import { Icon, Layout } from '@appwrite.io/pink-svelte';
     import { IconCalendar, IconFingerPrint, IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
-    import { columnOptions as baseColumnOptions } from '../columns/store';
+    import { type Entity, getTerminologies } from '$database/(entity)';
+    import { resolveRoute, withPath } from '$lib/stores/navigation';
+    import { IndexType } from '@appwrite.io/console';
+    import { columnOptions as baseColumnOptions } from '$database/table-[table]/columns/store';
+    import { IndexOrder } from '$database/(suggestions)';
 
     let {
+        entity,
         showCreateIndex = $bindable(false),
-        externalColumnKey = null
+        externalFieldKey = null,
+        onCreateIndex
     }: {
+        entity: Entity;
         showCreateIndex: boolean;
-        externalColumnKey?: string;
+        externalFieldKey?: string | null;
+        onCreateIndex: (index: CreateIndexesCallbackType) => Promise<void>;
     } = $props();
 
-    const databaseId = page.params.database;
-
     let key = $state('');
-
+    let initializedForOpen = $state(false);
     let selectedType = $state<IndexType>(IndexType.Key);
 
-    let columnOptions = $derived(
-        $table.columns
-            .filter((column) => {
+    const { dependencies, terminology } = getTerminologies();
+
+    const fieldOptions = $derived(
+        entity.fields
+            .filter((field) => {
                 if (selectedType === IndexType.Spatial) {
-                    return isSpatialType(column); // keep only spatial
+                    // keep only spatial
+                    return isSpatialType(field);
                 }
-                return !isRelationship(column) && !isSpatialType(column); // keep non-relationship and non-spatial
+                // keep non-relationship and non-spatial
+                return !isRelationship(field) && !isSpatialType(field);
             })
-            .map((column) => ({
-                value: column.key,
-                label: column.key,
-                leadingIcon: baseColumnOptions.find((option) => option.type === column.type)?.icon
+            .map((field) => ({
+                value: field.key,
+                label: field.key,
+                leadingIcon: baseColumnOptions.find((option) => option.type === field.type)?.icon
             }))
     );
 
-    let columnList = $state([{ value: '', order: '', length: null }]);
+    let fieldList: Array<{
+        value: string;
+        order: IndexOrder | null;
+        length: number | null;
+    }> = $state([{ value: '', order: null, length: null }]);
 
     const types = [
         { value: IndexType.Key, label: 'Key' },
@@ -68,17 +88,17 @@
               ]
     );
 
-    // spatial type selected -> reset column list to single empty column
-    // and the column already is not spatial type
+    // spatial type selected -> reset field list to single empty field
+    // and the field already is not spatial type
     $effect(() => {
-        const firstColumn = $table.columns.find((col) => col.key === columnList.at(0)?.value);
-        if (selectedType === IndexType.Spatial && firstColumn && !isSpatialType(firstColumn)) {
-            columnList = [{ value: '', order: null, length: null }];
+        const firstField = entity.fields.find((field) => field.key === fieldList.at(0)?.value);
+        if (selectedType === IndexType.Spatial && firstField && !isSpatialType(firstField)) {
+            fieldList = [{ value: '', order: null, length: null }];
         }
     });
 
     function generateIndexKey() {
-        let indexKeys = $indexes.map((index) => index.key);
+        let indexKeys = entity.indexes.map((index) => index.key);
 
         let highestIndex = indexKeys.reduce((max, key) => {
             const match = key.match(/^index_(\d+)$/);
@@ -89,62 +109,75 @@
     }
 
     function initialize() {
-        const column = $table.columns.filter((column) => externalColumnKey === column.key);
-        const isSpatial = column.length && isSpatialType(column[0]);
-        const order = isSpatial ? null : 'ASC';
+        const field = entity.fields.filter((field) => externalFieldKey === field.key);
+        const isSpatial = field.length && isSpatialType(field[0]);
+        const order = isSpatial ? null : IndexOrder.ASC;
+
         selectedType = isSpatial ? IndexType.Spatial : IndexType.Key;
-        columnList = externalColumnKey
-            ? [{ value: externalColumnKey, order, length: null }]
+
+        fieldList = externalFieldKey
+            ? [{ value: externalFieldKey, order, length: null }]
             : [{ value: '', order, length: null }];
-        key = `index_${$indexes.length + 1}`;
+
+        key = `index_${entity.indexes.length + 1}`;
     }
 
-    const addColumnDisabled = $derived(
+    const addFieldDisabled = $derived(
         selectedType === IndexType.Spatial ||
-            !columnList.at(-1)?.value ||
-            (!columnList.at(-1)?.order && columnList.at(-1)?.order !== null)
+            !fieldList.at(-1)?.value ||
+            (!fieldList.at(-1)?.order && fieldList.at(-1)?.order !== null)
     );
 
     const isOnIndexesPage = $derived(page.route.id?.endsWith('/indexes'));
-    const navigatorPathToIndexes = $derived(
-        `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/table-${$table?.$id}/indexes`
-    );
+    const navigatorPathToIndexes = $derived.by(() => {
+        const type = terminology.entity.lower.singular;
+        const base = resolveRoute(
+            '/(console)/project-[region]-[project]/databases/database-[database]',
+            page.params
+        );
 
-    let initializedForOpen = $state(false);
+        return withPath(base, `${type}-${entity.$id}`, 'indexes');
+    });
+
     $effect(() => {
         if (showCreateIndex && !initializedForOpen) {
             initialize();
             key = generateIndexKey();
             initializedForOpen = true;
         }
+
         if (!showCreateIndex && initializedForOpen) {
             initializedForOpen = false;
         }
     });
 
     export async function create() {
-        if (!key || !selectedType || (selectedType !== IndexType.Spatial && addColumnDisabled)) {
+        const fieldType = terminology.field.lower.singular;
+
+        if (!key || !selectedType || (selectedType !== IndexType.Spatial && addFieldDisabled)) {
             addNotification({
                 type: 'error',
-                message: 'Selected column key or type invalid'
+                message: `Selected ${fieldType} key or type invalid`
             });
-            throw new Error('Selected column key or type invalid');
+            throw new Error(`Selected ${fieldType} key or type invalid`);
         }
 
         try {
-            const orders = columnList.map((a) => a.order).filter((order) => order !== null);
-            await sdk.forProject(page.params.region, page.params.project).tablesDB.createIndex({
-                databaseId,
-                tableId: $table.$id,
+            const orders = fieldList
+                .map((field) => field.order)
+                .filter((order: IndexOrder) => order !== null)
+                .map((order) => String(order));
+
+            await onCreateIndex({
                 key,
                 type: selectedType,
-                columns: columnList.map((a) => a.value),
-                lengths: columnList.map((a) => (a.length ? Number(a.length) : null)),
-                ...(orders.length ? { orders } : {})
+                fields: fieldList.map((a) => a.value),
+                lengths: fieldList.map((a) => (a.length ? Number(a.length) : null)),
+                orders: orders.length ? orders : []
             });
 
             await Promise.allSettled([
-                invalidate(Dependencies.TABLE),
+                invalidate(dependencies.entity.singular),
                 invalidate(Dependencies.DATABASE)
             ]);
 
@@ -172,11 +205,11 @@
         }
     }
 
-    function addColumn() {
-        if (addColumnDisabled) return;
+    function addField() {
+        if (addFieldDisabled) return;
 
-        // We assign instead of pushing to trigger Svelte's reactivity
-        columnList = [...columnList, { value: '', order: '', length: null }];
+        // we assign instead of pushing to trigger Svelte's reactivity
+        fieldList = [...fieldList, { value: '', order: null, length: null }];
     }
 </script>
 
@@ -189,10 +222,12 @@
     bind:value={key}
     autofocus />
 
-<InputSelect required options={types} id="type" label="Index type" bind:value={selectedType} />
+<InputSelect required id="type" options={types} label="Index type" bind:value={selectedType} />
 
 <Layout.Stack gap="s">
-    {#each columnList as column, index}
+    {@const fieldType = terminology.field.title.singular}
+    {@const fieldTypeLower = terminology.field.lower.singular}
+    {#each fieldList as field, index}
         {@const direction = $isSmallViewport ? 'column' : 'row'}
         <Layout.Stack {direction}>
             <InputSelect
@@ -214,19 +249,19 @@
                                   leadingIcon: IconCalendar
                               }
                           ]),
-                    ...columnOptions
+                    ...fieldOptions
                 ]}
-                id={`column-${index}`}
-                label={index === 0 ? 'Column' : undefined}
-                placeholder="Select column"
-                bind:value={column.value} />
+                id={`field-${index}`}
+                label={index === 0 ? fieldType : undefined}
+                placeholder="Select {fieldType}"
+                bind:value={field.value} />
 
             <InputSelect
                 options={orderOptions}
                 required
                 id={`order-${index}`}
                 label={index === 0 ? 'Order' : undefined}
-                bind:value={column.order}
+                bind:value={field.order}
                 placeholder="Select order" />
 
             {#if selectedType === IndexType.Key}
@@ -234,7 +269,7 @@
                     id={`length-${index}`}
                     label={index === 0 ? 'Length' : undefined}
                     placeholder="Enter length"
-                    bind:value={column.length} />
+                    bind:value={field.length} />
             {/if}
 
             {#if $isSmallViewport}
@@ -242,9 +277,9 @@
                     <Button
                         text
                         secondary
-                        disabled={columnList.length <= 1}
+                        disabled={fieldList.length <= 1}
                         on:click={() => {
-                            columnList = remove(columnList, index);
+                            fieldList = remove(fieldList, index);
                         }}>
                         Remove
                     </Button>
@@ -255,9 +290,9 @@
                         icon
                         size="s"
                         secondary
-                        disabled={columnList.length <= 1}
+                        disabled={fieldList.length <= 1}
                         on:click={() => {
-                            columnList = remove(columnList, index);
+                            fieldList = remove(fieldList, index);
                         }}>
                         <Icon icon={IconX} size="s" />
                     </Button>
@@ -266,9 +301,9 @@
         </Layout.Stack>
     {/each}
     <div>
-        <Button compact on:click={addColumn} disabled={addColumnDisabled}>
+        <Button compact on:click={addField} disabled={addFieldDisabled}>
             <Icon icon={IconPlus} slot="start" size="s" />
-            Add column
+            Add {fieldTypeLower}
         </Button>
     </div>
 </Layout.Stack>

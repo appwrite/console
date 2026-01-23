@@ -20,11 +20,28 @@ export type Columns =
     | Models.ColumnPolygon
     | (Models.ColumnRelationship & { default?: never });
 
-type Table = Omit<Models.Table, 'columns'> & {
+export type Attributes =
+    | Models.AttributeBoolean
+    | Models.AttributeEmail
+    | Models.AttributeEnum
+    | Models.AttributeFloat
+    | Models.AttributeInteger
+    | Models.AttributeIp
+    | Models.AttributeString
+    | Models.AttributeUrl
+    | Models.AttributePoint
+    | Models.AttributeLine
+    | Models.AttributePolygon
+    | (Models.AttributeRelationship & { default?: never });
+
+export type Collection = Omit<Models.Collection, 'attributes'> & {
+    attributes: Array<Attributes>;
+};
+
+export type Table = Omit<Models.Table, 'columns'> & {
     columns: Array<Columns>;
 };
 
-export const table = derived(page, ($page) => $page.data.table as Table);
 export const columns = derived(page, ($page) => $page.data.table.columns as Columns[]);
 export const indexes = derived(page, ($page) => $page.data.table.indexes as Models.ColumnIndex[]);
 
