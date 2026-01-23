@@ -13,9 +13,16 @@
     } from '@appwrite.io/pink-svelte';
     import DomainMetrics from './domainMetrics.svelte';
     import { base } from '$app/paths';
+    import { isSmallViewport } from '$lib/stores/viewport';
     import { app } from '$lib/stores/app';
     import { Button } from '$lib/elements/forms';
-    import { IconDownload, IconPlus, IconUpload } from '@appwrite.io/pink-icons-svelte';
+    import {
+        IconDownload,
+        IconPlus,
+        IconUpload,
+        IconAdjustments
+    } from '@appwrite.io/pink-icons-svelte';
+    import DisplaySettingsModal from '$lib/layout/displaySettingsModal.svelte';
     import { ViewSelector } from '$lib/components';
     import { View } from '$lib/helpers/load';
     import { columns, presets } from './store';
@@ -33,6 +40,7 @@
     let showCreate = false;
     let showPresetModal = false;
     let showImportModal = false;
+    let showDisplaySettingsModal = false;
     let selectedPreset = '';
 
     async function downloadRecords() {
@@ -70,23 +78,55 @@
 
         <Layout.Stack gap="l">
             {#if data.recordList.total}
-                <Layout.Stack direction="row" justifyContent="space-between">
-                    <Layout.Stack direction="row" gap="s" inline>
-                        <Button secondary on:click={() => (showImportModal = true)}>
-                            <Icon icon={IconUpload} size="s" slot="start" />
-                            Import zone file
+                <Layout.Stack direction="row" gap="s" alignItems="center" wrap="wrap">
+                    <div style:order={$isSmallViewport ? 2 : undefined}>
+                        <Button
+                            secondary
+                            icon={$isSmallViewport}
+                            ariaLabel={$isSmallViewport ? 'Import zone file' : undefined}
+                            on:click={() => (showImportModal = true)}>
+                            {#if $isSmallViewport}
+                                <Icon size="m" icon={IconUpload} />
+                            {:else}
+                                <Icon icon={IconUpload} size="s" slot="start" />
+                                Import zone file
+                            {/if}
                         </Button>
+                    </div>
+
+                    <div style:order={$isSmallViewport ? 3 : undefined}>
                         <Tooltip>
                             <PinkButton.Button variant="secondary" icon on:click={downloadRecords}>
-                                <Icon icon={IconDownload} size="s" />
+                                <Icon icon={IconDownload} size={$isSmallViewport ? 'm' : 's'} />
                             </PinkButton.Button>
                             <svelte:fragment slot="tooltip">Export as .txt</svelte:fragment>
                         </Tooltip>
-                    </Layout.Stack>
-                    <Layout.Stack direction="row" gap="s" inline>
-                        <ViewSelector ui="new" view={View.Table} {columns} hideView />
+                    </div>
+
+                    {#if !$isSmallViewport}
+                        <div style="flex: 1"></div>
+                    {/if}
+
+                    <div style:order={$isSmallViewport ? 4 : undefined}>
+                        {#if $isSmallViewport}
+                            <Button
+                                secondary
+                                icon
+                                ariaLabel="Display settings"
+                                on:click={() => (showDisplaySettingsModal = true)}>
+                                <Icon icon={IconAdjustments} />
+                            </Button>
+                        {:else}
+                            <ViewSelector ui="new" view={View.Table} {columns} hideView />
+                        {/if}
+                    </div>
+
+                    <div
+                        style:order={$isSmallViewport ? 1 : undefined}
+                        style:flex={$isSmallViewport ? 1 : undefined}>
                         <Popover let:toggle padding="none">
-                            <Button secondary on:click={toggle}>Add preset</Button>
+                            <Button secondary fullWidth={$isSmallViewport} on:click={toggle}
+                                >Add preset</Button>
                             <svelte:fragment slot="tooltip" let:toggle>
                                 <ActionMenu.Root>
                                     {#each presets as preset}
@@ -100,11 +140,16 @@
                                 </ActionMenu.Root>
                             </svelte:fragment>
                         </Popover>
-                        <Button size="s" on:click={() => (showCreate = true)}>
+                    </div>
+
+                    <div
+                        style:order={$isSmallViewport ? 5 : undefined}
+                        style:width={$isSmallViewport ? '100%' : undefined}>
+                        <Button fullWidth={$isSmallViewport} on:click={() => (showCreate = true)}>
                             <Icon size="s" icon={IconPlus} slot="start" />
                             Create record
                         </Button>
-                    </Layout.Stack>
+                    </div>
                 </Layout.Stack>
                 <Table {data} />
             {:else}
@@ -152,4 +197,12 @@
 
 {#if showRetry}
     <RetryDomainModal bind:show={showRetry} selectedDomain={data.domain} />
+{/if}
+
+{#if showDisplaySettingsModal}
+    <DisplaySettingsModal
+        bind:show={showDisplaySettingsModal}
+        {columns}
+        hideView
+        view={View.Table} />
 {/if}

@@ -16,7 +16,6 @@
         Typography
     } from '@appwrite.io/pink-svelte';
     import { isRelationship, isSpatialType, isString } from '../rows/store';
-    import FailedModal from '../failedModal.svelte';
     import {
         columns,
         type Columns,
@@ -46,10 +45,8 @@
     } from '@appwrite.io/pink-icons-svelte';
     import { type ComponentProps, onDestroy, onMount } from 'svelte';
     import { Click, trackEvent } from '$lib/actions/analytics';
-    import CsvDisabled from '../csvDisabled.svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
-    import SideSheet from '../layout/sidesheet.svelte';
-    import SpreadsheetContainer from '../layout/spreadsheet.svelte';
+    import { SideSheet, SpreadsheetContainer, FailedModal, CsvDisabled } from '$database/(entity)';
     import { showCreateColumnSheet } from '../store';
     import { type Models } from '@appwrite.io/console';
     import { preferences } from '$lib/stores/preferences';
@@ -572,9 +569,9 @@
 </div>
 
 {#if selectedColumn}
-    <DeleteColumn bind:showDelete bind:selectedColumn />
+    <DeleteColumn table={data.table} bind:showDelete bind:selectedColumn />
 {:else if selectedColumns && selectedColumns.length}
-    <DeleteColumn bind:showDelete bind:selectedColumn={selectedColumns} />
+    <DeleteColumn table={data.table} bind:showDelete bind:selectedColumn={selectedColumns} />
 {/if}
 
 <SideSheet
@@ -587,9 +584,7 @@
     <EditColumn showEdit isModal={false} {selectedColumn} bind:this={editColumn} />
 </SideSheet>
 
-{#if showFailed}
-    <FailedModal bind:show={showFailed} title="Create attribute" header="Creation failed" {error} />
-{/if}
+<FailedModal bind:show={showFailed} title="Create column" header="Creation failed" {error} />
 
 <style>
     .floating-action-bar {

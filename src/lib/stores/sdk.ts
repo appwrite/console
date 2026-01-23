@@ -3,6 +3,7 @@ import {
     Account,
     Assistant,
     Avatars,
+    Backups,
     Client,
     Console,
     Functions,
@@ -22,11 +23,11 @@ import {
     Tokens,
     TablesDB,
     Domains,
+    DocumentsDB,
     Realtime,
     Organizations
 } from '@appwrite.io/console';
 import { Billing } from '../sdk/billing';
-import { Backups } from '../sdk/backups';
 import { Sources } from '$lib/sdk/sources';
 import {
     REGION_FRA,
@@ -137,6 +138,7 @@ const sdkForProject = {
     migrations: new Migrations(clientProject),
     sites: new Sites(clientProject),
     tablesDB: new TablesDB(clientProject),
+    documentsDB: new DocumentsDB(clientProject),
     console: new Console(clientProject) // for suggestions API
 };
 

@@ -11,7 +11,6 @@
     } from '@appwrite.io/pink-svelte';
     import { Button, Form } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
-    import { organization } from '$lib/stores/organization';
     import { addNotification } from '$lib/stores/notifications';
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
@@ -23,6 +22,7 @@
     import RecordTable from '$lib/components/domains/recordTable.svelte';
     import NameserverTable from '$lib/components/domains/nameserverTable.svelte';
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
+    import { getApexDomain } from '$lib/helpers/tlds.js';
 
     let { data } = $props();
 
@@ -44,6 +44,7 @@
     );
     const showNSTab = isCloud;
 
+    let proxyRule = $derived(data.proxyRule);
     let selectedTab = $state<'cname' | 'nameserver' | 'a' | 'aaaa'>(getDefaultTab());
     let routeBase = `${base}/project-${page.params.region}-${page.params.project}/sites/site-${page.params.site}/domains`;
     let verified: boolean | undefined = $state(undefined);
@@ -54,44 +55,34 @@
     }
 
     async function verify() {
-        const isNewDomain =
-            data.domainsList.domains.findIndex((rule) => rule.domain === data.proxyRule.domain) ===
-            -1;
+        verified = undefined;
+
         try {
-            if (selectedTab !== 'nameserver') {
-                const ruleData = await sdk
-                    .forProject(page.params.region, page.params.project)
-                    .proxy.updateRuleVerification({ ruleId });
-                verified = ruleData.status === 'verified';
-
-                // This means domain verification using DNS records hasn't succeeded and the rule is still in initial state.
-                if (ruleData.status === 'created') {
-                    throw new Error(
-                        'Domain verification failed. Please check your domain settings or try again later'
-                    );
-                }
-            } else if (isNewDomain && isCloud) {
-                const domainData = await sdk.forConsole.domains.create({
-                    teamId: $organization.$id,
-                    domain: data.proxyRule.domain
-                });
-                verified = domainData.nameservers.toLowerCase() === 'appwrite';
-            }
-
-            if (verified) {
-                addNotification({
-                    type: 'success',
-                    message: 'Domain added successfully'
-                });
-            } else {
-                addNotification({
-                    type: 'info',
-                    message: 'Verification in progress'
+            const apexDomain = getApexDomain(proxyRule.domain);
+            const domain = data.domainsList.domains.find((d) => d.domain === apexDomain);
+            if (isCloud && domain) {
+                await sdk.forConsole.domains.updateNameservers({
+                    domainId: domain.$id
                 });
             }
+        } catch (error) {
+            // Ignore error
+        }
+
+        try {
+            proxyRule = await sdk
+                .forProject(page.params.region, page.params.project)
+                .proxy.updateRuleVerification({ ruleId });
+
+            await Promise.all([
+                invalidate(Dependencies.DOMAINS),
+                invalidate(Dependencies.SITES_DOMAINS)
+            ]);
             await goto(routeBase);
-            await invalidate(Dependencies.DOMAINS);
-            await invalidate(Dependencies.SITES_DOMAINS);
+            addNotification({
+                type: 'success',
+                message: 'Domain verified successfully'
+            });
         } catch (error) {
             verified = false;
             isSubmitting.set(false);
@@ -108,7 +99,7 @@
                 .forProject(page.params.region, page.params.project)
                 .proxy.deleteRule({ ruleId });
         }
-        await goto(`${routeBase}/add-domain?domain=${data.proxyRule.domain}`);
+        await goto(`${routeBase}/add-domain?domain=${proxyRule.domain}`);
     }
 </script>
 
@@ -125,7 +116,7 @@
                         <Icon icon={IconGlobeAlt} color="--fgcolor-neutral-primary" />
 
                         <Typography.Text variation="m-500" color="--fgcolor-neutral-primary">
-                            {data.proxyRule.domain}
+                            {proxyRule.domain}
                         </Typography.Text>
                     </Layout.Stack>
                     <Button secondary on:click={back}>Change</Button>
@@ -172,14 +163,17 @@
                         <Divider />
                     </div>
                     {#if selectedTab === 'nameserver'}
-                        <NameserverTable domain={data.proxyRule.domain} {verified} />
+                        <NameserverTable
+                            {verified}
+                            domain={proxyRule.domain}
+                            ruleStatus={proxyRule.status} />
                     {:else}
                         <RecordTable
                             {verified}
                             service="sites"
                             variant={selectedTab}
-                            domain={data.proxyRule.domain}
-                            ruleStatus={data.proxyRule.status}
+                            domain={proxyRule.domain}
+                            ruleStatus={proxyRule.status}
                             onNavigateToNameservers={() => (selectedTab = 'nameserver')}
                             onNavigateToA={() => (selectedTab = 'a')}
                             onNavigateToAAAA={() => (selectedTab = 'aaaa')} />

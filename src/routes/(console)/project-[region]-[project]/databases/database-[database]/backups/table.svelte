@@ -15,10 +15,8 @@
     import { addNotification } from '$lib/stores/notifications';
     import { invalidate } from '$app/navigation';
     import { calculateSize } from '$lib/helpers/sizeConvertion';
-    import { ID } from '@appwrite.io/console';
+    import { ID, type Models } from '@appwrite.io/console';
     import { columns } from './store';
-    import { database } from '../store';
-    import type { BackupArchive, BackupPolicy } from '$lib/sdk/backups';
     import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { copy } from '$lib/helpers/copy';
     import { LabelCard } from '$lib/components/index.js';
@@ -52,10 +50,12 @@
         data: PageData;
     } = $props();
 
-    let showDelete = $state(false);
-    let selectedBackup: BackupArchive | null = $state(null);
+    const database = $derived(data.database);
 
-    let showDropdown = [];
+    let showDelete = $state(false);
+    let selectedBackup: Models.BackupArchive | null = $state(null);
+
+    let showDropdown = $state([]);
 
     let showRestore = $state(false);
     let showCustomId = $state(false);
@@ -66,6 +66,7 @@
 
     let confirmSameDbRestore = $state(false);
     let selectedRestoreOption = $state('new');
+
     const restoreOptions = [
         {
             id: 'new',
@@ -79,23 +80,15 @@
         }
     ];
 
-    const disableRestoreButton = $derived.by(() => {
-        return (
-            (selectedRestoreOption === 'new' &&
-                (!newDatabaseInfo.name || $database.$id === newDatabaseInfo.id)) ||
-            (selectedRestoreOption === 'same' && !confirmSameDbRestore)
-        );
-    });
-
-    function getPolicyDetails(policyId: string | null): BackupPolicy | null {
+    function getPolicyDetails(policyId: string | null): Models.BackupPolicy | null {
         return data.policies.policies.find((policy) => policy.$id === policyId);
     }
 
-    function getCleanBackupName(backup: BackupArchive): string {
+    function getCleanBackupName(backup: Models.BackupArchive): string {
         return toLocaleDateTime(backup.$createdAt).replaceAll(',', '');
     }
 
-    function getBackupStatus(backup: BackupArchive) {
+    function getBackupStatus(backup: Models.BackupArchive) {
         switch (backup.status) {
             case 'pending':
                 return 'pending';
@@ -115,7 +108,7 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .backups.deleteArchive(archiveId);
+                .backups.deleteArchive({ archiveId });
 
             addNotification({
                 type: 'success',
@@ -135,7 +128,9 @@
 
     async function deleteBackups(batchDelete: DeleteOperation): Promise<DeleteOperationState> {
         const result = await batchDelete((archiveId) =>
-            sdk.forProject(page.params.region, page.params.project).backups.deleteArchive(archiveId)
+            sdk
+                .forProject(page.params.region, page.params.project)
+                .backups.deleteArchive({ archiveId })
         );
 
         try {
@@ -153,19 +148,19 @@
 
     async function restoreBackup() {
         if (selectedRestoreOption === 'same') {
-            newDatabaseInfo.id = $database.$id;
-            newDatabaseInfo.name = $database.name;
+            newDatabaseInfo.id = database.$id;
+            newDatabaseInfo.name = database.name;
         }
 
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .backups.createRestoration(
-                    selectedBackup.$id,
-                    ['databases'],
-                    newDatabaseInfo.id ?? ID.unique(),
-                    newDatabaseInfo.name
-                );
+                .backups.createRestoration({
+                    archiveId: selectedBackup.$id,
+                    services: ['databases'],
+                    newResourceId: newDatabaseInfo.id ?? ID.unique(),
+                    newResourceName: newDatabaseInfo.name
+                });
             await invalidate(Dependencies.BACKUPS);
 
             addNotification({
@@ -182,6 +177,14 @@
             showRestore = false;
         }
     }
+
+    const disableRestoreButton = $derived.by(() => {
+        return (
+            (selectedRestoreOption === 'new' &&
+                (!newDatabaseInfo.name || database.$id === newDatabaseInfo.id)) ||
+            (selectedRestoreOption === 'same' && !confirmSameDbRestore)
+        );
+    });
 
     $effect(() => {
         if (!showRestore && !showDelete) {
@@ -372,7 +375,7 @@
                     autofocus={false}
                     name="Database"
                     bind:show={showCustomId}
-                    databaseId={$database.$id}
+                    databaseId={database.$id}
                     bind:id={newDatabaseInfo.id} />
             {/if}
         </Layout.Stack>
@@ -382,7 +385,7 @@
             size="s"
             id="delete_policy"
             bind:checked={confirmSameDbRestore}
-            label="Overwrite '{$database.name}' with the selected backup version">
+            label="Overwrite '{database.name}' with the selected backup version">
         </InputCheckbox>
     {/if}
 

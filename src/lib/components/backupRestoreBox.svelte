@@ -5,7 +5,6 @@
     import { isCloud, isSelfHosted } from '$lib/system';
     import { organization } from '$lib/stores/organization';
     import { BillingPlan, Dependencies } from '$lib/constants';
-    import type { BackupArchive, BackupRestoration } from '$lib/sdk/backups';
     import { goto, invalidate } from '$app/navigation';
     import { page } from '$app/state';
     import { addNotification } from '$lib/stores/notifications';
@@ -13,10 +12,11 @@
     import { getProjectId } from '$lib/helpers/project';
     import { toLocaleDate } from '$lib/helpers/date';
     import { Typography } from '@appwrite.io/pink-svelte';
+    import { type Models } from '@appwrite.io/console';
 
     const backupRestoreItems: {
-        archives: Map<string, BackupArchive>;
-        restorations: Map<string, BackupRestoration>;
+        archives: Map<string, Models.BackupArchive>;
+        restorations: Map<string, Models.BackupRestoration>;
     } = {
         archives: new Map(),
         restorations: new Map()
@@ -57,21 +57,22 @@
     }
 
     function updateOrAddItem(payload: Payload) {
-        // todo: @itznotabug - might need a change to $table?
-        const { $id, status, $collection, policyId } = payload;
-        if ($collection === 'archives' && policyId !== null) {
+        // the internal structure still uses `$collection`,
+        // and is basically an identifier of the op. type here!
+        const { $id, status, $collection: type, policyId } = payload;
+        if (type === 'archives' && policyId !== null) {
             return;
         }
 
-        if ($collection in backupRestoreItems) {
-            const collectionMap = backupRestoreItems[$collection];
+        if (type in backupRestoreItems) {
+            const collectionMap = backupRestoreItems[type];
 
             if (collectionMap.has($id)) {
                 collectionMap.get($id).status = status;
                 if (status === 'completed') {
                     invalidate(Dependencies.BACKUPS);
 
-                    if ($collection === 'restorations') {
+                    if (type === 'restorations') {
                         const { newId, newName } =
                             collectionMap.get($id).options?.['databases']?.['database'][0] || {};
 
@@ -81,7 +82,7 @@
             } else if (status === 'pending' || status === 'processing' || status === 'uploading') {
                 collectionMap.set($id, payload);
             }
-            backupRestoreItems[$collection] = collectionMap;
+            backupRestoreItems[type] = collectionMap;
         }
     }
 
@@ -117,7 +118,7 @@
         if (which === 'restorations') lastDatabaseRestorationId = null;
     }
 
-    function backupName(item: BackupArchive | BackupRestoration, key: string) {
+    function backupName(item: Models.BackupArchive | Models.BackupRestoration, key: string) {
         const column = key === 'archives' ? '$createdAt' : 'startedAt';
 
         return toLocaleDate(item[column]);

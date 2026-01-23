@@ -57,7 +57,7 @@
             const res = await fetch(`${endpoint}/account/invite`, {
                 method: 'POST',
                 headers: {
-                    'X-Appwrite-Project': project,
+                    'X-Appwrite-Project': project as string,
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({

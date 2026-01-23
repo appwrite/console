@@ -66,6 +66,12 @@
                 <Table.Header.Cell {root} />
             </svelte:fragment>
             {#each deploymentList?.deployments as deployment (deployment.$id)}
+                {@const effectiveStatus = getEffectiveBuildStatus(
+                    deployment,
+                    $regionalConsoleVariables
+                )}
+                {@const displayStatus =
+                    effectiveStatus === 'finalizing' ? 'ready' : effectiveStatus}
                 <Table.Row.Link
                     {root}
                     href={`${base}/project-${page.params.region}-${page.params.project}/sites/site-${page.params.site}/deployments/deployment-${deployment.$id}`}>
@@ -73,18 +79,12 @@
                         <Id value={deployment.$id}>{deployment.$id}</Id>
                     </Table.Cell>
                     <Table.Cell {root}>
-                        {@const status = deployment.status}
-                        {@const effectiveStatus = getEffectiveBuildStatus(
-                            status,
-                            deployment.$createdAt,
-                            $regionalConsoleVariables
-                        )}
                         {#if activeDeployment?.$id === deployment?.$id}
                             <Status status="complete" label="Active" />
                         {:else}
                             <Status
-                                status={deploymentStatusConverter(effectiveStatus)}
-                                label={capitalize(effectiveStatus)} />
+                                status={deploymentStatusConverter(displayStatus)}
+                                label={capitalize(displayStatus)} />
                         {/if}
                     </Table.Cell>
 
