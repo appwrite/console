@@ -289,13 +289,13 @@ function createPreferences() {
         getColumnOrder(tableId: string): TeamPreferences['order'] {
             const columnOrder = teamPreferences?.columnOrder?.[tableId] ?? [];
             safePrefsKeyForOrder(columnOrder, '$uid', '$id');
-            return columnOrder;
+            return Array.from(new Set(columnOrder));
         },
 
         async saveColumnOrder(orgId: string, tableId: string, columnIds: TeamPreferences['order']) {
             teamPreferences = ensureObjectProperty(teamPreferences, 'columnOrder');
 
-            teamPreferences.columnOrder[tableId] = columnIds;
+            teamPreferences.columnOrder[tableId] = Array.from(new Set(columnIds));
 
             for (const tableOrder of Object.values(teamPreferences.columnOrder)) {
                 safePrefsKeyForOrder(tableOrder, '$id', '$uid');

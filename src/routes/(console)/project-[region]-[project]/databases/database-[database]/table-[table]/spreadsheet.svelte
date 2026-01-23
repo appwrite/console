@@ -147,9 +147,7 @@
     let selectedRowForDelete: Models.Row['$id'] | null = null;
 
     onMount(async () => {
-        columnsOrder.set(preferences.getColumnOrder(tableId));
-        columnsWidth.set(preferences.getColumnWidths(tableId));
-
+        setupColumns();
         makeTableColumns();
         sortState.set(data.currentSort as SortState);
 
@@ -166,23 +164,27 @@
 
     onDestroy(() => ($showCreateColumnSheet.show = false));
 
-    function handleExpandShortcut(event: KeyboardEvent) {
-        if (!(event.metaKey || event.ctrlKey) || event.key !== 'Enter') return;
+    function setupColumns() {
+        const order = preferences.getColumnOrder(tableId);
+        const systemColumns = new Set(['$id', 'actions']);
 
-        const target = event.target as HTMLElement | null;
-        if (target?.isContentEditable) return;
-        if (target?.tagName === 'INPUT' || target?.tagName === 'TEXTAREA') return;
+        const validColumnKeys = new Set([
+            ...$table.columns.map((col) => col.key),
+            '$createdAt' /* allowed for reordering */,
+            '$updatedAt' /* allowed for reordering */
+        ]);
 
-        if (selectedRows.length !== 1) return;
+        const seen = new Set<string>();
+        const cleanOrder = order.filter((columnId) => {
+            if (systemColumns.has(columnId)) return false;
+            if (seen.has(columnId)) return false;
+            if (!validColumnKeys.has(columnId)) return false;
+            seen.add(columnId);
+            return true;
+        });
 
-        const rowId = selectedRows[0];
-        const focusedRow = $paginatedRows.items.find((row) => row.$id === rowId);
-        if (!focusedRow) return;
-
-        event.preventDefault();
-        previouslyFocusedElement = document.activeElement;
-        $databaseRowSheetOptions.autoFocus = false;
-        onSelectSheetOption('update', null, null, 'row', focusedRow);
+        columnsOrder.set(cleanOrder);
+        columnsWidth.set(preferences.getColumnWidths(tableId));
     }
 
     function makeTableColumns() {
@@ -252,17 +254,13 @@
             }
         ];
 
-        const groupedColumns: Column[] = [
-            staticColumns[0],
-            ...baseColumns,
-            staticColumns[1],
-            staticColumns[2]
-        ];
+        const fixedLeftColumn = staticColumns[0];
+        const fixedRightColumn = staticColumns[3];
 
-        const actionsColumn = staticColumns[3];
+        const reorderableColumns = [...baseColumns, staticColumns[1], staticColumns[2]];
+        const reorderedColumns = reorderItems(reorderableColumns, $columnsOrder);
 
-        const reorderedNonActions = reorderItems(groupedColumns, $columnsOrder);
-        const finalColumns = [...reorderedNonActions, actionsColumn];
+        const finalColumns = [fixedLeftColumn, ...reorderedColumns, fixedRightColumn];
 
         tableColumns.set(finalColumns);
     }
