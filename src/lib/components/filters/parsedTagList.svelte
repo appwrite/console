@@ -65,7 +65,7 @@
             : []
     );
 
-    // QuickFilters uses the same filter list
+    // QuickFilters uses the same filters list
     let filterCols = $derived(availableFilters);
 
     // Always-show placeholders are derived from available filters (no hardcoding)
