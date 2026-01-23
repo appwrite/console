@@ -163,7 +163,7 @@
         const systemColumns = new Set(['$id', 'actions']);
 
         const validColumnKeys = new Set([
-            ...$table.columns.map((col) => col.key),
+            ...$columns.map((col) => col.key),
             '$createdAt' /* allowed for reordering */,
             '$updatedAt' /* allowed for reordering */
         ]);
