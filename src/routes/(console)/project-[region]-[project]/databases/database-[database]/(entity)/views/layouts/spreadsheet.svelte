@@ -1,6 +1,6 @@
 <script lang="ts">
     import { debounce } from '$lib/helpers/debounce';
-    import { scrollStore, sheetHeightStore } from '../store';
+    import { scrollStore, sheetHeightStore } from './store';
     import { onMount, onDestroy, type Snippet, tick } from 'svelte';
 
     let {

@@ -1,34 +1,38 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Button, InputCheckbox } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdk } from '$lib/stores/sdk';
-    import { database } from './store';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
-    import { type Models, Query } from '@appwrite.io/console';
+    import { Query } from '@appwrite.io/console';
     import { Spinner, Table } from '@appwrite.io/pink-svelte';
+    import { resolveRoute } from '$lib/stores/navigation';
+    import { type EntityList, getTerminologies } from '$database/(entity)';
 
-    const databaseId = page.params.database;
+    let {
+        showDelete = $bindable(false)
+    }: {
+        showDelete: boolean;
+    } = $props();
 
-    export let showDelete = false;
-    let confirmedDeletion = false;
+    let error = $state(null);
+    let confirmedDeletion = $state(false);
+    let isLoadingRowsCount = $state(false);
 
-    let error = null;
-    let isLoadingRowsCount = false;
+    let entityItems = $state([]);
+    let entities: EntityList | null = $state(null);
 
-    $: tableItems = [];
-    let tables: Models.TableList = null;
+    const { databaseSdk } = getTerminologies();
+    const database = $derived(page.data.database);
 
     function buildQueries(): string[] {
         const queries = [Query.orderDesc('$updatedAt')];
 
-        if (tableItems.length > 0) {
+        if (entityItems.length > 0) {
             queries.push(Query.limit(25));
-            queries.push(Query.offset(tableItems.length));
+            queries.push(Query.offset(entityItems.length));
         } else {
             queries.push(Query.limit(3));
         }
@@ -36,7 +40,7 @@
         return queries;
     }
 
-    async function listTables() {
+    async function listEntities() {
         // let's just wait...
         if (isLoadingRowsCount) return;
 
@@ -44,23 +48,20 @@
 
         try {
             const queries = buildQueries();
+            entities = await databaseSdk.listEntities({
+                databaseId: page.params.database,
+                queries
+            });
 
-            tables = await sdk
-                .forProject(page.params.region, page.params.project)
-                .tablesDB.listTables({
-                    databaseId,
-                    queries
-                });
-
-            const tablePromises = tables.tables.map(async (table) => {
+            const entityInfo = entities.entities.map((entity) => {
                 return {
-                    id: table.$id,
-                    name: table.name,
-                    updatedAt: table.$updatedAt
+                    id: entity.$id,
+                    name: entity.name,
+                    updatedAt: entity.$updatedAt
                 };
             });
 
-            tableItems = [...tableItems, ...(await Promise.all(tablePromises))];
+            entityItems = [...entityItems, ...entityInfo];
         } catch (err) {
             error = true;
         } finally {
@@ -70,16 +71,22 @@
 
     const handleDelete = async () => {
         try {
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .tablesDB.delete({ databaseId });
+            await databaseSdk.delete({
+                databaseId: page.params.database
+            });
+
             showDelete = false;
+
             addNotification({
                 type: 'success',
-                message: `${$database.name} has been deleted`
+                message: `${database.name} has been deleted`
             });
-            await goto(`${base}/project-${page.params.region}-${page.params.project}/databases`);
+
             trackEvent(Submit.DatabaseDelete);
+
+            await goto(
+                resolveRoute('/(console)/project-[region]-[project]/databases', page.params)
+            );
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -90,21 +97,28 @@
     };
 
     /* reset data on modal close */
-    $: if (!showDelete) {
-        tables = null;
-        tableItems = [];
-    } else {
-        listTables();
-    }
+    $effect(() => {
+        if (showDelete) {
+            if (entityItems.length === 0 && !entities) {
+                listEntities();
+            }
+        } else {
+            entities = null;
+            entityItems = [];
+
+            error = false;
+            confirmedDeletion = false;
+        }
+    });
 </script>
 
 <Modal title="Delete database" bind:show={showDelete} onSubmit={handleDelete}>
     <p class="text" slot="description">
-        {#if tableItems.length > 0}
-            The following tables and all data associated with <b>{$database.name}</b>, will be
+        {#if entityItems.length > 0}
+            The following tables and all data associated with <b>{database.name}</b>, will be
             permanently deleted.
         {:else}
-            Are you sure you want to delete <b>{$database.name}</b>?
+            Are you sure you want to delete <b>{database.name}</b>?
         {/if}
     </p>
 
@@ -114,16 +128,16 @@
         </div>
     {:else if error}
         <p class="text">
-            Are you sure you want to delete <b>{$database.name}</b>?
+            Are you sure you want to delete <b>{database.name}</b>?
         </p>
-    {:else if tableItems.length > 0}
+    {:else if entityItems.length > 0}
         <div class="u-flex-vertical u-gap-16">
             <Table.Root columns={2} let:root>
                 <svelte:fragment slot="header" let:root>
                     <Table.Header.Cell {root}>Table</Table.Header.Cell>
                     <Table.Header.Cell {root}>Last Updated</Table.Header.Cell>
                 </svelte:fragment>
-                {#each tableItems as table}
+                {#each entityItems as table}
                     <Table.Row.Base {root}>
                         <Table.Cell {root}>{table.name}</Table.Cell>
                         <Table.Cell {root}>
@@ -133,9 +147,9 @@
                 {/each}
             </Table.Root>
 
-            {#if tableItems.length < tables.total}
+            {#if entityItems.length < entities.total}
                 <div class="u-flex u-gap-16 u-cross-center">
-                    <button class="u-underline" on:click={listTables} type="button">
+                    <button class="u-underline" onclick={listEntities} type="button">
                         Show more
                     </button>
 
@@ -143,11 +157,11 @@
                         <div class="loader is-small"></div>
                     {/if}
                 </div>
-            {:else if tableItems.length > 25}
+            {:else if entityItems.length > 25}
                 <button
                     class="u-underline"
-                    on:click={() => {
-                        tableItems = tableItems.slice(0, 3);
+                    onclick={() => {
+                        entityItems = entityItems.slice(0, 3);
                     }}
                     type="button">
                     Show less

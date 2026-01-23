@@ -21,6 +21,7 @@ export async function loadAvailableRegions(orgId: string, force: boolean = false
             return;
         }
 
+        // TODO: @itznotabug, fix with latest SDK.
         const availableRegions = await sdk.forConsole.console.getRegions({
             organizationId: orgId
         });

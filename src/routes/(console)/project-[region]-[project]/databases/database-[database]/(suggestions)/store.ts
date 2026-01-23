@@ -40,7 +40,7 @@ export type SuggestedIndexSchema = {
     key: string;
     type: IndexType;
     orders: IndexOrder;
-    columns: string[];
+    fields: string[];
     lengths?: number[] | undefined;
 };
 
