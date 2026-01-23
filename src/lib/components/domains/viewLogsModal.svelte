@@ -53,9 +53,7 @@
             });
             trackEvent(Submit.DomainUpdateVerification);
         } catch (e) {
-            error =
-                e.message ??
-                'Domain verification failed. Please check your domain settings or try again later';
+            error = e.message;
             trackError(e, Submit.DomainUpdateVerification);
         }
     }
