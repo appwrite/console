@@ -273,6 +273,16 @@
         margin-right: 10px;
         margin-left: 48px;
         overflow: auto;
+
+        @media (max-width: 767px) {
+            width: 100vw;
+            max-width: 100vw;
+            margin-left: 0;
+            margin-right: 0;
+            height: auto;
+            min-height: 100vh;
+        }
+
         @media (min-width: 1024px) {
             width: 100%;
             padding-left: 190px;
