@@ -2,8 +2,8 @@ import { sdk } from '$lib/stores/sdk';
 import { faker } from '@faker-js/faker';
 import type { NestedNumberArray } from './types';
 import { ID, type Models } from '@appwrite.io/console';
-import { isWithinSafeRange } from '$lib/helpers/numbers';
 import type { DatabaseType, Field } from '$database/(entity)';
+import { coerceToNumber, isWithinSafeRange } from '$lib/helpers/numbers';
 
 export async function generateFields(
     project: Models.Project,
@@ -213,10 +213,13 @@ function generateSingleValue(field: Field): string | number | boolean | NestedNu
 
         case 'integer': {
             const intAttr = field as Models.ColumnInteger;
-            const min = isWithinSafeRange(intAttr.min) ? intAttr.min : 0;
+            const minCompat = coerceToNumber(intAttr.min);
+            const maxCompat = coerceToNumber(intAttr.max);
+
+            const min = isWithinSafeRange(minCompat) ? minCompat : 0;
             const fallbackMax = Math.max(min + 100, 100);
-            const max = isWithinSafeRange(intAttr.max)
-                ? intAttr.max
+            const max = isWithinSafeRange(maxCompat)
+                ? maxCompat
                 : Math.min(fallbackMax, Number.MAX_SAFE_INTEGER);
             return faker.number.int({ min, max });
         }

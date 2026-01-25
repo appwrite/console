@@ -42,6 +42,10 @@ export function isWithinSafeRange(val: number) {
     return Math.abs(val) < Number.MAX_SAFE_INTEGER;
 }
 
+export function coerceToNumber(val: number | bigint) {
+    return Number(val);
+}
+
 /**
  * Clamps a number to a minimum value
  *
