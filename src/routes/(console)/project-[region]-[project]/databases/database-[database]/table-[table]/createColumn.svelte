@@ -48,7 +48,7 @@
         array: column?.array ?? false,
         default: column?.default ?? null,
         ...column
-    });
+    } as Partial<Columns>);
 
     let ColumnComponent = $derived(
         columnOptions.find((option) => option.name === selectedOption).component
