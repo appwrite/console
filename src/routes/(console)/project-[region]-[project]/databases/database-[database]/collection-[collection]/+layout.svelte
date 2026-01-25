@@ -202,6 +202,7 @@
         $spreadsheetLoading = true;
         isWaterfallFromFaker = true;
 
+        let documentIds = [];
         let suggestedColumns: { total: number; columns: ColumnInput[] } = {
             total: 0,
             columns: []
@@ -245,7 +246,8 @@
                 status: 'available'
             })) as Field[];
 
-            const { rows } = generateFakeRecords($randomDataModalState.value, fields);
+            const { rows, ids } = generateFakeRecords($randomDataModalState.value, fields);
+            documentIds = ids;
 
             await sdk
                 .forProject(page.params.region, page.params.project)
@@ -278,6 +280,8 @@
             $spreadsheetLoading = false;
             isWaterfallFromFaker = false;
         }
+
+        spreadsheetRenderKey.set(hash(documentIds));
     }
 
     async function createFakeData() {

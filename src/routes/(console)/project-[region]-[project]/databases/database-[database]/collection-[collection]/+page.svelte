@@ -1,7 +1,8 @@
 <script lang="ts">
-    import { hasPageQueries, queries } from '$lib/components/filters';
+    import { Filters, hasPageQueries, queries } from '$lib/components/filters';
     import ViewSelector from '$lib/components/viewSelector.svelte';
     import { Button } from '$lib/elements/forms';
+    import type { Column, ColumnType } from '$lib/helpers/types';
     import { Container } from '$lib/layout';
     import { preferences } from '$lib/stores/preferences';
     import { Icon, Layout, Divider, Tooltip } from '@appwrite.io/pink-svelte';
@@ -15,10 +16,13 @@
         IconChevronDown,
         IconChevronUp,
         IconPlus,
-        IconViewBoards
+        IconViewBoards,
+        IconRefresh
     } from '@appwrite.io/pink-icons-svelte';
     import { type Models } from '@appwrite.io/console';
     import { expandTabs, randomDataModalState } from '$database/store';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
     import { EmptySheet, EmptySheetCards } from '$database/(entity)';
     import {
         isCollectionsJsonImportInProgress,
@@ -30,15 +34,31 @@
     import ColumnDisplayNameInput from '$database/collection-[collection]/(components)/inputs/displayName.svelte';
     import { Modal } from '$lib/components';
     import { buildInitDoc } from './+layout.svelte';
+    import { writable } from 'svelte/store';
 
     const { data }: PageProps = $props();
 
+    const filterColumns = writable<Column[]>([]);
+
+    let isRefreshing = $state(false);
     let showImportJson = $state(false);
     let showCustomColumnsModal = $state(false);
 
     let columnsError: string = $state(null);
     let spreadsheet: SpreadSheet | null = $state(null);
     let columnDisplayNameInput: ColumnDisplayNameInput | null = $state(null);
+
+    function createFilterableColumns(): Column[] {
+        return [
+            { id: '$id', title: '$id', type: 'string' as ColumnType },
+            { id: '$createdAt', title: '$createdAt', type: 'datetime' as ColumnType },
+            { id: '$updatedAt', title: '$updatedAt', type: 'datetime' as ColumnType }
+        ];
+    }
+
+    $effect(() => {
+        filterColumns.set(createFilterableColumns());
+    });
 
     async function onSelect(file: Models.File, localFile = false) {
         $isCollectionsJsonImportInProgress = true;
@@ -94,6 +114,16 @@
 
                         <svelte:fragment slot="tooltip">Columns</svelte:fragment>
                     </Tooltip>
+
+                    <Tooltip>
+                        <Filters
+                            onlyIcon
+                            query={data.query}
+                            columns={filterColumns}
+                            analyticsSource="database_collections" />
+
+                        <svelte:fragment slot="tooltip">Filters</svelte:fragment>
+                    </Tooltip>
                 </Layout.Stack>
                 <Layout.Stack
                     direction="row"
@@ -138,6 +168,26 @@
                                     icon={!$expandTabs ? IconChevronDown : IconChevronUp}
                                     size="s" />
                             </Button>
+
+                            <Tooltip disabled={isRefreshing || !data.documents.total} placement="top">
+                                <Button
+                                    icon
+                                    size="s"
+                                    secondary
+                                    disabled={isRefreshing || !data.documents.total}
+                                    class="small-button-dimensions"
+                                    on:click={async () => {
+                                        isRefreshing = true;
+                                        await invalidate(Dependencies.COLLECTION);
+                                        isRefreshing = false; /* too fast on local */
+                                    }}>
+                                    <div style:line-height="0px" class:rotating={isRefreshing}>
+                                        <Icon icon={IconRefresh} size="s" />
+                                    </div>
+                                </Button>
+
+                                <svelte:fragment slot="tooltip">Refresh</svelte:fragment>
+                            </Tooltip>
                         {/if}
                     </Layout.Stack>
                 </Layout.Stack>
@@ -187,8 +237,8 @@
                 {#snippet actions()}
                     <EmptySheetCards
                         icon={IconPlus}
-                        title="Create documents"
-                        subtitle="Create documents manually"
+                        title="Create document"
+                        subtitle="Create a document manually"
                         onClick={() => {
                             noSqlDocument.create(buildInitDoc());
                         }} />
@@ -256,5 +306,18 @@
     :global(.small-button-dimensions) {
         width: 32px !important;
         height: 32px !important;
+    }
+
+    :global(.rotating) {
+        animation: rotate 1s linear infinite;
+    }
+
+    @keyframes rotate {
+        from {
+            transform: rotate(0deg);
+        }
+        to {
+            transform: rotate(360deg);
+        }
     }
 </style>

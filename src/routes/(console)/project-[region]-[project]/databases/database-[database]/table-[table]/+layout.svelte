@@ -31,7 +31,6 @@
         rowActivitySheet,
         databaseRelatedRowSheetOptions,
         rowPermissionSheet,
-        isWaterfallFromFaker,
         showRowCreateSheet
     } from '$database/table-[table]/store';
     import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
@@ -73,7 +72,7 @@
         expandTabs,
         spreadsheetLoading,
         randomDataModalState,
-        spreadsheetRenderKey
+        spreadsheetRenderKey, isWaterfallFromFaker, resetSampleFieldsConfig
     } from '$database/store';
 
     import type { LayoutData } from './$types';
@@ -380,8 +379,7 @@
                 message: e.message
             });
         } finally {
-            // reset value to 25 default!
-            $randomDataModalState.value = 25;
+            resetSampleFieldsConfig();
         }
 
         $spreadsheetLoading = false;

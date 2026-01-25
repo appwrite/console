@@ -8,6 +8,7 @@ import type { Entity, Field } from '$database/(entity)';
 import { isRelationship } from '$database/table-[table]/rows/store';
 import type { TagValue } from '$lib/components/filters/store';
 import type { SortDirection } from '$lib/components';
+import { entityColumnSuggestions } from '$database/(suggestions)';
 
 export type Columns =
     | Models.ColumnBoolean
@@ -56,6 +57,12 @@ export type RandomDataSchema = {
     onSubmit?: () => Promise<void> | void;
 };
 
+/**
+ * adding a lot of fake data will trigger the realtime below
+ * and will keep invalidating the `Dependencies.ENTITY` making a lot of API noise!
+ */
+export const isWaterfallFromFaker = writable(false);
+
 export const expandTabs = writable(null);
 
 export const showCreateEntity = writable(false);
@@ -98,6 +105,25 @@ export const randomDataModalState = writable<RandomDataSchema>({
 export const spreadsheetLoading = writable(false);
 
 export const spreadsheetRenderKey = writable('initial');
+
+export function resetSampleFieldsConfig() {
+    spreadsheetLoading.set(false);
+    isWaterfallFromFaker.set(false);
+
+    randomDataModalState.set({
+        value: 25,
+        show: false,
+    });
+
+    // Reset suggestion state
+    entityColumnSuggestions.set({
+        thinking: false,
+        entity: null,
+        enabled: false,
+        context: null,
+        force: false
+    });
+}
 
 export function buildEntityRoute(page: Page, entityType: string, entityId: string): string {
     return withPath(
