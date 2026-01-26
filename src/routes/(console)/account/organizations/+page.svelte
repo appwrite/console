@@ -66,7 +66,7 @@
     }
 
     function isNonPayingOrganization(organization: Models.Organization): boolean {
-        // 0 priced plans don't need payment methods!
+        // plan doesn't require payments, it is a non-paying org!
         return !organization?.billingPlanDetails.requiresPaymentMethod;
     }
 

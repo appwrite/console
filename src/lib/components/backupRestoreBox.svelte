@@ -125,7 +125,7 @@
     }
 
     onMount(() => {
-        // fast path: don't subscribe if org is on a free plan or is self-hosted.
+        // fast path: don't subscribe if org doesn't support backups or is self-hosted.
         if (isSelfHosted || (isCloud && !$organization?.billingPlanDetails.backupsEnabled)) return;
 
         return realtime.forProject(page.params.region, 'console', (response) => {

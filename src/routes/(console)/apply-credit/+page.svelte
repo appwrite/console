@@ -279,6 +279,17 @@
     ) {
         loadPaymentMethods();
     }
+
+    /* check if payment method selection is needed */
+    $: needsPaymentMethod =
+        selectedOrgId &&
+        (!selectedOrg?.billingPlanDetails.requiresPaymentMethod || !selectedOrg?.paymentMethodId);
+
+    /* check if coupon code input should be shown */
+    $: needsCouponInput = !data?.couponData?.code && selectedOrgId;
+
+    /* show payment section if either payment method or coupon input is needed */
+    $: showPaymentSection = needsPaymentMethod || needsCouponInput;
 </script>
 
 <svelte:head>
@@ -302,7 +313,7 @@
                         {/if}
 
                         <!-- show invite members -->
-                        {#if selectedOrgId && (!selectedOrg?.billingPlanDetails.addons.seats.supported || !selectedOrg?.paymentMethodId)}
+                        {#if selectedOrgId && !selectedOrg?.billingPlanDetails.addons.seats.supported}
                             {#if selectedOrgId === newOrgId}
                                 <InputText
                                     label="Organization name"
@@ -330,17 +341,17 @@
                     </Layout.Stack>
                 </Fieldset>
 
-                {#if (selectedOrgId && (!selectedOrg?.billingPlanDetails.requiresPaymentMethod || !selectedOrg?.paymentMethodId)) || (!data?.couponData?.code && selectedOrgId)}
+                {#if showPaymentSection}
                     <Fieldset legend="Payment">
                         <Layout.Stack gap="xl">
-                            {#if selectedOrgId && (!selectedOrg?.billingPlanDetails.requiresPaymentMethod || !selectedOrg?.paymentMethodId)}
+                            {#if needsPaymentMethod}
                                 <SelectPaymentMethod
                                     bind:methods
                                     bind:value={paymentMethodId}
                                     bind:taxId />
                             {/if}
                             <Form bind:this={couponForm} onSubmit={addCoupon}>
-                                {#if !data?.couponData?.code && selectedOrgId}
+                                {#if needsCouponInput}
                                     <Layout.Stack gap="s" direction="row" alignItems="flex-end">
                                         <InputText
                                             required

@@ -21,13 +21,8 @@
 
     let selectedPlan = $state(selectedBillingPlan.$id);
 
-    const plans = $derived(Object.values(page.data.plans.plans) as Models.BillingPlan[]);
-    const currentPlanInList = $derived(plans.some((plan) => plan.$id === $currentPlan?.$id));
-
-    // experiment to remove scale plan temporarily
-    const plansWithoutScale = $derived(
-        plans.filter((plan) => plan.group != BillingPlanGroup.Scale)
-    );
+    const visiblePlans = $derived(Object.values(page.data.plans.plans) as Models.BillingPlan[]);
+    const currentPlanInList = $derived(visiblePlans.some((plan) => plan.$id === $currentPlan?.$id));
 
     function shouldShowTooltip(plan: Models.BillingPlan) {
         if (plan.group !== BillingPlanGroup.Starter) return true;
@@ -44,7 +39,7 @@
 </script>
 
 <Layout.Stack>
-    {#each plansWithoutScale as plan}
+    {#each visiblePlans as plan}
         <Tooltip disabled={shouldShowTooltip(plan)} maxWidth="fit-content">
             <LabelCard
                 name="plan"
