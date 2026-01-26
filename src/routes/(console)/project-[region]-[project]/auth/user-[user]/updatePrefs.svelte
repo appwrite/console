@@ -76,7 +76,7 @@
                             id={`key-${index}`}
                             value={pref.key}
                             on:input={(e) => {
-                                prefs[index].key = (e.target as HTMLInputElement).value;
+                                prefs[index].key = (e.currentTarget as HTMLInputElement).value;
                                 prefs = [...prefs];
                             }}
                             placeholder="Enter key"
@@ -87,7 +87,7 @@
                                 id={`value-${index}`}
                                 value={pref.value}
                                 on:input={(e) => {
-                                    prefs[index].value = (e.target as HTMLInputElement).value;
+                                    prefs[index].value = (e.currentTarget as HTMLInputElement).value;
                                     prefs = [...prefs];
                                 }}
                                 placeholder="Enter value"
