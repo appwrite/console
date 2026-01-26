@@ -52,7 +52,11 @@
     import { preferences } from '$lib/stores/preferences';
     import { page } from '$app/state';
     import { debounce } from '$lib/helpers/debounce';
-    import { LARGE_NUMBER_THRESHOLD, toExponential } from '$lib/helpers/numbers';
+    import {
+        LARGE_NUMBER_THRESHOLD,
+        LARGE_NUMBER_THRESHOLD_NUM,
+        toExponential
+    } from '$lib/helpers/numbers';
     import type { PageData } from './$types';
     import { realtime } from '$lib/stores/sdk';
     import { invalidate } from '$app/navigation';
@@ -168,10 +172,17 @@
     }
 
     function formatLargeNumber(num: number | bigint): string {
-        const absNum = typeof num === 'bigint' ? (num < 0n ? -num : num) : BigInt(Math.abs(num));
-
-        if (absNum < LARGE_NUMBER_THRESHOLD) {
-            return num.toString();
+        // type-safe abs comparison
+        if (typeof num === 'bigint') {
+            const absNum = num < 0n ? -num : num;
+            if (absNum < LARGE_NUMBER_THRESHOLD) {
+                return num.toString();
+            }
+        } else {
+            const absNum = Math.abs(num);
+            if (absNum < LARGE_NUMBER_THRESHOLD_NUM) {
+                return num.toString();
+            }
         }
 
         return toExponential(num);
@@ -195,25 +206,32 @@
 
             if (hasValidMin && hasValidMax) {
                 display = `Min: ${formatLargeNumber(min)}, Max: ${formatLargeNumber(max)}`;
-                const minAbs =
-                    typeof min === 'bigint' ? (min < 0n ? -min : min) : BigInt(Math.abs(min));
-                const maxAbs =
-                    typeof max === 'bigint' ? (max < 0n ? -max : max) : BigInt(Math.abs(max));
-                if (minAbs >= LARGE_NUMBER_THRESHOLD || maxAbs >= LARGE_NUMBER_THRESHOLD) {
+                const shouldShowTooltip =
+                    (typeof min === 'bigint'
+                        ? (min < 0n ? -min : min) >= LARGE_NUMBER_THRESHOLD
+                        : Math.abs(min) >= LARGE_NUMBER_THRESHOLD_NUM) ||
+                    (typeof max === 'bigint'
+                        ? (max < 0n ? -max : max) >= LARGE_NUMBER_THRESHOLD
+                        : Math.abs(max) >= LARGE_NUMBER_THRESHOLD_NUM);
+                if (shouldShowTooltip) {
                     tooltip = `Min: ${min.toLocaleString()}, Max: ${max.toLocaleString()}`;
                 }
             } else if (hasValidMin) {
                 display = `Min: ${formatLargeNumber(min)}`;
-                const minAbs =
-                    typeof min === 'bigint' ? (min < 0n ? -min : min) : BigInt(Math.abs(min));
-                if (minAbs >= LARGE_NUMBER_THRESHOLD) {
+                const shouldShowTooltip =
+                    typeof min === 'bigint'
+                        ? (min < 0n ? -min : min) >= LARGE_NUMBER_THRESHOLD
+                        : Math.abs(min) >= LARGE_NUMBER_THRESHOLD_NUM;
+                if (shouldShowTooltip) {
                     tooltip = `Min: ${min.toLocaleString()}`;
                 }
             } else if (hasValidMax) {
                 display = `Max: ${formatLargeNumber(max)}`;
-                const maxAbs =
-                    typeof max === 'bigint' ? (max < 0n ? -max : max) : BigInt(Math.abs(max));
-                if (maxAbs >= LARGE_NUMBER_THRESHOLD) {
+                const shouldShowTooltip =
+                    typeof max === 'bigint'
+                        ? (max < 0n ? -max : max) >= LARGE_NUMBER_THRESHOLD
+                        : Math.abs(max) >= LARGE_NUMBER_THRESHOLD_NUM;
+                if (shouldShowTooltip) {
                     tooltip = `Max: ${max.toLocaleString()}`;
                 }
             }

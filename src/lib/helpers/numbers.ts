@@ -1,4 +1,5 @@
 export const LARGE_NUMBER_THRESHOLD = 1_000_000n;
+export const LARGE_NUMBER_THRESHOLD_NUM = 1_000_000;
 
 export function abbreviateNumber(num: number, decimals: number = 1): string {
     if (isNaN(num)) return String(num);
@@ -71,6 +72,11 @@ export function toExponential(value: number | bigint, fractionDigits: number = 2
     const [sign, digits] = !bigIntString.startsWith('-')
         ? ['', bigIntString]
         : ['-', bigIntString.slice(1)];
+
+    // when no decimal
+    if (fractionDigits === 0) {
+        return `${sign}${digits[0]}e+${digits.length - 1}`;
+    }
 
     const fraction = digits.slice(1, 1 + fractionDigits).padEnd(fractionDigits, '0');
 
