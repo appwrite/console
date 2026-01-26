@@ -198,8 +198,11 @@
             const numbersColumn = column as Models.ColumnInteger | Models.ColumnFloat;
             const { min, max } = numbersColumn;
 
-            const hasValidMin = min > Number.MIN_SAFE_INTEGER;
-            const hasValidMax = max < Number.MAX_SAFE_INTEGER;
+            const isMinBigInt = typeof min === 'bigint';
+            const isMaxBigInt = typeof max === 'bigint';
+
+            const hasValidMin = isMinBigInt || min > Number.MIN_SAFE_INTEGER;
+            const hasValidMax = isMaxBigInt || max < Number.MAX_SAFE_INTEGER;
 
             let display: string | undefined;
             let tooltip: string | undefined;
@@ -207,10 +210,10 @@
             if (hasValidMin && hasValidMax) {
                 display = `Min: ${formatLargeNumber(min)}, Max: ${formatLargeNumber(max)}`;
                 const shouldShowTooltip =
-                    (typeof min === 'bigint'
+                    (isMinBigInt
                         ? (min < 0n ? -min : min) >= LARGE_NUMBER_THRESHOLD
                         : Math.abs(min) >= LARGE_NUMBER_THRESHOLD_NUM) ||
-                    (typeof max === 'bigint'
+                    (isMaxBigInt
                         ? (max < 0n ? -max : max) >= LARGE_NUMBER_THRESHOLD
                         : Math.abs(max) >= LARGE_NUMBER_THRESHOLD_NUM);
                 if (shouldShowTooltip) {
@@ -218,19 +221,17 @@
                 }
             } else if (hasValidMin) {
                 display = `Min: ${formatLargeNumber(min)}`;
-                const shouldShowTooltip =
-                    typeof min === 'bigint'
-                        ? (min < 0n ? -min : min) >= LARGE_NUMBER_THRESHOLD
-                        : Math.abs(min) >= LARGE_NUMBER_THRESHOLD_NUM;
+                const shouldShowTooltip = isMinBigInt
+                    ? (min < 0n ? -min : min) >= LARGE_NUMBER_THRESHOLD
+                    : Math.abs(min) >= LARGE_NUMBER_THRESHOLD_NUM;
                 if (shouldShowTooltip) {
                     tooltip = `Min: ${min.toLocaleString()}`;
                 }
             } else if (hasValidMax) {
                 display = `Max: ${formatLargeNumber(max)}`;
-                const shouldShowTooltip =
-                    typeof max === 'bigint'
-                        ? (max < 0n ? -max : max) >= LARGE_NUMBER_THRESHOLD
-                        : Math.abs(max) >= LARGE_NUMBER_THRESHOLD_NUM;
+                const shouldShowTooltip = isMaxBigInt
+                    ? (max < 0n ? -max : max) >= LARGE_NUMBER_THRESHOLD
+                    : Math.abs(max) >= LARGE_NUMBER_THRESHOLD_NUM;
                 if (shouldShowTooltip) {
                     tooltip = `Max: ${max.toLocaleString()}`;
                 }
