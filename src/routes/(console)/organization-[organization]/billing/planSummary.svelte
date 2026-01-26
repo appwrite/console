@@ -351,7 +351,9 @@
                         'screenshots-generated',
                         'Screenshots generated',
                         getResource(resources, 'screenshotsGenerated'),
-                        currentPlan?.['screenshotsGenerated'], /* TODO: @itznotabug - needs correct SDK */
+                        currentPlan?.[
+                            'screenshotsGenerated'
+                        ] /* TODO: @itznotabug - needs correct SDK */
                     ),
                     createResourceRow(
                         'gb-hours',
