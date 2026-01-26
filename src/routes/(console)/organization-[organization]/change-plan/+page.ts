@@ -23,22 +23,21 @@ export const load: PageLoad = async ({ depends, parent }) => {
         };
     }
 
-    let plan: string;
+    let plan: Models.BillingPlan;
 
     const pro = getBasePlanFromGroup(BillingPlanGroup.Pro);
     const scale = getBasePlanFromGroup(BillingPlanGroup.Scale);
 
-    // TODO: why not just use the current id as is?
-    if (currentPlan?.$id === scale.$id) {
-        plan = scale.$id /* temp */;
+    if (currentPlan?.group === BillingPlanGroup.Scale) {
+        plan = scale;
     } else {
-        plan = pro.$id /* temp */;
+        plan = pro;
     }
 
     const selfService = currentPlan?.selfService ?? true;
     const hasFreeOrgs = organizations.teams?.some(
         (org) =>
-            (org as Models.Organization)?.billingPlan ===
+            (org as Models.Organization)?.billingPlanId ===
             getBasePlanFromGroup(BillingPlanGroup.Starter).$id
     );
 

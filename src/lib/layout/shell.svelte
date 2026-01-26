@@ -9,14 +9,12 @@
     import { organization, organizationList } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import { user } from '$lib/stores/user';
-    import { billingIdToPlan } from '$lib/stores/billing';
     import { isCloud } from '$lib/system';
     import SideNavigation from '$lib/layout/navigation.svelte';
     import { hasOnboardingDismissed } from '$lib/helpers/onboarding';
     import { isSidebarOpen, noWidthTransition } from '$lib/stores/sidebar';
-    import { BillingPlan } from '$lib/constants';
     import { page } from '$app/stores';
-    import type { Models } from '@appwrite.io/console';
+    import { BillingPlanGroup, type Models } from '@appwrite.io/console';
     import { getSidebarState, isInDatabasesRoute, updateSidebarState } from '$lib/helpers/sidebar';
     import { isTabletViewport } from '$lib/stores/viewport';
 
@@ -156,13 +154,13 @@
             .toString(),
 
         organizations: $organizationList.teams.map((org) => {
-            const billingPlan = org['billingPlan'];
+            const billingPlan = org['billingPlanDetails'] as Models.BillingPlan;
             return {
                 name: org.name,
                 $id: org.$id,
-                showUpgrade: billingPlan === BillingPlan.FREE,
-                tierName: isCloud ? billingIdToPlan(billingPlan).name : null,
-                isSelected: $organization?.$id === org.$id
+                isSelected: $organization?.$id === org.$id,
+                tierName: isCloud ? billingPlan.name : null,
+                showUpgrade: billingPlan.group === BillingPlanGroup.Starter
             };
         }),
 

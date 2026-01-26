@@ -6,14 +6,14 @@
     import InputPassword from '$lib/elements/forms/inputPassword.svelte';
     import { sdk } from '$lib/stores/sdk';
     import { invalidate } from '$app/navigation';
-    import { BillingPlan, Dependencies } from '$lib/constants';
+    import { Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
     import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import InputNumber from '$lib/elements/forms/inputNumber.svelte';
     import { base } from '$app/paths';
     import deepEqual from 'deep-equal';
     import { onMount } from 'svelte';
-    import { organization } from '$lib/stores/organization';
+    import { currentPlan } from '$lib/stores/organization';
     import { type SMTPSecure } from '@appwrite.io/console';
     import InputSelect from '$lib/elements/forms/inputSelect.svelte';
     import { upgradeURL } from '$lib/stores/billing';
@@ -123,10 +123,10 @@
             <Link.Anchor href={`${base}/project-${$project.region}-${$project.$id}/auth/templates`}
                 >here</Link.Anchor>
             <svelte:fragment slot="aside">
-                {#if $organization.billingPlan === BillingPlan.FREE}
+                {#if !$currentPlan.customSmtp}
                     <Alert.Inline
                         status="info"
-                        title="Custom SMTP is a Pro plan feature. Upgrade to enable custom SMTP sever.">
+                        title="Custom SMTP is a paid plan feature. Upgrade to enable custom SMTP sever.">
                         <svelte:fragment slot="actions">
                             <Button
                                 compact
@@ -196,9 +196,7 @@
                 {/if}
             </svelte:fragment>
             <svelte:fragment slot="actions">
-                <Button
-                    submit
-                    disabled={isButtonDisabled || $organization.billingPlan === BillingPlan.FREE}>
+                <Button submit disabled={isButtonDisabled || !$currentPlan.customSmtp}>
                     Update
                 </Button>
             </svelte:fragment>

@@ -44,10 +44,14 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
                 loadFailedInvoices(params.organization);
             }
         }
+
         if (prefs.organization !== params.organization) {
             const newPrefs = { ...prefs, organization: params.organization };
             sdk.forConsole.account.updatePrefs({ prefs: newPrefs });
         }
+
+        const program: Models.Program | null =
+            currentPlan && currentPlan?.program ? currentPlan.program : null;
 
         const [org, members, countryList, locale] = await Promise.all([
             sdk.forConsole.teams.get({
@@ -69,7 +73,8 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
             roles,
             scopes,
             countryList,
-            locale
+            locale,
+            program
         };
     } catch (e) {
         const newPrefs = { ...prefs, organization: null };

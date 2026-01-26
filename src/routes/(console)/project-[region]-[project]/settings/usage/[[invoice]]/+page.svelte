@@ -1,20 +1,25 @@
 <script lang="ts">
     import { Container } from '$lib/layout';
     import { CardGrid, Card, ProgressBarBig } from '$lib/components';
-    import { showUsageRatesModal, billingIdToPlan, upgradeURL } from '$lib/stores/billing';
+    import {
+        showUsageRatesModal,
+        billingIdToPlan,
+        upgradeURL,
+        planHasGroup
+    } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { Button } from '$lib/elements/forms';
     import { bytesToSize, humanFileSize, mbSecondsToGBHours } from '$lib/helpers/sizeConvertion';
     import { BarChart, Legend } from '$lib/charts';
     import { formatNum } from '$lib/helpers/string';
     import { total } from '$lib/layout/usage.svelte';
-    import { BillingPlan } from '$lib/constants.js';
     import { base } from '$app/paths';
     import { formatCurrency, formatNumberWithCommas, clampMin } from '$lib/helpers/numbers';
     import { getCountryName } from '$lib/helpers/diallingCodes.js';
     import { Accordion, Icon, Layout, Link, Table, Typography } from '@appwrite.io/pink-svelte';
     import { IconChartSquareBar } from '@appwrite.io/pink-icons-svelte';
     import { page } from '$app/state';
+    import { BillingPlanGroup } from '@appwrite.io/console';
 
     export let data;
 
@@ -46,38 +51,41 @@
         }
     ];
 
-    const tier = data?.currentInvoice?.plan ?? $organization?.billingPlan;
-    const plan = billingIdToPlan(tier).name;
+    const currentPlanId = data?.currentInvoice?.plan ?? $organization?.billingPlanId;
+    const currentBillingPlan = billingIdToPlan(currentPlanId);
 </script>
 
 <Container>
     <div class="u-flex u-cross-center u-main-space-between">
         <Typography.Title>Usage</Typography.Title>
 
-        {#if $organization?.billingPlan === BillingPlan.FREE}
+        <!-- always show upgrade on free -->
+        {#if planHasGroup(currentBillingPlan, BillingPlanGroup.Starter)}
             <Button href={$upgradeURL}>
                 <span class="text">Upgrade</span>
             </Button>
         {/if}
     </div>
+
     <div class="u-flex u-main-space-between common-section u-cross-center">
-        {#if $organization.billingPlan === BillingPlan.SCALE}
+        {#if planHasGroup(currentBillingPlan, BillingPlanGroup.Scale)}
             <p class="text">
                 On the Scale plan, you'll be charged only for any usage that exceeds the thresholds
                 per resource listed below. <Link.Button
                     on:click={() => ($showUsageRatesModal = true)}
                     >Learn more about plan usage limits.</Link.Button>
             </p>
-        {:else if $organization.billingPlan === BillingPlan.PRO}
+        {:else if planHasGroup(currentBillingPlan, BillingPlanGroup.Pro)}
             <p class="text">
                 On the Pro plan, you'll be charged only for any usage that exceeds the thresholds
                 per resource listed below. <Link.Button
                     on:click={() => ($showUsageRatesModal = true)}
                     >Learn more about plan usage limits.</Link.Button>
             </p>
-        {:else if $organization.billingPlan === BillingPlan.FREE}
+        {:else if planHasGroup(currentBillingPlan, BillingPlanGroup.Starter)}
             <p class="text">
-                If you exceed the limits of the {plan} plan, services for your projects may be disrupted.
+                If you exceed the limits of the {currentBillingPlan.name} plan, services for your projects
+                may be disrupted.
                 <Link.Anchor href={$upgradeURL} class="link"
                     >Upgrade for greater capacity</Link.Anchor
                 >.

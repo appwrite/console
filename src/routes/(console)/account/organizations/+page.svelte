@@ -17,7 +17,6 @@
     import type { Models } from '@appwrite.io/console';
     import { daysLeftInTrial, billingIdToPlan } from '$lib/stores/billing';
     import { toLocaleDate } from '$lib/helpers/date';
-    import { BillingPlan } from '$lib/constants';
     import { goto } from '$app/navigation';
     import { Icon, Tooltip, Typography } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
@@ -61,16 +60,14 @@
     function isOrganizationOnTrial(organization: Models.Organization): boolean {
         if (!organization?.billingTrialStartDate) return false;
         if ($daysLeftInTrial <= 0) return false;
-        if (organization.billingPlan === BillingPlan.FREE) return false;
+        if (!organization.billingPlanDetails.trial) return false;
 
         return !!organization?.billingTrialDays;
     }
 
     function isNonPayingOrganization(organization: Models.Organization): boolean {
-        return (
-            organization?.billingPlan === BillingPlan.FREE ||
-            organization?.billingPlan === BillingPlan.GITHUB_EDUCATION
-        );
+        // plan doesn't require payments, it is a non-paying org!
+        return !organization?.billingPlanDetails.requiresPaymentMethod;
     }
 
     function isPayingOrganization(
@@ -117,7 +114,7 @@
                 {@const avatarList = getMemberships(organization.$id)}
                 {@const payingOrg = isPayingOrganization(organization)}
                 {@const planName = isCloudOrg(organization)
-                    ? getPlanName(organization.billingPlan)
+                    ? getPlanName(organization.billingPlanId)
                     : null}
 
                 <GridItem1 href={`${base}/organization-${organization.$id}`}>

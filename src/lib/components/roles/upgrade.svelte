@@ -3,7 +3,6 @@
     import { upgradeURL } from '$lib/stores/billing';
     import { isCloud } from '$lib/system';
     import { organization } from '$lib/stores/organization';
-    import { BillingPlan } from '$lib/constants';
     import Button from '$lib/elements/forms/button.svelte';
     import { Badge, Layout, Link, Typography } from '@appwrite.io/pink-svelte';
 </script>
@@ -11,7 +10,7 @@
 <Base>
     <Layout.Stack gap="s">
         {#if isCloud}
-            {#if $organization?.billingPlan !== BillingPlan.FREE}
+            {#if $organization?.billingPlanDetails.supportsOrganizationRoles}
                 <Typography.Text variant="m-600">Roles</Typography.Text>
                 <Typography.Text>Owner, Developer, Editor, Analyst and Billing.</Typography.Text>
                 <Typography.Text>

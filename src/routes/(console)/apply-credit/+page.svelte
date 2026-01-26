@@ -4,7 +4,7 @@
     import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CreditsApplied, SelectPaymentMethod } from '$lib/components/billing';
-    import { BillingPlan, Dependencies } from '$lib/constants';
+    import { Dependencies } from '$lib/constants';
     import { Button, Form, InputSelect, InputTags, InputText } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
     import { Wizard } from '$lib/layout';
@@ -16,6 +16,7 @@
     import { onMount } from 'svelte';
     import { writable } from 'svelte/store';
     import {
+        billingIdToPlan,
         getBasePlanFromGroup,
         isPaymentAuthenticationRequired,
         plansInfo
@@ -69,7 +70,7 @@
     let campaign = data?.campaign;
     let tempOrgId = null;
 
-    let billingPlan = getBasePlanFromGroup(BillingPlanGroup.Pro).$id;
+    let billingPlan = getBasePlanFromGroup(BillingPlanGroup.Pro);
 
     let currentPlan: Models.BillingPlan;
 
@@ -78,7 +79,7 @@
     $: selectedOrgId = tempOrgId;
 
     function isUpgrade() {
-        const newPlan = $plansInfo.get(billingPlan);
+        const newPlan = $plansInfo.get(billingPlan.$id);
         return currentPlan && newPlan && currentPlan.order < newPlan.order;
     }
 
@@ -87,12 +88,14 @@
         if (!$organizationList?.total || campaign?.onlyNewOrgs) {
             selectedOrgId = newOrgId;
         }
+
         if (page.url.searchParams.has('org')) {
             selectedOrgId = page.url.searchParams.get('org');
             canSelectOrg = false;
         }
+
         if (campaign?.plan) {
-            billingPlan = campaign.plan;
+            billingPlan = billingIdToPlan(campaign.plan);
         }
 
         if ($organizationList.total > 0 && tempOrgId === null) {
@@ -136,7 +139,7 @@
                 org = await sdk.forConsole.organizations.create({
                     organizationId: newOrgId,
                     name,
-                    billingPlan: billingPlan,
+                    billingPlan: billingPlan.$id,
                     paymentMethodId,
                     invites: collaborators,
                     couponId: couponData.code ? couponData.code : null,
@@ -146,10 +149,10 @@
             }
 
             // Upgrade existing org
-            else if (selectedOrg?.billingPlan !== billingPlan && isUpgrade()) {
+            else if (selectedOrg?.billingPlanId !== billingPlan.$id && isUpgrade()) {
                 org = await sdk.forConsole.organizations.updatePlan({
                     organizationId: selectedOrg.$id,
-                    billingPlan: billingPlan,
+                    billingPlan: billingPlan.$id,
                     paymentMethodId,
                     invites: collaborators,
                     couponId: couponData.code ? couponData.code : null
@@ -236,19 +239,19 @@
         (team) => team.$id === selectedOrgId
     ) as Models.Organization;
 
-    function getBillingPlan(): string | undefined {
-        const campaignPlan =
-            campaign?.plan && $plansInfo.get(campaign.plan) ? $plansInfo.get(campaign.plan) : null;
-        const newPlan = $plansInfo.get(billingPlan);
+    function getBillingPlan(): Models.BillingPlan | undefined {
+        const newPlan = billingIdToPlan(billingPlan.$id);
+        const planInCache = billingIdToPlan(campaign.plan);
+        const campaignPlan = campaign?.plan && planInCache ? planInCache : null;
 
         // if campaign has a plan, and it's higher than the selected new plan
         if (campaignPlan?.order > newPlan?.order) {
-            return campaignPlan.$id;
+            return campaignPlan;
         }
 
         // if current plan's order is higher than the selected new plan
         if (currentPlan?.order > newPlan?.order) {
-            return currentPlan.$id;
+            return currentPlan;
         }
 
         return billingPlan;
@@ -276,6 +279,17 @@
     ) {
         loadPaymentMethods();
     }
+
+    /* check if payment method selection is needed */
+    $: needsPaymentMethod =
+        selectedOrgId &&
+        (!selectedOrg?.billingPlanDetails.requiresPaymentMethod || !selectedOrg?.paymentMethodId);
+
+    /* check if coupon code input should be shown */
+    $: needsCouponInput = !data?.couponData?.code && selectedOrgId;
+
+    /* show payment section if either payment method or coupon input is needed */
+    $: showPaymentSection = needsPaymentMethod || needsCouponInput;
 </script>
 
 <svelte:head>
@@ -297,7 +311,9 @@
                                 placeholder="Select organization"
                                 id="organization" />
                         {/if}
-                        {#if selectedOrgId && (selectedOrg?.billingPlan !== BillingPlan.PRO || !selectedOrg?.paymentMethodId)}
+
+                        <!-- show invite members -->
+                        {#if selectedOrgId && !selectedOrg?.billingPlanDetails.addons.seats.supported}
                             {#if selectedOrgId === newOrgId}
                                 <InputText
                                     label="Organization name"
@@ -306,6 +322,7 @@
                                     required
                                     bind:value={name} />
                             {/if}
+
                             <InputTags
                                 bind:tags={collaborators}
                                 label="Invite members by email"
@@ -323,17 +340,18 @@
                         {/if}
                     </Layout.Stack>
                 </Fieldset>
-                {#if (selectedOrgId && (selectedOrg?.billingPlan !== BillingPlan.PRO || !selectedOrg?.paymentMethodId)) || (!data?.couponData?.code && selectedOrgId)}
+
+                {#if showPaymentSection}
                     <Fieldset legend="Payment">
                         <Layout.Stack gap="xl">
-                            {#if selectedOrgId && (selectedOrg?.billingPlan !== BillingPlan.PRO || !selectedOrg?.paymentMethodId)}
+                            {#if needsPaymentMethod}
                                 <SelectPaymentMethod
                                     bind:methods
                                     bind:value={paymentMethodId}
                                     bind:taxId />
                             {/if}
                             <Form bind:this={couponForm} onSubmit={addCoupon}>
-                                {#if !data?.couponData?.code && selectedOrgId}
+                                {#if needsCouponInput}
                                     <Layout.Stack gap="s" direction="row" alignItems="flex-end">
                                         <InputText
                                             required
@@ -361,7 +379,7 @@
         </Form>
     </Layout.Stack>
     <svelte:fragment slot="aside">
-        {#if selectedOrg?.$id && selectedOrg?.billingPlan === billingPlan}
+        {#if selectedOrg?.$id && selectedOrg?.billingPlanId === billingPlan.$id}
             <section
                 class="card"
                 style:--p-card-padding="1.5rem"

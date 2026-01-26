@@ -1,5 +1,5 @@
 import { sdk } from '$lib/stores/sdk.js';
-import { redirect, error } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 import { base } from '$app/paths';
 import { isCloud } from '$lib/system';
 import { BillingPlanGroup, ID, type Models } from '@appwrite.io/console';

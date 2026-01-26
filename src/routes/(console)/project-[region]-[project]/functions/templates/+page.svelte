@@ -81,7 +81,7 @@
 
     $: buttonDisabled = isServiceLimited(
         'functions',
-        $organization?.billingPlan,
+        $organization?.billingPlanId,
         $functionsList?.total ?? 0
     );
 </script>
@@ -153,7 +153,7 @@
                 <EmptyFilter resource="templates"></EmptyFilter>
             {:else}
                 <Paginator items={data.templates} limit={12} hidePages={false} hasLimit bind:offset>
-                    {#snippet children(paginatedItems: typeof data.templates)}
+                    {#snippet children(paginatedItems)}
                         <Layout.Grid columns={2} columnsXL={3} columnsXS={1}>
                             {#each paginatedItems as template}
                                 {@const baseRuntimes = getBaseRuntimes(template.runtimes)}
