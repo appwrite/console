@@ -1,7 +1,7 @@
 <script lang="ts">
     import { page } from '$app/state';
     import { goto, invalidate } from '$app/navigation';
-    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Confirm, Id, SortButton } from '$lib/components';
     import { Dependencies, SPREADSHEET_PAGE_LIMIT } from '$lib/constants';
     import { Button as ConsoleButton, InputSelect } from '$lib/elements/forms';
@@ -21,7 +21,6 @@
     } from './rows/store';
     import {
         columns,
-        table,
         tableColumns,
         databaseColumnSheetOptions,
         databaseRowSheetOptions,
@@ -86,7 +85,7 @@
     import type { HeaderCellAction, RowCellAction } from './sheetOptions.svelte';
     import SheetOptions from './sheetOptions.svelte';
     import { isSmallViewport, isTabletViewport } from '$lib/stores/viewport';
-    import SpreadsheetContainer from './layout/spreadsheet.svelte';
+    import { type Field, SpreadsheetContainer } from '$database/(entity)';
     import EditRowCell from './rows/cell/edit.svelte';
     import { copy } from '$lib/helpers/copy';
     import { writable } from 'svelte/store';
@@ -103,6 +102,7 @@
         row: Partial<Models.Row> | null;
     };
 
+    $: table = data.table;
     $: rows = writable(data.rows);
     $: if ($rows) {
         paginatedRows.clear();
@@ -141,9 +141,7 @@
     let selectedRowForDelete: Models.Row['$id'] | null = null;
 
     onMount(async () => {
-        columnsOrder.set(preferences.getColumnOrder(tableId));
-        columnsWidth.set(preferences.getColumnWidths(tableId));
-
+        setupColumns();
         makeTableColumns();
         sortState.set(data.currentSort as SortState);
 
@@ -160,22 +158,47 @@
 
     onDestroy(() => ($showCreateColumnSheet.show = false));
 
+    function setupColumns() {
+        const order = preferences.getColumnOrder(tableId);
+        const systemColumns = new Set(['$id', 'actions']);
+
+        const validColumnKeys = new Set([
+            ...$columns.map((col) => col.key),
+            '$createdAt' /* allowed for reordering */,
+            '$updatedAt' /* allowed for reordering */
+        ]);
+
+        const seen = new Set<string>();
+        const cleanOrder = order.filter((columnId) => {
+            if (systemColumns.has(columnId)) return false;
+            if (seen.has(columnId)) return false;
+            if (!validColumnKeys.has(columnId)) return false;
+            seen.add(columnId);
+            return true;
+        });
+
+        columnsOrder.set(cleanOrder);
+        columnsWidth.set(preferences.getColumnWidths(tableId));
+    }
+
     function makeTableColumns() {
         const selectedColumnsToHide = preferences.getCustomTableColumns(tableId);
 
-        const baseColumns = $table.columns.map((col) => ({
-            id: col.key,
-            title: col.key,
-            type: col.type as ColumnType,
-            hide: !!selectedColumnsToHide?.includes(col.key),
-            array: col?.array,
-            width: getColumnWidth(col.key, { min: minimumWidth }),
-            minimumWidth: minimumWidth,
-            draggable: true,
-            icon: getAppropriateIcon(col.type),
-            format: 'format' in col && col?.format === 'enum' ? col.format : null,
-            elements: 'elements' in col ? col.elements : null
-        }));
+        const baseColumns: Column[] = table.fields.map((field: Field) => {
+            return {
+                id: field.key,
+                title: field.key,
+                type: field.type as ColumnType,
+                hide: !!selectedColumnsToHide?.includes(field.key),
+                array: field?.array,
+                width: getColumnWidth(field.key, { min: minimumWidth }),
+                minimumWidth: minimumWidth,
+                draggable: true,
+                icon: getAppropriateIcon(field.type),
+                format: 'format' in field && field?.format === 'enum' ? field.format : null,
+                elements: 'elements' in field ? field.elements : null
+            };
+        });
 
         const staticColumns: Column[] = [
             {
@@ -225,17 +248,13 @@
             }
         ];
 
-        const groupedColumns: Column[] = [
-            staticColumns[0],
-            ...baseColumns,
-            staticColumns[1],
-            staticColumns[2]
-        ];
+        const fixedLeftColumn = staticColumns[0];
+        const fixedRightColumn = staticColumns[3];
 
-        const actionsColumn = staticColumns[3];
+        const reorderableColumns = [...baseColumns, staticColumns[1], staticColumns[2]];
+        const reorderedColumns = reorderItems(reorderableColumns, $columnsOrder);
 
-        const reorderedNonActions = reorderItems(groupedColumns, $columnsOrder);
-        const finalColumns = [...reorderedNonActions, actionsColumn];
+        const finalColumns = [fixedLeftColumn, ...reorderedColumns, fixedRightColumn];
 
         tableColumns.set(finalColumns);
     }
@@ -384,9 +403,7 @@
                 });
             } else {
                 if (selectedRows.length) {
-                    const hasAnyRelationships = $table.columns.some((column) =>
-                        isRelationship(column)
-                    );
+                    const hasAnyRelationships = table.fields.some(isRelationship) ?? false;
 
                     const tablesSDK = sdk.forProject(
                         page.params.region,
@@ -430,7 +447,7 @@
             }
 
             await invalidate(Dependencies.ROWS);
-            trackEvent(Submit.RowDelete);
+            trackEvent(Click.DatabaseRowDelete);
 
             if (!hadErrors) {
                 // error is already shown above!
@@ -624,7 +641,7 @@
         try {
             await sdk.forProject(page.params.region, page.params.project).tablesDB.updateRow({
                 databaseId,
-                tableId: $table.$id,
+                tableId: table.$id,
                 rowId: row.$id,
                 data: row,
                 permissions: row.$permissions
@@ -673,7 +690,7 @@
                     Query.limit(SPREADSHEET_PAGE_LIMIT),
                     Query.offset(pageToOffset(pageNumber, SPREADSHEET_PAGE_LIMIT)),
                     ...filterQueries /* filter queries */,
-                    ...buildWildcardColumnsQuery($table)
+                    ...buildWildcardColumnsQuery(table)
                 ]
             });
 
@@ -700,7 +717,7 @@
                         getCorrectOrderQuery(),
                         Query.limit(SPREADSHEET_PAGE_LIMIT),
                         Query.offset(pageToOffset(targetPageNum, SPREADSHEET_PAGE_LIMIT)),
-                        ...buildWildcardColumnsQuery($table)
+                        ...buildWildcardColumnsQuery(table)
                     ]
                 });
 
@@ -715,8 +732,8 @@
         let tableId = null;
         if (typeof relatedTable === 'string') {
             tableId = relatedTable;
-        } else if (typeof relatedTable === 'object' && '$tableId' in relatedTable) {
-            tableId = relatedTable.$tableId;
+        } else if (typeof relatedTable === 'object' && 'tableId' in relatedTable) {
+            tableId = relatedTable.tableId;
         }
 
         return preferences.getDisplayNames(tableId) ?? ['$id'];
@@ -758,7 +775,7 @@
 
     $: canShowDatetimePopover = true;
 
-    $: if ($table.columns) {
+    $: if (table.fields) {
         makeTableColumns();
     }
 
@@ -1230,17 +1247,17 @@
     bind:open={showDelete}
     onSubmit={handleDelete}
     confirmDeletionLabel={relatedColumns?.length
-        ? `Delete ${selectedRowForDelete !== null ? 'row' : 'rows'} from ${$table.name}`
+        ? `Delete ${selectedRowForDelete !== null ? 'row' : 'rows'} from ${table.name}`
         : undefined}
     title={selectedRows.length === 1 ? 'Delete Row' : 'Delete Rows'}>
     {@const isSingle = selectedRowForDelete !== null}
 
     <p>
         {#if isSingle}
-            Are you sure you want to delete this row from <b>{$table.name}</b>?
+            Are you sure you want to delete this row from <b>{table.name}</b>?
         {:else}
             Are you sure you want to delete <b>{selectedRows.length}</b>
-            {selectedRows.length > 1 ? 'rows' : 'row'} from <b>{$table.name}</b>?
+            {selectedRows.length > 1 ? 'rows' : 'row'} from <b>{table.name}</b>?
         {/if}
     </p>
 

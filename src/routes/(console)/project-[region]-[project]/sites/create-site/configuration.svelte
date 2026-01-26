@@ -95,7 +95,8 @@
                                 id="installCommand"
                                 label="Install command"
                                 bind:value={installCommand}
-                                placeholder={adapterData?.installCommand} />
+                                placeholder={adapterData?.installCommand ||
+                                    'Enter install command'} />
                             <Button
                                 secondary
                                 size="s"
@@ -109,7 +110,7 @@
                                 id="buildCommand"
                                 label="Build command"
                                 bind:value={buildCommand}
-                                placeholder={adapterData?.buildCommand} />
+                                placeholder={adapterData?.buildCommand || 'Enter build command'} />
                             <Button
                                 secondary
                                 size="s"
@@ -123,7 +124,8 @@
                                 id="outputDirectory"
                                 label="Output directory"
                                 bind:value={outputDirectory}
-                                placeholder={adapterData?.outputDirectory} />
+                                placeholder={adapterData?.outputDirectory ||
+                                    'Enter output directory'} />
                             <Button
                                 secondary
                                 size="s"

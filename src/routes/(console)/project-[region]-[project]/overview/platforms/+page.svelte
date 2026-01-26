@@ -27,9 +27,15 @@
         });
     }
 
-    export async function continuePlatform(platform: Platform, name: string, type: PlatformType) {
+    export async function continuePlatform(
+        platform: Platform,
+        name: string,
+        key: string,
+        type: PlatformType
+    ) {
         createPlatform.set({
             name: name,
+            key: key,
             type: type
         });
 
@@ -39,8 +45,9 @@
         });
 
         wizard.start(platforms[platform], null, 1, {
-            isConnectPlatform: true,
-            platform: type
+            isPlatformCreated: true,
+            platform: type,
+            key: key
         });
     }
 

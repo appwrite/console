@@ -325,6 +325,54 @@
     </CardGrid>
 
     <CardGrid gap="none">
+        <svelte:fragment slot="title">Screenshots generated</svelte:fragment>
+        The total number of unique screenshots generated across all projects in your organization.
+
+        <svelte:fragment slot="aside">
+            {#if data.organizationUsage.screenshotsGeneratedTotal}
+                {@const current = data.organizationUsage.screenshotsGeneratedTotal}
+                <ProgressBarBig
+                    currentUnit="Screenshots generated"
+                    currentValue={formatNum(current)}
+                    progressValue={current}
+                    showBar={false} />
+                <BarChart
+                    options={{
+                        yAxis: {
+                            axisLabel: {
+                                formatter: formatNum
+                            }
+                        }
+                    }}
+                    series={[
+                        {
+                            name: 'Screenshots generated',
+                            data: [
+                                ...(data.organizationUsage.imageTransformations ?? []).map((e) => [
+                                    e.date,
+                                    e.value
+                                ])
+                            ]
+                        }
+                    ]} />
+                {#if projects?.length > 0}
+                    <ProjectBreakdown {projects} metric="screenshotsGenerated" {usageProjects} />
+                {/if}
+            {:else}
+                <Card isDashed>
+                    <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
+                        <span
+                            class="icon-chart-square-bar text-large"
+                            aria-hidden="true"
+                            style="font-size: 32px;"></span>
+                        <p class="u-bold">No data to show</p>
+                    </div>
+                </Card>
+            {/if}
+        </svelte:fragment>
+    </CardGrid>
+
+    <CardGrid gap="none">
         <svelte:fragment slot="title">Executions</svelte:fragment>
         Calculated for all functions that are executed in all projects in your organization.
         <svelte:fragment slot="aside">

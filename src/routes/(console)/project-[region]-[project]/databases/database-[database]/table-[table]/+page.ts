@@ -1,11 +1,12 @@
 import { Dependencies, SPREADSHEET_PAGE_LIMIT } from '$lib/constants';
 import { getLimit, getPage, getQuery, getView, pageToOffset, View } from '$lib/helpers/load';
 import { sdk } from '$lib/stores/sdk';
-import { type Models, Query } from '@appwrite.io/console';
+import { Query } from '@appwrite.io/console';
 import type { PageLoad } from './$types';
 import { queries, queryParamToMap } from '$lib/components/filters';
 import { buildWildcardColumnsQuery } from './rows/store';
 import type { TagValue } from '$lib/components/filters/store';
+import type { Entity } from '$database/(entity)';
 
 export const load: PageLoad = async ({ params, depends, url, route, parent }) => {
     const { table } = await parent();
@@ -57,7 +58,7 @@ function buildGridQueries(
     limit: number,
     offset: number,
     parsedQueries: Map<TagValue, string>,
-    table: Models.Table
+    table: Entity
 ) {
     const hasOrderQuery = Array.from(parsedQueries.values()).some(
         (q) => q.includes('orderAsc') || q.includes('orderDesc')
