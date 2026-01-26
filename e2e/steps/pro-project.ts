@@ -57,9 +57,11 @@ export async function createProProject(page: Page): Promise<Metadata> {
         const regionPicker = dialog.locator('button[role="combobox"]');
         if (await regionPicker.isVisible()) {
             await regionPicker.click();
-            const firstEnabledOption = page.locator('[role="option"]:not([data-disabled="true"])').first();
+            const firstEnabledOption = page
+                .locator('[role="option"]:not([data-disabled="true"])')
+                .first();
 
-            if (await firstEnabledOption.count() > 0) {
+            if ((await firstEnabledOption.count()) > 0) {
                 const selectedRegion = await firstEnabledOption.getAttribute('data-value');
                 await firstEnabledOption.click();
                 region = selectedRegion?.replace(/"/g, '') || 'fra';
