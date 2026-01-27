@@ -68,12 +68,11 @@
     onSubmit={handleSubmit}
     bind:show
     title="Update payment method state">
-    <svelte:fragment slot="description">
-        State information is required for US payment methods to apply correct taxes and meet U.S.
-        legal requirements.
-    </svelte:fragment>
-
     <Layout.Stack direction="column" gap="m">
+        <Typography.Text>
+            State information is required for US payment methods to apply correct taxes and meet
+            U.S. legal requirements.
+        </Typography.Text>
         {#if paymentMethod}
             <Card.Base variant="secondary" padding="s">
                 <Layout.Stack direction="row" alignItems="center" gap="s">
