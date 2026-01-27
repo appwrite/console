@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Wizard } from '$lib/layout';
     import { writable } from 'svelte/store';
-    import { Form, InputText, Button } from '$lib/elements/forms';
+    import { Form, InputText, InputSelect, InputCheckbox, Button } from '$lib/elements/forms';
     import { Alert, Card, Fieldset, Icon, Layout, Tag, Typography } from '@appwrite.io/pink-svelte';
     import { resolveRoute } from '$lib/stores/navigation';
     import { afterNavigate, goto } from '$app/navigation';
@@ -10,7 +10,11 @@
     import { IconPencil } from '@appwrite.io/pink-icons-svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { ID, type Models } from '@appwrite.io/console';
-    import { type DatabaseType, useDatabaseSdk } from '$database/(entity)';
+    import {
+        type DatabaseType,
+        type DedicatedDatabaseParams,
+        useDatabaseSdk
+    } from '$database/(entity)';
     import { isCloud } from '$lib/system';
     import { upgradeURL } from '$lib/stores/billing';
     import { currentPlan } from '$lib/stores/organization';
@@ -18,12 +22,16 @@
     import EmptyLightMobile from '$lib/images/backups/upgrade/backups-mobile-light.png';
     import { app } from '$lib/stores/app';
     import { sdk } from '$lib/stores/sdk';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import CreatePolicy from '$database/backups/createPolicy.svelte';
     import { cronExpression, type UserBackupPolicy } from '$lib/helpers/backups';
 
     import Mongo from '../(assets)/mongo.svelte';
     import { isTabletViewport } from '$lib/stores/viewport';
+    import { filterRegions } from '$lib/helpers/regions';
+    import { regions as regionsStore } from '$lib/stores/organization';
+    import { backupRetainingOptions } from '$database/store';
+    import PolicyPresets from '$database/backups/policyPresets.svelte';
 
     let formComponent: Form;
 
@@ -48,6 +56,7 @@
         type: DatabaseType;
         title: string;
         subtitle: string;
+        icon?: typeof Mongo;
     }> = [
         {
             type: 'tablesdb',
@@ -59,9 +68,111 @@
             type: 'documentsdb',
             title: 'DocumentsDB',
             subtitle:
-                'Store flexible data without a fixed schema. Best for unstructured data and simple querying.'
+                'Store flexible data without a fixed schema. Best for unstructured data and simple querying.',
+            icon: Mongo
+        },
+        {
+            type: 'prismapostgres',
+            title: 'Prisma Postgres',
+            subtitle:
+                'Managed PostgreSQL with direct connections. Best for high-performance SQL workloads.'
+        },
+        {
+            type: 'dedicateddb',
+            title: 'DedicatedDB',
+            subtitle:
+                'Always-on dedicated instances with high availability. Best for production workloads.'
         }
     ];
+
+    // Dedicated DB specific options
+    const engineOptions = [
+        { value: 'postgres', label: 'PostgreSQL' },
+        { value: 'mysql', label: 'MySQL' },
+        { value: 'mariadb', label: 'MariaDB' }
+    ];
+
+    const regionOptions = $derived(filterRegions($regionsStore.regions || []));
+
+    const tierOptions = [
+        { value: 'starter', label: 'Starter - 0.5 CPU, 512MB RAM, 10GB Storage' },
+        { value: 'standard', label: 'Standard - 1 CPU, 2GB RAM, 50GB Storage' },
+        { value: 'professional', label: 'Professional - 2 CPU, 4GB RAM, 100GB Storage' },
+        { value: 'enterprise', label: 'Enterprise - 4 CPU, 8GB RAM, 250GB Storage' }
+    ];
+
+    // State for dedicated/prisma options
+    let selectedEngine = $state('postgres');
+    let selectedRegion = $state<string | null>(null);
+    let selectedTier = $state('starter');
+
+    // Set default region when regions load
+    $effect(() => {
+        if (!selectedRegion && regionOptions.length > 0) {
+            const firstEnabled = regionOptions.find((r) => !r.disabled);
+            selectedRegion = firstEnabled?.value ?? regionOptions[0].value;
+        }
+    });
+    let highAvailability = $state(false);
+
+    // Helper to check database type capabilities
+    const showRegionSelect = $derived(type === 'prismapostgres' || type === 'dedicateddb');
+    const showTierSelect = $derived(type === 'dedicateddb');
+    const showEngineSelect = $derived(type === 'dedicateddb');
+
+    // Backup system varies by database type
+    const backupSystem = $derived.by(() => {
+        switch (type) {
+            case 'tablesdb':
+            case 'documentsdb':
+                return 'appwrite';
+            case 'prismapostgres':
+                return 'prisma';
+            case 'dedicateddb':
+                return 'dedicated';
+            default:
+                return 'appwrite';
+        }
+    });
+
+    // DedicatedDB backup options
+    const dedicatedBackupPresets = [
+        {
+            id: 'daily',
+            label: 'Daily',
+            description: 'Backup every day, retained for 7 days',
+            schedule: '0 0 * * *',
+            retained: 7
+        },
+        {
+            id: 'hourly',
+            label: 'Hourly',
+            description: 'Backup every hour, retained for 24 hours',
+            schedule: '0 * * * *',
+            retained: 1
+        },
+        {
+            id: 'none',
+            label: 'No backup',
+            description: 'Skip backups. You can change this later'
+        }
+    ];
+
+    let selectedBackupPolicy = $state<string>('daily');
+    let backupRetentionDays = $state(7);
+    let backupPitr = $state(false);
+
+    // Derive backup settings from selected policy
+    const backupEnabled = $derived(selectedBackupPolicy !== 'none');
+    const selectedBackupSchedule = $derived.by(() => {
+        const policy = dedicatedBackupPresets.find((p) => p.id === selectedBackupPolicy);
+        return policy?.schedule ?? '0 0 * * *';
+    });
+
+    // Filter retention options (exclude Forever and Custom for dedicated DBs)
+    const dedicatedRetentionOptions = backupRetainingOptions.filter(
+        (opt) => opt.value > 0 && opt.value <= 365
+    );
 
     afterNavigate(({ from }) => (previousPage = from?.url?.pathname || previousPage));
 
@@ -125,12 +236,34 @@
             let database: Models.Database;
             const databaseSdk = useDatabaseSdk(page.params.region, page.params.project);
 
-            database = await databaseSdk.create(type, {
-                databaseId,
-                name: databaseName
-            });
-
-            await createPolicies(database.$id);
+            if (type === 'prismapostgres') {
+                database = await databaseSdk.create(type, {
+                    databaseId,
+                    name: databaseName,
+                    region: selectedRegion,
+                    tier: selectedTier
+                } as DedicatedDatabaseParams);
+            } else if (type === 'dedicateddb') {
+                database = await databaseSdk.create(type, {
+                    databaseId,
+                    name: databaseName,
+                    engine: selectedEngine,
+                    region: selectedRegion,
+                    tier: selectedTier,
+                    highAvailability,
+                    backupEnabled,
+                    backupSchedule: backupEnabled ? selectedBackupSchedule : undefined,
+                    backupRetentionDays: backupEnabled ? backupRetentionDays : undefined,
+                    backupPitr: backupEnabled ? backupPitr : undefined
+                } as DedicatedDatabaseParams);
+            } else {
+                database = await databaseSdk.create(type, {
+                    databaseId,
+                    name: databaseName
+                });
+                // Create Appwrite backup policies for TablesDB/DocumentsDB
+                await createPolicies(database.$id);
+            }
 
             addNotification({
                 type: 'success',
@@ -152,6 +285,7 @@
                 type: 'error',
                 message: error.message
             });
+            trackError(error, Submit.DatabaseCreate);
         }
     }
 </script>
@@ -194,11 +328,51 @@
                 </Layout.Stack>
             </Fieldset>
 
+            {#if showRegionSelect}
+                <Fieldset legend="Configuration">
+                    <Layout.Stack direction="column" gap="l">
+                        {#if showEngineSelect}
+                            <InputSelect
+                                id="engine"
+                                label="Database Engine"
+                                bind:value={selectedEngine}
+                                options={engineOptions} />
+                        {/if}
+
+                        <InputSelect
+                            id="region"
+                            label="Region"
+                            bind:value={selectedRegion}
+                            options={regionOptions} />
+
+                        {#if showTierSelect}
+                            <InputSelect
+                                id="tier"
+                                label="Resource Tier"
+                                bind:value={selectedTier}
+                                options={tierOptions} />
+
+                            <InputCheckbox
+                                id="ha"
+                                label="Enable High Availability"
+                                bind:checked={highAvailability}
+                                description="Deploy a standby replica for automatic failover" />
+                        {/if}
+                    </Layout.Stack>
+                </Fieldset>
+            {/if}
+
             <Fieldset legend="Backups">
-                {#if isCloud}
-                    {@render cloudBackupOptions()}
-                {:else}
-                    {@render selfHostedBackupOptions()}
+                {#if backupSystem === 'appwrite'}
+                    {#if isCloud}
+                        {@render cloudBackupOptions()}
+                    {:else}
+                        {@render selfHostedBackupOptions()}
+                    {/if}
+                {:else if backupSystem === 'prisma'}
+                    {@render prismaBackupOptions()}
+                {:else if backupSystem === 'dedicated'}
+                    {@render dedicatedBackupOptions()}
                 {/if}
             </Fieldset>
         </Layout.Stack>
@@ -271,6 +445,46 @@
     </Layout.Stack>
 {/snippet}
 
+{#snippet prismaBackupOptions()}
+    <Layout.Stack gap="l">
+        <Alert.Inline status="info" title="Automatic backups included">
+            Prisma Postgres automatically creates daily snapshots with 30-day retention. Backups are
+            managed by Prisma and cannot be customized.
+        </Alert.Inline>
+    </Layout.Stack>
+{/snippet}
+
+{#snippet dedicatedBackupOptions()}
+    <Layout.Stack gap="l">
+        <PolicyPresets
+            policies={dedicatedBackupPresets}
+            bind:selected={selectedBackupPolicy}
+            columns={3} />
+
+        {#if backupEnabled}
+            <InputSelect
+                id="backupRetention"
+                label="Retention period"
+                bind:value={backupRetentionDays}
+                options={dedicatedRetentionOptions} />
+
+            <InputCheckbox
+                id="backupPitr"
+                label="Enable Point-in-Time Recovery (PITR)"
+                bind:checked={backupPitr}
+                description="Restore your database to any point within the retention window" />
+
+            {#if backupPitr}
+                <Alert.Inline status="info" title="Point-in-Time Recovery">
+                    PITR allows you to restore your database to any point within the retention
+                    window using WAL archiving. This provides more granular recovery options but
+                    increases storage usage.
+                </Alert.Inline>
+            {/if}
+        {/if}
+    </Layout.Stack>
+{/snippet}
+
 {#snippet selectDatabaseType()}
     <Layout.Grid columns={2} columnsS={1}>
         {#each databaseTypes as databaseType}
@@ -283,7 +497,7 @@
                     value={databaseType.type}
                     title={databaseType.title}
                     imageRadius="s"
-                    icon={databaseType.type === 'documentsdb' ? Mongo : undefined}>
+                    icon={databaseType.icon}>
                     {databaseType.subtitle}
                 </Card.Selector>
             </div>

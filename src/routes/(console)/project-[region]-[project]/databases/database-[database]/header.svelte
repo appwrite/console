@@ -5,7 +5,7 @@
     import { isTabSelected } from '$lib/helpers/load';
     import { canWriteDatabases } from '$lib/stores/roles';
     import { resolveRoute, withPath } from '$lib/stores/navigation';
-    import { useTerminology } from '$database/(entity)';
+    import { useTerminology, type DatabaseType } from '$database/(entity)';
     import { isSmallViewport } from '$lib/stores/viewport';
 
     const terminology = useTerminology(page);
@@ -20,13 +20,20 @@
         page.params
     );
 
+    // Check if this is a dedicated database type
+    const isDedicatedType = $derived(
+        (database?.type as DatabaseType) === 'prismapostgres' ||
+            (database?.type as DatabaseType) === 'dedicateddb'
+    );
+
     const tabs = $derived(
         [
             {
                 href: baseDatabasePath,
-                title: terminology.entity.title.plural,
-                event: terminology.entity.lower.plural,
-                hasChildren: true
+                // For dedicated DBs, show "Overview" instead of Tables/Collections
+                title: isDedicatedType ? 'Overview' : terminology.entity.title.plural,
+                event: isDedicatedType ? 'overview' : terminology.entity.lower.plural,
+                hasChildren: !isDedicatedType
             },
             {
                 href: withPath(baseDatabasePath, '/backups'),

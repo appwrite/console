@@ -14,6 +14,12 @@
     import DocumentsDB from './(assets)/documents-db.svg';
     import DocumentsDBDark from './(assets)/dark/documents-db.svg';
 
+    import PrismaPostgres from './(assets)/prisma-postgres.svg';
+    import PrismaPostgresDark from './(assets)/dark/prisma-postgres.svg';
+
+    import DedicatedDB from './(assets)/dedicated-db.svg';
+    import DedicatedDBDark from './(assets)/dark/dedicated-db.svg';
+
     import { isSmallViewport } from '$lib/stores/viewport';
     import type { DatabaseType } from '$database/(entity)';
 
@@ -29,6 +35,8 @@
     const mongoDbImage = $derived(isDark ? MongoDBDark : MongoDB);
     const tablesDbImage = $derived(isDark ? TablesDBDark : TablesDB);
     const documentsDbImage = $derived(isDark ? DocumentsDBDark : DocumentsDB);
+    const prismaPostgresImage = $derived(isDark ? PrismaPostgresDark : PrismaPostgres);
+    const dedicatedDbImage = $derived(isDark ? DedicatedDBDark : DedicatedDB);
 </script>
 
 {#if $isSmallViewport}
@@ -66,12 +74,32 @@
             subtitle:
                 'Store flexible data without a fixed schema. Best for unstructured data and simple querying.',
             image: documentsDbImage,
-            footer: true
+            footerType: 'mongodb'
+        })}
+
+        <!-- Prisma Postgres -->
+        {@render databaseTypeCard({
+            type: 'prismapostgres',
+            title: 'Prisma Postgres',
+            subtitle:
+                'Managed PostgreSQL with direct connections. Best for high-performance SQL workloads.',
+            image: prismaPostgresImage,
+            footerType: 'prisma'
+        })}
+
+        <!-- Dedicated Database -->
+        {@render databaseTypeCard({
+            type: 'dedicateddb',
+            title: 'DedicatedDB',
+            subtitle:
+                'Always-on dedicated database instances with high availability. Best for production workloads.',
+            image: dedicatedDbImage,
+            footerType: 'appwrite'
         })}
     </Layout.Grid>
 {/snippet}
 
-{#snippet databaseTypeCard({ type, title, subtitle, image = undefined, footer = false })}
+{#snippet databaseTypeCard({ type, title, subtitle, image = undefined, footerType = undefined })}
     <Card
         isButton
         radius="s"
@@ -111,15 +139,24 @@
                     direction="row"
                     alignContent="center"
                     style="margin-block-end: 20px;">
-                    {#if footer}
+                    {#if footerType === 'mongodb'}
                         <Typography.Text>Powered by</Typography.Text>
-
                         <img
                             height="20px"
                             width="auto"
                             src={mongoDbImage}
                             alt="mongo-db artwork"
                             style:padding-block-end="2px" />
+                    {:else if footerType === 'prisma'}
+                        <Typography.Text>Powered by</Typography.Text>
+                        <img
+                            height="20px"
+                            width="auto"
+                            src={prismaPostgresImage}
+                            alt="prisma artwork"
+                            style:padding-block-end="2px" />
+                    {:else if footerType === 'appwrite'}
+                        <Typography.Text>Powered by Appwrite</Typography.Text>
                     {/if}
                 </Layout.Stack>
             </Layout.Stack>

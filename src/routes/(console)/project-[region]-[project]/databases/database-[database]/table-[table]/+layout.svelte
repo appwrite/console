@@ -161,8 +161,13 @@
             label: 'Create row',
             keys: page.url.pathname.endsWith(table?.$id) ? ['r'] : ['r', 'd'],
             callback: () => {
-                if (table.fields) {
+                if (table.fields?.length > 0) {
                     $showRowCreateSheet.show = true;
+                } else {
+                    addNotification({
+                        type: 'warning',
+                        message: 'Cannot create rows: table has no fields'
+                    });
                 }
             },
             icon: IconPlus,

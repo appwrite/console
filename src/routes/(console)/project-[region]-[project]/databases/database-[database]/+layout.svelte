@@ -30,6 +30,10 @@
 
     const { databaseSdk, terminology } = getTerminologies();
 
+    // Check if this is a dedicated database type
+    $: isDedicatedType =
+        terminology.type === 'prismapostgres' || terminology.type === 'dedicateddb';
+
     $: $registerCommands([
         {
             label: 'Create table',
@@ -42,7 +46,8 @@
                 }
             },
             keys: page.url.pathname.endsWith(databaseId) ? ['c'] : ['c', 'c'],
-            disabled: page.url.pathname.includes('table-') || !$canWriteTables,
+            // Disable for dedicated databases - they don't have tables/collections
+            disabled: page.url.pathname.includes('table-') || !$canWriteTables || isDedicatedType,
             group: 'databases',
             icon: IconPlus
         },
@@ -79,7 +84,8 @@
             disabled: !isCloud || !$currentPlan?.backupsEnabled
         },
         {
-            label: 'Go to tables',
+            // For dedicated DBs, show "Go to overview" instead of "Go to tables"
+            label: isDedicatedType ? 'Go to overview' : 'Go to tables',
             callback() {
                 goto(
                     `${base}/project-${page.params.region}-${project}/databases/database-${databaseId}`
@@ -133,11 +139,16 @@
                 addSubPanel(TablesPanel);
             },
             group: 'databases',
-            rank: -1
+            rank: -1,
+            // Disable for dedicated databases
+            disabled: isDedicatedType
         }
     ]);
 
-    $registerSearchers(tablesSearcher);
+    // Only register table searcher for non-dedicated databases
+    if (!isDedicatedType) {
+        $registerSearchers(tablesSearcher);
+    }
 
     $: $updateCommandGroupRanks({ tables: 10 });
 
@@ -172,23 +183,26 @@
 
 <slot />
 
-<CreateEntity bind:show={$showCreateEntity} onCreateEntity={createEntity} />
+<!-- Only show entity creation dialog for non-dedicated databases -->
+{#if !isDedicatedType}
+    <CreateEntity bind:show={$showCreateEntity} onCreateEntity={createEntity} />
 
-<Dialog title="Generate sample data" bind:open={$randomDataModalState.show}>
-    {@const records = terminology.record.lower.singular}
-    <Layout.Stack style="gap: 28px;">
-        <Typography.Text>
-            Select how many sample {records} to generate for testing. This won't delete or replace any
-            existing {records}.
-        </Typography.Text>
+    <Dialog title="Generate sample data" bind:open={$randomDataModalState.show}>
+        {@const records = terminology.record.lower.singular}
+        <Layout.Stack style="gap: 28px;">
+            <Typography.Text>
+                Select how many sample {records} to generate for testing. This won't delete or replace
+                any existing {records}.
+            </Typography.Text>
 
-        <Seekbar max={100} breakpointCount={5} bind:value={$randomDataModalState.value} />
-    </Layout.Stack>
-
-    <svelte:fragment slot="footer">
-        <Layout.Stack direction="row" gap="s" justifyContent="flex-end">
-            <Button text on:click={() => ($randomDataModalState.show = false)}>Cancel</Button>
-            <Button on:click={() => $randomDataModalState.onSubmit?.()}>Create</Button>
+            <Seekbar max={100} breakpointCount={5} bind:value={$randomDataModalState.value} />
         </Layout.Stack>
-    </svelte:fragment>
-</Dialog>
+
+        <svelte:fragment slot="footer">
+            <Layout.Stack direction="row" gap="s" justifyContent="flex-end">
+                <Button text on:click={() => ($randomDataModalState.show = false)}>Cancel</Button>
+                <Button on:click={() => $randomDataModalState.onSubmit?.()}>Create</Button>
+            </Layout.Stack>
+        </svelte:fragment>
+    </Dialog>
+{/if}

@@ -12,14 +12,30 @@ import {
 } from './terminology';
 import type { Models } from '@appwrite.io/console';
 
+export type DedicatedDatabaseParams = {
+    databaseId: string;
+    name: string;
+    enabled?: boolean;
+    engine?: 'postgres' | 'mysql' | 'mariadb';
+    region?: string;
+    tier?: string;
+    highAvailability?: boolean;
+    backupEnabled?: boolean;
+    backupSchedule?: string;
+    backupRetentionDays?: number;
+    backupPitr?: boolean;
+};
+
 export type DatabaseSdkResult = {
     create: (
         type: DatabaseType,
-        params: {
-            databaseId: string;
-            name: string;
-            enabled?: boolean;
-        }
+        params:
+            | {
+                  databaseId: string;
+                  name: string;
+                  enabled?: boolean;
+              }
+            | DedicatedDatabaseParams
     ) => Promise<Models.Database>;
     list: (params: { queries?: string[]; search?: string }) => Promise<Models.DatabaseList>;
     createEntity: (params: {
@@ -96,7 +112,12 @@ export function useDatabaseSdk(
         region = regionOrPage?.params?.region || '';
         project = regionOrPage?.params?.project || '';
     } else {
-        type = databaseType!;
+        if (!databaseType) {
+            throw new Error(
+                'databaseType is required when passing string parameters to useDatabaseSdk'
+            );
+        }
+        type = databaseType;
         region = regionOrPage as string;
         project = projectOrTerminology as string;
     }
@@ -112,6 +133,37 @@ export function useDatabaseSdk(
                 }
                 case 'documentsdb': {
                     return await baseSdk.documentsDB.create(params);
+                }
+                case 'prismapostgres': {
+                    // Prisma databases are created via the compute/databases endpoint
+                    // with backend: 'prisma'
+                    const prismaParams = params as DedicatedDatabaseParams;
+                    return await baseSdk.dedicatedDatabases.create({
+                        databaseId: prismaParams.databaseId,
+                        name: prismaParams.name,
+                        backend: 'prisma',
+                        engine: 'postgres',
+                        region: prismaParams.region,
+                        tier: prismaParams.tier
+                    });
+                }
+                case 'dedicateddb': {
+                    // Dedicated databases are created via the compute/databases endpoint
+                    // with backend: 'appwrite'
+                    const dedicatedParams = params as DedicatedDatabaseParams;
+                    return await baseSdk.dedicatedDatabases.create({
+                        databaseId: dedicatedParams.databaseId,
+                        name: dedicatedParams.name,
+                        backend: 'appwrite',
+                        engine: dedicatedParams.engine,
+                        region: dedicatedParams.region,
+                        tier: dedicatedParams.tier,
+                        highAvailability: dedicatedParams.highAvailability,
+                        backupEnabled: dedicatedParams.backupEnabled,
+                        backupSchedule: dedicatedParams.backupSchedule,
+                        backupRetentionDays: dedicatedParams.backupRetentionDays,
+                        backupPitr: dedicatedParams.backupPitr
+                    });
                 }
                 case 'vectordb':
                     throw new Error('Database type not supported yet');
@@ -212,6 +264,9 @@ export function useDatabaseSdk(
                     return await baseSdk.tablesDB.delete(params);
                 case 'documentsdb':
                     return await baseSdk.documentsDB.delete(params);
+                case 'prismapostgres':
+                case 'dedicateddb':
+                    return await baseSdk.dedicatedDatabases.delete(params);
                 case 'vectordb':
                     throw new Error('Database type not supported yet');
                 default:

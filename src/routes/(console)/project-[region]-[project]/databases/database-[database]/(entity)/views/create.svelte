@@ -91,6 +91,14 @@
         show = false;
     }
 
+    /**
+     * Converts string to valid Appwrite ID format matching backend rules:
+     * - Lowercase alphanumeric characters, hyphens, underscores, and dots only
+     * - Cannot start with a hyphen
+     * - Cannot end with a dot
+     * - Consecutive underscores collapsed to single underscore
+     * - Maximum 36 characters
+     */
     function toIdFormat(str: string): string {
         return str
             .toLowerCase()
@@ -99,7 +107,7 @@
             .replace(/^-+/, '')
             .replace(/\.+$/, '')
             .replace(/_{2,}/g, '_')
-            .slice(0, 36); // max length
+            .slice(0, 36);
     }
 
     $effect(() => {

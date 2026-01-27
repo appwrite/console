@@ -73,9 +73,14 @@ export async function generateFields(
             ]);
         }
 
-        case 'documentsdb': /* doesn't need any fields */
-        case 'vectordb': /* vector embeddings + metadata defined at collection creation */ {
-            /* no individual field creation needed */
+        /**
+         * Schema-less database types that don't require individual field creation:
+         * - documentsdb: Flexible document structure without predefined schema
+         * - vectordb: Vector embeddings and metadata are defined at collection creation
+         * @returns Empty array since no individual field creation is needed
+         */
+        case 'documentsdb':
+        case 'vectordb': {
             return [];
         }
     }

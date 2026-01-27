@@ -121,6 +121,7 @@
     let warningMessage = $state<string | null>(null);
     let changeTimer: ReturnType<typeof setTimeout> | null = null; // debounce timer for parse + onChange
     let autoSaveTimer: ReturnType<typeof setTimeout> | null = null; // debounce timer for auto-save
+    let saveGeneration = 0; // generation counter to detect stale closures in auto-save
     let tooltipTimer: ReturnType<typeof setTimeout> | null = null; // timer for tooltip message reset
     let suggestionsHideTimer: ReturnType<typeof setTimeout> | null = null; // timer to auto-hide suggestions
     let pendingCanonicalize = false; // set when a full-document replace (paste-all) occurs
@@ -856,10 +857,36 @@
             suggestedObject[attr] = '';
         }
 
-        // Merge with existing data (keeping system fields)
+        // System fields that should not be overwritten via spread
+        const SYSTEM_FIELDS = [
+            '$id',
+            '$createdAt',
+            '$updatedAt',
+            '$permissions',
+            '$collectionId',
+            '$databaseId'
+        ];
+
+        // Sanitize data to prevent system field injection
+        const existingData = (
+            typeof data === 'object' && data !== null && !Array.isArray(data) ? data : {}
+        ) as JsonObject;
+        const sanitizedData = Object.fromEntries(
+            Object.entries(existingData).filter(([key]) => !SYSTEM_FIELDS.includes(key))
+        );
+
+        // Merge sanitized data with suggested attributes, then restore system fields
         const updatedData = {
-            ...(typeof data === 'object' && data !== null && !Array.isArray(data) ? data : {}),
-            ...suggestedObject
+            ...sanitizedData,
+            ...suggestedObject,
+            // Restore original system fields
+            ...(existingData['$id'] !== undefined && { $id: existingData['$id'] }),
+            ...(existingData['$createdAt'] !== undefined && {
+                $createdAt: existingData['$createdAt']
+            }),
+            ...(existingData['$updatedAt'] !== undefined && {
+                $updatedAt: existingData['$updatedAt']
+            })
         };
 
         // Update the data
@@ -1102,8 +1129,18 @@
                             autoSaveTimer = null;
                         }
 
+                        // Increment generation to track this save attempt
+                        saveGeneration++;
+                        const capturedGeneration = saveGeneration;
+
                         // Set new auto-save timer
                         autoSaveTimer = setTimeout(() => {
+                            // Skip if a newer edit has occurred (stale closure detection)
+                            if (capturedGeneration !== saveGeneration) {
+                                autoSaveTimer = null;
+                                return;
+                            }
+
                             const parseCache = editorView?.state.field(json5ParseCache, false);
                             if (parseCache?.err || errorMessage) {
                                 autoSaveTimer = null;

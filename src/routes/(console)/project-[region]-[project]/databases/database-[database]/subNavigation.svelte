@@ -42,6 +42,11 @@
     const terminology = useTerminology(page);
     const databaseSdk = useDatabaseSdk(page, terminology);
 
+    // Check if this is a dedicated database type
+    const isDedicatedType = $derived(
+        terminology.type === 'prismapostgres' || terminology.type === 'dedicateddb'
+    );
+
     const entityTypePlural = terminology.entity.lower.plural;
     const entityTypeSingular = terminology.entity.lower.singular;
 
@@ -78,6 +83,12 @@
     );
 
     async function loadEntities() {
+        // Don't load entities for dedicated databases - they don't have tables/collections
+        if (isDedicatedType) {
+            loading = false;
+            return;
+        }
+
         try {
             entities = await databaseSdk.listEntities({
                 databaseId: page.params.database,
@@ -113,83 +124,86 @@
 
                 {data.database?.name}
             </a>
-            <div class="entity-content" style:padding-bottom={entityContentPadding}>
-                {#if loading}
-                    <ul class="drop-list u-margin-inline-start-8 u-margin-block-start-4">
-                        {#each Array(2) as _}
-                            <Layout.Stack gap="s" direction="row" alignItems="center">
-                                <li>
-                                    <div
-                                        class="u-padding-block-8 u-padding-inline-end-4 u-padding-inline-start-8 u-flex u-cross-center u-gap-8">
-                                        <Skeleton variant="line" width="70%" height={19} />
-                                    </div>
-                                </li>
-                            </Layout.Stack>
-                        {/each}
-                    </ul>
-                {:else if entities?.total}
-                    <ul class="drop-list u-margin-inline-start-8 u-margin-block-start-4">
-                        {#each sortedEntities as entity, index}
-                            {@const isFirst = index === 0}
-                            {@const isSelected = entityId === entity.$id}
-                            {@const isLast = index === sortedEntities.length - 1}
-                            {@const href = withPath(
-                                databaseBaseRoute,
-                                `/${entityTypeSingular}-${entity.$id}`
-                            )}
+            <!-- Only show entity list for non-dedicated databases -->
+            {#if !isDedicatedType}
+                <div class="entity-content" style:padding-bottom={entityContentPadding}>
+                    {#if loading}
+                        <ul class="drop-list u-margin-inline-start-8 u-margin-block-start-4">
+                            {#each Array(2) as _}
+                                <Layout.Stack gap="s" direction="row" alignItems="center">
+                                    <li>
+                                        <div
+                                            class="u-padding-block-8 u-padding-inline-end-4 u-padding-inline-start-8 u-flex u-cross-center u-gap-8">
+                                            <Skeleton variant="line" width="70%" height={19} />
+                                        </div>
+                                    </li>
+                                </Layout.Stack>
+                            {/each}
+                        </ul>
+                    {:else if entities?.total}
+                        <ul class="drop-list u-margin-inline-start-8 u-margin-block-start-4">
+                            {#each sortedEntities as entity, index}
+                                {@const isFirst = index === 0}
+                                {@const isSelected = entityId === entity.$id}
+                                {@const isLast = index === sortedEntities.length - 1}
+                                {@const href = withPath(
+                                    databaseBaseRoute,
+                                    `/${entityTypeSingular}-${entity.$id}`
+                                )}
 
-                            <Layout.Stack gap="s" direction="row" alignItems="center">
-                                <li
-                                    class:is-last={isLast}
-                                    class:is-first={isFirst}
-                                    class:is-selected={isSelected}>
-                                    <a
-                                        class="u-padding-block-8 u-padding-inline-end-4 u-padding-inline-start-8 u-flex u-cross-center u-gap-8"
-                                        {href}>
-                                        <Icon
-                                            icon={IconTable}
-                                            size="s"
-                                            color={isSelected
-                                                ? '--fgcolor-neutral-tertiary'
-                                                : '--fgcolor-neutral-weak'} />
-                                        <span class="text entity-name" data-private
-                                            >{entity.name}</span>
-                                    </a>
-                                </li>
+                                <Layout.Stack gap="s" direction="row" alignItems="center">
+                                    <li
+                                        class:is-last={isLast}
+                                        class:is-first={isFirst}
+                                        class:is-selected={isSelected}>
+                                        <a
+                                            class="u-padding-block-8 u-padding-inline-end-4 u-padding-inline-start-8 u-flex u-cross-center u-gap-8"
+                                            {href}>
+                                            <Icon
+                                                icon={IconTable}
+                                                size="s"
+                                                color={isSelected
+                                                    ? '--fgcolor-neutral-tertiary'
+                                                    : '--fgcolor-neutral-weak'} />
+                                            <span class="text entity-name" data-private
+                                                >{entity.name}</span>
+                                        </a>
+                                    </li>
+                                </Layout.Stack>
+                            {/each}
+                        </ul>
+                    {:else}
+                        <div style:padding-block="0.75rem">
+                            <Layout.Stack
+                                gap="m"
+                                direction="row"
+                                alignItems="center"
+                                class="u-margin-inline-start-8 u-margin-block-start-8">
+                                <div
+                                    style:border-left="1px solid var(--border-neutral, #ededf0)"
+                                    style:height="1rem">
+                                </div>
+                                No {entityTypePlural} yet
                             </Layout.Stack>
-                        {/each}
-                    </ul>
-                {:else}
-                    <div style:padding-block="0.75rem">
-                        <Layout.Stack
-                            gap="m"
-                            direction="row"
-                            alignItems="center"
-                            class="u-margin-inline-start-8 u-margin-block-start-8">
-                            <div
-                                style:border-left="1px solid var(--border-neutral, #ededf0)"
-                                style:height="1rem">
-                            </div>
-                            No {entityTypePlural} yet
-                        </Layout.Stack>
-                    </div>
-                {/if}
+                        </div>
+                    {/if}
 
-                <Layout.Stack
-                    alignItems="center"
-                    direction="row"
-                    style="gap: 3px; margin-block-start: 8px;">
-                    <Icon icon={IconPlus} size="s" />
-                    <Button
-                        compact
-                        on:click={() => {
-                            $showCreateEntity = true;
-                            $showSubNavigation = false;
-                        }}>
-                        Create {entityTypeSingular}
-                    </Button>
-                </Layout.Stack>
-            </div>
+                    <Layout.Stack
+                        alignItems="center"
+                        direction="row"
+                        style="gap: 3px; margin-block-start: 8px;">
+                        <Icon icon={IconPlus} size="s" />
+                        <Button
+                            compact
+                            on:click={() => {
+                                $showCreateEntity = true;
+                                $showSubNavigation = false;
+                            }}>
+                            Create {entityTypeSingular}
+                        </Button>
+                    </Layout.Stack>
+                </div>
+            {/if}
 
             <div class="bottom-nav-container" style:bottom={bottomNavOffset}>
                 <div class="action-menu-divider">

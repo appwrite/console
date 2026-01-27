@@ -68,7 +68,7 @@ export function parseIfString(value: unknown): unknown {
 export function areObjectsSame<T>(
     objectOne: T,
     objectTwo: T,
-    method: 'recursive' | 'stringify' = 'stringify'
+    method: 'recursive' | 'stringify' = 'recursive'
 ): boolean {
     if (method === 'recursive') {
         return deepEqual(objectOne, objectTwo);

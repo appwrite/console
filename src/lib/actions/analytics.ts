@@ -75,13 +75,12 @@ export function trackEvent(name: string, data: object = null): void {
     }
 }
 
-export function trackError(exception: Error, event: Submit): void {
-    if (exception instanceof AppwriteException && exception.type && event) {
-        trackEvent(Submit.Error, {
-            type: exception.type,
-            form: event
-        });
-    }
+export function trackError(exception: Error, event?: Submit): void {
+    if (!(exception instanceof AppwriteException) || !exception.type) return;
+
+    const data: Record<string, unknown> = { type: exception.type };
+    if (event) data.form = event;
+    trackEvent(Submit.Error, data);
 }
 
 export function trackPageView(path: string) {

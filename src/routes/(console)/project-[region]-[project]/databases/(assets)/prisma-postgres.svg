@@ -1,0 +1,8 @@
+<svg width="240" height="180" viewBox="0 0 240 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="240" height="180" fill="#f8f9fa"/>
+  <rect x="40" y="40" width="160" height="100" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="2"/>
+  <path d="M80 70 L120 50 L160 70 L160 110 L120 130 L80 110 Z" fill="#2D3748" stroke="#1a202c" stroke-width="2"/>
+  <path d="M120 50 L120 90 L80 70" fill="#4A5568"/>
+  <path d="M120 90 L160 70 L160 110 L120 130 L120 90" fill="#718096"/>
+  <text x="120" y="160" text-anchor="middle" font-family="system-ui" font-size="12" fill="#4a5568">Prisma Postgres</text>
+</svg>

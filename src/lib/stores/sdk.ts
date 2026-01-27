@@ -29,6 +29,7 @@ import {
 } from '@appwrite.io/console';
 import { Billing } from '../sdk/billing';
 import { Sources } from '$lib/sdk/sources';
+import { DedicatedDatabases } from '$lib/sdk/dedicatedDatabases';
 import {
     REGION_FRA,
     REGION_NYC,
@@ -139,6 +140,7 @@ const sdkForProject = {
     sites: new Sites(clientProject),
     tablesDB: new TablesDB(clientProject),
     documentsDB: new DocumentsDB(clientProject),
+    dedicatedDatabases: new DedicatedDatabases(clientProject),
     console: new Console(clientProject) // for suggestions API
 };
 

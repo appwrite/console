@@ -14,6 +14,7 @@
     import { resolveRoute } from '$lib/stores/navigation';
     import { getTerminologies } from '$database/(entity)';
     import { withPath } from '$lib/stores/navigation.js';
+    import DedicatedOverview from './dedicatedOverview.svelte';
 
     const { data }: PageProps = $props();
 
@@ -49,78 +50,82 @@
     });
 </script>
 
-<Container databasesMainScreen>
-    <Layout.Stack direction="row" justifyContent="space-between">
-        <Layout.Stack direction="row" alignItems="center">
-            <SearchQuery placeholder="Search by name or ID" />
+{#if data.isDedicatedType && data.dedicatedDatabase}
+    <DedicatedOverview database={data.dedicatedDatabase} credentials={data.credentials} />
+{:else}
+    <Container databasesMainScreen>
+        <Layout.Stack direction="row" justifyContent="space-between">
+            <Layout.Stack direction="row" alignItems="center">
+                <SearchQuery placeholder="Search by name or ID" />
+            </Layout.Stack>
+
+            <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
+                <ViewSelector
+                    ui="new"
+                    view={data.view}
+                    columns={tableViewColumns}
+                    hideColumns={!data.entities.total}
+                    hideView={!data.entities.total} />
+
+                {#if $canWriteTables}
+                    <Button event="create_table" on:click={() => ($showCreateEntity = true)}>
+                        <Icon icon={IconPlus} slot="start" size="s" />
+                        Create {entityLower.singular}
+                    </Button>
+                {/if}
+            </Layout.Stack>
         </Layout.Stack>
 
-        <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
-            <ViewSelector
-                ui="new"
-                view={data.view}
-                columns={tableViewColumns}
-                hideColumns={!data.entities.total}
-                hideView={!data.entities.total} />
-
-            {#if $canWriteTables}
-                <Button event="create_table" on:click={() => ($showCreateEntity = true)}>
-                    <Icon icon={IconPlus} slot="start" size="s" />
-                    Create {entityLower.singular}
-                </Button>
+        {#if data.entities.total}
+            {#if data.view === 'grid'}
+                <Grid {data} {terminology} bind:showCreate={$showCreateEntity} />
+            {:else}
+                <Table {terminology} {databaseSdk} entities={data.entities} />
             {/if}
-        </Layout.Stack>
-    </Layout.Stack>
 
-    {#if data.entities.total}
-        {#if data.view === 'grid'}
-            <Grid {data} {terminology} bind:showCreate={$showCreateEntity} />
+            <PaginationWithLimit
+                limit={data.limit}
+                offset={data.offset}
+                total={data.entities.total}
+                name={entityTitle.plural} />
+        {:else if data.search}
+            <EmptySearch target={entityLower.singular} hidePagination>
+                <Button
+                    size="s"
+                    secondary
+                    href={resolveRoute(
+                        '/(console)/project-[region]-[project]/databases/database-[database]',
+                        page.params
+                    )}>Clear Search</Button>
+            </EmptySearch>
         {:else}
-            <Table {terminology} {databaseSdk} entities={data.entities} />
+            <Card.Base padding="none">
+                <div class="empty-container">
+                    <Empty
+                        src={getImageRoute($app.themeInUse)}
+                        title="Create your first {entityLower.singular}">
+                        <span slot="description">{emptyPageText}</span>
+
+                        <span slot="actions">
+                            <Button
+                                external
+                                href="https://appwrite.io/docs/products/databases/databases"
+                                text
+                                event="empty_documentation"
+                                ariaLabel="create {entityLower.singular}">Documentation</Button>
+
+                            {#if $canWriteTables}
+                                <Button secondary on:click={() => ($showCreateEntity = true)}>
+                                    Create {entityLower.singular}
+                                </Button>
+                            {/if}
+                        </span>
+                    </Empty>
+                </div>
+            </Card.Base>
         {/if}
-
-        <PaginationWithLimit
-            limit={data.limit}
-            offset={data.offset}
-            total={data.entities.total}
-            name={entityTitle.plural} />
-    {:else if data.search}
-        <EmptySearch target={entityLower.singular} hidePagination>
-            <Button
-                size="s"
-                secondary
-                href={resolveRoute(
-                    '/(console)/project-[region]-[project]/databases/database-[database]',
-                    page.params
-                )}>Clear Search</Button>
-        </EmptySearch>
-    {:else}
-        <Card.Base padding="none">
-            <div class="empty-container">
-                <Empty
-                    src={getImageRoute($app.themeInUse)}
-                    title="Create your first {entityLower.singular}">
-                    <span slot="description">{emptyPageText}</span>
-
-                    <span slot="actions">
-                        <Button
-                            external
-                            href="https://appwrite.io/docs/products/databases/databases"
-                            text
-                            event="empty_documentation"
-                            ariaLabel="create {entityLower.singular}">Documentation</Button>
-
-                        {#if $canWriteTables}
-                            <Button secondary on:click={() => ($showCreateEntity = true)}>
-                                Create {entityLower.singular}
-                            </Button>
-                        {/if}
-                    </span>
-                </Empty>
-            </div>
-        </Card.Base>
-    {/if}
-</Container>
+    </Container>
+{/if}
 
 <style lang="scss">
     /* temporary */

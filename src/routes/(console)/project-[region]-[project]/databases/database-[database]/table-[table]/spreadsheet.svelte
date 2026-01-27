@@ -398,7 +398,8 @@
 
     async function handleDelete() {
         showDelete = false;
-        let hadErrors = false;
+        let successCount = 0;
+        let failedCount = 0;
 
         try {
             if (selectedRowForDelete) {
@@ -407,6 +408,7 @@
                     tableId,
                     rowId: selectedRowForDelete
                 });
+                successCount = 1;
             } else {
                 if (selectedRows.length) {
                     const hasAnyRelationships = table.fields.some(isRelationship) ?? false;
@@ -418,27 +420,22 @@
 
                     if (hasAnyRelationships) {
                         for (const batch of chunks(selectedRows)) {
-                            try {
-                                await Promise.all(
-                                    batch.map((rowId) =>
-                                        tablesSDK.deleteRow({
-                                            databaseId,
-                                            tableId,
-                                            rowId
-                                        })
-                                    )
-                                );
-                            } catch (e) {
-                                hadErrors = true;
-                                // ignore but keep proceeding!
+                            const results = await Promise.allSettled(
+                                batch.map((rowId) =>
+                                    tablesSDK.deleteRow({
+                                        databaseId,
+                                        tableId,
+                                        rowId
+                                    })
+                                )
+                            );
+                            for (const result of results) {
+                                if (result.status === 'fulfilled') {
+                                    successCount++;
+                                } else {
+                                    failedCount++;
+                                }
                             }
-                        }
-
-                        if (hadErrors) {
-                            addNotification({
-                                type: 'error',
-                                message: 'Some rows could not be deleted'
-                            });
                         }
                     } else {
                         for (const batch of chunks(selectedRows, 100)) {
@@ -447,6 +444,7 @@
                                 tableId,
                                 queries: [Query.equal('$id', batch)]
                             });
+                            successCount += batch.length;
                         }
                     }
                 }
@@ -455,11 +453,15 @@
             await invalidate(Dependencies.ROWS);
             trackEvent(Click.DatabaseRowDelete);
 
-            if (!hadErrors) {
-                // error is already shown above!
+            if (failedCount > 0) {
+                addNotification({
+                    type: 'warning',
+                    message: `${successCount} row${successCount !== 1 ? 's' : ''} deleted, ${failedCount} failed`
+                });
+            } else if (successCount > 0) {
                 addNotification({
                     type: 'success',
-                    message: `${selectedRows.length ? selectedRows.length : 1} row${selectedRows.length > 1 ? 's' : ''} deleted`
+                    message: `${successCount} row${successCount !== 1 ? 's' : ''} deleted`
                 });
             }
 

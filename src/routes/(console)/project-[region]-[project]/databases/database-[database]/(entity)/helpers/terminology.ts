@@ -1,14 +1,20 @@
 import type { Page } from '@sveltejs/kit';
 
 import { capitalize, plural } from '$lib/helpers/string';
-import { AppwriteException, type Models } from '@appwrite.io/console';
+import type { Models } from '@appwrite.io/console';
 import type { Attributes, Collection, Columns, Table } from '$database/store';
 import type { Term, TerminologyResult, TerminologyShape } from '$database/(entity)/helpers/types';
 
 type BaseTerminology = typeof baseTerminology;
 type ImplementedDBTypes = Omit<BaseTerminology, 'vectordb' | 'legacy'>;
 
-export type DatabaseType = 'legacy' | 'tablesdb' | 'documentsdb' | 'vectordb';
+export type DatabaseType =
+    | 'legacy'
+    | 'tablesdb'
+    | 'documentsdb'
+    | 'vectordb'
+    | 'prismapostgres'
+    | 'dedicateddb';
 
 export type RecordType = ImplementedDBTypes[keyof ImplementedDBTypes]['record'];
 
@@ -60,7 +66,17 @@ export const baseTerminology = {
         field: 'attribute',
         record: 'document'
     },
-    vectordb: {}
+    vectordb: {},
+    prismapostgres: {
+        entity: 'table',
+        field: 'column',
+        record: 'row'
+    },
+    dedicateddb: {
+        entity: 'table',
+        field: 'column',
+        record: 'row'
+    }
 } as const;
 
 const createTerm = (singular: string, pluralForm: string): Term => {
@@ -145,7 +161,7 @@ export function useTerminology(pageOrType: Page | DatabaseType): TerminologyResu
             : pageOrType;
     if (!type) {
         // strict check because this should always be available!
-        throw new AppwriteException('Database type is required', 500);
+        throw new Error('Database type is required for terminology lookup');
     }
 
     const dbTerminologies = terminologyData[type] || {};

@@ -41,10 +41,10 @@
     $: totalPolicies = [
         ...listOfCustomPolicies,
         ...$presetPolicies.filter((policy) => policy.checked)
-    ].map((policy) => {
-        if (!policy.id) policy.id = ID.unique();
-        return policy;
-    });
+    ].map((policy) => ({
+        ...policy,
+        id: policy.id || ID.unique()
+    }));
 
     let policyInEdit = null;
     let policyBeingEdited = null;
