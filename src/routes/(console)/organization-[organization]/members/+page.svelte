@@ -44,7 +44,7 @@
 
     // Calculate if button should be disabled and tooltip should show
     $: memberCount = data.organizationMembers?.total ?? 0;
-    $: supportsMembers = $organization?.billingPlanDetails.addons.seats;
+    $: supportsMembers = $organization?.billingPlanDetails?.addons?.seats;
     $: isFreeWithMembers = !supportsMembers && memberCount >= 1;
     $: isButtonDisabled = isCloud ? isFreeWithMembers : false;
 

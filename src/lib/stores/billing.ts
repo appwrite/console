@@ -302,6 +302,7 @@ export function checkForProjectLimitation(plan: string, id: PlanServices) {
 
 export function isServiceLimited(serviceId: PlanServices, plan: string, total: number) {
     if (!total) return false;
+    if (!plan) return false;
     const limit = getServiceLimit(serviceId) || Infinity;
     const isLimited = limit !== 0 && limit < Infinity;
     const hasUsageFees = checkForUsageFees(plan, serviceId);

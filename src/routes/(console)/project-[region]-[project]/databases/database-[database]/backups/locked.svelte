@@ -23,7 +23,7 @@
                 title="Policies"
                 buttonText="Create policy"
                 buttonType="secondary"
-                buttonDisabled={true} />
+                buttonDisabled />
 
             <img
                 src={$app.themeInUse === 'dark'
@@ -41,7 +41,7 @@
                 title="Policies"
                 buttonText="Create policy"
                 buttonType="secondary"
-                buttonDisabled={true} />
+                buttonDisabled />
 
             <img
                 src={$app.themeInUse === 'dark'
@@ -60,7 +60,7 @@
                         title="Policies"
                         buttonText="Create policy"
                         buttonType="secondary"
-                        buttonDisabled={true} />
+                        buttonDisabled />
                 </div>
 
                 <div style="width: 69%; padding-inline-start: 1.5rem;">
@@ -68,7 +68,7 @@
                         title="Backups"
                         buttonText="Manual backup"
                         buttonType="secondary"
-                        buttonDisabled={true} />
+                        buttonDisabled />
                 </div>
             </div>
 
