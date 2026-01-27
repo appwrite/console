@@ -18,10 +18,10 @@ export async function enterCreditCard(page: Page) {
     await dialog.waitFor({ state: 'visible' });
     await page.getByPlaceholder('cardholder').fill('Test User');
     const stripe = page.locator('[title="Secure payment input frame"]').nth(0).contentFrame();
-    await stripe.locator('id=Field-numberInput').fill('4242424242424242');
-    await stripe.locator('id=Field-expiryInput').fill('1250');
-    await stripe.locator('id=Field-cvcInput').fill('123');
-    await stripe.locator('id=Field-countryInput').selectOption('DE');
+    await stripe.locator('id=payment-numberInput').fill('4242424242424242');
+    await stripe.locator('id=payment-expiryInput').fill('1250');
+    await stripe.locator('id=payment-cvcInput').fill('123');
+    await stripe.locator('id=payment-countryInput').selectOption('DE');
     await dialog.getByRole('button', { name: 'Add', exact: true }).click();
     await page.locator('id=state-picker').click(); // open dropdown
     await page.getByRole('option', { name: 'Alabama' }).click();
