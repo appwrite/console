@@ -151,7 +151,6 @@
                                 </Button>
                             </div>
                             <div slot="tooltip">
-                                <!-- TODO: @itznotabug - should be updated since members are unlimited on paid plans now -->
                                 {!organization?.billingPlanDetails.addons.seats.supported
                                     ? 'Upgrade to add more members'
                                     : `You've reached the members limit for the ${

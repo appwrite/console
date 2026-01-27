@@ -126,7 +126,7 @@
                 {#if !$currentPlan.customSmtp}
                     <Alert.Inline
                         status="info"
-                        title="Custom SMTP is a paid plan feature. Upgrade to enable custom SMTP sever.">
+                        title="Custom SMTP is a paid plan feature. Upgrade to enable custom SMTP server.">
                         <svelte:fragment slot="actions">
                             <Button
                                 compact

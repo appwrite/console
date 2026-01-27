@@ -16,7 +16,7 @@
     let error: string;
 
     async function removeDefaultMethod() {
-        if ($currentPlan.requiresPaymentMethod && !hasOtherMethod) return;
+        if ($currentPlan?.requiresPaymentMethod && !hasOtherMethod) return;
 
         try {
             await sdk.forConsole.organizations.deleteDefaultPaymentMethod({
@@ -38,7 +38,7 @@
     }
 
     async function removeBackupMethod() {
-        if ($currentPlan.requiresPaymentMethod && !hasOtherMethod) return;
+        if ($currentPlan?.requiresPaymentMethod && !hasOtherMethod) return;
         showDelete = false;
 
         try {

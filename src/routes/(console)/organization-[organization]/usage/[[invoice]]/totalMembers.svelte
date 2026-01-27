@@ -11,9 +11,8 @@
     export let members: Models.MembershipList;
 
     $: total = members?.total ?? 0;
-    $: billingPlan = $organization?.billingPlanDetails;
-
-    $: organizationMembersSupported = !billingPlan.addons.seats.supported; /* false on free */
+    $: organizationMembersSupported =
+        !$organization?.billingPlanDetails.addons.seats.supported; /* false on free */
 </script>
 
 <CardGrid>

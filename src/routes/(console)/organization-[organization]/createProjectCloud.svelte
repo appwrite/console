@@ -24,14 +24,14 @@
         currentPlan?: Models.BillingPlan;
     } = $props();
 
+    let initialProjectId = ID.unique();
+
     let error = $state(null);
-    let projectId = $state(ID.unique());
     let projectRegion = $state(Region.Fra);
     let projectName = $state('New project');
+    let projectId = $state(initialProjectId);
 
     let showSubmissionLoader = $state(false);
-
-    const projectIdForLog = $derived(projectId);
 
     async function create() {
         let project: Models.Project;
@@ -56,7 +56,7 @@
             trackEvent(Submit.ProjectCreate, {
                 teamId,
                 region: projectRegion,
-                customId: projectId !== projectIdForLog
+                customId: initialProjectId !== projectId
             });
         } catch (e) {
             error = e.message;
@@ -73,10 +73,13 @@
 
     onDestroy(() => {
         error = null;
-        projectId = ID.unique();
         projectName = 'New project';
         projectRegion = Region.Fra;
         showCreateProjectCloud = false;
+
+        // reset with a new ID
+        initialProjectId = ID.unique();
+        projectId = initialProjectId;
     });
 </script>
 
@@ -99,7 +102,7 @@
         <Button
             submit
             size="s"
-            disabled={currentPlan.projects > 0 && projects && projects >= currentPlan?.projects}
+            disabled={currentPlan?.projects > 0 && projects && projects >= currentPlan?.projects}
             forceShowLoader={showSubmissionLoader}
             submissionLoader={showSubmissionLoader}>Create</Button>
     </svelte:fragment>

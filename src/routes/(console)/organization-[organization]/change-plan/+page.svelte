@@ -470,7 +470,10 @@
         </Layout.Stack>
     </Form>
     <svelte:fragment slot="aside">
-        {#if selectedPlan.group !== BillingPlanGroup.Starter && data.organization.billingPlanId !== selectedPlan.group && !data.organization.billingPlanDetails.selfService}
+        {@const isStarter = selectedPlan.group === BillingPlanGroup.Starter}
+        {@const isSelfService = data.organization.billingPlanDetails.selfService}
+        {@const isSameGroup = data.organization.billingPlanDetails.group === selectedPlan.group}
+        {#if !isStarter && !isSameGroup && !isSelfService}
             <EstimatedTotalBox
                 {collaborators}
                 {isDowngrade}
