@@ -884,6 +884,10 @@
         z-index: 1 !important;
     }
 
+    :global(.virtual-row.hover .select-checkbox) {
+        background: none;
+    }
+
     :global(.floating-editor) {
         z-index: 3 !important;
 
