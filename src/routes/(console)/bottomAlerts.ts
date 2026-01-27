@@ -14,15 +14,15 @@ const listOfPromotions: BottomModalAlertItem[] = [];
 
 if (isCloud && SHOW_IMAGINE_PROMO) {
     const imaginePromo: BottomModalAlertItem = {
-        id: 'modal:imagine.dev',
+        id: 'modal:imagine-ph-launch',
         backgroundComponent: Imagine,
-        title: 'Introducing Imagine',
-        message: 'the most complete AI builder to date',
+        title: 'Imagine is live on Product Hunt',
+        message: 'Ask questions, share feedback, and support the launch',
         importance: 8,
         scope: 'everywhere',
         plan: 'free',
         cta: {
-            text: 'Try it now',
+            text: 'Head to Product Hunt',
             color: {
                 light: '#FFFFFF',
                 dark: '#000000'
@@ -35,7 +35,8 @@ if (isCloud && SHOW_IMAGINE_PROMO) {
                 light: '#333333',
                 dark: '#CCCCCC'
             },
-            link: () => 'https://cloud.appwrite.io',
+            link: () =>
+                'https://www.producthunt.com/products/imagine-2?launch=imagine-00018118-5267-43ba-b456-efeeb7cbfbc9',
             external: true,
             hideOnClick: true
         },
