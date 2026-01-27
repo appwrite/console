@@ -1355,7 +1355,7 @@
     }
 
     :global(.virtual-row.hover .select-checkbox) {
-      background: none;
+        background: none;
     }
 
     :global(.floating-editor) {

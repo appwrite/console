@@ -90,8 +90,8 @@
                 gap="xxs"
                 direction="column"
                 justifyContent="space-between"
-                style="margin-block-start: 20px; padding-inline: 20px; flex: 1;">
-                <Layout.Stack direction="column" gap="xxs">
+                style="padding: var(--gap-xl); flex: 1; border-inline-start:  1px solid var(--border-neutral);">
+                <Layout.Stack direction="column" gap="xxs" style="margin-block-start: 20px; ">
                     <Layout.Stack
                         inline
                         direction="row"
