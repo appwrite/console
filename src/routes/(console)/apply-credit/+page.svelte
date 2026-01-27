@@ -91,6 +91,7 @@
 
         if (page.url.searchParams.has('org')) {
             selectedOrgId = page.url.searchParams.get('org');
+            tempOrgId = selectedOrgId;
             canSelectOrg = false;
         }
 
@@ -104,8 +105,12 @@
         if (page.url.searchParams.has('type')) {
             const type = page.url.searchParams.get('type');
             if (type === 'payment_confirmed') {
-                const organizationId = page.url.searchParams.get('id');
-                collaborators = page.url.searchParams.get('invites').split(',');
+                const organizationId =
+                    page.url.searchParams.get('org') || page.url.searchParams.get('id');
+                const invites = page.url.searchParams.get('invites');
+                if (invites) {
+                    collaborators = invites.split(',');
+                }
 
                 await sdk.forConsole.organizations.validatePayment({
                     organizationId,

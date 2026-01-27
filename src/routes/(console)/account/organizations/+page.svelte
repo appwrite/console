@@ -83,7 +83,7 @@
     function isCloudOrg(
         data: Partial<Models.TeamList<Models.Preferences>> | Models.Organization
     ): data is Models.Organization {
-        return isCloud && 'billingPlan' in data;
+        return isCloud && 'billingPlanId' in data;
     }
 
     function createOrg() {
