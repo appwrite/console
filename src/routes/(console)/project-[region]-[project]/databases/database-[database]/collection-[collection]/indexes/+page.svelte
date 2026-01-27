@@ -4,6 +4,7 @@
     import type { PageProps } from './$types';
     import {
         type CreateIndexesCallbackType,
+        type DatabaseType,
         Indexes,
         EmptySheet,
         EmptySheetCards
@@ -46,7 +47,7 @@
 
 <Indexes {onCreateIndex} {onDeleteIndexes} entity={data.collection}>
     {#snippet emptyIndexesSheetView(toggle)}
-        <EmptySheet mode="indexes" type={data.database.type}>
+        <EmptySheet mode="indexes" type={data.database.type as DatabaseType}>
             {#snippet actions()}
                 <EmptySheetCards
                     icon={IconPlus}

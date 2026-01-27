@@ -29,7 +29,7 @@
         IconFingerPrint
     } from '@appwrite.io/pink-icons-svelte';
     import { isSmallViewport, isTabletViewport } from '$lib/stores/viewport';
-    import { SpreadsheetContainer, useDatabaseSdk } from '$database/(entity)';
+    import { SpreadsheetContainer, useDatabaseSdk, type DatabaseType } from '$database/(entity)';
     import { copy } from '$lib/helpers/copy';
     import { writable } from 'svelte/store';
     import { pageToOffset } from '$lib/helpers/load';
@@ -85,7 +85,11 @@
 
     const databaseId = page.params.database;
     const collectionId = page.params.collection;
-    const databaseSdk = useDatabaseSdk(page.params.region, page.params.project, data.database.type);
+    const databaseSdk = useDatabaseSdk(
+        page.params.region,
+        page.params.project,
+        data.database.type as DatabaseType
+    );
 
     const emptyCellsLimit = $spreadsheetLoading
         ? 30

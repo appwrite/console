@@ -138,20 +138,20 @@ export function useDatabaseSdk(
                     // Prisma databases are created via the compute/databases endpoint
                     // with backend: 'prisma'
                     const prismaParams = params as DedicatedDatabaseParams;
-                    return await baseSdk.dedicatedDatabases.create({
+                    return (await baseSdk.dedicatedDatabases.create({
                         databaseId: prismaParams.databaseId,
                         name: prismaParams.name,
                         backend: 'prisma',
                         engine: 'postgres',
                         region: prismaParams.region,
                         tier: prismaParams.tier
-                    });
+                    })) as unknown as Models.Database;
                 }
                 case 'dedicateddb': {
                     // Dedicated databases are created via the compute/databases endpoint
                     // with backend: 'appwrite'
                     const dedicatedParams = params as DedicatedDatabaseParams;
-                    return await baseSdk.dedicatedDatabases.create({
+                    return (await baseSdk.dedicatedDatabases.create({
                         databaseId: dedicatedParams.databaseId,
                         name: dedicatedParams.name,
                         backend: 'appwrite',
@@ -163,7 +163,7 @@ export function useDatabaseSdk(
                         backupSchedule: dedicatedParams.backupSchedule,
                         backupRetentionDays: dedicatedParams.backupRetentionDays,
                         backupPitr: dedicatedParams.backupPitr
-                    });
+                    })) as unknown as Models.Database;
                 }
                 case 'vectordb':
                     throw new Error('Database type not supported yet');
@@ -257,7 +257,7 @@ export function useDatabaseSdk(
             }
         },
 
-        async delete(params) {
+        async delete(params): Promise<{}> {
             switch (type ?? params.databaseType) {
                 case 'legacy': /* databases api */
                 case 'tablesdb':
@@ -266,7 +266,8 @@ export function useDatabaseSdk(
                     return await baseSdk.documentsDB.delete(params);
                 case 'prismapostgres':
                 case 'dedicateddb':
-                    return await baseSdk.dedicatedDatabases.delete(params);
+                    await baseSdk.dedicatedDatabases.delete(params);
+                    return {};
                 case 'vectordb':
                     throw new Error('Database type not supported yet');
                 default:
