@@ -52,6 +52,11 @@
     import { preferences } from '$lib/stores/preferences';
     import { page } from '$app/state';
     import { debounce } from '$lib/helpers/debounce';
+    import {
+        LARGE_NUMBER_THRESHOLD,
+        LARGE_NUMBER_THRESHOLD_NUM,
+        toExponential
+    } from '$lib/helpers/numbers';
     import type { PageData } from './$types';
     import { realtime } from '$lib/stores/sdk';
     import { invalidate } from '$app/navigation';
@@ -166,24 +171,73 @@
         }
     }
 
-    function getMinMaxSizeForColumn(column: Columns): string | undefined {
+    function formatLargeNumber(num: number | bigint): string {
+        // type-safe abs comparison
+        if (typeof num === 'bigint') {
+            const absNum = num < 0n ? -num : num;
+            if (absNum < LARGE_NUMBER_THRESHOLD) {
+                return num.toString();
+            }
+        } else {
+            const absNum = Math.abs(num);
+            if (absNum < LARGE_NUMBER_THRESHOLD_NUM) {
+                return num.toString();
+            }
+        }
+
+        return toExponential(num);
+    }
+
+    function getMinMaxSizeForColumn(
+        column: Columns
+    ): { display: string; tooltip?: string } | undefined {
         if (column.type === 'string' && !column['format'] && column.key !== '$id') {
             const stringColumn = column as Models.ColumnString;
-            return `Size: ${stringColumn.size}`;
+            return { display: `Size: ${stringColumn.size}` };
         } else if (column.type === 'integer' || column.type === 'double') {
             const numbersColumn = column as Models.ColumnInteger | Models.ColumnFloat;
             const { min, max } = numbersColumn;
 
-            const hasValidMin = min > Number.MIN_SAFE_INTEGER;
-            const hasValidMax = max < Number.MAX_SAFE_INTEGER;
+            const isMinBigInt = typeof min === 'bigint';
+            const isMaxBigInt = typeof max === 'bigint';
+
+            const hasValidMin = isMinBigInt || min > Number.MIN_SAFE_INTEGER;
+            const hasValidMax = isMaxBigInt || max < Number.MAX_SAFE_INTEGER;
+
+            let display: string | undefined;
+            let tooltip: string | undefined;
 
             if (hasValidMin && hasValidMax) {
-                return `Min: ${min}, Max: ${max}`;
+                display = `Min: ${formatLargeNumber(min)}, Max: ${formatLargeNumber(max)}`;
+                const shouldShowTooltip =
+                    (isMinBigInt
+                        ? (min < 0n ? -min : min) >= LARGE_NUMBER_THRESHOLD
+                        : Math.abs(min) >= LARGE_NUMBER_THRESHOLD_NUM) ||
+                    (isMaxBigInt
+                        ? (max < 0n ? -max : max) >= LARGE_NUMBER_THRESHOLD
+                        : Math.abs(max) >= LARGE_NUMBER_THRESHOLD_NUM);
+                if (shouldShowTooltip) {
+                    tooltip = `Min: ${min.toLocaleString()}, Max: ${max.toLocaleString()}`;
+                }
             } else if (hasValidMin) {
-                return `Min: ${min}`;
+                display = `Min: ${formatLargeNumber(min)}`;
+                const shouldShowTooltip = isMinBigInt
+                    ? (min < 0n ? -min : min) >= LARGE_NUMBER_THRESHOLD
+                    : Math.abs(min) >= LARGE_NUMBER_THRESHOLD_NUM;
+                if (shouldShowTooltip) {
+                    tooltip = `Min: ${min.toLocaleString()}`;
+                }
             } else if (hasValidMax) {
-                return `Max: ${max}`;
+                display = `Max: ${formatLargeNumber(max)}`;
+                const shouldShowTooltip = isMaxBigInt
+                    ? (max < 0n ? -max : max) >= LARGE_NUMBER_THRESHOLD
+                    : Math.abs(max) >= LARGE_NUMBER_THRESHOLD_NUM;
+                if (shouldShowTooltip) {
+                    tooltip = `Max: ${max.toLocaleString()}`;
+                }
             }
+
+            return display ? { display, tooltip } : undefined;
         } else {
             return undefined;
         }
@@ -413,11 +467,22 @@
                             {@const minMaxSize = getMinMaxSizeForColumn(column)}
                             {@const relationType = getRelationshipTypeForColumn(column)}
                             {#if minMaxSize}
-                                <Typography.Caption
-                                    variant="400"
-                                    color="--fgcolor-neutral-tertiary">
-                                    {minMaxSize}
-                                </Typography.Caption>
+                                {#if minMaxSize.tooltip}
+                                    <Tooltip portal>
+                                        <Typography.Caption
+                                            variant="400"
+                                            color="--fgcolor-neutral-tertiary">
+                                            {minMaxSize.display}
+                                        </Typography.Caption>
+                                        <div slot="tooltip">{minMaxSize.tooltip}</div>
+                                    </Tooltip>
+                                {:else}
+                                    <Typography.Caption
+                                        variant="400"
+                                        color="--fgcolor-neutral-tertiary">
+                                        {minMaxSize.display}
+                                    </Typography.Caption>
+                                {/if}
                             {:else if relationType}
                                 <Typography.Caption
                                     variant="400"
