@@ -153,14 +153,19 @@
             })
             .toString(),
 
-        organizations: $organizationList.teams.map((org) => {
-            const billingPlan = org['billingPlanDetails'] as Models.BillingPlan;
+        organizations: $organizationList.teams.map((team) => {
+            let billingPlan: Models.BillingPlan | null = null;
+
+            if (isCloud) {
+                billingPlan = (team as Models.Organization).billingPlanDetails;
+            }
+
             return {
-                name: org.name,
-                $id: org.$id,
-                isSelected: $organization?.$id === org.$id,
+                name: team.name,
+                $id: team.$id,
+                isSelected: $organization?.$id === team.$id,
                 tierName: isCloud ? billingPlan.name : null,
-                showUpgrade: billingPlan.group === BillingPlanGroup.Starter
+                showUpgrade: isCloud ? billingPlan.group === BillingPlanGroup.Starter : false
             };
         }),
 
