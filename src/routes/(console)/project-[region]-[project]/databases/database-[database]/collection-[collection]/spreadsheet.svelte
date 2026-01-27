@@ -81,6 +81,15 @@
         } else {
             paginatedDocuments.setPage(1, $documents.documents);
         }
+
+        const firstDocument = $documents.documents[0];
+        const currentOpenDocument = $noSqlDocument.document;
+        const isNewOrDirty = $noSqlDocument.isNew || $noSqlDocument.isDirty;
+
+        /* always show the first item in the list if not new or editing! */
+        if (currentOpenDocument?.$id !== firstDocument?.$id && !isNewOrDirty) {
+            noSqlDocument.update({ document: firstDocument });
+        }
     }
 
     const databaseId = page.params.database;

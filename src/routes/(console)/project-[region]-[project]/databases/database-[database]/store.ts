@@ -112,7 +112,7 @@ export function resetSampleFieldsConfig() {
 
     randomDataModalState.set({
         value: 25,
-        show: false,
+        show: false
     });
 
     // Reset suggestion state

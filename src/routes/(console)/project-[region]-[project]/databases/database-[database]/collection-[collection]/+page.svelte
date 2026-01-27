@@ -120,6 +120,7 @@
                             onlyIcon
                             query={data.query}
                             columns={filterColumns}
+                            schema={false}
                             analyticsSource="database_collections" />
 
                         <svelte:fragment slot="tooltip">Filters</svelte:fragment>
@@ -169,7 +170,9 @@
                                     size="s" />
                             </Button>
 
-                            <Tooltip disabled={isRefreshing || !data.documents.total} placement="top">
+                            <Tooltip
+                                disabled={isRefreshing || !data.documents.total}
+                                placement="top">
                                 <Button
                                     icon
                                     size="s"

@@ -72,7 +72,9 @@
         expandTabs,
         spreadsheetLoading,
         randomDataModalState,
-        spreadsheetRenderKey, isWaterfallFromFaker, resetSampleFieldsConfig
+        spreadsheetRenderKey,
+        isWaterfallFromFaker,
+        resetSampleFieldsConfig
     } from '$database/store';
 
     import type { LayoutData } from './$types';
