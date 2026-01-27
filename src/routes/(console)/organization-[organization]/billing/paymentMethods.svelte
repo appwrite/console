@@ -11,6 +11,7 @@
     import ReplaceCard from './replaceCard.svelte';
     import EditPaymentModal from '$routes/(console)/account/payments/editPaymentModal.svelte';
     import PaymentModal from '$lib/components/billing/paymentModal.svelte';
+    import UpdateStateModal from '$lib/components/billing/updateStateModal.svelte';
     import { user } from '$lib/stores/user';
     import {
         ActionMenu,
@@ -50,7 +51,9 @@
     let showDelete = $state(false);
     let showPayment = $state(false);
     let showReplace = $state(false);
+    let showUpdateState = $state(false);
     let isSelectedBackup = $state(false);
+    let paymentMethodNeedingState: Models.PaymentMethod | null = $state(null);
 
     const hasPaymentError = $derived.by(() => {
         return (
@@ -105,6 +108,28 @@
     $effect(() => {
         if (!showReplace) {
             isSelectedBackup = false;
+        }
+    });
+
+    $effect(() => {
+        if (paymentMethods?.paymentMethods && !showUpdateState && !paymentMethodNeedingState) {
+            const usMethodWithoutState = paymentMethods.paymentMethods.find(
+                (method: Models.PaymentMethod) =>
+                    method?.country?.toLowerCase() === 'us' &&
+                    (!method.state || method.state.trim() === '') &&
+                    !!method.last4
+            );
+
+            if (usMethodWithoutState) {
+                paymentMethodNeedingState = usMethodWithoutState;
+                showUpdateState = true;
+            }
+        }
+    });
+
+    $effect(() => {
+        if (!showUpdateState && paymentMethodNeedingState) {
+            paymentMethodNeedingState = null;
         }
     });
 </script>
@@ -338,4 +363,8 @@
         {hasOtherMethod}
         isBackup={isSelectedBackup}
         disabled={$currentPlan.requiresPaymentMethod && !hasOtherMethod} />
+{/if}
+
+{#if showUpdateState && paymentMethodNeedingState && isCloud && hasStripePublicKey}
+    <UpdateStateModal bind:show={showUpdateState} paymentMethod={paymentMethodNeedingState} />
 {/if}
