@@ -222,11 +222,11 @@
 {/if}
 
 {#if showRetry}
-    <RetryDomainModal bind:show={showRetry} {selectedProxyRule} />
+    <RetryDomainModal bind:show={showRetry} {selectedProxyRule} domainsList={organizationDomains} />
 {/if}
 
 {#if showLogs}
-    <ViewLogsModal bind:show={showLogs} {selectedProxyRule} />
+    <ViewLogsModal bind:show={showLogs} {selectedProxyRule} domainsList={organizationDomains} />
 {/if}
 
 <style>

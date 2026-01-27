@@ -18,6 +18,7 @@
     import DualTimeView from '$lib/components/dualTimeView.svelte';
     import { func } from '../store';
     import { sdk } from '$lib/stores/sdk';
+    import { getEffectiveExecutionStatus } from '$lib/helpers/executionTimeout';
     import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { invalidate } from '$app/navigation';
@@ -66,6 +67,7 @@
 
     {#snippet children(root)}
         {#each executions.executions as log (log.$id)}
+            {@const effectiveStatus = getEffectiveExecutionStatus(log, $func)}
             <Table.Row.Button
                 {root}
                 id={log.$id}
@@ -100,14 +102,14 @@
                         {:else if column.id === 'trigger'}
                             {capitalize(log.trigger)}
                         {:else if column.id === 'status'}
-                            {@const status = log.status}
                             <Tooltip
-                                disabled={!log?.scheduledAt || status !== ExecutionStatus.Scheduled}
+                                disabled={!log?.scheduledAt ||
+                                    effectiveStatus !== ExecutionStatus.Scheduled}
                                 maxWidth="400px">
                                 <div>
                                     <Status
-                                        status={logStatusConverter(status)}
-                                        label={capitalize(status)}>
+                                        status={logStatusConverter(effectiveStatus)}
+                                        label={capitalize(effectiveStatus)}>
                                     </Status>
                                 </div>
                                 <span slot="tooltip">

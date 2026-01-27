@@ -1,20 +1,21 @@
 <script lang="ts">
-    import { base } from '$app/paths';
     import { page } from '$app/state';
-    import { Id } from '$lib/components';
-    import DualTimeView from '$lib/components/dualTimeView.svelte';
     import { columns } from './store';
+    import { Id } from '$lib/components';
+    import type { Models } from '@appwrite.io/console';
+    import { useTerminology } from '$database/(entity)';
+    import DualTimeView from '$lib/components/dualTimeView.svelte';
+    import { resolveRoute, withPath } from '$lib/stores/navigation';
     import { IconExclamation } from '@appwrite.io/pink-icons-svelte';
     import { Layout, Tooltip, Table, Icon } from '@appwrite.io/pink-svelte';
-    import { type Models } from '@appwrite.io/console';
 
     let {
-        tables,
+        entities,
         policies,
         databases,
         lastBackups
     }: {
-        tables: Record<string, string>;
+        entities: Record<string, string>;
         databases: Models.DatabaseList;
         lastBackups: Record<string, string>;
         policies: Record<string, Models.BackupPolicy[]>;
@@ -32,6 +33,19 @@
     function getPoliciesDescription(policies: Models.BackupPolicy[] | null): string {
         return policies?.map((policy) => getPolicyDescription(policy.schedule)).join(', ') ?? '';
     }
+
+    function getEntityUrl(database: Models.Database, entityId: string) {
+        const terminology = useTerminology(database.type);
+        const entityType = terminology.entity.lower.singular;
+
+        return withPath(
+            resolveRoute('/(console)/project-[region]-[project]/databases/database-[database]', {
+                ...page.params,
+                database: database.$id
+            }),
+            entityId ? `/${entityType}-${entityId}` : ''
+        );
+    }
 </script>
 
 <Table.Root columns={$columns} let:root>
@@ -40,13 +54,11 @@
             <Table.Header.Cell column={id} {root}>{title}</Table.Header.Cell>
         {/each}
     </svelte:fragment>
+
     {#each databases.databases as database (database.$id)}
         <!-- takes directly to the spreadsheet -->
-        {@const tableId = tables[database?.$id] ?? null}
-        {@const tableHref = tableId ? `/table-${tableId}` : ''}
-        <Table.Row.Link
-            {root}
-            href={`${base}/project-${page.params.region}-${page.params.project}/databases/database-${database.$id}${tableHref}`}>
+        {@const entityId = entities[database?.$id] ?? null}
+        <Table.Row.Link {root} href={getEntityUrl(database, entityId)}>
             {#each $columns as column}
                 <Table.Cell column={column.id} {root}>
                     {#if column.id === '$id'}

@@ -15,7 +15,7 @@ function isBuildTimedOut(createdAt: string, status: string, timeoutSeconds: numb
     const created = new Date(createdAt);
     const elapsedSeconds = Math.floor((Date.now() - created.getTime()) / 1000);
 
-    return elapsedSeconds > timeoutSeconds;
+    return elapsedSeconds >= timeoutSeconds;
 }
 
 /**

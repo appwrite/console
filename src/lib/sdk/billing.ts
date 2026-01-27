@@ -22,6 +22,7 @@ export type PaymentMethodData = {
     name: string;
     mandateId?: string;
     lastError?: string;
+    state?: string;
 };
 
 export type PaymentList = {
@@ -298,6 +299,7 @@ export type OrganizationUsage = {
     databasesReadsTotal: number;
     databasesWritesTotal: number;
     imageTransformationsTotal: number;
+    screenshotsGeneratedTotal: number;
     deploymentsStorageTotal: number;
     executionsMBSecondsTotal: number;
     buildsMBSecondsTotal: number;
@@ -316,6 +318,7 @@ export type OrganizationUsage = {
         authPhoneTotal: number;
         authPhoneEstimate: number;
         imageTransformations: number;
+        screenshotsGenerated: number;
     }>;
     authPhoneTotal: number;
     authPhoneEstimate: number;
@@ -384,6 +387,7 @@ export type Plan = {
     bandwidth: number;
     storage: number;
     imageTransformations: number;
+    screenshotsGenerated: number;
     webhooks: number;
     users: number;
     teams: number;
@@ -1405,7 +1409,7 @@ export class Billing {
     }
 
     async listRegions(organizationId: string): Promise<Models.ConsoleRegionList> {
-        const path = `/console/regions`;
+        const path = `/organizations/${organizationId}/regions`;
         const params = {
             organizationId
         };
