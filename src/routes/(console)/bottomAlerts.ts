@@ -14,7 +14,7 @@ const listOfPromotions: BottomModalAlertItem[] = [];
 
 if (isCloud && SHOW_IMAGINE_PROMO) {
     const imaginePromo: BottomModalAlertItem = {
-        id: 'modal:imagine-ph-launch-studio',
+        id: 'modal:imagine-ph-launch-studio-123',
         backgroundComponent: Imagine,
         title: 'Imagine is live on Product Hunt',
         message: 'Ask questions, share feedback, and support the launch',
@@ -48,7 +48,7 @@ if (isCloud && SHOW_IMAGINE_PROMO) {
 
 export function addBottomModalAlerts() {
     // fast path: not the valid profile to show this!
-    if (resolvedProfile.id !== ProfileMode.CONSOLE) return;
+    if (resolvedProfile.id !== ProfileMode.STUDIO) return;
 
     listOfPromotions.forEach((promotion) => showBottomModalAlert(promotion));
 
