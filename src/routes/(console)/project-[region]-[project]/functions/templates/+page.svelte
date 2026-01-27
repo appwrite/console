@@ -79,11 +79,7 @@
             .some((param) => param.toLowerCase() === useCase.toLowerCase());
     };
 
-    $: buttonDisabled = isServiceLimited(
-        'functions',
-        $organization?.billingPlanId,
-        $functionsList?.total ?? 0
-    );
+    $: buttonDisabled = isServiceLimited('functions', $organization, $functionsList?.total ?? 0);
 </script>
 
 <Container>

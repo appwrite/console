@@ -68,11 +68,7 @@
             keys: ['c'],
             disabled:
                 $wizard.show ||
-                isServiceLimited(
-                    'functions',
-                    $organization?.billingPlanId,
-                    data.functions?.total
-                ) ||
+                isServiceLimited('functions', $organization, data.functions?.total) ||
                 !$canWriteFunctions,
             icon: IconPlus,
             group: 'functions'

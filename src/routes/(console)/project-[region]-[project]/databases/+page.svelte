@@ -25,9 +25,7 @@
 
     let showCreate = $state(false);
 
-    const isLimited = $derived(
-        isServiceLimited('databases', $organization?.billingPlanId, data.databases.total)
-    );
+    const isLimited = $derived(isServiceLimited('databases', $organization, data.databases.total));
 
     async function handleCreate(event: CustomEvent<Models.Database>) {
         showCreate = false;

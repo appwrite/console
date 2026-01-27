@@ -300,12 +300,21 @@ export function checkForProjectLimitation(plan: string, id: PlanServices) {
     }
 }
 
-export function isServiceLimited(serviceId: PlanServices, plan: string, total: number) {
+export function isServiceLimited(
+    serviceId: PlanServices,
+    organization: Models.Organization,
+    total: number
+) {
+    // total validity
     if (!total) return false;
-    if (!plan) return false;
+
+    // org and plan validity!
+    if (!organization) return false;
+    if (!('billingPlanId' in organization)) return false;
+
     const limit = getServiceLimit(serviceId) || Infinity;
     const isLimited = limit !== 0 && limit < Infinity;
-    const hasUsageFees = checkForUsageFees(plan, serviceId);
+    const hasUsageFees = checkForUsageFees(organization.billingPlanId, serviceId);
     return isLimited && total >= limit && !hasUsageFees;
 }
 
