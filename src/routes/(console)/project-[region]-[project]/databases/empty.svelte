@@ -47,31 +47,30 @@
             <Typography.Text variant="l-400"
                 >Store, organize, and manage your app data</Typography.Text>
         </Layout.Stack>
+
+        <Layout.Grid columns={2} columnsS={1} gap="xl">
+            <!-- legacy, tablesDB -->
+            {@render databaseTypeCard({
+                type: 'tablesdb',
+                title: 'TablesDB',
+                subtitle:
+                    'Structure your data in rows and columns. Best for relational data and advanced querying.',
+                image: tablesDbImage
+            })}
+
+            <!-- documentsDB -->
+            {@render databaseTypeCard({
+                type: 'documentsdb',
+                title: 'DocumentsDB',
+                subtitle:
+                    'Store flexible data without a fixed schema. Best for unstructured data and simple querying.',
+                image: documentsDbImage
+            })}
+        </Layout.Grid>
     </Layout.Stack>
-
-    <Layout.Grid columns={2} columnsS={1}>
-        <!-- legacy, tablesDB -->
-        {@render databaseTypeCard({
-            type: 'tablesdb',
-            title: 'TablesDB',
-            subtitle:
-                'Structure your data in rows and columns. Best for relational data and advanced querying.',
-            image: tablesDbImage
-        })}
-
-        <!-- documentsDB -->
-        {@render databaseTypeCard({
-            type: 'documentsdb',
-            title: 'DocumentsDB',
-            subtitle:
-                'Store flexible data without a fixed schema. Best for unstructured data and simple querying.',
-            image: documentsDbImage,
-            footer: true
-        })}
-    </Layout.Grid>
 {/snippet}
 
-{#snippet databaseTypeCard({ type, title, subtitle, image = undefined, footer = false })}
+{#snippet databaseTypeCard({ type, title, subtitle, image = undefined })}
     <Card
         isButton
         radius="s"
@@ -91,7 +90,7 @@
                 direction="column"
                 justifyContent="space-between"
                 style="padding: var(--gap-xl); flex: 1; border-inline-start:  1px solid var(--border-neutral);">
-                <Layout.Stack direction="column" gap="xxs" style="margin-block-start: 20px; ">
+                <Layout.Stack direction="column" gap="xxs">
                     <Layout.Stack
                         inline
                         direction="row"
@@ -103,24 +102,6 @@
                     </Layout.Stack>
 
                     <Typography.Text variant="l-400">{subtitle}</Typography.Text>
-                </Layout.Stack>
-
-                <Layout.Stack
-                    inline
-                    gap="xxs"
-                    direction="row"
-                    alignContent="center"
-                    style="margin-block-end: 20px;">
-                    {#if footer}
-                        <Typography.Text>Powered by</Typography.Text>
-
-                        <img
-                            height="20px"
-                            width="auto"
-                            src={mongoDbImage}
-                            alt="mongo-db artwork"
-                            style:padding-block-end="2px" />
-                    {/if}
                 </Layout.Stack>
             </Layout.Stack>
         </Layout.Stack>
