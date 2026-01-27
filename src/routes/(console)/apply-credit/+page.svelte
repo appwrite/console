@@ -286,9 +286,7 @@
     }
 
     /* check if payment method selection is needed */
-    $: needsPaymentMethod =
-        selectedOrgId &&
-        (!selectedOrg?.billingPlanDetails.requiresPaymentMethod || !selectedOrg?.paymentMethodId);
+    $: needsPaymentMethod = selectedOrgId && selectedOrg?.billingPlanDetails.requiresPaymentMethod;
 
     /* check if coupon code input should be shown */
     $: needsCouponInput = !data?.couponData?.code && selectedOrgId;
