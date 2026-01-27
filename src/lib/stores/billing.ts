@@ -130,14 +130,12 @@ export function getBasePlanFromGroup(billingPlanGroup: BillingPlanGroup): Models
     return proPlans.sort((a, b) => a.order - b.order)[0];
 }
 
-export function billingIdToPlan(billingId: string): Models.BillingPlan {
+export function billingIdToPlan(billingId: string): Models.BillingPlan | null {
     const plansInfoStore = getPlansInfoStore();
     if (plansInfoStore.has(billingId)) {
         return plansInfoStore.get(billingId);
     } else {
-        // fallback to PRO group's 1st item.
-        // TODO: @itznotabug, @dlohani - but should we fallback to PRO?.
-        return getBasePlanFromGroup(BillingPlanGroup.Pro);
+        return null;
     }
 }
 

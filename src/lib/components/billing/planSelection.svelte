@@ -2,10 +2,10 @@
     import { LabelCard } from '..';
     import { page } from '$app/state';
     import { formatCurrency } from '$lib/helpers/numbers';
+    import { billingIdToPlan } from '$lib/stores/billing';
     import { currentPlan, organization } from '$lib/stores/organization';
     import { BillingPlanGroup, type Models } from '@appwrite.io/console';
     import { Badge, Layout, Tooltip, Typography } from '@appwrite.io/pink-svelte';
-    import { billingIdToPlan } from '$lib/stores/billing';
 
     let {
         isNewOrg = false,
