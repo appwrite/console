@@ -5,9 +5,32 @@
     import { HeaderAlert } from '$lib/layout';
     import { hideBillingHeaderRoutes } from '$lib/stores/billing';
     import { orgMissingPaymentMethod } from '$routes/(console)/store';
+
+    // exists
+    $: hasOrgBillingContext = !!$orgMissingPaymentMethod;
+
+    // needs any methods
+    $: requiresPaymentMethod =
+        hasOrgBillingContext && $orgMissingPaymentMethod.billingPlanDetails.requiresPaymentMethod;
+
+    // has any methods
+    $: hasAnyPaymentMethod =
+        hasOrgBillingContext &&
+        (!!$orgMissingPaymentMethod.paymentMethodId ||
+            !!$orgMissingPaymentMethod.backupPaymentMethodId);
+
+    // is url excluded
+    $: isBillingHeaderHidden = hideBillingHeaderRoutes.includes(page.url.pathname);
+
+    // should show header
+    $: shouldShowBillingHeader =
+        hasOrgBillingContext &&
+        requiresPaymentMethod &&
+        !hasAnyPaymentMethod &&
+        !isBillingHeaderHidden;
 </script>
 
-{#if $orgMissingPaymentMethod.billingPlanDetails.requiresPaymentMethod && !$orgMissingPaymentMethod.paymentMethodId && !$orgMissingPaymentMethod.backupPaymentMethodId && !hideBillingHeaderRoutes.includes(page.url.pathname)}
+{#if shouldShowBillingHeader}
     <HeaderAlert
         type="error"
         title={`Payment method required for ${$orgMissingPaymentMethod.name}`}>
