@@ -44,7 +44,7 @@
             case 'tablesdb':
                 return `Create, organize, and query structured data with ${entityTitle.plural}.`;
             case 'documentsdb':
-                return `Create, organize, and query flexible data with ${entityTitle.plural}.`;
+                return `Store, manage, and query unstructured data with ${entityTitle.plural}.`;
         }
     });
 </script>

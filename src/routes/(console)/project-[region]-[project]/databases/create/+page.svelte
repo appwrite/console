@@ -33,7 +33,7 @@
     let showCreatePolicies = $state(false);
     let totalPolicies: UserBackupPolicy[] = $state([]);
 
-    let showCustomId = $state(false);
+    let showCustomId = $state(true);
     let showExitModal = $state(false);
     let isSubmitting = $state(writable(false));
     let previousPage: string = $state(resolveRoute('/'));
@@ -190,7 +190,11 @@
                         </div>
                     {/if}
 
-                    <CustomId bind:show={showCustomId} name="Database" bind:id={databaseId} />
+                    <CustomId
+                        name="Database"
+                        autofocus={false}
+                        bind:id={databaseId}
+                        bind:show={showCustomId} />
                 </Layout.Stack>
             </Fieldset>
 
