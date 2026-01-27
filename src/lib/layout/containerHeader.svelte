@@ -60,7 +60,7 @@
     };
     const dispatch = createEventDispatcher();
 
-    $: planName = $organization?.billingPlanDetails?.name;
+    $: planName = $organization?.billingPlanDetails.name;
     // these can be organization level limitations as well.
     // we need to migrate this sometime later, but soon!
     $: hasProjectLimitation = checkForProjectLimitation($organization?.billingPlanId, serviceId);

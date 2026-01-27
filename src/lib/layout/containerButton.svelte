@@ -9,7 +9,7 @@
         $organization?.billingPlanDetails.group === BillingPlanGroup.Starter
             ? `Upgrade to add more ${title.toLocaleLowerCase()}`
             : `You've reached the ${title.toLocaleLowerCase()} limit for the ${
-                  $organization?.billingPlanDetails?.name
+                  $organization?.billingPlanDetails.name
               } plan`;
 
     export let disabled: boolean;

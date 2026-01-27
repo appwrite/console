@@ -90,7 +90,7 @@
             <div slot="tooltip">
                 {!supportsMembers
                     ? 'Upgrade to add more members'
-                    : `You've reached the members limit for the ${$organization?.billingPlanDetails?.name} plan`}
+                    : `You've reached the members limit for the ${$organization?.billingPlanDetails.name} plan`}
             </div>
         </Tooltip>
     </Layout.Stack>
