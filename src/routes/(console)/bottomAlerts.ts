@@ -14,7 +14,7 @@ const listOfPromotions: BottomModalAlertItem[] = [];
 
 if (isCloud && SHOW_IMAGINE_PROMO) {
     const imaginePromo: BottomModalAlertItem = {
-        id: 'modal:imagine-ph-launch-studio-123',
+        id: 'modal:imagine-ph-launch-studio',
         backgroundComponent: Imagine,
         title: 'Imagine is live on Product Hunt',
         message: 'Ask questions, share feedback, and support the launch',
