@@ -13,6 +13,7 @@
     import ReplaceCard from './replaceCard.svelte';
     import EditPaymentModal from '$routes/(console)/account/payments/editPaymentModal.svelte';
     import PaymentModal from '$lib/components/billing/paymentModal.svelte';
+    import UpdateStateModal from '$lib/components/billing/updateStateModal.svelte';
     import { user } from '$lib/stores/user';
     import {
         ActionMenu,
@@ -44,6 +45,8 @@
     let showEdit = false;
     let showDelete = false;
     let showReplace = false;
+    let showUpdateState = false;
+    let paymentMethodNeedingState: PaymentMethodData | null = null;
     let isSelectedBackup = false;
 
     async function addPaymentMethod(paymentMethodId: string) {
@@ -96,6 +99,27 @@
         primaryMethod?.expired ||
         backupMethod?.lastError ||
         backupMethod?.expired;
+
+    // Check for US payment methods without state
+    $: {
+        if (methods?.paymentMethods && !showUpdateState && !paymentMethodNeedingState) {
+            const usMethodWithoutState = methods.paymentMethods.find(
+                (method: PaymentMethodData) =>
+                    method?.country?.toLowerCase() === 'us' &&
+                    (!method.state || method.state.trim() === '') &&
+                    !!method.last4
+            );
+            if (usMethodWithoutState) {
+                paymentMethodNeedingState = usMethodWithoutState;
+                showUpdateState = true;
+            }
+        }
+    }
+
+    // Reset when modal is closed
+    $: if (!showUpdateState && paymentMethodNeedingState) {
+        paymentMethodNeedingState = null;
+    }
 </script>
 
 <CardGrid overflow={false}>
@@ -322,4 +346,7 @@
         {hasOtherMethod}
         isBackup={isSelectedBackup}
         disabled={organization?.billingPlan !== BillingPlan.FREE && !hasOtherMethod} />
+{/if}
+{#if showUpdateState && paymentMethodNeedingState && isCloud && hasStripePublicKey}
+    <UpdateStateModal bind:show={showUpdateState} paymentMethod={paymentMethodNeedingState} />
 {/if}
