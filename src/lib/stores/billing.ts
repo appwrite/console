@@ -145,7 +145,6 @@ export function getNextTierBillingPlan(billingPlanId: string): Models.BillingPla
     const plans = get(plansInfo);
 
     for (const [, plan] of plans) {
-        // TODO: @itznotabug, check for group maybe?
         if (plan.order === currentOrder + 1) {
             return plan;
         }
@@ -423,7 +422,6 @@ export async function checkForUsageLimit(organization: Models.Organization) {
         }
     }
 
-    // TODO: @itznotabug - check with @abnegate, what do we do here? this is billing!
     const { bandwidth, executions, storage, users } = organization?.billingLimits ?? {};
     const resources = [
         { value: bandwidth, name: 'bandwidth' },
