@@ -73,7 +73,7 @@
         try {
             proxyRule = await sdk
                 .forProject(page.params.region, page.params.project)
-                .proxy.updateRuleVerification({ ruleId });
+                .proxy.updateRuleVerification({ ruleId, type: 'dns' });
 
             await Promise.all([
                 invalidate(Dependencies.DOMAINS),

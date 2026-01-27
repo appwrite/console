@@ -68,7 +68,7 @@
         try {
             selectedProxyRule = await sdk
                 .forProject(page.params.region, page.params.project)
-                .proxy.updateRuleVerification({ ruleId: selectedProxyRule.$id });
+                .proxy.updateRuleVerification({ ruleId: selectedProxyRule.$id, type: 'dns' });
 
             await invalidate(Dependencies.SITES_DOMAINS);
             show = false;

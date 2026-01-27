@@ -7,7 +7,8 @@
         IconDotsHorizontal,
         IconRefresh,
         IconTrash,
-        IconTerminal
+        IconTerminal,
+        IconInfo
     } from '@appwrite.io/pink-icons-svelte';
     import {
         ActionMenu,
@@ -26,6 +27,7 @@
     import DnsRecordsAction from '$lib/components/domains/dnsRecordsAction.svelte';
     import ViewLogsModal from '$lib/components/domains/viewLogsModal.svelte';
     import { timeFromNowShort } from '$lib/helpers/date';
+    import ActionRequiredModal from '../../../../../../lib/components/domains/actionRequiredModal.svelte';
 
     let {
         proxyRules,
@@ -36,6 +38,7 @@
     } = $props();
 
     let showDelete = $state(false);
+    let showActionRequired = $state(false);
     let showRetry = $state(false);
     let showLogs = $state(false);
     let selectedProxyRule: Models.ProxyRule = $state(null);
@@ -104,13 +107,29 @@
                                         variant="secondary"
                                         type={proxyRule.status === 'verifying'
                                             ? undefined
-                                            : 'error'}
+                                            : proxyRule.status === 'action_required'
+                                              ? 'warning'
+                                              : 'error'}
                                         content={proxyRule.status === 'created'
                                             ? 'Verification failed'
                                             : proxyRule.status === 'verifying'
                                               ? 'Generating certificate'
-                                              : 'Certificate generation failed'}
+                                              : proxyRule.status === 'action_required'
+                                                ? 'Action required'
+                                                : 'Certificate generation failed'}
                                         size="xs" />
+                                {/if}
+                                {#if proxyRule.status === 'action_required'}
+                                    <Link
+                                        size="s"
+                                        variant="muted"
+                                        on:click={(e) => {
+                                            e.preventDefault();
+                                            selectedProxyRule = proxyRule;
+                                            showActionRequired = true;
+                                        }}>
+                                        View actions
+                                    </Link>
                                 {/if}
                                 {#if isRetryable}
                                     <Link
@@ -167,6 +186,17 @@
 
                         <svelte:fragment slot="tooltip" let:toggle>
                             <ActionMenu.Root>
+                                {#if proxyRule.status === 'action_required'}
+                                    <ActionMenu.Item.Button
+                                        leadingIcon={IconInfo}
+                                        on:click={(e) => {
+                                            selectedProxyRule = proxyRule;
+                                            showActionRequired = true;
+                                            toggle(e);
+                                        }}>
+                                        View actions
+                                    </ActionMenu.Item.Button>
+                                {/if}
                                 {#if isLogsViewable}
                                     <ActionMenu.Item.Button
                                         leadingIcon={IconTerminal}
@@ -219,6 +249,10 @@
 
 {#if showDelete}
     <DeleteDomainModal bind:show={showDelete} {selectedProxyRule} />
+{/if}
+
+{#if showActionRequired}
+    <ActionRequiredModal bind:show={showActionRequired} {selectedProxyRule} />
 {/if}
 
 {#if showRetry}
