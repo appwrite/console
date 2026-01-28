@@ -44,19 +44,19 @@ If you are worried about or don't know where to start, check out the next sectio
 git clone https://github.com/appwrite/console.git appwrite-console
 ```
 
-### 2. Install dependencies with npm
+### 2. Install dependencies with Bun
 
 Navigate to the Appwrite Console repository and install dependencies.
 
 ```bash
-cd appwrite-console && pnpm install
+cd appwrite-console && bun install
 ```
 
 ### 3. Install and run Appwrite locally
 
 When you run the Appwrite Console locally, it needs to point to a backend as well. The easiest way to do this is to run an Appwrite instance locally.
 
-Follow the [install instructions](https://appwrite.io/docs/advanced/self-hosting) in the Appwrite docs.
+Follow the [installation instructions](https://appwrite.io/docs/advanced/self-hosting) in the Appwrite docs.
 
 ### 4. Setup environment variables
 
@@ -68,7 +68,7 @@ Add a `.env` file by copying the `.env.example` file as a template in the projec
 Finally, start a development server:
 
 ```bash
-pnpm dev
+bun dev
 ```
 
 > **Note**
@@ -77,15 +77,15 @@ pnpm dev
 ### Build
 
 ```bash
-pnpm build
+bun run build
 ```
 
-> You can preview the built app with `npm run preview`, regardless of whether you installed an adapter. This should _not_ be used to serve your app in production.
+> You can preview the built app with `bun run preview`, regardless of whether you installed an adapter. This should _not_ be used to serve your app in production.
 
 ### Tests
 
 ```bash
-pnpm test
+bun tests
 ```
 
 This will run tests in the `tests/` directory.
@@ -95,13 +95,13 @@ This will run tests in the `tests/` directory.
 Code should be consistently formatted everywhere. Before committing code, run the code-formatter.
 
 ```bash
-pnpm run format
+bun format
 ```
 
 ### Linter
 
 ```bash
-pnpm run lint
+bun run lint
 ```
 
 ### Diagnostics
@@ -113,7 +113,7 @@ Diagnostic tool that checks for the following:
 - TypeScript compiler errors
 
 ```bash
-pnpm run check
+bun check
 ```
 
 ## Submit a Pull Request 🚀
@@ -176,11 +176,11 @@ $ git push origin [name_of_your_new_branch]
 Before committing always make sure to run all available tools to improve the codebase:
 
 - Formatter
-    - `pnpm run format`
+    - `bun format`
 - Tests
-    - `pnpm test`
+    - `bun tests`
 - Diagnostics
-    - `pnpm run check`
+    - `bun check`
 
 ### Performance
 
