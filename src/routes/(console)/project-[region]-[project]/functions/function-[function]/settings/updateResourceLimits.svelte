@@ -17,6 +17,7 @@
 
     export let func: Models.Function;
     export let specs: Models.SpecificationList;
+
     let specification = func.specification;
     let originalSpecification = func.specification;
     $: originalSpecification = func.specification;

@@ -61,7 +61,7 @@
 
         <!-- always show upgrade on free -->
         {#if planHasGroup(currentBillingPlan, BillingPlanGroup.Starter)}
-            <Button href={getChangePlanUrl($organization.$id)}>
+            <Button href={getChangePlanUrl(data.project.teamId)}>
                 <span class="text">Upgrade</span>
             </Button>
         {/if}
@@ -86,7 +86,7 @@
             <p class="text">
                 If you exceed the limits of the {currentBillingPlan.name} plan, services for your projects
                 may be disrupted.
-                <Link.Anchor href={getChangePlanUrl($organization.$id)} class="link"
+                <Link.Anchor href={getChangePlanUrl(data.project.teamId)} class="link"
                     >Upgrade for greater capacity</Link.Anchor
                 >.
             </p>
