@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import { registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import {
@@ -27,12 +26,21 @@
     import { goto } from '$app/navigation';
     import { Button } from '$lib/elements/forms';
     import Avatar from '$lib/components/avatar.svelte';
+    import { resolveRoute, withPath } from '$lib/stores/navigation';
+    import type { PageProps } from './$types';
 
-    export let data;
+    const { data }: PageProps = $props();
 
-    let offset = 0;
+    let offset = $state(0);
 
-    const project = page.params.project;
+    const createFunctionsUrl = resolveRoute(
+        '/(console)/project-[region]-[project]/functions/create-function',
+        {
+            ...page.params
+        }
+    );
+
+    const isLimited = $derived(isServiceLimited('functions', $organization, data.functions.total));
 
     onMount(async () => {
         const from = page.url.searchParams.get('from');
@@ -42,15 +50,18 @@
                 case 'template': {
                     const template = page.url.searchParams.get('template');
                     const templateConfig = page.url.searchParams.get('templateConfig');
-                    goto(
-                        `${base}/project-${page.params.region}-${project}/functions/create-function/template-${template}?templateConfig=${templateConfig}`
+                    const templateUrl = resolveRoute(
+                        '/(console)/project-[region]-[project]/functions/create-function/template-[template]',
+                        {
+                            ...page.params,
+                            template
+                        }
                     );
+                    await goto(withPath(templateUrl, `?templateConfig=${templateConfig}`));
                     break;
                 }
                 case 'cover':
-                    goto(
-                        `${base}/project-${page.params.region}-${project}/functions/create-function`
-                    );
+                    await goto(createFunctionsUrl);
                     break;
             }
         }
@@ -60,32 +71,42 @@
         return toLocaleDateTime(parseExpression(func.schedule, { utc: true }).next().toString());
     }
 
-    $: $registerCommands([
-        {
-            label: 'Create function',
-            callback: () =>
-                goto(`${base}/project-${page.params.region}-${project}/functions/create-function`),
-            keys: ['c'],
-            disabled:
-                $wizard.show ||
-                isServiceLimited('functions', $organization, data.functions?.total) ||
-                !$canWriteFunctions,
-            icon: IconPlus,
-            group: 'functions'
-        }
-    ]);
+    $effect(() => {
+        $registerCommands([
+            {
+                label: 'Create function',
+                callback: () => goto(createFunctionsUrl),
+                keys: ['c'],
+                disabled:
+                    $wizard.show ||
+                    isServiceLimited('functions', $organization, data.functions?.total) ||
+                    !$canWriteFunctions,
+                icon: IconPlus,
+                group: 'functions'
+            }
+        ]);
+    });
 
-    $updateCommandGroupRanks({ functions: 1000 });
+    $effect(() => {
+        $updateCommandGroupRanks({ functions: 1000 });
+    });
 </script>
 
 <Container>
     <Layout.Stack direction="row" justifyContent="space-between">
         <SearchQuery placeholder="Search by name or ID" />
 
-        <Button href={`${base}/project-${page.params.region}-${project}/functions/create-function`}>
-            <Icon icon={IconPlus} slot="start" />
-            Create function
-        </Button>
+        <Tooltip disabled={!isLimited}>
+            <div>
+                <Button disabled={isLimited} href={createFunctionsUrl}>
+                    <Icon icon={IconPlus} slot="start" />
+                    Create function
+                </Button>
+            </div>
+            <svelte:fragment slot="tooltip">
+                You have reached the maximum number of functions for your plan.
+            </svelte:fragment>
+        </Tooltip>
     </Layout.Stack>
 
     {#if data.functions.total}
@@ -95,11 +116,16 @@
             event="functions"
             total={data.functions.total}
             service="functions"
-            on:click={() =>
-                goto(`${base}/project-${page.params.region}-${project}/functions/create-function`)}>
+            on:click={() => goto(createFunctionsUrl)}>
             {#each data.functions.functions as func (func.$id)}
                 <GridItem1
-                    href={`${base}/project-${page.params.region}-${project}/functions/function-${func.$id}`}>
+                    href={resolveRoute(
+                        '/(console)/project-[region]-[project]/functions/function-[function]',
+                        {
+                            ...page.params,
+                            function: func.$id
+                        }
+                    )}>
                     <svelte:fragment slot="title">
                         <Layout.Stack gap="l" alignItems="center" direction="row" inline>
                             <Avatar alt={func.name} size="m">
@@ -135,7 +161,9 @@
         <EmptySearch hidePages bind:search={data.search} target="functions">
             <Button
                 secondary
-                href={`${base}/project-${page.params.region}-${page.params.project}/functions`}>
+                href={resolveRoute('/(console)/project-[region]-[project]/functions', {
+                    ...page.params
+                })}>
                 Clear search
             </Button>
         </EmptySearch>
@@ -145,9 +173,6 @@
             allowCreate={$canWriteFunctions}
             href="https://appwrite.io/docs/products/functions"
             target="function"
-            on:click={() =>
-                goto(
-                    `${base}/project-${page.params.region}-${project}/functions/create-function`
-                )} />
+            on:click={() => goto(createFunctionsUrl)} />
     {/if}
 </Container>
