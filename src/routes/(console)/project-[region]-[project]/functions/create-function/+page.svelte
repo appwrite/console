@@ -5,7 +5,7 @@
     import { Click, trackEvent } from '$lib/actions/analytics';
     import type { Models } from '@appwrite.io/console';
     import { isSelfHosted } from '$lib/system';
-    import { afterNavigate, goto } from '$app/navigation';
+    import { goto } from '$app/navigation';
     import { installation, repository } from '$lib/stores/vcs';
     import { Repositories } from '$lib/components/git';
     import {
@@ -27,10 +27,6 @@
 
     const isVcsEnabled = $regionalConsoleVariables?._APP_VCS_ENABLED === true;
     const wizardBase = `${base}/project-${page.params.region}-${page.params.project}/functions`;
-    let previousPage: string = wizardBase;
-    afterNavigate(({ from }) => {
-        previousPage = from?.url?.pathname || previousPage;
-    });
 
     let selectedRepository: string;
 
@@ -60,7 +56,7 @@
     }
 </script>
 
-<Wizard title="Create function" href={previousPage} column columnSize="l" hideFooter>
+<Wizard title="Create function" href={wizardBase} column columnSize="l" hideFooter>
     <Layout.Stack gap="l">
         <Layout.GridFraction start={4} end={6} gap="l" rowSize="auto">
             <Card.Base>
@@ -105,10 +101,13 @@
                                 }}
                                 {connect} />
                         </Layout.Stack>
-                        {#if data.installations.total}
+                        {#if $installation}
                             <Layout.Stack gap="l">
                                 <Divider />
-                                <Link variant="quiet" href="#/">
+                                <Link
+                                    variant="quiet"
+                                    external
+                                    href={`https://github.com/settings/installations/${$installation.providerInstallationId}`}>
                                     <Layout.Stack direction="row" gap="xs">
                                         Missing a repository? check your permissions <Icon
                                             icon={IconArrowSmRight} />

@@ -70,9 +70,12 @@
                             href="https://appwrite.io/docs/products/sites/deploy-from-git"
                             external
                             secondary>Docs</Button>
-                        <Button
-                            href={`https://github.com/${data.installations.installations[0].organization}`}
-                            text>Go to GitHub</Button>
+                        {#if $installation}
+                            <Button
+                                href={`https://github.com/settings/installations/${$installation.providerInstallationId}`}
+                                external
+                                text>Go to GitHub</Button>
+                        {/if}
                     </Layout.Stack>
                 {/if}
             </Layout.Stack>
