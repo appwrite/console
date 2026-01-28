@@ -4,7 +4,7 @@
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { Button } from '$lib/elements/forms';
     import { HeaderAlert } from '$lib/layout';
-    import { hideBillingHeaderRoutes, readOnly, upgradeURL } from '$lib/stores/billing';
+    import { hideBillingHeaderRoutes, readOnly, getChangePlanUrl } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
 </script>
 
@@ -27,7 +27,7 @@
                 </Button>
             {/if}
             <Button
-                href={$upgradeURL}
+                href={getChangePlanUrl($organization.$id)}
                 on:click={() => {
                     trackEvent(Click.OrganizationClickUpgrade, {
                         from: 'button',

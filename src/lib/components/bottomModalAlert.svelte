@@ -10,7 +10,7 @@
     } from '$lib/stores/bottom-alerts';
     import { onMount } from 'svelte';
     import { organization } from '$lib/stores/organization';
-    import { canUpgrade, upgradeURL } from '$lib/stores/billing';
+    import { canUpgrade, getChangePlanUrl } from '$lib/stores/billing';
     import { addBottomModalAlerts } from '$routes/(console)/bottomAlerts';
     import { project } from '$routes/(console)/project-[region]-[project]/store';
     import { page } from '$app/state';
@@ -145,9 +145,10 @@
 
         // for correct event tracking after removal
         const currentModalId = currentModalAlert.id;
+        const organizationId = $project.teamId ?? $organization.$id;
 
         const url = shouldShowUpgrade
-            ? $upgradeURL
+            ? getChangePlanUrl(organizationId)
             : alertAction.link({
                   organization: $organization,
                   project: $project

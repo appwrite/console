@@ -8,12 +8,13 @@
     import { createEventDispatcher } from 'svelte';
     import { isCloud } from '$lib/system';
     import { currentPlan } from '$lib/stores/organization';
-    import { upgradeURL } from '$lib/stores/billing';
+    import { getChangePlanUrl } from '$lib/stores/billing';
     import CreatePolicy from './database-[database]/backups/createPolicy.svelte';
     import { cronExpression, type UserBackupPolicy } from '$lib/helpers/backups';
     import { Alert, Icon, Tag } from '@appwrite.io/pink-svelte';
     import { IconPencil } from '@appwrite.io/pink-icons-svelte';
     import { page } from '$app/state';
+    import { project } from '../store';
 
     export let showCreate = false;
     let totalPolicies: UserBackupPolicy[] = [];
@@ -133,7 +134,7 @@
             <Alert.Inline title="This database won't be backed up" status="warning">
                 Upgrade your plan to ensure your data stays safe and backed up.
                 <svelte:fragment slot="actions">
-                    <Button compact href={$upgradeURL}>Upgrade plan</Button>
+                    <Button compact href={getChangePlanUrl($project.teamId)}>Upgrade plan</Button>
                 </svelte:fragment>
             </Alert.Inline>
         {:else}

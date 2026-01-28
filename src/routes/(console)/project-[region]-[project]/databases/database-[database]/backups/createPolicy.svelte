@@ -25,7 +25,8 @@
     import { IconPencil, IconTrash } from '@appwrite.io/pink-icons-svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
     import { goto } from '$app/navigation';
-    import { upgradeURL } from '$lib/stores/billing';
+    import { getChangePlanUrl } from '$lib/stores/billing';
+    import { project } from '$routes/(console)/project-[region]-[project]/store';
 
     export let isShowing: boolean;
     export let isFromBackupsTab: boolean = false;
@@ -213,7 +214,7 @@
                         on:click={() => {
                             isShowing = false;
                             $showCreatePolicy = false;
-                            goto($upgradeURL);
+                            goto(getChangePlanUrl($project.teamId));
                         }}>Upgrade your plan</Button> to add customized backup policies.
                 </Layout.Stack>
             </Layout.Stack>
@@ -229,7 +230,7 @@
                         <Link.Button
                             on:click={() => {
                                 isShowing = false;
-                                goto($upgradeURL);
+                                goto(getChangePlanUrl($project.teamId));
                             }}>Upgrade your plan</Link.Button>
                         to add customized backup policies.
                     </Typography.Text>

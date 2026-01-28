@@ -5,15 +5,17 @@
     import { BillingPlanGroup } from '@appwrite.io/console';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { Layout, Typography } from '@appwrite.io/pink-svelte';
-    import { getBasePlanFromGroup, upgradeURL } from '$lib/stores/billing';
+    import { getBasePlanFromGroup, getChangePlanUrl } from '$lib/stores/billing';
 
     let {
         service,
         eventSource,
+        organizationId = null,
         children = null
     }: {
         service: string;
         eventSource: string;
+        organizationId?: string;
         children?: Snippet;
     } = $props();
 
@@ -33,7 +35,7 @@
             <Button
                 secondary
                 fullWidthMobile
-                href={$upgradeURL}
+                href={getChangePlanUrl(organizationId)}
                 on:click={() => {
                     trackEvent(Click.OrganizationClickUpgrade, {
                         from: 'button',

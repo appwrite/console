@@ -1,8 +1,8 @@
-import { browser } from '$app/environment';
-import { goto } from '$app/navigation';
 import { resolve } from '$app/paths';
-import { Click, trackEvent } from '$lib/actions/analytics';
 import { page } from '$app/stores';
+import { goto } from '$app/navigation';
+import { browser } from '$app/environment';
+import { Click, trackEvent } from '$lib/actions/analytics';
 import LimitReached from '$lib/components/billing/alerts/limitReached.svelte';
 import MarkedForDeletion from '$lib/components/billing/alerts/markedForDeletion.svelte';
 import MissingPaymentMethod from '$lib/components/billing/alerts/missingPaymentMethod.svelte';
@@ -650,11 +650,33 @@ export async function checkForNewDevUpgradePro(org: Models.Organization) {
         importance: 1
     });
 }
-export const upgradeURL = derived(page, ($page) => {
-    return resolve('/(console)/organization-[organization]/change-plan', {
-        organization: $page.data?.organization?.$id
-    });
-});
+
+export function getChangePlanUrl(organizationId?: string | null | undefined): string {
+    let orgId = organizationId || null;
+
+    if (!orgId) {
+        try {
+            const pageState = get(page);
+
+            const fromUrl = pageState?.params?.organization?.trim?.() || null;
+            const fromOrgData = pageState?.data?.organization?.$id?.trim?.() || null;
+            const fromProjectData = pageState?.data?.project?.teamId?.trim?.() || null;
+
+            orgId = fromUrl ?? fromProjectData ?? fromOrgData;
+        } catch {
+            /* ignore */
+        }
+    }
+
+    if (orgId) {
+        return resolve('/(console)/organization-[organization]/change-plan', {
+            organization: orgId
+        });
+    } else {
+        /* fallback to not crash anything */
+        return resolve('/');
+    }
+}
 
 export const hideBillingHeaderRoutes = [resolve('/account'), resolve('/create-organization')];
 

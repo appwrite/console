@@ -4,7 +4,7 @@
     import {
         showUsageRatesModal,
         billingIdToPlan,
-        upgradeURL,
+        getChangePlanUrl,
         planHasGroup
     } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
@@ -61,7 +61,7 @@
 
         <!-- always show upgrade on free -->
         {#if planHasGroup(currentBillingPlan, BillingPlanGroup.Starter)}
-            <Button href={$upgradeURL}>
+            <Button href={getChangePlanUrl($organization.$id)}>
                 <span class="text">Upgrade</span>
             </Button>
         {/if}

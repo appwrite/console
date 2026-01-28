@@ -4,7 +4,7 @@
     import { CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, Form, InputNumber, InputSwitch } from '$lib/elements/forms';
-    import { showUsageRatesModal, upgradeURL } from '$lib/stores/billing';
+    import { showUsageRatesModal, getChangePlanUrl } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Alert, Link } from '@appwrite.io/pink-svelte';
@@ -92,7 +92,7 @@
             {#if !currentPlan.budgetCapEnabled}
                 <Button
                     secondary
-                    href={$upgradeURL}
+                    href={getChangePlanUrl(organization.$id)}
                     on:click={() => {
                         trackEvent(Click.OrganizationClickUpgrade, {
                             from: 'button',

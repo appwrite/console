@@ -40,12 +40,13 @@
 
 <script lang="ts">
     import { isCloud } from '$lib/system';
-    import { upgradeURL } from '$lib/stores/billing';
+    import { getChangePlanUrl } from '$lib/stores/billing';
     import { currentPlan } from '$lib/stores/organization';
     import { createConservative } from '$lib/helpers/stores';
     import { ActionMenu, Selector } from '@appwrite.io/pink-svelte';
     import RequiredArrayCheckboxes from './requiredArrayCheckboxes.svelte';
     import { InputNumber, InputText, InputTextarea } from '$lib/elements/forms';
+    import { project } from '$routes/(console)/project-[region]-[project]/store';
     import { Popover, Layout, Tag, Typography, Link } from '@appwrite.io/pink-svelte';
 
     export let data: Partial<Models.ColumnString> = {
@@ -160,7 +161,8 @@
 
                 <ActionMenu.Root width="180px" slot="tooltip">
                     <Typography.Text variant="m-500">
-                        Available on Pro plan. <Link.Anchor href={$upgradeURL}>Upgrade</Link.Anchor>
+                        Available on Pro plan. <Link.Anchor href={getChangePlanUrl($project.teamId)}
+                            >Upgrade</Link.Anchor>
                         to enable encrypted columns.
                     </Typography.Text>
                 </ActionMenu.Root>

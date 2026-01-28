@@ -3,7 +3,7 @@
     import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { upgradeURL } from '$lib/stores/billing';
+    import { getChangePlanUrl } from '$lib/stores/billing';
     import { Button, Form } from '$lib/elements/forms';
     import { symmetricDifference } from '$lib/helpers/array';
     import { addNotification } from '$lib/stores/notifications';
@@ -151,7 +151,7 @@
             {#if !currentPlan.budgeting}
                 <Button
                     secondary
-                    href={$upgradeURL}
+                    href={getChangePlanUrl($organization.$id)}
                     on:click={() => {
                         trackEvent(Click.OrganizationClickUpgrade, {
                             from: 'button',

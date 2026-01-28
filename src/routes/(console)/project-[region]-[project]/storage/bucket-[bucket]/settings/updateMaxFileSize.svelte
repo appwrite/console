@@ -5,7 +5,7 @@
     import { Button, Form, InputNumber, InputSelect } from '$lib/elements/forms';
     import { humanFileSize, sizeToBytes } from '$lib/helpers/sizeConvertion';
     import { createByteUnitPair } from '$lib/helpers/unit';
-    import { isStarterPlan, readOnly, upgradeURL } from '$lib/stores/billing';
+    import { getChangePlanUrl, isStarterPlan, readOnly } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
     import { updateBucket } from './+page.svelte';
@@ -55,7 +55,7 @@
                             <div class="alert-buttons u-flex">
                                 <Button
                                     text
-                                    href={$upgradeURL}
+                                    href={getChangePlanUrl($organization.$id)}
                                     on:click={() => {
                                         trackEvent(Click.OrganizationClickUpgrade, {
                                             source: 'bucket_settings'

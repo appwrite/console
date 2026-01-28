@@ -16,7 +16,7 @@
     import { currentPlan } from '$lib/stores/organization';
     import { type SMTPSecure } from '@appwrite.io/console';
     import InputSelect from '$lib/elements/forms/inputSelect.svelte';
-    import { upgradeURL } from '$lib/stores/billing';
+    import { getChangePlanUrl } from '$lib/stores/billing';
     import { Link, Selector, Alert } from '@appwrite.io/pink-svelte';
 
     let enabled = false;
@@ -130,7 +130,7 @@
                         <svelte:fragment slot="actions">
                             <Button
                                 compact
-                                href={$upgradeURL}
+                                href={getChangePlanUrl($project.teamId)}
                                 on:click={() => {
                                     trackEvent(Click.OrganizationClickUpgrade, {
                                         source: 'project_settings'

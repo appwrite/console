@@ -2,7 +2,7 @@
     import { CustomId } from '$lib/components';
     import { InputSelect, InputText } from '$lib/elements/forms';
     import Link from '$lib/elements/link.svelte';
-    import { isStarterPlan, upgradeURL } from '$lib/stores/billing';
+    import { isStarterPlan, getChangePlanUrl } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { isCloud } from '$lib/system';
     import { IconPencil } from '@appwrite.io/pink-icons-svelte';
@@ -82,8 +82,8 @@
                 {@const isStarter = isStarterPlan($organization.billingPlanId)}
                 {#if isStarter}
                     <Input.Helper state="default">
-                        <Link href={$upgradeURL} variant="muted">Upgrade</Link> your plan to adjust your
-                        CPU and RAM beyond the default.
+                        <Link href={getChangePlanUrl($organization.$id)} variant="muted"
+                            >Upgrade</Link> your plan to adjust your CPU and RAM beyond the default.
                     </Input.Helper>
                 {/if}
             </Layout.Stack>

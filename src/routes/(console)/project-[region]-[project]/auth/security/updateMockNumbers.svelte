@@ -5,7 +5,7 @@
     import { Button, Form } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
     import { project } from '../../store';
-    import { upgradeURL } from '$lib/stores/billing';
+    import { getChangePlanUrl } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
@@ -137,7 +137,9 @@
                             secondary
                             fullWidth
                             external={isSelfHosted}
-                            href={isCloud ? $upgradeURL : 'https://cloud.appwrite.io/register'}
+                            href={isCloud
+                                ? getChangePlanUrl($project.teamId)
+                                : 'https://cloud.appwrite.io/register'}
                             on:click={() => {
                                 trackEvent(Click.CloudSignupClick, {
                                     from: 'button',

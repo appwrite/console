@@ -9,7 +9,7 @@
     import { Adapter, BuildRuntime, Framework, type Models } from '@appwrite.io/console';
     import Link from '$lib/elements/link.svelte';
     import { Alert } from '@appwrite.io/pink-svelte';
-    import { isStarterPlan, upgradeURL } from '$lib/stores/billing';
+    import { getChangePlanUrl, isStarterPlan } from '$lib/stores/billing';
     import { isCloud } from '$lib/system';
     import { organization } from '$lib/stores/organization';
     import { page } from '$app/state';
@@ -90,7 +90,7 @@
                 <Alert.Inline title="Customizing specs available with Pro or Scale plans">
                     Upgrade your plan to adjust your CPU and RAM beyond the default.
                     <svelte:fragment slot="actions">
-                        <Button href={$upgradeURL} compact>Upgrade</Button>
+                        <Button href={getChangePlanUrl($organization.$id)} compact>Upgrade</Button>
                     </svelte:fragment>
                 </Alert.Inline>
             {/if}

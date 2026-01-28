@@ -18,7 +18,7 @@
     } from '$lib/components';
     import { trackEvent, Click } from '$lib/actions/analytics';
     import { type Models } from '@appwrite.io/console';
-    import { getServiceLimit, readOnly, upgradeURL } from '$lib/stores/billing';
+    import { getServiceLimit, readOnly, getChangePlanUrl } from '$lib/stores/billing';
     import { hideNotification, shouldShowNotification } from '$lib/helpers/notifications';
     import { onMount, type ComponentType } from 'svelte';
     import { canWriteProjects } from '$lib/stores/roles';
@@ -206,7 +206,7 @@
                 <Button
                     compact
                     size="s"
-                    href={$upgradeURL}
+                    href={getChangePlanUrl(data.organization.$id)}
                     on:click={() => {
                         trackEvent(Click.OrganizationClickUpgrade, {
                             from: 'button',
@@ -228,7 +228,7 @@
                 <Button
                     compact
                     size="s"
-                    href={$upgradeURL}
+                    href={getChangePlanUrl(data.organization.$id)}
                     on:click={() => {
                         trackEvent(Click.OrganizationClickUpgrade, {
                             from: 'button',

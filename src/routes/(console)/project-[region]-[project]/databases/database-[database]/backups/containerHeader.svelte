@@ -1,10 +1,11 @@
 <script lang="ts">
+    import { goto } from '$app/navigation';
     import { DropList } from '$lib/components';
     import { Button } from '$lib/elements/forms';
+    import { getChangePlanUrl } from '$lib/stores/billing';
     import { IconInfo, IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { project } from '$routes/(console)/project-[region]-[project]/store';
     import { Badge, Icon, Layout, Tag, Typography } from '@appwrite.io/pink-svelte';
-    import { goto } from '$app/navigation';
-    import { upgradeURL } from '$lib/stores/billing';
 
     export let isFlex = true;
     export let title: string;
@@ -73,7 +74,7 @@
                                     class="u-underline"
                                     on:click={() => {
                                         showDropdown = !showDropdown;
-                                        goto($upgradeURL);
+                                        goto(getChangePlanUrl($project.teamId));
                                     }}>Upgrade your plan</button> to add customized backup policies.
                             </span>
                         </slot>

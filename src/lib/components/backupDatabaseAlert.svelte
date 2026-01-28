@@ -4,7 +4,7 @@
     import { organization } from '$lib/stores/organization';
     import { HeaderAlert } from '$lib/layout';
     import { isCloud } from '$lib/system';
-    import { upgradeURL } from '$lib/stores/billing';
+    import { getChangePlanUrl } from '$lib/stores/billing';
     import { hideNotification } from '$lib/helpers/notifications';
     import { backupsBannerId, showPolicyAlert } from '$lib/stores/database';
     import { IconX } from '@appwrite.io/pink-icons-svelte';
@@ -24,7 +24,9 @@
         : 'Protect your data by quickly adding a backup policy'}
 
     {@const ctaText = !areBackupsAvailable ? 'Upgrade plan' : 'Create policy'}
-    {@const ctaURL = !areBackupsAvailable ? $upgradeURL : `${page.url.pathname}/backups`}
+    {@const ctaURL = !areBackupsAvailable
+        ? getChangePlanUrl($organization.$id)
+        : `${page.url.pathname}/backups`}
 
     <HeaderAlert type="warning" title="Your database has no backup policy">
         <svelte:fragment>{subtitle}</svelte:fragment>

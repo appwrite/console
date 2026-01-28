@@ -10,7 +10,7 @@
         getServiceLimit,
         readOnly,
         showUsageRatesModal,
-        upgradeURL,
+        getChangePlanUrl,
         type PlanServices,
         canUpgrade
     } from '$lib/stores/billing';
@@ -56,8 +56,9 @@
     //TODO: refactor this to be a string
     const upgradeMethod = () => {
         showDropdown = false;
-        goto($upgradeURL);
+        goto(getChangePlanUrl($organization?.$id));
     };
+
     const dispatch = createEventDispatcher();
 
     $: planName = $organization?.billingPlanDetails.name;
@@ -117,7 +118,7 @@
                 <Alert.Inline status={alertType}>
                     <span class="text">
                         You've reached the {services} limit for the {planName} plan. <Link
-                            href={$upgradeURL}
+                            href={getChangePlanUrl($organization?.$id)}
                             event="organization_upgrade"
                             eventData={{ from: 'event', source: 'inline_alert' }}>Upgrade</Link> your
                         organization for additional resources.
@@ -161,7 +162,7 @@
                                 You are limited to {limit}
                                 {title.toLocaleLowerCase()} per project on the {planName} plan.
                                 {#if canUpgrade($organization.billingPlanId)}<Link
-                                        href={$upgradeURL}
+                                        href={getChangePlanUrl($organization?.$id)}
                                         event="organization_upgrade"
                                         eventData={{ from: 'button', source: 'resource_limit_tag' }}
                                         >Upgrade</Link>
@@ -181,7 +182,7 @@
                                 You are limited to {limit}
                                 {title.toLocaleLowerCase()} per organization on the {planName} plan.
                                 {#if canUpgrade($organization.billingPlanId)}
-                                    <Link href={$upgradeURL}>Upgrade</Link>
+                                    <Link href={getChangePlanUrl($organization?.$id)}>Upgrade</Link>
                                     for additional {title.toLocaleLowerCase()}.
                                 {/if}
                             </p>

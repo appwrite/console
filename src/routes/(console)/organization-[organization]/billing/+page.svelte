@@ -11,7 +11,7 @@
     import {
         failedInvoice,
         billingIdToPlan,
-        upgradeURL,
+        getChangePlanUrl,
         useNewPricingModal
     } from '$lib/stores/billing';
     import { onMount } from 'svelte';
@@ -32,13 +32,13 @@
 
     $: organization = data.organization;
     $: baseUrl = resolve('/(console)/organization-[organization]/billing', {
-        organization: organization.$id
+        organization: page.params.organization
     });
 
     onMount(async () => {
         if (page.url.searchParams.has('type')) {
             if (page.url.searchParams.get('type') === 'upgrade') {
-                await goto($upgradeURL);
+                await goto(getChangePlanUrl(page.params.organization));
             }
 
             if (
@@ -68,8 +68,10 @@
                     organizationId: organization.$id,
                     invoiceId
                 });
-                invalidate(Dependencies.INVOICES);
-                invalidate(Dependencies.ORGANIZATION);
+                await Promise.all([
+                    invalidate(Dependencies.INVOICES),
+                    invalidate(Dependencies.ORGANIZATION)
+                ]);
             }
 
             if (

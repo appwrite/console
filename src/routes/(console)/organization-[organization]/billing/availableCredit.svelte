@@ -10,7 +10,7 @@
     import AddCreditModal from './addCreditModal.svelte';
     import { formatCurrency } from '$lib/helpers/numbers';
     import { Click, trackEvent } from '$lib/actions/analytics';
-    import { upgradeURL } from '$lib/stores/billing';
+    import { getChangePlanUrl } from '$lib/stores/billing';
 
     import { Alert, Badge, Icon, Link, Table, Tooltip, Typography } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
@@ -174,7 +174,7 @@
         {#if !areCreditsSupported}
             <Button
                 secondary
-                href={$upgradeURL}
+                href={getChangePlanUrl($organization.$id)}
                 on:click={() => {
                     trackEvent(Click.OrganizationClickUpgrade, {
                         from: 'button',

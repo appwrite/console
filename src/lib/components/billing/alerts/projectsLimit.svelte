@@ -3,7 +3,7 @@
     import { Click } from '$lib/actions/analytics';
     import { Button } from '$lib/elements/forms';
     import { HeaderAlert } from '$lib/layout';
-    import { hideBillingHeaderRoutes, upgradeURL } from '$lib/stores/billing';
+    import { hideBillingHeaderRoutes, getChangePlanUrl } from '$lib/stores/billing';
     import { currentPlan, organization } from '$lib/stores/organization';
     import SelectProjectCloud from './selectProjectCloud.svelte';
     import { toLocaleDate } from '$lib/helpers/date';
@@ -38,7 +38,7 @@
                     showSelectProject = true;
                 }}>Manage projects</Button>
             <Button
-                href={$upgradeURL}
+                href={getChangePlanUrl(organizationId)}
                 event={Click.OrganizationClickUpgrade}
                 eventData={{
                     from: 'button',

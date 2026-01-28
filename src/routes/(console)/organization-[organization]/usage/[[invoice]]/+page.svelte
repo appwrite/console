@@ -9,7 +9,7 @@
         isStarterPlan,
         planHasGroup,
         showUsageRatesModal,
-        upgradeURL,
+        getChangePlanUrl,
         useNewPricingModal
     } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
@@ -65,7 +65,7 @@
 
         {#if isStarterPlan(currentBillingPlan)}
             <Button
-                href={$upgradeURL}
+                href={getChangePlanUrl($organization.$id)}
                 on:click={() => {
                     trackEvent(Click.OrganizationClickUpgrade, {
                         from: 'button',
@@ -110,7 +110,9 @@
         <p class="text">
             If you exceed the limits of the Free plan, services for your organization's projects may
             be disrupted.
-            <Link.Anchor href={$upgradeURL}>Upgrade for greater capacity</Link.Anchor>.
+            <Link.Anchor href={getChangePlanUrl($organization.$id)}
+                >Upgrade for greater capacity</Link.Anchor
+            >.
         </p>
     {/if}
 

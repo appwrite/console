@@ -3,7 +3,7 @@
     import { EstimatedCard, Pagination as PaginationComponent } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
-    import { upgradeURL } from '$lib/stores/billing';
+    import { getChangePlanUrl } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { formatCurrency } from '$lib/helpers/numbers';
     import { DEFAULT_BILLING_PROJECTS_LIMIT } from '$lib/constants';
@@ -603,7 +603,7 @@
                         {/if}
                         <Button
                             disabled={$organization?.markedForDeletion}
-                            href={$upgradeURL}
+                            href={getChangePlanUrl($organization?.$id)}
                             on:click={() =>
                                 trackEvent(Click.OrganizationClickUpgrade, {
                                     from: 'button',
@@ -626,7 +626,7 @@
                             <Button
                                 text
                                 disabled={$organization?.markedForDeletion}
-                                href={$upgradeURL}
+                                href={getChangePlanUrl($organization?.$id)}
                                 on:click={() =>
                                     trackEvent(Click.OrganizationClickUpgrade, {
                                         from: 'button',

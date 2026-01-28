@@ -1,12 +1,12 @@
 <script lang="ts">
-    import { AvatarInitials, CardGrid, Paginator } from '$lib/components';
-    import { EmptyCardCloud } from '$lib/components/billing';
     import { Button } from '$lib/elements/forms';
-    import { newMemberModal, organization } from '$lib/stores/organization';
     import type { Models } from '@appwrite.io/console';
-    import { IconInfo, IconPlus } from '@appwrite.io/pink-icons-svelte';
-    import { Icon, Layout, Table, Tooltip, Typography } from '@appwrite.io/pink-svelte';
+    import { EmptyCardCloud } from '$lib/components/billing';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
+    import { IconInfo, IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { AvatarInitials, CardGrid, Paginator } from '$lib/components';
+    import { newMemberModal, organization } from '$lib/stores/organization';
+    import { Icon, Layout, Table, Tooltip, Typography } from '@appwrite.io/pink-svelte';
 
     export let members: Models.MembershipList;
 
@@ -80,7 +80,10 @@
                 {/snippet}
             </Paginator>
         {:else}
-            <EmptyCardCloud service="members" eventSource="organization_usage" />
+            <EmptyCardCloud
+                service="members"
+                eventSource="organization_usage"
+                organizationId={$organization?.$id} />
         {/if}
     </svelte:fragment>
 </CardGrid>

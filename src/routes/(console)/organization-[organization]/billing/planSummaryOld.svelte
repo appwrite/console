@@ -3,7 +3,7 @@
     import { CardGrid } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
-    import { upgradeURL } from '$lib/stores/billing';
+    import { getChangePlanUrl } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { abbreviateNumber, formatCurrency, formatNumberWithCommas } from '$lib/helpers/numbers';
     import { Click, trackEvent } from '$lib/actions/analytics';
@@ -175,7 +175,7 @@
                     {/if}
                     <Button
                         disabled={$organization?.markedForDeletion}
-                        href={$upgradeURL}
+                        href={getChangePlanUrl($organization?.$id)}
                         on:click={() =>
                             trackEvent(Click.OrganizationClickUpgrade, {
                                 from: 'button',
@@ -193,7 +193,7 @@
                         <Button
                             text
                             disabled={$organization?.markedForDeletion}
-                            href={$upgradeURL}
+                            href={getChangePlanUrl($organization?.$id)}
                             on:click={() =>
                                 trackEvent(Click.OrganizationClickUpgrade, {
                                     from: 'button',
