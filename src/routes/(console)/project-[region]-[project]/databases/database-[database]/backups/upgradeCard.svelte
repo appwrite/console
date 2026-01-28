@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import { app } from '$lib/stores/app';
     import { Button } from '$lib/elements/forms';
 
@@ -14,7 +14,9 @@
     import { isCloud } from '$lib/system';
     import { getChangePlanUrl } from '$lib/stores/billing';
     import { Card, Layout, Typography } from '@appwrite.io/pink-svelte';
-    import { page } from '$app/state';
+    import type { Models } from '@appwrite.io/console';
+
+    export let project: Models.Project;
 
     const title = isCloud
         ? 'Backups are available on paid plans'
@@ -30,8 +32,6 @@
     const mobileImg = isDark ? EmptyDarkMobile : EmptyLightMobile;
     const desktopImg = isDark ? EmptyDark : EmptyLight;
     const tabletImg = isDark ? EmptyDarkTablet : EmptyLightTablet;
-
-    const organizationId = page.data?.organization.$id ?? page.data?.project?.teamId;
 </script>
 
 <div>
@@ -81,7 +81,7 @@
                     <Button
                         external={!isCloud}
                         href={isCloud
-                            ? getChangePlanUrl(organizationId)
+                            ? getChangePlanUrl(project.teamId)
                             : 'https://cloud.appwrite.io/register'}>
                         {isCloud ? 'Upgrade plan' : 'Sign up'}
                     </Button>
@@ -91,7 +91,7 @@
                 <Button
                     external={!isCloud}
                     href={isCloud
-                        ? getChangePlanUrl(organizationId)
+                        ? getChangePlanUrl(project.teamId)
                         : 'https://cloud.appwrite.io/register'}>
                     {isCloud ? 'Upgrade plan' : 'Sign up'}
                 </Button>

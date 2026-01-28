@@ -11,15 +11,23 @@
 
     import LockedBackupsDarkTablet from '$lib/images/backups/empty/backups-tablet-dark.png';
     import LockedBackupsLightTablet from '$lib/images/backups/empty/backups-tablet-light.png';
+    import type { Models } from '@appwrite.io/console';
+
+    let {
+        project
+    }: {
+        project: Models.Project;
+    } = $props();
 </script>
 
 <div class="u-flex-vertical u-gap-32">
-    <UpgradeCard />
+    <UpgradeCard {project} />
 
     <div>
         <!-- mobile, only policies are shown -->
         <div class="is-only-mobile u-flex-vertical u-gap-16">
             <ContainerHeader
+                {project}
                 title="Policies"
                 buttonText="Create policy"
                 buttonType="secondary"
@@ -38,6 +46,7 @@
         <!-- tablet, only policies are shown but bigger table-->
         <div class="is-tablet u-flex-vertical u-gap-16 u-width-full-line">
             <ContainerHeader
+                {project}
                 title="Policies"
                 buttonText="Create policy"
                 buttonType="secondary"
@@ -57,6 +66,7 @@
             <div class="desktop-locked-card-buttons u-flex u-gap-24">
                 <div style="width: 31%">
                     <ContainerHeader
+                        {project}
                         title="Policies"
                         buttonText="Create policy"
                         buttonType="secondary"
@@ -65,6 +75,7 @@
 
                 <div style="width: 69%; padding-inline-start: 1.5rem;">
                     <ContainerHeader
+                        {project}
                         title="Backups"
                         buttonText="Manual backup"
                         buttonType="secondary"

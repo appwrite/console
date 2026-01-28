@@ -7,10 +7,12 @@
 
     export const promptDeleteUser = (id: string) => {
         showDelete.set(true);
-        goto(resolveRoute('/(console)/project-[region]-[project]/auth/user-[user]', {
-            ...page.params,
-            user: id
-        }));
+        goto(
+            resolveRoute('/(console)/project-[region]-[project]/auth/user-[user]', {
+                ...page.params,
+                user: id
+            })
+        );
     };
 </script>
 

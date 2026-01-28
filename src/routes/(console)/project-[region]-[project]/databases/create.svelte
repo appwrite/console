@@ -4,7 +4,7 @@
     import { Button, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { ID } from '@appwrite.io/console';
+    import { ID, type Models } from '@appwrite.io/console';
     import { createEventDispatcher } from 'svelte';
     import { isCloud } from '$lib/system';
     import { currentPlan } from '$lib/stores/organization';
@@ -14,9 +14,10 @@
     import { Alert, Icon, Tag } from '@appwrite.io/pink-svelte';
     import { IconPencil } from '@appwrite.io/pink-icons-svelte';
     import { page } from '$app/state';
-    import { project } from '../store';
 
     export let showCreate = false;
+    export let project: Models.Project;
+
     let totalPolicies: UserBackupPolicy[] = [];
 
     const dispatch = createEventDispatcher();
@@ -134,11 +135,12 @@
             <Alert.Inline title="This database won't be backed up" status="warning">
                 Upgrade your plan to ensure your data stays safe and backed up.
                 <svelte:fragment slot="actions">
-                    <Button compact href={getChangePlanUrl($project.teamId)}>Upgrade plan</Button>
+                    <Button compact href={getChangePlanUrl(project.teamId)}>Upgrade plan</Button>
                 </svelte:fragment>
             </Alert.Inline>
         {:else}
             <CreatePolicy
+                {project}
                 bind:totalPolicies
                 bind:isShowing={showCreate}
                 title="Backup policies"

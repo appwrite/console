@@ -10,8 +10,8 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
 
     export let showDelete = false;
-    export let user: Models.User;
     export let project: Models.Project;
+    export let user: Models.User<Record<string, string>>;
 
     let error: string;
     const deleteUser = async () => {
@@ -25,10 +25,11 @@
                 message: `${user.name ? user.name : 'User'} has been deleted`
             });
             trackEvent(Submit.UserDelete);
-            await goto(resolveRoute('/(console)/project-[region]-[project]/auth', {
-                ...page.params
-            }));
-
+            await goto(
+                resolveRoute('/(console)/project-[region]-[project]/auth', {
+                    ...page.params
+                })
+            );
         } catch (e) {
             error = e.message;
             trackError(e, Submit.UserDelete);
