@@ -77,9 +77,8 @@
                     <Layout.Stack direction="row" alignItems="flex-end">
                         <InputText
                             id={`key-${index}`}
-                            value={pref.key}
-                            on:input={(e) => {
-                                prefs[index].key = (e.currentTarget as HTMLInputElement).value;
+                            bind:value={pref.key}
+                            on:input={() => {
                                 prefs = [...prefs];
                             }}
                             placeholder="Enter key"
@@ -88,9 +87,8 @@
                         <Layout.Stack direction="row" alignItems="flex-end" gap="xs">
                             <InputText
                                 id={`value-${index}`}
-                                value={pref.value}
-                                on:input={(e) => {
-                                    prefs[index].value = (e.currentTarget as HTMLInputElement).value;
+                                bind:value={pref.value}
+                                on:input={() => {
                                     prefs = [...prefs];
                                 }}
                                 placeholder="Enter value"
