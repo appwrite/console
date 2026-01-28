@@ -11,13 +11,15 @@
         IconPlus,
         IconReact
     } from '@appwrite.io/pink-icons-svelte';
-    import { isCloud } from '$lib/system';
-    import { currentPlan } from '$lib/stores/organization';
+    import { isServiceLimited } from '$lib/stores/billing';
+    import { organization } from '$lib/stores/organization';
     import { page } from '$app/state';
+
+    $: isLimited = isServiceLimited('platforms', $organization, page.data.platforms.total);
 </script>
 
 {#if $canWritePlatforms}
-    {#if isCloud && $currentPlan?.platforms >= page.data.platforms.total}
+    {#if isLimited}
         <Tooltip maxWidth="200px">
             <div>
                 <Button disabled>
