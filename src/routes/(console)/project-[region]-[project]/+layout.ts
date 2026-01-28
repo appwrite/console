@@ -8,8 +8,7 @@ import { get } from 'svelte/store';
 import { headerAlert } from '$lib/stores/headerAlert';
 import PaymentFailed from '$lib/components/billing/alerts/paymentFailed.svelte';
 import { loadAvailableRegions } from '$routes/(console)/regions';
-import type { Organization, OrganizationList } from '$lib/stores/organization';
-import { Platform } from '@appwrite.io/console';
+import { type Models, Platform } from '@appwrite.io/console';
 import { redirect } from '@sveltejs/kit';
 import { resolve } from '$app/paths';
 
@@ -21,19 +20,24 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
     project.region ??= 'default';
 
     // fast path without a network call!
-    let organization = (organizations as OrganizationList)?.teams?.find(
+    let organization = (organizations as Models.OrganizationList)?.teams?.find(
         (org) => org.$id === project.teamId
     );
 
     // organization can be null if not in the filtered list!
-    const includedInBasePlans = plansInfo.has(organization?.billingPlan);
+    const includedInBasePlans = plansInfo.has(organization?.billingPlanId);
 
     const [org, regionalConsoleVariables, rolesResult] = await Promise.all([
         !organization
-            ? (sdk.forConsole.teams.get({ teamId: project.teamId }) as Promise<Organization>)
+            ? // TODO: @itznotabug - teams.get with Models.Organization?
+              (sdk.forConsole.teams.get({ teamId: project.teamId }) as Promise<Models.Organization>)
             : organization,
         sdk.forConsoleIn(project.region).console.variables(),
-        isCloud ? sdk.forConsole.billing.getRoles(project.teamId) : null,
+        isCloud
+            ? sdk.forConsole.organizations.getScopes({
+                  organizationId: project.teamId
+              })
+            : null,
 
         loadAvailableRegions(project.teamId)
     ]);
@@ -54,9 +58,11 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
     // fetch if not available in `plansInfo`.
     // out of promise.all because we filter orgs based on platform now!
     const organizationPlan = includedInBasePlans
-        ? plansInfo.get(organization?.billingPlan)
+        ? plansInfo.get(organization?.billingPlanId)
         : isCloud
-          ? await sdk.forConsole.billing.getOrganizationPlan(organization?.$id)
+          ? await sdk.forConsole.organizations.getPlan({
+                organizationId: organization?.$id
+            })
           : null;
 
     const roles = rolesResult?.roles ?? defaultRoles;
@@ -80,7 +86,7 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
 
     if (!includedInBasePlans) {
         // save the custom plan to `plansInfo` cache.
-        plansInfo.set(organization.billingPlan, organizationPlan);
+        plansInfo.set(organization.billingPlanId, organizationPlan);
     }
 
     return {

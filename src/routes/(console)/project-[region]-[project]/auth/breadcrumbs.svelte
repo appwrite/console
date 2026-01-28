@@ -1,8 +1,8 @@
 <script lang="ts">
+    import { page } from '$app/state';
     import { base } from '$app/paths';
     import { Breadcrumbs } from '$lib/layout';
     import { organization } from '$lib/stores/organization';
-    import { project } from '../store';
 
     $: breadcrumbs = [
         {
@@ -10,11 +10,11 @@
             title: $organization?.name
         },
         {
-            href: `${base}/project-${$project.region}-${$project?.$id}`,
-            title: $project?.name
+            href: `${base}/project-${page.params.region}-${page.params.project}`,
+            title: page.data?.project?.name
         },
         {
-            href: `${base}/project-${$project.region}-${$project?.$id}/auth`,
+            href: `${base}/project-${page.params.region}-${page.params.project}/auth`,
             title: 'Auth'
         }
     ];

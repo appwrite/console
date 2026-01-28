@@ -1,12 +1,12 @@
 <script lang="ts">
     import { abbreviateNumber, formatCurrency, formatNumberWithCommas } from '$lib/helpers/numbers';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
-    import type { OrganizationUsage } from '$lib/sdk/billing';
     import { canSeeProjects } from '$lib/stores/roles';
     import { onMount } from 'svelte';
     import { Accordion, Table } from '@appwrite.io/pink-svelte';
-    import { base } from '$app/paths';
     import type { UsageProjectInfo } from '../../store';
+    import type { Models } from '@appwrite.io/console';
+    import { resolve } from '$app/paths';
 
     type Metric =
         | 'users'
@@ -16,15 +16,16 @@
         | 'authPhoneTotal'
         | 'databasesReads'
         | 'databasesWrites'
-        | 'imageTransformations';
+        | 'imageTransformations'
+        | 'screenshotsGenerated';
 
     type Estimate = 'authPhoneEstimate';
 
     type DatabaseOperationMetric = Extract<Metric, 'databasesReads' | 'databasesWrites'>;
 
-    export let projects: OrganizationUsage['projects'];
     export let metric: Metric | undefined = undefined;
     export let estimate: Estimate | undefined = undefined;
+    export let projects: Models.UsageOrganization['projects'];
     export let usageProjects: Record<string, UsageProjectInfo> = {};
     export let databaseOperationMetric: DatabaseOperationMetric[] | undefined = undefined;
 
@@ -39,7 +40,10 @@
 
     function getProjectUsageLink(projectId: string): string {
         const region = usageProjects[projectId]?.region ?? 'default';
-        return `${base}/project-${region}-${projectId}/settings/usage`;
+        return resolve('/(console)/project-[region]-[project]/settings/usage', {
+            region,
+            project: projectId
+        });
     }
 
     function groupByProject(

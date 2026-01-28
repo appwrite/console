@@ -1,9 +1,19 @@
 <script lang="ts">
     import { Button } from '$lib/elements/forms';
-    import { upgradeURL } from '$lib/stores/billing';
+    import { getChangePlanUrl } from '$lib/stores/billing';
     import { Click, trackEvent } from '$lib/actions/analytics';
+    import { organization } from '$lib/stores/organization';
+    import { project } from '$routes/(console)/project-[region]-[project]/store';
 
-    export let service: string;
+    const {
+        service
+    }: {
+        service: string;
+    } = $props();
+
+    const organizationId: string | null = $derived.by(() => {
+        return $project.teamId ?? $organization.$id;
+    });
 </script>
 
 <article class="card u-grid u-cross-center u-width-full-line">
@@ -11,7 +21,7 @@
         <p class="text u-text-center">Upgrade your plan to add more {service}</p>
         <Button
             secondary
-            href={$upgradeURL}
+            href={getChangePlanUrl(organizationId)}
             on:click={() => {
                 trackEvent(Click.OrganizationClickUpgrade, { source: 'card_plan_limit' });
             }}>Change plan</Button>

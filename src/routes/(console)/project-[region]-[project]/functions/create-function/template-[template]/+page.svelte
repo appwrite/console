@@ -242,7 +242,10 @@
                         repositoryId={selectedRepository} />
 
                     {#if data.template.variables?.length}
-                        <Configuration bind:variables templateVariables={data.template.variables} />
+                        <Configuration
+                            bind:variables
+                            project={data.project}
+                            templateVariables={data.template.variables} />
                     {/if}
                 </Layout.Stack>
             {:else}
@@ -328,7 +331,10 @@
                         </Card>
                     {/if}
                 {:else if data.template.variables?.length}
-                    <Configuration bind:variables templateVariables={data.template.variables} />
+                    <Configuration
+                        bind:variables
+                        project={data.project}
+                        templateVariables={data.template.variables} />
                 {/if}
             {/if}
         </Layout.Stack>

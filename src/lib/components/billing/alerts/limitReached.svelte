@@ -2,21 +2,19 @@
     import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Click, trackEvent } from '$lib/actions/analytics';
-    import { BillingPlan } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { HeaderAlert } from '$lib/layout';
-    import { hideBillingHeaderRoutes, readOnly, tierToPlan, upgradeURL } from '$lib/stores/billing';
+    import { hideBillingHeaderRoutes, readOnly, getChangePlanUrl } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
 </script>
 
-{#if $organization?.$id && $organization?.billingPlan === BillingPlan.FREE && $readOnly && !hideBillingHeaderRoutes.includes(page.url.pathname)}
+{#if $organization?.$id && !$organization?.billingPlanDetails.usage && $readOnly && !hideBillingHeaderRoutes.includes(page.url.pathname)}
     <HeaderAlert
         type="error"
-        title={`${$organization.name} usage has reached the ${tierToPlan($organization.billingPlan).name} plan limit`}>
+        title={`${$organization.name} usage has reached the ${$organization.billingPlanDetails.name} plan limit`}>
         <svelte:fragment>
-            Usage for the <b>{$organization.name}</b> organization has reached the limits of the {tierToPlan(
-                $organization.billingPlan
-            ).name}
+            Usage for the <b>{$organization.name}</b> organization has reached the limits of the {$organization
+                .billingPlanDetails.name}
             plan. Consider upgrading to increase your resource usage.
         </svelte:fragment>
         <svelte:fragment slot="buttons">
@@ -29,7 +27,7 @@
                 </Button>
             {/if}
             <Button
-                href={$upgradeURL}
+                href={getChangePlanUrl($organization.$id)}
                 on:click={() => {
                     trackEvent(Click.OrganizationClickUpgrade, {
                         from: 'button',

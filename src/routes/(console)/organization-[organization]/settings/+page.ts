@@ -12,7 +12,11 @@ export const load: PageLoad = async ({ depends, params, parent }) => {
         sdk.forConsole.projects.list({
             queries: [Query.equal('teamId', params.organization), Query.select(['$id', 'name'])]
         }),
-        isCloud ? sdk.forConsole.billing.listInvoices(params.organization) : undefined
+        isCloud
+            ? sdk.forConsole.organizations.listInvoices({
+                  organizationId: params.organization
+              })
+            : undefined
     ]);
 
     return {

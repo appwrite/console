@@ -22,9 +22,7 @@
 
     const { data }: PageProps = $props();
 
-    const isLimited = $derived(
-        isServiceLimited('databases', $organization?.billingPlan, data.databases.total)
-    );
+    const isLimited = $derived(isServiceLimited('databases', $organization, data.databases.total));
 
     async function goToCreateDatabaseWizard() {
         await goto(

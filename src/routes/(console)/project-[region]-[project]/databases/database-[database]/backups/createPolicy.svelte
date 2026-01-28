@@ -10,7 +10,7 @@
         InputTime,
         Label
     } from '$lib/elements/forms';
-    import { ID } from '@appwrite.io/console';
+    import { ID, type Models } from '@appwrite.io/console';
     import { capitalize } from '$lib/helpers/string';
     import { backupRetainingOptions, customRetainingOptions } from '../store';
     import { presetPolicies, showCreatePolicy } from './store';
@@ -25,13 +25,14 @@
     import { IconPencil, IconTrash } from '@appwrite.io/pink-icons-svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
     import { goto } from '$app/navigation';
-    import { upgradeURL } from '$lib/stores/billing';
+    import { getChangePlanUrl } from '$lib/stores/billing';
     import { onMount } from 'svelte';
 
     export let isShowing: boolean;
     export let isFromBackupsTab: boolean = false;
     export let title: string | undefined = undefined;
     export let subtitle: string | undefined = undefined;
+    export let project: Models.Project;
 
     export let totalPolicies: UserBackupPolicy[] = [];
 
@@ -255,7 +256,7 @@
                         on:click={() => {
                             isShowing = false;
                             $showCreatePolicy = false;
-                            goto($upgradeURL);
+                            goto(getChangePlanUrl(project.teamId));
                         }}>Upgrade your plan</Button> to add customized backup policies.
                 </Layout.Stack>
             </Layout.Stack>
@@ -271,7 +272,7 @@
                         <Link.Button
                             on:click={() => {
                                 isShowing = false;
-                                goto($upgradeURL);
+                                goto(getChangePlanUrl(project.teamId));
                             }}>Upgrade your plan</Link.Button>
                         to add customized backup policies.
                     </Typography.Text>

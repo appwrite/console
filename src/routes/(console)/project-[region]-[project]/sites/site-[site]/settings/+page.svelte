@@ -75,6 +75,7 @@
         isGlobal={false}
         globalVariableList={data.globalVariables}
         variableList={data.variables}
+        project={data.project}
         product="site"
         analyticsSource="site_settings" />
     {#if isCloud}

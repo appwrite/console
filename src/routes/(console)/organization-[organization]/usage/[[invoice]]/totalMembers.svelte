@@ -1,27 +1,25 @@
 <script lang="ts">
-    import { AvatarInitials, CardGrid, Paginator } from '$lib/components';
-    import { EmptyCardCloud } from '$lib/components/billing';
-    import { BillingPlan } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
-    import { formatCurrency } from '$lib/helpers/numbers';
-    import { plansInfo, tierToPlan } from '$lib/stores/billing';
-    import { newMemberModal, organization } from '$lib/stores/organization';
     import type { Models } from '@appwrite.io/console';
-    import { IconInfo, IconPlus } from '@appwrite.io/pink-icons-svelte';
-    import { Icon, Layout, Table, Tooltip, Typography } from '@appwrite.io/pink-svelte';
+    import { EmptyCardCloud } from '$lib/components/billing';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
+    import { IconInfo, IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { AvatarInitials, CardGrid, Paginator } from '$lib/components';
+    import { newMemberModal, organization } from '$lib/stores/organization';
+    import { Icon, Layout, Table, Tooltip, Typography } from '@appwrite.io/pink-svelte';
 
     export let members: Models.MembershipList;
 
     $: total = members?.total ?? 0;
-    $: plan = $plansInfo?.get($organization?.billingPlan);
+    $: organizationMembersSupported =
+        !$organization?.billingPlanDetails.addons.seats.supported; /* false on free */
 </script>
 
 <CardGrid>
     <svelte:fragment slot="title">Members</svelte:fragment>
     The number of members in your organization.
     <svelte:fragment slot="aside">
-        {#if $organization.billingPlan !== BillingPlan.FREE}
+        {#if !organizationMembersSupported}
             <div class="u-flex u-flex-vertical">
                 <Layout.Stack direction="row" justifyContent="space-between">
                     <Layout.Stack gap="s" direction="row" alignItems="center">
@@ -37,11 +35,7 @@
                             <Tooltip maxWidth="200px">
                                 <Icon icon={IconInfo} size="s" />
                                 <svelte:fragment slot="tooltip">
-                                    You can add unlimited organization members on the {tierToPlan(
-                                        $organization.billingPlan
-                                    ).name} plan {$organization.billingPlan === BillingPlan.PRO
-                                        ? `for ${formatCurrency(plan.addons.seats.price)} each per billing period.`
-                                        : '.'}
+                                    You can add unlimited organization members on paid plans.
                                 </svelte:fragment>
                             </Tooltip>
                         </Layout.Stack>
@@ -53,7 +47,7 @@
                 </Layout.Stack>
             </div>
             <Paginator items={members?.memberships} hideFooter={members?.total <= 5}>
-                {#snippet children(paginatedItems: typeof members.memberships)}
+                {#snippet children(paginatedItems)}
                     <Table.Root columns={2} let:root>
                         <svelte:fragment slot="header" let:root>
                             <Table.Header.Cell {root}>Members</Table.Header.Cell>
@@ -86,7 +80,10 @@
                 {/snippet}
             </Paginator>
         {:else}
-            <EmptyCardCloud service="members" eventSource="organization_usage" />
+            <EmptyCardCloud
+                service="members"
+                eventSource="organization_usage"
+                organizationId={$organization?.$id} />
         {/if}
     </svelte:fragment>
 </CardGrid>

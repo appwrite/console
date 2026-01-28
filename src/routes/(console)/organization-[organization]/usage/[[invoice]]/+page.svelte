@@ -6,17 +6,16 @@
     import { bytesToSize, humanFileSize, mbSecondsToGBHours } from '$lib/helpers/sizeConvertion';
     import {
         getServiceLimit,
+        isStarterPlan,
+        planHasGroup,
         showUsageRatesModal,
-        type Tier,
-        upgradeURL,
+        getChangePlanUrl,
         useNewPricingModal
     } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import ProjectBreakdown from './ProjectBreakdown.svelte';
     import { formatNum } from '$lib/helpers/string';
     import { accumulateFromEndingTotal, total } from '$lib/layout/usage.svelte';
-    import type { OrganizationUsage } from '$lib/sdk/billing';
-    import { BillingPlan } from '$lib/constants';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import TotalMembers from './totalMembers.svelte';
     import { formatCurrency, formatNumberWithCommas } from '$lib/helpers/numbers';
@@ -24,16 +23,17 @@
     import { IconChartSquareBar, IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { onMount } from 'svelte';
     import type { UsageProjectInfo } from '../../store';
+    import { BillingPlanGroup } from '@appwrite.io/console';
 
     export let data;
 
     const tier = data?.plan
-        ? (data.plan.$id as Tier)
-        : (data?.currentInvoice?.plan ?? $organization?.billingPlan);
+        ? data.plan.$id
+        : (data?.currentInvoice?.plan ?? $organization?.billingPlanId);
 
     const plan = data?.plan ?? undefined;
 
-    $: projects = (data.organizationUsage as OrganizationUsage).projects;
+    $: projects = data.organizationUsage.projects;
 
     let usageProjects: Record<string, UsageProjectInfo> = {};
 
@@ -55,15 +55,17 @@
     ];
 
     onMount(async () => (usageProjects = await data.projects));
+
+    const currentBillingPlan = $organization.billingPlanDetails;
 </script>
 
 <Container>
     <div class="u-flex u-cross-center u-main-space-between">
         <Typography.Title>Usage</Typography.Title>
 
-        {#if $organization?.billingPlan === BillingPlan.FREE}
+        {#if isStarterPlan(currentBillingPlan)}
             <Button
-                href={$upgradeURL}
+                href={getChangePlanUrl($organization.$id)}
                 on:click={() => {
                     trackEvent(Click.OrganizationClickUpgrade, {
                         from: 'button',
@@ -74,7 +76,7 @@
             </Button>
         {/if}
     </div>
-    {#if $organization.billingPlan === BillingPlan.SCALE}
+    {#if planHasGroup(currentBillingPlan, BillingPlanGroup.Scale)}
         <p class="text">
             On the Scale plan, you'll be charged only for any usage that exceeds the thresholds per
             resource listed below.
@@ -89,7 +91,7 @@
                 </Link.Anchor>
             {/if}
         </p>
-    {:else if $organization.billingPlan === BillingPlan.PRO}
+    {:else if planHasGroup(currentBillingPlan, BillingPlanGroup.Pro)}
         <p class="text">
             On the Pro plan, you'll be charged only for any usage that exceeds the thresholds per
             resource listed below.
@@ -104,11 +106,13 @@
                 </Link.Anchor>
             {/if}
         </p>
-    {:else if $organization.billingPlan === BillingPlan.FREE}
+    {:else if isStarterPlan(currentBillingPlan)}
         <p class="text">
             If you exceed the limits of the Free plan, services for your organization's projects may
             be disrupted.
-            <Link.Anchor href={$upgradeURL}>Upgrade for greater capacity</Link.Anchor>.
+            <Link.Anchor href={getChangePlanUrl($organization.$id)}
+                >Upgrade for greater capacity</Link.Anchor
+            >.
         </p>
     {/if}
 
@@ -307,6 +311,54 @@
                     ]} />
                 {#if projects?.length > 0}
                     <ProjectBreakdown {projects} metric="imageTransformations" {usageProjects} />
+                {/if}
+            {:else}
+                <Card isDashed>
+                    <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
+                        <span
+                            class="icon-chart-square-bar text-large"
+                            aria-hidden="true"
+                            style="font-size: 32px;"></span>
+                        <p class="u-bold">No data to show</p>
+                    </div>
+                </Card>
+            {/if}
+        </svelte:fragment>
+    </CardGrid>
+
+    <CardGrid gap="none">
+        <svelte:fragment slot="title">Screenshots generated</svelte:fragment>
+        The total number of unique screenshots generated across all projects in your organization.
+
+        <svelte:fragment slot="aside">
+            {#if data.organizationUsage.screenshotsGeneratedTotal}
+                {@const current = data.organizationUsage.screenshotsGeneratedTotal}
+                <ProgressBarBig
+                    currentUnit="Screenshots generated"
+                    currentValue={formatNum(current)}
+                    progressValue={current}
+                    showBar={false} />
+                <BarChart
+                    options={{
+                        yAxis: {
+                            axisLabel: {
+                                formatter: formatNum
+                            }
+                        }
+                    }}
+                    series={[
+                        {
+                            name: 'Screenshots generated',
+                            data: [
+                                ...(data.organizationUsage.imageTransformations ?? []).map((e) => [
+                                    e.date,
+                                    e.value
+                                ])
+                            ]
+                        }
+                    ]} />
+                {#if projects?.length > 0}
+                    <ProjectBreakdown {projects} metric="screenshotsGenerated" {usageProjects} />
                 {/if}
             {:else}
                 <Card isDashed>

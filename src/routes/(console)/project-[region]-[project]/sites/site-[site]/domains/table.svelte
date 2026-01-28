@@ -226,7 +226,7 @@
 {/if}
 
 {#if showLogs}
-    <ViewLogsModal bind:show={showLogs} {selectedProxyRule} />
+    <ViewLogsModal bind:show={showLogs} {selectedProxyRule} domainsList={organizationDomains} />
 {/if}
 
 <style>

@@ -179,6 +179,7 @@
                     buttonText="Create policy"
                     buttonEvent="create_backup"
                     buttonType="secondary"
+                    project={data.project}
                     buttonDisabled={isDisabled}
                     policiesCreated={data.policies.total}
                     maxPolicies={$currentPlan.backupPolicies}
@@ -199,6 +200,7 @@
                     buttonText="Manual backup"
                     buttonEvent="create_backup"
                     buttonType="secondary"
+                    project={data.project}
                     buttonDisabled={isDisabled}
                     buttonMethod={() => {
                         $showCreateBackup = true;
@@ -227,7 +229,7 @@
             </div>
         {:else}
             <div class="u-flex-vertical u-gap-32">
-                <LockedCard />
+                <LockedCard project={data.project} />
             </div>
         {/if}
     </div>
@@ -238,7 +240,11 @@
     onSubmit={createPolicies}
     bind:show={$showCreatePolicy}
     bind:error={policyCreateError}>
-    <CreatePolicy bind:totalPolicies isShowing={$showCreatePolicy} isFromBackupsTab />
+    <CreatePolicy
+        bind:totalPolicies
+        isShowing={$showCreatePolicy}
+        isFromBackupsTab
+        project={data.project} />
 
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => ($showCreatePolicy = false)}>Cancel</Button>

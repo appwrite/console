@@ -105,6 +105,7 @@
         isGlobal={false}
         globalVariableList={data.globalVariables}
         variableList={data.variables}
+        project={data.project}
         analyticsSource="function_settings" />
     <UpdateBuildCommand func={data.function} />
 

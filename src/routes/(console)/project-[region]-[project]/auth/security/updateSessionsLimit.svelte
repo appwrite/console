@@ -7,14 +7,20 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Typography } from '@appwrite.io/pink-svelte';
-    import { project } from '../../store';
+    import type { Models } from '@appwrite.io/console';
 
-    let maxSessions = $project?.authSessionsLimit;
+    let {
+        project
+    }: {
+        project: Models.Project;
+    } = $props();
+
+    let maxSessions = $state(project?.authSessionsLimit);
 
     async function updateSessionsLimit() {
         try {
             await sdk.forConsole.projects.updateAuthSessionsLimit({
-                projectId: $project.$id,
+                projectId: project.$id,
                 limit: maxSessions
             });
             await invalidate(Dependencies.PROJECT);
@@ -49,7 +55,7 @@
                 bind:value={maxSessions} />
         </svelte:fragment>
         <svelte:fragment slot="actions">
-            <Button disabled={maxSessions === $project?.authSessionsLimit} submit>Update</Button>
+            <Button disabled={maxSessions === project?.authSessionsLimit} submit>Update</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>

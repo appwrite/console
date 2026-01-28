@@ -60,7 +60,7 @@
     allowSelection={$canWriteTables}
     {onDelete}>
     {#snippet header(root)}
-        {#each $tableViewColumns as { id, title }}
+        {#each $tableViewColumns as { id, title } (id)}
             <Table.Header.Cell column={id} {root}>{title}</Table.Header.Cell>
         {/each}
     {/snippet}

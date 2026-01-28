@@ -70,7 +70,7 @@
 
     function openPlatformWizard(type: Platform, platform?: Models.Platform) {
         if (platform) {
-            continuePlatform(type, platform.name, platform.type);
+            continuePlatform(type, platform.name, platform.key, platform.type);
         } else {
             trackEvent(Click.PlatformCreateClick, { source: 'onboarding' });
             addPlatform(type);

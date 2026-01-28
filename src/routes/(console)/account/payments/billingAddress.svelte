@@ -6,8 +6,7 @@
     import type { Models } from '@appwrite.io/console';
     import DeleteAddress from './deleteAddressModal.svelte';
     import EditAddressModal from './editAddressModal.svelte';
-    import type { Address } from '$lib/sdk/billing';
-    import { organizationList, type Organization } from '$lib/stores/organization';
+    import { organizationList } from '$lib/stores/organization';
     import { base } from '$app/paths';
     import {
         IconDotsHorizontal,
@@ -35,11 +34,11 @@
 
     let show = false;
     let showEdit = false;
-    let selectedAddress: Address;
-    let selectedLinkedOrgs: Organization[] = [];
+    let selectedAddress: Models.BillingAddress;
+    let selectedLinkedOrgs: Array<Models.Organization> = [];
     let showDelete = false;
 
-    $: orgList = $organizationList.teams as unknown as Organization[];
+    $: orgList = $organizationList.teams as unknown as Array<Models.Organization>;
 </script>
 
 <CardGrid>
