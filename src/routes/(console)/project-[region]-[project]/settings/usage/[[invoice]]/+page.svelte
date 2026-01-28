@@ -86,7 +86,7 @@
             <p class="text">
                 If you exceed the limits of the {currentBillingPlan.name} plan, services for your projects
                 may be disrupted.
-                <Link.Anchor href={$upgradeURL} class="link"
+                <Link.Anchor href={getChangePlanUrl($organization.$id)} class="link"
                     >Upgrade for greater capacity</Link.Anchor
                 >.
             </p>

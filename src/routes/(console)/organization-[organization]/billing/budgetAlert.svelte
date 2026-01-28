@@ -151,7 +151,7 @@
             {#if !currentPlan.budgeting}
                 <Button
                     secondary
-                    href={getChangePlanUrl($organization.$id)}
+                    href={getChangePlanUrl(organization.$id)}
                     on:click={() => {
                         trackEvent(Click.OrganizationClickUpgrade, {
                             from: 'button',
