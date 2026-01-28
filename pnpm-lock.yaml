@@ -12,8 +12,8 @@ importers:
         specifier: ^1.1.24
         version: 1.1.24(svelte@5.25.3)(zod@3.24.3)
       '@appwrite.io/console':
-        specifier: https://pkg.vc/-/@appwrite/@appwrite.io/console@3ec199d
-        version: https://pkg.vc/-/@appwrite/@appwrite.io/console@3ec199d
+        specifier: https://pkg.vc/-/@appwrite/@appwrite.io/console@726b5cd
+        version: https://pkg.vc/-/@appwrite/@appwrite.io/console@726b5cd
       '@appwrite.io/pink-icons':
         specifier: 0.25.0
         version: 0.25.0
@@ -311,8 +311,8 @@ packages:
   '@analytics/type-utils@0.6.2':
     resolution: {integrity: sha512-TD+xbmsBLyYy/IxFimW/YL/9L2IEnM7/EoV9Aeh56U64Ify8o27HJcKjo38XY9Tcn0uOq1AX3thkKgvtWvwFQg==}
 
-  '@appwrite.io/console@https://pkg.vc/-/@appwrite/@appwrite.io/console@3ec199d':
-    resolution: {tarball: https://pkg.vc/-/@appwrite/@appwrite.io/console@3ec199d}
+  '@appwrite.io/console@https://pkg.vc/-/@appwrite/@appwrite.io/console@726b5cd':
+    resolution: {tarball: https://pkg.vc/-/@appwrite/@appwrite.io/console@726b5cd}
     version: 2.1.0
 
   '@appwrite.io/pink-icons-svelte@2.0.0-RC.1':
@@ -1809,6 +1809,9 @@ packages:
   bidi-js@1.0.3:
     resolution: {integrity: sha512-RKshQI1R3YQ+n9YJz2QQ147P66ELpa1FQEg20Dk8oW9t2KgLbpDLLp9aGZ7y8WHSshDknG0bknqGw5/tyCs5tw==}
 
+  bignumber.js@9.0.0:
+    resolution: {integrity: sha512-t/OYhhJ2SD+YGBQcjY8GzzDHEk9f3nerxjtfa6tlMXfe7frs/WozhvCNoGvpM0P3bNf3Gq5ZRMlGr5f3r4/N8A==}
+
   binary-extensions@2.3.0:
     resolution: {integrity: sha512-Ceh+7ox5qe7LJuLHoY0feh3pHuUDHAcRUeyL2VYghZwfpkNIy/+8Ocg0a3UuSoYzavmylwuLWQOf3hl0jjMMIw==}
     engines: {node: '>=8'}
@@ -2684,6 +2687,9 @@ packages:
     resolution: {integrity: sha512-/sM3dO2FOzXjKQhJuo0Q173wf2KOo8t4I8vHy6lF9poUp7bKT0/NHE8fPX23PwfhnykfqnC2xRxOnVw5XuGIaA==}
     engines: {node: '>=6'}
     hasBin: true
+
+  json-bigint@1.0.0:
+    resolution: {integrity: sha512-SiPv/8VpZuWbvLSMtTDU8hEfrZWg/mH/nV/b4o0CYbSxu1UIQPLdwKOCIyLQX+VIPO5vrLX3i8qtqFyhdPSUSQ==}
 
   json-buffer@3.0.1:
     resolution: {integrity: sha512-4bV5BfR2mqfQTJm+V5tPPdf+ZpuhiIvTuAB5g8kcrXOZpTT/QwwVRWBywX1ozr6lEuPdbHxwaJlm9G6mI2sfSQ==}
@@ -3919,7 +3925,10 @@ snapshots:
 
   '@analytics/type-utils@0.6.2': {}
 
-  '@appwrite.io/console@https://pkg.vc/-/@appwrite/@appwrite.io/console@3ec199d': {}
+  '@appwrite.io/console@https://pkg.vc/-/@appwrite/@appwrite.io/console@726b5cd':
+    dependencies:
+      bignumber.js: 9.0.0
+      json-bigint: 1.0.0
 
   '@appwrite.io/pink-icons-svelte@2.0.0-RC.1(svelte@5.25.3)':
     dependencies:
@@ -5633,6 +5642,8 @@ snapshots:
     dependencies:
       require-from-string: 2.0.2
 
+  bignumber.js@9.0.0: {}
+
   binary-extensions@2.3.0: {}
 
   brace-expansion@1.1.11:
@@ -6593,6 +6604,10 @@ snapshots:
       - utf-8-validate
 
   jsesc@3.1.0: {}
+
+  json-bigint@1.0.0:
+    dependencies:
+      bignumber.js: 9.0.0
 
   json-buffer@3.0.1: {}
 

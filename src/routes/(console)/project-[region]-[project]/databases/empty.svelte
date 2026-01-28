@@ -5,8 +5,8 @@
     import { IconArrowRight } from '@appwrite.io/pink-icons-svelte';
     import { Layout, Typography, Icon, Divider } from '@appwrite.io/pink-svelte';
 
-    import MongoDB from './(assets)/mongo-db.svg';
-    import MongoDBDark from './(assets)/dark/mongo-db.svg';
+    /*import MongoDB from './(assets)/mongo-db.svg';
+    import MongoDBDark from './(assets)/dark/mongo-db.svg';*/
 
     import TablesDB from './(assets)/tables-db.svg';
     import TablesDBDark from './(assets)/dark/tables-db.svg';
@@ -26,7 +26,7 @@
     } = $props();
 
     const isDark = $derived($app.themeInUse === 'dark');
-    const mongoDbImage = $derived(isDark ? MongoDBDark : MongoDB);
+    /*const mongoDbImage = $derived(isDark ? MongoDBDark : MongoDB);*/
     const tablesDbImage = $derived(isDark ? TablesDBDark : TablesDB);
     const documentsDbImage = $derived(isDark ? DocumentsDBDark : DocumentsDB);
 </script>

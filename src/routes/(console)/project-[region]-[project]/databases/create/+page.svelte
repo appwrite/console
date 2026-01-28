@@ -12,7 +12,7 @@
     import { ID, type Models } from '@appwrite.io/console';
     import { type DatabaseType, useDatabaseSdk } from '$database/(entity)';
     import { isCloud } from '$lib/system';
-    import { upgradeURL } from '$lib/stores/billing';
+    import { getChangePlanUrl } from '$lib/stores/billing';
     import { currentPlan } from '$lib/stores/organization';
     import EmptyDarkMobile from '$lib/images/backups/upgrade/backups-mobile-dark.png';
     import EmptyLightMobile from '$lib/images/backups/upgrade/backups-mobile-light.png';
@@ -24,6 +24,9 @@
 
     import Mongo from '../(assets)/mongo.svelte';
     import { isTabletViewport } from '$lib/stores/viewport';
+    import type { PageProps } from './$types';
+
+    const { data }: PageProps = $props();
 
     let formComponent: Form;
 
@@ -231,6 +234,7 @@
             <CreatePolicy
                 bind:totalPolicies
                 title="Backup policies"
+                project={data.project}
                 bind:isShowing={showCreatePolicies}
                 subtitle="Protect your data and ensure quick recovery by adding backup policies." />
         </div>
@@ -238,7 +242,7 @@
         <Alert.Inline title="This database won't be backed up" status="warning">
             Upgrade your plan to ensure your data stays safe and backed up.
             <svelte:fragment slot="actions">
-                <Button compact href={$upgradeURL}>Upgrade plan</Button>
+                <Button compact href={getChangePlanUrl(data?.project?.teamId)}>Upgrade plan</Button>
             </svelte:fragment>
         </Alert.Inline>
     {/if}
