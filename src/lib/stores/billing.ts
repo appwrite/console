@@ -141,6 +141,11 @@ export function billingIdToPlan(billingId: string): Models.BillingPlan | null {
 
 export function getNextTierBillingPlan(billingPlanId: string): Models.BillingPlan {
     const currentPlanData = billingIdToPlan(billingPlanId);
+    if (!currentPlanData) {
+        /* should never happen but safety! */
+        return getBasePlanFromGroup(BillingPlanGroup.Pro);
+    }
+
     const currentOrder = currentPlanData.order;
     const plans = get(plansInfo);
 
@@ -155,6 +160,10 @@ export function getNextTierBillingPlan(billingPlanId: string): Models.BillingPla
 
 export function getPreviousTierBillingPlan(billingPlanId: string): Models.BillingPlan {
     const currentPlanData = billingIdToPlan(billingPlanId);
+    if (!currentPlanData) {
+        /* should never happen but safety! */
+        return getBasePlanFromGroup(BillingPlanGroup.Starter);
+    }
     const currentOrder = currentPlanData.order;
     const plans = get(plansInfo);
 

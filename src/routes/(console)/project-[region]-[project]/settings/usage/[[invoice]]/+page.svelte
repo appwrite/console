@@ -51,8 +51,8 @@
         }
     ];
 
-    const currentPlanId = data?.currentInvoice?.plan ?? $organization?.billingPlanId;
-    const currentBillingPlan = billingIdToPlan(currentPlanId);
+    $: currentPlanId = data?.currentInvoice?.plan ?? $organization?.billingPlanId;
+    $: currentBillingPlan = billingIdToPlan(currentPlanId);
 </script>
 
 <Container>

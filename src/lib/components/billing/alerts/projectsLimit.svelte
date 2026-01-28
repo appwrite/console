@@ -22,7 +22,7 @@
 
 <SelectProjectCloud bind:showSelectProject bind:selectedProjects {organizationId} />
 
-{#if $currentPlan && $currentPlan.projects > 0 && !hideBillingHeaderRoutes.includes(page.url.pathname)}
+{#if organizationId && $currentPlan && $currentPlan.projects > 0 && !hideBillingHeaderRoutes.includes(page.url.pathname)}
     <HeaderAlert
         type="warning"
         title="Action required: You have more than {$currentPlan.projects} projects.">

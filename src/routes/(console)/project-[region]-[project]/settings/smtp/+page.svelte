@@ -17,6 +17,7 @@
     import { getChangePlanUrl } from '$lib/stores/billing';
     import { Link, Selector, Alert } from '@appwrite.io/pink-svelte';
     import type { PageProps } from './$types';
+    import { isCloud } from '$lib/system';
 
     const { data }: PageProps = $props();
 
@@ -24,17 +25,17 @@
 
     let enabled: boolean = $state(false);
 
-    let replyTo: string = $state(null);
-    let senderName: string = $state(null);
-    let senderEmail: string = $state(null);
+    let replyTo: string = $state('');
+    let senderName: string = $state('');
+    let senderEmail: string = $state('');
 
-    let host: string = $state(null);
+    let host: string = $state('');
     let port: number = $state(null);
 
-    let username: string = $state(null);
-    let password: string = $state(null);
+    let username: string = $state('');
+    let password: string = $state('');
 
-    let secure: string = $state(null);
+    let secure: string = $state('');
 
     const options = [
         { value: 'tls', label: 'TLS' },
@@ -44,7 +45,17 @@
 
     const isButtonDisabled = $derived.by(() => {
         return deepEqual(
-            { enabled, senderName, senderEmail, replyTo, host, port, username, password, secure },
+            {
+                enabled,
+                senderName,
+                senderEmail,
+                replyTo,
+                host,
+                port: port ?? '',
+                username,
+                password,
+                secure
+            },
             {
                 enabled: project.smtpEnabled,
                 senderName: project.smtpSenderName,
@@ -103,14 +114,14 @@
 
     $effect(() => {
         if (!enabled) {
-            senderName = undefined;
-            senderEmail = undefined;
-            replyTo = undefined;
-            host = undefined;
-            port = undefined;
-            username = undefined;
-            password = undefined;
-            secure = undefined;
+            senderName = '';
+            senderEmail = '';
+            replyTo = '';
+            host = '';
+            port = null;
+            username = '';
+            password = '';
+            secure = '';
         }
     });
 </script>
@@ -126,7 +137,7 @@
                     region: project.region
                 })}>here</Link.Anchor>
             <svelte:fragment slot="aside">
-                {#if !$currentPlan.customSmtp}
+                {#if isCloud && !$currentPlan.customSmtp}
                     <Alert.Inline
                         status="info"
                         title="Custom SMTP is a paid plan feature. Upgrade to enable custom SMTP server.">
@@ -199,7 +210,7 @@
                 {/if}
             </svelte:fragment>
             <svelte:fragment slot="actions">
-                <Button submit disabled={isButtonDisabled || !$currentPlan.customSmtp}>
+                <Button submit disabled={isButtonDisabled || (isCloud && !$currentPlan.customSmtp)}>
                     Update
                 </Button>
             </svelte:fragment>
