@@ -35,8 +35,7 @@ if (isCloud && SHOW_IMAGINE_PROMO) {
                 light: '#333333',
                 dark: '#CCCCCC'
             },
-            link: () =>
-                'https://www.producthunt.com/products/imagine-2?launch=imagine-00018118-5267-43ba-b456-efeeb7cbfbc9',
+            link: () => 'https://apwr.dev/imagine-ph-studio',
             external: true,
             hideOnClick: true
         },
