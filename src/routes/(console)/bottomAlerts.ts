@@ -7,22 +7,22 @@ import {
     showBottomModalAlert
 } from '$lib/stores/bottom-alerts';
 
-const SHOW_IMAGINE_PROMO = false;
+const SHOW_IMAGINE_PROMO = true;
 import { ProfileMode, resolvedProfile } from '$lib/profiles/index.svelte';
 
 const listOfPromotions: BottomModalAlertItem[] = [];
 
 if (isCloud && SHOW_IMAGINE_PROMO) {
     const imaginePromo: BottomModalAlertItem = {
-        id: 'modal:imagine.dev',
+        id: 'modal:imagine-ph-launch-studio',
         backgroundComponent: Imagine,
-        title: 'Introducing Imagine',
-        message: 'the most complete AI builder to date',
+        title: 'Imagine is live on Product Hunt',
+        message: 'Ask questions, share feedback, and support the launch',
         importance: 8,
         scope: 'everywhere',
         plan: 'free',
         cta: {
-            text: 'Try it now',
+            text: 'Head to Product Hunt',
             color: {
                 light: '#FFFFFF',
                 dark: '#000000'
@@ -35,7 +35,7 @@ if (isCloud && SHOW_IMAGINE_PROMO) {
                 light: '#333333',
                 dark: '#CCCCCC'
             },
-            link: () => 'https://cloud.appwrite.io',
+            link: () => 'https://apwr.dev/imagine-ph-studio',
             external: true,
             hideOnClick: true
         },
@@ -47,7 +47,7 @@ if (isCloud && SHOW_IMAGINE_PROMO) {
 
 export function addBottomModalAlerts() {
     // fast path: not the valid profile to show this!
-    if (resolvedProfile.id !== ProfileMode.CONSOLE) return;
+    if (resolvedProfile.id !== ProfileMode.STUDIO) return;
 
     listOfPromotions.forEach((promotion) => showBottomModalAlert(promotion));
 
