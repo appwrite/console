@@ -56,7 +56,7 @@
                 password: project.smtpPassword,
                 secure: project.smtpSecure
             }
-        )
+        );
     });
 
     async function updateSmtp() {

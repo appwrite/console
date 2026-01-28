@@ -1,5 +1,4 @@
-import { page } from '$app/stores';
-import { derived, writable } from 'svelte/store';
+import { writable } from 'svelte/store';
 import { EmailTemplateType, type Models } from '@appwrite.io/console';
 
 // component imports
@@ -10,8 +9,6 @@ import EmailRecoveryTemplate from './emailRecoveryTemplate.svelte';
 import EmailOtpSessionTemplate from './emailOtpSessionTemplate.svelte';
 import EmailVerificationTemplate from './emailVerificationTemplate.svelte';
 import EmailSessionAlertTemplate from './emailSessionAlertTemplate.svelte';
-
-export const localeCodes = derived(page, ($page) => $page.data.localeCodes as Models.LocaleCode[]);
 
 export const emailTemplate = writable<Models.EmailTemplate>({
     type: null,

@@ -13,11 +13,11 @@
 </script>
 
 <Container>
-    <UpdateUsersLimit />
-    <UpdateSessionLength />
-    <UpdateSessionsLimit />
+    <UpdateUsersLimit project={data.project} />
+    <UpdateSessionLength project={data.project} />
+    <UpdateSessionsLimit project={data.project} />
     <PasswordPolicies project={data.project} />
     <SessionSecurity project={data.project} />
-    <UpdateMockNumbers />
-    <UpdateMembershipPrivacy />
+    <UpdateMockNumbers project={data.project} />
+    <UpdateMembershipPrivacy project={data.project} />
 </Container>
