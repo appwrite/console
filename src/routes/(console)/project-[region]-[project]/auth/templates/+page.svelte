@@ -64,7 +64,7 @@
 
     let templateType = $state(null);
     let isTemplateLoading = $state(false);
-    let openStates = Object.fromEntries(templates.map(({ key }) => [key, false]));
+    let openStates = $state(Object.fromEntries(templates.map(({ key }) => [key, false])));
 
     loadTemplateFor(EmailTemplateType.Verification);
 
