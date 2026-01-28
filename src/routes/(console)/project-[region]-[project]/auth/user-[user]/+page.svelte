@@ -9,6 +9,9 @@
     import UpdatePhone from './updatePhone.svelte';
     import UpdatePrefs from './updatePrefs.svelte';
     import UpdateStatus from './updateStatus.svelte';
+    import type { PageData } from './$types';
+
+    export let data: PageData
 </script>
 
 <Container>
@@ -20,5 +23,5 @@
     <UpdateLabels />
     <UpdatePrefs />
     <UpdateMfa />
-    <DangerZone />
+    <DangerZone project={data.project} />
 </Container>
