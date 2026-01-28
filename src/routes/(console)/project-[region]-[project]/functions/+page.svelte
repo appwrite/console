@@ -33,12 +33,11 @@
 
     let offset = $state(0);
 
-    const createFunctionsUrl = resolveRoute(
-        '/(console)/project-[region]-[project]/functions/create-function',
-        {
+    const createFunctionsUrl = $derived.by(() => {
+        return resolveRoute('/(console)/project-[region]-[project]/functions/create-function', {
             ...page.params
-        }
-    );
+        });
+    });
 
     const isLimited = $derived(isServiceLimited('functions', $organization, data.functions.total));
 
@@ -57,7 +56,13 @@
                             template
                         }
                     );
-                    await goto(withPath(templateUrl, `?templateConfig=${templateConfig}`));
+
+                    if (!templateConfig) {
+                        await goto(templateUrl);
+                    } else {
+                        await goto(withPath(templateUrl, `?templateConfig=${templateConfig}`));
+                    }
+
                     break;
                 }
                 case 'cover':
