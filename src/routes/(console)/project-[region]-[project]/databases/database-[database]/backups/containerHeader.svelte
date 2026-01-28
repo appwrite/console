@@ -4,11 +4,12 @@
     import { Button } from '$lib/elements/forms';
     import { getChangePlanUrl } from '$lib/stores/billing';
     import { IconInfo, IconPlus } from '@appwrite.io/pink-icons-svelte';
-    import { project } from '$routes/(console)/project-[region]-[project]/store';
     import { Badge, Icon, Layout, Tag, Typography } from '@appwrite.io/pink-svelte';
+    import type { Models } from '@appwrite.io/console';
 
     export let isFlex = true;
     export let title: string;
+    export let project: Models.Project;
 
     export let buttonText: string = null;
     export let policiesCreated: number = 0;
@@ -22,8 +23,8 @@
 </script>
 
 <header
-    class:is-disabled={buttonDisabled}
     class:u-flex={isFlex}
+    class:is-disabled={buttonDisabled}
     class="u-gap-12 common-section u-main-space-between u-flex-wrap">
     <Layout.Stack
         direction="row"
@@ -74,7 +75,7 @@
                                     class="u-underline"
                                     on:click={() => {
                                         showDropdown = !showDropdown;
-                                        goto(getChangePlanUrl($project.teamId));
+                                        goto(getChangePlanUrl(project.teamId));
                                     }}>Upgrade your plan</button> to add customized backup policies.
                             </span>
                         </slot>

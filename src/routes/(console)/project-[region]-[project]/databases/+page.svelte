@@ -111,4 +111,4 @@
     {/if}
 </Container>
 
-<Create bind:showCreate on:created={handleCreate} />
+<Create bind:showCreate on:created={handleCreate} project={data.project} />

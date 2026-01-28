@@ -2,21 +2,37 @@
     import { Button, Form, InputEmail, InputText, InputTextarea } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { project } from '../../store';
     import ResetEmail from './resetEmail.svelte';
     import { baseEmailTemplate, emailTemplate } from './store';
     import deepEqual from 'deep-equal';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import type { EmailTemplateLocale, EmailTemplateType } from '@appwrite.io/console';
+    import {
+        type EmailTemplateLocale,
+        type EmailTemplateType,
+        type Models
+    } from '@appwrite.io/console';
     import { Icon, Layout, Tooltip, Typography } from '@appwrite.io/pink-svelte';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import TemplateSkeleton from './templateSkeleton.svelte';
+    import type { Snippet } from 'svelte';
 
-    export let loading = false;
-    export let isUpdating = false;
+    let {
+        loading = false,
+        isUpdating = false,
+        project,
+        children = null
+    }: {
+        loading: boolean;
+        isUpdating: boolean;
+        project: Models.Project;
+        children: Snippet;
+    } = $props();
 
-    let openResetModal = false;
-    let eventType = Submit.EmailUpdateInviteTemplate;
+    let openResetModal = $state(false);
+    let eventType = $state(Submit.EmailUpdateInviteTemplate);
+
+    const isSmtpEnabled = $derived(project?.smtpEnabled);
+    const isButtonDisabled = $derived(deepEqual($emailTemplate, $baseEmailTemplate));
 
     async function saveEmailTemplate() {
         if (!$emailTemplate.locale) {
@@ -51,7 +67,7 @@
             }
             // TODO: fix TemplateType and TemplateLocale typing once SDK is updated
             await sdk.forConsole.projects.updateEmailTemplate({
-                projectId: $project.$id,
+                projectId: project.$id,
                 type: $emailTemplate.type as EmailTemplateType,
                 locale: $emailTemplate.locale as EmailTemplateLocale,
                 subject: $emailTemplate.subject || undefined,
@@ -80,9 +96,6 @@
             });
         }
     }
-
-    $: isSmtpEnabled = $project?.smtpEnabled;
-    $: isButtonDisabled = deepEqual($emailTemplate, $baseEmailTemplate);
 </script>
 
 <div class:u-opacity-0={isUpdating} style={isUpdating ? 'pointer-events: none' : ''}>
@@ -111,7 +124,7 @@
                     label="Reply to"
                     placeholder="noreply@appwrite.io" />
 
-                {#if $$slots.default}
+                {#if children}
                     <p class="text">
                         Click to copy variables for the fields below. Learn more <a
                             class="link"
@@ -119,8 +132,9 @@
                             >here</a
                         >.
                     </p>
+
                     <Layout.Stack direction="row" wrap="wrap">
-                        <slot />
+                        {@render children()}
                     </Layout.Stack>
                 {/if}
 
@@ -154,4 +168,4 @@
     </Form>
 </div>
 
-<ResetEmail bind:show={openResetModal} />
+<ResetEmail bind:show={openResetModal} {project} />

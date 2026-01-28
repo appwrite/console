@@ -8,7 +8,13 @@
     import EmailLight from './email-footer-light.png';
     import EmailMobileDark from './email-footer-mobile-dark.png';
     import EmailMobileLight from './email-footer-mobile-light.png';
-    import { project } from '$routes/(console)/project-[region]-[project]/store';
+    import type { Models } from '@appwrite.io/console';
+
+    const {
+        project
+    }: {
+        project: Models.Project;
+    } = $props();
 </script>
 
 <CardGrid>
@@ -55,7 +61,7 @@
                     class="u-margin-block-start-32"
                     secondary
                     fullWidth
-                    href={getChangePlanUrl($project.teamId)}
+                    href={getChangePlanUrl(project.teamId)}
                     on:click={() => {
                         trackEvent(Click.OrganizationClickUpgrade, {
                             from: 'button',

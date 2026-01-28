@@ -42,7 +42,6 @@
     import CreateColumn from './createColumn.svelte';
     import { CreateColumnPanel } from '$lib/commandCenter/panels';
     import { showCreateEntity } from '../store';
-    import { project } from '../../../store';
     import { page } from '$app/state';
     import { canWriteTables } from '$lib/stores/roles';
     import {
@@ -298,8 +297,13 @@
 
                 columnCreationHandler = handler;
 
+                const project = {
+                    id: page.params.project,
+                    region: page.params.region
+                };
+
                 columns = await generateFields(
-                    $project,
+                    project,
                     page.params.database,
                     page.params.table,
                     databaseType
