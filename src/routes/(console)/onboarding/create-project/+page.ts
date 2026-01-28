@@ -2,9 +2,8 @@ import type { PageLoad } from './$types';
 import { isCloud } from '$lib/system';
 import { sdk } from '$lib/stores/sdk';
 import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-import { isOrganization, tierToPlan } from '$lib/stores/billing';
-import { ID, Query, type Models } from '@appwrite.io/console';
-import { BillingPlan } from '$lib/constants';
+import { getBasePlanFromGroup, isPaymentAuthenticationRequired } from '$lib/stores/billing';
+import { BillingPlanGroup, ID, type Models, Query } from '@appwrite.io/console';
 import { redirect } from '@sveltejs/kit';
 import { base } from '$app/paths';
 
@@ -25,28 +24,28 @@ export const load: PageLoad = async ({ parent }) => {
     if (!organizations?.total) {
         try {
             if (isCloud) {
-                const org = await sdk.forConsole.billing.createOrganization(
-                    ID.unique(),
-                    'Personal projects',
-                    BillingPlan.FREE,
-                    null
-                );
+                const starterPlan = getBasePlanFromGroup(BillingPlanGroup.Starter);
+                const org = await sdk.forConsole.organizations.create({
+                    organizationId: ID.unique(),
+                    name: 'Personal projects',
+                    billingPlan: starterPlan.$id
+                });
                 trackEvent(Submit.OrganizationCreate, {
-                    plan: tierToPlan(BillingPlan.FREE)?.name,
+                    plan: starterPlan?.name,
                     budget_cap_enabled: false,
                     members_invited: 0
                 });
 
-                if (isOrganization(org)) {
+                if (!isPaymentAuthenticationRequired(org)) {
                     return {
                         accountPrefs,
                         organization: org
                     };
                 } else {
-                    const e = new Error(org.message, {
+                    const error = new Error(org.message, {
                         cause: org
                     });
-                    trackError(e, Submit.OrganizationCreate);
+                    trackError(error, Submit.OrganizationCreate);
                 }
             } else {
                 return {

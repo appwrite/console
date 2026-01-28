@@ -128,7 +128,7 @@
                     (prodDeployment) => prodDeployment.$id !== deployment.$id
                 )}
                 <Paginator {items} hideFooter={items?.length <= 6} limit={6}>
-                    {#snippet children(paginatedItems: typeof items)}
+                    {#snippet children(paginatedItems)}
                         {#each paginatedItems as prodDeployment}
                             <LabelCard
                                 padding="xs"

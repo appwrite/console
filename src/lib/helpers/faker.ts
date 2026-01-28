@@ -6,12 +6,15 @@ import type { DatabaseType, Field } from '$database/(entity)';
 import { coerceToNumber, isWithinSafeRange } from '$lib/helpers/numbers';
 
 export async function generateFields(
-    project: Models.Project,
+    project: {
+        id: string;
+        region: string;
+    },
     databaseId: string,
     tableId: string,
     databaseType: DatabaseType
 ): Promise<Field[]> {
-    const client = sdk.forProject(project.region, project.$id);
+    const client = sdk.forProject(project.region, project.id);
 
     switch (databaseType) {
         case 'legacy':

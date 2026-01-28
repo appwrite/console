@@ -34,8 +34,6 @@
         ActionMenu,
         Tooltip
     } from '@appwrite.io/pink-svelte';
-    import { BillingPlan } from '$lib/constants';
-    import { tierToPlan } from '$lib/stores/billing';
 
     export let data;
 
@@ -46,7 +44,8 @@
 
     // Calculate if button should be disabled and tooltip should show
     $: memberCount = data.organizationMembers?.total ?? 0;
-    $: isFreeWithMembers = $organization?.billingPlan === BillingPlan.FREE && memberCount >= 1;
+    $: supportsMembers = $organization?.billingPlanDetails?.addons?.seats;
+    $: isFreeWithMembers = !supportsMembers && memberCount >= 1;
     $: isButtonDisabled = isCloud ? isFreeWithMembers : false;
 
     const resend = async (member: Models.Membership) => {
@@ -89,11 +88,9 @@
                 </ConsoleButton>
             </div>
             <div slot="tooltip">
-                {$organization?.billingPlan === BillingPlan.FREE
+                {!supportsMembers
                     ? 'Upgrade to add more members'
-                    : `You've reached the members limit for the ${
-                          tierToPlan($organization?.billingPlan)?.name
-                      } plan`}
+                    : `You've reached the members limit for the ${$organization?.billingPlanDetails.name} plan`}
             </div>
         </Tooltip>
     </Layout.Stack>

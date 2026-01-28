@@ -5,18 +5,18 @@
     import { Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import type { PaymentMethodData } from '$lib/sdk/billing';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { states } from './state';
     import { Alert, Card, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { CreditCardBrandImage } from '../index.js';
+    import type { Models } from '@appwrite.io/console';
 
     let {
         show = $bindable(false),
         paymentMethod
     }: {
         show: boolean;
-        paymentMethod: PaymentMethodData;
+        paymentMethod: Models.PaymentMethod;
     } = $props();
 
     let selectedState = $state('');
@@ -40,12 +40,12 @@
         error = null;
 
         try {
-            await sdk.forConsole.billing.setPaymentMethod(
-                paymentMethod.$id,
-                paymentMethod.providerMethodId,
-                paymentMethod.name,
-                selectedState
-            );
+            await sdk.forConsole.account.updatePaymentMethod({
+                paymentMethodId: paymentMethod.$id,
+                expiryMonth: paymentMethod.expiryMonth,
+                expiryYear: paymentMethod.expiryYear,
+                state: selectedState
+            });
             trackEvent(Submit.PaymentMethodUpdate);
             await invalidate(Dependencies.PAYMENT_METHODS);
             addNotification({
@@ -63,10 +63,10 @@
 </script>
 
 <Modal
-    dismissible={false}
     bind:error
-    onSubmit={handleSubmit}
     bind:show
+    dismissible={false}
+    onSubmit={handleSubmit}
     title="Update payment method state">
     <Layout.Stack direction="column" gap="m">
         <Typography.Text>

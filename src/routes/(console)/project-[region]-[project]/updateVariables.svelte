@@ -8,7 +8,6 @@
     import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
-    import { project } from '$routes/(console)/project-[region]-[project]/store';
     import PromoteVariableModal from './promoteVariableModal.svelte';
     import CreateVariable from './createVariableModal.svelte';
     import RawVariableEditor from './rawVariableEditor.svelte';
@@ -39,7 +38,9 @@
     import UpdateVariablesModal from './updateVariablesModal.svelte';
     import SecretVariableModal from './secretVariableModal.svelte';
     import { Confirm } from '$lib/components';
+    import { resolveRoute, withPath } from '$lib/stores/navigation';
 
+    export let project: Models.Project;
     export let variableList: Models.VariableList;
     export let globalVariableList: Models.VariableList | undefined = undefined;
     export let analyticsSource = '';
@@ -80,7 +81,7 @@
             showVariablesModal = false;
             addNotification({
                 type: 'success',
-                message: `${$project.name} ${
+                message: `${project.name} ${
                     isGlobal ? 'global variable' : 'variable'
                 } has been created.`
             });
@@ -102,7 +103,7 @@
             showVariablesModal = false;
             addNotification({
                 type: 'success',
-                message: `${$project.name} ${
+                message: `${project.name} ${
                     isGlobal ? 'global variable' : 'variable'
                 } has been updated.`
             });
@@ -123,7 +124,7 @@
             showVariablesModal = false;
             addNotification({
                 type: 'success',
-                message: `${$project.name} ${
+                message: `${project.name} ${
                     isGlobal ? 'global variable' : 'variable'
                 } has been marked as secret.`
             });
@@ -144,7 +145,7 @@
             selectedVar = null;
             addNotification({
                 type: 'success',
-                message: `${$project.name} ${
+                message: `${project.name} ${
                     isGlobal ? 'global variable' : 'variable'
                 } has been deleted.`
             });
@@ -274,7 +275,12 @@
     {:else}
         Set the environment variables or secret keys that will be passed to your {product}. Global
         variables can be found in <Link
-            href={`${base}/project-${$project.region}-${$project.$id}/settings#variables`}>
+            href={withPath(
+                resolveRoute('/(console)/project-[region]-[project]/settings', {
+                    ...page.params
+                }),
+                '#variables'
+            )}>
             project settings</Link
         >.
     {/if}
@@ -324,7 +330,12 @@
                             {/if}
                             a naming conflict with a global variable. View global variables in
                             <a
-                                href={`${base}/project-${$project.region}-${$project.$id}/settings`}
+                                href={resolveRoute(
+                                    '/(console)/project-[region]-[project]/settings',
+                                    {
+                                        ...page.params
+                                    }
+                                )}
                                 title="Project settings"
                                 class="link">
                                 project settings</a

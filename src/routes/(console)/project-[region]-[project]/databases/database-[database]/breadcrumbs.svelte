@@ -1,13 +1,13 @@
 <script lang="ts">
     import { page } from '$app/state';
     import { Breadcrumbs } from '$lib/layout';
+    import type { Models } from '@appwrite.io/console';
     import { resolveRoute } from '$lib/stores/navigation';
-    import { type Organization } from '$lib/stores/organization';
 
     const params = $derived(page.params);
     const project = $derived(page.data.project);
     const database = $derived(page.data.database);
-    const organization = $derived(page.data.organization) as Organization;
+    const organization = $derived(page.data.organization) as Models.Organization;
 
     const breadcrumbs = $derived([
         {

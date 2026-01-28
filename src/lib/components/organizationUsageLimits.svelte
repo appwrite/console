@@ -1,7 +1,6 @@
 <script lang="ts">
     import { Button } from '$lib/elements/forms';
-    import { getServiceLimit, plansInfo } from '$lib/stores/billing';
-    import { BillingPlan } from '$lib/constants';
+    import { getBasePlanFromGroup, getServiceLimit } from '$lib/stores/billing';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { Badge, Icon, Layout, Table, Typography, Tooltip } from '@appwrite.io/pink-svelte';
     import { IconArrowUp, IconInfo } from '@appwrite.io/pink-icons-svelte';
@@ -11,15 +10,15 @@
     import { Alert } from '@appwrite.io/pink-svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { toLocaleDate, toLocaleDateTime } from '$lib/helpers/date';
-    import { organization, type Organization } from '$lib/stores/organization';
-    import type { Models } from '@appwrite.io/console';
+    import { organization } from '$lib/stores/organization';
+    import { BillingPlanGroup, type Models } from '@appwrite.io/console';
 
     // Props
     type Props = {
-        organization: Organization;
+        storageUsage?: number;
         projects?: Models.Project[];
         members?: Models.Membership[];
-        storageUsage?: number;
+        organization: Models.Organization;
     };
 
     const { projects = [], members = [], storageUsage = 0 }: Props = $props();
@@ -29,11 +28,13 @@
     let error = $state<string | null>(null);
     let showSelectionReminder = $state(false);
 
+    const baseFreePlan = getBasePlanFromGroup(BillingPlanGroup.Starter);
+
     // Derived state using runes
     let freePlanLimits = $derived({
-        projects: $plansInfo?.get(BillingPlan.FREE)?.projects,
-        members: getServiceLimit('members', BillingPlan.FREE),
-        storage: getServiceLimit('storage', BillingPlan.FREE)
+        projects: baseFreePlan?.projects,
+        members: getServiceLimit('members', null, baseFreePlan),
+        storage: getServiceLimit('storage', null, baseFreePlan)
     });
 
     // When preparing to downgrade to Free, enforce Free plan limit locally (2)

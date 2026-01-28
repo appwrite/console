@@ -8,9 +8,12 @@ import type { LayoutLoad } from './$types';
 import { redirectTo } from './store';
 import { resolve } from '$app/paths';
 import type { Account } from '$lib/stores/user';
-import { type AppwriteException, Query, Platform } from '@appwrite.io/console';
+import { type AppwriteException, Platform } from '@appwrite.io/console';
 import { isCloud, VARS } from '$lib/system';
 import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
+import { getTeamOrOrganizationList } from '$lib/stores/organization';
+import { makePlansMap } from '$lib/helpers/billing';
+import { plansInfo as plansInfoStore } from '$lib/stores/billing';
 
 export const ssr = false;
 
@@ -38,13 +41,13 @@ export const load: LayoutLoad = async ({ depends, url, route }) => {
             }
         }
 
+        const plansInfo = await getPlatformPlans();
+        plansInfoStore.set(plansInfo);
+
         return {
+            plansInfo,
             account: account,
-            organizations: !isCloud
-                ? await sdk.forConsole.teams.list()
-                : await sdk.forConsole.billing.listOrganization([
-                      Query.equal('platform', Platform.Appwrite)
-                  ])
+            organizations: await getTeamOrOrganizationList()
         };
     }
 
@@ -54,11 +57,13 @@ export const load: LayoutLoad = async ({ depends, url, route }) => {
     }
 
     if (error.type === 'user_more_factors_required') {
-        if (url.pathname === resolve('/mfa'))
+        const mfaUrl = resolve('/(authenticated)/mfa');
+
+        if (url.pathname === mfaUrl)
             return {
                 mfaRequired: true
             };
-        redirect(303, withParams(resolve('/mfa'), url.searchParams));
+        redirect(303, withParams(mfaUrl, url.searchParams));
     }
 
     if (!isPublicRoute) {
@@ -66,11 +71,22 @@ export const load: LayoutLoad = async ({ depends, url, route }) => {
             checkPricingRefAndRedirect(url.searchParams, true);
         }
 
-        redirect(303, withParams(resolve('/login'), url.searchParams));
+        const loginUrl = resolve('/(public)/(guest)/login');
+        redirect(303, withParams(loginUrl, url.searchParams));
     }
 };
 
 function withParams(pathname: string, searchParams: URLSearchParams) {
     if (searchParams.size > 0) return `${pathname}?${searchParams.toString()}`;
     return pathname;
+}
+
+async function getPlatformPlans() {
+    if (!isCloud) return null;
+
+    const plansArray = await sdk.forConsole.console.getPlans({
+        platform: Platform.Appwrite
+    });
+
+    return makePlansMap(plansArray);
 }

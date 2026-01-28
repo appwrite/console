@@ -2,8 +2,7 @@
     import { CardGrid, CreditCardInfo, Empty } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { paymentMethods } from '$lib/stores/billing';
-    import type { PaymentMethodData } from '$lib/sdk/billing';
-    import { organizationList, type Organization } from '$lib/stores/organization';
+    import { organizationList } from '$lib/stores/organization';
     import { base } from '$app/paths';
     import EditPaymentModal from './editPaymentModal.svelte';
     import DeletePaymentModal from './deletePaymentModal.svelte';
@@ -27,24 +26,23 @@
         Tag,
         Typography
     } from '@appwrite.io/pink-svelte';
+    import type { Models } from '@appwrite.io/console';
 
     export let showPayment = false;
     let showDropdown = [];
-    let selectedMethod: PaymentMethodData;
-    let selectedLinkedOrgs: Organization[] = [];
+    let selectedMethod: Models.PaymentMethod;
+    let selectedLinkedOrgs: Array<Models.Organization> = [];
     let showDelete = false;
     let showEdit = false;
     let showUpdateState = false;
-    let paymentMethodNeedingState: PaymentMethodData | null = null;
+    let paymentMethodNeedingState: Models.PaymentMethod | null = null;
     let isLinked = false;
 
-    $: orgList = $organizationList.teams as unknown as Organization[];
+    $: orgList = $organizationList.teams as unknown as Array<Models.Organization>;
 
-    $: filteredMethods = $paymentMethods?.paymentMethods.filter(
-        (method: PaymentMethodData) => !!method?.last4
-    );
+    $: filteredMethods = $paymentMethods?.paymentMethods.filter((method) => !!method?.last4);
 
-    const isMethodLinkedToOrg = (methodId: string, org: Organization) =>
+    const isMethodLinkedToOrg = (methodId: string, org: Models.Organization) =>
         methodId === org.paymentMethodId || methodId === org.backupPaymentMethodId;
 
     $: linkedMethodIds = new Set(
@@ -57,7 +55,7 @@
     $: {
         if ($paymentMethods?.paymentMethods && !showUpdateState && !paymentMethodNeedingState) {
             const usMethodWithoutState = $paymentMethods.paymentMethods.find(
-                (method: PaymentMethodData) =>
+                (method: Models.PaymentMethod) =>
                     method?.country?.toLowerCase() === 'us' &&
                     (!method.state || method.state.trim() === '') &&
                     !!method.last4

@@ -1,24 +1,31 @@
 <script lang="ts" context="module">
     import { page } from '$app/state';
-    import { base } from '$app/paths';
     import { goto } from '$app/navigation';
+    import { resolveRoute } from '$lib/stores/navigation';
 
     let showDelete = writable(false);
 
     export const promptDeleteUser = (id: string) => {
         showDelete.set(true);
-        goto(`${base}/project-${page.params.region}-${page.params.project}/auth/user-${id}`);
+        goto(
+            resolveRoute('/(console)/project-[region]-[project]/auth/user-[user]', {
+                ...page.params,
+                user: id
+            })
+        );
     };
 </script>
 
 <script lang="ts">
-    import { CardGrid, BoxAvatar, AvatarInitials } from '$lib/components';
-    import { Button } from '$lib/elements/forms';
     import { writable } from 'svelte/store';
+    import { Button } from '$lib/elements/forms';
     import DeleteUser from './deleteUser.svelte';
     import { user } from './store';
     import { toLocaleDate } from '$lib/helpers/date';
-    $: accessedAt = ($user as unknown as { accessedAt: string }).accessedAt;
+    import type { Models } from '@appwrite.io/console';
+    import { CardGrid, BoxAvatar, AvatarInitials } from '$lib/components';
+
+    export let project: Models.Project;
 </script>
 
 <CardGrid>
@@ -52,7 +59,7 @@
                     ? [$user.email, $user.phone].join(',')
                     : $user.email || $user.phone}
             </p>
-            <p>Last activity: {accessedAt ? toLocaleDate(accessedAt) : 'never'}</p>
+            <p>Last activity: {$user.accessedAt ? toLocaleDate($user.accessedAt) : 'never'}</p>
         </BoxAvatar>
     </svelte:fragment>
 
@@ -61,4 +68,4 @@
     </svelte:fragment>
 </CardGrid>
 
-<DeleteUser bind:showDelete={$showDelete} />
+<DeleteUser bind:showDelete={$showDelete} {project} user={$user} />

@@ -7,11 +7,15 @@
     import { createTimeUnitPair } from '$lib/helpers/unit';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { project as projectStore } from '../../store';
     import { Layout } from '@appwrite.io/pink-svelte';
-    import { page } from '$app/state';
+    import type { Models } from '@appwrite.io/console';
 
-    const project = $derived($projectStore ?? page.data?.project);
+    let {
+        project
+    }: {
+        project: Models.Project;
+    } = $props();
+
     const { value, unit, baseValue, units } = $derived(createTimeUnitPair(project?.authDuration));
     const options = $derived(units.map((v) => ({ label: v.name, value: v.name })));
 

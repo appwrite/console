@@ -10,8 +10,7 @@
     } from '$lib/stores/bottom-alerts';
     import { onMount } from 'svelte';
     import { organization } from '$lib/stores/organization';
-    import { BillingPlan } from '$lib/constants';
-    import { upgradeURL } from '$lib/stores/billing';
+    import { canUpgrade, getChangePlanUrl } from '$lib/stores/billing';
     import { addBottomModalAlerts } from '$routes/(console)/bottomAlerts';
     import { project } from '$routes/(console)/project-[region]-[project]/store';
     import { page } from '$app/state';
@@ -142,13 +141,14 @@
     // the button component cannot have both href and on:click!
     function triggerWindowLink(alert: BottomModalAlertItem, event?: string) {
         const alertAction = alert.cta;
-        const shouldShowUpgrade = showUpgrade();
+        const shouldShowUpgrade = canUpgrade($organization?.billingPlanDetails);
 
         // for correct event tracking after removal
         const currentModalId = currentModalAlert.id;
+        const organizationId = $project.teamId ?? $organization.$id;
 
         const url = shouldShowUpgrade
-            ? $upgradeURL
+            ? getChangePlanUrl(organizationId)
             : alertAction.link({
                   organization: $organization,
                   project: $project
@@ -170,26 +170,11 @@
         });
     }
 
-    function showUpgrade() {
-        const plan = currentModalAlert.plan;
-        const organizationPlan = $organization?.billingPlan;
-        switch (plan) {
-            case 'free':
-                return false;
-            case 'pro':
-                return organizationPlan === BillingPlan.FREE;
-            case 'scale':
-                return (
-                    organizationPlan === BillingPlan.FREE || organizationPlan === BillingPlan.PRO
-                );
-        }
-    }
-
     onMount(addBottomModalAlerts);
 </script>
 
 {#if !isOnOnboarding && filteredModalAlerts.length > 0 && currentModalAlert}
-    {@const shouldShowUpgrade = showUpgrade()}
+    {@const shouldShowUpgrade = canUpgrade($organization?.billingPlanDetails)}
     <div class="main-alert-wrapper is-not-mobile">
         <div class="alert-container">
             <article class="card">
