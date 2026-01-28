@@ -6,7 +6,6 @@
     import { Container, ResponsiveContainerHeader } from '$lib/layout';
     import { realtime } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import { project } from '$routes/(console)/project-[region]-[project]/store';
     import { base } from '$app/paths';
     import { Icon, Tooltip } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
@@ -32,7 +31,7 @@
             <div>
                 <Button
                     event="execute_function"
-                    href={`${base}/project-${$project.region}-${$project.$id}/functions/function-${data.func.$id}/executions/execute-function`}
+                    href={`${base}/project-${page.params.region}-${page.params.project}/functions/function-${data.func.$id}/executions/execute-function`}
                     disabled={!data.func.$id || !data.func?.deploymentId}>
                     <Icon icon={IconPlus} size="s" slot="start" />
                     Create execution
@@ -69,7 +68,7 @@
                         <Button
                             secondary
                             event="execute_function"
-                            href={`${base}/project-${$project.region}-${$project.$id}/functions/function-${data.func.$id}/executions/execute-function`}
+                            href={`${base}/project-${page.params.region}-${page.params.project}/functions/function-${data.func.$id}/executions/execute-function`}
                             disabled={!data.func.$id || !data.func?.deploymentId}>
                             Create execution
                         </Button>
