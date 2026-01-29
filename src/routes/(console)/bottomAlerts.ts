@@ -39,7 +39,7 @@ if (isCloud && SHOW_IMAGINE_PROMO) {
             external: true,
             hideOnClick: true
         },
-        show: true
+        show: false
     };
 
     listOfPromotions.push(imaginePromo);
