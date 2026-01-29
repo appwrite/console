@@ -7,16 +7,22 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Selector } from '@appwrite.io/pink-svelte';
-    import { project } from '../../store';
+    import type { Models } from '@appwrite.io/console';
 
-    let authMembershipsUserName = $project?.authMembershipsUserName ?? true;
-    let authMembershipsUserEmail = $project?.authMembershipsUserEmail ?? true;
-    let authMembershipsMfa = $project?.authMembershipsMfa ?? true;
+    const {
+        project
+    }: {
+        project: Models.Project;
+    } = $props();
+
+    let authMembershipsMfa = $state(project?.authMembershipsMfa ?? true);
+    let authMembershipsUserName = $state(project?.authMembershipsUserName ?? true);
+    let authMembershipsUserEmail = $state(project?.authMembershipsUserEmail ?? true);
 
     async function updateMembershipsPrivacy() {
         try {
             await sdk.forConsole.projects.updateMembershipsPrivacy({
-                projectId: $project.$id,
+                projectId: project.$id,
                 userName: authMembershipsUserName,
                 userEmail: authMembershipsUserEmail,
                 mfa: authMembershipsMfa
@@ -60,9 +66,9 @@
         </svelte:fragment>
         <svelte:fragment slot="actions">
             <Button
-                disabled={authMembershipsUserName === ($project?.authMembershipsUserName ?? true) &&
-                    authMembershipsUserEmail === ($project?.authMembershipsUserEmail ?? true) &&
-                    authMembershipsMfa === ($project?.authMembershipsMfa ?? true)}
+                disabled={authMembershipsUserName === (project?.authMembershipsUserName ?? true) &&
+                    authMembershipsUserEmail === (project?.authMembershipsUserEmail ?? true) &&
+                    authMembershipsMfa === (project?.authMembershipsMfa ?? true)}
                 submit>Update</Button>
         </svelte:fragment>
     </CardGrid>

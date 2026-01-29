@@ -11,12 +11,10 @@
     import { Icon, Layout, Divider, Tooltip, Typography, Link } from '@appwrite.io/pink-svelte';
     import type { PageData } from './$types';
     import {
-        table,
         tableColumns,
         isCsvImportInProgress,
         showRowCreateSheet,
         showCreateColumnSheet,
-        type Columns,
         randomDataModalState,
         expandTabs
     } from './store';
@@ -39,10 +37,11 @@
         IconDownload
     } from '@appwrite.io/pink-icons-svelte';
     import type { Models } from '@appwrite.io/console';
-    import EmptySheet from './layout/emptySheet.svelte';
     import CreateRow from './rows/create.svelte';
     import { onDestroy } from 'svelte';
     import { isCloud } from '$lib/system';
+    import { columnOptions } from './columns/store';
+    import { EmptySheet, EmptySheetCards, type Field } from '$database/(entity)';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import {
@@ -50,10 +49,11 @@
         tableColumnSuggestions,
         showColumnsSuggestionsModal
     } from '../(suggestions)';
-    import EmptySheetCards from './layout/emptySheetCards.svelte';
     import IconAI from '../(suggestions)/icon/aiForButton.svelte';
 
     export let data: PageData;
+
+    $: table = data.table;
 
     let isRefreshing = false;
     let showImportCSV = false;
@@ -61,16 +61,19 @@
     // todo: might need a type fix here.
     const filterColumns = writable<Column[]>([]);
 
-    function createTableColumns(columns: Columns[], selected: string[] = []): Column[] {
-        return columns.map((column) => ({
-            id: column.key,
-            title: column.key,
-            type: column.type as ColumnType,
-            hide: !!selected?.includes(column.key),
-            array: column?.array,
-            format: 'format' in column && column?.format === 'enum' ? column.format : null,
-            elements: 'elements' in column ? column.elements : null
-        }));
+    function createTableColumns(fields: Field[], selected: string[] = []): Column[] {
+        return fields.map((field) => {
+            return {
+                id: field.key,
+                title: field.key,
+                type: field.type as ColumnType,
+                hide: !!selected?.includes(field.key),
+                array: field?.array,
+                format: 'format' in field && field?.format === 'enum' ? field.format : null,
+                elements: 'elements' in field ? field.elements : null,
+                icon: columnOptions.find((option) => option.type === field.type)?.icon
+            };
+        });
     }
 
     function createFilterableColumns(columns: Column[], selected: string[] = []): Column[] {
@@ -88,14 +91,14 @@
 
     $: selected = preferences.getCustomTableColumns(page.params.table);
 
-    $: if ($table.columns) {
-        const freshColumns = createTableColumns($table.columns, selected);
+    $: if (table.fields) {
+        const freshColumns = createTableColumns(table.fields, selected);
         tableColumns.set(freshColumns);
         filterColumns.set(createFilterableColumns(freshColumns, selected));
     }
 
-    $: hasColumns = !!$table.columns.length;
-    $: hasValidColumns = $table?.columns?.some((col) => col.status === 'available');
+    $: hasColumns = !!table.fields.length;
+    $: hasValidColumns = table?.fields?.some((field: Field) => field.status === 'available');
     $: canShowSuggestionsSheet =
         // enabled, has table details
         // and it matches current table
@@ -303,7 +306,7 @@
                 <EmptySheet
                     mode="rows-filtered"
                     title="There are no rows that match your filters"
-                    customColumns={createTableColumns($table.columns, selected)}>
+                    customColumns={createTableColumns(table.fields, selected)}>
                     {#snippet actions()}
                         <Button
                             size="s"
@@ -323,7 +326,7 @@
                 <EmptySheet
                     mode="rows"
                     showActions={$canWriteRows}
-                    customColumns={createTableColumns($table.columns, selected)}>
+                    customColumns={createTableColumns(table.fields, selected)}>
                     {#snippet actions()}
                         <EmptySheetCards
                             icon={IconPlus}
@@ -419,7 +422,7 @@
 {/if}
 
 <CreateRow
-    table={$table}
+    {table}
     bind:showSheet={$showRowCreateSheet.show}
     bind:existingData={$showRowCreateSheet.row} />
 

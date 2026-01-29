@@ -3,15 +3,14 @@
     import { FakeModal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
-    import type { Organization } from '$lib/stores/organization';
     import { Dependencies } from '$lib/constants';
     import { setPaymentMethod, submitStripeCard } from '$lib/stores/stripe';
     import { onMount } from 'svelte';
-    import type { PaymentList, PaymentMethodData } from '$lib/sdk/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { PaymentBoxes } from '$lib/components/billing';
-    import type { PaymentMethod } from '@stripe/stripe-js';
+    import type { PaymentMethod as StripePaymentMethod } from '@stripe/stripe-js';
+    import type { Models } from '@appwrite.io/console';
 
     let {
         show = $bindable(false),
@@ -21,15 +20,15 @@
     }: {
         show?: boolean;
         isBackup?: boolean;
-        methods: PaymentList;
-        organization: Organization;
+        methods: Models.PaymentMethodList;
+        organization: Models.Organization;
     } = $props();
 
     let name: string | null = $state(null);
     let error: string | null = $state(null);
     let showState: boolean = $state(false);
     let countryState: string | null = $state(null);
-    let paymentMethod: PaymentMethod | null = $state(null);
+    let paymentMethod: StripePaymentMethod | null = $state(null);
     let selectedPaymentMethodId: string | null = $state(null);
 
     const filteredMethods = $derived(methods?.paymentMethods.filter((method) => !!method?.last4));
@@ -60,19 +59,19 @@
                 if (showState && !countryState) {
                     throw Error('Please select a state');
                 }
-                let method: PaymentMethodData;
+                let method: Models.PaymentMethod;
                 if (showState) {
                     method = await setPaymentMethod(paymentMethod.id, name, countryState);
                 } else {
                     const card = await submitStripeCard(name, organization.$id);
                     if (card && Object.hasOwn(card, 'id')) {
-                        if ((card as PaymentMethod).card?.country === 'US') {
-                            paymentMethod = card as PaymentMethod;
+                        if ((card as StripePaymentMethod).card?.country === 'US') {
+                            paymentMethod = card as StripePaymentMethod;
                             showState = true;
                             return;
                         }
                     } else if (card && Object.hasOwn(card, '$id')) {
-                        method = card as PaymentMethodData;
+                        method = card as Models.PaymentMethod;
                     }
                 }
                 selectedPaymentMethodId = method.$id;
@@ -97,10 +96,10 @@
 
     async function addPaymentMethod(paymentMethodId: string) {
         try {
-            await sdk.forConsole.billing.setOrganizationPaymentMethod(
-                organization.$id,
+            await sdk.forConsole.organizations.setDefaultPaymentMethod({
+                organizationId: organization.$id,
                 paymentMethodId
-            );
+            });
         } catch (err) {
             error = err.message;
         }
@@ -108,10 +107,10 @@
 
     async function addBackupPaymentMethod(paymentMethodId: string) {
         try {
-            await sdk.forConsole.billing.setOrganizationPaymentMethodBackup(
-                organization.$id,
+            await sdk.forConsole.organizations.setBackupPaymentMethod({
+                organizationId: organization.$id,
                 paymentMethodId
-            );
+            });
         } catch (err) {
             error = err.message;
         }

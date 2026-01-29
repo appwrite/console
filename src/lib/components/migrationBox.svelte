@@ -5,6 +5,7 @@
     import { realtime } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
+    import { calculatePercentage, type Counter } from '$lib/helpers/migration';
     import { writable } from 'svelte/store';
 
     export const showMigrationBox = writable(false);
@@ -12,19 +13,6 @@
 
 <script lang="ts">
     let migration: Models.Migration;
-    type Counter = {
-        pending: number;
-        error: number;
-        success: number;
-        processing: number;
-        skip: number;
-        warning: number;
-    };
-
-    type TotalCounter = {
-        done: number;
-        processing: number;
-    };
 
     $: percentage = (function getPercentage() {
         if (!migration) return 0;
@@ -32,21 +20,7 @@
         if (migration.status === 'completed') return 100;
 
         const statusCounters = parseIfString(migration.statusCounters) as Record<string, Counter>;
-        const totalCounter: TotalCounter = Object.values(statusCounters).reduce(
-            (curr, acc) => {
-                return {
-                    done: curr.done + acc.success + acc.error + acc.skip + acc.warning,
-                    processing: curr.processing + acc.processing + acc.pending
-                };
-            },
-            { done: 0, processing: 0 } as TotalCounter
-        );
-
-        const res = Math.round(
-            (totalCounter.done / (totalCounter.done + totalCounter.processing)) * 100
-        );
-
-        return Number.isNaN(res) ? 0 : res;
+        return calculatePercentage(statusCounters);
     })();
 
     onMount(() => {

@@ -18,7 +18,6 @@
 
     const dispatch = createEventDispatcher();
 
-    // TODO: @itznotabug - check what needs to be changed here. we might need to do dual stuff to manage backwards compat?
     const labelMap = {
         users: { root: 'Users', teams: 'Include teams' },
         databases: { root: 'Databases', rows: 'Include rows' },

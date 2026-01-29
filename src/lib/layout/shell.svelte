@@ -9,14 +9,12 @@
     import { organization, organizationList } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import { user } from '$lib/stores/user';
-    import { tierToPlan } from '$lib/stores/billing';
     import { isCloud } from '$lib/system';
     import SideNavigation from '$lib/layout/navigation.svelte';
     import { hasOnboardingDismissed } from '$lib/helpers/onboarding';
     import { isSidebarOpen, noWidthTransition } from '$lib/stores/sidebar';
-    import { BillingPlan } from '$lib/constants';
     import { page } from '$app/stores';
-    import type { Models } from '@appwrite.io/console';
+    import { BillingPlanGroup, type Models } from '@appwrite.io/console';
     import { getSidebarState, isInDatabasesRoute, updateSidebarState } from '$lib/helpers/sidebar';
     import { isTabletViewport } from '$lib/stores/viewport';
 
@@ -155,14 +153,19 @@
             })
             .toString(),
 
-        organizations: $organizationList.teams.map((org) => {
-            const billingPlan = org['billingPlan'];
+        organizations: $organizationList.teams.map((team) => {
+            let billingPlan: Models.BillingPlan | null = null;
+
+            if (isCloud) {
+                billingPlan = (team as Models.Organization).billingPlanDetails;
+            }
+
             return {
-                name: org.name,
-                $id: org.$id,
-                showUpgrade: billingPlan === BillingPlan.FREE,
-                tierName: isCloud ? tierToPlan(billingPlan).name : null,
-                isSelected: $organization?.$id === org.$id
+                name: team.name,
+                $id: team.$id,
+                isSelected: $organization?.$id === team.$id,
+                tierName: isCloud ? billingPlan.name : null,
+                showUpgrade: isCloud ? billingPlan.group === BillingPlanGroup.Starter : false
             };
         }),
 

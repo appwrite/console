@@ -97,11 +97,11 @@
             <div>
                 <Button
                     secondary
-                    disabled={prefs?.length &&
-                    prefs[prefs.length - 1][0] &&
-                    prefs[prefs.length - 1][1]
-                        ? false
-                        : true}
+                    disabled={!(
+                        prefs?.length &&
+                        prefs[prefs.length - 1][0] &&
+                        prefs[prefs.length - 1][1]
+                    )}
                     on:click={() => {
                         if (prefs[prefs.length - 1][0] && prefs[prefs.length - 1][1]) {
                             prefs.push(['', '']);

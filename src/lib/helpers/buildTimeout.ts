@@ -15,21 +15,31 @@ function isBuildTimedOut(createdAt: string, status: string, timeoutSeconds: numb
     const created = new Date(createdAt);
     const elapsedSeconds = Math.floor((Date.now() - created.getTime()) / 1000);
 
-    return elapsedSeconds > timeoutSeconds;
+    return elapsedSeconds >= timeoutSeconds;
 }
 
 /**
  * Gets the effective status for a build, considering timeout
  */
 export function getEffectiveBuildStatus(
-    originalStatus: string,
-    createdAt: string,
+    deployment: Models.Deployment,
     consoleVariables: Models.ConsoleVariables | undefined
 ): string {
+    const originalStatus = deployment.status;
+    const createdAt = deployment.$createdAt;
+
     const timeoutSeconds = getBuildTimeoutSeconds(consoleVariables);
     if (isBuildTimedOut(createdAt, originalStatus, timeoutSeconds)) {
         return 'failed';
     }
+
+    const isReady = originalStatus === 'ready';
+    const hasScreenshot = deployment.screenshotLight && deployment.screenshotDark;
+
+    if (isReady && !hasScreenshot) {
+        return 'finalizing';
+    }
+
     return originalStatus;
 }
 

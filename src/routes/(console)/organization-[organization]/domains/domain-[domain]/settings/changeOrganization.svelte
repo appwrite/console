@@ -6,12 +6,12 @@
     import { Dependencies } from '$lib/constants';
     import { Button, InputSelect } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import type { OrganizationList } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
 
     export let domain: Models.Domain;
-    export let organizations: OrganizationList;
+    export let organizations: Models.OrganizationList;
+
     let selectedOrg: string = null;
 
     async function moveDomain() {

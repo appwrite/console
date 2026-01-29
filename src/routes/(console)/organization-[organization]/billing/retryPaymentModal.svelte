@@ -3,7 +3,6 @@
     import { FakeModal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { Dependencies } from '$lib/constants';
-    import type { Invoice, PaymentMethodData } from '$lib/sdk/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { page } from '$app/state';
@@ -20,19 +19,22 @@
     import { onMount } from 'svelte';
     import { getApiEndpoint, sdk } from '$lib/stores/sdk';
     import { formatCurrency } from '$lib/helpers/numbers';
-    import { base } from '$app/paths';
-    import type { PaymentMethod } from '@stripe/stripe-js';
+    import { resolve } from '$app/paths';
+    import type { PaymentMethod as StripePaymentMethod } from '@stripe/stripe-js';
+    import type { Models } from '@appwrite.io/console';
 
     export let show = false;
-    export let invoice: Invoice;
-    let error: string = null;
-    let isButtonDisabled = false;
+    export let invoice: Models.Invoice | null = null;
+
     let name: string;
-    let paymentMethodId: string;
-    let setAsDefault = false;
-    let showState: boolean = false;
     let state: string = '';
-    let paymentMethod: PaymentMethod | null = null;
+    let error: string = null;
+    let setAsDefault = false;
+    let isButtonDisabled = false;
+    let paymentMethodId: string;
+    let showState: boolean = false;
+    let paymentMethod: StripePaymentMethod | null = null;
+
     const endpoint = getApiEndpoint();
 
     onMount(async () => {
@@ -60,15 +62,15 @@
                     if (showState && !state) {
                         throw Error('Please select a state');
                     }
-                    let method: PaymentMethodData;
+                    let method: Models.PaymentMethod;
                     if (showState) {
                         method = await setPaymentMethod(paymentMethod.id, name, state);
                     } else {
                         const card = await submitStripeCard(name, $organization.$id);
                         // When Stripe returns an expanded PaymentMethod for US cards, we need state.
-                        if (Object.hasOwn(card, 'id') && (card as PaymentMethod)?.card) {
-                            if ((card as PaymentMethod).card?.country === 'US') {
-                                paymentMethod = card as PaymentMethod;
+                        if (Object.hasOwn(card, 'id') && (card as StripePaymentMethod)?.card) {
+                            if ((card as StripePaymentMethod).card?.country === 'US') {
+                                paymentMethod = card as StripePaymentMethod;
                                 showState = true;
                                 return;
                             }
@@ -76,10 +78,14 @@
 
                         // Otherwise, we expect an Appwrite PaymentMethodData with `$id`.
                         if (Object.hasOwn(card, '$id')) {
-                            method = card as PaymentMethodData;
+                            method = card as Models.PaymentMethod;
                         }
                     }
-                    const card = await sdk.forConsole.billing.getPaymentMethod(method.$id);
+
+                    const card = await sdk.forConsole.account.getPaymentMethod({
+                        paymentMethodId: method.$id
+                    });
+
                     if (card?.last4) {
                         paymentMethodId = card.$id;
                     } else {
@@ -87,31 +93,45 @@
                             'The payment method you selected is not valid. Please select a different one.'
                         );
                     }
-                    invalidate(Dependencies.PAYMENT_METHODS);
+
+                    await invalidate(Dependencies.PAYMENT_METHODS);
                 } catch (e) {
                     paymentMethodId = $organization.paymentMethodId;
                     error = e.message;
                 }
             }
+
             if (setAsDefault) {
-                await sdk.forConsole.billing.setDefaultPaymentMethod(paymentMethodId);
+                await sdk.forConsole.organizations.setDefaultPaymentMethod({
+                    organizationId: $organization.$id,
+                    paymentMethodId
+                });
             }
-            const { clientSecret, status } = await sdk.forConsole.billing.retryPayment(
-                $organization.$id,
-                invoice.$id,
-                paymentMethodId
-            );
+
+            const { clientSecret, status } =
+                await sdk.forConsole.organizations.createInvoicePayment({
+                    organizationId: $organization.$id,
+                    invoiceId: invoice.$id,
+                    paymentMethodId
+                });
 
             if (status !== 'succeeded' && status !== 'cancelled') {
                 // probably still pending, confirm via stripe!
-                await confirmPayment(
-                    $organization.$id,
-                    clientSecret,
-                    paymentMethodId ? paymentMethodId : $organization.paymentMethodId,
-                    `${base}/organization-${$organization.$id}/billing?type=validate-invoice&invoice=${invoice.$id}`
-                );
+                const resolvedUrl = resolve('/(console)/organization-[organization]/billing', {
+                    organization: $organization.$id
+                });
 
-                await sdk.forConsole.billing.updateInvoiceStatus($organization.$id, invoice.$id);
+                await confirmPayment({
+                    clientSecret,
+                    paymentMethodId: paymentMethodId ?? $organization.paymentMethodId,
+                    orgId: $organization.$id,
+                    route: `${resolvedUrl}?type=validate-invoice&invoice=${invoice.$id}`
+                });
+
+                await sdk.forConsole.organizations.validateInvoice({
+                    organizationId: $organization.$id,
+                    invoiceId: invoice.$id
+                });
             }
 
             invalidate(Dependencies.ORGANIZATION);

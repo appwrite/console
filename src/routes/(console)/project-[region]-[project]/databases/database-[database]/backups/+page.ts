@@ -2,8 +2,8 @@ import { getLimit, getPage, getView, pageToOffset, View } from '$lib/helpers/loa
 import { Dependencies, PAGE_LIMIT } from '$lib/constants';
 import { sdk } from '$lib/stores/sdk';
 import { Query } from '@appwrite.io/console';
-import type { BackupArchive, BackupArchiveList, BackupPolicyList } from '$lib/sdk/backups';
 import { isCloud } from '$lib/system';
+import { type Models } from '@appwrite.io/console';
 
 export const load = async ({ params, url, route, depends, parent }) => {
     depends(Dependencies.BACKUPS);
@@ -13,8 +13,8 @@ export const load = async ({ params, url, route, depends, parent }) => {
     const view = getView(url, route, View.Grid);
     const offset = pageToOffset(page, limit);
 
-    let backups: BackupArchiveList = { total: 0, archives: [] };
-    let policies: BackupPolicyList = { total: 0, policies: [] };
+    let backups: Models.BackupArchiveList = { total: 0, archives: [] };
+    let policies: Models.BackupPolicyList = { total: 0, policies: [] };
 
     // already loaded by parent.
     const { currentPlan } = await parent();
@@ -23,23 +23,23 @@ export const load = async ({ params, url, route, depends, parent }) => {
     if (isCloud && backupsEnabled) {
         try {
             [backups, policies] = await Promise.all([
-                sdk
-                    .forProject(params.region, params.project)
-                    .backups.listArchives([
+                sdk.forProject(params.region, params.project).backups.listArchives({
+                    queries: [
                         Query.limit(limit),
                         Query.offset(offset),
                         Query.orderDesc('$createdAt'),
                         Query.equal('resourceType', 'database'),
                         Query.equal('resourceId', params.database)
-                    ]),
+                    ]
+                }),
 
-                sdk
-                    .forProject(params.region, params.project)
-                    .backups.listPolicies([
+                sdk.forProject(params.region, params.project).backups.listPolicies({
+                    queries: [
                         Query.orderDesc('$createdAt'),
                         Query.equal('resourceType', 'database'),
                         Query.equal('resourceId', params.database)
-                    ])
+                    ]
+                })
             ]);
         } catch (e) {
             // ignore
@@ -59,17 +59,17 @@ export const load = async ({ params, url, route, depends, parent }) => {
     };
 };
 
-const groupArchivesByPolicy = (archives: BackupArchive[]) => {
+const groupArchivesByPolicy = (archives: Models.BackupArchive[]) => {
     return archives.reduce((acc, archive) => {
         if (!acc.has(archive.policyId)) {
             acc.set(archive.policyId, []);
         }
         acc.get(archive.policyId)!.push(archive);
         return acc;
-    }, new Map<string, BackupArchive[]>());
+    }, new Map<string, Models.BackupArchive[]>());
 };
 
-const getLatestBackupForPolicies = (policyIdMap: Map<string, BackupArchive[]>) => {
+const getLatestBackupForPolicies = (policyIdMap: Map<string, Models.BackupArchive[]>) => {
     const latestBackups = new Map<string, string | null>();
     for (const [policyId, archives] of policyIdMap) {
         const latestBackup = archives.sort(
