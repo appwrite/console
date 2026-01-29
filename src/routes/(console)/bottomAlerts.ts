@@ -14,15 +14,15 @@ const listOfPromotions: BottomModalAlertItem[] = [];
 
 if (isCloud && SHOW_IMAGINE_PROMO) {
     const imaginePromo: BottomModalAlertItem = {
-        id: 'modal:imagine.dev',
+        id: 'modal:imagine-ph-launch-console',
         backgroundComponent: Imagine,
-        title: 'Introducing Imagine',
-        message: 'The most complete AI builder to date',
+        title: 'Imagine is live on Product Hunt',
+        message: 'Ask questions, share feedback, and support the launch',
         importance: 8,
         scope: 'everywhere',
         plan: 'free',
         cta: {
-            text: 'Try it now',
+            text: 'Head to Product Hunt',
             color: {
                 light: '#FFFFFF',
                 dark: '#000000'
@@ -35,7 +35,7 @@ if (isCloud && SHOW_IMAGINE_PROMO) {
                 light: '#333333',
                 dark: '#CCCCCC'
             },
-            link: () => 'https://imagine.dev',
+            link: () => 'https://apwr.dev/imagine-ph-appwrite-console',
             external: true,
             hideOnClick: true
         },
@@ -51,10 +51,9 @@ export function addBottomModalAlerts() {
 
     listOfPromotions.forEach((promotion) => showBottomModalAlert(promotion));
 
-    // only for imagine!
     if (listOfPromotions.length > 0) {
-        const imaginePromo = listOfPromotions[0];
-        const { cta, title, message } = imaginePromo;
+        const promo = listOfPromotions[0];
+        const { cta, title, message } = promo;
         setMobileSingleAlertLayout({ enabled: true, cta, title, message });
     }
 }
