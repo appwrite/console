@@ -13,8 +13,8 @@ export type DatabaseType =
     | 'tablesdb'
     | 'documentsdb'
     | 'vectordb'
-    | 'prismapostgres'
-    | 'dedicateddb';
+    | 'prisma'
+    | 'dedicated';
 
 export type RecordType = ImplementedDBTypes[keyof ImplementedDBTypes]['record'];
 
@@ -67,12 +67,12 @@ export const baseTerminology = {
         record: 'document'
     },
     vectordb: {},
-    prismapostgres: {
+    prisma: {
         entity: 'table',
         field: 'column',
         record: 'row'
     },
-    dedicateddb: {
+    dedicated: {
         entity: 'table',
         field: 'column',
         record: 'row'

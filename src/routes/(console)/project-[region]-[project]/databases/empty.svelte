@@ -79,7 +79,7 @@
 
         <!-- Prisma Postgres -->
         {@render databaseTypeCard({
-            type: 'prismapostgres',
+            type: 'prisma',
             title: 'Prisma Postgres',
             subtitle:
                 'Managed PostgreSQL with direct connections. Best for high-performance SQL workloads.',
@@ -89,7 +89,7 @@
 
         <!-- Dedicated Database -->
         {@render databaseTypeCard({
-            type: 'dedicateddb',
+            type: 'dedicated',
             title: 'DedicatedDB',
             subtitle:
                 'Always-on dedicated database instances with high availability. Best for production workloads.',

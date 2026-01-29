@@ -44,7 +44,7 @@
 
     // Check if this is a dedicated database type
     const isDedicatedType = $derived(
-        terminology.type === 'prismapostgres' || terminology.type === 'dedicateddb'
+        terminology.type === 'prisma' || terminology.type === 'dedicated'
     );
 
     const entityTypePlural = terminology.entity.lower.plural;

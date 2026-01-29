@@ -112,11 +112,6 @@ export function useDatabaseSdk(
         region = regionOrPage?.params?.region || '';
         project = regionOrPage?.params?.project || '';
     } else {
-        if (!databaseType) {
-            throw new Error(
-                'databaseType is required when passing string parameters to useDatabaseSdk'
-            );
-        }
         type = databaseType;
         region = regionOrPage as string;
         project = projectOrTerminology as string;
@@ -134,7 +129,7 @@ export function useDatabaseSdk(
                 case 'documentsdb': {
                     return await baseSdk.documentsDB.create(params);
                 }
-                case 'prismapostgres': {
+                case 'prisma': {
                     // Prisma databases are created via the compute/databases endpoint
                     // with backend: 'prisma'
                     const prismaParams = params as DedicatedDatabaseParams;
@@ -147,7 +142,7 @@ export function useDatabaseSdk(
                         tier: prismaParams.tier
                     })) as unknown as Models.Database;
                 }
-                case 'dedicateddb': {
+                case 'dedicated': {
                     // Dedicated databases are created via the compute/databases endpoint
                     // with backend: 'appwrite'
                     const dedicatedParams = params as DedicatedDatabaseParams;
@@ -192,7 +187,9 @@ export function useDatabaseSdk(
         async createEntity(params) {
             switch (type ?? params.databaseType) {
                 case 'legacy': /* databases api */
-                case 'tablesdb': {
+                case 'tablesdb':
+                case 'prisma':
+                case 'dedicated': {
                     const table = await baseSdk.tablesDB.createTable({
                         ...params,
                         tableId: params.entityId
@@ -217,7 +214,9 @@ export function useDatabaseSdk(
         async listEntities(params) {
             switch (type ?? params.databaseType) {
                 case 'legacy': /* databases api */
-                case 'tablesdb': {
+                case 'tablesdb':
+                case 'prisma':
+                case 'dedicated': {
                     const { total, tables } = await baseSdk.tablesDB.listTables(params);
                     return { total, entities: tables.map(toSupportiveEntity) };
                 }
@@ -236,7 +235,9 @@ export function useDatabaseSdk(
         async getEntity(params) {
             switch (type ?? params.databaseType) {
                 case 'legacy': /* databases api */
-                case 'tablesdb': {
+                case 'tablesdb':
+                case 'prisma':
+                case 'dedicated': {
                     const table = await baseSdk.tablesDB.getTable({
                         databaseId: params.databaseId,
                         tableId: params.entityId
@@ -264,8 +265,8 @@ export function useDatabaseSdk(
                     return await baseSdk.tablesDB.delete(params);
                 case 'documentsdb':
                     return await baseSdk.documentsDB.delete(params);
-                case 'prismapostgres':
-                case 'dedicateddb':
+                case 'prisma':
+                case 'dedicated':
                     await baseSdk.dedicatedDatabases.delete(params);
                     return {};
                 case 'vectordb':
@@ -279,6 +280,8 @@ export function useDatabaseSdk(
             switch (type ?? params.databaseType) {
                 case 'legacy': /* databases api */
                 case 'tablesdb':
+                case 'prisma':
+                case 'dedicated':
                     return await baseSdk.tablesDB.deleteTable({
                         databaseId: params.databaseId,
                         tableId: params.entityId
@@ -299,6 +302,8 @@ export function useDatabaseSdk(
             switch (type ?? params.databaseType) {
                 case 'legacy': /* databases api */
                 case 'tablesdb':
+                case 'prisma':
+                case 'dedicated':
                     return await baseSdk.tablesDB.createRow({
                         databaseId: params.databaseId,
                         tableId: params.entityId,
@@ -325,6 +330,8 @@ export function useDatabaseSdk(
             switch (type ?? params.databaseType) {
                 case 'legacy': /* databases api */
                 case 'tablesdb':
+                case 'prisma':
+                case 'dedicated':
                     return await baseSdk.tablesDB.updateRow({
                         databaseId: params.databaseId,
                         tableId: params.entityId,
@@ -351,6 +358,8 @@ export function useDatabaseSdk(
             switch (type ?? params.databaseType) {
                 case 'legacy': /* databases api */
                 case 'tablesdb':
+                case 'prisma':
+                case 'dedicated':
                     return await baseSdk.tablesDB.updateRow({
                         databaseId: params.databaseId,
                         tableId: params.entityId,
@@ -374,7 +383,9 @@ export function useDatabaseSdk(
         async deleteRecord(params) {
             switch (type ?? params.databaseType) {
                 case 'legacy': /* databases api */
-                case 'tablesdb': {
+                case 'tablesdb':
+                case 'prisma':
+                case 'dedicated': {
                     const row = await baseSdk.tablesDB.deleteRow({
                         databaseId: params.databaseId,
                         tableId: params.entityId,
@@ -400,7 +411,9 @@ export function useDatabaseSdk(
         async deleteRecords(params) {
             switch (type ?? params.databaseType) {
                 case 'legacy': /* databases api */
-                case 'tablesdb': {
+                case 'tablesdb':
+                case 'prisma':
+                case 'dedicated': {
                     const { total, rows } = await baseSdk.tablesDB.deleteRows({
                         databaseId: params.databaseId,
                         tableId: params.entityId,

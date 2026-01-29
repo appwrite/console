@@ -72,13 +72,13 @@
             icon: Mongo
         },
         {
-            type: 'prismapostgres',
+            type: 'prisma',
             title: 'Prisma Postgres',
             subtitle:
                 'Managed PostgreSQL with direct connections. Best for high-performance SQL workloads.'
         },
         {
-            type: 'dedicateddb',
+            type: 'dedicated',
             title: 'DedicatedDB',
             subtitle:
                 'Always-on dedicated instances with high availability. Best for production workloads.'
@@ -116,9 +116,9 @@
     let highAvailability = $state(false);
 
     // Helper to check database type capabilities
-    const showRegionSelect = $derived(type === 'prismapostgres' || type === 'dedicateddb');
-    const showTierSelect = $derived(type === 'dedicateddb');
-    const showEngineSelect = $derived(type === 'dedicateddb');
+    const showRegionSelect = $derived(type === 'prisma' || type === 'dedicated');
+    const showTierSelect = $derived(type === 'dedicated');
+    const showEngineSelect = $derived(type === 'dedicated');
 
     // Backup system varies by database type
     const backupSystem = $derived.by(() => {
@@ -126,9 +126,9 @@
             case 'tablesdb':
             case 'documentsdb':
                 return 'appwrite';
-            case 'prismapostgres':
+            case 'prisma':
                 return 'prisma';
-            case 'dedicateddb':
+            case 'dedicated':
                 return 'dedicated';
             default:
                 return 'appwrite';
@@ -236,14 +236,14 @@
             let database: Models.Database;
             const databaseSdk = useDatabaseSdk(page.params.region, page.params.project);
 
-            if (type === 'prismapostgres') {
+            if (type === 'prisma') {
                 database = await databaseSdk.create(type, {
                     databaseId,
                     name: databaseName,
                     region: selectedRegion,
                     tier: selectedTier
                 } as DedicatedDatabaseParams);
-            } else if (type === 'dedicateddb') {
+            } else if (type === 'dedicated') {
                 database = await databaseSdk.create(type, {
                     databaseId,
                     name: databaseName,

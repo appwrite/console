@@ -12,7 +12,7 @@ type DatabaseWithType = Models.Database & {
 };
 
 function isDedicatedDatabaseType(type: string | undefined): boolean {
-    return type === 'prismapostgres' || type === 'dedicateddb';
+    return type === 'prisma' || type === 'dedicated';
 }
 
 export const load: LayoutLoad = async ({ params, depends }) => {

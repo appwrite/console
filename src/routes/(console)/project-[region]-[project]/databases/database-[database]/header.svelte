@@ -22,8 +22,8 @@
 
     // Check if this is a dedicated database type
     const isDedicatedType = $derived(
-        (database?.type as DatabaseType) === 'prismapostgres' ||
-            (database?.type as DatabaseType) === 'dedicateddb'
+        (database?.type as DatabaseType) === 'prisma' ||
+            (database?.type as DatabaseType) === 'dedicated'
     );
 
     const tabs = $derived(
