@@ -14,7 +14,7 @@ const listOfPromotions: BottomModalAlertItem[] = [];
 
 if (isCloud && SHOW_IMAGINE_PROMO) {
     const imaginePromo: BottomModalAlertItem = {
-        id: 'modal:imagine-ph-launch-console',
+        id: 'modal:imagine-ph-launch-studio',
         backgroundComponent: Imagine,
         title: 'Imagine is live on Product Hunt',
         message: 'Ask questions, share feedback, and support the launch',
@@ -35,7 +35,7 @@ if (isCloud && SHOW_IMAGINE_PROMO) {
                 light: '#333333',
                 dark: '#CCCCCC'
             },
-            link: () => 'https://apwr.dev/imagine-ph-appwrite-console',
+            link: () => 'https://apwr.dev/imagine-ph-studio',
             external: true,
             hideOnClick: true
         },
@@ -51,9 +51,10 @@ export function addBottomModalAlerts() {
 
     listOfPromotions.forEach((promotion) => showBottomModalAlert(promotion));
 
+    // only for imagine!
     if (listOfPromotions.length > 0) {
-        const promo = listOfPromotions[0];
-        const { cta, title, message } = promo;
+        const imaginePromo = listOfPromotions[0];
+        const { cta, title, message } = imaginePromo;
         setMobileSingleAlertLayout({ enabled: true, cta, title, message });
     }
 }
