@@ -4,9 +4,6 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-overrides:
-  seroval: ^1.4.1
-
 importers:
 
   .:
@@ -3012,10 +3009,10 @@ packages:
     resolution: {integrity: sha512-16OL3NnUBw8JG1jBLUoZJsLnQq0n5Ua6aHalhJK4fMQkz1lqR7Osz1sA30trBtd9VUDc2NgkuRCn8+/pBwqZ+w==}
     engines: {node: '>=10'}
     peerDependencies:
-      seroval: ^1.4.1
+      seroval: ^1.0
 
-  seroval@1.5.0:
-    resolution: {integrity: sha512-OE4cvmJ1uSPrKorFIH9/w/Qwuvi/IMcGbv5RKgcJ/zjA/IohDLU6SVaxFN9FwajbP7nsX0dQqMDes1whk3y+yw==}
+  seroval@1.3.2:
+    resolution: {integrity: sha512-RbcPH1n5cfwKrru7v7+zrZvjLurgHhGyso3HTyGtRivGWgYjbOmGuivCQaORNELjNONoK35nj28EoWul9sb1zQ==}
     engines: {node: '>=10'}
 
   set-cookie-parser@2.7.2:
@@ -6586,11 +6583,11 @@ snapshots:
 
   semver@7.7.3: {}
 
-  seroval-plugins@1.3.3(seroval@1.5.0):
+  seroval-plugins@1.3.3(seroval@1.3.2):
     dependencies:
-      seroval: 1.5.0
+      seroval: 1.3.2
 
-  seroval@1.5.0: {}
+  seroval@1.3.2: {}
 
   set-cookie-parser@2.7.2: {}
 
@@ -6668,8 +6665,8 @@ snapshots:
   solid-js@1.9.10:
     dependencies:
       csstype: 3.2.3
-      seroval: 1.5.0
-      seroval-plugins: 1.3.3(seroval@1.5.0)
+      seroval: 1.3.2
+      seroval-plugins: 1.3.3(seroval@1.3.2)
 
   solid-swr-store@0.10.7(solid-js@1.9.10)(swr-store@0.10.6):
     dependencies:
