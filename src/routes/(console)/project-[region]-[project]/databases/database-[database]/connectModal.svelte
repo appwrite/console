@@ -5,20 +5,15 @@
     import { IconDuplicate } from '@appwrite.io/pink-icons-svelte';
     import { copy } from '$lib/helpers/copy';
     import { addNotification } from '$lib/stores/notifications';
-    import type {
-        DedicatedDatabase,
-        DedicatedDatabaseCredentials
-    } from '$lib/sdk/dedicatedDatabases';
+    import type { DedicatedDatabase } from '$lib/sdk/dedicatedDatabases';
 
     let {
         show = $bindable(false),
         database,
-        credentials,
         connectionCommand
     }: {
         show: boolean;
         database: DedicatedDatabase;
-        credentials: DedicatedDatabaseCredentials | null;
         connectionCommand: string;
     } = $props();
 
@@ -48,8 +43,8 @@
     }
 
     async function copyConnectionString() {
-        if (!credentials) return;
-        const success = await copy(credentials.connectionString);
+        if (!database.connectionString) return;
+        const success = await copy(database.connectionString);
         if (success) {
             addNotification({
                 type: 'success',
@@ -91,8 +86,8 @@
             <Typography.Text variant="m-400">
                 Use this URI to connect from your application or database client.
             </Typography.Text>
-            {#if credentials}
-                <CopyInput value={credentials.connectionString} />
+            {#if database.connectionString}
+                <CopyInput value={database.connectionString} />
             {/if}
         </Layout.Stack>
 
@@ -116,21 +111,19 @@
             <div class="reference-grid">
                 <div class="reference-item">
                     <Typography.Text variant="m-500">Host</Typography.Text>
-                    <Typography.Text variant="m-400">{credentials?.host ?? '-'}</Typography.Text>
+                    <Typography.Text variant="m-400">{database.hostname || '-'}</Typography.Text>
                 </div>
                 <div class="reference-item">
                     <Typography.Text variant="m-500">Port</Typography.Text>
-                    <Typography.Text variant="m-400">{credentials?.port ?? '-'}</Typography.Text>
+                    <Typography.Text variant="m-400">{database.connectionPort || '-'}</Typography.Text>
                 </div>
                 <div class="reference-item">
                     <Typography.Text variant="m-500">Database</Typography.Text>
-                    <Typography.Text variant="m-400"
-                        >{credentials?.database ?? '-'}</Typography.Text>
+                    <Typography.Text variant="m-400">postgres</Typography.Text>
                 </div>
                 <div class="reference-item">
                     <Typography.Text variant="m-500">Username</Typography.Text>
-                    <Typography.Text variant="m-400"
-                        >{credentials?.username ?? '-'}</Typography.Text>
+                    <Typography.Text variant="m-400">{database.connectionUser || '-'}</Typography.Text>
                 </div>
             </div>
         </Layout.Stack>

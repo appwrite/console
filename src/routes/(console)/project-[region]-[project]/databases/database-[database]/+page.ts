@@ -5,7 +5,7 @@ import { CARD_LIMIT, Dependencies } from '$lib/constants';
 import { type DatabaseType, useDatabaseSdk } from '$database/(entity)';
 
 export const load: PageLoad = async ({ params, url, route, depends, parent }) => {
-    const { database, dedicatedDatabase, credentials } = await parent();
+    const { database, dedicatedDatabase } = await parent();
     depends(Dependencies.TABLES);
 
     const databaseType = database.type as DatabaseType;
@@ -21,8 +21,7 @@ export const load: PageLoad = async ({ params, url, route, depends, parent }) =>
             view: View.Grid,
             entities: { total: 0, entities: [] },
             isDedicatedType: true,
-            dedicatedDatabase,
-            credentials
+            dedicatedDatabase
         };
     }
 
@@ -46,7 +45,6 @@ export const load: PageLoad = async ({ params, url, route, depends, parent }) =>
         view,
         entities,
         isDedicatedType: false,
-        dedicatedDatabase: null,
-        credentials: null
+        dedicatedDatabase: null
     };
 };

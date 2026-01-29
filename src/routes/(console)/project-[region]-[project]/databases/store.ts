@@ -23,8 +23,15 @@ export const columns = writable<Column[]>(
           ]
 );
 
-export function getDatabaseTypeTitle(database: Models.Database) {
+export function getDatabaseTypeTitle(database: Models.Database & { engine?: string }) {
     switch (database.type as DatabaseType) {
+        case 'prisma':
+            return 'Prisma Postgres';
+        case 'dedicated': {
+            const engine = database.engine || 'postgres';
+            const engineName = engine === 'postgres' ? 'PostgreSQL' : engine === 'mysql' ? 'MySQL' : engine;
+            return `Dedicated ${engineName}`;
+        }
         default:
         case 'legacy':
         case 'tablesdb':

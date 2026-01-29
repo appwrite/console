@@ -187,15 +187,16 @@ export function useDatabaseSdk(
         async createEntity(params) {
             switch (type ?? params.databaseType) {
                 case 'legacy': /* databases api */
-                case 'tablesdb':
-                case 'prisma':
-                case 'dedicated': {
+                case 'tablesdb': {
                     const table = await baseSdk.tablesDB.createTable({
                         ...params,
                         tableId: params.entityId
                     });
                     return toSupportiveEntity(table);
                 }
+                case 'prisma':
+                case 'dedicated':
+                    throw new Error('External databases do not support entity creation via Appwrite');
                 case 'documentsdb': {
                     const table = await baseSdk.documentsDB.createCollection({
                         ...params,
@@ -214,11 +215,14 @@ export function useDatabaseSdk(
         async listEntities(params) {
             switch (type ?? params.databaseType) {
                 case 'legacy': /* databases api */
-                case 'tablesdb':
-                case 'prisma':
-                case 'dedicated': {
+                case 'tablesdb': {
                     const { total, tables } = await baseSdk.tablesDB.listTables(params);
                     return { total, entities: tables.map(toSupportiveEntity) };
+                }
+                case 'prisma':
+                case 'dedicated': {
+                    // External databases don't have entities managed by Appwrite
+                    return { total: 0, entities: [] };
                 }
                 case 'documentsdb': {
                     const { total, collections } =
@@ -235,15 +239,16 @@ export function useDatabaseSdk(
         async getEntity(params) {
             switch (type ?? params.databaseType) {
                 case 'legacy': /* databases api */
-                case 'tablesdb':
-                case 'prisma':
-                case 'dedicated': {
+                case 'tablesdb': {
                     const table = await baseSdk.tablesDB.getTable({
                         databaseId: params.databaseId,
                         tableId: params.entityId
                     });
                     return toSupportiveEntity(table);
                 }
+                case 'prisma':
+                case 'dedicated':
+                    throw new Error('External databases do not support entity retrieval via Appwrite');
                 case 'documentsdb': {
                     const table = await baseSdk.documentsDB.getCollection({
                         databaseId: params.databaseId,
@@ -280,12 +285,13 @@ export function useDatabaseSdk(
             switch (type ?? params.databaseType) {
                 case 'legacy': /* databases api */
                 case 'tablesdb':
-                case 'prisma':
-                case 'dedicated':
                     return await baseSdk.tablesDB.deleteTable({
                         databaseId: params.databaseId,
                         tableId: params.entityId
                     });
+                case 'prisma':
+                case 'dedicated':
+                    throw new Error('External databases do not support entity deletion via Appwrite');
                 case 'documentsdb':
                     return await baseSdk.documentsDB.deleteCollection({
                         databaseId: params.databaseId,
@@ -302,8 +308,6 @@ export function useDatabaseSdk(
             switch (type ?? params.databaseType) {
                 case 'legacy': /* databases api */
                 case 'tablesdb':
-                case 'prisma':
-                case 'dedicated':
                     return await baseSdk.tablesDB.createRow({
                         databaseId: params.databaseId,
                         tableId: params.entityId,
@@ -311,6 +315,9 @@ export function useDatabaseSdk(
                         data: params.data,
                         permissions: params.permissions
                     });
+                case 'prisma':
+                case 'dedicated':
+                    throw new Error('External databases do not support record creation via Appwrite');
                 case 'documentsdb':
                     return await baseSdk.documentsDB.createDocument({
                         databaseId: params.databaseId,
@@ -330,8 +337,6 @@ export function useDatabaseSdk(
             switch (type ?? params.databaseType) {
                 case 'legacy': /* databases api */
                 case 'tablesdb':
-                case 'prisma':
-                case 'dedicated':
                     return await baseSdk.tablesDB.updateRow({
                         databaseId: params.databaseId,
                         tableId: params.entityId,
@@ -339,6 +344,9 @@ export function useDatabaseSdk(
                         data: params.data,
                         permissions: params.permissions
                     });
+                case 'prisma':
+                case 'dedicated':
+                    throw new Error('External databases do not support record updates via Appwrite');
                 case 'documentsdb':
                     return await baseSdk.documentsDB.upsertDocument({
                         databaseId: params.databaseId,
@@ -358,14 +366,15 @@ export function useDatabaseSdk(
             switch (type ?? params.databaseType) {
                 case 'legacy': /* databases api */
                 case 'tablesdb':
-                case 'prisma':
-                case 'dedicated':
                     return await baseSdk.tablesDB.updateRow({
                         databaseId: params.databaseId,
                         tableId: params.entityId,
                         rowId: params.recordId,
                         permissions: params.permissions
                     });
+                case 'prisma':
+                case 'dedicated':
+                    throw new Error('External databases do not support permission updates via Appwrite');
                 case 'documentsdb':
                     return await baseSdk.documentsDB.upsertDocument({
                         databaseId: params.databaseId,
@@ -383,9 +392,7 @@ export function useDatabaseSdk(
         async deleteRecord(params) {
             switch (type ?? params.databaseType) {
                 case 'legacy': /* databases api */
-                case 'tablesdb':
-                case 'prisma':
-                case 'dedicated': {
+                case 'tablesdb': {
                     const row = await baseSdk.tablesDB.deleteRow({
                         databaseId: params.databaseId,
                         tableId: params.entityId,
@@ -393,6 +400,9 @@ export function useDatabaseSdk(
                     });
                     return toSupportiveRecord(row);
                 }
+                case 'prisma':
+                case 'dedicated':
+                    throw new Error('External databases do not support record deletion via Appwrite');
                 case 'documentsdb': {
                     const document = await baseSdk.documentsDB.deleteDocument({
                         databaseId: params.databaseId,
@@ -411,9 +421,7 @@ export function useDatabaseSdk(
         async deleteRecords(params) {
             switch (type ?? params.databaseType) {
                 case 'legacy': /* databases api */
-                case 'tablesdb':
-                case 'prisma':
-                case 'dedicated': {
+                case 'tablesdb': {
                     const { total, rows } = await baseSdk.tablesDB.deleteRows({
                         databaseId: params.databaseId,
                         tableId: params.entityId,
@@ -421,6 +429,9 @@ export function useDatabaseSdk(
                     });
                     return { total, records: rows.map(toSupportiveRecord) };
                 }
+                case 'prisma':
+                case 'dedicated':
+                    throw new Error('External databases do not support bulk record deletion via Appwrite');
                 case 'documentsdb': {
                     const { total, documents } = await baseSdk.documentsDB.deleteDocuments({
                         databaseId: params.databaseId,

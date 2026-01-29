@@ -1,7 +1,7 @@
 <script lang="ts">
     import { page } from '$app/state';
     import { invalidate } from '$app/navigation';
-    import { CardGrid, CopyInput, Copy } from '$lib/components';
+    import { CardGrid, CopyInput, Copy, Code, Status } from '$lib/components';
     import { Button, InputSecret } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import { toLocaleDateTime } from '$lib/helpers/date';
@@ -9,10 +9,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { Dependencies } from '$lib/constants';
     import { trackEvent } from '$lib/actions/analytics';
-    import type {
-        DedicatedDatabase,
-        DedicatedDatabaseCredentials
-    } from '$lib/sdk/dedicatedDatabases';
+    import type { DedicatedDatabase } from '$lib/sdk/dedicatedDatabases';
     import {
         Badge,
         Layout,
@@ -20,49 +17,56 @@
         Alert,
         Icon,
         Input,
-        Skeleton
+        Skeleton,
+        Tabs,
+        Divider,
+        Card
     } from '@appwrite.io/pink-svelte';
-    import { IconDuplicate, IconTerminal, IconRefresh } from '@appwrite.io/pink-icons-svelte';
-    import ConnectModal from './connectModal.svelte';
+    import { IconDuplicate, IconRefresh } from '@appwrite.io/pink-icons-svelte';
 
     const {
-        database,
-        credentials
+        database
     }: {
         database: DedicatedDatabase;
-        credentials: DedicatedDatabaseCredentials | null;
     } = $props();
 
-    let showConnectModal = $state(false);
     let isRefreshing = $state(false);
     let isColdStarting = $state(false);
+    let connectionTab = $state<'direct' | 'string'>('direct');
 
-    // Status badge type mapping
-    const statusBadgeType = $derived.by((): 'success' | 'warning' | 'error' | undefined => {
+    // Check if this is a Prisma database
+    const isPrisma = $derived(database.backend === 'prisma');
+
+    // Map database status to Status component status
+    const statusComponentStatus = $derived.by((): 'ready' | 'processing' | 'failed' | 'pending' => {
         switch (database.status) {
             case 'ready':
-                return 'success';
+                return 'ready';
             case 'provisioning':
-            case 'deleting':
-                return 'warning';
+            case 'scaling':
+            case 'restoring':
+                return 'processing';
             case 'failed':
             case 'deleted':
-                return 'error';
+                return 'failed';
+            case 'inactive':
+            case 'paused':
             default:
-                return undefined;
+                return 'pending';
         }
     });
 
-    // Container status badge type
-    const containerBadgeType = $derived.by((): 'success' | 'warning' | undefined => {
+    // Map container status to Status component status
+    const containerComponentStatus = $derived.by((): 'ready' | 'processing' | 'pending' => {
         switch (database.containerStatus) {
             case 'running':
-                return 'success';
+            case 'active':
+                return 'ready';
             case 'starting':
-                return 'warning';
+                return 'processing';
             case 'inactive':
             default:
-                return undefined;
+                return 'pending';
         }
     });
 
@@ -96,6 +100,10 @@
             default:
                 return engine;
         }
+    }
+
+    function capitalizeFirst(str: string): string {
+        return str.charAt(0).toUpperCase() + str.slice(1);
     }
 
     async function refreshStatus() {
@@ -142,50 +150,47 @@
         }
     }
 
+    // Check if connection details are available
+    const hasConnectionDetails = $derived(
+        database.hostname && database.connectionUser && database.connectionPassword
+    );
+
     // Generate connection command based on engine
     function getConnectionCommand(): string {
-        if (!credentials) return '';
+        if (!hasConnectionDetails) return '';
 
         switch (database.engine) {
             case 'postgres':
-                return `psql "postgresql://${credentials.username}:${credentials.password}@${credentials.host}:${credentials.port}/${credentials.database}"`;
+                return `psql "${database.connectionString}"`;
             case 'mysql':
             case 'mariadb':
-                return `mysql -h ${credentials.host} -P ${credentials.port} -u ${credentials.username} -p${credentials.password} ${credentials.database}`;
+                return `mysql -h ${database.hostname} -P ${database.connectionPort} -u ${database.connectionUser} -p${database.connectionPassword} postgres`;
             default:
-                return credentials.connectionString;
+                return database.connectionString;
         }
     }
 </script>
 
-<Container databasesMainScreen>
-    <!-- Status Section -->
+<Container>
+    <!-- Status Card -->
     <CardGrid>
         <svelte:fragment slot="title">Status</svelte:fragment>
         <svelte:fragment slot="aside">
             <Layout.Stack gap="l">
-                <Layout.Stack direction="row" gap="l" alignItems="center">
-                    <Layout.Stack gap="xxs">
-                        <Typography.Text variant="m-500">Database Status</Typography.Text>
-                        <Badge
-                            type={statusBadgeType}
-                            variant="secondary"
-                            size="s"
-                            content={database.status.charAt(0).toUpperCase() +
-                                database.status.slice(1)} />
-                    </Layout.Stack>
+                <Layout.Stack direction="row" gap="xl" alignItems="center" wrap>
+                    <Status status={statusComponentStatus}>
+                        {capitalizeFirst(database.status)}
+                    </Status>
 
-                    {#if database.containerStatus}
-                        <Layout.Stack gap="xxs">
-                            <Typography.Text variant="m-500">Container</Typography.Text>
-                            <Badge
-                                type={containerBadgeType}
-                                variant="secondary"
-                                size="s"
-                                content={database.containerStatus.charAt(0).toUpperCase() +
-                                    database.containerStatus.slice(1)} />
-                        </Layout.Stack>
+                    {#if database.containerStatus && !isPrisma}
+                        <Status status={containerComponentStatus}>
+                            Container: {capitalizeFirst(database.containerStatus)}
+                        </Status>
                     {/if}
+
+                    <Typography.Text variant="m-500">
+                        {database.region.toUpperCase()}
+                    </Typography.Text>
                 </Layout.Stack>
 
                 {#if database.error}
@@ -194,14 +199,18 @@
                     </Alert.Inline>
                 {/if}
 
-                <div class="grid-1-2-col-2">
-                    <p>Created: {toLocaleDateTime(database.$createdAt)}</p>
-                    <p>Last updated: {toLocaleDateTime(database.$updatedAt)}</p>
-                </div>
+                <Layout.Stack direction="row" gap="xl" wrap>
+                    <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                        Created {toLocaleDateTime(database.$createdAt)}
+                    </Typography.Caption>
+                    <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                        Updated {toLocaleDateTime(database.$updatedAt)}
+                    </Typography.Caption>
+                </Layout.Stack>
             </Layout.Stack>
         </svelte:fragment>
         <svelte:fragment slot="actions">
-            {#if database.containerStatus === 'inactive'}
+            {#if database.containerStatus === 'inactive' && !isPrisma}
                 <Button secondary disabled={isColdStarting} on:click={triggerColdStart}>
                     {isColdStarting ? 'Starting...' : 'Start Database'}
                 </Button>
@@ -213,43 +222,72 @@
         </svelte:fragment>
     </CardGrid>
 
-    <!-- Connection Settings Section -->
-    {#if database.status === 'ready' && credentials}
+    <!-- Connection Settings -->
+    {#if database.status === 'ready' && hasConnectionDetails}
         <CardGrid>
-            <svelte:fragment slot="title">Connection Settings</svelte:fragment>
-            Use these credentials to connect to your database directly.
+            <svelte:fragment slot="title">Connection</svelte:fragment>
+            Use these credentials to connect to your database.
             <svelte:fragment slot="aside">
-                <Layout.Stack gap="m">
-                    <CopyInput label="Host" value={credentials.host} />
-                    <CopyInput label="Port" value={String(credentials.port)} />
-                    <CopyInput label="Database" value={credentials.database} />
-                    <CopyInput label="Username" value={credentials.username} />
-
-                    <!-- Password with show/hide toggle -->
-                    <div class="password-field">
-                        <InputSecret id="password" label="Password" value={credentials.password} />
-                        <div class="password-copy">
-                            <Copy value={credentials.password}>
-                                <Input.Action icon={IconDuplicate} />
-                            </Copy>
-                        </div>
+                <Layout.Stack gap="l">
+                    <div>
+                        <Tabs.Root variant="secondary" let:root>
+                            <Tabs.Item.Button
+                                {root}
+                                on:click={() => (connectionTab = 'direct')}
+                                active={connectionTab === 'direct'}>
+                                Direct Connection
+                            </Tabs.Item.Button>
+                            <Tabs.Item.Button
+                                {root}
+                                on:click={() => (connectionTab = 'string')}
+                                active={connectionTab === 'string'}>
+                                Connection String
+                            </Tabs.Item.Button>
+                        </Tabs.Root>
+                        <Divider />
                     </div>
 
-                    <CopyInput label="Connection String" value={credentials.connectionString} />
+                    {#if connectionTab === 'direct'}
+                        <Layout.Grid columns={2} columnsS={1} gap="m">
+                            <CopyInput label="Host" value={database.hostname} />
+                            <CopyInput label="Port" value={String(database.connectionPort)} />
+                            <CopyInput label="Username" value={database.connectionUser} />
+                            <div class="password-field">
+                                <InputSecret
+                                    id="password"
+                                    label="Password"
+                                    value={database.connectionPassword} />
+                                <div class="password-copy">
+                                    <Copy value={database.connectionPassword}>
+                                        <Input.Action icon={IconDuplicate} />
+                                    </Copy>
+                                </div>
+                            </div>
+                        </Layout.Grid>
+                        <CopyInput label="Database" value="postgres" />
+                    {:else}
+                        <Layout.Stack gap="m">
+                            <CopyInput
+                                label="Connection String"
+                                value={database.connectionString} />
+                            <Layout.Stack gap="xs">
+                                <Typography.Caption
+                                    variant="400"
+                                    color="--fgcolor-neutral-tertiary">
+                                    Terminal Command
+                                </Typography.Caption>
+                                <Code language="bash" code={getConnectionCommand()} withCopy />
+                            </Layout.Stack>
+                        </Layout.Stack>
+                    {/if}
                 </Layout.Stack>
-            </svelte:fragment>
-            <svelte:fragment slot="actions">
-                <Button secondary on:click={() => (showConnectModal = true)}>
-                    <Icon icon={IconTerminal} size="s" slot="start" />
-                    Connect
-                </Button>
             </svelte:fragment>
         </CardGrid>
     {:else if database.status === 'provisioning'}
         <CardGrid>
-            <svelte:fragment slot="title">Connection Settings</svelte:fragment>
+            <svelte:fragment slot="title">Connection</svelte:fragment>
             <svelte:fragment slot="aside">
-                <Layout.Stack gap="m">
+                <Layout.Stack gap="l">
                     <Alert.Inline status="info" title="Provisioning in progress">
                         Your database is being set up. Connection details will be available once
                         provisioning is complete.
@@ -264,53 +302,69 @@
         </CardGrid>
     {/if}
 
-    <!-- Resources Section -->
+    <!-- Resources -->
     <CardGrid>
         <svelte:fragment slot="title">Resources</svelte:fragment>
+        Your database configuration and allocated resources.
         <svelte:fragment slot="aside">
-            <Layout.Stack gap="m">
-                <Layout.Grid columns={2} columnsXS={1} gap="l">
-                    <Layout.Stack gap="xxs">
-                        <Typography.Text variant="m-500">Engine</Typography.Text>
-                        <Typography.Text
-                            >{getEngineDisplayName(database.engine)}
-                            {database.version}</Typography.Text>
-                    </Layout.Stack>
-                    <Layout.Stack gap="xxs">
-                        <Typography.Text variant="m-500">Tier</Typography.Text>
-                        <Typography.Text
-                            >{database.tier.charAt(0).toUpperCase() +
-                                database.tier.slice(1)}</Typography.Text>
-                    </Layout.Stack>
-                    <Layout.Stack gap="xxs">
-                        <Typography.Text variant="m-500">CPU</Typography.Text>
-                        <Typography.Text>{cpuDisplay}</Typography.Text>
-                    </Layout.Stack>
-                    <Layout.Stack gap="xxs">
-                        <Typography.Text variant="m-500">Memory</Typography.Text>
-                        <Typography.Text>{memoryDisplay}</Typography.Text>
-                    </Layout.Stack>
-                    <Layout.Stack gap="xxs">
-                        <Typography.Text variant="m-500">Storage</Typography.Text>
-                        <Typography.Text>{storageDisplay}</Typography.Text>
-                    </Layout.Stack>
-                    <Layout.Stack gap="xxs">
-                        <Typography.Text variant="m-500">Storage Class</Typography.Text>
-                        <Typography.Text>{database.storageClass}</Typography.Text>
-                    </Layout.Stack>
-                </Layout.Grid>
-            </Layout.Stack>
+            <Layout.Grid columns={3} columnsM={2} columnsS={1} gap="l">
+                <Layout.Stack gap="xxs">
+                    <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                        Engine
+                    </Typography.Caption>
+                    <Typography.Text variant="m-500">
+                        {getEngineDisplayName(database.engine)} {database.version}
+                    </Typography.Text>
+                </Layout.Stack>
+                <Layout.Stack gap="xxs">
+                    <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                        Tier
+                    </Typography.Caption>
+                    <Typography.Text variant="m-500">
+                        {capitalizeFirst(database.tier)}
+                    </Typography.Text>
+                </Layout.Stack>
+                <Layout.Stack gap="xxs">
+                    <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                        Backend
+                    </Typography.Caption>
+                    <Typography.Text variant="m-500">
+                        {capitalizeFirst(database.backend)}
+                    </Typography.Text>
+                </Layout.Stack>
+                <Layout.Stack gap="xxs">
+                    <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                        CPU
+                    </Typography.Caption>
+                    <Typography.Text variant="m-500">{cpuDisplay}</Typography.Text>
+                </Layout.Stack>
+                <Layout.Stack gap="xxs">
+                    <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                        Memory
+                    </Typography.Caption>
+                    <Typography.Text variant="m-500">{memoryDisplay}</Typography.Text>
+                </Layout.Stack>
+                <Layout.Stack gap="xxs">
+                    <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                        Storage
+                    </Typography.Caption>
+                    <Typography.Text variant="m-500">{storageDisplay}</Typography.Text>
+                </Layout.Stack>
+            </Layout.Grid>
         </svelte:fragment>
     </CardGrid>
 
-    <!-- High Availability Section -->
-    <CardGrid>
-        <svelte:fragment slot="title">High Availability</svelte:fragment>
-        <svelte:fragment slot="aside">
-            <Layout.Stack gap="m">
-                <Layout.Grid columns={2} columnsXS={1} gap="l">
+    <!-- High Availability - Only show for non-Prisma databases -->
+    {#if !isPrisma}
+        <CardGrid>
+            <svelte:fragment slot="title">High Availability</svelte:fragment>
+            Configure replicas and failover settings for your database.
+            <svelte:fragment slot="aside">
+                <Layout.Grid columns={3} columnsM={2} columnsS={1} gap="l">
                     <Layout.Stack gap="xxs">
-                        <Typography.Text variant="m-500">Status</Typography.Text>
+                        <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                            Status
+                        </Typography.Caption>
                         <Badge
                             type={database.highAvailability ? 'success' : undefined}
                             variant="secondary"
@@ -319,101 +373,132 @@
                     </Layout.Stack>
                     {#if database.highAvailability}
                         <Layout.Stack gap="xxs">
-                            <Typography.Text variant="m-500">Replica Count</Typography.Text>
-                            <Typography.Text>{database.haReplicaCount}</Typography.Text>
+                            <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                                Replicas
+                            </Typography.Caption>
+                            <Typography.Text variant="m-500">
+                                {database.haReplicaCount}
+                            </Typography.Text>
                         </Layout.Stack>
                         {#if database.haSyncMode}
                             <Layout.Stack gap="xxs">
-                                <Typography.Text variant="m-500">Sync Mode</Typography.Text>
-                                <Typography.Text>{database.haSyncMode}</Typography.Text>
+                                <Typography.Caption
+                                    variant="400"
+                                    color="--fgcolor-neutral-tertiary">
+                                    Sync Mode
+                                </Typography.Caption>
+                                <Typography.Text variant="m-500">
+                                    {capitalizeFirst(database.haSyncMode)}
+                                </Typography.Text>
                             </Layout.Stack>
                         {/if}
                     {/if}
                 </Layout.Grid>
-            </Layout.Stack>
-        </svelte:fragment>
-    </CardGrid>
+            </svelte:fragment>
+        </CardGrid>
+    {/if}
 
-    <!-- Network Settings Section -->
-    <CardGrid>
-        <svelte:fragment slot="title">Network</svelte:fragment>
-        <svelte:fragment slot="aside">
-            <Layout.Stack gap="m">
-                <Layout.Grid columns={2} columnsXS={1} gap="l">
-                    <Layout.Stack gap="xxs">
-                        <Typography.Text variant="m-500">Max Connections</Typography.Text>
-                        <Typography.Text>{database.networkMaxConnections}</Typography.Text>
-                    </Layout.Stack>
-                    <Layout.Stack gap="xxs">
-                        <Typography.Text variant="m-500">Idle Timeout</Typography.Text>
-                        <Typography.Text>{database.networkIdleTimeoutSeconds}s</Typography.Text>
-                    </Layout.Stack>
-                    {#if database.idleTimeoutMinutes}
+    <!-- Network - Only show for non-Prisma databases -->
+    {#if !isPrisma}
+        <CardGrid>
+            <svelte:fragment slot="title">Network</svelte:fragment>
+            Connection limits and network configuration.
+            <svelte:fragment slot="aside">
+                <Layout.Stack gap="l">
+                    <Layout.Grid columns={3} columnsM={2} columnsS={1} gap="l">
                         <Layout.Stack gap="xxs">
-                            <Typography.Text variant="m-500">Sleep After Idle</Typography.Text>
-                            <Typography.Text>{database.idleTimeoutMinutes} min</Typography.Text>
+                            <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                                Max Connections
+                            </Typography.Caption>
+                            <Typography.Text variant="m-500">
+                                {database.networkMaxConnections}
+                            </Typography.Text>
+                        </Layout.Stack>
+                        <Layout.Stack gap="xxs">
+                            <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                                Idle Timeout
+                            </Typography.Caption>
+                            <Typography.Text variant="m-500">
+                                {database.networkIdleTimeoutSeconds}s
+                            </Typography.Text>
+                        </Layout.Stack>
+                        {#if database.idleTimeoutMinutes}
+                            <Layout.Stack gap="xxs">
+                                <Typography.Caption
+                                    variant="400"
+                                    color="--fgcolor-neutral-tertiary">
+                                    Sleep After Idle
+                                </Typography.Caption>
+                                <Typography.Text variant="m-500">
+                                    {database.idleTimeoutMinutes} min
+                                </Typography.Text>
+                            </Layout.Stack>
+                        {/if}
+                    </Layout.Grid>
+
+                    {#if database.networkIPAllowlist?.length > 0}
+                        <Layout.Stack gap="xs">
+                            <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                                IP Allowlist
+                            </Typography.Caption>
+                            <Layout.Stack direction="row" gap="xs" wrap>
+                                {#each database.networkIPAllowlist as ip}
+                                    <Badge variant="secondary" size="s" content={ip} />
+                                {/each}
+                            </Layout.Stack>
                         </Layout.Stack>
                     {/if}
-                </Layout.Grid>
+                </Layout.Stack>
+            </svelte:fragment>
+        </CardGrid>
+    {/if}
 
-                {#if database.networkIPAllowlist?.length > 0}
-                    <Layout.Stack gap="xxs">
-                        <Typography.Text variant="m-500">IP Allowlist</Typography.Text>
-                        <Layout.Stack gap="xs">
-                            {#each database.networkIPAllowlist as ip}
-                                <Typography.Text variant="m-400">{ip}</Typography.Text>
-                            {/each}
-                        </Layout.Stack>
-                    </Layout.Stack>
-                {/if}
-            </Layout.Stack>
-        </svelte:fragment>
-    </CardGrid>
-
-    <!-- Backup Settings Section -->
+    <!-- Backups -->
     <CardGrid>
         <svelte:fragment slot="title">Backups</svelte:fragment>
+        Automatic backup and point-in-time recovery settings.
         <svelte:fragment slot="aside">
-            <Layout.Stack gap="m">
-                <Layout.Grid columns={2} columnsXS={1} gap="l">
+            <Layout.Grid columns={2} columnsS={1} gap="l">
+                <Layout.Stack gap="xxs">
+                    <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                        Automatic Backups
+                    </Typography.Caption>
+                    <Badge
+                        type={database.backupEnabled ? 'success' : undefined}
+                        variant="secondary"
+                        size="s"
+                        content={database.backupEnabled ? 'Enabled' : 'Disabled'} />
+                </Layout.Stack>
+                {#if database.backupEnabled}
                     <Layout.Stack gap="xxs">
-                        <Typography.Text variant="m-500">Status</Typography.Text>
+                        <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                            Point-in-Time Recovery
+                        </Typography.Caption>
                         <Badge
-                            type={database.backupEnabled ? 'success' : undefined}
+                            type={database.backupPitr ? 'success' : undefined}
                             variant="secondary"
                             size="s"
-                            content={database.backupEnabled ? 'Enabled' : 'Disabled'} />
+                            content={database.backupPitr ? 'Enabled' : 'Disabled'} />
                     </Layout.Stack>
-                    {#if database.backupEnabled}
-                        <Layout.Stack gap="xxs">
-                            <Typography.Text variant="m-500"
-                                >Point-in-Time Recovery</Typography.Text>
-                            <Badge
-                                type={database.backupPitr ? 'success' : undefined}
-                                variant="secondary"
-                                size="s"
-                                content={database.backupPitr ? 'Enabled' : 'Disabled'} />
-                        </Layout.Stack>
-                        <Layout.Stack gap="xxs">
-                            <Typography.Text variant="m-500">Schedule</Typography.Text>
-                            <Typography.Text>{database.backupCron}</Typography.Text>
-                        </Layout.Stack>
-                        <Layout.Stack gap="xxs">
-                            <Typography.Text variant="m-500">Retention</Typography.Text>
-                            <Typography.Text>{database.backupRetentionDays} days</Typography.Text>
-                        </Layout.Stack>
-                    {/if}
-                </Layout.Grid>
-            </Layout.Stack>
+                    <Layout.Stack gap="xxs">
+                        <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                            Schedule
+                        </Typography.Caption>
+                        <Typography.Text variant="m-500">{database.backupCron}</Typography.Text>
+                    </Layout.Stack>
+                    <Layout.Stack gap="xxs">
+                        <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                            Retention
+                        </Typography.Caption>
+                        <Typography.Text variant="m-500">
+                            {database.backupRetentionDays} days
+                        </Typography.Text>
+                    </Layout.Stack>
+                {/if}
+            </Layout.Grid>
         </svelte:fragment>
     </CardGrid>
 </Container>
-
-<ConnectModal
-    bind:show={showConnectModal}
-    {database}
-    {credentials}
-    connectionCommand={getConnectionCommand()} />
 
 <style lang="scss">
     .password-field {
@@ -425,17 +510,6 @@
             top: 50%;
             transform: translateY(-50%);
             z-index: 1;
-        }
-    }
-
-    .grid-1-2-col-2 {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 0.5rem;
-        color: var(--fgcolor-neutral-secondary);
-
-        @media (max-width: 768px) {
-            grid-template-columns: 1fr;
         }
     }
 </style>

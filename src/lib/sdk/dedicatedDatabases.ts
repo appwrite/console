@@ -16,10 +16,12 @@ export type DedicatedDatabase = {
     storage: number;
     storageClass: string;
     hostname: string;
-    port: number;
-    status: 'provisioning' | 'ready' | 'failed' | 'deleting' | 'deleted';
-    containerStatus: 'inactive' | 'starting' | 'running' | null;
-    projectId: string;
+    connectionPort: number;
+    connectionUser: string;
+    connectionPassword: string;
+    connectionString: string;
+    status: 'provisioning' | 'ready' | 'inactive' | 'paused' | 'failed' | 'deleted' | 'restoring' | 'scaling';
+    containerStatus: 'inactive' | 'starting' | 'running' | 'active' | null;
     highAvailability: boolean;
     haReplicaCount: number;
     haSyncMode: string | null;

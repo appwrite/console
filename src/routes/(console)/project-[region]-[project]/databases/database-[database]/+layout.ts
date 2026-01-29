@@ -4,7 +4,7 @@ import type { LayoutLoad } from './$types';
 import { Dependencies } from '$lib/constants';
 import Breadcrumbs from './breadcrumbs.svelte';
 import SubNavigation from './subNavigation.svelte';
-import type { DedicatedDatabase, DedicatedDatabaseCredentials } from '$lib/sdk/dedicatedDatabases';
+import type { DedicatedDatabase } from '$lib/sdk/dedicatedDatabases';
 import type { Models } from '@appwrite.io/console';
 
 type DatabaseWithType = Models.Database & {
@@ -23,7 +23,6 @@ export const load: LayoutLoad = async ({ params, depends }) => {
     // Try to get from tablesDB first (handles legacy, tablesdb, documentsdb)
     let database: DatabaseWithType | DedicatedDatabase;
     let dedicatedDatabase: DedicatedDatabase | null = null;
-    let credentials: DedicatedDatabaseCredentials | null = null;
 
     try {
         database = await projectSdk.tablesDB.get({
@@ -45,19 +44,9 @@ export const load: LayoutLoad = async ({ params, depends }) => {
         }
     }
 
-    // Fetch credentials for dedicated databases
-    if (dedicatedDatabase) {
-        try {
-            credentials = await projectSdk.dedicatedDatabases.getCredentials(params.database);
-        } catch {
-            // Credentials not available yet (e.g., still provisioning)
-        }
-    }
-
     return {
         database,
         dedicatedDatabase,
-        credentials,
         header: Header,
         breadcrumbs: Breadcrumbs,
         subNavigation: SubNavigation

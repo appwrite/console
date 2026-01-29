@@ -51,7 +51,7 @@
 </script>
 
 {#if data.isDedicatedType && data.dedicatedDatabase}
-    <DedicatedOverview database={data.dedicatedDatabase} credentials={data.credentials} />
+    <DedicatedOverview database={data.dedicatedDatabase} />
 {:else}
     <Container databasesMainScreen>
         <Layout.Stack direction="row" justifyContent="space-between">
