@@ -14,8 +14,6 @@
 
     - Hidden logo
     <img src={ImagineSvg} alt="Imagine" class="imagine-logo" />
-   
-
 </div>
 
 <style>
