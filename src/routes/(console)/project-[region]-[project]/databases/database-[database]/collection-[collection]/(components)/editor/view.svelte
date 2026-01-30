@@ -21,7 +21,7 @@
         highlightActiveLineGutter,
         type ViewUpdate
     } from '@codemirror/view';
-    import { history } from '@codemirror/commands';
+    import { history, undo } from '@codemirror/commands';
     import {
         bracketMatching,
         foldGutter,
@@ -65,7 +65,6 @@
         DEBOUNCE_DELAY,
         LINTER_DELAY,
         AUTOSAVE_DELAY,
-        SUGGESTIONS_HIDE_DELAY,
         INDENT_REGEX,
         SCALAR_VALUE_REGEX,
         TRAILING_COMMA_REGEX,
@@ -122,7 +121,6 @@
     let changeTimer: ReturnType<typeof setTimeout> | null = null; // debounce timer for parse + onChange
     let autoSaveTimer: ReturnType<typeof setTimeout> | null = null; // debounce timer for auto-save
     let tooltipTimer: ReturnType<typeof setTimeout> | null = null; // timer for tooltip message reset
-    let suggestionsHideTimer: ReturnType<typeof setTimeout> | null = null; // timer to auto-hide suggestions
     let pendingCanonicalize = false; // set when a full-document replace (paste-all) occurs
     let lastExpectedContent = ''; // track latest serialized data to avoid spurious rewrites
     let lastDocId: string | null = null; // track current document identity for history reset
@@ -882,12 +880,6 @@
         // Hide the suggestions bar after applying
         hasStartedEditing = false;
         hasSuggestionsBeenShown = true;
-
-        // Clear the auto-hide timer
-        if (suggestionsHideTimer) {
-            clearTimeout(suggestionsHideTimer);
-            suggestionsHideTimer = null;
-        }
     }
 
     // Handle save logic - called from both button and keyboard shortcut
@@ -913,6 +905,11 @@
         originalData = $state.snapshot(data);
 
         isSaving = false;
+    }
+
+    function handleUndo() {
+        if (!editorView) return;
+        undo(editorView);
     }
 
     onMount(() => {
@@ -991,10 +988,6 @@
                         if (showSuggestions && hasStartedEditing) {
                             hasStartedEditing = false;
                             hasSuggestionsBeenShown = true;
-                            if (suggestionsHideTimer) {
-                                clearTimeout(suggestionsHideTimer);
-                                suggestionsHideTimer = null;
-                            }
                             return true;
                         }
                         return false;
@@ -1018,18 +1011,11 @@
                 const isManualInput = !isPaste && !isUpdatingFromEditor;
 
                 if (isNew && isManualInput && !hasSuggestionsBeenShown) {
-                    hasStartedEditing = true;
-
-                    if (showSuggestions) {
-                        if (suggestionsHideTimer) {
-                            clearTimeout(suggestionsHideTimer);
-                        }
-
-                        suggestionsHideTimer = setTimeout(() => {
-                            hasStartedEditing = false;
-                            hasSuggestionsBeenShown = true;
-                            suggestionsHideTimer = null;
-                        }, SUGGESTIONS_HIDE_DELAY);
+                    if (hasStartedEditing) {
+                        hasStartedEditing = false;
+                        hasSuggestionsBeenShown = true;
+                    } else {
+                        hasStartedEditing = true;
                     }
 
                     const parseCache = update.state.field(json5ParseCache, false);
@@ -1146,10 +1132,6 @@
         if (tooltipTimer) {
             clearTimeout(tooltipTimer);
             tooltipTimer = null;
-        }
-        if (suggestionsHideTimer) {
-            clearTimeout(suggestionsHideTimer);
-            suggestionsHideTimer = null;
         }
         lastSerializedData = null;
         lastSerializedText = '';
@@ -1348,11 +1330,7 @@
     <div bind:this={editorContainer} class="cm-editor-wrapper" class:loading></div>
 
     {#if showSuggestions && hasStartedEditing}
-        <div
-            class="suggestions-wrapper"
-            style="position: absolute; top: 205px; left: 205px; z-index: 50;">
-            <Suggestions show={showSuggestions} />
-        </div>
+        <Suggestions show={showSuggestions} />
     {/if}
 </div>
 
@@ -1362,7 +1340,7 @@
         severity={errorMessage ? 'error' : 'warning'} />
 {/if}
 
-<SavingSonner state={saveSonnerState} />
+<SavingSonner state={saveSonnerState} onUndo={handleUndo} />
 
 <style lang="scss">
     .editor-container {

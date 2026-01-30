@@ -12,9 +12,11 @@
     import { isSmallViewport } from '$lib/stores/viewport';
 
     let {
-        state = null
+        state = null,
+        onUndo = null
     }: {
         state: 'saving' | 'saved' | null;
+        onUndo?: () => Promise<void> | void;
     } = $props();
 
     let previousState = state;
@@ -53,7 +55,7 @@
 
             <svelte:fragment slot="end">
                 {#if state === 'saved' && !$isSmallViewport}
-                    <Button secondary size="xs" on:click={async () => {}}>
+                    <Button secondary size="xs" on:click={async () => onUndo?.()}>
                         <Typography.Caption variant="500">Undo</Typography.Caption>
 
                         <Badge content="⌘Z" variant="secondary" size="xs" />
