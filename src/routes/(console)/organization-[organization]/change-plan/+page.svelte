@@ -6,7 +6,7 @@
     import { PlanComparisonBox, PlanSelection, SelectPaymentMethod } from '$lib/components/billing';
     import ValidateCreditModal from '$lib/components/billing/validateCreditModal.svelte';
     import { Dependencies, feedbackDowngradeOptions } from '$lib/constants';
-    import { Button, Form, InputSelect, InputTags, InputTextarea } from '$lib/elements/forms';
+    import { Button, Form, InputTags, InputTextarea } from '$lib/elements/forms';
     import { formatCurrency } from '$lib/helpers/numbers.js';
     import { Wizard } from '$lib/layout';
     import {
@@ -449,20 +449,19 @@
                 </Fieldset>
             {/if}
             {#if isDowngrade && selectedPlan.group === BillingPlanGroup.Starter && !data.hasFreeOrgs}
-                <Fieldset legend="Feedback">
+                <Fieldset legend="Reason for plan change">
                     <Layout.Stack gap="xl">
-                        <InputSelect
+                        <!--<InputSelect
                             id="reason"
                             label="Reason for plan change"
                             placeholder="Select one"
                             required
                             options={feedbackDowngradeOptions}
-                            bind:value={feedbackDowngradeReason} />
+                            bind:value={feedbackDowngradeReason} />-->
                         <InputTextarea
                             id="comment"
                             required
-                            label="If you need to elaborate, please do so here"
-                            placeholder="Enter feedback"
+                            placeholder="Please enter your feedback"
                             bind:value={feedbackMessage} />
                     </Layout.Stack>
                 </Fieldset>
