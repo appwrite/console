@@ -39,9 +39,11 @@
         footer?: Snippet;
     } = $props();
 
-    let effectiveStatus = $derived(getEffectiveBuildStatus(deployment, $regionalConsoleVariables));
-    let displayStatus = $derived(effectiveStatus === 'finalizing' ? 'ready' : effectiveStatus);
-    let totalSize = $derived(humanFileSize(deployment?.totalSize ?? 0));
+    const effectiveStatus = $derived(
+        getEffectiveBuildStatus(deployment, $regionalConsoleVariables)
+    );
+    const displayStatus = $derived(effectiveStatus === 'finalizing' ? 'ready' : effectiveStatus);
+    const totalSize = $derived(humanFileSize(deployment?.totalSize ?? 0));
 </script>
 
 {#snippet titleSnippet(title: string)}

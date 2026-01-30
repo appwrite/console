@@ -40,10 +40,10 @@
 
     let { data } = $props();
 
-    let effectiveStatus = $derived(
+    const effectiveStatus = $derived(
         getEffectiveBuildStatus(data.deployment, $regionalConsoleVariables)
     );
-    let displayStatus = $derived(effectiveStatus === 'finalizing' ? 'ready' : effectiveStatus);
+    const displayStatus = $derived(effectiveStatus === 'finalizing' ? 'ready' : effectiveStatus);
     let showDelete = $state(false);
     let showCancel = $state(false);
     let showActivate = $state(false);
