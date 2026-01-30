@@ -27,7 +27,8 @@
         subtitle,
         showActions = true,
         customColumns = [],
-        onOpenCreateColumn
+        onOpenCreateColumn,
+        showNoSqlEditor = false
     }: {
         type?: DatabaseType;
         mode: Mode;
@@ -36,6 +37,7 @@
         actions?: Snippet;
         showActions?: boolean;
         customColumns?: Column[];
+        showNoSqlEditor?: boolean;
         onOpenCreateColumn?: () => Promise<void> | void;
     } = $props();
 
@@ -221,7 +223,6 @@
         return columns;
     };
 
-    // TODO: @itznotabug - we probably don't need `hasCustomColumns` but check please.
     const getDocumentsDbColumns = (): Column[] => [
         {
             id: '$id',
@@ -380,8 +381,10 @@
         </Spreadsheet.Root>
 
         {#snippet noSqlEditor()}
-            {#if type === 'documentsdb' && mode === 'records'}
-                <NoSqlEditor loading />
+            {#if showNoSqlEditor}
+                {#if type === 'documentsdb' && mode === 'records'}
+                    <NoSqlEditor loading />
+                {/if}
             {/if}
         {/snippet}
     </SpreadsheetContainer>

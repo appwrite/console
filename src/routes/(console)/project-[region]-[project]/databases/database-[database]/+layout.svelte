@@ -18,12 +18,10 @@
     import { currentPlan } from '$lib/stores/organization';
     import { isCloud } from '$lib/system';
     import { noWidthTransition } from '$lib/stores/sidebar';
-    import { CreateEntity, getTerminologies, setTerminologies } from '$database/(entity)';
+    import { CreateEntity, getTerminologies } from '$database/(entity)';
     import { resolveRoute, withPath } from '$lib/stores/navigation';
     import { Dialog, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { Button, Seekbar } from '$lib/elements/forms';
-
-    setTerminologies(page);
 
     const project = page.params.project;
     const databaseId = page.params.database;

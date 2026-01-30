@@ -23,7 +23,7 @@
 
     /**
      * init update because `getContext`
-     * doesn't work on typescript context!
+     * doesn't work on TypeScript context!
      */
     tableViewColumns.update((columns) => {
         /* $id */
@@ -31,10 +31,11 @@
         return columns;
     });
 
-    // TODO: get proper images for documentsDB
     function getImageRoute(type: 'light' | 'dark'): string {
-        const base = terminology.type === 'documentsdb' ? 'empty-documents-db' : 'empty-database';
-        return withPath(resolveRoute('/'), `/images/${base}-${type}.svg`);
+        return withPath(
+            resolveRoute('/'),
+            `/images/databases/empty-${terminology.type}-${type}.svg`
+        );
     }
 
     const emptyPageText = $derived.by(() => {

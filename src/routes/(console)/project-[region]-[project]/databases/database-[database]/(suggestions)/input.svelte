@@ -50,7 +50,7 @@
 
         if (featureActive) {
             return isDocs
-                ? `Enable AI to generate sample ${record.plural} based on your ${entity} name`
+                ? `Generate sample ${record.plural} based on your ${entity} name`
                 : `Enable AI to suggest useful ${field.plural} based on your ${entity} name`;
         }
 
@@ -61,7 +61,7 @@
 </script>
 
 <Card.Base variant="secondary" radius="s" padding="xs">
-    <Layout.Stack gap={featureActive ? 'm' : 'l'}>
+    <Layout.Stack gap={featureActive ? 'm' : 'l'} style="padding-block-end: var(--gap-m);">
         <Layout.Stack gap="s" direction="row" alignItems="flex-start">
             <IconAI />
 
@@ -95,7 +95,7 @@
         <!-- just being safe with extra guard! -->
         {#if $entityColumnSuggestions.enabled && featureActive}
             <div class="context-input" transition:slide={{ duration: 200 }}>
-                <Layout.Stack gap="xl">
+                <Layout.Stack gap="l">
                     <InputTextarea
                         id="context"
                         rows={3}
@@ -104,14 +104,15 @@
                         placeholder="Optional: Add context to improve suggestions" />
 
                     {#if showSampleCountPicker}
-                        <Layout.Stack gap="m" style="margin-block-end: var(--space-4, 8px);">
+                        <Layout.Stack gap="xl" style="padding-inline: var(--space-4, 8px);">
                             <Typography.Text>
                                 Select how many random documents to generate for testing.
                             </Typography.Text>
 
                             <Seekbar
                                 max={100}
-                                breakpointCount={5}
+                                extraBlockStart
+                                breakpointCount={8}
                                 bind:value={$randomDataModalState.value} />
                         </Layout.Stack>
                     {/if}

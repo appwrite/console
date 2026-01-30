@@ -44,3 +44,11 @@
     helper={error || helper}
     on:invalid={handleInvalid}
     state={error ? 'error' : 'default'}><slot name="info" slot="info" /></Input.Tags>
+
+<style>
+    /* hotfix due to root styles increasing block-size */
+    :global(.tag) {
+        border: none;
+        block-size: unset;
+    }
+</style>
