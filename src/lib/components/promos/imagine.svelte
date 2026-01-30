@@ -1,7 +1,7 @@
 <script lang="ts">
     import { NoToneMapping } from 'three';
     import { Canvas } from '@threlte/core';
-    import ProductHuntSvg from './product-hunt.svg';
+    import ImagineSvg from './imagine.svg';
     import ImaginationShader from './shader.svelte';
 </script>
 
@@ -12,11 +12,7 @@
         </Canvas>
     </div>
 
-    <!--- Hidden logo
     <img src={ImagineSvg} alt="Imagine" class="imagine-logo" />
-    -->
-
-    <img src={ProductHuntSvg} alt="Product Hunt" class="imagine-logo" />
 </div>
 
 <style>
@@ -38,7 +34,7 @@
         top: 50%;
         left: 50%;
         width: auto;
-        height: 40px;
+        height: 24px;
         position: absolute;
         transform: translate(-50%, -50%);
     }
