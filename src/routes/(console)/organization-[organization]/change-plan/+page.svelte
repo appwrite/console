@@ -449,7 +449,7 @@
                 </Fieldset>
             {/if}
             {#if isDowngrade && selectedPlan.group === BillingPlanGroup.Starter && !data.hasFreeOrgs}
-                <Fieldset legend="Reason for plan change">
+                <Fieldset legend="Feedback">
                     <Layout.Stack gap="xl">
                         <!--<InputSelect
                             id="reason"
@@ -461,7 +461,8 @@
                         <InputTextarea
                             id="comment"
                             required
-                            placeholder="Please enter your feedback"
+                            label="What wasn't working for you?"
+                            placeholder="Please share anything that influenced your decision to downgrade. This feedback helps us improve the platform."
                             bind:value={feedbackMessage} />
                     </Layout.Stack>
                 </Fieldset>
