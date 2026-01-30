@@ -5,8 +5,10 @@ export const SYSTEM_KEYS = new Set(['$id:', '$createdAt:', '$updatedAt:']);
 // timing constants
 export const LINTER_DELAY = 250;
 export const DEBOUNCE_DELAY = 200;
-export const AUTOSAVE_DELAY = 2000;
 export const SUGGESTIONS_HIDE_DELAY = 3000;
+
+export const AUTOSAVE_DELAY = 2000;
+export const ENABLE_AUTOSAVE = false;
 
 // regex patterns
 /* export const UNQUOTED_KEY_REGEX = /([{,]\s*)([a-zA-Z_$][a-zA-Z0-9_$]*)\s*:/g; */

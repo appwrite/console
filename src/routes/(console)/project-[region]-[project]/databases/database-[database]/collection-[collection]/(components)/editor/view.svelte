@@ -58,7 +58,8 @@
         createReadOnlyRangesFilter,
         createNestedKeyPlugin,
         createDuplicateKeyLinter,
-        createSystemFieldStylePlugin
+        createSystemFieldStylePlugin,
+        createLineHoverPlugin
     } from './extensions';
     import {
         ALLOWED_DOLLAR_PROPS,
@@ -71,7 +72,8 @@
         WHITESPACE_REGEX,
         WHITESPACE_ONLY_REGEX,
         SKELETON_LINES,
-        getIndent
+        getIndent,
+        ENABLE_AUTOSAVE
     } from './helpers/constants';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { ID } from '@appwrite.io/console';
@@ -938,6 +940,7 @@
             createNestedKeyPlugin(),
             createDuplicateKeyLinter({ delay: LINTER_DELAY }),
             createSystemFieldStylePlugin(() => isNew && !hasUserContent),
+            createLineHoverPlugin(),
             highlightSelectionMatches(),
             // Clear selection after fold/unfold to prevent split highlighting
             EditorView.updateListener.of((update) => {
@@ -1000,7 +1003,11 @@
             customTheme,
             wrapCompartment.of(wrapLines ? EditorView.lineWrapping : []),
             EditorView.updateListener.of((update) => {
-                if (update.docChanged || update.transactions.some((tr) => tr.effects.length > 0)) {
+                const hasNonHoverEffects = update.transactions.some((tr) => {
+                    if (!tr.effects.length) return false;
+                    return tr.annotation(Transaction.userEvent) !== 'appwrite:hover';
+                });
+                if (update.docChanged || hasNonHoverEffects) {
                     const summary = getLintWarningSummary(update.state);
                     warningMessage = summary.message;
                 }
@@ -1089,20 +1096,25 @@
                         }
 
                         // Set new auto-save timer
-                        autoSaveTimer = setTimeout(() => {
-                            const parseCache = editorView?.state.field(json5ParseCache, false);
-                            if (parseCache?.err || errorMessage) {
-                                autoSaveTimer = null;
-                                return;
-                            }
-                            if (editorView && getLintWarningSummary(editorView.state).hasWarning) {
-                                autoSaveTimer = null;
-                                return;
-                            }
+                        if (ENABLE_AUTOSAVE) {
+                            autoSaveTimer = setTimeout(() => {
+                                const parseCache = editorView?.state.field(json5ParseCache, false);
+                                if (parseCache?.err || errorMessage) {
+                                    autoSaveTimer = null;
+                                    return;
+                                }
+                                if (
+                                    editorView &&
+                                    getLintWarningSummary(editorView.state).hasWarning
+                                ) {
+                                    autoSaveTimer = null;
+                                    return;
+                                }
 
-                            handleSave();
-                            autoSaveTimer = null;
-                        }, AUTOSAVE_DELAY);
+                                handleSave();
+                                autoSaveTimer = null;
+                            }, AUTOSAVE_DELAY);
+                        }
                     }
                 }, DEBOUNCE_DELAY);
             }),
@@ -1274,6 +1286,10 @@
                             <span slot="tooltip">Cancel</span>
                         </Tooltip>
                     {/if}
+
+                    <Button secondary size="xs" disabled={!hasDataChanged} on:click={handleSave}>
+                        Save
+                    </Button>
 
                     <Tooltip placement="top">
                         <Button
@@ -1485,6 +1501,14 @@
             background-color: var(--overlay-neutral-pressed) !important;
         }
 
+        :global(.cm-hovered-line) {
+            background-color: var(--overlay-neutral-hover);
+        }
+
+        :global(.cm-gutterElement.cm-hovered-lineGutter) {
+            background-color: var(--overlay-neutral-hover);
+        }
+
         // Subtle indicator for read-only system-field lines
         :global(.cm-readOnlyLine) {
             cursor: not-allowed;
@@ -1500,6 +1524,8 @@
 
         // Syntax highlighting
         // Property names (keys) must use neutral color with priority
+        :global(.cm-string),
+        :global(.cm-number),
         :global(.cm-propertyName) {
             font-weight: 400;
             font-style: normal;

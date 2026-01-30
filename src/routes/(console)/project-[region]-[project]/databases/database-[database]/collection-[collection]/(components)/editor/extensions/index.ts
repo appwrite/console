@@ -7,3 +7,4 @@ export {
 
 export { createDuplicateKeyLinter } from './duplicates';
 export { createNestedKeyPlugin, createSystemFieldStylePlugin } from './highlighting';
+export { createLineHoverPlugin } from './hover';
