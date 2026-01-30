@@ -285,7 +285,6 @@
     </svelte:fragment>
 
     <ColumnDisplayNameInput
-        inModal
         bind:this={columnDisplayNameInput}
         databaseType={data.database.type}
         collectionId={page.params.collection}
@@ -301,7 +300,8 @@
     <svelte:fragment slot="footer">
         <Button size="s" secondary on:click={() => (showCustomColumnsModal = false)}>Cancel</Button>
 
-        <Button size="s" submit disabled={columnDisplayNameInput?.hasChanged()}>Update</Button>
+        <Button size="s" submit submissionLoader disabled={columnDisplayNameInput?.hasChanged()}
+            >Update</Button>
     </svelte:fragment>
 </Modal>
 

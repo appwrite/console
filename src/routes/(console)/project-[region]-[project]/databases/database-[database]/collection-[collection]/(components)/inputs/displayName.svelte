@@ -2,13 +2,11 @@
     import { InputTags } from '$lib/elements/forms';
     import { symmetricDifference } from '$lib/helpers/array';
     import { preferences } from '$lib/stores/preferences';
-    import { Input, Layout } from '@appwrite.io/pink-svelte';
     import { organization } from '$lib/stores/organization';
 
     let {
         collectionId,
         databaseType,
-        inModal = false,
         onSuccess = null,
         onFailure = null
     }: {
@@ -59,18 +57,10 @@
     });
 </script>
 
-<Layout.Stack>
-    <Layout.Stack gap="s">
-        {#key names.length}
-            <InputTags
-                bind:tags={names}
-                id="custom-columns-{collectionId}"
-                placeholder="Enter fields"
-                label={inModal ? null : 'Fields to display'} />
-        {/key}
-
-        <Input.Helper state="default">
-            ID, createdAt, and updatedAt are always included and cannot be modified
-        </Input.Helper>
-    </Layout.Stack>
-</Layout.Stack>
+<InputTags
+    max={5}
+    bind:tags={names}
+    id="custom-columns-{collectionId}"
+    placeholder="Enter fields"
+    label="Fields to display"
+    helper="ID, createdAt, and updatedAt are always included and cannot be modified" />
