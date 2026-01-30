@@ -1523,8 +1523,12 @@
         // Syntax highlighting
         // Property names (keys) must use neutral color with priority
         :global(.cm-propertyName) {
-            color: var(--fgcolor-neutral-primary) !important;
-            font-weight: 500;
+            font-weight: 400;
+            font-style: normal;
+            line-height: 140%; /* 16.8px */
+            font-size: var(--font-size-xs, 12px);
+            color: var(--fgcolor-neutral-primary);
+            font-family: var(--font-family-code, 'Fira Code');
         }
 
         // System fields muted styling (when suggestions are showing)
