@@ -39,6 +39,7 @@
     } = $props();
 
     let effectiveStatus = $derived(getEffectiveBuildStatus(deployment, $regionalConsoleVariables));
+    let displayStatus = $derived(effectiveStatus === 'finalizing' ? 'ready' : effectiveStatus);
     let totalSize = $derived(humanFileSize(deployment?.totalSize ?? 0));
 </script>
 
@@ -129,7 +130,7 @@
                         <Layout.Stack gap="xxs" inline>
                             {@render titleSnippet('Status')}
                             <Typography.Text variant="m-400" color="--fgcolor-neutral-primary">
-                                <Status status={effectiveStatus} label={effectiveStatus} />
+                                <Status status={displayStatus} label={displayStatus} />
                             </Typography.Text>
                         </Layout.Stack>
                     {:else}
