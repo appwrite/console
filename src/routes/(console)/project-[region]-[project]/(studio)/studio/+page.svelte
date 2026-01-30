@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { onDestroy, onMount, tick } from 'svelte';
+    import { onDestroy, tick } from 'svelte';
     import {
         attachStudioTo,
         ensureStudioComponent,
@@ -18,16 +18,20 @@
         attachStudioTo(anchor, { offsetX: 0, offsetY: 0 });
     }
 
-    onMount(async () => {
+    async function setStudioParams(props: { projectId: string; region: string }) {
         ensureStudioComponent();
         await tick();
         positionStudio();
         navigateToRoute({
             id: 'project',
-            props: {
-                projectId: params.project,
-                region: params.region
-            }
+            props
+        });
+    }
+
+    $effect(() => {
+        setStudioParams({
+            projectId: params.project,
+            region: params.region
         });
     });
 
