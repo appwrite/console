@@ -49,9 +49,12 @@
     let isLoadingRepositories = $state(null);
     let installationsMap = $state(null);
     let offset = $state(0);
+    let connectingRepositoryId = $state<string | null>(null);
+    let loadRepositoriesRequestId = 0;
     const limit = 5;
 
     onMount(() => {
+        isLoadingRepositories = true;
         loadInstallations();
     });
 
@@ -115,6 +118,8 @@
     }
 
     async function loadRepositories(installationId: string, search: string) {
+        const requestId = ++loadRepositoriesRequestId;
+
         const result = await sdk
             .forProject(page.params.region, page.params.project)
             .vcs.listRepositories({
@@ -124,6 +129,11 @@
                 search: search || undefined,
                 queries: [Query.limit(limit), Query.offset(offset)]
             });
+
+        // Stale request
+        if (requestId !== loadRepositoriesRequestId) {
+            return;
+        }
 
         $repositories.repositories =
             product === 'functions'
@@ -186,10 +196,7 @@
                             debouncedLoadRepositories.cancel();
                         }}
                         bind:value={selectedInstallation} />
-                    <InputSearch
-                        placeholder="Search repositories"
-                        bind:value={search}
-                        disabled={!search && !$repositories?.repositories?.length} />
+                    <InputSearch placeholder="Search repositories" bind:value={search} />
                 </Layout.Stack>
             {/if}
         </Layout.Stack>
@@ -266,7 +273,11 @@
                                             size="xs"
                                             variant="secondary"
                                             style="flex-shrink: 0;"
-                                            on:click={() => connect(repo)}>
+                                            disabled={!!connectingRepositoryId}
+                                            on:click={() => {
+                                                connectingRepositoryId = repo.id;
+                                                connect(repo);
+                                            }}>
                                             Connect
                                         </PinkButton.Button>
                                     {/if}
@@ -305,7 +316,7 @@
                     <PaginationInline
                         {limit}
                         bind:offset
-                        total={$repositories.total}
+                        total={isLoadingRepositories ? 0 : $repositories.total}
                         hidePages={true}
                         on:change={loadRepositoryPage} />
                 </Layout.Stack>
