@@ -5,6 +5,7 @@
     import type { Models } from '@appwrite.io/console';
     import { isSelfHosted } from '$lib/system';
     import { goto } from '$app/navigation';
+    import { resolveRoute } from '$lib/stores/navigation';
     import { installation, repository } from '$lib/stores/vcs';
     import { Repositories } from '$lib/components/git';
     import {
@@ -24,13 +25,8 @@
 
     export let data;
 
-    import { resolveRoute } from '$lib/stores/navigation';
-
     const isVcsEnabled = $regionalConsoleVariables?._APP_VCS_ENABLED === true;
-    const wizardBase = resolveRoute('/(console)/project-[region]-[project]/functions', {
-        region: page.params.region,
-        project: page.params.project
-    });
+    const wizardBase = resolveRoute('/(console)/project-[region]-[project]/functions', page.params);
 
     let selectedRepository: string;
 
@@ -60,8 +56,7 @@
             resolveRoute(
                 '/(console)/project-[region]-[project]/functions/create-function/repository-[repository]',
                 {
-                    region: page.params.region,
-                    project: page.params.project,
+                    ...page.params,
                     repository: e.id
                 }
             ) + `?installation=${$installation.$id}`
@@ -155,8 +150,7 @@
                                 href={resolveRoute(
                                     '/(console)/project-[region]-[project]/functions/create-function/template-[template]',
                                     {
-                                        region: page.params.region,
-                                        project: page.params.project,
+                                        ...page.params,
                                         template: starterTemplate.id
                                     }
                                 ) + `?runtime=${runtimeDetail.$id}`}>
@@ -190,8 +184,7 @@
                                 href={resolveRoute(
                                     '/(console)/project-[region]-[project]/functions/create-function/template-[template]',
                                     {
-                                        region: page.params.region,
-                                        project: page.params.project,
+                                        ...page.params,
                                         template: template.id
                                     }
                                 )}
@@ -228,10 +221,7 @@
                         variant="quiet"
                         href={resolveRoute(
                             '/(console)/project-[region]-[project]/functions/templates',
-                            {
-                                region: page.params.region,
-                                project: page.params.project
-                            }
+                            page.params
                         )}>
                         <Layout.Stack direction="row" gap="xs">
                             Browse all templates <Icon icon={IconArrowSmRight} />
@@ -248,10 +238,7 @@
                 }}
                 href={resolveRoute(
                     '/(console)/project-[region]-[project]/functions/create-function/manual',
-                    {
-                        region: page.params.region,
-                        project: page.params.project
-                    }
+                    page.params
                 )}>manually</Link>
             or using the CLI.
             <Link href="https://appwrite.io/docs/products/functions/deployment" external

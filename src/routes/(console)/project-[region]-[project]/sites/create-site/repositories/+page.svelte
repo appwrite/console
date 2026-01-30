@@ -24,8 +24,7 @@
             resolveRoute(
                 '/(console)/project-[region]-[project]/sites/create-site/repositories/repository-[repository]',
                 {
-                    region: page.params.region,
-                    project: page.params.project,
+                    ...page.params,
                     repository: e.id
                 }
             ) + `?installation=${$installation.$id}`;
@@ -35,10 +34,7 @@
 
 <Wizard
     title="Create site"
-    href={resolveRoute('/(console)/project-[region]-[project]/sites', {
-        region: page.params.region,
-        project: page.params.project
-    })}
+    href={resolveRoute('/(console)/project-[region]-[project]/sites', page.params)}
     hideFooter>
     {#if !!data?.installations?.total}
         <Fieldset legend="Git repository">
@@ -65,10 +61,7 @@
                     <Button
                         href={resolveRoute(
                             '/(console)/project-[region]-[project]/sites/create-site/templates',
-                            {
-                                region: page.params.region,
-                                project: page.params.project
-                            }
+                            page.params
                         )}
                         secondary>View templates</Button>
                 {:else}
