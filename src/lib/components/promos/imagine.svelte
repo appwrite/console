@@ -15,7 +15,6 @@
     <!--- Hidden logo
     <img src={ImagineSvg} alt="Imagine" class="imagine-logo" />
     -->
-
     <img src={ProductHuntSvg} alt="Product Hunt" class="imagine-logo" />
 </div>
 
