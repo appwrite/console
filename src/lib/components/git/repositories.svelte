@@ -310,7 +310,7 @@
                     justifyContent="space-between"
                     alignItems="center"
                     wrap="wrap">
-                    <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
+                    <Typography.Text variant="m-400" color="--fgcolor-neutral-secondary">
                         Total results: {$repositories.total}
                     </Typography.Text>
                     <PaginationInline
