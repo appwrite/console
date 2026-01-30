@@ -20,10 +20,9 @@
     import { getIconFromRuntime } from '$lib/stores/runtimes';
     import { regionalConsoleVariables, getPageTitle } from '../../../store';
     import { InvalidFileType, removeFile } from '$lib/helpers/files';
-    import { isCloud } from '$lib/system';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { currentPlan } from '$lib/stores/organization';
-    import { resolvedProfile } from '$lib/profiles/index.svelte';
+    import { isBillingEnabled, resolvedProfile } from '$lib/profiles/index.svelte';
 
     export let data;
 
@@ -153,7 +152,7 @@
         : [];
 
     $: maxSize =
-        isCloud && $currentPlan
+        isBillingEnabled && $currentPlan
             ? $currentPlan.deploymentSize * 1000000
             : $regionalConsoleVariables._APP_COMPUTE_SIZE_LIMIT; // already in MB
 

@@ -14,7 +14,7 @@ import { defaultRoles, defaultScopes } from '$lib/constants';
 import type { Plan } from '$lib/sdk/billing';
 import { loadAvailableRegions } from '$routes/(console)/regions';
 import type { Organization } from '$lib/stores/organization';
-import { resolvedProfile } from '$lib/profiles/index.svelte';
+import { isBillingEnabled, resolvedProfile } from '$lib/profiles/index.svelte';
 import { resolve } from '$app/paths';
 
 export const load: LayoutLoad = async ({ params, depends, parent }) => {
@@ -26,12 +26,12 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
 
     const requestedOrg = await checkPlatformAndRedirect(params, organizations, prefs);
 
-    let roles = isCloud ? [] : defaultRoles;
-    let scopes = isCloud ? [] : defaultScopes;
+    let roles = isBillingEnabled ? [] : defaultRoles;
+    let scopes = isBillingEnabled ? [] : defaultScopes;
     let currentPlan: Plan = null;
 
     try {
-        if (isCloud) {
+        if (isBillingEnabled) {
             [{ roles, scopes }, currentPlan] = await Promise.all([
                 sdk.forConsole.billing.getRoles(params.organization),
                 sdk.forConsole.billing.getOrganizationPlan(params.organization)

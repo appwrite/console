@@ -10,7 +10,6 @@
     import { sdk } from '$lib/stores/sdk';
     import { user } from '$lib/stores/user';
     import { tierToPlan } from '$lib/stores/billing';
-    import { isCloud } from '$lib/system';
     import SideNavigation from '$lib/layout/navigation.svelte';
     import { hasOnboardingDismissed } from '$lib/helpers/onboarding';
     import { isSidebarOpen, noWidthTransition } from '$lib/stores/sidebar';
@@ -18,7 +17,7 @@
     import type { Models } from '@appwrite.io/console';
     import { getSidebarState, isInDatabasesRoute, updateSidebarState } from '$lib/helpers/sidebar';
     import { isTabletViewport } from '$lib/stores/viewport';
-    import { ProfileMode, resolvedProfile } from '$lib/profiles/index.svelte';
+    import { isBillingEnabled, ProfileMode, resolvedProfile } from '$lib/profiles/index.svelte';
     import { app } from '$lib/stores/app';
     import { isFreePlan } from '$lib/helpers/billing';
 
@@ -161,10 +160,14 @@
                 $id: org.$id,
                 name: org.name,
                 isSelected: $organization?.$id === org.$id,
-                showUpgrade: isCloud ? isFreePlan(billingPlan) : false,
-                tierName: isCloud ? tierToPlan(billingPlan).name : null,
-                billingNextInvoiceDate: isCloud ? org['billingNextInvoiceDate'] : undefined,
-                billingCurrentInvoiceDate: isCloud ? org['billingCurrentInvoiceDate'] : undefined
+                showUpgrade: isBillingEnabled ? isFreePlan(billingPlan) : false,
+                tierName: isBillingEnabled ? tierToPlan(billingPlan).name : null,
+                billingNextInvoiceDate: isBillingEnabled
+                    ? org['billingNextInvoiceDate']
+                    : undefined,
+                billingCurrentInvoiceDate: isBillingEnabled
+                    ? org['billingCurrentInvoiceDate']
+                    : undefined
             };
         }),
 
