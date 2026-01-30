@@ -59,7 +59,8 @@
         createNestedKeyPlugin,
         createDuplicateKeyLinter,
         createSystemFieldStylePlugin,
-        createLineHoverPlugin
+        createLineHoverPlugin,
+        createErrorLineHighlight
     } from './extensions';
     import {
         ALLOWED_DOLLAR_PROPS,
@@ -827,6 +828,43 @@
 
     const baseJson5Linter = json5ParseLinter();
 
+    function expandErrorRange(state: EditorState, diagnostic: Diagnostic): Diagnostic {
+        if (diagnostic.severity !== 'error') return diagnostic;
+
+        const line = state.doc.lineAt(diagnostic.from);
+        const text = line.text;
+        const colonIndex = text.indexOf(':');
+
+        let from = line.from;
+        let to = line.to;
+
+        if (colonIndex !== -1) {
+            let startOffset = colonIndex + 1;
+            while (startOffset < text.length && /\s/.test(text[startOffset])) {
+                startOffset += 1;
+            }
+
+            let endOffset = text.length;
+            while (endOffset > 0 && /\s/.test(text[endOffset - 1])) {
+                endOffset -= 1;
+            }
+            if (endOffset > 0 && text[endOffset - 1] === ',') {
+                endOffset -= 1;
+            }
+
+            if (endOffset > startOffset) {
+                from = line.from + startOffset;
+                to = line.from + endOffset;
+            }
+        }
+
+        if (to <= from) {
+            return diagnostic;
+        }
+
+        return { ...diagnostic, from, to };
+    }
+
     // JSON5 linter using the parse cache; preserves errorInPlace behavior.
     async function json5Linter(view: EditorView): Promise<Diagnostic[]> {
         if (isUpdatingFromEditor) return [];
@@ -838,7 +876,7 @@
         const errorMsg = (result[0]?.message || 'Syntax error').replace(/^JSON5:\s*/i, '');
         errorMessage = errorMsg;
         if (errorInPlace) {
-            return result;
+            return result.map((diagnostic) => expandErrorRange(view.state, diagnostic));
         }
         // Fallback to full-doc underline
         return [{ from: 0, to: view.state.doc.length, severity: 'error', message: errorMsg }];
@@ -932,6 +970,7 @@
             bracketMatching(),
             closeBrackets(),
             linter(json5Linter, { delay: LINTER_DELAY }),
+            createErrorLineHighlight(),
             readOnlyRangesField,
             EditorState.transactionFilter.of(
                 createReadOnlyRangesFilter(readOnlyRangesField, readonly)
@@ -1509,6 +1548,14 @@
             background-color: var(--overlay-neutral-hover);
         }
 
+        :global(.cm-line.cm-error-line) {
+            background-color: var(--bgColor-error-weak, rgba(255, 69, 58, 0.28)) !important;
+        }
+
+        :global(.cm-gutterElement.cm-error-lineGutter) {
+            background-color: var(--bgColor-error-weak, rgba(255, 69, 58, 0.28)) !important;
+        }
+
         // Subtle indicator for read-only system-field lines
         :global(.cm-readOnlyLine) {
             cursor: not-allowed;
@@ -1600,17 +1647,19 @@
 
         // Smooth curved underline for errors
         :global(.cm-lintRange-error) {
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='3' viewBox='0 0 4 3'%3E%3Cpath d='M0 3 Q 1 0 2 3 Q 3 0 4 3' fill='none' stroke='%23f04438' stroke-width='0.6'/%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='4' viewBox='0 0 14 4' fill='none'%3E%3Cpath d='M0 2 C2 0.6 5 0.6 7 2 C9 3.4 12 3.4 14 2' stroke='%23f04438' stroke-width='1' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
             background-repeat: repeat-x;
             background-position: left bottom;
-            padding-bottom: 2px;
+            background-size: 14px 4px;
+            padding-bottom: 3px;
         }
 
         :global(.cm-lintRange-warning) {
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='3' viewBox='0 0 4 3'%3E%3Cpath d='M0 3 Q 1 0 2 3 Q 3 0 4 3' fill='none' stroke='%23ffa500' stroke-width='0.6'/%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='4' viewBox='0 0 14 4' fill='none'%3E%3Cpath d='M0 2 C2 0.6 5 0.6 7 2 C9 3.4 12 3.4 14 2' stroke='%23ffa500' stroke-width='1' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
             background-repeat: repeat-x;
             background-position: left bottom;
-            padding-bottom: 2px;
+            background-size: 14px 4px;
+            padding-bottom: 3px;
         }
 
         // Hide lint tooltip since we show errors in header

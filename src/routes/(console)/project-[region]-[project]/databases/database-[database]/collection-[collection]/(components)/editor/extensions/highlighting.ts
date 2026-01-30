@@ -2,10 +2,13 @@ import {
     Decoration,
     type DecorationSet,
     EditorView,
+    GutterMarker,
+    gutterLineClass,
     type ViewUpdate,
     ViewPlugin
 } from '@codemirror/view';
-import { Range, type Extension } from '@codemirror/state';
+import { Range, RangeSet, RangeSetBuilder, StateField, type Extension } from '@codemirror/state';
+import { forEachDiagnostic, setDiagnosticsEffect } from '@codemirror/lint';
 import { NESTED_KEY_REGEX } from '../helpers/constants';
 
 // ViewPlugin to highlight nested keys (4+ spaces) only in visible ranges
@@ -108,4 +111,64 @@ export function createSystemFieldStylePlugin(getShouldStyle: () => boolean): Ext
         },
         { decorations: (v) => v.decorations }
     );
+}
+
+export function createErrorLineHighlight(): Extension {
+    const errorLineDecoration = Decoration.line({
+        attributes: { class: 'cm-error-line' }
+    });
+
+    class ErrorLineGutterMarker extends GutterMarker {
+        elementClass = 'cm-error-lineGutter';
+    }
+
+    const errorLineGutterMarker = new ErrorLineGutterMarker();
+
+    type ErrorLineDecorations = {
+        line: DecorationSet;
+        gutter: RangeSet<GutterMarker>;
+    };
+
+    const buildDecorations = (state: import('@codemirror/state').EditorState) => {
+        const lineBuilder = new RangeSetBuilder<Decoration>();
+        const gutterBuilder = new RangeSetBuilder<GutterMarker>();
+        const seenLines = new Set<number>();
+
+        forEachDiagnostic(state, (diagnostic, from) => {
+            if (diagnostic.severity !== 'error') return;
+            try {
+                const line = state.doc.lineAt(from);
+                if (seenLines.has(line.from)) return;
+                seenLines.add(line.from);
+                lineBuilder.add(line.from, line.from, errorLineDecoration);
+                gutterBuilder.add(line.from, line.from, errorLineGutterMarker);
+            } catch {
+                // line might not exist
+            }
+        });
+
+        return {
+            line: lineBuilder.finish(),
+            gutter: gutterBuilder.finish()
+        };
+    };
+
+    return StateField.define<ErrorLineDecorations>({
+        create(state) {
+            return buildDecorations(state);
+        },
+        update(decorations, tr) {
+            const hasDiagnosticsUpdate = tr.effects.some((effect) =>
+                effect.is(setDiagnosticsEffect)
+            );
+            if (!tr.docChanged && !hasDiagnosticsUpdate) {
+                return decorations;
+            }
+            return buildDecorations(tr.state);
+        },
+        provide: (f) => [
+            EditorView.decorations.compute([f], (state) => state.field(f).line),
+            gutterLineClass.compute([f], (state) => state.field(f).gutter)
+        ]
+    });
 }

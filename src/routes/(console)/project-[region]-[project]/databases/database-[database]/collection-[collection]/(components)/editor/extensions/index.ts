@@ -6,5 +6,9 @@ export {
 } from './readonly';
 
 export { createDuplicateKeyLinter } from './duplicates';
-export { createNestedKeyPlugin, createSystemFieldStylePlugin } from './highlighting';
+export {
+    createNestedKeyPlugin,
+    createSystemFieldStylePlugin,
+    createErrorLineHighlight
+} from './highlighting';
 export { createLineHoverPlugin } from './hover';
