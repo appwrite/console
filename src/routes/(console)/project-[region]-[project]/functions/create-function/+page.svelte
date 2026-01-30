@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { base } from '$app/paths';
     import { SvgIcon } from '$lib/components';
     import { page } from '$app/state';
     import { Click, trackEvent } from '$lib/actions/analytics';
@@ -25,8 +24,13 @@
 
     export let data;
 
+    import { resolveRoute } from '$lib/stores/navigation';
+
     const isVcsEnabled = $regionalConsoleVariables?._APP_VCS_ENABLED === true;
-    const wizardBase = `${base}/project-${page.params.region}-${page.params.project}/functions`;
+    const wizardBase = resolveRoute('/(console)/project-[region]-[project]/functions', {
+        region: page.params.region,
+        project: page.params.project
+    });
 
     let selectedRepository: string;
 
@@ -52,7 +56,16 @@
     function connect(e: Models.ProviderRepository) {
         trackEvent(Click.ConnectRepositoryClick, { from: 'cover' });
         repository.set(e);
-        goto(`${wizardBase}/create-function/repository-${e.id}?installation=${$installation.$id}`);
+        goto(
+            resolveRoute(
+                '/(console)/project-[region]-[project]/functions/create-function/repository-[repository]',
+                {
+                    region: page.params.region,
+                    project: page.params.project,
+                    repository: e.id
+                }
+            ) + `?installation=${$installation.$id}`
+        );
     }
 </script>
 
@@ -139,7 +152,14 @@
                                         runtime: template.name
                                     });
                                 }}
-                                href={`${wizardBase}/create-function/template-${starterTemplate.id}?runtime=${runtimeDetail.$id}`}>
+                                href={resolveRoute(
+                                    '/(console)/project-[region]-[project]/functions/create-function/template-[template]',
+                                    {
+                                        region: page.params.region,
+                                        project: page.params.project,
+                                        template: starterTemplate.id
+                                    }
+                                ) + `?runtime=${runtimeDetail.$id}`}>
                                 <Layout.Stack direction="row" gap="s" alignItems="center">
                                     <Avatar size="xs" alt={template.name} empty={!template.name}>
                                         <SvgIcon name={iconName} iconSize="small" />
@@ -167,7 +187,14 @@
                             <Card.Link
                                 radius="s"
                                 padding="xs"
-                                href={`${wizardBase}/create-function/template-${template.id}`}
+                                href={resolveRoute(
+                                    '/(console)/project-[region]-[project]/functions/create-function/template-[template]',
+                                    {
+                                        region: page.params.region,
+                                        project: page.params.project,
+                                        template: template.id
+                                    }
+                                )}
                                 on:click={() => {
                                     trackEvent('click_connect_template', {
                                         from: 'cover',
@@ -197,7 +224,15 @@
                         {/each}
                     </Layout.Grid>
 
-                    <Link variant="quiet" href={`${wizardBase}/templates`}>
+                    <Link
+                        variant="quiet"
+                        href={resolveRoute(
+                            '/(console)/project-[region]-[project]/functions/templates',
+                            {
+                                region: page.params.region,
+                                project: page.params.project
+                            }
+                        )}>
                         <Layout.Stack direction="row" gap="xs">
                             Browse all templates <Icon icon={IconArrowSmRight} />
                         </Layout.Stack>
@@ -211,7 +246,13 @@
                 on:click={() => {
                     trackEvent('click_create_function_manual', { from: 'cover' });
                 }}
-                href={`${wizardBase}/create-function/manual`}>manually</Link>
+                href={resolveRoute(
+                    '/(console)/project-[region]-[project]/functions/create-function/manual',
+                    {
+                        region: page.params.region,
+                        project: page.params.project
+                    }
+                )}>manually</Link>
             or using the CLI.
             <Link href="https://appwrite.io/docs/products/functions/deployment" external
                 >Learn more</Link

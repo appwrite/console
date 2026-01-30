@@ -310,8 +310,8 @@
                     justifyContent="space-between"
                     alignItems="center"
                     wrap="wrap">
-                    <Typography.Text variant="m-400" color="--fgcolor-neutral-secondary">
-                        Total results: {isLoadingRepositories ? 0 : $repositories.total}
+                    <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
+                        Total results: {$repositories.total}
                     </Typography.Text>
                     <PaginationInline
                         {limit}
