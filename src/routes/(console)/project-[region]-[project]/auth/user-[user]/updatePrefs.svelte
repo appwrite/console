@@ -13,8 +13,12 @@
     import { page } from '$app/state';
     import deepEqual from 'deep-equal';
     import type { PrefRow } from '$lib/helpers/prefs';
-    import { normalizePrefs, createPrefRow, isAddDisabled, sanitizePrefs } from '$lib/helpers/prefs';
-
+    import {
+        normalizePrefs,
+        createPrefRow,
+        isAddDisabled,
+        sanitizePrefs
+    } from '$lib/helpers/prefs';
 
     $: if (prefs) {
         const currentNormalized = normalizePrefs(prefs);
