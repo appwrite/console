@@ -3,11 +3,10 @@
     import { EstimatedCard, Pagination as PaginationComponent } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
-    import { upgradeURL } from '$lib/stores/billing';
+    import { getChangePlanUrl } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
-    import type { AggregationTeam, InvoiceUsage, Plan } from '$lib/sdk/billing';
     import { formatCurrency } from '$lib/helpers/numbers';
-    import { BillingPlan, DEFAULT_BILLING_PROJECTS_LIMIT } from '$lib/constants';
+    import { DEFAULT_BILLING_PROJECTS_LIMIT } from '$lib/constants';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import {
         Typography,
@@ -25,6 +24,7 @@
     import { IconTag } from '@appwrite.io/pink-icons-svelte';
     import { page } from '$app/state';
     import type { RowFactoryOptions } from '$routes/(console)/organization-[organization]/billing/store';
+    import type { Models } from '@appwrite.io/console';
 
     let {
         currentPlan,
@@ -34,10 +34,10 @@
         limit = undefined,
         offset = undefined
     }: {
-        currentPlan: Plan;
-        nextPlan?: Plan | null;
+        currentPlan: Models.BillingPlan;
+        nextPlan?: Models.BillingPlan | null;
         availableCredit?: number | undefined;
-        currentAggregation?: AggregationTeam | undefined;
+        currentAggregation?: Models.AggregationTeam | undefined;
         limit?: number | undefined;
         offset?: number | undefined;
     } = $props();
@@ -146,8 +146,8 @@
         ];
     }
 
-    function getResource(resources: InvoiceUsage[] | undefined, resourceId: string) {
-        return resources?.find((r) => r.resourceId === resourceId);
+    function getResource(resources: Array<Models.UsageResources> | undefined, resourceId: string) {
+        return resources?.find((resource) => resource.resourceId === resourceId);
     }
 
     function createRow({
@@ -221,7 +221,7 @@
     function createResourceRow(
         id: string,
         label: string,
-        resource: InvoiceUsage | undefined,
+        resource: Models.UsageResources | undefined,
         planLimit: number | null | undefined,
         formatValue = formatNum
     ) {
@@ -229,8 +229,8 @@
     }
 
     function getBillingData(
-        currentPlan: Plan,
-        currentAggregation: AggregationTeam | undefined,
+        currentPlan: Models.BillingPlan,
+        currentAggregation: Models.AggregationTeam | undefined,
         isSmallViewport: boolean
     ) {
         // base plan row
@@ -346,6 +346,12 @@
                         'Image transformations',
                         getResource(resources, 'imageTransformations'),
                         currentPlan?.imageTransformations
+                    ),
+                    createResourceRow(
+                        'screenshots-generated',
+                        'Screenshots generated',
+                        getResource(resources, 'screenshotsGenerated'),
+                        currentPlan?.screenshotsGenerated
                     ),
                     createResourceRow(
                         'gb-hours',
@@ -582,7 +588,7 @@
 
             <!-- Actions -->
             <div class="actions-container">
-                {#if $organization?.billingPlan === BillingPlan.FREE || $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION}
+                {#if !currentPlan.requiresPaymentMethod}
                     <Layout.Stack
                         direction="row"
                         alignItems="center"
@@ -597,7 +603,7 @@
                         {/if}
                         <Button
                             disabled={$organization?.markedForDeletion}
-                            href={$upgradeURL}
+                            href={getChangePlanUrl($organization?.$id)}
                             on:click={() =>
                                 trackEvent(Click.OrganizationClickUpgrade, {
                                     from: 'button',
@@ -620,7 +626,7 @@
                             <Button
                                 text
                                 disabled={$organization?.markedForDeletion}
-                                href={$upgradeURL}
+                                href={getChangePlanUrl($organization?.$id)}
                                 on:click={() =>
                                     trackEvent(Click.OrganizationClickUpgrade, {
                                         from: 'button',

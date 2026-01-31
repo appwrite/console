@@ -5,7 +5,7 @@
     import BackupPolicy from './policy.svelte';
     import LockedCard from './locked.svelte';
     import Table from './table.svelte';
-    import type { PageData } from './$types';
+    import type { PageProps } from './$types';
     import CreatePolicy from './createPolicy.svelte';
     import { Button } from '$lib/elements/forms';
     import { addNotification, dismissAllNotifications } from '$lib/stores/notifications';
@@ -20,16 +20,17 @@
     import { ID } from '@appwrite.io/console';
     import { showCreateBackup, showCreatePolicy } from './store';
     import { getProjectId } from '$lib/helpers/project';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Layout, Typography } from '@appwrite.io/pink-svelte';
     import { page } from '$app/state';
     import IconQuestionMarkCircle from './components/questionIcon.svelte';
 
-    let policyCreateError: string;
-    let totalPolicies: UserBackupPolicy[] = [];
-    let isDisabled = isSelfHosted || (isCloud && !$currentPlan.backupsEnabled);
+    const { data }: PageProps = $props();
 
-    export let data: PageData;
+    let policyCreateError: string | null = $state(null);
+    let totalPolicies: UserBackupPolicy[] = $state([]);
+
+    const isDisabled = $derived(isSelfHosted || (isCloud && !$currentPlan.backupsEnabled));
 
     const showFeedbackNotification = () => {
         let counter = localStorage.getItem('createBackupsCounter');
@@ -112,7 +113,7 @@
 
             if (actualDay) message['monthlyInterval'] = actualDay;
 
-            trackEvent('submit_policy_submit', message);
+            trackEvent(Submit.DatabaseBackupPolicyCreate, message);
         });
     };
 
@@ -148,14 +149,12 @@
 
             await invalidate(Dependencies.BACKUPS);
             showFeedbackNotification();
-        } catch (err) {
-            addNotification({
-                type: 'error',
-                message: err.message
-            });
-        } finally {
+
             totalPolicies = [];
             $showCreatePolicy = false;
+        } catch (err) {
+            policyCreateError = err.message;
+            trackError(err, Submit.DatabaseBackupPolicyCreate);
         }
     };
 
@@ -180,6 +179,7 @@
                     buttonText="Create policy"
                     buttonEvent="create_backup"
                     buttonType="secondary"
+                    project={data.project}
                     buttonDisabled={isDisabled}
                     policiesCreated={data.policies.total}
                     maxPolicies={$currentPlan.backupPolicies}
@@ -200,6 +200,7 @@
                     buttonText="Manual backup"
                     buttonEvent="create_backup"
                     buttonType="secondary"
+                    project={data.project}
                     buttonDisabled={isDisabled}
                     buttonMethod={() => {
                         $showCreateBackup = true;
@@ -228,7 +229,7 @@
             </div>
         {:else}
             <div class="u-flex-vertical u-gap-32">
-                <LockedCard />
+                <LockedCard project={data.project} />
             </div>
         {/if}
     </div>
@@ -239,7 +240,11 @@
     onSubmit={createPolicies}
     bind:show={$showCreatePolicy}
     bind:error={policyCreateError}>
-    <CreatePolicy bind:totalPolicies isShowing={$showCreatePolicy} isFromBackupsTab />
+    <CreatePolicy
+        bind:totalPolicies
+        isShowing={$showCreatePolicy}
+        isFromBackupsTab
+        project={data.project} />
 
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => ($showCreatePolicy = false)}>Cancel</Button>

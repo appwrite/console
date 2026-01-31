@@ -34,7 +34,6 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Dependencies } from '$lib/constants';
     import { invalidate } from '$app/navigation';
-
     import type { PageProps } from './$types';
 
     let { data }: PageProps = $props();

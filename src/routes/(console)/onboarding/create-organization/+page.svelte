@@ -1,19 +1,19 @@
 <script lang="ts">
     import { isCloud } from '$lib/system';
     import { sdk } from '$lib/stores/sdk';
-    import { ID } from '@appwrite.io/console';
-    import { BillingPlan, Dependencies } from '$lib/constants';
-    import { tierToPlan } from '$lib/stores/billing';
+    import { BillingPlanGroup, ID } from '@appwrite.io/console';
+    import { Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
     import { loadAvailableRegions } from '$routes/(console)/regions';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Button, Card, Layout, Input, Typography, Spinner } from '@appwrite.io/pink-svelte';
     import { Form } from '$lib/elements/forms/index.js';
     import { goto, invalidate } from '$app/navigation';
-    import { base } from '$app/paths';
+    import { resolve } from '$app/paths';
+    import { getBasePlanFromGroup } from '$lib/stores/billing';
 
-    let isLoading = false;
-    let organizationName = 'Personal Projects';
+    let isLoading = $state(false);
+    let organizationName = $state('Personal Projects');
 
     async function createOrganization() {
         isLoading = true;
@@ -21,15 +21,15 @@
 
         try {
             if (isCloud) {
-                organization = await sdk.forConsole.billing.createOrganization(
-                    ID.unique(),
-                    organizationName,
-                    BillingPlan.FREE,
-                    null
-                );
+                const starter = getBasePlanFromGroup(BillingPlanGroup.Starter);
+                organization = await sdk.forConsole.organizations.create({
+                    organizationId: ID.unique(),
+                    name: organizationName,
+                    billingPlan: starter.$id
+                });
 
                 trackEvent(Submit.OrganizationCreate, {
-                    plan: tierToPlan(BillingPlan.FREE)?.name,
+                    plan: starter?.name,
                     budget_cap_enabled: false,
                     members_invited: 0
                 });
@@ -48,7 +48,11 @@
         } finally {
             if (organization) {
                 loadAvailableRegions(organization?.$id).then();
-                await goto(`${base}/organization-${organization.$id}`);
+                await goto(
+                    resolve('/(console)/organization-[organization]', {
+                        organization: organization.$id
+                    })
+                );
 
                 // fixes an edge case where
                 // the org is not available for some reason!

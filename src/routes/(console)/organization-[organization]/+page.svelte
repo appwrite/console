@@ -18,8 +18,7 @@
     } from '$lib/components';
     import { trackEvent, Click } from '$lib/actions/analytics';
     import { type Models } from '@appwrite.io/console';
-    import { getServiceLimit, readOnly, upgradeURL } from '$lib/stores/billing';
-    import { BillingPlan } from '$lib/constants';
+    import { getServiceLimit, readOnly, getChangePlanUrl } from '$lib/stores/billing';
     import { hideNotification, shouldShowNotification } from '$lib/helpers/notifications';
     import { onMount, type ComponentType } from 'svelte';
     import { canWriteProjects } from '$lib/stores/roles';
@@ -38,7 +37,7 @@
     import type { PageProps } from './$types';
     import { getPlatformInfo } from '$lib/helpers/platform';
     import CreateProjectCloud from './createProjectCloud.svelte';
-    import { currentPlan, regions as regionsStore } from '$lib/stores/organization';
+    import { regions as regionsStore } from '$lib/stores/organization';
     import SelectProjectCloud from '$lib/components/billing/alerts/selectProjectCloud.svelte';
     import ArchiveProject from '$lib/components/archiveProject.svelte';
 
@@ -197,7 +196,7 @@
         {/if}
     </Layout.Stack>
 
-    {#if isCloud && $currentPlan?.projects && $currentPlan?.projects > 0 && data.organization.projects.length > 0 && $canWriteProjects && (projectsToArchive.length > 0 || data.projects.total > $currentPlan.projects)}
+    {#if isCloud && data.currentPlan?.projects && data.currentPlan?.projects > 0 && data.organization.projects.length > 0 && $canWriteProjects && (projectsToArchive.length > 0 || data.projects.total > data.currentPlan.projects)}
         {@const difference = projectsToArchive.length}
         {@const messagePrefix =
             difference !== 1 ? `${difference} projects are` : `${difference} project is`}
@@ -207,7 +206,7 @@
                 <Button
                     compact
                     size="s"
-                    href={$upgradeURL}
+                    href={getChangePlanUrl(data.organization.$id)}
                     on:click={() => {
                         trackEvent(Click.OrganizationClickUpgrade, {
                             from: 'button',
@@ -220,7 +219,7 @@
         </Alert.Inline>
     {/if}
 
-    {#if isCloud && data.organization.billingPlan === BillingPlan.FREE && projectsToArchive.length === 0 && !freePlanAlertDismissed}
+    {#if isCloud && data.currentPlan?.projects !== 0 && projectsToArchive.length === 0 && !freePlanAlertDismissed}
         <Alert.Inline dismissible on:dismiss={dismissFreePlanAlert}>
             <Typography.Text
                 >Your Free plan includes up to 2 projects and limited resources. Upgrade to unlock
@@ -229,7 +228,7 @@
                 <Button
                     compact
                     size="s"
-                    href={$upgradeURL}
+                    href={getChangePlanUrl(data.organization.$id)}
                     on:click={() => {
                         trackEvent(Click.OrganizationClickUpgrade, {
                             from: 'button',
@@ -336,7 +335,7 @@
     <ArchiveProject
         {projectsToArchive}
         organization={data.organization}
-        currentPlan={$currentPlan}
+        currentPlan={data.currentPlan}
         archivedTotalOverall={data.archivedTotalOverall}
         archivedOffset={data.archivedOffset}
         limit={data.limit} />
@@ -344,7 +343,8 @@
 <CreateOrganization bind:show={addOrganization} />
 <CreateProject bind:show={showCreate} teamId={page.params.organization} />
 <CreateProjectCloud
-    projects={data.projects.total}
     bind:showCreateProjectCloud
+    projects={data.projects.total}
     regions={$regionsStore.regions}
-    teamId={page.params.organization} />
+    teamId={page.params.organization}
+    currentPlan={data.currentPlan} />

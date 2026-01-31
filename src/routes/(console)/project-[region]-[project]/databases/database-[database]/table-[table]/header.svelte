@@ -1,22 +1,18 @@
 <script lang="ts">
-    import { base } from '$app/paths';
     import { page } from '$app/state';
-    import { Id, Tab, Tabs } from '$lib/components';
-    import { isTabSelected } from '$lib/helpers/load';
-    import { Cover } from '$lib/layout';
-    import AnimatedTitle from '$lib/layout/animatedTitle.svelte';
     import { canWriteTables } from '$lib/stores/roles';
-    import { expandTabs, table } from './store';
-    import { Layout } from '@appwrite.io/pink-svelte';
-    import { preferences } from '$lib/stores/preferences';
+    import { resolveRoute } from '$lib/stores/navigation';
 
-    const databaseId = $derived(page.params.database);
-
-    const tableId = $derived(page.params.table);
+    import { type Entity, Header } from '$database/(entity)';
 
     const path = $derived(
-        `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/table-${tableId}`
+        resolveRoute(
+            '/(console)/project-[region]-[project]/databases/database-[database]/table-[table]',
+            page.params
+        )
     );
+
+    const table = $derived(page.data.table) as Entity;
 
     const tabs = $derived(
         [
@@ -56,77 +52,8 @@
             }
         ].filter((tab) => !tab.disabled)
     );
-
-    const link = $derived(
-        `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}`
-    );
-
-    const nonSheetPages = $derived.by(() => {
-        const endings = ['table-[table]', 'table-[table]/columns', 'table-[table]/indexes'];
-        const isSpreadsheetPage = endings.some((end) => page.route.id?.endsWith(end));
-        return !isSpreadsheetPage;
-    });
-
-    $effect(() => {
-        if (nonSheetPages) expandTabs.set(true);
-        else {
-            expandTabs.set(preferences.getKey('tableHeaderExpanded', true));
-        }
-    });
 </script>
 
-<div class:nonSheetPages>
-    <Cover animate expanded collapsed={!$expandTabs} blocksize={$expandTabs ? '152px' : '90px'}>
-        <svelte:fragment slot="header">
-            <Layout.Stack direction="row" alignContent="center" alignItems="center" inline>
-                <AnimatedTitle href={link} collapsed={!$expandTabs}>
-                    {$table?.name}
-                </AnimatedTitle>
-
-                {#key $table?.$id}
-                    <Id value={$table?.$id} tooltipPlacement={$expandTabs ? undefined : 'right'}
-                        >{$table?.$id}</Id>
-                {/key}
-            </Layout.Stack>
-        </svelte:fragment>
-
-        <div class="tabs-container" class:collapsed={!$expandTabs}>
-            <Tabs>
-                {#each tabs as tab}
-                    <Tab
-                        href={tab.href}
-                        selected={isTabSelected(tab, page.url.pathname, path, tabs)}
-                        event={tab.event}>
-                        {tab.title}
-                    </Tab>
-                {/each}
-            </Tabs>
-        </div>
-    </Cover>
-</div>
-
-<style lang="scss">
-    .nonSheetPages :global(.cover-container) {
-        @media (min-width: 1440px) {
-            padding-inline: 7px !important;
-        }
-
-        @media (min-width: 1728px) {
-            padding-inline: 10.25rem !important;
-        }
-    }
-
-    .tabs-container {
-        opacity: 1;
-        transition: opacity 300ms cubic-bezier(0.4, 0, 0.2, 1);
-
-        &.collapsed {
-            opacity: 0;
-            pointer-events: none;
-
-            & :global([role='tab']) {
-                cursor: default;
-            }
-        }
-    }
-</style>
+{#if table}
+    <Header {tabs} entity={table} />
+{/if}

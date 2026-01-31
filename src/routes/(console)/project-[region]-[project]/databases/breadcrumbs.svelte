@@ -1,24 +1,30 @@
 <script lang="ts">
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Breadcrumbs } from '$lib/layout';
-    import { organization } from '$lib/stores/organization';
-    import { project } from '../store';
+    import { resolveRoute } from '$lib/stores/navigation';
 
-    $: breadcrumbs = [
-        {
-            href: `${base}/organization-${page.data.organization?.$id}`,
-            title: $organization?.name
-        },
-        {
-            href: `${base}/project-${page.params.region}-${page.params.project}`,
-            title: $project?.name
-        },
-        {
-            href: `${base}/project-${page.params.region}-${page.params.project}/databases`,
-            title: 'Databases'
-        }
-    ];
+    const breadcrumbs = $derived.by(() => {
+        const project = page.data.project;
+        const organization = page.data.organization;
+        const organizationId = organization?.$id ?? project.teamId;
+
+        return [
+            {
+                href: resolveRoute('/(console)/organization-[organization]', {
+                    organization: organizationId
+                }),
+                title: organization?.name
+            },
+            {
+                href: resolveRoute('/(console)/project-[region]-[project]', page.params),
+                title: project?.name
+            },
+            {
+                href: resolveRoute('/(console)/project-[region]-[project]/databases', page.params),
+                title: 'Databases'
+            }
+        ];
+    });
 </script>
 
 <Breadcrumbs {breadcrumbs} />

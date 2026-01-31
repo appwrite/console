@@ -1,11 +1,9 @@
 <script lang="ts">
     import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid } from '$lib/components';
-    import { InputPhone, InputOTP } from '$lib/elements/forms';
-    import { Button, Form } from '$lib/elements/forms';
+    import { InputPhone, InputOTP, Button, Form } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
-    import { project } from '../../store';
-    import { upgradeURL } from '$lib/stores/billing';
+    import { getChangePlanUrl } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
@@ -20,54 +18,66 @@
     import { Icon, Input, Layout, Link, Tooltip } from '@appwrite.io/pink-svelte';
     import { IconPlus, IconRefresh } from '@appwrite.io/pink-icons-svelte';
 
-    let numbers: Models.MockNumber[] = $project?.authMockNumbers ?? [];
-    let initialNumbers = [];
+    const {
+        project
+    }: {
+        project: Models.Project;
+    } = $props();
 
-    $: initialNumbers = $project?.authMockNumbers?.map((num) => ({ ...num })) ?? [];
-    $: isSubmitDisabled = JSON.stringify(numbers) === JSON.stringify(initialNumbers);
+    let numbers: Models.MockNumber[] = $state(project?.authMockNumbers ?? []);
+    let lastProjectId: string = $state(project?.$id ?? null);
 
-    let isComponentDisabled: boolean =
-        isSelfHosted || (isCloud && !$currentPlan.supportsMockNumbers);
-    let emptyStateTitle: string = isSelfHosted
-        ? 'Available on Appwrite Cloud'
-        : 'Upgrade to add mock phone numbers';
-    let emptyStateDescription: string = isSelfHosted
-        ? 'Sign up for Cloud to add mock phone numbers to your projects.'
-        : 'Upgrade to a Pro plan to add mock phone numbers to your project.';
-    let cta: string = isSelfHosted ? 'Sign up' : 'Upgrade plan';
+    const initialNumbers = $derived(project.authMockNumbers?.map((n) => ({ ...n })) ?? []);
+
+    const isSubmitDisabled = $derived(JSON.stringify(numbers) === JSON.stringify(initialNumbers));
+
+    const isComponentDisabled = $derived(
+        isSelfHosted || (isCloud && !$currentPlan.supportsMockNumbers)
+    );
+
+    const emptyStateTitle = $derived(
+        isSelfHosted ? 'Available on Appwrite Cloud' : 'Upgrade to add mock phone numbers'
+    );
+
+    const emptyStateDescription = $derived(
+        isSelfHosted
+            ? 'Sign up for Cloud to add mock phone numbers to your projects.'
+            : 'Upgrade to a Pro plan to add mock phone numbers to your project.'
+    );
+
+    const cta = $derived(isSelfHosted ? 'Sign up' : 'Upgrade plan');
+
+    $effect(() => {
+        const id = project?.$id ?? null;
+        if (id && id !== lastProjectId) {
+            lastProjectId = id;
+            numbers = project?.authMockNumbers ?? [];
+        }
+    });
 
     async function updateMockNumbers() {
         try {
             await sdk.forConsole.projects.updateMockNumbers({
-                projectId: $project.$id,
+                projectId: project.$id,
                 numbers
             });
+
             await invalidate(Dependencies.PROJECT);
-            addNotification({
-                type: 'success',
-                message: 'Mock phone numbers have been updated'
-            });
+
+            addNotification({ type: 'success', message: 'Mock phone numbers have been updated' });
             trackEvent(Submit.AuthMockNumbersUpdate);
         } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
+            addNotification({ type: 'error', message: error.message });
             trackError(error, Submit.AuthMockNumbersUpdate);
         }
     }
 
     function addPhoneNumber(number: Models.MockNumber) {
-        numbers.push({
-            phone: number.phone,
-            otp: number.otp
-        });
-        numbers = numbers;
+        numbers = [...numbers, { phone: number.phone, otp: number.otp }];
     }
 
     function deletePhoneNumber(index: number) {
-        numbers.splice(index, 1);
-        numbers = numbers;
+        numbers = numbers.filter((_, i) => i !== index);
     }
 
     function generateNumber(): string {
@@ -79,7 +89,7 @@
     }
 
     function generateOTP(): string {
-        return Math.floor(100000 + Math.random() * 900000) + '';
+        return String(Math.floor(100000 + Math.random() * 900000));
     }
 </script>
 
@@ -137,7 +147,9 @@
                             secondary
                             fullWidth
                             external={isSelfHosted}
-                            href={isCloud ? $upgradeURL : 'https://cloud.appwrite.io/register'}
+                            href={isCloud
+                                ? getChangePlanUrl(project.teamId)
+                                : 'https://cloud.appwrite.io/register'}
                             on:click={() => {
                                 trackEvent(Click.CloudSignupClick, {
                                     from: 'button',

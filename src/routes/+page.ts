@@ -1,23 +1,24 @@
 import { redirect } from '@sveltejs/kit';
-import { base } from '$app/paths';
+import { base, resolve } from '$app/paths';
 import type { PageLoad } from './$types';
 import { sdk } from '$lib/stores/sdk';
 import { VARS } from '$lib/system';
 
 const handleGithubEducationMembership = async (name: string, email: string) => {
-    const result = await sdk.forConsole.billing.setMembership('github-student-developer');
-    if (result && 'error' in result) {
-        if (result.error.code === 409) {
-            redirect(303, `${base}/account/organizations`);
+    try {
+        await sdk.forConsole.console.createProgramMembership({
+            programId: 'github-student-developer'
+        });
+
+        await setToGhStudentMailingList(name, email);
+    } catch (error) {
+        if (error.code === 409) {
+            redirect(303, resolve('/(console)/account/organizations'));
         } else {
             await sdk.forConsole.account.deleteSession({ sessionId: 'current' });
-            redirect(
-                303,
-                `${base}/education/error?message=${result.error.message}&code=${result.error.code}`
-            );
+            const errorUrl = resolve('/(public)/(guest)/education/error');
+            redirect(303, `${errorUrl}?message=${error.message}&code=${error.code}`);
         }
-    } else if (result && '$createdAt' in result) {
-        setToGhStudentMailingList(name, email);
     }
 };
 
@@ -35,7 +36,7 @@ export const load: PageLoad = async ({ parent, url }) => {
 
     if (userVisitedEducationPage()) {
         await handleGithubEducationMembership(account.name, account.email);
-        redirect(303, base);
+        redirect(303, resolve('/'));
     } else if (organizations.total && !isApplyingCredit) {
         const teamId = account.prefs.organization ?? organizations.teams[0].$id;
         if (!teamId) {
