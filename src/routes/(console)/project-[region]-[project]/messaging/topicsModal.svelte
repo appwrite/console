@@ -16,19 +16,28 @@
     import { getProviderText } from './helper';
     import { page } from '$app/state';
 
-    export let providerType: MessagingProviderType;
-    export let show: boolean;
-    export let topicsById: Record<string, Models.Topic>;
-    export let title: string = 'Select topics';
+    let {
+        providerType,
+        show = $bindable(),
+        topicsById = $bindable(),
+        title = 'Select topics'
+    }: {
+        providerType: MessagingProviderType;
+        show: boolean;
+        topicsById: Record<string, Models.Topic>;
+        title?: string;
+    } = $props();
 
     const dispatch = createEventDispatcher();
 
-    let search = '';
-    let offset = 0;
-    let totalResults = 0;
-    let topicResultsById: Record<string, Models.Topic> = {};
-    let selected: Record<string, Models.Topic> = {};
-    let emptyTopicsExists = false;
+    let offset = $state(0);
+    let search = $state('');
+    let totalResults = $state(0);
+    let emptyTopicsExists = $state(false);
+    let selected = $state<Record<string, Models.Topic>>({});
+    let topicResultsById = $state<Record<string, Models.Topic>>({});
+    let wasOpen = $state(false);
+    let previousSearch = $state('');
 
     function getTopicTotal(topic: Models.Topic): number {
         switch (providerType) {
@@ -97,27 +106,41 @@
         selected = updatedSelected;
     }
 
-    $: if (show) {
-        request();
-    }
-    $: if (offset !== null) {
-        request();
-    }
-    $: if (search !== null) {
-        offset = 0;
-        request();
-    }
+    const selectedSize = $derived(Object.keys(selected).length);
+    const hasSelection = $derived(selectedSize > 0);
 
-    $: selectedSize = Object.keys(selected).length;
-    $: hasSelection = selectedSize > 0;
-
-    $: topicSelectionStates = Object.fromEntries(
-        Object.keys(topicResultsById).map((id) => [id, !!selected[id]])
+    const topicsWithState = $derived(
+        Object.entries(topicResultsById).map(([topicId, topic]) => ({
+            topicId,
+            topic,
+            checked: !!selected[topicId],
+            disabled: !!topicsById[topicId]
+        }))
     );
 
-    $: if (show) {
-        selected = topicsById;
-    }
+    $effect(() => {
+        const searchChanged = search !== previousSearch;
+        if (searchChanged) {
+            previousSearch = search;
+            offset = 0;
+        }
+    });
+
+    $effect(() => {
+        const hasValidData = offset !== null || search !== null;
+        const shouldFetch = show && hasValidData;
+        if (shouldFetch) {
+            request();
+        }
+    });
+
+    $effect(() => {
+        const isOpening = show && !wasOpen;
+        if (isOpening) {
+            selected = topicsById;
+        }
+        wasOpen = show;
+    });
 </script>
 
 <Modal {title} bind:show onSubmit={submit} on:close={reset}>
@@ -133,17 +156,17 @@
             disabled={totalResults === 0 && !search}
             placeholder="Search for topics"
             bind:value={search} />
-        {#if Object.keys(topicResultsById).length > 0 && !emptyTopicsExists}
+        {#if topicsWithState.length > 0 && !emptyTopicsExists}
             <Table.Root columns={1} let:root>
-                {#each Object.entries(topicResultsById) as [topicId, topic]}
+                {#each topicsWithState as { topicId, topic, checked, disabled } (topicId)}
                     <Table.Row.Base {root}>
                         <Table.Cell {root}>
                             <Layout.Stack direction="row" alignItems="center" gap="s">
                                 <Selector.Checkbox
                                     id={topicId}
                                     label={topic.name}
-                                    disabled={!!topicsById[topicId]}
-                                    checked={topicSelectionStates[topicId] || false}
+                                    {checked}
+                                    {disabled}
                                     on:change={(event) => onTopicSelection(event, topic)}>
                                 </Selector.Checkbox>
                                 <span>
