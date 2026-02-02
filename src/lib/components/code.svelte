@@ -27,7 +27,7 @@
         label?: string;
         labelIcon?: 'code' | 'android' | 'flutter' | 'apple';
         code: string;
-        language: 'js' | 'html' | 'dart' | 'kotlin' | 'json' | 'sh' | 'yml' | 'swift';
+        language: Language;
         withLineNumbers?: boolean;
         withCopy?: boolean;
         noMargin?: boolean;
@@ -78,18 +78,6 @@
 </section>
 
 <style lang="scss">
-    .box {
-        --p-box-background-color: var(--color-neutral-400) !important;
-
-        body.theme-light & {
-            --p-box-background-color: var(--color-neutral-5) !important;
-        }
-
-        .controls {
-            z-index: 2;
-        }
-    }
-
     .noBoxPadding {
         padding: 0 !important;
     }
