@@ -578,7 +578,7 @@
     sideSheetOptions={{
         sideSheetTitle: $noSqlDocument.document?.$id,
         submit: {
-            text: 'Update',
+            text: $noSqlDocument.documentId ? 'Update' : 'Save',
             disabled: !$noSqlDocument.hasDataChanged,
             onClick: async () => {
                 await createOrUpdateDocument($noSqlDocument.document);

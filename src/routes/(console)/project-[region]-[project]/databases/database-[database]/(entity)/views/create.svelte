@@ -122,7 +122,7 @@
     <CustomId show bind:id required={false} autofocus={false} name={title} syncFrom={name} />
 
     {#if useSuggestions}
-        <SuggestionsInput showSampleCountPicker={terminology.type === 'documentsdb'} />
+        <SuggestionsInput showSampleCountPicker={!terminology.schema} />
     {/if}
 
     <svelte:fragment slot="footer">

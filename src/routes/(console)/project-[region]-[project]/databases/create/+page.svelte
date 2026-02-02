@@ -197,8 +197,7 @@
                         autofocus={false}
                         bind:id={databaseId}
                         bind:show={showCustomId}
-                        syncFrom={databaseName}
-                    />
+                        syncFrom={databaseName} />
                 </Layout.Stack>
             </Fieldset>
 
@@ -291,8 +290,7 @@
                     id={databaseType.type}
                     value={databaseType.type}
                     title={databaseType.title}
-                    imageRadius="s"
-                >
+                    imageRadius="s">
                     {databaseType.subtitle}
                 </Card.Selector>
             </div>

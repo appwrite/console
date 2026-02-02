@@ -139,7 +139,7 @@
     let tooltipMessage = $state('Copy document');
 
     // Store the original data to preserve system values
-    let originalData = $state<JsonValue>($state.snapshot(data));
+    let originalData = $state<JsonValue>(data);
 
     // Check if the update is from editor
     let isUpdatingFromEditor = false;
@@ -940,7 +940,7 @@
         await onSave?.(dataToSave);
 
         // update after save completes
-        originalData = $state.snapshot(data);
+        originalData = data;
 
         isSaving = false;
     }
@@ -1050,6 +1050,11 @@
                 }
                 if (!update.docChanged || readonly) return;
 
+                // Hide saved sonner when user starts typing
+                if (saveSonnerState === 'saved') {
+                    saveSonnerState = null;
+                }
+
                 // Check if this is manual typing (not paste, undo, or programmatic)
                 const isPaste = isPasteUpdate(update);
                 const isManualInput = !isPaste && !isUpdatingFromEditor;
@@ -1145,7 +1150,7 @@
     // Reset originalData when transitioning to new document mode
     $effect(() => {
         if (isNew && !wasNew) {
-            originalData = $state.snapshot(data);
+            originalData = data;
             generatedId = ID.unique();
             hasStartedEditing = false; // Reset editing flag for new document
             hasUserContent = false;
@@ -1167,8 +1172,13 @@
             hasUserContent = false;
             hasSuggestionsBeenShown = false; // Reset suggestions shown flag when switching documents
 
+            // Hide saved sonner when document is changed
+            if (saveSonnerState === 'saved') {
+                saveSonnerState = null;
+            }
+
             // Capture original data snapshot when switching documents
-            originalData = $state.snapshot(data);
+            originalData = data;
 
             lastExpectedContent = expectedContent;
 

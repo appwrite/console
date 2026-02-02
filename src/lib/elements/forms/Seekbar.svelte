@@ -245,12 +245,13 @@
     }
 
     .breakpoints {
-        position: absolute;
-        top: calc(1.25rem + var(--seekbar-height) + 8px);
         left: 0;
         right: 0;
         height: 12px;
+        position: absolute;
+        margin-inline: 1px;
         pointer-events: none;
+        top: calc(1.25rem + var(--seekbar-height) + 8px);
     }
 
     .breakpoint {

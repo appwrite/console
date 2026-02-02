@@ -48,6 +48,7 @@
 
         & :global(div:first-of-type) {
             height: 44px;
+            bottom: 32px;
             width: fit-content;
             align-content: center;
         }

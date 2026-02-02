@@ -80,6 +80,7 @@
         }
 
         & :global(div:first-of-type) {
+            bottom: 32px;
             max-width: 280px;
             transition: width 250ms cubic-bezier(0.4, 0, 0.2, 1);
         }
