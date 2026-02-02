@@ -22,7 +22,6 @@
     import CreatePolicy from '$database/backups/createPolicy.svelte';
     import { cronExpression, type UserBackupPolicy } from '$lib/helpers/backups';
 
-    import Mongo from '../(assets)/mongo.svelte';
     import { isTabletViewport } from '$lib/stores/viewport';
     import type { PageProps } from './$types';
 
@@ -197,7 +196,9 @@
                         name="Database"
                         autofocus={false}
                         bind:id={databaseId}
-                        bind:show={showCustomId} />
+                        bind:show={showCustomId}
+                        syncFrom={databaseName}
+                    />
                 </Layout.Stack>
             </Fieldset>
 
@@ -291,7 +292,7 @@
                     value={databaseType.type}
                     title={databaseType.title}
                     imageRadius="s"
-                    icon={databaseType.type === 'documentsdb' ? Mongo : undefined}>
+                >
                     {databaseType.subtitle}
                 </Card.Selector>
             </div>

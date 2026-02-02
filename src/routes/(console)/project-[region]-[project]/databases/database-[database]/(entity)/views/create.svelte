@@ -36,7 +36,6 @@
     let name = $state('');
     let id = $state(null);
     let error = $state(null);
-    let touchedId = $state(false);
     let creatingEntity = $state(false);
 
     function enableThinkingModeForSuggestions(id: string, name: string) {
@@ -93,26 +92,10 @@
         show = false;
     }
 
-    function toIdFormat(str: string): string {
-        return str
-            .toLowerCase()
-            .replace(/[^a-z0-9\-_. ]+/g, '')
-            .replace(/ /g, '_')
-            .replace(/^-+/, '')
-            .replace(/\.+$/, '')
-            .replace(/_{2,}/g, '_')
-            .slice(0, 36); // max length
-    }
-
     $effect(() => {
-        if (!touchedId && name) {
-            id = toIdFormat(name);
-        }
-
         if (!show) {
             id = null;
             error = null;
-            touchedId = false;
         }
     });
 
@@ -134,24 +117,9 @@
         placeholder="Enter {lower} name"
         bind:value={name}
         autofocus
-        required
-        on:input={() => {
-            if (!touchedId) {
-                id = toIdFormat(name);
-            }
-        }} />
+        required />
 
-    <CustomId
-        show
-        bind:id
-        required={false}
-        autofocus={false}
-        name={title}
-        on:input={() => {
-            if (!touchedId) {
-                touchedId = true;
-            }
-        }} />
+    <CustomId show bind:id required={false} autofocus={false} name={title} syncFrom={name} />
 
     {#if useSuggestions}
         <SuggestionsInput showSampleCountPicker={terminology.type === 'documentsdb'} />

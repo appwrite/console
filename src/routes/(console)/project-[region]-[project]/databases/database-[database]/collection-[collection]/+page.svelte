@@ -246,19 +246,19 @@
             <EmptySheet mode="records" type="documentsdb" showActions={$canWriteRows}>
                 {#snippet actions()}
                     <EmptySheetCards
-                        icon={IconPlus}
-                        title="Create document"
-                        subtitle="Create a document manually"
-                        onClick={() => {
-                            noSqlDocument.create(buildInitDoc());
-                        }} />
-
-                    <EmptySheetCards
                         icon={IconViewBoards}
                         title="Generate sample data"
                         subtitle="Generate data for testing"
                         onClick={() => {
                             $randomDataModalState.show = true;
+                        }} />
+
+                    <EmptySheetCards
+                        icon={IconPlus}
+                        title="Create document"
+                        subtitle="Manually add documents"
+                        onClick={() => {
+                            noSqlDocument.create(buildInitDoc());
                         }} />
                 {/snippet}
             </EmptySheet>
