@@ -35,6 +35,10 @@
 
     const columnsTypeMap = {
         string: String,
+        varchar: String,
+        text: String,
+        mediumtext: String,
+        longtext: String,
         integer: Integer,
         double: Integer,
         boolean: Boolean,

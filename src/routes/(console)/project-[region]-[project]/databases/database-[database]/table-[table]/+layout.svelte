@@ -90,7 +90,7 @@
 
     let createIndex: CreateIndex;
     let createColumn: CreateColumn;
-    let selectedOption: Option['name'] = 'String';
+    let selectedOption: Option['name'] = 'Text';
     let createMoreColumns = false;
 
     /* terminology */

@@ -46,8 +46,9 @@
     }
 
     function getValidColumns() {
+        const textTypes = ['string', 'varchar', 'text', 'mediumtext', 'longtext'];
         return ($columns as Models.ColumnString[]).filter(
-            (attr) => attr.type === 'string' && !attr?.array
+            (attr) => textTypes.includes(attr.type) && !attr?.array
         );
     }
 

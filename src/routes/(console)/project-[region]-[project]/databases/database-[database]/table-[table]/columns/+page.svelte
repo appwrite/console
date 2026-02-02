@@ -191,7 +191,11 @@
     function getMinMaxSizeForColumn(
         column: Columns
     ): { display: string; tooltip?: string } | undefined {
-        if (column.type === 'string' && !column['format'] && column.key !== '$id') {
+        if (
+            (column.type === 'string' || column.type === 'varchar') &&
+            !column['format'] &&
+            column.key !== '$id'
+        ) {
             const stringColumn = column as Models.ColumnString;
             return { display: `Size: ${stringColumn.size}` };
         } else if (column.type === 'integer' || column.type === 'double') {

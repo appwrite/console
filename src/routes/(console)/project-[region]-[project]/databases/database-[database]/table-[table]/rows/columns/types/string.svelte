@@ -32,7 +32,7 @@
     const maxlength = $derived(
         limited
             ? undefined
-            : column.type === 'string'
+            : column.type === 'string' || column.type === 'varchar'
               ? (column as Models.ColumnString).size
               : undefined
     );

@@ -146,7 +146,7 @@ export function mapSuggestedColumns<T extends ColumnInput>(columns: T[]): Sugges
         required: col.required ?? false,
         array: false,
         default: col.default ?? null,
-        size: col.type === 'string' ? (col.size ?? undefined) : undefined,
+        size: col.type === 'string' || col.type === 'varchar' ? (col.size ?? undefined) : undefined,
         min:
             col.type === 'integer' || col.type === 'double'
                 ? (col.min ?? col.formatOptions?.min ?? undefined)

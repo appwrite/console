@@ -30,6 +30,10 @@ export type Prettify<T> = T & {};
 
 const columnTypes = [
     'string',
+    'varchar',
+    'text',
+    'mediumtext',
+    'longtext',
     'integer',
     'double',
     'boolean',

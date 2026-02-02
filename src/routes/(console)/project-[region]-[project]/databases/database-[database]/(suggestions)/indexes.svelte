@@ -222,7 +222,10 @@
         const usedKeys = new Set<string>();
         const columnMap: Map<string, number> = new Map(
             table.fields
-                .filter((field) => field.type === 'string' && 'size' in field)
+                .filter(
+                    (field) =>
+                        (field.type === 'string' || field.type === 'varchar') && 'size' in field
+                )
                 .map((field) => [field.key, field['size']])
         );
 
