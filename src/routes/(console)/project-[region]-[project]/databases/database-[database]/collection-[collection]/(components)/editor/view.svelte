@@ -1336,8 +1336,13 @@
 
     <div bind:this={editorContainer} class="cm-editor-wrapper" class:loading></div>
 
-    {#if showSuggestions && hasStartedEditing}
-        <Suggestions show={showSuggestions} />
+    {#if ($isSmallViewport && showSuggestions) || (showSuggestions && hasStartedEditing)}
+        <Suggestions
+            show={showSuggestions}
+            onMobileClick={() => {
+                showSuggestions = false;
+                applySuggestedAttributes();
+            }} />
     {/if}
 </div>
 
