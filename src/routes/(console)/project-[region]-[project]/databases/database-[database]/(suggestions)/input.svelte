@@ -112,7 +112,7 @@
                             <Seekbar
                                 max={100}
                                 extraBlockStart
-                                breakpointCount={8}
+                                breakpointCount={5}
                                 bind:value={$randomDataModalState.value} />
                         </Layout.Stack>
                     {/if}

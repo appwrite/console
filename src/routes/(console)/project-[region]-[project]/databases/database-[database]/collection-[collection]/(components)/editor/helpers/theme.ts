@@ -25,7 +25,7 @@ export const customTheme = EditorView.theme({
     },
     '.cm-line': {
         padding: '0',
-        lineHeight: '1.6'
+        lineHeight: '140%'
     }
 });
 

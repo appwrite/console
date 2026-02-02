@@ -45,7 +45,7 @@
     import { onMount, onDestroy } from 'svelte';
     import Id, { truncateId } from '$lib/components/id.svelte';
     import { Icon, Layout, Skeleton, Tooltip } from '@appwrite.io/pink-svelte';
-    import { IconDuplicate, IconX } from '@appwrite.io/pink-icons-svelte';
+    import { IconDuplicate } from '@appwrite.io/pink-icons-svelte';
     import { Button } from '$lib/elements/forms';
     import { copy } from '$lib/helpers/copy';
     import { isSmallViewport } from '$lib/stores/viewport';
@@ -66,7 +66,6 @@
         ALLOWED_DOLLAR_PROPS,
         DEBOUNCE_DELAY,
         LINTER_DELAY,
-        AUTOSAVE_DELAY,
         INDENT_REGEX,
         SCALAR_VALUE_REGEX,
         TRAILING_COMMA_REGEX,
@@ -74,12 +73,12 @@
         WHITESPACE_ONLY_REGEX,
         SKELETON_LINES,
         getIndent,
-        ENABLE_AUTOSAVE
+        SAVE_UNDO_TOOLBAR_TIMEOUT
     } from './helpers/constants';
-    import { toLocaleDateTime } from '$lib/helpers/date';
     import { ID } from '@appwrite.io/console';
-    import { Suggestions, Error as ErrorSonner, Save as SavingSonner } from '../sonners';
     import { sleep } from '$lib/helpers/promises';
+    import { toLocaleDateTime } from '$lib/helpers/date';
+    import { Suggestions, Error as ErrorSonner, Save as SavingSonner } from '../sonners';
     import { json5, json5ParseCache, json5ParseLinter } from 'codemirror-json5';
 
     interface Props {
@@ -122,7 +121,6 @@
     let errorMessage = $state<string | null>(null);
     let warningMessage = $state<string | null>(null);
     let changeTimer: ReturnType<typeof setTimeout> | null = null; // debounce timer for parse + onChange
-    let autoSaveTimer: ReturnType<typeof setTimeout> | null = null; // debounce timer for auto-save
     let tooltipTimer: ReturnType<typeof setTimeout> | null = null; // timer for tooltip message reset
     let pendingCanonicalize = false; // set when a full-document replace (paste-all) occurs
     let lastExpectedContent = ''; // track latest serialized data to avoid spurious rewrites
@@ -1094,12 +1092,6 @@
                     changeTimer = null;
                 }
 
-                // Clear auto-save timer when user starts typing again
-                if (autoSaveTimer) {
-                    clearTimeout(autoSaveTimer);
-                    autoSaveTimer = null;
-                }
-
                 changeTimer = setTimeout(async () => {
                     const state = update.view.state;
                     const parseCache = state.field(json5ParseCache, false);
@@ -1119,42 +1111,6 @@
                     data = parsed;
                     onChange?.(parsed, hasDataChanged);
                     lastExpectedContent = serializeData(parsed);
-
-                    // Check if this was a manual edit (not undo) and trigger auto-save
-                    const isUndoOrRedo = update.transactions.some(
-                        (tr) =>
-                            tr.annotation(Transaction.userEvent) === 'undo' ||
-                            tr.annotation(Transaction.userEvent) === 'redo'
-                    );
-
-                    if (!isUndoOrRedo && !$isSmallViewport && hasDataChanged && onSave) {
-                        // Clear existing auto-save timer
-                        if (autoSaveTimer) {
-                            clearTimeout(autoSaveTimer);
-                            autoSaveTimer = null;
-                        }
-
-                        // Set new auto-save timer
-                        if (ENABLE_AUTOSAVE) {
-                            autoSaveTimer = setTimeout(() => {
-                                const parseCache = editorView?.state.field(json5ParseCache, false);
-                                if (parseCache?.err || errorMessage) {
-                                    autoSaveTimer = null;
-                                    return;
-                                }
-                                if (
-                                    editorView &&
-                                    getLintWarningSummary(editorView.state).hasWarning
-                                ) {
-                                    autoSaveTimer = null;
-                                    return;
-                                }
-
-                                handleSave();
-                                autoSaveTimer = null;
-                            }, AUTOSAVE_DELAY);
-                        }
-                    }
                 }, DEBOUNCE_DELAY);
             }),
             readOnlyCompartment.of(EditorState.readOnly.of(readonly))
@@ -1175,10 +1131,6 @@
         if (changeTimer) {
             clearTimeout(changeTimer);
             changeTimer = null;
-        }
-        if (autoSaveTimer) {
-            clearTimeout(autoSaveTimer);
-            autoSaveTimer = null;
         }
         if (tooltipTimer) {
             clearTimeout(tooltipTimer);
@@ -1284,7 +1236,7 @@
             saveSonnerState = 'saving';
         } else if (saveSonnerState === 'saving') {
             saveSonnerState = 'saved';
-            sleep(AUTOSAVE_DELAY).then(() => {
+            sleep(SAVE_UNDO_TOOLBAR_TIMEOUT).then(() => {
                 if (saveSonnerState === 'saved') {
                     saveSonnerState = null;
                 }
@@ -1311,19 +1263,9 @@
             {#if documentId}
                 <Layout.Stack direction="row" inline gap="s">
                     {#if isNew && onCancel}
-                        <Tooltip placement="top">
-                            <Button
-                                icon
-                                secondary
-                                size="xs"
-                                class="icon-button"
-                                disabled={loading}
-                                on:click={onCancel}>
-                                <Icon icon={IconX} size="s" />
-                            </Button>
-
-                            <span slot="tooltip">Cancel</span>
-                        </Tooltip>
+                        <Button text size="xs" disabled={loading} on:click={onCancel}>
+                            Cancel
+                        </Button>
                     {/if}
 
                     <Button secondary size="xs" disabled={!hasDataChanged} on:click={handleSave}>
@@ -1549,11 +1491,11 @@
         }
 
         :global(.cm-line.cm-error-line) {
-            background-color: var(--bgColor-error-weak, rgba(255, 69, 58, 0.28)) !important;
+            background-color: var(--bgcolor-error-weak) !important;
         }
 
         :global(.cm-gutterElement.cm-error-lineGutter) {
-            background-color: var(--bgColor-error-weak, rgba(255, 69, 58, 0.28)) !important;
+            background-color: var(--bgcolor-error-weak) !important;
         }
 
         // Subtle indicator for read-only system-field lines

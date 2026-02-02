@@ -1,6 +1,6 @@
 <script lang="ts">
     import { FloatingActionBar, Icon, Layout } from '@appwrite.io/pink-svelte';
-    import { IconExclamationCircle } from '@appwrite.io/pink-icons-svelte';
+    import { IconExclamationCircle, IconExclamation } from '@appwrite.io/pink-icons-svelte';
 
     let {
         message,
@@ -10,6 +10,7 @@
         severity?: 'error' | 'warning';
     } = $props();
 
+    const properIcon = $derived(severity === 'warning' ? IconExclamation : IconExclamationCircle);
     const iconColor = $derived(severity === 'warning' ? '--fgcolor-warning' : '--fgcolor-error');
 </script>
 
@@ -23,7 +24,7 @@
                     direction="row"
                     alignItems="center"
                     style="width: max-content;">
-                    <Icon icon={IconExclamationCircle} color={iconColor} />
+                    <Icon icon={properIcon} color={iconColor} />
 
                     <div class="sonner-message">
                         {message}

@@ -10,6 +10,7 @@
     } from '@appwrite.io/pink-svelte';
     import { sleep } from '$lib/helpers/promises';
     import { isSmallViewport } from '$lib/stores/viewport';
+    import { SAVE_UNDO_TOOLBAR_TIMEOUT } from '../editor/helpers/constants';
 
     let {
         state = null,
@@ -23,7 +24,7 @@
 
     $effect(() => {
         if (state === 'saved' && previousState !== 'saved') {
-            sleep(3000).then(() => {
+            sleep(SAVE_UNDO_TOOLBAR_TIMEOUT).then(() => {
                 previousState = state;
                 state = null;
             });

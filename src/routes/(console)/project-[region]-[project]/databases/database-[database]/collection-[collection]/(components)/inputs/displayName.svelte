@@ -59,6 +59,7 @@
 
 <InputTags
     max={5}
+    required
     bind:tags={names}
     id="custom-columns-{collectionId}"
     placeholder="Enter fields"
