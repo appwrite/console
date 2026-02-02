@@ -72,7 +72,7 @@
             await Promise.all(promises);
             addNotification({
                 type: 'success',
-                message: `${targetIds.length} subscriber${targetIds.length !== 1 ? 's' : ''} have been added`
+                message: `${targetIds.length} subscriber${targetIds.length !== 1 ? 's' : ''} created`
             });
             trackEvent(Submit.MessagingTopicSubscriberAdd);
             await invalidate(Dependencies.MESSAGING_TOPIC_SUBSCRIBERS);
@@ -88,7 +88,7 @@
 
 <Container>
     <Layout.Stack direction="row" justifyContent="space-between">
-        <SearchQuery placeholder="Search by type or IDs"></SearchQuery>
+        <SearchQuery placeholder="Search by type or ID"></SearchQuery>
         <Layout.Stack direction="row" inline>
             <Filters query={data.query} {columns} analyticsSource="messaging_topics" />
             <ViewSelector ui="new" view={View.Table} {columns} hideView />
@@ -99,7 +99,7 @@
                 }}
                 event="create_subscriber">
                 <Icon icon={IconPlus} slot="start" size="s" />
-                Add subscriber
+                Create subscriber
             </Button>
         </Layout.Stack>
     </Layout.Stack>
@@ -115,14 +115,11 @@
     {:else if $hasPageQueries}
         <EmptyFilter resource="subscribers" />
     {:else if data.search}
-        <EmptySearch>
-            <div class="u-text-center">
-                <b>Sorry, we couldn't find '{data.search}'</b>
-                <p>There are no subscribers that match your search.</p>
-            </div>
+        <EmptySearch bind:search={data.search} target="subscribers">
             <Button
                 secondary
                 href={`${base}/project-${page.params.region}-${page.params.project}/messaging/topics/topic-${page.params.topic}/subscribers`}>
+                Clear Search
             </Button>
         </EmptySearch>
     {:else}
@@ -141,7 +138,7 @@
     on:update={addTargets}>
     <svelte:fragment slot="description">
         <Typography.Text>
-            Add subscribers to this topic by selecting the targets for directing messages.{' '}
+            Create subscribers for this topic by selecting the targets for directing messages.{' '}
             <Link
                 href="https://appwrite.io/docs/products/messaging/topics#subscribe-targets-to-topics"
                 external>
