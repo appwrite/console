@@ -8,19 +8,9 @@
 </script>
 
 <script lang="ts">
-    import { Badge, Icon } from '@appwrite.io/pink-svelte';
-    import { IconCode, IconAndroid, IconFlutter, IconApple } from '@appwrite.io/pink-icons-svelte';
-    import Prism from 'prismjs';
-    import 'prismjs/components/prism-dart';
-    import 'prismjs/components/prism-kotlin';
-    import 'prismjs/components/prism-json';
-    import 'prismjs/components/prism-bash';
-    import 'prismjs/components/prism-yaml';
-    import 'prismjs/components/prism-swift';
-    import 'prismjs/plugins/autoloader/prism-autoloader';
-    import 'prismjs/plugins/custom-class/prism-custom-class';
-    import 'prismjs/plugins/line-numbers/prism-line-numbers';
     import { Copy } from '.';
+    import { Badge, Icon, Code } from '@appwrite.io/pink-svelte';
+    import { IconCode, IconAndroid, IconFlutter, IconApple } from '@appwrite.io/pink-icons-svelte';
 
     let {
         label = null,
@@ -60,16 +50,13 @@
                 return null;
         }
     }
-
-    Prism.plugins.customClass.prefix('prism-');
-
-    $effect(() => Prism.highlightAll());
 </script>
 
 <section
     class="box u-overflow-hidden {classes}"
     class:common-section={!noMargin}
-    class:noBoxPadding>
+    class:noBoxPadding
+    class:with-scroll={allowScroll}>
     <div
         class="controls u-position-absolute u-inset-inline-end-8 u-inset-block-start-8 u-flex u-gap-8">
         {#if label}
@@ -87,17 +74,10 @@
             </Copy>
         {/if}
     </div>
-    <pre
-        class:with-scroll={allowScroll}
-        class={`language-${language}`}
-        class:line-numbers={withLineNumbers}><code>{code}</code></pre>
+    <Code {code} lang={language} lineNumbers={withLineNumbers} hideHeader />
 </section>
 
-<!-- svelte-ignore css_unused_selector -->
-<style lang="scss" global>
-    @import 'prismjs/themes/prism.css';
-    @import 'prismjs/plugins/line-numbers/prism-line-numbers.css';
-
+<style lang="scss">
     .box {
         --p-box-background-color: var(--color-neutral-400) !important;
 
@@ -116,121 +96,6 @@
 
     .with-scroll {
         height: 100%;
-        overflow: auto;
-    }
-
-    code,
-    pre {
-        &[class*='language-'] {
-            color: #fcfcff;
-            text-shadow: none;
-            font-family: 'Source Code Pro';
-
-            &.line-numbers {
-                padding-left: 2.5em;
-            }
-            body.theme-light & {
-                color: #373b4d;
-            }
-        }
-        ::selection,
-        &::selection {
-            text-shadow: none;
-            background: #b3d4fc;
-        }
-
-        &.line-numbers .line-numbers-rows {
-            border: none;
-
-            > span::before {
-                color: #868ea3;
-            }
-        }
-    }
-
-    :not(pre) > code[class*='language-'],
-    pre[class*='language-'] {
-        background: hsl(var(--p-box-background-color));
-
-        margin: 0;
-    }
-    .prism-token {
-        &.prism-comment,
-        &.prism-prolog,
-        &.prism-doctype,
-        &.prism-cdata {
-            color: #868ea3;
-        }
-
-        &.prism-punctuation {
-            color: #fcfcff;
-
-            body.theme-light & {
-                color: #373b4d;
-            }
-        }
-        &.prism-property,
-        &.prism-tag,
-        &.prism-boolean,
-        &.prism-number,
-        &.prism-constant,
-        &.prism-symbol,
-        &.prism-deleted,
-        &.prism-selector,
-        &.prism-attr-name,
-        &.prism-string,
-        &.prism-char,
-        &.prism-builtin,
-        &.prism-inserted {
-            color: #fdc584;
-            body.theme-light & {
-                color: #e49545;
-            }
-        }
-        &.prism-operator,
-        &.prism-entity,
-        &.prism-url,
-        .language-css &.prism-string,
-        .style &.prism-string {
-            color: #fcfcff;
-            background: none;
-            body.theme-light & {
-                color: #373b4d;
-            }
-        }
-
-        &.prism-atrule,
-        &.prism-attr-value,
-        &.prism-keyword {
-            color: #cbb1fc;
-            body.theme-light & {
-                color: #6a6af7;
-            }
-        }
-        &.prism-function {
-            color: #ffa1ce;
-            body.theme-light & {
-                color: #f02e7f;
-            }
-        }
-        &.prism-class-name {
-            color: #a1c4ff;
-            body.theme-light & {
-                color: #62aed2;
-            }
-        }
-        &.prism-important,
-        &.prism-variable {
-            color: #a1c4ff;
-            body.theme-light & {
-                color: #62aed2;
-            }
-        }
-        &.prism-regex {
-            color: #a1c4ff;
-            body.theme-light & {
-                color: #62aed2;
-            }
-        }
+        overflow: auto !important;
     }
 </style>
