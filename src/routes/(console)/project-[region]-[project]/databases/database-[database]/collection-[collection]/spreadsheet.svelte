@@ -9,7 +9,7 @@
     import { preferences } from '$lib/stores/preferences';
     import { sdk } from '$lib/stores/sdk';
     import { type Models, Query } from '@appwrite.io/console';
-    import { onMount } from 'svelte';
+    import { onMount, onDestroy } from 'svelte';
     import type { PageData } from './$types';
     import type { Column } from '$lib/helpers/types';
     import {
@@ -80,15 +80,6 @@
             paginatedDocuments.setPage(1, docsWithTemp);
         } else {
             paginatedDocuments.setPage(1, $documents.documents);
-        }
-
-        const firstDocument = $documents.documents[0];
-        const currentOpenDocument = $noSqlDocument.document;
-        const isNewOrDirty = $noSqlDocument.isNew || $noSqlDocument.isDirty;
-
-        /* always show the first item in the list if not new or editing! */
-        if (currentOpenDocument?.$id !== firstDocument?.$id && !isNewOrDirty) {
-            noSqlDocument.update({ document: firstDocument });
         }
     }
 
@@ -543,6 +534,26 @@
             : [];
 
     $: showSuggestions = $noSqlDocument.isNew && suggestedAttributes.length > 0;
+
+    const unsubscribeRenderKey = spreadsheetRenderKey.subscribe(() => {
+        const firstDocument = $documents?.documents[0];
+        const currentOpenDocument = $noSqlDocument.document;
+        const isNewOrDirty = $noSqlDocument.isNew || $noSqlDocument.isDirty;
+
+        // check if current document still exists in the list
+        const currentDocStillExists = currentOpenDocument?.$id
+            ? $documents?.documents.some((doc) => doc.$id === currentOpenDocument.$id)
+            : false;
+
+        /* Only reset to first document if current doc was deleted or no doc is open */
+        if (!isNewOrDirty && !currentDocStillExists && firstDocument) {
+            noSqlDocument.update({ document: firstDocument });
+        }
+    });
+
+    onDestroy(() => {
+        unsubscribeRenderKey();
+    });
 
     const hasUnsavedChanges = () =>
         Boolean(

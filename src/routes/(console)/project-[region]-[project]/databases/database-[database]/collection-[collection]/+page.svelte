@@ -10,7 +10,7 @@
     import FilePicker from '$lib/components/filePicker.svelte';
     import { page } from '$app/state';
     import { addNotification } from '$lib/stores/notifications';
-    import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { isSmallViewport } from '$lib/stores/viewport';
     import {
         IconChevronDown,
@@ -20,8 +20,9 @@
         IconRefresh
     } from '@appwrite.io/pink-icons-svelte';
     import { type Models } from '@appwrite.io/console';
-    import { expandTabs, randomDataModalState } from '$database/store';
+    import { expandTabs, randomDataModalState, spreadsheetRenderKey } from '$database/store';
     import { invalidate } from '$app/navigation';
+    import { hash } from '$lib/helpers/string';
     import { Dependencies } from '$lib/constants';
     import { EmptySheet, EmptySheetCards } from '$database/(entity)';
     import {
@@ -59,6 +60,11 @@
     $effect(() => {
         filterColumns.set(createFilterableColumns());
     });
+
+    function handleColumnToggle() {
+        // Force spreadsheet re-render when columns are toggled
+        spreadsheetRenderKey.set(hash(Date.now().toString()));
+    }
 
     async function onSelect(file: Models.File, localFile = false) {
         $isCollectionsJsonImportInProgress = true;
@@ -109,6 +115,7 @@
                                 view={data.view}
                                 columns={collectionColumns}
                                 disableButton={data.documents.total === 0}
+                                onPreferencesUpdated={handleColumnToggle}
                                 onCustomOptionClick={() => (showCustomColumnsModal = true)} />
                         </div>
 
@@ -136,13 +143,13 @@
                         direction="row"
                         alignItems="center"
                         justifyContent="flex-end">
-                        <Button
+                        <!--<Button
                             secondary
                             disabled
                             event={Click.DatabaseImportJson}
                             on:click={() => (showImportJson = true)}>
                             Import JSON
-                        </Button>
+                        </Button>-->
                         {#if !$isSmallViewport}
                             <Button
                                 secondary
