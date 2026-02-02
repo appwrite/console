@@ -201,7 +201,6 @@
     "shadow-offsety-6": "var(--base-6)",
     "shadow-offsety-8": "var(--base-8)",
     "shadow-offsety-20": "var(--base-20)",
-    "shadow-offsety-20": "var(--base-20)",
     "shiki-foreground": "var(--fgcolor-neutral-primary)",
     "shiki-background": "var(--bgcolor-neutral-primary)",
     "shiki-token-constant": "var(--brand-orange-700)",
