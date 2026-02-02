@@ -104,6 +104,9 @@
     let showDelete = false;
     let selectedDocumentForDelete: Models.Document['$id'] | null = null;
 
+    let showUnsavedChangesModal = false;
+    let confirmNavigation: (() => void | Promise<void>) | null = null;
+
     async function loadRemoteDocument() {
         try {
             noSqlDocument.update({ show: true, loading: true });
@@ -566,6 +569,10 @@
         shouldBlockNavigation: (navigation) => {
             const nextPath = navigation.to?.url?.pathname;
             return Boolean(nextPath && nextPath !== page.url.pathname);
+        },
+        onShowConfirmModal: (_, onConfirm) => {
+            confirmNavigation = onConfirm;
+            showUnsavedChangesModal = true;
         }
     });
 </script>
@@ -861,24 +868,60 @@
     {/if}
 </SpreadsheetContainer>
 
-<Confirm
-    confirmDeletion
-    bind:open={showDelete}
-    onSubmit={handleDelete}
-    title={selectedDocuments.length === 1 ? 'Delete document' : 'Delete documents'}>
-    {@const isSingle = selectedDocumentForDelete !== null}
+{#if showDelete}
+    <Confirm
+        confirmDeletion
+        bind:open={showDelete}
+        onSubmit={handleDelete}
+        title={selectedDocuments.length === 1 ? 'Delete document' : 'Delete documents'}>
+        {@const isSingle = selectedDocumentForDelete !== null}
 
-    <p>
-        {#if isSingle}
-            Are you sure you want to delete this document from <b>{collection.name}</b>?
-        {:else}
-            Are you sure you want to delete <b>{selectedDocuments.length}</b>
-            {selectedDocuments.length > 1 ? 'documents' : 'document'} from <b>{collection.name}</b>?
-        {/if}
-    </p>
+        <p>
+            {#if isSingle}
+                Are you sure you want to delete this document from <b>{collection.name}</b>?
+            {:else}
+                Are you sure you want to delete <b>{selectedDocuments.length}</b>
+                {selectedDocuments.length > 1 ? 'documents' : 'document'} from
+                <b>{collection.name}</b>?
+            {/if}
+        </p>
 
-    <p class="u-bold">This action is irreversible.</p>
-</Confirm>
+        <p class="u-bold">This action is irreversible.</p>
+    </Confirm>
+{/if}
+
+{#if showUnsavedChangesModal}
+    <Confirm
+        bind:open={showUnsavedChangesModal}
+        title="Unsaved changes"
+        onSubmit={(e) => {
+            e.preventDefault();
+            confirmNavigation?.();
+            showUnsavedChangesModal = false;
+        }}>
+        <svelte:fragment slot="footer">
+            <Button.Button
+                size="s"
+                variant="text"
+                on:click={() => {
+                    confirmNavigation = null;
+                    showUnsavedChangesModal = false;
+                }}>
+                Keep editing
+            </Button.Button>
+
+            <Button.Button
+                size="s"
+                variant="secondary"
+                on:click={() => {
+                    confirmNavigation?.();
+                    showUnsavedChangesModal = false;
+                }}>Discard changes</Button.Button>
+        </svelte:fragment>
+
+        <p>You have unsaved changes that haven't been saved.</p>
+    </Confirm>
+{/if}
 
 <style lang="scss">
     .floating-action-bar {
