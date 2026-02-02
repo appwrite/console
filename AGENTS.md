@@ -30,7 +30,7 @@ manager/runtime: **Bun** (Node 20+ optional for tooling). ~1500 files with exten
 - `bun run check` - TypeScript/Svelte validation (~30-60s)
 - `bun run lint` - ESLint check (~10-20s)
 - `bun run format` - Auto-fix Prettier formatting
-- `bun run test` - Bun unit tests with TZ=EST (~10-30s)
+- `bun run test` - Vitest unit tests with TZ=EST (~10-30s)
 - `bun run build` - Production build via build.js (~60-120s)
 - `bun run dev` - Dev server on port 3000
 - `bun run preview` - Preview build on port 4173
