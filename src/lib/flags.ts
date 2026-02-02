@@ -1,6 +1,6 @@
 import { env } from '$env/dynamic/public';
 import type { Account } from './stores/user';
-import type { Organization } from './stores/organization';
+import type { Models } from '@appwrite.io/console';
 
 // Parse feature flags from env as a string array (exact match only)
 const flagsRaw = (env.PUBLIC_CONSOLE_FEATURE_FLAGS ?? '').split(',');
@@ -8,7 +8,7 @@ const flagsRaw = (env.PUBLIC_CONSOLE_FEATURE_FLAGS ?? '').split(',');
 // @ts-expect-error: unused method!
 function isFlagEnabled(name: string) {
     // loose generic to allow safe access while retaining type safety
-    return <T extends { account?: Account; organization?: Organization }>(data: T) => {
+    return <T extends { account?: Account; organization?: Models.Organization }>(data: T) => {
         const { account, organization } = data;
 
         return !!(

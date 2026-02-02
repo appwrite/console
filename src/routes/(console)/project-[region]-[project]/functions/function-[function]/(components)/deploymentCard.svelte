@@ -16,6 +16,7 @@
     import { func } from '../store';
     import { capitalize } from '$lib/helpers/string';
     import { getEffectiveBuildStatus } from '$lib/helpers/buildTimeout';
+    import { deploymentStatusConverter } from '$lib/stores/git';
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
     import { isCloud } from '$lib/system';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
@@ -38,10 +39,11 @@
         footer?: Snippet;
     } = $props();
 
-    let effectiveStatus = $derived(
-        getEffectiveBuildStatus(deployment.status, deployment.$createdAt, $regionalConsoleVariables)
+    const effectiveStatus = $derived(
+        getEffectiveBuildStatus(deployment, $regionalConsoleVariables)
     );
-    let totalSize = $derived(humanFileSize(deployment?.totalSize ?? 0));
+    const displayStatus = $derived(effectiveStatus === 'finalizing' ? 'ready' : effectiveStatus);
+    const totalSize = $derived(humanFileSize(deployment?.totalSize ?? 0));
 </script>
 
 {#snippet titleSnippet(title: string)}
@@ -131,7 +133,9 @@
                         <Layout.Stack gap="xxs" inline>
                             {@render titleSnippet('Status')}
                             <Typography.Text variant="m-400" color="--fgcolor-neutral-primary">
-                                <Status status={effectiveStatus} label={effectiveStatus} />
+                                <Status
+                                    status={deploymentStatusConverter(displayStatus)}
+                                    label={displayStatus} />
                             </Typography.Text>
                         </Layout.Stack>
                     {:else}

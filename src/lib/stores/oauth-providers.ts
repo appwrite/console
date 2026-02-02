@@ -27,7 +27,7 @@ export const oAuthProviders: Record<string, Provider> = {
     apple: {
         name: 'Apple',
         icon: 'apple',
-        docs: 'https://developer.apple.com/',
+        docs: 'https://developer.apple.com/sign-in-with-apple/',
         component: Apple
     },
     auth0: {

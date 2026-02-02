@@ -12,7 +12,7 @@
 
     let isOverflowing = false;
 
-    const hasOverflow: Action<HTMLDivElement, unknown> = (node) => {
+    const hasOverflow: Action<HTMLDivElement, unknown> = (node: Element) => {
         const observer = new ResizeObserver((entries) => {
             for (const entry of entries) {
                 let overflowing = false;

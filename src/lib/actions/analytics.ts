@@ -1,5 +1,5 @@
 import Analytics, { type AnalyticsPlugin } from 'analytics';
-import Plausible from 'plausible-tracker';
+import { init, track } from '@plausible-analytics/tracker';
 import { get } from 'svelte/store';
 import { page } from '$app/state';
 import { user } from '$lib/stores/user';
@@ -11,30 +11,30 @@ import { getReferrerAndUtmSource, getTrackedQueryParams } from '$lib/helpers/utm
 function plausible(domain: string): AnalyticsPlugin {
     if (!browser) return { name: 'analytics-plugin-plausible' };
 
-    const instance = Plausible({
-        domain
+    init({
+        domain,
+        autoCapturePageviews: false
     });
 
     return {
         name: 'analytics-plugin-plausible',
         page: ({ payload }) => {
-            instance.trackPageview({
+            track('pageview', {
                 url: payload.properties.path,
-                referrer: payload.properties.referrer,
-                deviceWidth: payload.properties.width
+                props: {
+                    referrer: payload.properties.referrer,
+                    deviceWidth: String(payload.properties.width)
+                }
             });
         },
         track: ({ payload }) => {
-            instance.trackEvent(
-                payload.event,
-                {
-                    props: payload.properties
-                },
-                {
-                    url: payload.properties.path,
-                    deviceWidth: payload.properties.width
+            track(payload.event, {
+                url: payload.properties.path,
+                props: {
+                    ...payload.properties,
+                    deviceWidth: String(payload.properties.width)
                 }
-            );
+            });
         },
         loaded: () => true
     };
@@ -52,7 +52,7 @@ const analytics = Analytics({
 });
 
 export function trackEvent(name: string, data: object = null): void {
-    if (!isTrackingAllowed()) {
+    if (!name || !isTrackingAllowed()) {
         return;
     }
 
@@ -76,7 +76,7 @@ export function trackEvent(name: string, data: object = null): void {
 }
 
 export function trackError(exception: Error, event: Submit): void {
-    if (exception instanceof AppwriteException && exception.type) {
+    if (exception instanceof AppwriteException && exception.type && event) {
         trackEvent(Submit.Error, {
             type: exception.type,
             form: event
@@ -148,11 +148,14 @@ export enum Click {
     ConnectRepositoryClick = 'click_connect_repository',
     CreditsRedeemClick = 'click_credits_redeem',
     CloudSignupClick = 'click_cloud_signup',
+
     DatabaseColumnDelete = 'click_column_delete',
     DatabaseIndexDelete = 'click_index_delete',
     DatabaseTableDelete = 'click_table_delete',
+    DatabaseRowDelete = 'click_row_delete',
     DatabaseDatabaseDelete = 'click_database_delete',
     DatabaseImportCsv = 'click_database_import_csv',
+
     DomainCreateClick = 'click_domain_create',
     DomainDeleteClick = 'click_domain_delete',
     DomainRetryDomainVerificationClick = 'click_domain_retry_domain_verification',
@@ -247,6 +250,7 @@ export enum Submit {
     ProjectDelete = 'submit_project_delete',
     ProjectUpdateName = 'submit_project_update_name',
     ProjectUpdateTeam = 'submit_project_update_team',
+    ProjectUpdateLabels = 'submit_project_update_labels',
     ProjectService = 'submit_project_service',
     ProjectUpdateSMTP = 'submit_project_update_smtp',
     MemberCreate = 'submit_member_create',
@@ -278,6 +282,7 @@ export enum Submit {
     DatabaseUpdateName = 'submit_database_update_name',
     DatabaseImportCsv = 'submit_database_import_csv',
     DatabaseBackupDelete = 'submit_database_backup_delete',
+    DatabaseBackupPolicyCreate = 'submit_database_backup_policy_create',
 
     ColumnCreate = 'submit_column_create',
     ColumnUpdate = 'submit_column_update',
@@ -288,15 +293,18 @@ export enum Submit {
     RowDelete = 'submit_row_delete',
     RowUpdate = 'submit_row_update',
     RowUpdatePermissions = 'submit_row_update_permissions',
+
     IndexCreate = 'submit_index_create',
     IndexDelete = 'submit_index_delete',
-    TableCreate = 'submit_row_create',
-    TableDelete = 'submit_row_delete',
-    TableUpdateName = 'submit_row_update_name',
-    TableUpdatePermissions = 'submit_row_update_permissions',
-    TableUpdateSecurity = 'submit_row_update_security',
-    TableUpdateEnabled = 'submit_row_update_enabled',
-    TableUpdateDisplayNames = 'submit_row_update_display_names',
+
+    TableCreate = 'submit_table_create',
+    TableDelete = 'submit_table_delete',
+    TableUpdateName = 'submit_table_update_name',
+    TableUpdatePermissions = 'submit_table_update_permissions',
+    TableUpdateSecurity = 'submit_table_update_security',
+    TableUpdateEnabled = 'submit_table_update_enabled',
+    TableUpdateDisplayNames = 'submit_table_update_display_names',
+
     FunctionCreate = 'submit_function_create',
     FunctionDelete = 'submit_function_delete',
     FunctionUpdateName = 'submit_function_update_name',

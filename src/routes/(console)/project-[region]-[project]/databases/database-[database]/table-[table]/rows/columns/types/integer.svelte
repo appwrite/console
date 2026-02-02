@@ -1,7 +1,6 @@
 <script lang="ts">
     import { InputNumber } from '$lib/elements/forms';
     import type { Models } from '@appwrite.io/console';
-    import { isWithinSafeRange } from '$lib/helpers/numbers';
     import { IconHashtag } from '@appwrite.io/pink-icons-svelte';
 
     export let id: string;
@@ -14,11 +13,6 @@
     $: nullable = !limited ? !column.required : false;
     $: if (limited) {
         label = undefined;
-    }
-
-    $: {
-        column.min = isWithinSafeRange(column.min) ? column.min : Number.MIN_SAFE_INTEGER;
-        column.max = isWithinSafeRange(column.max) ? column.max : Number.MAX_SAFE_INTEGER;
     }
 </script>
 

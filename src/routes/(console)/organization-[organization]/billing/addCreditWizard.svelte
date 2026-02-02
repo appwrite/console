@@ -18,12 +18,15 @@
 
     async function create() {
         try {
-            await sdk.forConsole.billing.setOrganizationPaymentMethod(
-                $organization.$id,
-                $addCreditWizardStore.paymentMethodId
-            );
+            await sdk.forConsole.organizations.setDefaultPaymentMethod({
+                organizationId: $organization.$id,
+                paymentMethodId: $addCreditWizardStore.paymentMethodId
+            });
 
-            await sdk.forConsole.billing.addCredit($organization.$id, $addCreditWizardStore.coupon);
+            await sdk.forConsole.organizations.addCredit({
+                organizationId: $organization.$id,
+                couponId: $addCreditWizardStore.coupon
+            });
             addNotification({
                 type: 'success',
                 message: `Credit has been added to ${$organization.name}`

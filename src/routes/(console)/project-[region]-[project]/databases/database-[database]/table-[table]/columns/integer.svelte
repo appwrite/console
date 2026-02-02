@@ -33,8 +33,8 @@
             key: originalKey,
             required: data.required,
             xdefault: data.default,
-            min: Math.abs(data.min) > Number.MAX_SAFE_INTEGER ? undefined : data.min,
-            max: Math.abs(data.max) > Number.MAX_SAFE_INTEGER ? undefined : data.max,
+            min: data.min,
+            max: data.max,
             newKey: data.key !== originalKey ? data.key : undefined
         });
     }

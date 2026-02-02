@@ -142,7 +142,7 @@
                 { id: '48492', value: $organization?.$id ?? '' },
                 { id: '48491', value: $supportData?.project ?? '' },
                 { id: '56023', value: $supportData?.severity ?? '' },
-                { id: '56024', value: $organization?.billingPlan ?? '' }
+                { id: '56024', value: $organization?.billingPlanId ?? '' }
             ])
         );
         if (files && files.length > 0) {

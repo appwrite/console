@@ -30,16 +30,24 @@
 
     async function addDomain() {
         const apexDomain = getApexDomain(domainName);
-        let domain = data.domainsList.domains.find((d: Models.Domain) => d.domain === apexDomain);
+        const domain = data.domainsList.domains.find((d: Models.Domain) => d.domain === apexDomain);
 
         if (apexDomain && !domain && isCloud) {
             try {
-                domain = await sdk.forConsole.domains.create({
+                await sdk.forConsole.domains.create({
                     teamId: $project.teamId,
                     domain: apexDomain
                 });
             } catch (error) {
-                // Apex domain creation error needs to be silent.
+                // apex might already be added on organization level, skip.
+                const alreadyAdded = error?.type === 'domain_already_exists';
+                if (!alreadyAdded) {
+                    addNotification({
+                        type: 'error',
+                        message: error.message
+                    });
+                    return;
+                }
             }
         }
 
@@ -47,12 +55,18 @@
             const rule = await sdk
                 .forProject(page.params.region, page.params.project)
                 .proxy.createAPIRule({ domain: domainName.toLocaleLowerCase() });
-            if (rule?.status === 'verified') {
+
+            await invalidate(Dependencies.DOMAINS);
+
+            const verified = rule?.status !== 'created';
+            if (verified) {
+                addNotification({
+                    type: 'success',
+                    message: 'Domain verified successfully'
+                });
                 await goto(routeBase);
-                await invalidate(Dependencies.DOMAINS);
             } else {
                 await goto(`${routeBase}/add-domain/verify-${domainName}?rule=${rule.$id}`);
-                await invalidate(Dependencies.DOMAINS);
             }
         } catch (error) {
             addNotification({
