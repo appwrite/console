@@ -310,8 +310,8 @@
     const spreadsheetColumns = $derived([
         {
             id: 'key',
-            width: getColumnWidth('key', 300),
-            minimumWidth: 300,
+            width: getColumnWidth('key', 380),
+            minimumWidth: 380,
             resizable: true
         },
         {
@@ -468,7 +468,7 @@
                             {@const relationType = getRelationshipTypeForColumn(column)}
                             {#if minMaxSize}
                                 {#if minMaxSize.tooltip}
-                                    <Tooltip portal>
+                                    <Tooltip portal maxWidth="22rem" placement="top">
                                         <Typography.Caption
                                             variant="400"
                                             color="--fgcolor-neutral-tertiary">
