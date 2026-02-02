@@ -216,7 +216,7 @@
                         ? (max < 0n ? -max : max) >= LARGE_NUMBER_THRESHOLD
                         : Math.abs(max) >= LARGE_NUMBER_THRESHOLD_NUM);
                 if (shouldShowTooltip) {
-                    tooltip = `Min: ${min.toLocaleString()}, Max: ${max.toLocaleString()}`;
+                    tooltip = `Min: ${min.toLocaleString()}\nMax: ${max.toLocaleString()}`;
                 }
             } else if (hasValidMin) {
                 display = `Min: ${formatLargeNumber(min)}`;
@@ -309,8 +309,8 @@
     const spreadsheetColumns = $derived([
         {
             id: 'key',
-            width: getColumnWidth('key', 300),
-            minimumWidth: 300,
+            width: getColumnWidth('key', 380),
+            minimumWidth: 380,
             resizable: true
         },
         {
@@ -467,13 +467,15 @@
                             {@const relationType = getRelationshipTypeForColumn(column)}
                             {#if minMaxSize}
                                 {#if minMaxSize.tooltip}
-                                    <Tooltip portal>
+                                    <Tooltip portal maxWidth="fit-content" placement="top">
                                         <Typography.Caption
                                             variant="400"
                                             color="--fgcolor-neutral-tertiary">
                                             {minMaxSize.display}
                                         </Typography.Caption>
-                                        <div slot="tooltip">{minMaxSize.tooltip}</div>
+                                        <div slot="tooltip" style="white-space: pre-line;">
+                                            {minMaxSize.tooltip}
+                                        </div>
                                     </Tooltip>
                                 {:else}
                                     <Typography.Caption

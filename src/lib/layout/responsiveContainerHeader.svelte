@@ -1,6 +1,11 @@
 <script lang="ts">
     import { SearchQuery, ViewSelector } from '$lib/components';
-    import { FiltersBottomSheet, ParsedTagList, queryParamToMap } from '$lib/components/filters';
+    import {
+        FiltersBottomSheet,
+        ParsedTagList,
+        queryParamToMap,
+        Filters
+    } from '$lib/components/filters';
     import QuickFilters from '$lib/components/filters/quickFilters.svelte';
     import Button from '$lib/elements/forms/button.svelte';
     import { View } from '$lib/helpers/load';
@@ -23,6 +28,7 @@
         hasSearch = false,
         searchPlaceholder = 'Search by ID',
         hasFilters = false,
+        hasCustomFiltersOnly = false,
         analyticsSource = '',
         children
     }: {
@@ -33,6 +39,7 @@
         hasSearch?: boolean;
         searchPlaceholder?: string;
         hasFilters?: boolean;
+        hasCustomFiltersOnly?: boolean;
         analyticsSource?: string;
         children?: Snippet;
     } = $props();
@@ -109,7 +116,11 @@
                 </Layout.Stack>
                 <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
                     {#if hasFilters && $columns?.length}
-                        <QuickFilters {columns} {analyticsSource} {filterCols} />
+                        {#if hasCustomFiltersOnly}
+                            <Filters query="[]" {columns} {analyticsSource} />
+                        {:else}
+                            <QuickFilters {columns} {analyticsSource} {filterCols} />
+                        {/if}
                     {/if}
                     {#if hasDisplaySettings}
                         <ViewSelector ui="new" {view} {columns} {hideView} {hideColumns} />

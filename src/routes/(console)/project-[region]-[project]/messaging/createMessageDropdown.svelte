@@ -7,7 +7,7 @@
     import { page } from '$app/state';
 </script>
 
-<Popover let:toggle padding="none" placement="bottom-start">
+<Popover let:toggle padding="none" placement="bottom-end">
     <slot {toggle}>
         <Button on:click={toggle} event="create_message">
             <Icon icon={IconPlus} slot="start" size="s" />
