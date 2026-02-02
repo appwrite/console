@@ -5,7 +5,7 @@
 </script>
 
 <p
-    class="helper u-margin-block-start-8 {classes}"
+    class="helper u-margin-block-start-6 {classes}"
     class:u-color-text-info={type === 'info'}
     class:u-color-text-danger={type === 'error'}
     class:u-color-text-success={type === 'success'}

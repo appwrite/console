@@ -12,6 +12,8 @@
     style="inline-size: 100%; block-size: 100%;"
     target="_blank"
     rel="noopener noreferrer"
+    on:click|stopPropagation
+    on:mousedown|stopPropagation
     aria-label="open file in new window">
     <div class="file-preview-image">
         <img src={$app.themeInUse === 'dark' ? darkSrc : lightSrc} {alt} />
