@@ -54,6 +54,7 @@ export type SortState = {
 export type RandomDataSchema = {
     show: boolean;
     value: number;
+    columns?: boolean;
     onSubmit?: () => Promise<void> | void;
 };
 
@@ -110,10 +111,11 @@ export function resetSampleFieldsConfig() {
     spreadsheetLoading.set(false);
     isWaterfallFromFaker.set(false);
 
-    randomDataModalState.set({
+    randomDataModalState.update((state) => ({
+        ...state,
         value: 25,
         show: false
-    });
+    }));
 
     // Reset suggestion state
     entityColumnSuggestions.set({

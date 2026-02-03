@@ -796,6 +796,7 @@
                                 variant="secondary"
                                 on:click={() => {
                                     $randomDataModalState.show = true;
+                                    $randomDataModalState.columns = true;
                                 }}>Generate sample data</Button.Button>
                         </div>
                     {/if}

@@ -12,7 +12,7 @@
     } from '$database/(suggestions)/index';
 
     import { getTerminologies } from '../helpers';
-    /*import { resetSampleFieldsConfig } from '$database/store';*/
+    import { resetSampleFieldsConfig } from '$database/store';
 
     let {
         show = $bindable(false),
@@ -73,7 +73,7 @@
             trackError(e, analyticsCreateSubmit);
         } finally {
             creatingEntity = false;
-            /*resetSampleFieldsConfig();*/
+            resetSampleFieldsConfig();
         }
     }
 

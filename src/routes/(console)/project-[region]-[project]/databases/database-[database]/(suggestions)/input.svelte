@@ -11,9 +11,13 @@
 
     const {
         isModal = false,
+        required = false,
+        context = 'suggestions',
         showSampleCountPicker = false
     }: {
         isModal?: boolean;
+        required?: boolean;
+        context?: 'suggestions' | 'data';
         showSampleCountPicker?: boolean;
     } = $props();
 
@@ -60,29 +64,43 @@
     });
 </script>
 
-<Card.Base variant="secondary" radius="s" padding="xs">
+{#if !required}
+    <Card.Base variant="secondary" radius="s" padding="xs">
+        {@render contextAndSeekbar(false)}
+    </Card.Base>
+{:else}
+    {@render contextAndSeekbar(true, 'Context', context)}
+{/if}
+
+{#snippet contextAndSeekbar(
+    required = false,
+    contextLabel = undefined,
+    contextType = 'suggestions'
+)}
     <Layout.Stack gap={featureActive ? 'm' : 'l'} style="padding-block-end: var(--gap-m);">
-        <Layout.Stack gap="s" direction="row" alignItems="flex-start">
-            <IconAI />
+        {#if !required}
+            <Layout.Stack gap="s" direction="row" alignItems="flex-start">
+                <IconAI />
 
-            <Layout.Stack direction="column" gap="none">
-                <Typography.Text variant="m-500" color="--fgcolor-neutral-primary"
-                    >{title}</Typography.Text>
+                <Layout.Stack direction="column" gap="none">
+                    <Typography.Text variant="m-500" color="--fgcolor-neutral-primary"
+                        >{title}</Typography.Text>
 
-                <Typography.Text color="--fgcolor-neutral-secondary">
-                    {subtitle}
-                </Typography.Text>
+                    <Typography.Text color="--fgcolor-neutral-secondary">
+                        {subtitle}
+                    </Typography.Text>
+                </Layout.Stack>
+
+                {#if featureActive && !isModal}
+                    <div class="suggestions-switch">
+                        <Selector.Switch
+                            id="suggestions"
+                            label={undefined}
+                            bind:checked={$entityColumnSuggestions.enabled} />
+                    </div>
+                {/if}
             </Layout.Stack>
-
-            {#if featureActive && !isModal}
-                <div class="suggestions-switch">
-                    <Selector.Switch
-                        id="suggestions"
-                        label={undefined}
-                        bind:checked={$entityColumnSuggestions.enabled} />
-                </div>
-            {/if}
-        </Layout.Stack>
+        {/if}
 
         {#if !featureActive}
             <Layout.Stack>
@@ -94,14 +112,15 @@
 
         <!-- just being safe with extra guard! -->
         {#if $entityColumnSuggestions.enabled && featureActive}
-            <div class="context-input" transition:slide={{ duration: 200 }}>
+            <div class="context-input" class:required transition:slide={{ duration: 200 }}>
                 <Layout.Stack gap="l">
                     <InputTextarea
                         id="context"
                         rows={3}
                         maxlength={255}
+                        label={contextLabel}
                         bind:value={$entityColumnSuggestions.context}
-                        placeholder="Optional: Add context to improve suggestions" />
+                        placeholder="Optional: Add context to improve {contextType}" />
 
                     {#if showSampleCountPicker}
                         <Layout.Stack gap="xl" style="padding-inline: var(--space-4, 8px);">
@@ -120,7 +139,7 @@
             </div>
         {/if}
     </Layout.Stack>
-</Card.Base>
+{/snippet}
 
 <style lang="scss">
     .suggestions-switch :global(button):not(:disabled) {
@@ -129,5 +148,9 @@
 
     .context-input :global(.input) {
         background: var(--bgcolor-neutral-primary);
+    }
+
+    .context-input.required :global(.input) {
+        background: var(--bgcolor-neutral-default);
     }
 </style>

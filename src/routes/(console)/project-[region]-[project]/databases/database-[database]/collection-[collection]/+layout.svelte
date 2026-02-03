@@ -81,7 +81,7 @@
         expandTabs.set(preferences.getKey('entityHeaderExpanded', true));
 
         // set faker method.
-        $randomDataModalState.onSubmit = async () => await createFakeData();
+        $randomDataModalState.onSubmit = async () => await createSampleDocuments();
 
         if (
             $entityColumnSuggestions.enabled &&
@@ -279,52 +279,8 @@
 
             $spreadsheetLoading = false;
             isWaterfallFromFaker = false;
+            $randomDataModalState.columns = false;
         }
-
-        spreadsheetRenderKey.set(hash(documentIds));
-    }
-
-    async function createFakeData() {
-        isWaterfallFromFaker = true;
-
-        $spreadsheetLoading = true;
-        $randomDataModalState.show = false;
-
-        /* let the columns be processed! */
-        await sleep(1250);
-
-        let documentIds = [];
-        try {
-            const { rows, ids } = generateFakeRecords($randomDataModalState.value);
-
-            documentIds = ids;
-
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .documentsDB.createDocuments({
-                    databaseId: page.params.database,
-                    collectionId: page.params.collection,
-                    documents: rows
-                });
-
-            addNotification({
-                type: 'success',
-                message: 'Sample data added successfully'
-            });
-
-            await invalidate(Dependencies.DOCUMENTS);
-        } catch (e) {
-            addNotification({
-                type: 'error',
-                message: e.message
-            });
-        } finally {
-            // reset value to 25 default!
-            $randomDataModalState.value = 25;
-        }
-
-        $spreadsheetLoading = false;
-        isWaterfallFromFaker = false;
 
         spreadsheetRenderKey.set(hash(documentIds));
     }

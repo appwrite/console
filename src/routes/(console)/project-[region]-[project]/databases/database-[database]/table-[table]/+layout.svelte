@@ -287,7 +287,6 @@
         indexes: 700
     });
 
-    // TODO: @itznotabug - needs to be fixed!
     async function createFakeData() {
         isWaterfallFromFaker.set(true);
 

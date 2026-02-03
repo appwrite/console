@@ -57,10 +57,6 @@
         ];
     }
 
-    $effect(() => {
-        filterColumns.set(createFilterableColumns());
-    });
-
     function handleColumnToggle() {
         // Force spreadsheet re-render when columns are toggled
         spreadsheetRenderKey.set(hash(Date.now().toString()));
@@ -97,6 +93,10 @@
             $isCollectionsJsonImportInProgress = false;
         }
     }
+
+    $effect(() => {
+        filterColumns.set(createFilterableColumns());
+    });
 </script>
 
 {#key page.params.collection}
