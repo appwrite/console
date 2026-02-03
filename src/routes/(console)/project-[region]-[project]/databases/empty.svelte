@@ -14,7 +14,7 @@
     import DocumentsDB from './(assets)/documents-db.svg';
     import DocumentsDBDark from './(assets)/dark/documents-db.svg';
 
-    import { isSmallViewport } from '$lib/stores/viewport';
+    import { isSmallViewport, isViewPortWidthInRange } from '$lib/stores/viewport';
     import type { DatabaseType } from '$database/(entity)';
 
     const {
@@ -29,6 +29,8 @@
     /*const mongoDbImage = $derived(isDark ? MongoDBDark : MongoDB);*/
     const tablesDbImage = $derived(isDark ? TablesDBDark : TablesDB);
     const documentsDbImage = $derived(isDark ? DocumentsDBDark : DocumentsDB);
+
+    const inRangeStore = isViewPortWidthInRange(1024, 1280);
 </script>
 
 {#if $isSmallViewport}
@@ -77,11 +79,15 @@
         padding="none"
         {disabled}
         on:click={() => onDatabaseTypeSelected?.(type)}>
-        {@const direction = $isSmallViewport ? 'column' : 'row'}
+        {@const direction = $isSmallViewport || $inRangeStore ? 'column' : 'row'}
         <Layout.Stack gap="none" {direction}>
-            <img class="database-image" src={image} alt="database type artwork" />
+            <img
+                src={image}
+                class="database-image"
+                class:adaptive-height={$inRangeStore}
+                alt="database type artwork" />
 
-            {#if $isSmallViewport}
+            {#if $isSmallViewport || $inRangeStore}
                 <Divider />
             {/if}
 
@@ -89,7 +95,9 @@
                 gap="xxs"
                 direction="column"
                 justifyContent="space-between"
-                style="padding: var(--gap-xl); flex: 1; border-inline-start:  1px solid var(--border-neutral);">
+                style="padding: var(--gap-xl); flex: 1; {!$isSmallViewport && !$inRangeStore
+                    ? 'border-inline-start: 1px solid var(--border-neutral);'
+                    : ''}">
                 <Layout.Stack direction="column" gap="xxs">
                     <Layout.Stack
                         inline
@@ -111,6 +119,13 @@
 <style lang="scss">
     .database-image {
         border-radius: var(--border-radius-s) 0 0 var(--border-radius-s);
+
+        &.adaptive-height {
+            max-height: 236px;
+            object-fit: cover;
+            object-position: center 5%;
+            border-radius: var(--border-radius-s) var(--border-radius-s) 0 0;
+        }
 
         @media (max-width: 768px) {
             max-height: 236px;
