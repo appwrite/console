@@ -7,7 +7,7 @@
         databaseId: string,
         tableId: string,
         key: string,
-        data: Partial<Models.ColumnString>
+        data: Partial<Models.ColumnMediumtext>
     ) {
         await sdk
             .forProject(page.params.region, page.params.project)
@@ -23,7 +23,7 @@
     export async function updateMediumtext(
         databaseId: string,
         tableId: string,
-        data: Partial<Models.ColumnString>,
+        data: Partial<Models.ColumnMediumtext>,
         originalKey?: string
     ) {
         await sdk
@@ -45,7 +45,7 @@
     import { InputTextarea } from '$lib/elements/forms';
     import { Layout, Typography } from '@appwrite.io/pink-svelte';
 
-    export let data: Partial<Models.ColumnString> = {
+    export let data: Partial<Models.ColumnMediumtext> = {
         required: false,
         array: false
     };
@@ -67,7 +67,7 @@
     const {
         stores: { required, array },
         listen
-    } = createConservative<Partial<Models.ColumnString>>({
+    } = createConservative<Partial<Models.ColumnMediumtext>>({
         required: false,
         array: false,
         ...data

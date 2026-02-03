@@ -7,7 +7,7 @@
         databaseId: string,
         tableId: string,
         key: string,
-        data: Partial<Models.ColumnString>
+        data: Partial<Models.ColumnVarchar>
     ) {
         await sdk.forProject(page.params.region, page.params.project).tablesDB.createVarcharColumn({
             databaseId,
@@ -22,7 +22,7 @@
     export async function updateVarchar(
         databaseId: string,
         tableId: string,
-        data: Partial<Models.ColumnString>,
+        data: Partial<Models.ColumnVarchar>,
         originalKey?: string
     ) {
         await sdk.forProject(page.params.region, page.params.project).tablesDB.updateVarcharColumn({
@@ -42,7 +42,7 @@
     import RequiredArrayCheckboxes from './requiredArrayCheckboxes.svelte';
     import { InputNumber, InputText, InputTextarea } from '$lib/elements/forms';
 
-    export let data: Partial<Models.ColumnString> = {
+    export let data: Partial<Models.ColumnVarchar> = {
         required: false,
         size: 255,
         array: false
@@ -65,7 +65,7 @@
     const {
         stores: { required, array },
         listen
-    } = createConservative<Partial<Models.ColumnString>>({
+    } = createConservative<Partial<Models.ColumnVarchar>>({
         required: false,
         array: false,
         ...data
