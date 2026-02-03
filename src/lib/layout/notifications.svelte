@@ -37,12 +37,6 @@
         top: calc(var(--main-header-height) + 12px);
     }
 
-    span {
-        display: block;
-        width: fit-content;
-        margin-left: auto;
-    }
-
     @media (min-width: 768px) {
         section {
             right: 24px;
