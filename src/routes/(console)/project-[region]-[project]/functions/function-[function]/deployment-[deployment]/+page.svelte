@@ -40,9 +40,10 @@
 
     let { data } = $props();
 
-    let effectiveStatus = $derived(
+    const effectiveStatus = $derived(
         getEffectiveBuildStatus(data.deployment, $regionalConsoleVariables)
     );
+    const displayStatus = $derived(effectiveStatus === 'finalizing' ? 'ready' : effectiveStatus);
     let showDelete = $state(false);
     let showCancel = $state(false);
     let showActivate = $state(false);
@@ -157,9 +158,9 @@
     <Card.Base padding="s">
         <Accordion
             title="Deployment logs"
-            badge={capitalize(effectiveStatus)}
+            badge={capitalize(displayStatus)}
             open
-            badgeType={badgeTypeDeployment(effectiveStatus)}
+            badgeType={badgeTypeDeployment(displayStatus)}
             hideDivider>
             <Layout.Stack gap="xl">
                 {#key data.deployment.buildLogs}
