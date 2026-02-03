@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { flip } from 'svelte/animate';
     import { fly } from 'svelte/transition';
     import { Layout, Toast } from '@appwrite.io/pink-svelte';
     import { dismissNotification, notifications } from '../stores/notifications';
@@ -9,7 +8,7 @@
     <section>
         <Layout.Stack gap="s">
             {#each $notifications as notification (notification.id)}
-                <span animate:flip={{ duration: 500 }} transition:fly|global={{ x: 50 }}>
+                <span transition:fly|global={{ x: 50 }}>
                     <Toast
                         isHtml={notification.isHtml}
                         title={notification.title}
@@ -36,6 +35,12 @@
         z-index: 1001;
         position: fixed;
         top: calc(var(--main-header-height) + 12px);
+    }
+
+    span {
+        display: block;
+        width: fit-content;
+        margin-left: auto;
     }
 
     @media (min-width: 768px) {
