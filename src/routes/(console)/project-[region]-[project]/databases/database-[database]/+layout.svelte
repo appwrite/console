@@ -11,6 +11,7 @@
     import { tablesSearcher } from '$lib/commandCenter/searchers';
     import { Dependencies } from '$lib/constants';
     import { showCreateEntity, randomDataModalState, resetSampleFieldsConfig } from './store';
+    import { entityColumnSuggestions } from './(suggestions)/store';
     import { TablesPanel } from '$lib/commandCenter/panels';
     import { canWriteTables, canWriteDatabases } from '$lib/stores/roles';
     import { showCreateBackup, showCreatePolicy } from './backups/store';
@@ -59,8 +60,11 @@
             )
         );
 
-        $randomDataModalState.columns = true;
-        await $randomDataModalState.onSubmit?.();
+        if ($entityColumnSuggestions.enabled) {
+            $randomDataModalState.columns = true;
+            await $randomDataModalState.onSubmit?.();
+        }
+
         resetSampleFieldsConfig();
     }
 
