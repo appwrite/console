@@ -44,13 +44,17 @@
     import {
         documentActivitySheet,
         documentPermissionSheet,
-        noSqlDocument
+        noSqlDocument,
+        showCreateIndexSheet
     } from '$database/collection-[collection]/store';
     import {
         SideSheet,
         EditRecordPermissions,
         RecordActivity,
-        type Field
+        CreateIndex,
+        useDatabaseSdk,
+        type Field,
+        type Index
     } from '$database/(entity)';
     import {
         entityColumnSuggestions,
@@ -69,6 +73,7 @@
      */
     let isWaterfallFromFaker = false;
 
+    let createIndex: CreateIndex;
     let editRecordPermissions: EditRecordPermissions;
 
     $: collection = data.collection;
@@ -198,6 +203,22 @@
         indexes: 700
     });
 
+    async function handleCreateIndex(index: Index) {
+        const databaseSdk = useDatabaseSdk(page.params.region, page.params.project);
+
+        await databaseSdk.createIndex({
+            databaseId: page.params.database,
+            entityId: page.params.collection,
+            key: index.key,
+            type: index.type,
+            attributes: index.fields,
+            lengths: index.lengths,
+            orders: index.orders
+        });
+
+        await invalidate(Dependencies.COLLECTION);
+    }
+
     async function createSampleDocuments() {
         $spreadsheetLoading = true;
         isWaterfallFromFaker = true;
@@ -309,4 +330,22 @@
 
 <SideSheet title="Document activity" bind:show={$documentActivitySheet.show} closeOnBlur>
     <RecordActivity record={$documentActivitySheet.document} />
+</SideSheet>
+
+<SideSheet
+    closeOnBlur
+    title="Create index"
+    bind:show={$showCreateIndexSheet.show}
+    submit={{
+        text: 'Create',
+        onClick: async () => {
+            await createIndex.create();
+        }
+    }}>
+    <CreateIndex
+        entity={collection}
+        bind:this={createIndex}
+        bind:showCreateIndex={$showCreateIndexSheet.show}
+        externalFieldKey={$showCreateIndexSheet.column}
+        onCreateIndex={handleCreateIndex} />
 </SideSheet>

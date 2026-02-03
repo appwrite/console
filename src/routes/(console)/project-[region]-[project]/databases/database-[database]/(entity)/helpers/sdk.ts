@@ -5,12 +5,15 @@ import {
     type DatabaseType,
     type Entity,
     type EntityList,
+    type Index,
     type Record,
     type RecordList,
     toSupportiveEntity,
-    toSupportiveRecord
+    toSupportiveRecord,
+    toSupportiveIndex
 } from './terminology';
-import type { Models } from '@appwrite.io/console';
+
+import type { IndexType, Models } from '@appwrite.io/console';
 
 export type DatabaseSdkResult = {
     create: (
@@ -80,6 +83,16 @@ export type DatabaseSdkResult = {
         queries?: string[];
         databaseType?: DatabaseType;
     }) => Promise<RecordList>;
+    createIndex: (params: {
+        databaseId: string;
+        entityId: string;
+        key: string;
+        type: IndexType;
+        attributes: string[];
+        lengths?: number[];
+        orders?: string[];
+        databaseType?: DatabaseType;
+    }) => Promise<Index>;
 };
 
 export function useDatabaseSdk(
@@ -360,6 +373,40 @@ export function useDatabaseSdk(
                         queries: params.queries
                     });
                     return { total, records: documents.map(toSupportiveRecord) };
+                }
+                case 'vectordb':
+                    throw new Error('Database type not supported yet');
+                default:
+                    throw new Error(`Unknown database type`);
+            }
+        },
+
+        async createIndex(params) {
+            switch (type ?? params.databaseType) {
+                case 'legacy': /* databases api */
+                case 'tablesdb': {
+                    const index = await baseSdk.tablesDB.createIndex({
+                        databaseId: params.databaseId,
+                        tableId: params.entityId,
+                        key: params.key,
+                        type: params.type,
+                        columns: params.attributes,
+                        lengths: params.lengths,
+                        orders: params.orders
+                    });
+                    return toSupportiveIndex(index);
+                }
+                case 'documentsdb': {
+                    const index = await baseSdk.documentsDB.createIndex({
+                        databaseId: params.databaseId,
+                        collectionId: params.entityId,
+                        key: params.key,
+                        type: params.type,
+                        attributes: params.attributes,
+                        lengths: params.lengths,
+                        orders: params.orders
+                    });
+                    return toSupportiveIndex(index);
                 }
                 case 'vectordb':
                     throw new Error('Database type not supported yet');

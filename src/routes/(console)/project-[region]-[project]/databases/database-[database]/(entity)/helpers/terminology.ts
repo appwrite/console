@@ -1,13 +1,14 @@
 import type { Page } from '@sveltejs/kit';
 
 import { capitalize, plural } from '$lib/helpers/string';
-import { AppwriteException, type Models } from '@appwrite.io/console';
+import { AppwriteException, type IndexType, type Models } from '@appwrite.io/console';
 import type { Attributes, Collection, Columns, Table } from '$database/store';
 import type { Term, TerminologyResult, TerminologyShape } from '$database/(entity)/helpers/types';
 
 type BaseTerminology = typeof baseTerminology;
 type ImplementedDBTypes = Omit<BaseTerminology, 'vectordb' | 'legacy'>;
 
+/* manual type for the time being because vectordb is pending */
 export type DatabaseType = 'legacy' | 'tablesdb' | 'documentsdb' | 'vectordb';
 
 export type RecordType = ImplementedDBTypes[keyof ImplementedDBTypes]['record'];
@@ -27,6 +28,7 @@ export type Record = Partial<Models.Document | Models.Row> & {
 
 export type Index = Partial<Models.Index | Models.ColumnIndex> & {
     fields: Models.Index['attributes'] | Models.ColumnIndex['columns'];
+    type: IndexType;
 };
 
 export type EntityList = {
@@ -90,17 +92,20 @@ const terminologyData = Object.fromEntries(
     ])
 );
 
-const toIndex = (index: Models.Index | Models.ColumnIndex): Index => ({
-    ...index,
-    fields: (index as Models.Index).attributes ?? (index as Models.ColumnIndex).columns ?? []
-});
+export function toSupportiveIndex(index: Models.Index | Models.ColumnIndex): Index {
+    return {
+        ...index,
+        type: index.type as IndexType,
+        fields: (index as Models.Index).attributes ?? (index as Models.ColumnIndex).columns ?? []
+    };
+}
 
 /**
  * Transforms a raw `Collection` / `Table` model to normalized `Entity`.
  */
 export function toSupportiveEntity(raw: Models.Collection | Models.Table): Entity {
     const isTable = 'columns' in raw;
-    const indexes = raw.indexes?.map(toIndex) ?? [];
+    const indexes = raw.indexes?.map(toSupportiveIndex) ?? [];
 
     const fields = isTable ? raw.columns : raw.attributes;
     const recordSecurity = isTable ? raw.rowSecurity : raw.documentSecurity;

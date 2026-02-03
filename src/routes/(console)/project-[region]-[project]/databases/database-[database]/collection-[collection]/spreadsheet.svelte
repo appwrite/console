@@ -46,7 +46,8 @@
         noSqlDocument,
         paginatedDocuments,
         paginatedDocumentsLoading,
-        sortState
+        sortState,
+        showCreateIndexSheet
     } from '$database/collection-[collection]/store';
     import {
         type SortState,
@@ -328,8 +329,29 @@
 
     async function onSelectSheetOption(
         action: HeaderCellAction | RowCellAction,
-        document: Models.Document | null = null
+        document: Models.Document | null = null,
+        columnId: string | null = null
     ) {
+        // Header actions
+        if (action === 'create-index') {
+            $showCreateIndexSheet.show = true;
+            $showCreateIndexSheet.column = columnId;
+            return;
+        }
+
+        if (action === 'sort-asc') {
+            sortState.set({ column: columnId, direction: 'asc' });
+            await sort(Query.orderAsc(columnId));
+            return;
+        }
+
+        if (action === 'sort-desc') {
+            sortState.set({ column: columnId, direction: 'desc' });
+            await sort(Query.orderDesc(columnId));
+            return;
+        }
+
+        // Row actions
         if (action === 'update') {
             noSqlDocument.set({
                 document: document,
@@ -626,25 +648,42 @@
             }}>
             <svelte:fragment slot="header" let:root>
                 {#each $collectionColumns as column (column.id)}
-                    <Spreadsheet.Header.Cell
-                        {root}
-                        column={column.id}
-                        icon={column.icon ?? undefined}>
-                        {#if !column.isAction}
-                            <Layout.Stack
-                                gap="xs"
-                                direction="row"
-                                alignItems="center"
-                                alignContent="center"
-                                style="min-width: 0;">
-                                <Typography.Text truncate>
-                                    {column.title}
-                                </Typography.Text>
+                    {#if column.isAction}
+                        <Spreadsheet.Header.Cell
+                            {root}
+                            column={column.id}
+                            icon={column.icon ?? undefined} />
+                    {:else}
+                        <SpreadsheetOptions
+                            type="header"
+                            columnId={column.id}
+                            onSelect={(option, columnId) =>
+                                onSelectSheetOption(option, null, columnId)}>
+                            {#snippet children(toggle)}
+                                <Spreadsheet.Header.Cell
+                                    {root}
+                                    column={column.id}
+                                    icon={column.icon ?? undefined}
+                                    on:contextmenu={toggle}>
+                                    <Layout.Stack
+                                        gap="xs"
+                                        direction="row"
+                                        alignItems="center"
+                                        alignContent="center"
+                                        style="min-width: 0;">
+                                        <Typography.Text truncate>
+                                            {column.title}
+                                        </Typography.Text>
 
-                                <SortButton onSort={sort} column={column.id} state={sortState} />
-                            </Layout.Stack>
-                        {/if}
-                    </Spreadsheet.Header.Cell>
+                                        <SortButton
+                                            onSort={sort}
+                                            column={column.id}
+                                            state={sortState} />
+                                    </Layout.Stack>
+                                </Spreadsheet.Header.Cell>
+                            {/snippet}
+                        </SpreadsheetOptions>
+                    {/if}
                 {/each}
             </svelte:fragment>
 
