@@ -104,8 +104,8 @@
         showCustomPolicy = false;
     };
 
-    const markPolicyChecked = (event: CustomEvent, policy: UserBackupPolicy) => {
-        const isChecked = event.detail as boolean;
+    const markPolicyChecked = (event: CustomEvent<boolean>, policy: UserBackupPolicy) => {
+        const isChecked = event.detail;
         presetPolicies.update((all) => {
             return all.map((p) => {
                 if (p.label === policy.label) {
@@ -134,6 +134,10 @@
             monthlyBackupFrequency,
             daysSelectionArray
         );
+    };
+
+    const getPolicyById = (id: string) => {
+        return $presetPolicies.find((p) => p.id === id);
     };
 
     $: if (showCustomPolicy) {
@@ -238,7 +242,7 @@
 
     <!-- because we show a set of pre-defined ones -->
     {#if $currentPlan?.backupPolicies === 1}
-        {@const dailyPolicy = $presetPolicies[1]}
+        {@const dailyPolicy = getPolicyById('daily')}
 
         {#if isFromBackupsTab}
             <Layout.Stack gap="m">
@@ -300,8 +304,8 @@
                         </label>
                     {/each}
                 {:else}
-                    {@const none = $presetPolicies[1]}
-                    {@const dailPreset = $presetPolicies[0]}
+                    {@const none = getPolicyById('none')}
+                    {@const dailPreset = getPolicyById('daily')}
                     <Card.Selector
                         variant="secondary"
                         imageRadius="s"

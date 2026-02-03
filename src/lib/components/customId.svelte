@@ -61,7 +61,10 @@
 
     $effect(() => {
         if (syncFrom && !touchedId) {
-            id = toIdFormat(syncFrom);
+            const newId = toIdFormat(syncFrom);
+            if (id !== newId) {
+                id = newId;
+            }
         }
     });
 

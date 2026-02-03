@@ -22,15 +22,13 @@
     import CreatePolicy from '$database/backups/createPolicy.svelte';
     import { cronExpression, type UserBackupPolicy } from '$lib/helpers/backups';
 
-    import { isTabletViewport } from '$lib/stores/viewport';
     import type { PageProps } from './$types';
+    import { createDatabaseStore } from './store';
+    import { isTabletViewport } from '$lib/stores/viewport';
 
     const { data }: PageProps = $props();
 
     let formComponent: Form;
-
-    let databaseId = $state(null);
-    let databaseName = $state(null);
 
     let showCreatePolicies = $state(false);
     let totalPolicies: UserBackupPolicy[] = $state([]);
@@ -122,14 +120,14 @@
 
     async function createDatabase() {
         try {
-            databaseId ??= ID.unique();
+            $createDatabaseStore.id ??= ID.unique();
 
             let database: Models.Database;
             const databaseSdk = useDatabaseSdk(page.params.region, page.params.project);
 
             database = await databaseSdk.create(type, {
-                databaseId,
-                name: databaseName
+                databaseId: $createDatabaseStore.id,
+                name: $createDatabaseStore.name
             });
 
             await createPolicies(database.$id);
@@ -149,7 +147,11 @@
                     }
                 )
             );
+
+            $createDatabaseStore.id = '';
+            $createDatabaseStore.name = '';
         } catch (error) {
+            console.log(error);
             addNotification({
                 type: 'error',
                 message: error.message
@@ -180,7 +182,7 @@
                         id="name"
                         autofocus
                         label="Name"
-                        bind:value={databaseName}
+                        bind:value={$createDatabaseStore.name}
                         placeholder="Enter database name" />
 
                     {#if !showCustomId}
@@ -195,9 +197,9 @@
                     <CustomId
                         name="Database"
                         autofocus={false}
-                        bind:id={databaseId}
                         bind:show={showCustomId}
-                        syncFrom={databaseName} />
+                        bind:id={$createDatabaseStore.id}
+                        syncFrom={$createDatabaseStore.name} />
                 </Layout.Stack>
             </Fieldset>
 
