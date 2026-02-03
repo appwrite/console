@@ -144,5 +144,9 @@
         :global(main:has([data-side-sheet-visible='true']) .layout-level-progress-bars) {
             visibility: hidden;
         }
+
+        :global(body:has(section .wizard) .layout-level-progress-bars) {
+            visibility: hidden;
+        }
     }
 </style>

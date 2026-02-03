@@ -13,7 +13,8 @@
         autofocus = true,
         isProject = false,
         required = true,
-        syncFrom = undefined
+        syncFrom = undefined,
+        disabled = false
     }: {
         show: boolean;
         name: string;
@@ -21,6 +22,7 @@
         autofocus?: boolean;
         isProject?: boolean;
         required?: boolean;
+        disabled?: boolean;
         syncFrom?: string | undefined;
     } = $props();
 
@@ -97,9 +99,9 @@
                 <Divider />
             </span>
             {#if isProject}
-                <InputProjectId on:input={handleInput} bind:value={id} {autofocus} />
+                <InputProjectId {disabled} on:input={handleInput} bind:value={id} {autofocus} />
             {:else}
-                <InputId {required} on:input={handleInput} bind:value={id} {autofocus} />
+                <InputId {disabled} {required} on:input={handleInput} bind:value={id} {autofocus} />
             {/if}
         </Layout.Stack>
     </Card.Base>

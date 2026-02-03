@@ -2,12 +2,11 @@
     import { Wizard } from '$lib/layout';
     import { writable } from 'svelte/store';
     import { Form, InputText, Button } from '$lib/elements/forms';
-    import { Alert, Card, Fieldset, Icon, Layout, Tag, Typography } from '@appwrite.io/pink-svelte';
+    import { Alert, Card, Fieldset, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { resolveRoute } from '$lib/stores/navigation';
     import { afterNavigate, goto } from '$app/navigation';
     import { CustomId } from '$lib/components';
     import { page } from '$app/state';
-    import { IconPencil } from '@appwrite.io/pink-icons-svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { ID, type Models } from '@appwrite.io/console';
     import { type DatabaseType, useDatabaseSdk } from '$database/(entity)';
@@ -33,7 +32,6 @@
     let showCreatePolicies = $state(false);
     let totalPolicies: UserBackupPolicy[] = $state([]);
 
-    let showCustomId = $state(true);
     let showExitModal = $state(false);
     let isSubmitting = $state(writable(false));
     let previousPage: string = $state(resolveRoute('/'));
@@ -120,13 +118,13 @@
 
     async function createDatabase() {
         try {
-            $createDatabaseStore.id ??= ID.unique();
+            const databaseId = $createDatabaseStore.id ?? ID.unique();
 
             let database: Models.Database;
             const databaseSdk = useDatabaseSdk(page.params.region, page.params.project);
 
             database = await databaseSdk.create(type, {
-                databaseId: $createDatabaseStore.id,
+                databaseId,
                 name: $createDatabaseStore.name
             });
 
@@ -148,8 +146,7 @@
                 )
             );
 
-            $createDatabaseStore.id = '';
-            $createDatabaseStore.name = '';
+            resetCreateDatabaseStore();
         } catch (error) {
             console.log(error);
             addNotification({
@@ -157,6 +154,11 @@
                 message: error.message
             });
         }
+    }
+
+    function resetCreateDatabaseStore() {
+        $createDatabaseStore.id = '';
+        $createDatabaseStore.name = '';
     }
 </script>
 
@@ -166,12 +168,13 @@
     bind:showExitModal
     confirmExit
     column
-    columnSize="s">
+    columnSize="s"
+    onExit={resetCreateDatabaseStore}>
     <Form bind:this={formComponent} onSubmit={createDatabase} bind:isSubmitting>
         <Layout.Stack gap="xxl">
             {#if typeFromParams === null}
                 <Fieldset legend="Database type">
-                    {@render selectDatabaseType()}
+                    {@render selectDatabaseType($isSubmitting)}
                 </Fieldset>
             {/if}
 
@@ -182,22 +185,16 @@
                         id="name"
                         autofocus
                         label="Name"
+                        disabled={$isSubmitting}
                         bind:value={$createDatabaseStore.name}
                         placeholder="Enter database name" />
 
-                    {#if !showCustomId}
-                        <div>
-                            <Tag size="s" on:click={() => (showCustomId = true)}>
-                                <Icon icon={IconPencil} slot="start" size="s" />
-                                Database ID
-                            </Tag>
-                        </div>
-                    {/if}
-
                     <CustomId
+                        show
                         name="Database"
+                        required={false}
                         autofocus={false}
-                        bind:show={showCustomId}
+                        disabled={$isSubmitting}
                         bind:id={$createDatabaseStore.id}
                         syncFrom={$createDatabaseStore.name} />
                 </Layout.Stack>
@@ -205,7 +202,7 @@
 
             <Fieldset legend="Backups">
                 {#if isCloud}
-                    {@render cloudBackupOptions()}
+                    {@render cloudBackupOptions($isSubmitting)}
                 {:else}
                     {@render selfHostedBackupOptions()}
                 {/if}
@@ -216,24 +213,28 @@
     <svelte:fragment slot="footer">
         <Button
             secondary
-            fullWidthMobile
             disabled={$isSubmitting}
-            on:click={() => (showExitModal = true)}>
+            on:click={() => {
+                showExitModal = true;
+                resetCreateDatabaseStore();
+            }}>
             Cancel
         </Button>
         <Button
-            fullWidthMobile
+            submissionLoader
             disabled={$isSubmitting}
-            on:click={() => formComponent.triggerSubmit()}
-            >Create
+            forceShowLoader={$isSubmitting}
+            on:click={() => formComponent.triggerSubmit()}>
+            Create
         </Button>
     </svelte:fragment>
 </Wizard>
 
-{#snippet cloudBackupOptions()}
+{#snippet cloudBackupOptions(disabled = false)}
     {#if $currentPlan?.backupsEnabled}
         <div style:width="100%">
             <CreatePolicy
+                {disabled}
                 bind:totalPolicies
                 title="Backup policies"
                 project={data.project}
@@ -281,11 +282,12 @@
     </Layout.Stack>
 {/snippet}
 
-{#snippet selectDatabaseType()}
+{#snippet selectDatabaseType(disabled = false)}
     <Layout.Grid columns={2} columnsS={1}>
         {#each databaseTypes as databaseType}
             <div class="card-selector">
                 <Card.Selector
+                    {disabled}
                     variant="secondary"
                     bind:group={type}
                     name={databaseType.type}

@@ -29,6 +29,7 @@
     import { onMount } from 'svelte';
 
     export let isShowing: boolean;
+    export let disabled: boolean = false;
     export let isFromBackupsTab: boolean = false;
     export let title: string | undefined = undefined;
     export let subtitle: string | undefined = undefined;
@@ -267,6 +268,7 @@
         {:else}
             <Layout.Stack gap="m">
                 <InputSwitch
+                    {disabled}
                     id="daily_backup"
                     label="Daily backups"
                     on:change={(event) => markPolicyChecked(event, dailyPolicy)}>
