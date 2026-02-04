@@ -19,7 +19,7 @@
 
     let showExitModal = $state(false);
     let formComponent: Form;
-    let isSubmitting = writable(false);
+    let isSubmitting = $state(writable(false));
 
     let localQueries = $state<Map<TagValue, string>>(new Map());
     const localTags = $derived(Array.from(localQueries.keys()));
