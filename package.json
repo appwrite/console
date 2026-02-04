@@ -20,7 +20,7 @@
     },
     "dependencies": {
         "@ai-sdk/svelte": "^1.1.24",
-        "@appwrite.io/console": "https://pkg.vc/-/@appwrite/@appwrite.io/console@95675c4",
+        "@appwrite.io/console": "https://pkg.vc/-/@appwrite/@appwrite.io/console@7dc3a8f",
         "@appwrite.io/pink-icons": "0.25.0",
         "@appwrite.io/pink-icons-svelte": "https://pkg.vc/-/@appwrite/@appwrite.io/pink-icons-svelte@c1feb89",
         "@appwrite.io/pink-legacy": "^1.0.3",

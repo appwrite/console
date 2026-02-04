@@ -19,6 +19,9 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
     const project = await sdk.forConsole.projects.get({ projectId: params.project });
     project.region ??= 'default';
 
+    // Track console access (fire-and-forget, backend has 6-day cooldown)
+    sdk.forConsole.projects.updateConsoleAccess({ projectId: params.project }).catch(() => {});
+
     // fast path without a network call!
     let organization = (organizations as Models.OrganizationList)?.teams?.find(
         (org) => org.$id === project.teamId
