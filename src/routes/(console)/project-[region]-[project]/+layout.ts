@@ -11,6 +11,7 @@ import { loadAvailableRegions } from '$routes/(console)/regions';
 import { type Models, Platform } from '@appwrite.io/console';
 import { redirect } from '@sveltejs/kit';
 import { resolve } from '$app/paths';
+import { normalizeConsoleVariables } from '$lib/helpers/domains';
 
 export const load: LayoutLoad = async ({ params, depends, parent }) => {
     const { plansInfo, organizations, preferences: prefs } = await parent();
@@ -27,7 +28,7 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
     // organization can be null if not in the filtered list!
     const includedInBasePlans = plansInfo.has(organization?.billingPlanId);
 
-    const [org, regionalConsoleVariables, rolesResult] = await Promise.all([
+    const [org, rawRegionalConsoleVariables, rolesResult] = await Promise.all([
         !organization
             ? // TODO: @itznotabug - teams.get with Models.Organization?
               (sdk.forConsole.teams.get({ teamId: project.teamId }) as Promise<Models.Organization>)
@@ -41,6 +42,8 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
 
         loadAvailableRegions(project.teamId)
     ]);
+
+    const regionalConsoleVariables = normalizeConsoleVariables(rawRegionalConsoleVariables);
 
     if (!organization) organization = org;
 
