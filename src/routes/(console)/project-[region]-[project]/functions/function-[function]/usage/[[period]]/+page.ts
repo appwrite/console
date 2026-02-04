@@ -8,8 +8,10 @@ export const load: PageLoad = async ({ params }) => {
         ? params.period
         : UsageRange.ThirtyDays;
 
-    return sdk.forProject(params.region, params.project).functions.getUsage({
-        functionId: params.function,
-        range: period
-    });
+    return {
+        ...(await sdk.forProject(params.region, params.project).functions.getUsage({
+            functionId: params.function,
+            range: period
+        }))
+    };
 };
