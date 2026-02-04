@@ -2,6 +2,8 @@
     import { Filters, hasPageQueries, queries } from '$lib/components/filters';
     import ViewSelector from '$lib/components/viewSelector.svelte';
     import { Button } from '$lib/elements/forms';
+    import { goto } from '$app/navigation';
+    import { resolve } from '$app/paths';
     import type { Column, ColumnType } from '$lib/helpers/types';
     import { Container } from '$lib/layout';
     import { preferences } from '$lib/stores/preferences';
@@ -28,7 +30,9 @@
         IconChevronUp,
         IconPlus,
         IconViewBoards,
-        IconRefresh
+        IconRefresh,
+        IconUpload,
+        IconDownload
     } from '@appwrite.io/pink-icons-svelte';
     import type { Models } from '@appwrite.io/console';
     import CreateRow from '$database/table-[table]/rows/create.svelte';
@@ -133,6 +137,20 @@
         }
     }
 
+    function getTableExportUrl() {
+        const queryParam = page.url.searchParams.get('query');
+        const url = resolve(
+            '/(console)/project-[region]-[project]/databases/database-[database]/table-[table]/export',
+            {
+                region: page.params.region,
+                project: page.params.project,
+                database: page.params.database,
+                table: page.params.table
+            }
+        );
+        return queryParam ? `${url}?query=${encodeURIComponent(queryParam)}` : url;
+    }
+
     onDestroy(() => ($showCreateColumnSheet.show = false));
 </script>
 
@@ -174,17 +192,10 @@
                     justifyContent="flex-end"
                     style="padding-right: {$isSmallViewport ? '0' : '40px'};">
                     <Layout.Stack
-                        gap="s"
                         direction="row"
                         alignItems="center"
-                        justifyContent="flex-end">
-                        <Button
-                            secondary
-                            event={Click.DatabaseImportCsv}
-                            disabled={!(hasColumns && hasValidColumns) || disableButton}
-                            on:click={() => (showImportCSV = true)}>
-                            Import CSV
-                        </Button>
+                        justifyContent="flex-end"
+                        gap="s">
                         {#if !$isSmallViewport}
                             <Button
                                 secondary
@@ -195,19 +206,37 @@
                                 Create row
                             </Button>
 
-                            <Button
-                                icon
-                                size="s"
-                                secondary
-                                class="small-button-dimensions"
-                                on:click={() => {
-                                    $expandTabs = !$expandTabs;
-                                    preferences.setKey('entityHeaderExpanded', $expandTabs);
-                                }}>
-                                <Icon
+                            <Tooltip placement="top">
+                                <Button
+                                    icon
                                     size="s"
-                                    icon={!$expandTabs ? IconChevronDown : IconChevronUp} />
-                            </Button>
+                                    secondary
+                                    class="small-button-dimensions"
+                                    disabled={!(hasColumns && hasValidColumns) || disableButton}
+                                    on:click={() => (showImportCSV = true)}>
+                                    <Icon icon={IconUpload} size="s" />
+                                </Button>
+
+                                <svelte:fragment slot="tooltip">Import CSV</svelte:fragment>
+                            </Tooltip>
+
+                            <Tooltip placement="top">
+                                <Button
+                                    icon
+                                    size="s"
+                                    secondary
+                                    class="small-button-dimensions"
+                                    disabled={!(hasColumns && hasValidColumns && data.rows.total) ||
+                                        disableButton}
+                                    on:click={() => {
+                                        trackEvent(Click.DatabaseExportCsv);
+                                        goto(getTableExportUrl());
+                                    }}>
+                                    <Icon icon={IconDownload} size="s" />
+                                </Button>
+
+                                <svelte:fragment slot="tooltip">Export CSV</svelte:fragment>
+                            </Tooltip>
 
                             <Tooltip disabled={isRefreshing || !data.rows.total} placement="top">
                                 <Button
@@ -230,6 +259,25 @@
                                 </Button>
 
                                 <svelte:fragment slot="tooltip">Refresh</svelte:fragment>
+                            </Tooltip>
+
+                            <Tooltip placement="top">
+                                <Button
+                                    icon
+                                    size="s"
+                                    secondary
+                                    class="small-button-dimensions"
+                                    on:click={() => {
+                                        $expandTabs = !$expandTabs;
+                                        preferences.setKey('entityHeaderExpanded', $expandTabs);
+                                    }}>
+                                    <Icon
+                                        icon={!$expandTabs ? IconChevronDown : IconChevronUp}
+                                        size="s" />
+                                </Button>
+
+                                <svelte:fragment slot="tooltip"
+                                    >{!$expandTabs ? 'Expand' : 'Collapse'}</svelte:fragment>
                             </Tooltip>
                         {/if}
                     </Layout.Stack>
@@ -388,6 +436,7 @@
 
     :global(.rotating) {
         animation: rotate 1s linear infinite;
+        animation-direction: reverse;
     }
 
     @keyframes rotate {

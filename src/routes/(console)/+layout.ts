@@ -5,6 +5,7 @@ import { Dependencies } from '$lib/constants';
 import { Platform, Query } from '@appwrite.io/console';
 import { makePlansMap } from '$lib/helpers/billing';
 import { plansInfo as plansInfoStore } from '$lib/stores/billing';
+import { normalizeConsoleVariables } from '$lib/helpers/domains';
 
 export const load: LayoutLoad = async ({ depends, parent }) => {
     const { organizations, plansInfo } = await parent();
@@ -22,7 +23,7 @@ export const load: LayoutLoad = async ({ depends, parent }) => {
                   platform: Platform.Appwrite
               });
 
-    const [preferences, plansArray, versionData, consoleVariables] = await Promise.all([
+    const [preferences, plansArray, versionData, rawConsoleVariables] = await Promise.all([
         sdk.forConsole.account.getPrefs(),
         plansArrayPromise,
         fetch(`${endpoint}/health/version`, {
@@ -30,6 +31,8 @@ export const load: LayoutLoad = async ({ depends, parent }) => {
         }).then((response) => response.json() as { version?: string }),
         sdk.forConsole.console.variables()
     ]);
+
+    const consoleVariables = normalizeConsoleVariables(rawConsoleVariables);
 
     let fallbackPlansInfoArray = plansInfo;
     if (!fallbackPlansInfoArray) {

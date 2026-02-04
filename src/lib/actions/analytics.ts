@@ -155,8 +155,8 @@ export enum Click {
     DatabaseRowDelete = 'click_row_delete',
     DatabaseDatabaseDelete = 'click_database_delete',
     DatabaseImportCsv = 'click_database_import_csv',
+    DatabaseExportCsv = 'click_database_export_csv',
     DatabaseImportJson = 'click_database_import_json',
-
     DomainCreateClick = 'click_domain_create',
     DomainDeleteClick = 'click_domain_delete',
     DomainRetryDomainVerificationClick = 'click_domain_retry_domain_verification',
@@ -282,6 +282,7 @@ export enum Submit {
     DatabaseDelete = 'submit_database_delete',
     DatabaseUpdateName = 'submit_database_update_name',
     DatabaseImportCsv = 'submit_database_import_csv',
+    DatabaseExportCsv = 'submit_database_export_csv',
     DatabaseImportJSON = 'submit_database_import_json',
     DatabaseBackupDelete = 'submit_database_backup_delete',
     DatabaseBackupPolicyCreate = 'submit_database_backup_policy_create',

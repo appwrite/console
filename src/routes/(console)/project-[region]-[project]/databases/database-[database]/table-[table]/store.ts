@@ -6,6 +6,7 @@ import { SPREADSHEET_PAGE_LIMIT } from '$lib/constants';
 import { createSparsePagedDataStore } from '@appwrite.io/pink-svelte';
 import type { Columns, SortState } from '$database/store';
 
+export const table = derived(page, ($page) => $page.data.table as Table);
 export const columns = derived(page, ($page) => $page.data.table.columns as Columns[]);
 export const indexes = derived(page, ($page) => $page.data.table.indexes as Models.ColumnIndex[]);
 
