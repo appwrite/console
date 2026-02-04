@@ -1,6 +1,7 @@
 import { env } from '$env/dynamic/public';
 
 const SECRET = env.PUBLIC_CONSOLE_FINGERPRINT_KEY ?? '';
+const CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour
 
 async function sha256(message: string): Promise<string> {
     const data = new TextEncoder().encode(message);
@@ -52,7 +53,8 @@ function getWebGLFingerprint(): string {
     try {
         const canvas = document.createElement('canvas');
         const gl =
-            canvas.getContext('webgl') || (canvas.getContext('experimental-webgl') as WebGLRenderingContext | null);
+            canvas.getContext('webgl') ||
+            (canvas.getContext('experimental-webgl') as WebGLRenderingContext | null);
         if (!gl) return '';
 
         const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
@@ -70,7 +72,10 @@ function getWebGLFingerprint(): string {
 function getAudioFingerprint(): Promise<string> {
     return new Promise((resolve) => {
         try {
-            const AudioContext = window.AudioContext || (window as unknown as { webkitAudioContext: typeof window.AudioContext }).webkitAudioContext;
+            const AudioContext =
+                window.AudioContext ||
+                (window as unknown as { webkitAudioContext: typeof window.AudioContext })
+                    .webkitAudioContext;
             if (!AudioContext) {
                 resolve('');
                 return;
@@ -112,8 +117,7 @@ function getAudioFingerprint(): Promise<string> {
     });
 }
 
-interface BrowserSignals {
-    timestamp: number;
+interface StaticSignals {
     userAgent: string;
     language: string;
     languages: string[];
@@ -133,7 +137,19 @@ interface BrowserSignals {
     audio: string;
 }
 
-async function collectBrowserSignals(): Promise<BrowserSignals> {
+interface BrowserSignals extends StaticSignals {
+    timestamp: number;
+}
+
+interface SignalsCache {
+    signals: StaticSignals;
+    collectedAt: number;
+}
+
+let cache: SignalsCache | null = null;
+let cachePromise: Promise<StaticSignals> | null = null;
+
+async function collectStaticSignals(): Promise<StaticSignals> {
     const [canvasRaw, webgl, audio] = await Promise.all([
         Promise.resolve(getCanvasFingerprint()),
         Promise.resolve(getWebGLFingerprint()),
@@ -143,7 +159,6 @@ async function collectBrowserSignals(): Promise<BrowserSignals> {
     const canvas = canvasRaw ? await sha256(canvasRaw) : '';
 
     return {
-        timestamp: Math.floor(Date.now() / 1000),
         userAgent: navigator.userAgent,
         language: navigator.language,
         languages: [...(navigator.languages || [])],
@@ -164,8 +179,36 @@ async function collectBrowserSignals(): Promise<BrowserSignals> {
     };
 }
 
+async function getCachedSignals(): Promise<StaticSignals> {
+    const now = Date.now();
+
+    if (cache && now - cache.collectedAt < CACHE_TTL_MS) {
+        return cache.signals;
+    }
+
+    if (cachePromise) {
+        return cachePromise;
+    }
+
+    cachePromise = collectStaticSignals();
+
+    try {
+        const signals = await cachePromise;
+        cache = { signals, collectedAt: now };
+        return signals;
+    } finally {
+        cachePromise = null;
+    }
+}
+
 export async function generateFingerprintToken(): Promise<string> {
-    const signals = await collectBrowserSignals();
+    const staticSignals = await getCachedSignals();
+
+    const signals: BrowserSignals = {
+        ...staticSignals,
+        timestamp: Math.floor(Date.now() / 1000)
+    };
+
     const payload = JSON.stringify(signals);
     const encoded = btoa(payload);
     const signature = await hmacSha256(encoded, SECRET);
