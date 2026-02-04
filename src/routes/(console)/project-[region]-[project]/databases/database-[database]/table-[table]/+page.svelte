@@ -325,7 +325,11 @@
                 <EmptySheet
                     mode="records"
                     showActions={$canWriteRows}
-                    customColumns={createTableColumns(table.fields, selected)}>
+                    customColumns={createTableColumns(table.fields, selected)}
+                    onOpenCreateColumn={() => {
+                        $showCreateColumnSheet.show = true;
+                    }}
+                >
                     {#snippet actions()}
                         <EmptySheetCards
                             icon={IconPlus}
@@ -352,7 +356,11 @@
             <EmptySheet
                 mode="records"
                 showActions={$canWriteTables}
-                title="You have no columns yet">
+                title="You have no columns yet"
+                onOpenCreateColumn={() => {
+                    $showCreateColumnSheet.show = true;
+                }}
+            >
                 {#snippet subtitle()}
                     {#if !isCloud}
                         <!-- shown on self-hosted -->

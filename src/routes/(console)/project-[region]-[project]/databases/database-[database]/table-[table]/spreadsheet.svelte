@@ -101,6 +101,7 @@
         spreadsheetLoading,
         spreadsheetRenderKey
     } from '$database/store';
+    import { SvelteSet } from 'svelte/reactivity';
 
     export let data: PageData;
     export let showRowCreateSheet: {
@@ -174,7 +175,7 @@
             '$updatedAt' /* allowed for reordering */
         ]);
 
-        const seen = new Set<string>();
+        const seen = new SvelteSet<string>();
         const cleanOrder = order.filter((columnId) => {
             if (systemColumns.has(columnId)) return false;
             if (seen.has(columnId)) return false;
