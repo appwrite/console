@@ -47,7 +47,7 @@
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { isSmallViewport } from '$lib/stores/viewport';
     import { SideSheet, SpreadsheetContainer, FailedModal, CsvDisabled } from '$database/(entity)';
-    import { openCreateColumnSheet, showCreateColumnSheet } from '../store';
+    import { showCreateColumnSheet } from '../store';
     import { type Models } from '@appwrite.io/console';
     import { preferences } from '$lib/stores/preferences';
     import { page } from '$app/state';
@@ -358,7 +358,7 @@
                 size="s"
                 secondary
                 disabled={$isCsvImportInProgress}
-                on:click={() => openCreateColumnSheet()}
+                on:click={() => ($showCreateColumnSheet.show = true)}
                 event="create_attribute">
                 <Icon icon={IconPlus} slot="start" size="s" />
                 Create column
@@ -376,7 +376,7 @@
             emptyCells={emptyCellsCount}
             bind:selectedRows={selectedColumns}
             columns={spreadsheetColumns}
-            bottomActionClick={() => openCreateColumnSheet()}
+            bottomActionClick={() => ($showCreateColumnSheet.show = true)}
             on:columnsResize={(resize) => saveColumnsWidth(resize.detail)}>
             <svelte:fragment slot="header" let:root>
                 <Spreadsheet.Header.Cell column="key" {root}>Column name</Spreadsheet.Header.Cell>

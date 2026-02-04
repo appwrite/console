@@ -265,7 +265,9 @@
                                 icon
                                 variant="extra-compact"
                                 onclick={() => {
-                                    onOpenCreateColumn?.();
+                                    if (mode !== 'indexes') {
+                                        onOpenCreateColumn?.();
+                                    }
                                 }}>
                                 <Icon icon={IconPlus} color="--fgcolor-neutral-primary" />
                             </Button.Button>

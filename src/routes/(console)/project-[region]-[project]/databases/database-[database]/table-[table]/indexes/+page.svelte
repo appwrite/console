@@ -7,7 +7,7 @@
     import { canWriteTables } from '$lib/stores/roles';
     import { Typography, Link } from '@appwrite.io/pink-svelte';
     import IconAI from '../../(suggestions)/icon/aiForButton.svelte';
-    import { openCreateColumnSheet, showCreateColumnSheet } from '$database/table-[table]/store';
+    import { showCreateColumnSheet } from '$database/table-[table]/store';
     import { IconBookOpen, IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { showIndexesSuggestions, showColumnsSuggestionsModal } from '$database/(suggestions)';
     import {
@@ -127,7 +127,7 @@
                         title="Create column"
                         subtitle="Create columns manually"
                         onClick={() => {
-                            openCreateColumnSheet();
+                            $showCreateColumnSheet.show = true;
                         }} />
                 {:else}
                     <EmptySheetCards
@@ -135,7 +135,7 @@
                         title="Create column"
                         subtitle="Create columns manually"
                         onClick={() => {
-                            openCreateColumnSheet();
+                            $showCreateColumnSheet.show = true;
                         }} />
 
                     <EmptySheetCards

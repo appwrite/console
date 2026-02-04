@@ -15,7 +15,6 @@
         isCsvImportInProgress,
         showRowCreateSheet,
         showCreateColumnSheet,
-        openCreateColumnSheet,
         randomDataModalState,
         expandTabs
     } from './store';
@@ -108,8 +107,6 @@
         $tableColumnSuggestions.table.id === page.params.table;
 
     $: disableButton = canShowSuggestionsSheet;
-
-    const onOpenCreateColumnSheet = () => openCreateColumnSheet({ columns: $tableColumns });
 
     async function onSelect(file: Models.File, localFile = false) {
         $isCsvImportInProgress = true;
@@ -309,7 +306,9 @@
                 <EmptySheet
                     mode="rows-filtered"
                     title="There are no rows that match your filters"
-                    onOpenCreateColumn={onOpenCreateColumnSheet}
+                    onOpenCreateColumn={() => {
+                        $showCreateColumnSheet.show = true;
+                    }}
                     customColumns={createTableColumns(table.fields, selected)}>
                     {#snippet actions()}
                         <Button
@@ -330,7 +329,9 @@
                 <EmptySheet
                     mode="rows"
                     showActions={$canWriteRows}
-                    onOpenCreateColumn={onOpenCreateColumnSheet}
+                    onOpenCreateColumn={() => {
+                        $showCreateColumnSheet.show = true;
+                    }}
                     customColumns={createTableColumns(table.fields, selected)}>
                     {#snippet actions()}
                         <EmptySheetCards
@@ -386,7 +387,7 @@
                         title="Create column"
                         subtitle="Create columns manually"
                         onClick={() => {
-                            openCreateColumnSheet();
+                            $showCreateColumnSheet.show = true;
                         }} />
 
                     <EmptySheetCards

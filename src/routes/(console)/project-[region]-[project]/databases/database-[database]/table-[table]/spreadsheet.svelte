@@ -41,8 +41,7 @@
         expandTabs,
         databaseRelatedRowSheetOptions,
         rowPermissionSheet,
-        type Columns,
-        openCreateColumnSheet
+        type Columns
     } from './store';
     import type { Column, ColumnType } from '$lib/helpers/types';
     import {
@@ -533,12 +532,11 @@
 
             if (action === 'column-left' || action === 'column-right') {
                 const { to, neighbour } = $databaseColumnSheetOptions.direction;
-                openCreateColumnSheet({
-                    title: `Create column to the ${to} of ${neighbour}`,
-                    direction: $databaseColumnSheetOptions.direction,
-                    columns: $tableColumns,
-                    columnsOrder: $columnsOrder
-                });
+                $showCreateColumnSheet.title = `Create column to the ${to} of ${neighbour}`;
+                $showCreateColumnSheet.direction = $databaseColumnSheetOptions.direction;
+                $showCreateColumnSheet.columns = $tableColumns;
+                $showCreateColumnSheet.columnsOrder = $columnsOrder;
+                $showCreateColumnSheet.show = true;
             }
 
             if (action === 'delete') {
@@ -559,12 +557,11 @@
             }
 
             if (action === 'duplicate-header') {
-                openCreateColumnSheet({
-                    title: `Duplicate column`,
-                    column: $columns.find((attr) => attr.key === columnId),
-                    columns: $tableColumns,
-                    columnsOrder: $columnsOrder
-                });
+                $showCreateColumnSheet.title = `Duplicate column`;
+                $showCreateColumnSheet.column = $columns.find((attr) => attr.key === columnId);
+                $showCreateColumnSheet.columns = $tableColumns;
+                $showCreateColumnSheet.columnsOrder = $columnsOrder;
+                $showCreateColumnSheet.show = true;
             }
         } else if (type === 'row') {
             if (action === 'update') {
@@ -840,10 +837,11 @@
                                     icon
                                     variant="extra-compact"
                                     on:click={() => {
-                                        openCreateColumnSheet({
-                                            columns: $tableColumns,
-                                            columnsOrder: $columnsOrder
-                                        });
+                                        $showCreateColumnSheet.show = true;
+                                        $showCreateColumnSheet.column = null;
+                                        $showCreateColumnSheet.title = 'Create column';
+                                        $showCreateColumnSheet.columns = $tableColumns;
+                                        $showCreateColumnSheet.columnsOrder = $columnsOrder;
                                     }}>
                                     <Icon icon={IconPlus} color="--fgcolor-neutral-primary" />
                                 </Button.Button>

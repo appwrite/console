@@ -145,44 +145,54 @@
         return newOrder;
     }
 
-    function invalidateTableOnColumnAvailable(createdKey: string) {
-        const { cleanup, waitPromise, startWaiting, columnCreationHandler } = setupColumnObserver();
-
-        const unsubscribe = realtime.forProject(
-            page.params.region,
-            ['project', 'console'],
-            (response) => {
-                const payload = response.payload as Columns;
-
-                // We only care about the column we just created
-                if (payload?.key !== createdKey) return;
-
-                columnCreationHandler(response);
-            }
-        );
-
-        startWaiting(1);
-
-        waitPromise
-            .then(async () => {
-                await invalidate(Dependencies.TABLE);
-            })
-            .finally(() => {
-                unsubscribe();
-                cleanup();
-            });
-    }
-
     export async function submit() {
+        const createdKey = key;
+        let stopObserver: (() => void) | null = null;
+        let waitPromise: Promise<void> | null = null;
+        let startWaiting: ((count: number) => void) | null = null;
+
+        if (createdKey) {
+            const observer = setupColumnObserver();
+            waitPromise = observer.waitPromise;
+            startWaiting = observer.startWaiting;
+
+            const unsubscribe = realtime.forProject(
+                page.params.region,
+                ['project', 'console'],
+                (response) => {
+                    const payload = response.payload as Columns;
+
+                    // We only care about the column we just created
+                    if (payload?.key !== createdKey) return;
+
+                    observer.columnCreationHandler(response);
+                }
+            );
+
+            stopObserver = () => {
+                unsubscribe();
+                observer.cleanup();
+            };
+        }
+
         try {
-            const createdKey = key;
             await $option.create(databaseId, tableId, key, data);
 
             columnId = key;
             insertColumnInOrder();
 
-            if (createdKey) {
-                invalidateTableOnColumnAvailable(createdKey);
+            if (createdKey && waitPromise && startWaiting && stopObserver) {
+                startWaiting(1);
+
+                waitPromise
+                    .then(async () => {
+                        await invalidate(Dependencies.TABLE);
+                    })
+                    .finally(() => {
+                        stopObserver?.();
+                    });
+            } else {
+                stopObserver?.();
             }
 
             await invalidate(Dependencies.TABLE);
@@ -200,6 +210,7 @@
             }
             return false; // close sheet
         } catch (e) {
+            stopObserver?.();
             addNotification({
                 type: 'error',
                 message: e.message
