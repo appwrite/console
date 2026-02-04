@@ -21,13 +21,15 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
     const project = await sdk.forConsole.projects.get({ projectId: params.project });
     project.region ??= 'default';
 
-    // Track console access (fire-and-forget, backend has 6-day cooldown)
-    generateFingerprintToken()
-        .then((fingerprint) => {
-            sdk.forConsole.client.headers['X-Appwrite-Console-Fingerprint'] = fingerprint;
-            return sdk.forConsole.projects.updateConsoleAccess({ projectId: params.project });
-        })
-        .catch(() => {});
+    // Track console access for cloud only (fire-and-forget, backend has 6-day cooldown)
+    if (isCloud) {
+        generateFingerprintToken()
+            .then((fingerprint) => {
+                sdk.forConsole.client.headers['X-Appwrite-Console-Fingerprint'] = fingerprint;
+                return sdk.forConsole.projects.updateConsoleAccess({ projectId: params.project });
+            })
+            .catch(() => {});
+    }
 
     // fast path without a network call!
     let organization = (organizations as Models.OrganizationList)?.teams?.find(
