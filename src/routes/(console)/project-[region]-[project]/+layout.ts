@@ -11,6 +11,7 @@ import { loadAvailableRegions } from '$routes/(console)/regions';
 import { type Models, Platform } from '@appwrite.io/console';
 import { redirect } from '@sveltejs/kit';
 import { resolve } from '$app/paths';
+import { generateFingerprintToken } from '$lib/helpers/fingerprint';
 
 export const load: LayoutLoad = async ({ params, depends, parent }) => {
     const { plansInfo, organizations, preferences: prefs } = await parent();
@@ -20,7 +21,12 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
     project.region ??= 'default';
 
     // Track console access (fire-and-forget, backend has 6-day cooldown)
-    sdk.forConsole.projects.updateConsoleAccess({ projectId: params.project }).catch(() => {});
+    generateFingerprintToken()
+        .then((fingerprint) => {
+            sdk.forConsole.client.headers['X-Appwrite-Console-Fingerprint'] = fingerprint;
+            return sdk.forConsole.projects.updateConsoleAccess({ projectId: params.project });
+        })
+        .catch(() => {});
 
     // fast path without a network call!
     let organization = (organizations as Models.OrganizationList)?.teams?.find(
