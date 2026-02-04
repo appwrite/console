@@ -265,9 +265,7 @@
                                 icon
                                 variant="extra-compact"
                                 onclick={() => {
-                                    if (mode === 'rows') {
-                                        onOpenCreateColumn?.();
-                                    }
+                                    onOpenCreateColumn?.();
                                 }}>
                                 <Icon icon={IconPlus} color="--fgcolor-neutral-primary" />
                             </Button.Button>

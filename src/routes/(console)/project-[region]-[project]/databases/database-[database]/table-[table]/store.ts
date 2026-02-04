@@ -154,6 +154,18 @@ export const showCreateColumnSheet = writable<CreateColumn>({
     columnsOrder: null
 });
 
+export function openCreateColumnSheet(params: Partial<Omit<CreateColumn, 'show'>> = {}): void {
+    showCreateColumnSheet.set({
+        show: true,
+        title: params.title ?? 'Create column',
+        column: params.column ?? null,
+        direction: params.direction ?? null,
+        onDone: params.onDone ?? null,
+        columns: params.columns ?? null,
+        columnsOrder: params.columnsOrder ?? null
+    });
+}
+
 export const showCreateIndexSheet = writable<{
     show: boolean;
     column?: string;

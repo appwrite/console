@@ -10,12 +10,14 @@
     import type { Column } from '$lib/helpers/types';
     import { preferences } from '$lib/stores/preferences';
     import { onMount } from 'svelte';
+    import { realtime } from '$lib/stores/sdk';
 
     import { showColumnsSuggestionsModal } from '../(suggestions)/store';
     import IconAINotification from '../(suggestions)/icon/aiNotification.svelte';
     import { type Columns, type ColumnDirection, showCreateColumnSheet } from './store';
     import { isCloud } from '$lib/system';
     import { slide } from 'svelte/transition';
+    import { setupColumnObserver } from '../(observer)/columnObserver';
 
     let {
         direction = null,
@@ -143,12 +145,45 @@
         return newOrder;
     }
 
+    function invalidateTableOnColumnAvailable(createdKey: string) {
+        const { cleanup, waitPromise, startWaiting, columnCreationHandler } = setupColumnObserver();
+
+        const unsubscribe = realtime.forProject(
+            page.params.region,
+            ['project', 'console'],
+            (response) => {
+                const payload = response.payload as Columns;
+
+                // We only care about the column we just created
+                if (payload?.key !== createdKey) return;
+
+                columnCreationHandler(response);
+            }
+        );
+
+        startWaiting(1);
+
+        waitPromise
+            .then(async () => {
+                await invalidate(Dependencies.TABLE);
+            })
+            .finally(() => {
+                unsubscribe();
+                cleanup();
+            });
+    }
+
     export async function submit() {
         try {
+            const createdKey = key;
             await $option.create(databaseId, tableId, key, data);
 
             columnId = key;
             insertColumnInOrder();
+
+            if (createdKey) {
+                invalidateTableOnColumnAvailable(createdKey);
+            }
 
             await invalidate(Dependencies.TABLE);
 
