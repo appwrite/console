@@ -188,6 +188,13 @@
                     .then(async () => {
                         await invalidate(Dependencies.TABLE);
                     })
+                    .catch((error) => {
+                        // avoid unhandled rejections if invalidate(Dependencies.TABLE) fails
+                        console.error(error);
+                        if (error instanceof Error) {
+                            trackError(error, Submit.ColumnCreate);
+                        }
+                    })
                     .finally(() => {
                         stopObserver?.();
                     });
