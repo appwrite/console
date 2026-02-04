@@ -4,6 +4,7 @@
     import { onMount, onDestroy, type Snippet, tick } from 'svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
     import { SideSheet } from '$database/(entity)';
+    import { SvelteSet } from 'svelte/reactivity';
 
     let {
         children,
@@ -42,7 +43,7 @@
     let mutationObserver: MutationObserver;
 
     /** to avoid querySelector for perf! */
-    let cachedElements = new Set<Element>();
+    let cachedElements = new SvelteSet<Element>();
 
     /** writable store to prevent jumps when changing views */
     let spreadsheetHeight = $state($sheetHeightStore);
@@ -155,6 +156,9 @@
         }
     });
 </script>
+
+<!-- in some cases, its window! -->
+<svelte:window on:resize={handleResize} />
 
 <div
     bind:this={spreadsheetWrapper}
