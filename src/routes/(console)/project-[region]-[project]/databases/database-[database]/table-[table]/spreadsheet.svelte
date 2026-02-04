@@ -1244,6 +1244,7 @@
                                 variant="secondary"
                                 on:click={() => {
                                     $randomDataModalState.show = true;
+                                    $randomDataModalState.managed = true;
                                 }}>Generate sample data</Button.Button>
                         </div>
                     {/if}

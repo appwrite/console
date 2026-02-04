@@ -251,6 +251,8 @@
                         subtitle="Generate data for testing"
                         onClick={() => {
                             $randomDataModalState.show = true;
+                            $randomDataModalState.columns = true;
+                            $randomDataModalState.managed = false;
                         }} />
 
                     <EmptySheetCards

@@ -194,23 +194,25 @@
 
 <CreateEntity bind:show={$showCreateEntity} onCreateEntity={createEntity} />
 
-<Modal title="Generate sample data" bind:show={$randomDataModalState.show}>
-    <Layout.Stack style="gap: 28px;">
-        {#if $randomDataModalState.columns}
-            <SuggestionsInput required context="data" showSampleCountPicker={!terminology.schema} />
-        {:else}
-            <Seekbar max={100} breakpointCount={5} bind:value={$randomDataModalState.value} />
-        {/if}
-    </Layout.Stack>
-
-    <svelte:fragment slot="footer">
-        <Layout.Stack direction="row" gap="s" justifyContent="flex-end">
-            <Button text on:click={() => resetSampleFieldsConfig()}>Cancel</Button>
-            <Button
-                on:click={() => {
-                    $randomDataModalState.onSubmit?.();
-                    $randomDataModalState.show = false;
-                }}>Create</Button>
+{#if !$randomDataModalState.managed}
+    <Modal title="Generate sample data" bind:show={$randomDataModalState.show}>
+        <Layout.Stack style="gap: 28px;">
+            {#if $randomDataModalState.columns}
+                <SuggestionsInput required context="data" showSampleCountPicker={!terminology.schema} />
+            {:else}
+                <Seekbar max={100} breakpointCount={5} bind:value={$randomDataModalState.value} />
+            {/if}
         </Layout.Stack>
-    </svelte:fragment>
-</Modal>
+
+        <svelte:fragment slot="footer">
+            <Layout.Stack direction="row" gap="s" justifyContent="flex-end">
+                <Button text on:click={() => resetSampleFieldsConfig()}>Cancel</Button>
+                <Button
+                    on:click={() => {
+                        $randomDataModalState.onSubmit?.();
+                        $randomDataModalState.show = false;
+                    }}>Create</Button>
+            </Layout.Stack>
+        </svelte:fragment>
+    </Modal>
+{/if}

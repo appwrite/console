@@ -341,6 +341,7 @@
                             subtitle="Generate data for testing"
                             onClick={() => {
                                 $randomDataModalState.show = true;
+                                $randomDataModalState.managed = true;
                             }} />
                     {/snippet}
                 </EmptySheet>
@@ -392,6 +393,7 @@
                         subtitle="Generate data for testing"
                         onClick={() => {
                             $randomDataModalState.show = true;
+                            $randomDataModalState.managed = true;
                         }} />
 
                     {#if isCloud}
