@@ -9,8 +9,8 @@ export const load: PageLoad = async ({ params }) => {
         : UsageRange.ThirtyDays;
 
     return {
-        usage: await sdk
+        ...(await sdk
             .forProject(params.region, params.project)
-            .sites.listUsage({ range: period })
+            .sites.listUsage({ range: period }))
     };
 };
