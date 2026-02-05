@@ -4,11 +4,18 @@
 
     let {
         show = true,
-        onMobileClick
+        onMobileClick,
+        showMock = false
     }: {
         show?: boolean;
         onMobileClick: () => Promise<void> | void;
+        showMock?: boolean;
     } = $props();
+
+    const suffix = $derived(
+        showMock ? 'to get started with example suggestions' : 'for suggestions'
+    );
+    const translateX = $derived(showMock ? '25%' : '40%');
 </script>
 
 {#if show}
@@ -21,7 +28,7 @@
             </FloatingActionBar>
         </button>
     {:else}
-        <div class="suggestions-wrapper">
+        <div class="suggestions-wrapper" style:transform={`translateX(${translateX})`}>
             <div class="popover-content">
                 <Layout.Stack inline gap="xs" direction="row" alignContent="center">
                     <Typography.Caption variant="400" color="--fgcolor-neutral-secondary">
@@ -34,7 +41,7 @@
                     </Layout.Stack>
 
                     <Typography.Caption variant="400" color="--fgcolor-neutral-secondary">
-                        for suggestions
+                        {suffix}
                     </Typography.Caption>
                 </Layout.Stack>
             </div>
@@ -48,7 +55,6 @@
         z-index: 50;
         position: absolute;
         pointer-events: none;
-        transform: translateX(40%);
     }
 
     .popover-content {

@@ -41,7 +41,6 @@
         Compartment,
         type Extension
     } from '@codemirror/state';
-    import type { Text } from '@codemirror/state';
     import { onMount, onDestroy } from 'svelte';
     import Id, { truncateId } from '$lib/components/id.svelte';
     import { Icon, Layout, Skeleton, Tooltip } from '@appwrite.io/pink-svelte';
@@ -98,6 +97,7 @@
         showHeaderActions?: boolean;
         showSuggestions?: boolean;
         suggestedAttributes?: string[];
+        showMockSuggestions?: boolean;
     }
 
     let {
@@ -114,7 +114,8 @@
         ctrlSave = false,
         showHeaderActions = true,
         showSuggestions = false,
-        suggestedAttributes = []
+        suggestedAttributes = [],
+        showMockSuggestions = false
     }: Props = $props();
 
     let editorContainer: HTMLDivElement = $state(null);
@@ -215,6 +216,10 @@
                 const formattedValue = dataToString(val, indent + 1, key);
                 return `${indentStr}  ${key}: ${formattedValue}${isLast ? '' : ','}`;
             });
+
+            if (isNew && !hasUserContent && sortedEntries[0]?.[0] === '$id') {
+                props.splice(1, 0, `${indentStr}  `);
+            }
 
             return `{\n${props.join('\n')}\n${indentStr}}`;
         } else if (type === 'array') {
@@ -920,6 +925,7 @@
 
         // Update the data
         data = updatedData;
+        hasUserContent = true;
 
         // Manually update the editor content
         const newContent = serializeData(updatedData);
@@ -1058,6 +1064,14 @@
             json5(),
             customSyntaxHighlighting,
             customTheme,
+            EditorView.domEventHandlers({
+                mousedown: () => {
+                    if (isNew && showSuggestions && !hasSuggestionsBeenShown) {
+                        hasStartedEditing = true;
+                    }
+                    return false;
+                }
+            }),
             wrapCompartment.of(wrapLines ? EditorView.lineWrapping : []),
             EditorView.updateListener.of((update) => {
                 const hasNonHoverEffects = update.transactions.some((tr) => {
@@ -1359,6 +1373,7 @@
     {#if ($isSmallViewport && showSuggestions) || (showSuggestions && hasStartedEditing)}
         <Suggestions
             show={showSuggestions}
+            showMock={showMockSuggestions}
             onMobileClick={() => {
                 showSuggestions = false;
                 applySuggestedAttributes();

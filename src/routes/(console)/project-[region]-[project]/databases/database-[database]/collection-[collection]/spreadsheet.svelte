@@ -39,6 +39,7 @@
     import { mapToQueryParams } from '$lib/components/filters/store';
     import { expandTabs, buildWildcardEntitiesQuery } from '$database/store';
     import { setupUnsavedChangesGuard } from '$lib/helpers/unsavedChanges';
+    import { mockSuggestions } from '$database/(suggestions)';
     import {
         collectionColumns,
         documentActivitySheet,
@@ -553,9 +554,17 @@
     $: rowSelection =
         !$spreadsheetLoading && !$paginatedDocumentsLoading ? true : ('disabled' as const);
 
+    const MIN_DOCS_FOR_FUZZY_SUGGESTIONS = 5;
+
+    $: useMockSuggestions =
+        $noSqlDocument.isNew &&
+        ($documents?.documents?.length ?? 0) < MIN_DOCS_FOR_FUZZY_SUGGESTIONS;
+
     $: suggestedAttributes =
         $noSqlDocument.isNew && $documents?.documents
-            ? (fuzzySearchKeys($documents.documents, { minOccurrences: 2 }) ?? [])
+            ? useMockSuggestions
+                ? mockSuggestions.columns.map((column) => column.name)
+                : (fuzzySearchKeys($documents.documents, { minOccurrences: 2 }) ?? [])
             : [];
 
     $: showSuggestions = $noSqlDocument.isNew && suggestedAttributes.length > 0;
@@ -866,6 +875,7 @@
             showHeaderActions={!$isSmallViewport}
             {showSuggestions}
             {suggestedAttributes}
+            showMockSuggestions={useMockSuggestions}
             onCancel={() => {
                 const firstDocument = $documents?.documents?.[0];
                 if (firstDocument) {
