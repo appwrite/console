@@ -30,12 +30,17 @@
     {:else}
         <div class="suggestions-wrapper" style:transform={`translateX(${translateX})`}>
             <div class="popover-content">
-                <Layout.Stack inline gap="xs" direction="row" alignContent="center">
+                <Layout.Stack inline gap="xs" direction="row" alignItems="center">
                     <Typography.Caption variant="400" color="--fgcolor-neutral-secondary">
                         Press
                     </Typography.Caption>
 
-                    <Layout.Stack direction="row" inline gap="xxxs" style="height: fit-content">
+                    <Layout.Stack
+                        direction="row"
+                        inline
+                        gap="xxxs"
+                        alignItems="center"
+                        style="height: fit-content">
                         <Badge content="⌘" variant="secondary" size="xs" />
                         <Badge content="A" variant="secondary" size="xs" />
                     </Layout.Stack>
