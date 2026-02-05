@@ -41,6 +41,7 @@
         Compartment,
         type Extension
     } from '@codemirror/state';
+    import type { Text as CmText } from '@codemirror/state';
     import { onMount, onDestroy } from 'svelte';
     import Id, { truncateId } from '$lib/components/id.svelte';
     import { Icon, Layout, Skeleton, Tooltip } from '@appwrite.io/pink-svelte';
@@ -421,7 +422,7 @@
         if (isPaste) return false;
 
         update.changes.iterChanges(
-            (fromA: number, toA: number, fromB: number, toB: number, inserted: Text) => {
+            (fromA: number, toA: number, fromB: number, toB: number, inserted: CmText) => {
                 if (did) return;
 
                 // Only trigger on insertion (not deletion)
@@ -472,7 +473,7 @@
     function ensureTimestampsAtBottom(
         expectedFields: Array<{ key: '$id' | '$createdAt' | '$updatedAt'; text: string }>,
         hits: Map<string, Hit>,
-        doc: Text,
+        doc: CmText,
         content: string,
         closeIdx: number,
         indent: string
@@ -664,7 +665,7 @@
     }
 
     // In-place patch: ensure top-level $ system fields reflect originals without reformatting the whole doc
-    function applySystemFieldsPatch(view: EditorView, doc: Text, parsed: JsonValue): boolean {
+    function applySystemFieldsPatch(view: EditorView, doc: CmText, parsed: JsonValue): boolean {
         if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return false;
         const obj = parsed as JsonObject;
         const expectedFields: Array<{ key: '$id' | '$createdAt' | '$updatedAt'; text: string }> = [
