@@ -38,7 +38,7 @@
     import { showSupportModal } from './wizard/support/store';
     import { activeHeaderAlert, consoleVariables } from './store';
 
-    import { base } from '$app/paths';
+    import { base, resolve } from '$app/paths';
     import { headerAlert } from '$lib/stores/headerAlert';
     import { UsageRates } from '$lib/components/billing';
     import { canSeeProjects } from '$lib/stores/roles';
@@ -53,10 +53,7 @@
         IconSparkles,
         IconSwitchHorizontal
     } from '@appwrite.io/pink-icons-svelte';
-    import type { LayoutData } from './$types';
     import type { Models } from '@appwrite.io/console';
-
-    export let data: LayoutData;
 
     function kebabToSentenceCase(str: string) {
         return str
@@ -74,9 +71,7 @@
     $: $registerCommands([
         {
             label: 'Go to Projects',
-            callback: () => {
-                goto(base);
-            },
+            callback: () => goto(resolve('/')),
             keys: ['g', 'p'],
             group: 'navigation',
             disabled:
