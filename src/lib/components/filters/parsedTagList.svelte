@@ -67,7 +67,6 @@
     // Always-show placeholders are derived from available filters (no hardcoding)
     // Use reactive array so runes can track changes
     let hiddenPlaceholders: string[] = $state([]);
-    let placeholderVersion = $state(0); // used to force keyed re-render when needed
 
     let activeTitles = $derived(
         ($parsedTags || []).map((t) => (t as ParsedTag).title).filter(Boolean) as string[]
@@ -142,7 +141,7 @@
                                                                         null,
                                                                         next,
                                                                         $columns,
-                                                                        ''
+                                                                        analyticsSource
                                                                     );
                                                                 } else {
                                                                     addFilterAndApply(
@@ -152,7 +151,7 @@
                                                                         option.value,
                                                                         [],
                                                                         $columns,
-                                                                        ''
+                                                                        analyticsSource
                                                                     );
                                                                 }
                                                             }}>
@@ -195,54 +194,51 @@
     {/if}
 
     <!-- Always render remaining placeholder tags alongside active tags -->
-    {#key placeholderVersion}
-        {#if placeholders?.length}
-            {#each placeholders as filter (filter.title + filter.id)}
-                <span>
-                    <Menu>
-                        <CompoundTagRoot size="s">
-                            <CompoundTagChild>
-                                <span>{capitalize(filter.title)}</span>
-                            </CompoundTagChild>
-                            <CompoundTagChild
-                                dismiss
-                                on:click={(e) => {
-                                    e.stopPropagation();
-                                    if (!hiddenPlaceholders.includes(filter.title)) {
-                                        hiddenPlaceholders.push(filter.title);
-                                    }
-                                    placeholderVersion++;
-                                }}>
-                                <Icon icon={IconX} size="s" />
-                            </CompoundTagChild>
-                        </CompoundTagRoot>
-                        <svelte:fragment slot="menu">
-                            {#if filter.options}
-                                {#each filter.options as option (filter.title + option.value + option.label)}
-                                    <ActionMenu.Root>
-                                        <ActionMenu.Item.Button
-                                            on:click={() => {
-                                                addFilterAndApply(
-                                                    filter.id,
-                                                    filter.title,
-                                                    filter.operator,
-                                                    filter?.array ? null : option.value,
-                                                    filter?.array ? [option.value] : [],
-                                                    $columns,
-                                                    ''
-                                                );
-                                            }}>
-                                            {capitalize(option.label)}
-                                        </ActionMenu.Item.Button>
-                                    </ActionMenu.Root>
-                                {/each}
-                            {/if}
-                        </svelte:fragment>
-                    </Menu>
-                </span>
-            {/each}
-        {/if}
-    {/key}
+    {#if placeholders?.length}
+        {#each placeholders as filter (filter.title + filter.id)}
+            <span>
+                <Menu>
+                    <CompoundTagRoot size="s">
+                        <CompoundTagChild>
+                            <span>{capitalize(filter.title)}</span>
+                        </CompoundTagChild>
+                        <CompoundTagChild
+                            dismiss
+                            on:click={(e) => {
+                                e.stopPropagation();
+                                if (!hiddenPlaceholders.includes(filter.title)) {
+                                    hiddenPlaceholders = [...hiddenPlaceholders, filter.title];
+                                }
+                            }}>
+                            <Icon icon={IconX} size="s" />
+                        </CompoundTagChild>
+                    </CompoundTagRoot>
+                    <svelte:fragment slot="menu">
+                        {#if filter.options}
+                            {#each filter.options as option (filter.title + option.value + option.label)}
+                                <ActionMenu.Root>
+                                    <ActionMenu.Item.Button
+                                        on:click={() => {
+                                            addFilterAndApply(
+                                                filter.id,
+                                                filter.title,
+                                                filter.operator,
+                                                filter?.array ? null : option.value,
+                                                filter?.array ? [option.value] : [],
+                                                $columns,
+                                                analyticsSource
+                                            );
+                                        }}>
+                                        {capitalize(option.label)}
+                                    </ActionMenu.Item.Button>
+                                </ActionMenu.Root>
+                            {/each}
+                        {/if}
+                    </svelte:fragment>
+                </Menu>
+            </span>
+        {/each}
+    {/if}
 
     {#if $parsedTags?.length}
         <Button
