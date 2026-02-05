@@ -198,7 +198,10 @@
     <Modal title="Generate sample data" bind:show={$randomDataModalState.show}>
         <Layout.Stack style="gap: 28px;">
             {#if $randomDataModalState.columns}
-                <SuggestionsInput required context="data" showSampleCountPicker={!terminology.schema} />
+                <SuggestionsInput
+                    required
+                    context="data"
+                    showSampleCountPicker={!terminology.schema} />
             {:else}
                 <Seekbar max={100} breakpointCount={5} bind:value={$randomDataModalState.value} />
             {/if}

@@ -49,6 +49,7 @@
         & :global(div:first-of-type) {
             height: 44px;
             bottom: 32px;
+            max-width: 100%;
             width: fit-content;
             align-content: center;
         }
@@ -57,9 +58,9 @@
     .sonner-message {
         flex: 1;
         font-size: 13px;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
+        min-width: 0;
+        white-space: normal;
+        word-break: break-word;
         font-family: var(--font-family-code);
     }
 </style>

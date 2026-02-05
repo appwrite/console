@@ -50,6 +50,7 @@
     import { copy } from '$lib/helpers/copy';
     import { isSmallViewport } from '$lib/stores/viewport';
 
+    import { makeErrorMessage } from './helpers/errorMessages';
     import { customTheme, customSyntaxHighlighting } from './helpers/theme';
     import { createEditorKeymaps, secondaryKeymaps } from './helpers/keymaps';
     import {
@@ -80,6 +81,7 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { Suggestions, Error as ErrorSonner, Save as SavingSonner } from '../sonners';
     import { json5, json5ParseCache, json5ParseLinter } from 'codemirror-json5';
+    import { SvelteMap } from 'svelte/reactivity';
 
     interface Props {
         isNew?: boolean;
@@ -591,7 +593,7 @@
         expectedFields: Array<{ key: '$id' | '$createdAt' | '$updatedAt'; text: string }>
     ): boolean {
         const FAST_CHECK_LINES = 20;
-        const foundValues = new Map<string, string>();
+        const foundValues = new SvelteMap<string, string>();
 
         // Check first `FAST_CHECK_LINES` lines after opening brace for $id
         let checkPos = openIdx + 1;
@@ -679,7 +681,7 @@
         }
 
         // Values differ or not all found - proceed with full scan
-        const hits = new Map<string, Hit>();
+        const hits = new SvelteMap<string, Hit>();
 
         // Scan lines between top-level braces to find existing $ fields at the start of a line
         let pos = openIdx + 1;
@@ -871,10 +873,28 @@
             errorMessage = null;
             return [];
         }
-        const errorMsg = (result[0]?.message || 'Syntax error').replace(/^JSON5:\s*/i, '');
+
+        const smartError = makeErrorMessage(view.state, result[0]);
+        const errorMsg = smartError.hint
+            ? `${smartError.message}: ${smartError.hint}`
+            : smartError.message;
         errorMessage = errorMsg;
         if (errorInPlace) {
-            return result.map((diagnostic) => expandErrorRange(view.state, diagnostic));
+            return result.map((diagnostic, index) => {
+                const expanded = expandErrorRange(view.state, diagnostic);
+                if (index === 0 && diagnostic.severity === 'error') {
+                    if (smartError.range) {
+                        return {
+                            ...expanded,
+                            from: smartError.range.from,
+                            to: smartError.range.to,
+                            message: smartError.message
+                        };
+                    }
+                    return { ...expanded, message: smartError.message };
+                }
+                return expanded;
+            });
         }
         // Fallback to full-doc underline
         return [{ from: 0, to: view.state.doc.length, severity: 'error', message: errorMsg }];
@@ -1604,18 +1624,18 @@
 
         // Smooth curved underline for errors
         :global(.cm-lintRange-error) {
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='4' viewBox='0 0 14 4' fill='none'%3E%3Cpath d='M0 2 C2 0.6 5 0.6 7 2 C9 3.4 12 3.4 14 2' stroke='%23f04438' stroke-width='1' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='4' viewBox='0 0 10 4' fill='none'%3E%3Cpath d='M0 2 C1.5 0.6 3.5 0.6 5 2 C6.5 3.4 8.5 3.4 10 2' stroke='%23f04438' stroke-width='1' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
             background-repeat: repeat-x;
             background-position: left bottom;
-            background-size: 14px 4px;
+            background-size: 10px 4px;
             padding-bottom: 3px;
         }
 
         :global(.cm-lintRange-warning) {
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='4' viewBox='0 0 14 4' fill='none'%3E%3Cpath d='M0 2 C2 0.6 5 0.6 7 2 C9 3.4 12 3.4 14 2' stroke='%23ffa500' stroke-width='1' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='4' viewBox='0 0 10 4' fill='none'%3E%3Cpath d='M0 2 C1.5 0.6 3.5 0.6 5 2 C6.5 3.4 8.5 3.4 10 2' stroke='%23ffa500' stroke-width='1' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
             background-repeat: repeat-x;
             background-position: left bottom;
-            background-size: 14px 4px;
+            background-size: 10px 4px;
             padding-bottom: 3px;
         }
 

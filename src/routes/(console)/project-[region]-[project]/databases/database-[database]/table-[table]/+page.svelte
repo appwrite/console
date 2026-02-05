@@ -328,8 +328,7 @@
                     customColumns={createTableColumns(table.fields, selected)}
                     onOpenCreateColumn={() => {
                         $showCreateColumnSheet.show = true;
-                    }}
-                >
+                    }}>
                     {#snippet actions()}
                         <EmptySheetCards
                             icon={IconPlus}
@@ -359,8 +358,7 @@
                 title="You have no columns yet"
                 onOpenCreateColumn={() => {
                     $showCreateColumnSheet.show = true;
-                }}
-            >
+                }}>
                 {#snippet subtitle()}
                     {#if !isCloud}
                         <!-- shown on self-hosted -->

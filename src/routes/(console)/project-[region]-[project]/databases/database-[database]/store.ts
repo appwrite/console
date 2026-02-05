@@ -55,7 +55,7 @@ export type RandomDataSchema = {
     show: boolean;
     value: number;
     columns?: boolean;
-    managed: boolean,
+    managed: boolean;
     onSubmit?: () => Promise<void> | void;
 };
 
@@ -102,7 +102,7 @@ export const databaseSubNavigationItems = [
 export const randomDataModalState = writable<RandomDataSchema>({
     show: false,
     value: 25, // initial value!
-    managed: true, // true means don't use the one in database/+layout.svelte
+    managed: true // true means don't use the one in database/+layout.svelte
 });
 
 export const spreadsheetLoading = writable(false);
