@@ -102,6 +102,7 @@
     </Layout.Stack>
 
     <Table.Root
+        class="responsive-table"
         columns={[
             { id: 'type', width: { min: 150 } },
             { id: 'name', width: { min: 80 } },
