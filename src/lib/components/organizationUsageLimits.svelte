@@ -222,9 +222,7 @@
                             </Typography.Text>
                         </Layout.Stack>
                     {:else}
-                        <Typography.Text color="--fgcolor-neutral-secondary">
-                            N/A
-                        </Typography.Text>
+                        <Typography.Text color="--fgcolor-neutral-secondary">N/A</Typography.Text>
                     {/if}
                 </Table.Cell>
                 <Table.Cell column="manage" {root}></Table.Cell>
@@ -261,10 +259,19 @@
 {#if showSelectProject}
     <Modal bind:show={showSelectProject} title="Manage projects" onSubmit={updateSelected}>
         <svelte:fragment slot="description">
-            Choose which {freePlanLimits.projects} projects to keep. Projects over the limit will be
-            blocked after your billing cycle ends on {toLocaleDate(
-                $organization.billingNextInvoiceDate
-            )}.
+            <Layout.Stack gap="m">
+                <Typography.Text>
+                    Choose which {freePlanLimits.projects} projects to keep.
+                </Typography.Text>
+                <Alert.Inline
+                    status="error"
+                    title="Unselected projects will be permanently deleted">
+                    All data associated with unselected projects, including databases, storage,
+                    functions, and users, will be <b>permanently deleted</b> on {toLocaleDate(
+                        $organization.billingNextInvoiceDate
+                    )}. <b>This action is irreversible</b>.
+                </Alert.Inline>
+            </Layout.Stack>
         </svelte:fragment>
 
         {#if error}
@@ -292,14 +299,17 @@
                 {/each}
             </Table.Root>
         </div>
+
         {#if selectedProjects.length === allowedProjectsToKeep}
             {@const difference = projects.length - selectedProjects.length}
             {@const messagePrefix =
                 difference > 1 ? `${difference} projects` : `${difference} project`}
             <Alert.Inline
-                status="warning"
-                title={`${messagePrefix} will be deleted on ${toLocaleDate($organization.billingNextInvoiceDate)}`}>
-                {formatProjectsToDelete()} will be deleted
+                status="error"
+                title={`${messagePrefix} will be permanently deleted on <b>${toLocaleDate($organization.billingNextInvoiceDate)}</b>`}>
+                <b>{formatProjectsToDelete()}</b> and all associated data, including databases,
+                storage, functions, and users, will be <b>permanently deleted</b>.
+                <b>This action is irreversible</b>.
             </Alert.Inline>
         {/if}
 
