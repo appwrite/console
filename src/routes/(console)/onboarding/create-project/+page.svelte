@@ -14,6 +14,7 @@
     import { loadAvailableRegions } from '$routes/(console)/regions';
     import { regions as regionsStore } from '$lib/stores/organization';
     import { user } from '$lib/stores/user';
+    import { showOnboardingAnimation } from '$lib/stores/layout';
 
     let isLoading = false;
     let startAnimation = false;
@@ -57,10 +58,12 @@
             });
 
             startAnimation = true;
+            showOnboardingAnimation.set(true);
 
             setTimeout(async () => {
                 await invalidate(Dependencies.ACCOUNT);
-                goto(`${base}/project-${project.region ?? 'default'}-${project.$id}`);
+                await goto(`${base}/project-${project.region ?? 'default'}-${project.$id}`);
+                showOnboardingAnimation.set(false);
             }, 3000);
         } catch (e) {
             trackError(e, Submit.ProjectCreate);

@@ -5,8 +5,9 @@
     import { activeHeaderAlert } from '$routes/(console)/store';
     import { onMount, setContext } from 'svelte';
     import { writable } from 'svelte/store';
-    import { showSubNavigation } from '$lib/stores/layout';
+    import { showSubNavigation, showOnboardingAnimation } from '$lib/stores/layout';
     import { organization, organizationList } from '$lib/stores/organization';
+
     import { sdk } from '$lib/stores/sdk';
     import { user } from '$lib/stores/user';
     import { isCloud } from '$lib/system';
@@ -176,7 +177,8 @@
 
     $: subNavigation = $page.data.subNavigation;
 
-    $: shouldRenderSidebar = !$isNewWizardStatusOpen && showSideNavigation;
+    $: shouldRenderSidebar =
+        !$isNewWizardStatusOpen && showSideNavigation && !$showOnboardingAnimation;
     $: hasSidebarSpace = shouldRenderSidebar && !$isTabletViewport && !!selectedProject;
 
     $: {
@@ -203,9 +205,9 @@
     class:is-open={$showSubNavigation}
     class:u-hide={$wizard.show || $wizard.cover}
     class:is-fixed-layout={$activeHeaderAlert?.show}
-    class:no-header={!showHeader}
+    class:no-header={!showHeader || $showOnboardingAnimation}
     style:--p-side-size={sideSize}>
-    {#if showHeader}
+    {#if showHeader && !$showOnboardingAnimation}
         <Navbar {...navbarProps} bind:sideBarIsOpen={$isSidebarOpen} bind:showAccountMenu />
     {/if}
 
@@ -220,7 +222,9 @@
             bind:state />
     {/if}
 
-    <SideNavigation bind:subNavigation />
+    {#if !$showOnboardingAnimation}
+        <SideNavigation bind:subNavigation />
+    {/if}
 
     <div
         class="content"
