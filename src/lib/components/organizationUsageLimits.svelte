@@ -223,9 +223,7 @@
                         </Layout.Stack>
                     {:else}
                         <Typography.Text color="--fgcolor-neutral-secondary">
-                            {formatNumber(currentUsage.members)} / {formatNumber(
-                                freePlanLimits.members
-                            )}
+                            N/A
                         </Typography.Text>
                     {/if}
                 </Table.Cell>
