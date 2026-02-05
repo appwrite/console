@@ -585,6 +585,16 @@
             $noSqlDocument?.hasDataChanged || ($noSqlDocument?.isNew && $noSqlDocument?.isDirty)
         );
 
+    const requestDiscardChanges = (onConfirm: () => void | Promise<void>) => {
+        if (!hasUnsavedChanges()) {
+            void onConfirm();
+            return;
+        }
+
+        confirmNavigation = onConfirm;
+        showUnsavedChangesModal = true;
+    };
+
     const { beforeUnload } = setupUnsavedChangesGuard({
         hasUnsavedChanges,
         onConfirmNavigate: () => noSqlDocument.reset({ show: false }),
@@ -716,7 +726,8 @@
                     <button
                         onclick={() => {
                             if (isUnsavedRow) return;
-                            noSqlDocument.edit(document);
+                            if (document.$id === $noSqlDocument.document?.$id) return;
+                            requestDiscardChanges(() => noSqlDocument.edit(document));
                         }}
                         style:cursor={isUnsavedRow ? 'default' : 'pointer'}>
                         <Spreadsheet.Row.Base
