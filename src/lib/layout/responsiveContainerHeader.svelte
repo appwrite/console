@@ -1,12 +1,7 @@
 <script lang="ts">
     import { SearchQuery, ViewSelector } from '$lib/components';
-    import {
-        FiltersBottomSheet,
-        ParsedTagList,
-        queryParamToMap,
-        Filters
-    } from '$lib/components/filters';
-    import QuickFilters from '$lib/components/filters/quickFilters.svelte';
+    import { FiltersBottomSheet, ParsedTagList, queryParamToMap } from '$lib/components/filters';
+
     import Button from '$lib/elements/forms/button.svelte';
     import { View } from '$lib/helpers/load';
     import type { Column } from '$lib/helpers/types';
@@ -28,7 +23,6 @@
         hasSearch = false,
         searchPlaceholder = 'Search by ID',
         hasFilters = false,
-        hasCustomFiltersOnly = false,
         analyticsSource = '',
         children
     }: {
@@ -39,7 +33,6 @@
         hasSearch?: boolean;
         searchPlaceholder?: string;
         hasFilters?: boolean;
-        hasCustomFiltersOnly?: boolean;
         analyticsSource?: string;
         children?: Snippet;
     } = $props();
@@ -106,22 +99,37 @@
                 {#if showSearch && hasSearch}
                     <SearchQuery placeholder={searchPlaceholder} />
                 {/if}
+                <div style="overflow-x: auto;">
+                    <ParsedTagList {columns} {analyticsSource} />
+                </div>
             </Layout.Stack>
         {:else}
-            <Layout.Stack direction="row" justifyContent="space-between">
-                <Layout.Stack direction="row" alignItems="center">
+            <Layout.Stack direction="row" justifyContent="space-between" alignItems="flex-start">
+                <Layout.Stack
+                    direction="row"
+                    alignItems="center"
+                    gap="m"
+                    style="min-width: 0; flex: 1 1 auto;">
                     {#if hasSearch}
                         <SearchQuery placeholder={searchPlaceholder} />
                     {/if}
-                </Layout.Stack>
-                <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
-                    {#if hasFilters && $columns?.length}
-                        {#if hasCustomFiltersOnly}
-                            <Filters query="[]" {columns} {analyticsSource} />
-                        {:else}
-                            <QuickFilters {columns} {analyticsSource} {filterCols} />
-                        {/if}
+                    {#if hasFilters}
+                        <!-- Tags with Filters button (rendered inside ParsedTagList) -->
+                        <Layout.Stack
+                            direction="row"
+                            alignItems="center"
+                            gap="s"
+                            wrap="wrap"
+                            style="min-width: 0;">
+                            <ParsedTagList {columns} {analyticsSource} />
+                        </Layout.Stack>
                     {/if}
+                </Layout.Stack>
+                <Layout.Stack
+                    direction="row"
+                    alignItems="center"
+                    justifyContent="flex-end"
+                    style="align-self: flex-start; white-space: nowrap;">
                     {#if hasDisplaySettings}
                         <ViewSelector ui="new" {view} {columns} {hideView} {hideColumns} />
                     {/if}
@@ -131,7 +139,6 @@
                 </Layout.Stack>
             </Layout.Stack>
         {/if}
-        <ParsedTagList />
     </Layout.Stack>
 </header>
 
@@ -171,7 +178,7 @@
 {/snippet}
 
 {#snippet filtersButton(icon = false)}
-    <Button ariaLabel="Filters" on:click={() => (showFilters = !showFilters)} secondary {icon}>
+    <Button ariaLabel="Filters" on:click={() => (showFilters = !showFilters)} text {icon}>
         <Icon icon={IconFilterLine} />
     </Button>
 {/snippet}

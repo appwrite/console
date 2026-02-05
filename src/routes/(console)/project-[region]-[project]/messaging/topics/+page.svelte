@@ -70,7 +70,6 @@
         view={View.Table}
         hideView
         hasFilters
-        hasCustomFiltersOnly
         hasSearch
         analyticsSource="messaging_topics_filter"
         searchPlaceholder="Search by name or ID">
