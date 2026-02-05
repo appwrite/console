@@ -6,7 +6,7 @@
       "name": "@appwrite/console",
       "dependencies": {
         "@ai-sdk/svelte": "^1.1.24",
-        "@appwrite.io/console": "https://pkg.vc/-/@appwrite/@appwrite.io/console@7dc3a8f",
+        "@appwrite.io/console": "https://pkg.vc/-/@appwrite/@appwrite.io/console@110a478",
         "@appwrite.io/pink-icons": "0.25.0",
         "@appwrite.io/pink-icons-svelte": "https://pkg.vc/-/@appwrite/@appwrite.io/pink-icons-svelte@c1feb89",
         "@appwrite.io/pink-legacy": "^1.0.3",
@@ -24,6 +24,7 @@
         "dayjs": "^1.11.13",
         "deep-equal": "^2.2.3",
         "echarts": "^5.6.0",
+        "@appwrite.io/console": "https://pkg.vc/-/@appwrite/@appwrite.io/console@110a478",
         "ignore": "^6.0.2",
         "nanoid": "^5.1.5",
         "nanotar": "^0.1.1",
@@ -107,7 +108,7 @@
 
     "@analytics/type-utils": ["@analytics/type-utils@0.6.4", "", {}, "sha512-Ou1gQxFakOWLcPnbFVsrPb8g1wLLUZYYJXDPjHkG07+5mustGs5yqACx42UAu4A6NszNN6Z5gGxhyH45zPWRxw=="],
 
-    "@appwrite.io/console": ["@appwrite.io/console@https://pkg.vc/-/@appwrite/@appwrite.io/console@7dc3a8f", { "dependencies": { "bignumber.js": "9.0.0", "json-bigint": "1.0.0" } }],
+    "@appwrite.io/console": ["@appwrite.io/console@https://pkg.vc/-/@appwrite/@appwrite.io/console@110a478", { "dependencies": { "bignumber.js": "9.0.0", "json-bigint": "1.0.0" } }],
 
     "@appwrite.io/pink-icons": ["@appwrite.io/pink-icons@0.25.0", "", {}, "sha512-0O3i2oEuh5mWvjO80i+X6rbzrWLJ1m5wmv2/M3a1p2PyBJsFxN8xQMTEmTn3Wl/D26SsM7SpzbdW6gmfgoVU9Q=="],
 

@@ -21,16 +21,6 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
     const project = await sdk.forConsole.projects.get({ projectId: params.project });
     project.region ??= 'default';
 
-    // Track console access for cloud only (fire-and-forget, backend has 6-day cooldown)
-    if (isCloud) {
-        generateFingerprintToken()
-            .then((fingerprint) => {
-                sdk.forConsole.client.headers['X-Appwrite-Console-Fingerprint'] = fingerprint;
-                return sdk.forConsole.projects.updateConsoleAccess({ projectId: params.project });
-            })
-            .catch(() => {});
-    }
-
     // fast path without a network call!
     let organization = (organizations as Models.OrganizationList)?.teams?.find(
         (org) => org.$id === project.teamId
@@ -101,6 +91,30 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
     if (!includedInBasePlans) {
         // save the custom plan to `plansInfo` cache.
         plansInfo.set(organization.billingPlanId, organizationPlan);
+    }
+
+    // Track console access for cloud only (fire-and-forget, backend has 6-day cooldown)
+    // Don't call if project is paused - user must explicitly resume via createConsoleAccess
+    if (isCloud) {
+        const projectInactivityDays = organizationPlan?.projectInactivityDays ?? 0;
+        const consoleAccessedAt = (project as { consoleAccessedAt?: string }).consoleAccessedAt;
+
+        let isPaused = false;
+        if (projectInactivityDays > 0 && consoleAccessedAt) {
+            const lastAccess = new Date(consoleAccessedAt);
+            const now = new Date();
+            const diffDays = Math.floor((now.getTime() - lastAccess.getTime()) / (1000 * 60 * 60 * 24));
+            isPaused = diffDays >= projectInactivityDays;
+        }
+
+        if (!isPaused) {
+            generateFingerprintToken()
+                .then((fingerprint) => {
+                    sdk.forConsole.client.headers['X-Appwrite-Console-Fingerprint'] = fingerprint;
+                    return sdk.forConsole.projects.updateConsoleAccess({ projectId: params.project });
+                })
+                .catch(() => {});
+        }
     }
 
     return {

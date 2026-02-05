@@ -25,6 +25,34 @@
         canWriteSites
     } from '$lib/stores/roles';
     import CsvImportBox from '$lib/components/csvImportBox.svelte';
+    import { currentPlan } from '$lib/stores/organization';
+    import { isCloud } from '$lib/system';
+    import PausedProjectModal from './pausedProjectModal.svelte';
+
+    /**
+     * Calculate if the project is paused based on console access date and plan's inactivity threshold.
+     */
+    function isProjectPaused(
+        consoleAccessedAt: string | null | undefined,
+        projectInactivityDays: number | undefined
+    ): boolean {
+        if (!isCloud) return false;
+        if (!projectInactivityDays || projectInactivityDays <= 0) return false;
+        if (!consoleAccessedAt) return false;
+
+        const lastAccess = new Date(consoleAccessedAt);
+        const now = new Date();
+        const diffMs = now.getTime() - lastAccess.getTime();
+        const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+        return diffDays >= projectInactivityDays;
+    }
+
+    let showPausedModal: boolean;
+    $: showPausedModal = isProjectPaused(
+        ($project as { consoleAccessedAt?: string })?.consoleAccessedAt,
+        $currentPlan?.projectInactivityDays
+    );
 
     onMount(() => {
         return realtime.forProject(page.params.region, ['project', 'console'], (response) => {
@@ -113,6 +141,10 @@
 </script>
 
 <slot />
+
+{#if isCloud}
+    <PausedProjectModal bind:show={showPausedModal} projectId={$project.$id} />
+{/if}
 
 <div class="layout-level-progress-bars">
     <UploadBox />
