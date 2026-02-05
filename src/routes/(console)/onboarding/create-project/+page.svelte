@@ -8,7 +8,7 @@
     import { Dependencies } from '$lib/constants';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { goto, invalidate } from '$app/navigation';
-    import { base } from '$app/paths';
+    import { base, resolve } from '$app/paths';
     import { addNotification } from '$lib/stores/notifications';
     import CreateProject from '$lib/layout/createProject.svelte';
     import { loadAvailableRegions } from '$routes/(console)/regions';
@@ -62,7 +62,12 @@
 
             setTimeout(async () => {
                 await invalidate(Dependencies.ACCOUNT);
-                await goto(`${base}/project-${project.region ?? 'default'}-${project.$id}`);
+                await goto(
+                    resolve('/(console)/project-[region]-[project]', {
+                        region: project.region ?? 'default',
+                        project: project.$id
+                    })
+                );
                 showOnboardingAnimation.set(false);
             }, 3000);
         } catch (e) {
