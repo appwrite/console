@@ -7,7 +7,6 @@
     import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
     import { page } from '$app/state';
     import { registerCommands } from '$lib/commandCenter';
-    import { formatName as formatNameHelper } from '$lib/helpers/string';
     import {
         CardContainer,
         Empty,
@@ -24,7 +23,6 @@
     import { canWriteProjects } from '$lib/stores/roles';
     import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
     import { Alert, Badge, Icon, Layout, Tooltip, Typography } from '@appwrite.io/pink-svelte';
-    import { isSmallViewport } from '$lib/stores/viewport';
     import {
         IconAndroid,
         IconApple,
@@ -120,12 +118,6 @@
         return $regionsStore.regions.find((region) => region.$id === project.region);
     }
 
-    function isSetToArchive(project: Models.Project): boolean {
-        if (!isCloud) return false;
-        if (!project || !project.$id) return false;
-        return project.status === 'archived';
-    }
-
     const activeProjectsTotal = $derived(data?.projects.total);
 
     function clearSearch() {
@@ -209,24 +201,13 @@
                 {@const platforms = filterPlatforms(
                     project.platforms.map((platform) => getPlatformInfo(platform.type))
                 )}
-                {@const formatted = isSetToArchive(project)
-                    ? formatNameHelper(project.name, isSmallViewport ? 19 : 25)
-                    : project.name}
                 <GridItem1
                     href={`${base}/project-${project.region}-${project.$id}/overview/platforms`}>
                     <svelte:fragment slot="eyebrow">
                         {project?.platforms?.length ? project?.platforms?.length : 'No'} apps
                     </svelte:fragment>
                     <svelte:fragment slot="title">
-                        <Tooltip
-                            maxWidth={project.name.length.toString()}
-                            placement="top"
-                            disabled={!isSetToArchive(project)}>
-                            {formatted}
-                            <span slot="tooltip">
-                                {project.name}
-                            </span>
-                        </Tooltip>
+                        {project.name}
                     </svelte:fragment>
 
                     {#each platforms.slice(0, 2) as platform}
