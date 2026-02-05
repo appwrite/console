@@ -4,16 +4,15 @@
     import { Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, InputSelect, InputText } from '$lib/elements/forms';
-    import type { Address } from '$lib/sdk/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import type { Models } from '@appwrite.io/console';
 
     export let show = false;
-    export let selectedAddress: Address;
     export let locale: Models.Locale;
     export let countryList: Models.CountryList;
+    export let selectedAddress: Models.BillingAddress;
 
     let error: string = null;
     let options = [
@@ -34,20 +33,22 @@
 
     async function handleSubmit() {
         try {
-            await sdk.forConsole.billing.updateAddress(
-                selectedAddress.$id,
-                selectedAddress.country,
-                selectedAddress.streetAddress,
-                selectedAddress.city,
-                selectedAddress.state,
-                selectedAddress.postalCode ? selectedAddress.postalCode : undefined,
-                selectedAddress.addressLine2 ? selectedAddress.addressLine2 : undefined
-            );
+            await sdk.forConsole.account.updateBillingAddress({
+                billingAddressId: selectedAddress.$id,
+                country: selectedAddress.country,
+                streetAddress: selectedAddress.streetAddress,
+                city: selectedAddress.city,
+                state: selectedAddress.state,
+                postalCode: selectedAddress.postalCode ? selectedAddress.postalCode : undefined,
+                addressLine2: selectedAddress.addressLine2
+                    ? selectedAddress.addressLine2
+                    : undefined
+            });
             await invalidate(Dependencies.ADDRESS);
             show = false;
             addNotification({
                 type: 'success',
-                message: `Address has been added`
+                message: 'Address has been updated'
             });
             trackEvent(Submit.BillingAddressUpdate);
         } catch (e) {

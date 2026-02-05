@@ -97,6 +97,7 @@
     </Layout.Stack>
 
     <Table.Root
+        class="responsive-table"
         let:root
         columns={[
             { id: 'client', width: { min: 450 } },

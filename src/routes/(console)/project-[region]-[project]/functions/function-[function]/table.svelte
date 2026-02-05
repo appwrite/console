@@ -98,6 +98,7 @@
                 deployment,
                 $regionalConsoleVariables
             )}
+            {@const displayStatus = effectiveStatus === 'finalizing' ? 'ready' : effectiveStatus}
             <Table.Row.Link
                 {root}
                 id={deployment.$id}
@@ -113,8 +114,8 @@
                                 <Status status="complete" label="Active" />
                             {:else}
                                 <Status
-                                    status={deploymentStatusConverter(effectiveStatus)}
-                                    label={capitalize(effectiveStatus)} />
+                                    status={deploymentStatusConverter(displayStatus)}
+                                    label={capitalize(displayStatus)} />
                             {/if}
                         {:else if column.id === 'type'}
                             <DeploymentSource {deployment} />

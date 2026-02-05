@@ -2,12 +2,12 @@ import { sdk } from '$lib/stores/sdk.js';
 import { redirect } from '@sveltejs/kit';
 import { base } from '$app/paths';
 import { isCloud } from '$lib/system';
-import { BillingPlan } from '$lib/constants';
-import { ID, type Models, Query, Platform } from '@appwrite.io/console';
-import type { OrganizationList } from '$lib/stores/organization';
+import { BillingPlanGroup, ID } from '@appwrite.io/console';
+import { getTeamOrOrganizationList } from '$lib/stores/organization';
 import { redirectTo } from '$routes/store';
 import type { PageLoad } from './$types';
 import { getRepositoryInfo } from '$lib/helpers/github';
+import { getBasePlanFromGroup } from '$lib/stores/billing';
 
 export const load: PageLoad = async ({ parent, url }) => {
     const { account } = await parent();
@@ -64,24 +64,16 @@ export const load: PageLoad = async ({ parent, url }) => {
     deploymentData.repository.owner = info.owner;
 
     // Get organizations
-    let organizations: Models.TeamList<Record<string, unknown>> | OrganizationList | undefined;
-    if (isCloud) {
-        organizations = await sdk.forConsole.billing.listOrganization([
-            Query.equal('platform', Platform.Appwrite)
-        ]);
-    } else {
-        organizations = await sdk.forConsole.teams.list();
-    }
+    let organizations = await getTeamOrOrganizationList();
 
     if (!organizations?.total) {
         try {
             if (isCloud) {
-                await sdk.forConsole.billing.createOrganization(
-                    ID.unique(),
-                    'Personal Projects',
-                    BillingPlan.FREE,
-                    null
-                );
+                await sdk.forConsole.organizations.create({
+                    organizationId: ID.unique(),
+                    name: 'Personal Projects',
+                    billingPlan: getBasePlanFromGroup(BillingPlanGroup.Starter).$id
+                });
             } else {
                 await sdk.forConsole.teams.create({
                     teamId: ID.unique(),
@@ -89,13 +81,7 @@ export const load: PageLoad = async ({ parent, url }) => {
                 });
             }
 
-            if (isCloud) {
-                organizations = await sdk.forConsole.billing.listOrganization([
-                    Query.equal('platform', Platform.Appwrite)
-                ]);
-            } else {
-                organizations = await sdk.forConsole.teams.list();
-            }
+            organizations = await getTeamOrOrganizationList();
         } catch (e) {
             console.error('Failed to create default organization:', e);
         }

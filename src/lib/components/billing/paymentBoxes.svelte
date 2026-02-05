@@ -4,11 +4,11 @@
     import { CreditCardBrandImage } from '..';
     import { initializeStripe, unmountPaymentElement } from '$lib/stores/stripe';
     import { Badge, Card, Layout } from '@appwrite.io/pink-svelte';
-    import type { PaymentMethodData } from '$lib/sdk/billing';
     import type { PaymentMethod } from '@stripe/stripe-js';
     import StatePicker from './statePicker.svelte';
+    import type { Models } from '@appwrite.io/console';
 
-    export let methods: PaymentMethodData[];
+    export let methods: Array<Models.PaymentMethod>;
     export let group: string;
     export let name: string;
     export let defaultMethod: string = null;

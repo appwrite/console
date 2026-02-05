@@ -1,8 +1,9 @@
 <script lang="ts">
     import { Alert } from '@appwrite.io/pink-svelte';
-    import type { EstimationDeleteOrganization } from '$lib/sdk/billing';
     import InvoicesTable from './invoicesTable.svelte';
-    export let estimation: EstimationDeleteOrganization;
+    import type { Models } from '@appwrite.io/console';
+
+    export let estimation: Models.EstimationDeleteOrganization;
 </script>
 
 {#if estimation}

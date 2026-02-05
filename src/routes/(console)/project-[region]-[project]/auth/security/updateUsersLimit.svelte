@@ -7,29 +7,32 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Layout, Selector, Input, Badge } from '@appwrite.io/pink-svelte';
-    import { project } from '../../store';
     import { tick } from 'svelte';
+    import type { Models } from '@appwrite.io/console';
 
-    let value = $project?.authLimit !== 0 ? 'limited' : 'unlimited';
+    let {
+        project
+    }: {
+        project: Models.Project;
+    } = $props();
 
-    $: isLimited = value === 'limited';
-    let newLimit = isLimited ? $project?.authLimit : 100;
+    let maxUsersInputField: HTMLInputElement | null = $state(null);
 
-    $: btnDisabled = (function isBtnDisabled() {
-        if (
-            (!isLimited && $project?.authLimit === 0) ||
-            (isLimited && $project?.authLimit === newLimit)
-        ) {
-            return true;
-        }
+    let value = $state(project?.authLimit !== 0 ? 'limited' : 'unlimited');
+    let newLimit = $state(project?.authLimit !== 0 ? project?.authLimit : 100);
 
-        return false;
-    })();
+    const isLimited = $derived(value === 'limited');
+    const btnDisabled = $derived.by(() => {
+        return (
+            (!isLimited && project?.authLimit === 0) ||
+            (isLimited && project?.authLimit === newLimit)
+        );
+    });
 
     async function updateLimit() {
         try {
             await sdk.forConsole.projects.updateAuthLimit({
-                projectId: $project?.$id,
+                projectId: project?.$id,
                 limit: isLimited ? newLimit : 0
             });
             await invalidate(Dependencies.PROJECT);
@@ -47,13 +50,13 @@
         }
     }
 
-    let maxUsersInputField: HTMLInputElement | null = null;
-
-    $: if (isLimited && maxUsersInputField) {
-        tick().then(() => {
-            maxUsersInputField.focus();
-        });
-    }
+    $effect(() => {
+        if (isLimited && maxUsersInputField) {
+            tick().then(() => {
+                maxUsersInputField.focus();
+            });
+        }
+    });
 </script>
 
 <CardGrid>

@@ -25,9 +25,7 @@
 
     let showCreate = $state(false);
 
-    const isLimited = $derived(
-        isServiceLimited('databases', $organization?.billingPlan, data.databases.total)
-    );
+    const isLimited = $derived(isServiceLimited('databases', $organization, data.databases.total));
 
     async function handleCreate(event: CustomEvent<Models.Database>) {
         showCreate = false;
@@ -113,4 +111,4 @@
     {/if}
 </Container>
 
-<Create bind:showCreate on:created={handleCreate} />
+<Create bind:showCreate on:created={handleCreate} project={data.project} />
