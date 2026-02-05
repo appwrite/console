@@ -49,6 +49,10 @@
     let spreadsheet: SpreadSheet | null = $state(null);
     let columnDisplayNameInput: ColumnDisplayNameInput | null = $state(null);
 
+    const disableCreateDocument = $derived(
+        $noSqlDocument.isNew && ($noSqlDocument.hasDataChanged || $noSqlDocument.isDirty)
+    );
+
     function createFilterableColumns(): Column[] {
         return [
             { id: '$id', title: '$id', type: 'string' as ColumnType },
@@ -151,17 +155,30 @@
                             Import JSON
                         </Button>-->
                         {#if !$isSmallViewport}
-                            <Button
-                                secondary
-                                event="create_document"
-                                on:click={() => {
-                                    if (!$noSqlDocument.isNew) {
-                                        noSqlDocument.create(buildInitDoc());
-                                    }
-                                }}>
-                                <Icon icon={IconPlus} slot="start" size="s" />
-                                Create document
-                            </Button>
+                            <Tooltip
+                                maxWidth="210px"
+                                placement="bottom"
+                                disabled={!disableCreateDocument}>
+                                <div>
+                                    <Button
+                                        secondary
+                                        event="create_document"
+                                        disabled={disableCreateDocument}
+                                        on:click={() => {
+                                            if (disableCreateDocument) return;
+                                            if (!$noSqlDocument.isNew) {
+                                                noSqlDocument.create(buildInitDoc());
+                                            }
+                                        }}>
+                                        <Icon icon={IconPlus} slot="start" size="s" />
+                                        Create document
+                                    </Button>
+                                </div>
+
+                                <svelte:fragment slot="tooltip">
+                                    Save your current document before creating a new one
+                                </svelte:fragment>
+                            </Tooltip>
 
                             <Button
                                 icon
