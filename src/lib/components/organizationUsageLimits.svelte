@@ -260,16 +260,13 @@
     <Modal bind:show={showSelectProject} title="Manage projects" onSubmit={updateSelected}>
         <svelte:fragment slot="description">
             <Layout.Stack gap="m">
-                <Typography.Text>
-                    Choose which {freePlanLimits.projects} projects to keep.
-                </Typography.Text>
                 <Alert.Inline
-                    status="error"
-                    title="Unselected projects will be permanently deleted">
-                    All data associated with unselected projects, including databases, storage,
-                    functions, and users, will be <b>permanently deleted</b> on {toLocaleDate(
-                        $organization.billingNextInvoiceDate
-                    )}. <b>This action is irreversible</b>.
+                    status="warning"
+                    title="Select the {freePlanLimits.projects} projects you want to keep">
+                    Projects not kept, including all associated data, will be <b
+                        >permanently deleted</b>
+                    on {toLocaleDate($organization.billingNextInvoiceDate)} and cannot be recovered.
+                    This action is irreversible.
                 </Alert.Inline>
             </Layout.Stack>
         </svelte:fragment>
@@ -307,8 +304,8 @@
             <Alert.Inline
                 status="error"
                 title={`${messagePrefix} will be permanently deleted on <b>${toLocaleDate($organization.billingNextInvoiceDate)}</b>`}>
-                <b>{formatProjectsToDelete()}</b> and all associated data, including databases,
-                storage, functions, and users, will be <b>permanently deleted</b>.
+                <b>{formatProjectsToDelete()}</b> and all associated data, will be
+                <b>permanently deleted</b>.
                 <b>This action is irreversible</b>.
             </Alert.Inline>
         {/if}
