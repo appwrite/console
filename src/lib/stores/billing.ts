@@ -368,32 +368,6 @@ export function calculateTrialDay(org: Models.Organization) {
     return days;
 }
 
-export async function checkForProjectsLimit(org: Models.Organization, orgProjectCount?: number) {
-    if (!isCloud) return;
-    if (!org) return;
-
-    const plan = await sdk.forConsole.organizations.getPlan({
-        organizationId: org.$id
-    });
-    if (!plan) return;
-
-    if (!org.projects) return;
-    if (org.projects.length > 0) return;
-
-    const projectCount = orgProjectCount;
-    if (projectCount === undefined) return;
-
-    // not unlimited and current exceeds plan limits!
-    if (plan.projects > 0 && projectCount > plan.projects) {
-        headerAlert.add({
-            id: 'projectsLimitReached',
-            component: ProjectsLimit,
-            show: true,
-            importance: 12
-        });
-    }
-}
-
 export async function checkForUsageLimit(organization: Models.Organization) {
     if (
         organization?.status === teamStatusReadonly &&

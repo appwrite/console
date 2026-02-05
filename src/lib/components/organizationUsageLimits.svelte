@@ -31,45 +31,45 @@
     const baseFreePlan = getBasePlanFromGroup(BillingPlanGroup.Starter);
 
     // Derived state using runes
-    let freePlanLimits = $derived({
+    const freePlanLimits = $derived({
         projects: baseFreePlan?.projects,
         members: getServiceLimit('members', null, baseFreePlan),
         storage: getServiceLimit('storage', null, baseFreePlan)
     });
 
     // When preparing to downgrade to Free, enforce Free plan limit locally (2)
-    let allowedProjectsToKeep = $derived(freePlanLimits.projects);
+    const allowedProjectsToKeep = $derived(freePlanLimits.projects);
 
-    let currentUsage = $derived({
+    const currentUsage = $derived({
         projects: projects?.length || 0,
         members: members?.length || 0,
         storage: storageUsage || 0
     });
 
-    let storageUsageGB = $derived(storageUsage / (1024 * 1024 * 1024));
+    const storageUsageGB = $derived(storageUsage / (1024 * 1024 * 1024));
 
-    let isLimitExceeded = $derived({
+    const isLimitExceeded = $derived({
         projects: currentUsage.projects > freePlanLimits.projects,
         members: currentUsage.members > freePlanLimits.members,
         storage: storageUsageGB > freePlanLimits.storage
     });
 
-    let excessUsage = $derived({
+    const excessUsage = $derived({
         projects: Math.max(0, currentUsage.projects),
         members: Math.max(0, currentUsage.members - freePlanLimits.members),
         storage: Math.max(0, storageUsageGB - freePlanLimits.storage)
     });
 
-    // projects that would be archived with the current selection
-    let projectsToArchive = $derived(
+    // projects that would be deleted with the current selection
+    const projectsToDelete = $derived(
         projects.filter((project) => !selectedProjects.includes(project.$id))
     );
 
-    function formatProjectsToArchive(): string {
+    function formatProjectsToDelete(): string {
         let result = '';
-        projectsToArchive.forEach((project, index) => {
-            const isLast = index === projectsToArchive.length - 1;
-            const isSecondLast = index === projectsToArchive.length - 2;
+        projectsToDelete.forEach((project, index) => {
+            const isLast = index === projectsToDelete.length - 1;
+            const isSecondLast = index === projectsToDelete.length - 2;
 
             result += `${index === 0 ? '' : ' '}${project.name}`;
 
@@ -114,10 +114,12 @@
             error = `You must select exactly ${allowedProjectsToKeep} projects to keep.`;
             return;
         }
-        // Keep selection locally; parent flow will apply after plan change
+
+        // Keep selection locally;
+        // parent flow will apply after plan change
         showSelectProject = false;
         showSelectionReminder = false;
-        addNotification({ type: 'success', message: `Projects selected for archiving` });
+        addNotification({ type: 'success', message: `Projects selected for deleting` });
     }
 </script>
 
@@ -298,8 +300,8 @@
                 difference > 1 ? `${difference} projects` : `${difference} project`}
             <Alert.Inline
                 status="warning"
-                title={`${messagePrefix} will be archived on ${toLocaleDate($organization.billingNextInvoiceDate)}`}>
-                {formatProjectsToArchive()} will be archived
+                title={`${messagePrefix} will be deleted on ${toLocaleDate($organization.billingNextInvoiceDate)}`}>
+                {formatProjectsToDelete()} will be deleted
             </Alert.Inline>
         {/if}
 

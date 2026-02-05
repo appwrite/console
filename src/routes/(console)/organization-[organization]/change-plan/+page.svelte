@@ -171,7 +171,7 @@
                 paymentMethodId
             });
 
-            // 2) If the target plan has a project limit, apply selected projects now
+            // 2) If the plan has a project limit, delete excess
             const targetProjectsLimit = selectedPlan?.projects ?? 0;
             if (targetProjectsLimit > 0 && usageLimitsComponent) {
                 const selected = usageLimitsComponent.getSelectedProjects();
