@@ -12,18 +12,18 @@
     import { capitalize } from '$lib/helpers/string';
     import { queries, tags } from './store';
     import { IconX } from '@appwrite.io/pink-icons-svelte';
-    import { parsedTags } from './setFilters';
+    import { parsedTags, type ParsedTag } from './setFilters';
     import { Button } from '$lib/elements/forms';
     import type { Column } from '$lib/helpers/types';
-    import type { Writable } from 'svelte/store';
+    import { writable, type Writable } from 'svelte/store';
     import Menu from '$lib/components/menu/menu.svelte';
     import { addFilterAndApply, buildFilterCol, type FilterData } from './quickFilters';
     import QuickFilters from '$lib/components/filters/quickFilters.svelte';
 
     let {
-        columns,
+        columns = writable([]),
         analyticsSource = ''
-    }: { columns: Writable<Column[]> | undefined; analyticsSource?: string } = $props();
+    }: { columns?: Writable<Column[]>; analyticsSource?: string } = $props();
 
     function parseTagParts(tagString: string): { text: string; operator: boolean }[] {
         return tagString
@@ -41,11 +41,6 @@
             })
             .flat()
             .filter((p) => Boolean(p.text));
-    }
-
-    function firstBoldText(tagString: string): string | null {
-        const m = /\*\*(.*?)\*\*/.exec(tagString);
-        return m ? m[1] : null;
     }
 
     function getFilterFor(title: string): FilterData | null {
@@ -74,7 +69,7 @@
     let placeholderVersion = $state(0); // used to force keyed re-render when needed
 
     let activeTitles = $derived(
-        ($parsedTags || []).map((t) => firstBoldText(t.tag)).filter(Boolean) as string[]
+        ($parsedTags || []).map((t) => (t as ParsedTag).title).filter(Boolean) as string[]
     );
 
     // Compute current placeholders (major filters not already active or dismissed)
@@ -94,7 +89,7 @@
                     maxWidth="600px">
                     <CompoundTagRoot size="s">
                         {@const parts = parseTagParts(tag.tag)}
-                        {@const property = firstBoldText(tag.tag)}
+                        {@const property = (tag as ParsedTag).title}
 
                         {#each parts as part}
                             <CompoundTagChild>
@@ -183,7 +178,7 @@
                             dismiss
                             on:click={() => {
                                 const t = $tags.filter((t) =>
-                                    t.tag.includes(tag.tag.split(' ')[0])
+                                    t.tag.includes((tag as ParsedTag).title)
                                 );
                                 t.forEach((t) => (t ? queries.removeFilter(t) : null));
                                 queries.apply();

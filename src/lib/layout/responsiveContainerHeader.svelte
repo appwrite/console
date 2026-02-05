@@ -109,7 +109,7 @@
                     direction="row"
                     alignItems="center"
                     gap="m"
-                    style={`min-width: 0; flex: 1 1 auto;`}>
+                    style="min-width: 0; flex: 1 1 auto;">
                     {#if hasSearch}
                         <SearchQuery placeholder={searchPlaceholder} />
                     {/if}
@@ -119,7 +119,7 @@
                         alignItems="center"
                         gap="s"
                         wrap="wrap"
-                        style={`min-width: 0;`}>
+                        style="min-width: 0;">
                         <ParsedTagList {columns} {analyticsSource} />
                     </Layout.Stack>
                 </Layout.Stack>
@@ -127,7 +127,7 @@
                     direction="row"
                     alignItems="center"
                     justifyContent="flex-end"
-                    style={`align-self: flex-start; white-space: nowrap;`}>
+                    style="align-self: flex-start; white-space: nowrap;">
                     {#if hasDisplaySettings}
                         <ViewSelector ui="new" {view} {columns} {hideView} {hideColumns} />
                     {/if}
