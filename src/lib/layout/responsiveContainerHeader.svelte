@@ -113,15 +113,17 @@
                     {#if hasSearch}
                         <SearchQuery placeholder={searchPlaceholder} />
                     {/if}
-                    <!-- Tags with Filters button (rendered inside ParsedTagList) -->
-                    <Layout.Stack
-                        direction="row"
-                        alignItems="center"
-                        gap="s"
-                        wrap="wrap"
-                        style="min-width: 0;">
-                        <ParsedTagList {columns} {analyticsSource} />
-                    </Layout.Stack>
+                    {#if hasFilters}
+                        <!-- Tags with Filters button (rendered inside ParsedTagList) -->
+                        <Layout.Stack
+                            direction="row"
+                            alignItems="center"
+                            gap="s"
+                            wrap="wrap"
+                            style="min-width: 0;">
+                            <ParsedTagList {columns} {analyticsSource} />
+                        </Layout.Stack>
+                    {/if}
                 </Layout.Stack>
                 <Layout.Stack
                     direction="row"

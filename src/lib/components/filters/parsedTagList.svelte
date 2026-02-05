@@ -19,6 +19,7 @@
     import Menu from '$lib/components/menu/menu.svelte';
     import { addFilterAndApply, buildFilterCol, type FilterData } from './quickFilters';
     import QuickFilters from '$lib/components/filters/quickFilters.svelte';
+    import { isSmallViewport } from '$lib/stores/viewport';
 
     let {
         columns = writable([]),
@@ -254,7 +255,7 @@
             }}>Clear all</Button>
     {/if}
 
-    {#if filterCols?.length}
+    {#if filterCols?.length && !$isSmallViewport}
         <QuickFilters {columns} {analyticsSource} {filterCols} />
     {/if}
 </Layout.Stack>
