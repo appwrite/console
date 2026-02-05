@@ -23,7 +23,6 @@
         hasSearch = false,
         searchPlaceholder = 'Search by ID',
         hasFilters = false,
-        hasCustomFiltersOnly = false,
         analyticsSource = '',
         children
     }: {
@@ -34,7 +33,6 @@
         hasSearch?: boolean;
         searchPlaceholder?: string;
         hasFilters?: boolean;
-        hasCustomFiltersOnly?: boolean;
         analyticsSource?: string;
         children?: Snippet;
     } = $props();
