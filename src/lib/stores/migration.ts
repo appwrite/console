@@ -145,9 +145,7 @@ export const resourcesToMigrationForm = (resources: Resources[]): MigrationFormD
     if (resources.includes(Resources.Database)) {
         formData.databases.root = true;
     }
-    if (
-        includesAll(resources, [Resources.Table, Resources.Column, Resources.Row] as Resources[])
-    ) {
+    if (includesAll(resources, [Resources.Table, Resources.Column, Resources.Row] as Resources[])) {
         formData.databases.rows = true;
     }
     if (includesAll(resources, [Resources.Bucket, Resources.File] as Resources[])) {

@@ -2,11 +2,7 @@
     import { Alert, Accordion, Icon, Layout, Skeleton, Typography } from '@appwrite.io/pink-svelte';
     import { IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
     import { Button, InputSelect /*InputNumber*/ } from '$lib/elements/forms';
-    import {
-        showIndexesSuggestions,
-        mockSuggestions,
-        type SuggestedIndexSchema
-    } from './store';
+    import { showIndexesSuggestions, mockSuggestions, type SuggestedIndexSchema } from './store';
     import { Modal } from '$lib/components';
     import { type Entity, SideSheet } from '$database/(entity)';
     import { isSmallViewport } from '$lib/stores/viewport';
@@ -164,7 +160,8 @@
 
     function prepareIndexForCreation(index: SuggestedIndexSchema, columnMap: Map<string, number>) {
         // prepare orders array
-        const orders: OrderBy[] = index.orders !== null ? index.fields.map(() => index.orders as OrderBy) : [];
+        const orders: OrderBy[] =
+            index.orders !== null ? index.fields.map(() => index.orders as OrderBy) : [];
 
         // prepare lengths array
         let lengths: (number | null)[];

@@ -15,7 +15,13 @@
     import { writable } from 'svelte/store';
     import ProductionBranch from '$lib/components/git/productionBranchFieldset.svelte';
     import Configuration from './configuration.svelte';
-    import { ID, Runtime, TemplateReferenceType, type Models, type Scopes } from '@appwrite.io/console';
+    import {
+        ID,
+        Runtime,
+        TemplateReferenceType,
+        type Models,
+        type Scopes
+    } from '@appwrite.io/console';
     import {
         ConnectBehaviour,
         NewRepository,
