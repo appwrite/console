@@ -48,7 +48,7 @@
     let showDisplaySettingsModal = $state(false);
     let showFilters = $state(false);
 
-    let filterCols = $derived(
+    const filterCols = $derived(
         $columns.map((col) => (col.filter !== false ? buildFilterCol(col) : null)).filter(Boolean)
     );
     const filtersBadge = $derived(
