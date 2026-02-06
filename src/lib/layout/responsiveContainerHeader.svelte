@@ -51,6 +51,9 @@
     let filterCols = $derived(
         $columns.map((col) => (col.filter !== false ? buildFilterCol(col) : null)).filter(Boolean)
     );
+    let filtersBadge = $derived(
+        filtersStyle === 'dropdown' && $parsedTags?.length ? `${$parsedTags.length}` : undefined
+    );
 
     afterNavigate((p) => {
         if (!hasFilters) return;
@@ -197,9 +200,7 @@
         on:click={() => (showFilters = !showFilters)}
         text
         {icon}
-        badge={filtersStyle === 'dropdown' && $parsedTags?.length
-            ? `${$parsedTags.length}`
-            : undefined}>
+        badge={filtersBadge}>
         <Icon icon={IconFilterLine} />
     </Button>
 {/snippet}
