@@ -68,7 +68,7 @@
     let showConfig = false;
     let silentMode = false;
     let entrypoint = '';
-    let selectedScopes: string[] = [];
+    let selectedScopes: Scopes[] = [];
     let execute = true;
     let variables: Partial<Models.TemplateVariable>[] = [];
     let specification = specificationOptions[0]?.value || '';
@@ -146,7 +146,7 @@
                         timeout: data.template.timeout || undefined,
                         entrypoint: entrypoint || rt?.entrypoint || undefined,
                         commands: rt?.commands || undefined,
-                        scopes: selectedScopes?.length ? (selectedScopes as Scopes[]) : undefined,
+                        scopes: selectedScopes?.length ? selectedScopes : undefined,
                         installationId:
                             connectBehaviour === 'later' ? undefined : $installation?.$id,
                         providerRepositoryId:
