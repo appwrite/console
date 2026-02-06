@@ -1,6 +1,7 @@
 <script lang="ts">
     import { SearchQuery, ViewSelector } from '$lib/components';
     import { FiltersBottomSheet, ParsedTagList, queryParamToMap } from '$lib/components/filters';
+    import QuickFilters from '$lib/components/filters/quickFilters.svelte';
 
     import Button from '$lib/elements/forms/button.svelte';
     import { View } from '$lib/helpers/load';
@@ -23,6 +24,7 @@
         hasSearch = false,
         searchPlaceholder = 'Search by ID',
         hasFilters = false,
+        filtersStyle = 'chips',
         analyticsSource = '',
         children
     }: {
@@ -33,6 +35,7 @@
         hasSearch?: boolean;
         searchPlaceholder?: string;
         hasFilters?: boolean;
+        filtersStyle?: 'chips' | 'dropdown';
         analyticsSource?: string;
         children?: Snippet;
     } = $props();
@@ -99,28 +102,32 @@
                 {#if showSearch && hasSearch}
                     <SearchQuery placeholder={searchPlaceholder} />
                 {/if}
-                <div style="overflow-x: auto;">
-                    <ParsedTagList {columns} {analyticsSource} />
-                </div>
+                {#if hasFilters && filtersStyle === 'chips'}
+                    <div style="overflow-x: auto;">
+                        <ParsedTagList {columns} {analyticsSource} />
+                    </div>
+                {/if}
             </Layout.Stack>
         {:else}
             <Layout.Stack direction="row" justifyContent="space-between" alignItems="flex-start">
                 <Layout.Stack
                     direction="row"
-                    alignItems="center"
+                    alignItems="flex-start"
                     gap="m"
                     style="min-width: 0; flex: 1 1 auto;">
                     {#if hasSearch}
-                        <SearchQuery placeholder={searchPlaceholder} />
+                        <div style="flex: 0 0 auto; max-width: 360px; min-width: 0;">
+                            <SearchQuery placeholder={searchPlaceholder} />
+                        </div>
                     {/if}
-                    {#if hasFilters}
+                    {#if hasFilters && filtersStyle === 'chips'}
                         <!-- Tags with Filters button (rendered inside ParsedTagList) -->
                         <Layout.Stack
                             direction="row"
                             alignItems="center"
                             gap="s"
                             wrap="wrap"
-                            style="min-width: 0;">
+                            style="min-width: 0; flex: 1 1 auto;">
                             <ParsedTagList {columns} {analyticsSource} />
                         </Layout.Stack>
                     {/if}
@@ -130,6 +137,13 @@
                     alignItems="center"
                     justifyContent="flex-end"
                     style="align-self: flex-start; white-space: nowrap;">
+                    {#if hasFilters && filtersStyle === 'dropdown'}
+                        <QuickFilters
+                            {columns}
+                            {analyticsSource}
+                            buttonVariant="secondary"
+                            filterCols={filterCols.filter((f) => f?.options)} />
+                    {/if}
                     {#if hasDisplaySettings}
                         <ViewSelector ui="new" {view} {columns} {hideView} {hideColumns} />
                     {/if}
