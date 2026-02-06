@@ -5,7 +5,6 @@
     import {
         createMigrationFormStore,
         createMigrationProviderStore,
-        isVersionAtLeast,
         type MigrationFormData,
         providerResources,
         resourcesToMigrationForm
@@ -35,8 +34,6 @@
     function selectAll() {
         $formData = resourcesToMigrationForm(resources);
     }
-
-    $: version = report?.version || '0.0.0';
 
     let error = false;
     let isOpen = false;
