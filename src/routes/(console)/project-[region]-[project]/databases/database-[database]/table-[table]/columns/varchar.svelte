@@ -64,7 +64,7 @@
     }
 
     function getNewColumnBytes(s: number): number {
-        return (s * 4) + (s <= 255 ? 1 : 2);
+        return s * 4 + (s <= 255 ? 1 : 2);
     }
 
     function getProgressData(bytesUsed: number, bytesMax: number, s: number) {
@@ -93,7 +93,7 @@
     $: bytesMax = $table?.bytesMax ?? 65535;
     $: bytesUsed = $table?.bytesUsed ?? 0;
     $: newColumnBytes = getNewColumnBytes(size);
-    $: exceedsLimit = !editing && (bytesUsed + newColumnBytes) > bytesMax;
+    $: exceedsLimit = !editing && bytesUsed + newColumnBytes > bytesMax;
 
     let savedDefault = data.default;
 
@@ -139,14 +139,17 @@
             <Tooltip maxWidth="300px">
                 <Icon icon={IconInfo} size="s" />
                 <span slot="tooltip">
-                    Database rows have a maximum size of 64 KB. varchar columns use 4 bytes per character plus a small overhead. text, mediumtext, and longtext columns only use ~20 bytes regardless of content length.
+                    Database rows have a maximum size of 64 KB. varchar columns use 4 bytes per
+                    character plus a small overhead. text, mediumtext, and longtext columns only use
+                    ~20 bytes regardless of content length.
                 </span>
             </Tooltip>
         </Layout.Stack>
         <ProgressBar maxSize={bytesMax} data={getProgressData(bytesUsed, bytesMax, size)} />
         {#if exceedsLimit}
             <Typography.Text variant="m-400" color="--fgcolor-danger">
-                This column exceeds the remaining row space. Consider using text, mediumtext, or longtext instead.
+                This column exceeds the remaining row space. Consider using text, mediumtext, or
+                longtext instead.
             </Typography.Text>
         {/if}
     </Layout.Stack>
