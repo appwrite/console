@@ -10,7 +10,7 @@
     import { createEventDispatcher } from 'svelte';
     import { func } from '../store';
     import { isValueOfStringEnum } from '$lib/helpers/types';
-    import { Runtime } from '@appwrite.io/console';
+    import { Runtime, type Scopes } from '@appwrite.io/console';
 
     export let show = false;
     const functionId = page.params.function;
@@ -35,7 +35,7 @@
                 logging: $func.logging || undefined,
                 entrypoint: $func.entrypoint,
                 commands: $func.commands || undefined,
-                scopes: $func.scopes || undefined,
+                scopes: ($func.scopes as Scopes[]) || undefined,
                 installationId: '',
                 providerRepositoryId: '',
                 providerBranch: '',

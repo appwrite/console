@@ -15,7 +15,7 @@
     import { writable } from 'svelte/store';
     import ProductionBranch from '$lib/components/git/productionBranchFieldset.svelte';
     import Configuration from './configuration.svelte';
-    import { ID, Runtime, TemplateReferenceType, type Models } from '@appwrite.io/console';
+    import { ID, Runtime, TemplateReferenceType, type Models, type Scopes } from '@appwrite.io/console';
     import {
         ConnectBehaviour,
         NewRepository,
@@ -140,7 +140,7 @@
                         timeout: data.template.timeout || undefined,
                         entrypoint: entrypoint || rt?.entrypoint || undefined,
                         commands: rt?.commands || undefined,
-                        scopes: selectedScopes?.length ? selectedScopes : undefined,
+                        scopes: selectedScopes?.length ? (selectedScopes as Scopes[]) : undefined,
                         installationId:
                             connectBehaviour === 'later' ? undefined : $installation?.$id,
                         providerRepositoryId:

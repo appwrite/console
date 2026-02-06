@@ -12,7 +12,7 @@
     import { project } from '../../store';
     import Delete from './delete.svelte';
     import UpdateExpirationDate from './updateExpirationDate.svelte';
-    import type { Models } from '@appwrite.io/console';
+    import type { Models, Scopes as ScopesType } from '@appwrite.io/console';
     import { symmetricDifference } from '$lib/helpers/array';
     import Scopes from '../api-keys/scopes.svelte';
     import { InteractiveText, Layout, Typography } from '@appwrite.io/pink-svelte';
@@ -48,7 +48,7 @@
                     projectId: $project.$id,
                     keyId: key.$id,
                     name,
-                    scopes,
+                    scopes: scopes as ScopesType[],
                     expire: key.expire
                 });
             } else {
@@ -81,7 +81,7 @@
                 projectId: $project.$id,
                 keyId: key.$id,
                 name: key.name,
-                scopes,
+                scopes: scopes as ScopesType[],
                 expire: key.expire
             });
             await invalidate(Dependencies.KEY);

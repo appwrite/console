@@ -14,6 +14,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { writable } from 'svelte/store';
     import Scopes from '../api-keys/scopes.svelte';
+    import { type Scopes as ScopesType } from '@appwrite.io/console';
     import { page } from '$app/state';
     import { copy } from '$lib/helpers/copy';
 
@@ -32,7 +33,7 @@
             const { $id, secret } = await sdk.forConsole.projects.createKey({
                 projectId,
                 name,
-                scopes,
+                scopes: scopes as ScopesType[],
                 expire: expire || undefined
             });
 

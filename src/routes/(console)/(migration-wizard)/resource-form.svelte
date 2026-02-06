@@ -12,7 +12,7 @@
     } from '$lib/stores/migration';
     import { Button } from '$lib/elements/forms';
     import { wizard } from '$lib/stores/wizard';
-    import type { Models } from '@appwrite.io/console';
+    import { Resources, type Models } from '@appwrite.io/console';
     import type { sdk } from '$lib/stores/sdk';
     import ImportReport from '$routes/(console)/project-[region]-[project]/settings/migrations/(import)/importReport.svelte';
 
@@ -33,7 +33,7 @@
     }
 
     function selectAll() {
-        $formData = resourcesToMigrationForm(resources, version);
+        $formData = resourcesToMigrationForm(resources);
     }
 
     $: version = report?.version || '0.0.0';
@@ -98,14 +98,21 @@
 
     const shouldRenderGroup = (groupKey: string): boolean => {
         if (groupKey === 'functions') {
-            return resources.includes('function') && isVersionAtLeast(version, '1.4.0');
+            // Functions not in SDK Resources enum, skip
+            return false;
         }
 
         if (groupKey === 'storage') {
-            return resources.includes('bucket') && resources.includes('file');
+            return resources.includes(Resources.Bucket) && resources.includes(Resources.File);
         }
 
-        return resources.includes(groupKey.slice(0, -1));
+        // Map groupKey to Resources enum
+        const groupToResource: Record<string, Resources> = {
+            users: Resources.User,
+            databases: Resources.Database
+        };
+        const resource = groupToResource[groupKey];
+        return resource ? resources.includes(resource) : false;
     };
 
     // no typecasting in svelte context!

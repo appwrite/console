@@ -4,7 +4,7 @@
     import { Button, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { ID, type Models } from '@appwrite.io/console';
+    import { BackupServices, ID, type Models } from '@appwrite.io/console';
     import { createEventDispatcher } from 'svelte';
     import { isCloud } from '$lib/system';
     import { currentPlan } from '$lib/stores/organization';
@@ -65,7 +65,7 @@
 
             return sdk.forProject(page.params.region, page.params.project).backups.createPolicy({
                 policyId: ID.unique(),
-                services: ['databases'],
+                services: [BackupServices.Databases],
                 retention: policy.retained,
                 schedule: policy.schedule,
                 name: policy.label,

@@ -11,7 +11,7 @@
     import { Fieldset, Layout, Icon, Input, Tag } from '@appwrite.io/pink-svelte';
     import { IconGithub, IconPencil } from '@appwrite.io/pink-icons-svelte';
     import { onMount } from 'svelte';
-    import { ID, Runtime, TemplateReferenceType } from '@appwrite.io/console';
+    import { ID, Runtime, TemplateReferenceType, type Scopes } from '@appwrite.io/console';
     import { CustomId } from '$lib/components';
     import { getIconFromRuntime } from '$lib/stores/runtimes';
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
@@ -103,7 +103,7 @@
                     execute: execute ? ['any'] : undefined,
                     entrypoint: entrypoint || undefined,
                     commands: installCommand || undefined,
-                    scopes: selectedScopes?.length ? selectedScopes : undefined,
+                    scopes: selectedScopes?.length ? (selectedScopes as Scopes[]) : undefined,
                     providerSilentMode: false,
                     specification: specification || undefined
                 });
