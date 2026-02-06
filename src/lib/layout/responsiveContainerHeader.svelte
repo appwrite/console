@@ -14,7 +14,7 @@
     import DisplaySettingsModal from './displaySettingsModal.svelte';
     import { buildFilterCol } from '$lib/components/filters/quickFilters';
     import { afterNavigate } from '$app/navigation';
-    import { setFilters } from '$lib/components/filters/setFilters';
+    import { parsedTags, setFilters } from '$lib/components/filters/setFilters';
 
     let {
         columns,
@@ -48,8 +48,11 @@
     let showDisplaySettingsModal = $state(false);
     let showFilters = $state(false);
 
-    let filterCols = $derived(
+    const filterCols = $derived(
         $columns.map((col) => (col.filter !== false ? buildFilterCol(col) : null)).filter(Boolean)
+    );
+    const filtersBadge = $derived(
+        filtersStyle === 'dropdown' && $parsedTags?.length ? `${$parsedTags.length}` : undefined
     );
 
     afterNavigate((p) => {
@@ -192,7 +195,12 @@
 {/snippet}
 
 {#snippet filtersButton(icon = false)}
-    <Button ariaLabel="Filters" on:click={() => (showFilters = !showFilters)} text {icon}>
+    <Button
+        ariaLabel="Filters"
+        on:click={() => (showFilters = !showFilters)}
+        text
+        {icon}
+        badge={filtersBadge}>
         <Icon icon={IconFilterLine} />
     </Button>
 {/snippet}
