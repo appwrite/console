@@ -16,10 +16,10 @@
     import { Link } from '$lib/elements';
 
     const functionId = page.params.function;
-    let functionScopes: string[] = null;
+    let functionScopes: ScopesType[] = null;
 
     onMount(async () => {
-        functionScopes ??= $func.scopes;
+        functionScopes ??= $func.scopes as ScopesType[];
     });
 
     async function updateScopes() {
@@ -39,7 +39,7 @@
                 logging: $func.logging || undefined,
                 entrypoint: $func.entrypoint || undefined,
                 commands: $func.commands || undefined,
-                scopes: (functionScopes as ScopesType[]) || undefined,
+                scopes: functionScopes || undefined,
                 installationId: $func.installationId || undefined,
                 providerRepositoryId: $func.providerRepositoryId || undefined,
                 providerBranch: $func.providerBranch || undefined,

@@ -22,7 +22,7 @@
     export let keyType: 'api' | 'dev' = 'api';
 
     let name: string = null;
-    let scopes: string[] = null;
+    let scopes: ScopesType[] = null;
 
     let showDelete = false;
     const isApiKey = keyType === 'api';
@@ -33,7 +33,7 @@
     onMount(() => {
         name ??= key.name;
         if (isApiKey) {
-            scopes ??= (key as Models.Key).scopes;
+            scopes ??= (key as Models.Key).scopes as ScopesType[];
         }
     });
 
@@ -48,7 +48,7 @@
                     projectId: $project.$id,
                     keyId: key.$id,
                     name,
-                    scopes: scopes as ScopesType[],
+                    scopes,
                     expire: key.expire
                 });
             } else {
@@ -81,7 +81,7 @@
                 projectId: $project.$id,
                 keyId: key.$id,
                 name: key.name,
-                scopes: scopes as ScopesType[],
+                scopes,
                 expire: key.expire
             });
             await invalidate(Dependencies.KEY);

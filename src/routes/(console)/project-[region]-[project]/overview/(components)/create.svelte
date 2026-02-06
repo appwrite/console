@@ -24,7 +24,7 @@
     let formComponent: Form;
     let isSubmitting = writable(false);
 
-    let scopes: string[] = [];
+    let scopes: ScopesType[] = [];
     let name = '';
     let expire: string | null = null;
 
@@ -33,7 +33,7 @@
             const { $id, secret } = await sdk.forConsole.projects.createKey({
                 projectId,
                 name,
-                scopes: scopes as ScopesType[],
+                scopes,
                 expire: expire || undefined
             });
 

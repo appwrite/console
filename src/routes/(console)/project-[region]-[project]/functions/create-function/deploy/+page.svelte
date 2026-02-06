@@ -39,7 +39,7 @@
     let specification = $state('');
     let runtime = $state<Runtime>();
     let installCommand = $state('');
-    let selectedScopes = $state<string[]>([]);
+    let selectedScopes = $state<Scopes[]>([]);
     let rootDir = $state(data.repository?.rootDirectory);
     let variables = $state<Array<{ key: string; value: string; secret: boolean }>>([]);
 
@@ -103,7 +103,7 @@
                     execute: execute ? ['any'] : undefined,
                     entrypoint: entrypoint || undefined,
                     commands: installCommand || undefined,
-                    scopes: selectedScopes?.length ? (selectedScopes as Scopes[]) : undefined,
+                    scopes: selectedScopes?.length ? selectedScopes : undefined,
                     providerSilentMode: false,
                     specification: specification || undefined
                 });
