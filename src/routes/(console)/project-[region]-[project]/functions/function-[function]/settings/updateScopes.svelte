@@ -39,7 +39,7 @@
                 logging: $func.logging || undefined,
                 entrypoint: $func.entrypoint || undefined,
                 commands: $func.commands || undefined,
-                scopes: functionScopes as ScopesType[],
+                scopes: (functionScopes as ScopesType[]) || undefined,
                 installationId: $func.installationId || undefined,
                 providerRepositoryId: $func.providerRepositoryId || undefined,
                 providerBranch: $func.providerBranch || undefined,

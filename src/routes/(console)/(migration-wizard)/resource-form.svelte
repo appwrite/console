@@ -132,14 +132,6 @@
 </script>
 
 <Layout.Stack gap="l">
-    {#if report && !isVersionAtLeast(version, '1.4.0') && $provider.provider === 'appwrite'}
-        <Alert.Inline status="warning">
-            <svelte:fragment slot="title">Functions not available for import</svelte:fragment>
-            To migrate your functions, update the version of the Appwrite instance you're importing from
-            to a version newer than 1.4
-        </Alert.Inline>
-    {/if}
-
     {#if error}
         <Alert.Inline status="error" title="Couldn’t load resources">
             {#if migrationType === 'provider'}
