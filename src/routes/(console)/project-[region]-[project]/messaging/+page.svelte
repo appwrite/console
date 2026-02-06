@@ -138,7 +138,7 @@
         hasSearch
         hasFilters
         filtersStyle="dropdown"
-        bind:view={data.view}
+        view={data.view}
         analyticsSource="messaging_messages"
         searchPlaceholder="Search by description, type, status, or ID">
         {#if $canWriteMessages}
