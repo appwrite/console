@@ -27,6 +27,10 @@
         | Models.ColumnInteger
         | Models.ColumnIp
         | Models.ColumnString
+        | Models.ColumnText
+        | Models.ColumnMediumtext
+        | Models.ColumnLongtext
+        | Models.ColumnVarchar
         | Models.ColumnDatetime
         | Models.ColumnUrl
         | Models.ColumnPoint
@@ -35,6 +39,10 @@
 
     const columnsTypeMap = {
         string: String,
+        varchar: String,
+        text: String,
+        mediumtext: String,
+        longtext: String,
         integer: Integer,
         double: Integer,
         boolean: Boolean,

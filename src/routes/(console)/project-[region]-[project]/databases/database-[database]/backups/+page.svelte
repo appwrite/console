@@ -17,7 +17,7 @@
     import { onMount } from 'svelte';
     import { feedback } from '$lib/stores/feedback';
     import { cronExpression, type UserBackupPolicy } from '$lib/helpers/backups';
-    import { ID } from '@appwrite.io/console';
+    import { BackupServices, ID } from '@appwrite.io/console';
     import { showCreateBackup, showCreatePolicy } from './store';
     import { getProjectId } from '$lib/helpers/project';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
@@ -68,7 +68,7 @@
     const createManualBackup = async () => {
         try {
             await sdk.forProject(page.params.region, page.params.project).backups.createArchive({
-                services: ['databases'],
+                services: [BackupServices.Databases],
                 resourceId: data.database.$id
             });
             await invalidate(Dependencies.BACKUPS);
@@ -123,7 +123,7 @@
 
             return sdk.forProject(page.params.region, page.params.project).backups.createPolicy({
                 policyId: ID.unique(),
-                services: ['databases'],
+                services: [BackupServices.Databases],
                 retention: policy.retained,
                 schedule: policy.schedule,
                 name: policy.label,

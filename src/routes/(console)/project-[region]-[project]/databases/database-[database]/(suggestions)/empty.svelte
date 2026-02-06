@@ -1504,7 +1504,7 @@
                                                     id="type"
                                                     required
                                                     label="Type"
-                                                    value={selectedOption?.name || 'String'}
+                                                    value={selectedOption?.name || 'Text'}
                                                     on:change={(e) => {
                                                         const newOption = columnOptions.find(
                                                             (opt) => opt.name === e.detail

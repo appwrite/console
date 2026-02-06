@@ -15,7 +15,13 @@
     import { writable } from 'svelte/store';
     import ProductionBranch from '$lib/components/git/productionBranchFieldset.svelte';
     import Configuration from './configuration.svelte';
-    import { ID, Runtime, TemplateReferenceType, type Models } from '@appwrite.io/console';
+    import {
+        ID,
+        Runtime,
+        TemplateReferenceType,
+        type Models,
+        type Scopes
+    } from '@appwrite.io/console';
     import {
         ConnectBehaviour,
         NewRepository,
@@ -62,7 +68,7 @@
     let showConfig = false;
     let silentMode = false;
     let entrypoint = '';
-    let selectedScopes: string[] = [];
+    let selectedScopes: Scopes[] = [];
     let execute = true;
     let variables: Partial<Models.TemplateVariable>[] = [];
     let specification = specificationOptions[0]?.value || '';

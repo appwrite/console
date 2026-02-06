@@ -183,7 +183,8 @@ function generateValueForField(
 
 function generateSingleValue(field: Field): string | number | boolean | NestedNumberArray | null {
     switch (field.type) {
-        case 'string': {
+        case 'string':
+        case 'varchar': {
             if ('format' in field && field.format) {
                 switch (field.format) {
                     case 'email': {
@@ -212,6 +213,21 @@ function generateSingleValue(field: Field): string | number | boolean | NestedNu
                 const maxLength = Math.min(stringAttr.size ?? 255, 1000);
                 return generateStringValue(field.key, maxLength);
             }
+        }
+
+        case 'text': {
+            // TEXT type max size is 16,383 characters (utf8mb4)
+            return generateStringValue(field.key, 1000);
+        }
+
+        case 'mediumtext': {
+            // MEDIUMTEXT type max size is 4,194,303 characters (utf8mb4)
+            return generateStringValue(field.key, 1000);
+        }
+
+        case 'longtext': {
+            // LONGTEXT type max size is 1,073,741,823 characters (utf8mb4)
+            return generateStringValue(field.key, 1000);
         }
 
         case 'integer': {

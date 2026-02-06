@@ -14,6 +14,10 @@ export type Columns =
     | Models.ColumnInteger
     | Models.ColumnIp
     | Models.ColumnString
+    | Models.ColumnText
+    | Models.ColumnMediumtext
+    | Models.ColumnLongtext
+    | Models.ColumnVarchar
     | Models.ColumnUrl
     | Models.ColumnPoint
     | Models.ColumnLine

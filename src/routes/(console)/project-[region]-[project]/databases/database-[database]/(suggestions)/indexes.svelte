@@ -2,16 +2,11 @@
     import { Alert, Accordion, Icon, Layout, Skeleton, Typography } from '@appwrite.io/pink-svelte';
     import { IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
     import { Button, InputSelect /*InputNumber*/ } from '$lib/elements/forms';
-    import {
-        showIndexesSuggestions,
-        IndexOrder,
-        mockSuggestions,
-        type SuggestedIndexSchema
-    } from './store';
+    import { showIndexesSuggestions, mockSuggestions, type SuggestedIndexSchema } from './store';
     import { Modal } from '$lib/components';
     import { type Entity, SideSheet } from '$database/(entity)';
     import { isSmallViewport } from '$lib/stores/viewport';
-    import { IndexType } from '@appwrite.io/console';
+    import { IndexType, OrderBy } from '@appwrite.io/console';
     import { capitalize } from '$lib/helpers/string';
     import { type Columns } from '../table-[table]/store';
     import { isRelationship } from '../table-[table]/rows/store';
@@ -74,7 +69,7 @@
                 key: column.name,
                 type: IndexType.Key,
                 fields: [column.name],
-                orders: index === 2 ? IndexOrder.DESC : IndexOrder.ASC,
+                orders: index === 2 ? OrderBy.Desc : OrderBy.Asc,
                 lengths: []
             }));
         } else {
@@ -90,7 +85,7 @@
                     return {
                         key: index.columns[0],
                         type: index.type as IndexType,
-                        orders: (index.orders?.[0] as IndexOrder) || IndexOrder.ASC,
+                        orders: (index.orders?.[0] as OrderBy) || OrderBy.Asc,
                         fields: index.columns,
                         lengths: index.lengths ?? []
                     };
@@ -118,7 +113,7 @@
             indexes.push({
                 key: '',
                 type: IndexType.Key,
-                orders: IndexOrder.ASC,
+                orders: OrderBy.Asc,
                 fields: [],
                 lengths: null
             });
@@ -139,11 +134,11 @@
     }
 
     function getOrderOptions(selectedType: IndexType) {
-        const base = [IndexOrder.ASC, IndexOrder.DESC];
-        const values = selectedType === IndexType.Spatial ? [...base, IndexOrder.NONE] : base;
+        const base = [OrderBy.Asc, OrderBy.Desc];
+        const values = selectedType === IndexType.Spatial ? [...base, null] : base;
 
         return values.map((order) => ({
-            label: capitalize(String(order)),
+            label: order ? capitalize(String(order)) : 'None',
             value: order
         }));
     }
@@ -165,7 +160,8 @@
 
     function prepareIndexForCreation(index: SuggestedIndexSchema, columnMap: Map<string, number>) {
         // prepare orders array
-        const orders = index.orders !== null ? index.fields.map(() => String(index.orders)) : [];
+        const orders: OrderBy[] =
+            index.orders !== null ? index.fields.map(() => index.orders as OrderBy) : [];
 
         // prepare lengths array
         let lengths: (number | null)[];
@@ -222,7 +218,10 @@
         const usedKeys = new Set<string>();
         const columnMap: Map<string, number> = new Map(
             table.fields
-                .filter((field) => field.type === 'string' && 'size' in field)
+                .filter(
+                    (field) =>
+                        (field.type === 'string' || field.type === 'varchar') && 'size' in field
+                )
                 .map((field) => [field.key, field['size']])
         );
 
