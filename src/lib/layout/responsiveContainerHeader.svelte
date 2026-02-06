@@ -51,7 +51,7 @@
     let filterCols = $derived(
         $columns.map((col) => (col.filter !== false ? buildFilterCol(col) : null)).filter(Boolean)
     );
-    let filtersBadge = $derived(
+    const filtersBadge = $derived(
         filtersStyle === 'dropdown' && $parsedTags?.length ? `${$parsedTags.length}` : undefined
     );
 
