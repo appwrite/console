@@ -61,7 +61,6 @@
         const localQueries = queryParamToMap(paramQueries || '[]');
         const localTags = Array.from(localQueries.keys());
         setFilters(localTags, filterCols, $columns);
-        filterCols = filterCols;
     });
 </script>
 
