@@ -53,7 +53,7 @@ export function createValueUnitPair<T = string>(initialValue = 0, units: Unit<T>
             }
 
             const unitInBase = v * prevUnit.value;
-            return unitInBase / newUnit.value;
+            return Math.round(unitInBase / newUnit.value);
         });
     });
     return {

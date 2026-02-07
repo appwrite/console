@@ -19,9 +19,7 @@
     const options = units.map((v) => ({ label: v.name, value: v.name }));
     $: selectedUnit = $unit;
 
-    const maxValue = function formMaxFileSize() {
-        return (service * 1000 * 1000) / units.find((unit) => unit.name === selectedUnit).value;
-    };
+    $: maxValue = (service * 1000 * 1000) / units.find((unit) => unit.name === selectedUnit).value;
 
     function updateMaxSize() {
         updateBucket(
@@ -80,7 +78,7 @@
                 disabled={$readOnly && !GRACE_PERIOD_OVERRIDE}
                 placeholder={bucket.maximumFileSize.toString()}
                 min={0}
-                max={isCloud ? maxValue() : Infinity}
+                max={isCloud ? maxValue : Infinity}
                 bind:value={$value} />
             <InputSelect required id="bytes" label="Bytes" {options} bind:value={$unit} />
         </svelte:fragment>
