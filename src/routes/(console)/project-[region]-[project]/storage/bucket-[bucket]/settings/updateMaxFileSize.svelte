@@ -21,11 +21,13 @@
 
     $: maxValue = (service * 1000 * 1000) / units.find((unit) => unit.name === selectedUnit).value;
 
+    $: step = $unit === 'Gigabytes' ? 0.01 : 1;
+
     function updateMaxSize() {
         updateBucket(
             bucket,
             {
-                maximumFileSize: $baseValue
+                maximumFileSize: Math.round($baseValue)
             },
             {
                 trackEventName: Submit.BucketUpdateSize,
@@ -78,6 +80,7 @@
                 disabled={$readOnly && !GRACE_PERIOD_OVERRIDE}
                 placeholder={bucket.maximumFileSize.toString()}
                 min={0}
+                {step}
                 max={isCloud ? maxValue : Infinity}
                 bind:value={$value} />
             <InputSelect required id="bytes" label="Bytes" {options} bind:value={$unit} />
