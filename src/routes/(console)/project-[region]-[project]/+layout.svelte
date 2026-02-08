@@ -27,9 +27,9 @@
     import CsvImportBox from '$lib/components/csvImportBox.svelte';
     import { isCloud } from '$lib/system';
     import PausedProjectModal from './pausedProjectModal.svelte';
+    import type { LayoutData } from './$types';
 
-    let showPausedModal: boolean;
-    $: showPausedModal = isCloud && $project?.status === 'paused';
+    export let data: LayoutData;
 
     onMount(() => {
         return realtime.forProject(page.params.region, ['project', 'console'], (response) => {
@@ -119,8 +119,8 @@
 
 <slot />
 
-{#if isCloud}
-    <PausedProjectModal bind:show={showPausedModal} projectId={$project.$id} />
+{#if isCloud && data.project?.status === 'paused'}
+    <PausedProjectModal show={true} projectId={data.project.$id} />
 {/if}
 
 <div class="layout-level-progress-bars">
