@@ -29,6 +29,7 @@
         IconAndroid,
         IconApple,
         IconCode,
+        IconExclamationCircle,
         IconFlutter,
         IconPlus,
         IconReact,
@@ -272,7 +273,12 @@
                     </svelte:fragment>
 
                     <svelte:fragment slot="status">
-                        {#if isSetToArchive(project)}
+                        {#if project.status === 'paused'}
+                            <Tag size="s" style="white-space: nowrap;">
+                                <Icon icon={IconExclamationCircle} size="s" slot="start" />
+                                Paused
+                            </Tag>
+                        {:else if isSetToArchive(project)}
                             <Tag
                                 size="s"
                                 style="white-space: nowrap;"
