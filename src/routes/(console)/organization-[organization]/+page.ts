@@ -30,7 +30,7 @@ export const load: PageLoad = async ({ params, url, route, depends, parent }) =>
         : [];
     const commonQueries = [Query.equal('teamId', params.organization)];
     const activeQueries = isCloud
-        ? [Query.or([Query.equal('status', 'active'), Query.isNull('status')])]
+        ? [Query.or([Query.equal('status', ['active', 'paused']), Query.isNull('status')])]
         : [];
 
     const [activeProjects, archivedProjects, activeTotal, archivedTotal] = await Promise.all([
