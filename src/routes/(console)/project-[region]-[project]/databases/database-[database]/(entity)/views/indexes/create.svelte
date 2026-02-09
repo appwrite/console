@@ -1,10 +1,11 @@
 <script module lang="ts">
+    import { IndexType, OrderBy } from '@appwrite.io/console';
     export type CreateIndexesCallbackType = {
         key: string;
         type: IndexType;
         fields: string[];
         lengths: (number | null)[];
-        orders: string[];
+        orders: OrderBy[];
     };
 </script>
 
@@ -22,9 +23,7 @@
     import { isSmallViewport } from '$lib/stores/viewport';
     import { type Entity, getTerminologies } from '$database/(entity)';
     import { resolveRoute, withPath } from '$lib/stores/navigation';
-    import { IndexType } from '@appwrite.io/console';
     import { columnOptions as baseColumnOptions } from '$database/table-[table]/columns/store';
-    import { IndexOrder } from '$database/(suggestions)';
 
     let {
         entity,
@@ -63,7 +62,7 @@
 
     let fieldList: Array<{
         value: string;
-        order: IndexOrder | null;
+        order: OrderBy | null;
         length: number | null;
     }> = $state([{ value: '', order: null, length: null }]);
 
@@ -78,13 +77,13 @@
     let orderOptions = $derived.by(() =>
         selectedType === IndexType.Spatial
             ? [
-                  { value: 'ASC', label: 'ASC' },
-                  { value: 'DESC', label: 'DESC' },
+                  { value: OrderBy.Asc, label: 'ASC' },
+                  { value: OrderBy.Desc, label: 'DESC' },
                   { value: null, label: 'NONE' }
               ]
             : [
-                  { value: 'ASC', label: 'ASC' },
-                  { value: 'DESC', label: 'DESC' }
+                  { value: OrderBy.Asc, label: 'ASC' },
+                  { value: OrderBy.Desc, label: 'DESC' }
               ]
     );
 
@@ -111,7 +110,7 @@
     function initialize() {
         const field = entity.fields.filter((field) => externalFieldKey === field.key);
         const isSpatial = field.length && isSpatialType(field[0]);
-        const order = isSpatial ? null : IndexOrder.ASC;
+        const order = isSpatial ? null : OrderBy.Asc;
 
         selectedType = isSpatial ? IndexType.Spatial : IndexType.Key;
 
@@ -165,8 +164,7 @@
         try {
             const orders = fieldList
                 .map((field) => field.order)
-                .filter((order: IndexOrder) => order !== null)
-                .map((order) => String(order));
+                .filter((order): order is OrderBy => order !== null);
 
             await onCreateIndex({
                 key,

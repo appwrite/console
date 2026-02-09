@@ -18,6 +18,10 @@ export type Columns =
     | Models.ColumnInteger
     | Models.ColumnIp
     | Models.ColumnString
+    | Models.ColumnText
+    | Models.ColumnMediumtext
+    | Models.ColumnLongtext
+    | Models.ColumnVarchar
     | Models.ColumnUrl
     | Models.ColumnPoint
     | Models.ColumnLine
@@ -32,6 +36,10 @@ export type Attributes =
     | Models.AttributeInteger
     | Models.AttributeIp
     | Models.AttributeString
+    | Models.AttributeText
+    | Models.AttributeMediumtext
+    | Models.AttributeLongtext
+    | Models.AttributeVarchar
     | Models.AttributeUrl
     | Models.AttributePoint
     | Models.AttributeLine

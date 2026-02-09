@@ -9,7 +9,7 @@
     import { columns } from './store';
     import Table from './table.svelte';
     import type { PageProps } from './$types';
-    import { Icon } from '@appwrite.io/pink-svelte';
+    import { Icon, Tooltip } from '@appwrite.io/pink-svelte';
     import { registerCommands } from '$lib/commandCenter';
     import { canWriteDatabases } from '$lib/stores/roles';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
@@ -97,10 +97,20 @@
         bind:view={data.view}
         searchPlaceholder="Search by name or ID">
         {#if $canWriteDatabases}
-            <Button event="create_database" on:click={goToCreateDatabaseWizard}>
-                <Icon icon={IconPlus} slot="start" size="s" />
-                Create database
-            </Button>
+            <Tooltip disabled={!isLimited}>
+                <div>
+                    <Button
+                        disabled={isLimited}
+                        event="create_database"
+                        on:click={goToCreateDatabaseWizard}>
+                        <Icon icon={IconPlus} slot="start" size="s" />
+                        Create database
+                    </Button>
+                </div>
+                <svelte:fragment slot="tooltip">
+                    You have reached the maximum number of databases for your plan.
+                </svelte:fragment>
+            </Tooltip>
         {/if}
     </ResponsiveContainerHeader>
 {/snippet}

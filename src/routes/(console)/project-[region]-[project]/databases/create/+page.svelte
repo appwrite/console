@@ -8,7 +8,7 @@
     import { CustomId } from '$lib/components';
     import { page } from '$app/state';
     import { addNotification } from '$lib/stores/notifications';
-    import { ID, type Models } from '@appwrite.io/console';
+    import { BackupServices, ID, type Models } from '@appwrite.io/console';
     import { type DatabaseType, useDatabaseSdk } from '$database/(entity)';
     import { isCloud } from '$lib/system';
     import { getChangePlanUrl } from '$lib/stores/billing';
@@ -104,7 +104,7 @@
 
             return sdk.forProject(page.params.region, page.params.project).backups.createPolicy({
                 policyId: ID.unique(),
-                services: ['databases'],
+                services: [BackupServices.Databases],
                 retention: policy.retained,
                 schedule: policy.schedule,
                 name: policy.label,

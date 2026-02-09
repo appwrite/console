@@ -7,6 +7,10 @@ import Float, { submitFloat, updateFloat } from './float.svelte';
 import Integer, { submitInteger, updateInteger } from './integer.svelte';
 import Ip, { submitIp, updateIp } from './ip.svelte';
 import String, { submitString, updateString } from './string.svelte';
+import Varchar, { submitVarchar, updateVarchar } from './varchar.svelte';
+import Text, { submitText, updateText } from './text.svelte';
+import Mediumtext, { submitMediumtext, updateMediumtext } from './mediumtext.svelte';
+import Longtext, { submitLongtext, updateLongtext } from './longtext.svelte';
 import Url, { submitUrl, updateUrl } from './url.svelte';
 import Datetime, { submitDatetime, updateDatetime } from './datetime.svelte';
 import Point, { submitPoint, updatePoint } from './point.svelte';
@@ -32,7 +36,10 @@ import type { ComponentType } from 'svelte';
 
 export type Option = {
     name:
-        | 'String'
+        | 'Text'
+        | 'Mediumtext'
+        | 'Longtext'
+        | 'Varchar'
         | 'Integer'
         | 'Float'
         | 'Boolean'
@@ -44,11 +51,16 @@ export type Option = {
         | 'Relationship'
         | 'Point'
         | 'Line'
-        | 'Polygon';
+        | 'Polygon'
+        | 'String (deprecated)';
     sentenceName: string;
     component: Component;
     type:
         | 'string'
+        | 'text'
+        | 'mediumtext'
+        | 'longtext'
+        | 'varchar'
         | 'integer'
         | 'double'
         | 'boolean'
@@ -75,12 +87,39 @@ export type Option = {
 
 export const columnOptions: Option[] = [
     {
-        name: 'String',
-        sentenceName: 'string',
-        component: String,
-        type: 'string',
-        create: submitString,
-        update: updateString,
+        name: 'Text',
+        sentenceName: 'text',
+        component: Text,
+        type: 'text',
+        create: submitText,
+        update: updateText,
+        icon: IconText
+    },
+    {
+        name: 'Mediumtext',
+        sentenceName: 'mediumtext',
+        component: Mediumtext,
+        type: 'mediumtext',
+        create: submitMediumtext,
+        update: updateMediumtext,
+        icon: IconText
+    },
+    {
+        name: 'Longtext',
+        sentenceName: 'longtext',
+        component: Longtext,
+        type: 'longtext',
+        create: submitLongtext,
+        update: updateLongtext,
+        icon: IconText
+    },
+    {
+        name: 'Varchar',
+        sentenceName: 'varchar',
+        component: Varchar,
+        type: 'varchar',
+        create: submitVarchar,
+        update: updateVarchar,
         icon: IconText
     },
     {
@@ -194,6 +233,15 @@ export const columnOptions: Option[] = [
         create: submitRelationship,
         update: updateRelationship,
         icon: IconRelationship
+    },
+    {
+        name: 'String (deprecated)',
+        sentenceName: 'string',
+        component: String,
+        type: 'string',
+        create: submitString,
+        update: updateString,
+        icon: IconText
     }
 ];
 

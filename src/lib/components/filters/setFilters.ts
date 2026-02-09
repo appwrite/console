@@ -11,11 +11,13 @@ export const parsedTags = writable<ParsedTag[]>([]);
 
 export function setFilters(localTags: TagValue[], filterCols: FilterData[], $columns: Column[]) {
     if (!localTags?.length) {
+        parsedTags.set([]);
         filterCols.forEach((filter) => {
             resetOptions(filter);
             cleanOldTags(filter?.title);
         });
     } else {
+        parsedTags.set([]);
         filterCols.forEach((filter) => {
             const id = filter?.id?.toLowerCase();
             if (id?.includes('duration')) {

@@ -29,6 +29,12 @@ export function isString(field: Field): field is Models.ColumnString | Models.At
     return field?.type === 'string';
 }
 
+export function isTextType(field: Field): boolean {
+    if (!field) return false;
+    const textTypes = ['string', 'varchar', 'text', 'mediumtext', 'longtext'];
+    return textTypes.includes(field?.type);
+}
+
 export function isSpatialType(
     field: Columns | Attributes | Column
 ): field is

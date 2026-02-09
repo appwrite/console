@@ -10,7 +10,13 @@
     import { sortBranches } from '$lib/stores/vcs';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { LabelCard } from '$lib/components';
-    import { type Models, ProxyResourceType, Runtime, StatusCode } from '@appwrite.io/console';
+    import {
+        type Models,
+        ProxyResourceType,
+        Runtime,
+        StatusCode,
+        type Scopes
+    } from '@appwrite.io/console';
     import { statusCodeOptions } from '$lib/stores/domains';
     import { writable } from 'svelte/store';
     import { onMount } from 'svelte';
@@ -138,7 +144,7 @@
                 logging: data.func.logging || undefined,
                 entrypoint: data.func.entrypoint,
                 commands: data.func.commands || undefined,
-                scopes: data.func.scopes || undefined,
+                scopes: (data.func.scopes as Scopes[]) || undefined,
                 installationId: selectedInstallationId,
                 providerRepositoryId: selectedRepository,
                 providerBranch: 'main'

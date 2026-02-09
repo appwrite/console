@@ -155,11 +155,17 @@
     }
 
     async function trackDowngradeFeedback() {
+        const selectedReason = feedbackDowngradeOptions.find(
+            (option) => option.value === feedbackDowngradeReason
+        )?.label;
+
+        const defaultReason = feedbackDowngradeOptions.find(
+            (option) => option.value === 'other'
+        )?.label;
+
         await sdk.forConsole.organizations.createDowngradeFeedback({
             organizationId: data.organization.$id,
-            reason: feedbackDowngradeOptions.find(
-                (option) => option.value === feedbackDowngradeReason
-            )?.label,
+            reason: selectedReason ?? defaultReason,
             message: feedbackMessage ?? '',
             fromPlanId: data.organization.billingPlanId,
             toPlanId: selectedPlan.$id
