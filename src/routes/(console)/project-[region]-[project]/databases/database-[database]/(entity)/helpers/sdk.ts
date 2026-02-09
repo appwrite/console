@@ -13,7 +13,7 @@ import {
     toSupportiveIndex
 } from './terminology';
 
-import type { IndexType, Models } from '@appwrite.io/console';
+import type { IndexType, Models, OrderBy } from '@appwrite.io/console';
 
 export type DatabaseSdkResult = {
     create: (
@@ -90,7 +90,7 @@ export type DatabaseSdkResult = {
         type: IndexType;
         attributes: string[];
         lengths?: number[];
-        orders?: string[];
+        orders?: OrderBy[];
         databaseType?: DatabaseType;
     }) => Promise<Index>;
 };

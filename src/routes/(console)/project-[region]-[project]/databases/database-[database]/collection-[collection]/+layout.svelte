@@ -64,6 +64,7 @@
     } from '$database/(suggestions)';
     import { VARS } from '$lib/system';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import type { OrderBy } from '@appwrite.io/console';
 
     export let data: LayoutData;
 
@@ -213,7 +214,7 @@
             type: index.type,
             attributes: index.fields,
             lengths: index.lengths,
-            orders: index.orders
+            orders: index.orders as OrderBy[] /* TODO: @itznotabug: needs to be fixed at SDK level */
         });
 
         await invalidate(Dependencies.COLLECTION);
