@@ -211,9 +211,8 @@
             <Layout.Stack direction="row" gap="s" justifyContent="flex-end">
                 <Button text on:click={() => resetSampleFieldsConfig()}>Cancel</Button>
                 <Button
-                    on:click={() => {
-                        $randomDataModalState.onSubmit?.();
-                        $randomDataModalState.show = false;
+                    on:click={async () => {
+                        await $randomDataModalState.onSubmit?.();
                         resetSampleFieldsConfig();
                     }}>Create</Button>
             </Layout.Stack>
