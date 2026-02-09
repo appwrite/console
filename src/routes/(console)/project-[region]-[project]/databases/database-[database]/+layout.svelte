@@ -214,6 +214,7 @@
                     on:click={() => {
                         $randomDataModalState.onSubmit?.();
                         $randomDataModalState.show = false;
+                        resetSampleFieldsConfig();
                     }}>Create</Button>
             </Layout.Stack>
         </svelte:fragment>
