@@ -981,7 +981,7 @@
                 }}>Discard changes</Button.Button>
         </svelte:fragment>
 
-        <p>You have unsaved changes that haven't been saved.</p>
+        <p>You have changes that haven't been saved.</p>
     </Confirm>
 {/if}
 
