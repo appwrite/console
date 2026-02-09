@@ -10,7 +10,7 @@
     export let maxSize: $$Props['maxSize'];
 
     /**
-     * Hides empty segments where size is < 0;
+     * Hides empty segments where size is <= 0;
      */
     export let hideEmptySegments: $$Props['hideEmptySegments'] = false;
 
