@@ -21,7 +21,10 @@
         return {
             name: table.name,
             tableId: page.params.table,
-            databaseId: page.params.database
+            databaseId: page.params.database,
+            rowSecurity: table.recordSecurity,
+            enabled: table.enabled,
+            permissions: table.$permissions
         };
     });
 
