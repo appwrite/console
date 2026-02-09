@@ -11,6 +11,65 @@ import { Range, RangeSet, RangeSetBuilder, StateField, type Extension } from '@c
 import { forEachDiagnostic, setDiagnosticsEffect } from '@codemirror/lint';
 import { NESTED_KEY_REGEX } from '../helpers/constants';
 
+const SYSTEM_FIELDS = ['$id', '$createdAt', '$updatedAt'] as const;
+
+function escapeRegExp(source: string): string {
+    return source.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+// Match a system field key at the start of a line, either quoted ("$id") or unquoted ($id).
+const SYSTEM_FIELDS_SOURCE = SYSTEM_FIELDS.map(escapeRegExp).join('|');
+const SYSTEM_FIELD_KEY_LINE_PATTERN = new RegExp(
+    `^\\s*("(?:${SYSTEM_FIELDS_SOURCE})"|(?:${SYSTEM_FIELDS_SOURCE}))\\s*:`
+);
+
+function skipInlineWhitespace(text: string, from: number): number {
+    let i = from;
+    while (i < text.length) {
+        const ch = text[i];
+        // Don't cross lines; values for the system fields we style are expected to be on the same line.
+        if (ch !== ' ' && ch !== '\t') break;
+        i += 1;
+    }
+    return i;
+}
+
+function findSingleLineValueEnd(text: string, from: number): number {
+    if (from >= text.length) return from;
+
+    const quote = text[from];
+    if (quote === '"' || quote === "'") {
+        let escaped = false;
+        for (let i = from + 1; i < text.length; i += 1) {
+            const ch = text[i];
+            if (escaped) {
+                escaped = false;
+                continue;
+            }
+            if (ch === '\\') {
+                escaped = true;
+                continue;
+            }
+            if (ch === quote) {
+                return i + 1;
+            }
+            if (ch === '\n' || ch === '\r') {
+                return i;
+            }
+        }
+        return text.length;
+    }
+
+    // Scalar token: read until comma or newline.
+    for (let i = from; i < text.length; i += 1) {
+        const ch = text[i];
+        if (ch === ',' || ch === '\n' || ch === '\r') {
+            return i;
+        }
+    }
+    return text.length;
+}
+
 // ViewPlugin to highlight nested keys (4+ spaces) only in visible ranges
 export function createNestedKeyPlugin(): Extension {
     return ViewPlugin.fromClass(
@@ -56,6 +115,8 @@ export function createNestedKeyPlugin(): Extension {
 
 // ViewPlugin to apply muted styling to system fields ($id, $createdAt, $updatedAt)
 export function createSystemFieldStylePlugin(getShouldStyle: () => boolean): Extension {
+    const mutedMark = Decoration.mark({ class: 'cm-system-field-muted' });
+
     return ViewPlugin.fromClass(
         class {
             decorations: DecorationSet;
@@ -77,32 +138,24 @@ export function createSystemFieldStylePlugin(getShouldStyle: () => boolean): Ext
 
                 const doc = view.state.doc;
                 const text = doc.toString();
-                const systemFields = ['$id', '$createdAt', '$updatedAt'];
                 const decos: Range<Decoration>[] = [];
 
-                // Find all occurrences of system field keys
-                for (const field of systemFields) {
-                    // Match the key in format: "$id": or $id: (with or without quotes)
-                    const quotedPattern = new RegExp(`"${field.replace('$', '\\$')}"\\s*:`, 'g');
-                    const unquotedPattern = new RegExp(`${field.replace('$', '\\$')}\\s*:`, 'g');
+                for (let ln = 1; ln <= doc.lines; ln += 1) {
+                    const line = doc.line(ln);
+                    const match = SYSTEM_FIELD_KEY_LINE_PATTERN.exec(line.text);
+                    if (!match) continue;
 
-                    let match: RegExpExecArray;
-                    // Check quoted format
-                    while ((match = quotedPattern.exec(text)) !== null) {
-                        const from = match.index;
-                        const to = from + field.length + 2; // +2 for quotes
-                        decos.push(
-                            Decoration.mark({ class: 'cm-system-field-muted' }).range(from, to)
-                        );
-                    }
+                    const keyToken = match[1]; // either "$id" or $id
+                    const keyOffset = match[0].indexOf(keyToken);
+                    const from = line.from + keyOffset;
+                    const to = line.from + match[0].length;
 
-                    // Check unquoted format
-                    while ((match = unquotedPattern.exec(text)) !== null) {
-                        const from = match.index;
-                        const to = from + field.length;
-                        decos.push(
-                            Decoration.mark({ class: 'cm-system-field-muted' }).range(from, to)
-                        );
+                    decos.push(mutedMark.range(from, to));
+
+                    const valueFrom = skipInlineWhitespace(text, to);
+                    const valueTo = findSingleLineValueEnd(text, valueFrom);
+                    if (valueTo > valueFrom) {
+                        decos.push(mutedMark.range(valueFrom, valueTo));
                     }
                 }
 

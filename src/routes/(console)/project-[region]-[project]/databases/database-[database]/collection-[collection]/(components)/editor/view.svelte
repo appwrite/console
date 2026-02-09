@@ -1578,6 +1578,7 @@
         // System fields muted styling (when suggestions are showing)
         // Must come after .cm-propertyName to override
         :global(.cm-system-field-muted),
+        :global(.cm-system-field-muted *),
         :global(.cm-system-field-muted.cm-propertyName),
         :global(.cm-system-field-muted .cm-propertyName) {
             color: var(--fgcolor-neutral-tertiary, #97979b) !important;
