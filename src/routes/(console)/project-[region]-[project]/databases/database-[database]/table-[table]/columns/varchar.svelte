@@ -145,7 +145,10 @@
                 </span>
             </Tooltip>
         </Layout.Stack>
-        <ProgressBar maxSize={bytesMax} data={getProgressData(bytesUsed, bytesMax, size)} />
+        <ProgressBar
+            hideEmptySegments
+            maxSize={bytesMax}
+            data={getProgressData(bytesUsed, bytesMax, size)} />
         {#if exceedsLimit}
             <Typography.Text variant="m-400" color="--fgcolor-danger">
                 This column exceeds the remaining row space. Consider using text, mediumtext, or

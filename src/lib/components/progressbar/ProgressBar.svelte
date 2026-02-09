@@ -10,18 +10,30 @@
     export let maxSize: $$Props['maxSize'];
 
     /**
+     * Hides empty segments where size is < 0;
+     */
+    export let hideEmptySegments: $$Props['hideEmptySegments'];
+
+    /**
      * The data for the progressbar
      */
     export let data: $$Props['data'];
 
+    $: segments = hideEmptySegments ? data.filter((item) => item.size > 0) : data;
+
     /**
      * The remaining value of the progressbar
      */
-    $: remainder = data.reduce((sum: number, item: ProgressbarData) => sum - item.size, maxSize);
+    $: remainder = segments.reduce(
+        (sum: number, item: ProgressbarData) => sum - item.size,
+        maxSize
+    );
+
+    $: segmentGap = segments.length > 1 ? '2px' : '0px';
 </script>
 
-<section class="progressbar__container">
-    {#each $$props.data as item}
+<section class="progressbar__container" style:--progressbar-segment-gap={segmentGap}>
+    {#each segments as item}
         <Tooltip disabled={!item.tooltip} maxWidth="max-content">
             <div
                 class="progressbar__content"
@@ -64,7 +76,7 @@
             border-radius: var(--progressbar-border-radius);
             display: flex;
             flex-direction: row;
-            gap: 2px;
+            gap: var(--progressbar-segment-gap, 2px);
             margin-top: 1rem;
             overflow: hidden;
         }
