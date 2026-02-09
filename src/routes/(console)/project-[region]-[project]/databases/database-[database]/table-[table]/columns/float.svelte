@@ -14,9 +14,9 @@
             tableId,
             key,
             required: data.required,
-            min: data.min,
-            max: data.max,
-            xdefault: data.default,
+            min: data.min !== null ? Number(data.min) : data.min,
+            max: data.max !== null ? Number(data.max) : data.max,
+            xdefault: data.default !== null ? Number(data.default) : data.default,
             array: data.array
         });
     }
@@ -32,9 +32,9 @@
             tableId,
             key: originalKey,
             required: data.required,
-            xdefault: data.default,
-            min: data.min,
-            max: data.max,
+            xdefault: data.default !== null ? Number(data.default) : data.default,
+            min: data.min !== null ? Number(data.min) : data.min,
+            max: data.max !== null ? Number(data.max) : data.max,
             newKey: data.key !== originalKey ? data.key : undefined
         });
     }
