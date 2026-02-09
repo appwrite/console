@@ -46,10 +46,10 @@
             position: absolute;
         }
 
-        & :global(div:first-of-type) {
-            height: 44px;
+        & > :global(div:first-of-type) {
             bottom: 32px;
             max-width: 100%;
+            min-height: 44px;
             width: fit-content;
             align-content: center;
         }
