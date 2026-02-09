@@ -876,7 +876,7 @@
             {showSuggestions}
             {suggestedAttributes}
             showMockSuggestions={useMockSuggestions}
-            onCancel={() => {
+            onDiscard={() => {
                 const firstDocument = $documents?.documents?.[0];
                 if (firstDocument) {
                     noSqlDocument.edit(firstDocument);

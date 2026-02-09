@@ -90,7 +90,7 @@
         loading?: boolean;
         onChange?: (newData: JsonValue, hasChanged: boolean) => Promise<void> | void;
         onSave?: (newData: JsonValue) => Promise<void> | void;
-        onCancel?: () => void;
+        onDiscard?: () => void;
         readonly?: boolean;
         wrapLines?: boolean;
         errorInPlace?: boolean;
@@ -106,7 +106,7 @@
         data = $bindable(),
         onChange,
         onSave,
-        onCancel,
+        onDiscard,
         isSaving = $bindable(false),
         loading = false,
         readonly = false,
@@ -1307,9 +1307,9 @@
 
             {#if documentId}
                 <Layout.Stack direction="row" inline gap="s">
-                    {#if isNew && onCancel}
-                        <Button text size="xs" disabled={loading} on:click={onCancel}>
-                            Cancel
+                    {#if isNew && onDiscard}
+                        <Button text size="xs" disabled={loading} on:click={onDiscard}>
+                            Discard
                         </Button>
                     {/if}
 
