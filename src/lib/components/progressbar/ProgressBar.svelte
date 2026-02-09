@@ -12,7 +12,7 @@
     /**
      * Hides empty segments where size is < 0;
      */
-    export let hideEmptySegments: $$Props['hideEmptySegments'];
+    export let hideEmptySegments: $$Props['hideEmptySegments'] = false;
 
     /**
      * The data for the progressbar
