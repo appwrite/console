@@ -2,6 +2,7 @@
     import { page } from '$app/state';
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
+    import { toNumberOrNull } from '$lib/helpers/numbers';
 
     export async function submitFloat(
         databaseId: string,
@@ -14,9 +15,9 @@
             tableId,
             key,
             required: data.required,
-            min: data.min !== null ? Number(data.min) : data.min,
-            max: data.max !== null ? Number(data.max) : data.max,
-            xdefault: data.default !== null ? Number(data.default) : data.default,
+            min: toNumberOrNull(data.min),
+            max: toNumberOrNull(data.max),
+            xdefault: toNumberOrNull(data.default),
             array: data.array
         });
     }
@@ -32,9 +33,9 @@
             tableId,
             key: originalKey,
             required: data.required,
-            xdefault: data.default !== null ? Number(data.default) : data.default,
-            min: data.min !== null ? Number(data.min) : data.min,
-            max: data.max !== null ? Number(data.max) : data.max,
+            xdefault: toNumberOrNull(data.default),
+            min: toNumberOrNull(data.min),
+            max: toNumberOrNull(data.max),
             newKey: data.key !== originalKey ? data.key : undefined
         });
     }
