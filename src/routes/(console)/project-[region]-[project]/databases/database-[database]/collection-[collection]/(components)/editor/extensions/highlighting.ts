@@ -11,7 +11,16 @@ import { Range, RangeSet, RangeSetBuilder, StateField, type Extension } from '@c
 import { forEachDiagnostic, setDiagnosticsEffect } from '@codemirror/lint';
 import { NESTED_KEY_REGEX } from '../helpers/constants';
 
-const SYSTEM_FIELDS = ['$id', '$createdAt', '$updatedAt'] as const;
+export const SYSTEM_FIELD_ID = '$id' as const;
+export const SYSTEM_FIELD_CREATED_AT = '$createdAt' as const;
+export const SYSTEM_FIELD_UPDATED_AT = '$updatedAt' as const;
+export const SYSTEM_FIELDS = [
+    SYSTEM_FIELD_ID,
+    SYSTEM_FIELD_CREATED_AT,
+    SYSTEM_FIELD_UPDATED_AT
+] as const;
+
+export type SystemFieldKey = (typeof SYSTEM_FIELDS)[number];
 
 function escapeRegExp(source: string): string {
     return source.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');

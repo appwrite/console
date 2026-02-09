@@ -61,7 +61,8 @@
         createDuplicateKeyLinter,
         createSystemFieldStylePlugin,
         createLineHoverPlugin,
-        createErrorLineHighlight
+        createErrorLineHighlight,
+        SYSTEM_FIELD_ID
     } from './extensions';
     import {
         ALLOWED_DOLLAR_PROPS,
@@ -275,6 +276,33 @@
         lastSerializedData = value;
         lastSerializedText = serialized;
         return serialized;
+    }
+
+    function findNewDocCursorPos(state: EditorState): number | null {
+        const maxLines = Math.min(state.doc.lines, 12);
+        for (let ln = 1; ln <= maxLines; ln += 1) {
+            const line = state.doc.line(ln);
+            const text = line.text;
+            let i = 0;
+            while (i < text.length && (text[i] === ' ' || text[i] === '\t')) i += 1;
+            if (text[i] === '"') {
+                const quoted = `"${SYSTEM_FIELD_ID}"`;
+                if (text.slice(i, i + quoted.length) !== quoted) continue;
+                i += quoted.length;
+            } else if (text.slice(i, i + SYSTEM_FIELD_ID.length) === SYSTEM_FIELD_ID) {
+                i += SYSTEM_FIELD_ID.length;
+            } else {
+                continue;
+            }
+            while (i < text.length && (text[i] === ' ' || text[i] === '\t')) i += 1;
+            if (text[i] !== ':') continue;
+
+            if (ln + 1 > state.doc.lines) return null;
+            const next = state.doc.line(ln + 1);
+            if (next.text.trim() === '') return next.to; // after indentation on the blank line
+            return null;
+        }
+        return null;
     }
 
     // Preserve system key values when content changes
@@ -1231,6 +1259,22 @@
                 extensions: baseExtensions
             });
             editorView.setState(newState);
+
+            if (isNew && !readonly) {
+                const pos = findNewDocCursorPos(editorView.state);
+                if (pos !== null) {
+                    editorView.dispatch({
+                        selection: EditorSelection.cursor(pos),
+                        scrollIntoView: true,
+                        annotations: [Transaction.addToHistory.of(false)]
+                    });
+                    editorView.focus();
+
+                    if (!hasSuggestionsBeenShown) {
+                        hasStartedEditing = true;
+                    }
+                }
+            }
             queueMicrotask(() => (isUpdatingFromEditor = false));
             return;
         }
