@@ -1,5 +1,5 @@
 import { writable, type Writable } from 'svelte/store';
-import { deepClone, objectEntries } from './object';
+import { objectEntries } from './object';
 
 /**
  * Given an object `obj`, returns an object of writable stores for each key in that object.
@@ -16,7 +16,7 @@ export function createConservative<Obj extends Record<string, unknown>>(obj: Obj
         [K in keyof Obj]: Writable<Obj[K]>;
     };
 
-    const history = deepClone(obj);
+    const history = structuredClone(obj);
 
     function listen(input: Obj) {
         objectEntries(input).forEach(([key, value]) => {
