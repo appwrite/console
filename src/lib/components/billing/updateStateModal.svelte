@@ -63,9 +63,8 @@
 </script>
 
 <Modal
-    bind:error
     bind:show
-    dismissible={false}
+    bind:error
     onSubmit={handleSubmit}
     title="Update payment method state">
     <Layout.Stack direction="column" gap="m">
