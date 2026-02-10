@@ -26,7 +26,6 @@
     import { isSmallViewport } from '$lib/stores/viewport';
     import { goto } from '$app/navigation';
     import { getChangePlanUrl } from '$lib/stores/billing';
-    import { onMount } from 'svelte';
 
     export let isShowing: boolean;
     export let disabled: boolean = false;
@@ -98,8 +97,6 @@
         userBackupPolicy.description = customPolicyDescription(userBackupPolicy);
 
         listOfCustomPolicies = [...listOfCustomPolicies, userBackupPolicy];
-
-        selectedPolicyGroup = 'custom';
 
         resetFormVariables();
         showCustomPolicy = false;
@@ -183,7 +180,7 @@
         label: freq.charAt(0).toUpperCase() + freq.slice(1)
     }));
 
-    let selectedPolicyGroup: string = null;
+    let selectedPolicyGroup: null | string = null;
     $: if (selectedPolicyGroup) {
         if (selectedPolicyGroup === 'custom') {
             if (listOfCustomPolicies.length === 0) {
@@ -209,15 +206,11 @@
         }
     }
 
-    onMount(() => {
+    $: filteredPresetPolicies = $presetPolicies.filter((policy) => {
         if (isFromBackupsTab) {
-            presetPolicies.update((preset) => {
-                return preset.filter((policy) => policy.id !== 'none');
-            });
+            return policy.id !== 'none';
         } else {
-            presetPolicies.update((preset) => {
-                return preset.filter((policy) => policy.id !== 'hourly');
-            });
+            return policy.id !== 'hourly';
         }
     });
 </script>
@@ -243,7 +236,7 @@
 
     <!-- because we show a set of pre-defined ones -->
     {#if $currentPlan?.backupPolicies === 1}
-        {@const dailyPolicy = getPolicyById('daily')}
+        {@const dailyPolicy = getPolicyById('dank')}
 
         {#if isFromBackupsTab}
             <Layout.Stack gap="m">
@@ -290,7 +283,7 @@
         <Layout.Stack gap="m">
             <Layout.Grid columns={isFromBackupsTab ? 2 : 3} columnsS={1}>
                 {#if isFromBackupsTab}
-                    {#each $presetPolicies as policy, index (index)}
+                    {#each filteredPresetPolicies as policy, index (index)}
                         <label for={index.toString()} class="card preset-label-card is-allow-focus">
                             <Layout.Stack gap="s" direction="row">
                                 <InputCheckbox

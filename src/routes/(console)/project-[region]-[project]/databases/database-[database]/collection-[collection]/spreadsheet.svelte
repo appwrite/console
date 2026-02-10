@@ -279,7 +279,6 @@
 
     async function handleDelete() {
         showDelete = false;
-        let hadErrors = false;
 
         try {
             if (selectedDocumentForDelete) {
@@ -303,13 +302,10 @@
             await invalidate(Dependencies.DOCUMENTS);
             trackEvent(Click.DatabaseRowDelete);
 
-            if (!hadErrors) {
-                // error is already shown above!
-                addNotification({
-                    type: 'success',
-                    message: `${selectedDocuments.length ? selectedDocuments.length : 1} document${selectedDocuments.length > 1 ? 's' : ''} deleted`
-                });
-            }
+            addNotification({
+                type: 'success',
+                message: `${selectedDocuments.length ? selectedDocuments.length : 1} document${selectedDocuments.length > 1 ? 's' : ''} deleted`
+            });
 
             spreadsheetRenderKey.set(
                 hash([

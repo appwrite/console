@@ -81,7 +81,7 @@
                     }
                 },
                 keys: page.url.pathname.endsWith(databaseId) ? ['c'] : ['c', 'c'],
-                disabled: page.url.pathname.includes('table-') || !$canWriteTables,
+                disabled: page.route.id?.includes('table-') || !$canWriteTables,
                 group: 'databases',
                 icon: IconPlus
             },

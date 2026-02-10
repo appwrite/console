@@ -36,7 +36,7 @@ function stripJson5Prefix(message: string): string {
 
 function getKeyName(lineText: string, colonIndex: number): string | null {
     const keyPart = lineText.slice(0, colonIndex).trim();
-    const match = keyPart.match(/^(?:"([^"]+)"|'([^']+)'|([A-Za-z_$][\w$]*))$/);
+    const match = keyPart.match(/^(?:"((?:[^"\\]|\\.)*)"|'((?:[^'\\]|\\.)*)'|([A-Za-z_$][\w$]*))$/);
     return match ? match[1] || match[2] || match[3] || null : null;
 }
 

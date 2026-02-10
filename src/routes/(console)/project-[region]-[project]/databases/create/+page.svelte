@@ -148,7 +148,6 @@
 
             resetCreateDatabaseStore();
         } catch (error) {
-            console.log(error);
             addNotification({
                 type: 'error',
                 message: error.message
@@ -211,13 +210,7 @@
     </Form>
 
     <svelte:fragment slot="footer">
-        <Button
-            secondary
-            disabled={$isSubmitting}
-            on:click={() => {
-                showExitModal = true;
-                resetCreateDatabaseStore();
-            }}>
+        <Button secondary disabled={$isSubmitting} on:click={() => (showExitModal = true)}>
             Cancel
         </Button>
         <Button
