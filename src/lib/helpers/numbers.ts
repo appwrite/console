@@ -95,17 +95,3 @@ export function toExponential(value: number | bigint, fractionDigits: number = 2
 export function clampMin(value: number, min: number = 0): number {
     return Math.max(min, value || 0);
 }
-
-export function toNumberOrNull(value: unknown): number | null {
-    if (value === null || value === undefined) {
-        return null;
-    }
-
-    if (typeof value === 'string' && value.trim() === '') {
-        return null;
-    }
-
-    const num = Number(value);
-
-    return Number.isNaN(num) ? null : num;
-}

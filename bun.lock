@@ -8,9 +8,9 @@
         "@ai-sdk/svelte": "^1.1.24",
         "@appwrite.io/console": "https://pkg.vc/-/@appwrite/@appwrite.io/console@bb72008",
         "@appwrite.io/pink-icons": "0.25.0",
-        "@appwrite.io/pink-icons-svelte": "https://pkg.vc/-/@appwrite/@appwrite.io/pink-icons-svelte@c1feb89",
+        "@appwrite.io/pink-icons-svelte": "https://pkg.vc/-/@appwrite/@appwrite.io/pink-icons-svelte@df765cc",
         "@appwrite.io/pink-legacy": "^1.0.3",
-        "@appwrite.io/pink-svelte": "https://pkg.vc/-/@appwrite/@appwrite.io/pink-svelte@dd7e01c",
+        "@appwrite.io/pink-svelte": "https://pkg.vc/-/@appwrite/@appwrite.io/pink-svelte@df765cc",
         "@faker-js/faker": "^9.9.0",
         "@plausible-analytics/tracker": "^0.4.4",
         "@popperjs/core": "^2.11.8",
@@ -111,11 +111,11 @@
 
     "@appwrite.io/pink-icons": ["@appwrite.io/pink-icons@0.25.0", "", {}, "sha512-0O3i2oEuh5mWvjO80i+X6rbzrWLJ1m5wmv2/M3a1p2PyBJsFxN8xQMTEmTn3Wl/D26SsM7SpzbdW6gmfgoVU9Q=="],
 
-    "@appwrite.io/pink-icons-svelte": ["@appwrite.io/pink-icons-svelte@https://pkg.vc/-/@appwrite/@appwrite.io/pink-icons-svelte@c1feb89", { "peerDependencies": { "svelte": "^4.0.0" } }],
+    "@appwrite.io/pink-icons-svelte": ["@appwrite.io/pink-icons-svelte@https://pkg.vc/-/@appwrite/@appwrite.io/pink-icons-svelte@df765cc", { "peerDependencies": { "svelte": "^4.0.0" } }],
 
     "@appwrite.io/pink-legacy": ["@appwrite.io/pink-legacy@1.0.3", "", { "dependencies": { "@appwrite.io/pink-icons": "1.0.0", "the-new-css-reset": "^1.11.2" } }, "sha512-GGde5fmPhs+s6/3aFeMPc/kKADG/gTFkYQSy6oBN8pK0y0XNCLrZZgBv+EBbdhwdtqVEWXa0X85Mv9w7jcIlwQ=="],
 
-    "@appwrite.io/pink-svelte": ["@appwrite.io/pink-svelte@https://pkg.vc/-/@appwrite/@appwrite.io/pink-svelte@dd7e01c", { "dependencies": { "@appwrite.io/pink-icons-svelte": "2.0.0-RC.1", "@floating-ui/dom": "^1.6.13", "@melt-ui/pp": "^0.3.2", "@melt-ui/svelte": "^0.86.6", "@tanstack/svelte-virtual": "^3.13.10", "ansicolor": "^2.0.3", "d3": "^7.9.0", "fuse.js": "^7.1.0", "pretty-bytes": "^6.1.1", "shiki": "^1.18.0", "svelte-motion": "^0.12.2", "svelte-sonner": "^0.3.28" }, "peerDependencies": { "svelte": "^4.0.0" } }],
+    "@appwrite.io/pink-svelte": ["@appwrite.io/pink-svelte@https://pkg.vc/-/@appwrite/@appwrite.io/pink-svelte@df765cc", { "dependencies": { "@appwrite.io/pink-icons-svelte": "2.0.0-RC.1", "@floating-ui/dom": "^1.6.13", "@melt-ui/pp": "^0.3.2", "@melt-ui/svelte": "^0.86.6", "@tanstack/svelte-virtual": "^3.13.10", "ansicolor": "^2.0.3", "d3": "^7.9.0", "fuse.js": "^7.1.0", "pretty-bytes": "^6.1.1", "shiki": "^1.18.0", "svelte-motion": "^0.12.2", "svelte-sonner": "^0.3.28" }, "peerDependencies": { "svelte": "^4.0.0" } }],
 
     "@asamuzakjp/css-color": ["@asamuzakjp/css-color@3.2.0", "", { "dependencies": { "@csstools/css-calc": "^2.1.3", "@csstools/css-color-parser": "^3.0.9", "@csstools/css-parser-algorithms": "^3.0.4", "@csstools/css-tokenizer": "^3.0.3", "lru-cache": "^10.4.3" } }, "sha512-K1A6z8tS3XsmCMM86xoWdn7Fkdn9m6RSVtocUrJYIwZnFVkng/PvkEoWtOWmP+Scc6saYWHWZYbndEEXxl24jw=="],
 
