@@ -62,11 +62,7 @@
     }
 </script>
 
-<Modal
-    bind:show
-    bind:error
-    onSubmit={handleSubmit}
-    title="Update payment method state">
+<Modal bind:show bind:error onSubmit={handleSubmit} title="Update payment method state">
     <Layout.Stack direction="column" gap="m">
         <Typography.Text>
             State information is required for US payment methods to apply correct taxes and meet
