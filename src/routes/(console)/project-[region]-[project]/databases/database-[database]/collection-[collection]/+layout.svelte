@@ -279,11 +279,6 @@
                     documents: rows
                 });
 
-            addNotification({
-                type: 'success',
-                message: 'Sample data added successfully with AI-suggested attributes'
-            });
-
             await invalidate(Dependencies.DOCUMENTS);
         } catch (e) {
             addNotification({
