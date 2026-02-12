@@ -98,10 +98,11 @@
 
             {#if isLoading && !variables?.length}
                 <Table.Root
+                    class="responsive-table"
                     let:root
                     columns={[
-                        { id: 'key', width: 200 },
-                        { id: 'value' },
+                        { id: 'key', width: { min: 300 } },
+                        { id: 'value', width: { min: 280 } },
                         { id: 'actions', width: 40 }
                     ]}>
                     <svelte:fragment slot="header" let:root>
@@ -129,8 +130,8 @@
                         <Table.Root
                             let:root
                             columns={[
-                                { id: 'key', width: 200 },
-                                { id: 'value' },
+                                { id: 'key', width: { min: 300 } },
+                                { id: 'value', width: { min: 280 } },
                                 { id: 'actions', width: 40 }
                             ]}>
                             <svelte:fragment slot="header" let:root>
@@ -143,7 +144,7 @@
                                     <Table.Cell column="key" {root}>{variable.key}</Table.Cell>
                                     <Table.Cell column="value" {root}>
                                         <!-- TODO: fix max width -->
-                                        <div style="max-width: 20rem">
+                                        <div style="max-width: 100%">
                                             {#if variable.secret}
                                                 <Tooltip maxWidth="26rem">
                                                     <Badge
@@ -158,7 +159,7 @@
                                             {:else}
                                                 <InteractiveText
                                                     variant="secret"
-                                                    isVisible={false}
+                                                    isVisible={true}
                                                     text={variable.value} />
                                             {/if}
                                         </div>
