@@ -212,6 +212,7 @@
                 <Button text on:click={() => resetSampleFieldsConfig()}>Cancel</Button>
                 <Button
                     on:click={async () => {
+                        $randomDataModalState.show = false;
                         await $randomDataModalState.onSubmit?.();
                         resetSampleFieldsConfig();
                     }}>Create</Button>
