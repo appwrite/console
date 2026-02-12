@@ -11,9 +11,7 @@
     const executionUrl = $derived.by(() => {
         return resolveRoute(
             '/(console)/project-[region]-[project]/functions/function-[function]/executions/execute-function',
-            {
-                ...page.params
-            }
+            page.params
         );
     });
 </script>

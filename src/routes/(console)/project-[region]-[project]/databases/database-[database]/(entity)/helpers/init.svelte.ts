@@ -1,5 +1,4 @@
-import type { Page } from '@sveltejs/kit';
-import { getContext, setContext } from 'svelte';
+import { page } from '$app/state';
 import {
     type AnalyticsResult,
     type DatabaseSdkResult,
@@ -11,8 +10,6 @@ import {
     useDatabaseSdk
 } from '$database/(entity)';
 
-const TERMINOLOGIES_KEY = Symbol('terminologies');
-
 export type Terminologies = {
     analytics: AnalyticsResult;
     terminology: TerminologyResult;
@@ -20,15 +17,7 @@ export type Terminologies = {
     databaseSdk: DatabaseSdkResult;
 };
 
-export function getTerminologies(): Terminologies {
-    return getContext<Terminologies>(TERMINOLOGIES_KEY);
-}
-
-export function setTerminologies(page: Page) {
-    setContext(TERMINOLOGIES_KEY, buildTerminologies(page));
-}
-
-function buildTerminologies(page: Page): Terminologies {
+const terminologies = $derived.by((): Terminologies => {
     const terminology = useTerminology(page);
     return {
         terminology,
@@ -36,4 +25,8 @@ function buildTerminologies(page: Page): Terminologies {
         dependencies: useDependencies(terminology),
         databaseSdk: useDatabaseSdk(page, terminology)
     };
+});
+
+export function getTerminologies(): Terminologies {
+    return terminologies;
 }

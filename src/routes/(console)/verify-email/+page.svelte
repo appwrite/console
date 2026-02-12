@@ -12,7 +12,7 @@
     const project = {
         region: 'fra',
         $id: 'appwrite',
-        name: 'Appwrite Project'
+        name: 'New Project'
     } as Models.Project;
 
     const progressCard = { title: 'Get started', percentage: 33 };

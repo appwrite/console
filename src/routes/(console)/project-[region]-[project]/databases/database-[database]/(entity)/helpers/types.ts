@@ -12,6 +12,7 @@ export type Term = { singular: string; plural: string };
 
 export type TerminologyResult = {
     type: DatabaseType;
+    schema: boolean;
     source: {
         entity?: { lower: Term; title: Term };
         field?: { lower: Term; title: Term };
@@ -60,7 +61,7 @@ export type AnalyticsResult = {
 
 // for derived dependencies!
 export type DependenciesResult = {
-    [K in keyof Omit<TerminologyResult, 'source' | 'type'>]: {
+    [K in keyof Omit<TerminologyResult, 'source' | 'type' | 'schema'>]: {
         singular: Dependencies;
         plural: Dependencies;
     };

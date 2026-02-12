@@ -36,8 +36,8 @@
         IconSortDescending,
         IconTrash
     } from '@appwrite.io/pink-icons-svelte';
-    import { type Columns, databaseColumnSheetOptions } from './store';
-    import { isRelationship } from './rows/store';
+    import { type Columns } from '$database/store';
+    import { isRelationship } from '$database/table-[table]/rows/store';
 
     interface MenuItem {
         label?: string;
@@ -84,7 +84,7 @@
         onVisibilityChanged,
         type
     }: {
-        column: Columns;
+        column?: Columns;
         columnId?: string;
         type: 'header' | 'row';
         onVisibilityChanged?: (visible: boolean) => void;
@@ -94,20 +94,6 @@
 
     function handleSelect(action: HeaderCellAction | RowCellAction, hide: () => void) {
         hide();
-        $databaseColumnSheetOptions.column = column;
-
-        if (action === 'column-left') {
-            $databaseColumnSheetOptions.direction = {
-                neighbour: columnId,
-                to: 'left'
-            };
-        } else if (action === 'column-right') {
-            $databaseColumnSheetOptions.direction = {
-                neighbour: columnId,
-                to: 'right'
-            };
-        }
-
         onSelect(action, columnId);
     }
 

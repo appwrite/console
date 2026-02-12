@@ -1,6 +1,6 @@
 import { resolve } from '$app/paths';
 import { goto } from '$app/navigation';
-import type { Pathname, RouteId, RouteParams } from '$app/types';
+import type { Pathname, ResolvedPathname, RouteId, RouteParams } from '$app/types';
 
 // taken directly from svelte's source!
 type ResolveArgs<T extends RouteId | Pathname> = T extends RouteId
@@ -20,7 +20,10 @@ export function withPath(base: string, ...parts: string[]) {
     return [normalizedBase, ...normalizedParts].join('/');
 }
 
-export function resolveRoute<T extends RouteId>(route: T, params?: Record<string, string>) {
+export function resolveRoute<T extends RouteId>(
+    route: T,
+    params?: Record<string, string>
+): ResolvedPathname {
     // type cast is necessary here!
     const resolveArgs = params ? ([route, params] as [T, RouteParams<T>]) : [route];
 

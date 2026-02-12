@@ -1,4 +1,6 @@
-import { get, writable } from 'svelte/store';
+import { derived, get, writable } from 'svelte/store';
+
+export const viewportWidth = writable(typeof window !== 'undefined' ? window.innerWidth : 0);
 
 export const isSmallViewport = writable(false);
 export const isTabletViewport = writable(false);
@@ -6,6 +8,8 @@ export const isDesktopViewport = writable(false);
 
 export function updateViewport() {
     if (typeof window !== 'undefined') {
+        viewportWidth.set(window.innerWidth);
+
         isSmallViewport.set(
             typeof window !== 'undefined' ? window.matchMedia('(max-width: 767px)').matches : false
         );
@@ -17,4 +21,8 @@ export function updateViewport() {
         // neither small, nor tablet
         isDesktopViewport.set(!get(isSmallViewport) && !get(isTabletViewport));
     }
+}
+
+export function isViewPortWidthInRange(min: number, max: number) {
+    return derived(viewportWidth, ($width) => $width >= min && $width <= max);
 }

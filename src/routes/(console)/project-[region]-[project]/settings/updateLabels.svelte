@@ -18,12 +18,25 @@
     let error = '';
 
     onMount(async () => {
-        labels = [...$project.labels];
+        labels = [...(($project as { labels?: string[] }).labels ?? [])];
     });
+
+    async function updateProjectLabels(projectId: string, nextLabels: string[]) {
+        const client = sdk.forConsole.client;
+        const apiPath = `/projects/${projectId}/labels`;
+        const uri = new URL(client.config.endpoint + apiPath);
+
+        return client.call(
+            'put',
+            uri,
+            { 'content-type': 'application/json' },
+            { labels: nextLabels }
+        );
+    }
 
     async function updateLabels() {
         try {
-            await sdk.forConsole.projects.updateLabels({ projectId: $project.$id, labels });
+            await updateProjectLabels($project.$id, labels);
             await invalidate(Dependencies.PROJECT);
             isDisabled = true;
             addNotification({
@@ -40,7 +53,9 @@
         }
     }
 
-    $: isDisabled = !!error || !symmetricDifference(labels, $project.labels).length;
+    $: isDisabled =
+        !!error ||
+        !symmetricDifference(labels, ($project as { labels?: string[] }).labels ?? []).length;
 
     $: if (labels) {
         const invalidLabels = [];

@@ -15,8 +15,9 @@
     import { isSmallViewport, isTabletViewport } from '$lib/stores/viewport';
     import type { Column } from '$lib/helpers/types';
     import { SortButton } from '$lib/components';
-    import { expandTabs, columnsOrder, columnsWidth, reorderItems } from '../table-[table]/store';
+    import { columnsOrder, columnsWidth, reorderItems } from '../table-[table]/store';
     import { preferences } from '$lib/stores/preferences';
+    import { expandTabs, type Columns } from '../store';
     import { SpreadsheetContainer } from '$database/(entity)';
     import { onDestroy, onMount, tick } from 'svelte';
     import { sdk, realtime, type RealtimeResponse } from '$lib/stores/sdk';
@@ -26,7 +27,7 @@
         type ColumnInput,
         mapSuggestedColumns,
         type SuggestedColumnSchema,
-        tableColumnSuggestions,
+        entityColumnSuggestions,
         basicColumnOptions,
         mockSuggestions,
         showIndexesSuggestions
@@ -37,7 +38,6 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { isWithinSafeRange } from '$lib/helpers/numbers';
-    import type { Columns } from '../table-[table]/store';
     import { columnOptions } from '../table-[table]/columns/store';
     import Options from './options.svelte';
     import { InputSelect, InputText } from '$lib/elements/forms';
@@ -607,27 +607,27 @@
     });
 
     function resetSuggestionsStore(fullReset: boolean = true) {
-        if ($tableColumnSuggestions.table?.id !== page.params.table) {
+        if ($entityColumnSuggestions.entity?.id !== page.params.table) {
             return;
         }
 
         if (fullReset) {
             // these are referenced in
             // `table-[table]/+page.svelte`
-            $tableColumnSuggestions.table = null;
-            $tableColumnSuggestions.force = false;
-            $tableColumnSuggestions.enabled = false;
+            $entityColumnSuggestions.entity = null;
+            $entityColumnSuggestions.force = false;
+            $entityColumnSuggestions.enabled = false;
         }
 
-        $tableColumnSuggestions.context = null;
-        $tableColumnSuggestions.thinking = false;
+        $entityColumnSuggestions.context = null;
+        $entityColumnSuggestions.thinking = false;
 
         // reset selection!
         resetSelectedColumn();
     }
 
     async function suggestColumns() {
-        $tableColumnSuggestions.thinking = true;
+        $entityColumnSuggestions.thinking = true;
 
         await tick();
         scrollToFirstCustomColumn();
@@ -651,7 +651,7 @@
                     .console.suggestColumns({
                         databaseId: page.params.database,
                         tableId: page.params.table,
-                        context: $tableColumnSuggestions.context ?? undefined,
+                        context: $entityColumnSuggestions.context ?? undefined,
                         min: 6
                     })) as unknown as {
                     total: number;
@@ -659,7 +659,7 @@
                 };
             }
 
-            const tableName = $tableColumnSuggestions.table?.name ?? undefined;
+            const tableName = $entityColumnSuggestions.entity?.name ?? undefined;
             trackEvent(Submit.ColumnSuggestions, {
                 tableName,
                 total: suggestedColumns.total
@@ -1298,7 +1298,7 @@
     role="none"
     bind:this={spreadsheetContainer}
     class:custom-columns={customColumns.length > 0}
-    class:thinking={$tableColumnSuggestions.thinking}
+    class:thinking={$entityColumnSuggestions.thinking}
     class="databases-spreadsheet spreadsheet-container-outer"
     style:--overlay-icon-color="#fd366e99"
     style:--non-overlay-icon-color="--fgcolor-neutral-weak"
@@ -1309,7 +1309,7 @@
             bind:this={rangeOverlayEl}
             class="columns-range-overlay"
             class:no-transition={hasTransitioned && customColumns.length > 0}
-            class:thinking={$tableColumnSuggestions.thinking || creatingColumns}>
+            class:thinking={$entityColumnSuggestions.thinking || creatingColumns}>
             <div class="inner-glow-wrapper">
                 {@render edgeGradients('left')}
                 {@render edgeGradients('right')}
@@ -1599,7 +1599,7 @@
         data-collapsed-tabs={!$expandTabs}>
     </div>
 
-    {#if $tableColumnSuggestions.thinking}
+    {#if $entityColumnSuggestions.thinking}
         <div class="floating-action-wrapper">
             <FloatingActionBar>
                 <svelte:fragment slot="start">
@@ -1775,7 +1775,7 @@
                 !isInlineEditing &&
                 !$isTabletViewport &&
                 !$isSmallViewport &&
-                !$tableColumnSuggestions.thinking &&
+                !$entityColumnSuggestions.thinking &&
                 !creatingColumns &&
                 hoveredColumnId !== column.id
             ) {
@@ -1876,38 +1876,6 @@
         {/each}
     </div>
 {/snippet}
-
-<!--{#snippet countdownProgress()}-->
-<!--    {@const COUNTDOWN_DURATION = 10000}-->
-
-<!--    <div class="countdown-wrapper" style="padding-bottom: 0;">-->
-<!--        <svg-->
-<!--            xmlns="http://www.w3.org/2000/svg"-->
-<!--            width={`var(&#45;&#45;icon-size-s)`}-->
-<!--            height={`var(&#45;&#45;icon-size-s)`}-->
-<!--            viewBox="0 0 24 24"-->
-<!--            fill="none"-->
-<!--            style="transform: rotate(-90deg)">-->
-<!--            &lt;!&ndash; Background circle &ndash;&gt;-->
-<!--            <path-->
-<!--                opacity="0.2"-->
-<!--                d="M24 12C24 18.6274 18.6274 24 12 24C5.37258 24 0 18.6274 0 12C0 5.37258 5.37258 0 12 0C18.6274 0 24 5.37258 24 12ZM2.4 12C2.4 17.3019 6.69807 21.6 12 21.6C17.3019 21.6 21.6 17.3019 21.6 12C21.6 6.69807 17.3019 2.4 12 2.4C6.69807 2.4 2.4 6.69807 2.4 12Z"-->
-<!--                fill="#56565C" />-->
-<!--            &lt;!&ndash; Progress circle &ndash;&gt;-->
-<!--            <circle-->
-<!--                cx="12"-->
-<!--                cy="12"-->
-<!--                r="10.8"-->
-<!--                fill="none"-->
-<!--                stroke="#56565C"-->
-<!--                stroke-width="2.4"-->
-<!--                stroke-dasharray="67.858"-->
-<!--                stroke-dashoffset="0"-->
-<!--                class="countdown-circle"-->
-<!--                style="animation-duration: {COUNTDOWN_DURATION}ms" />-->
-<!--        </svg>-->
-<!--    </div>-->
-<!--{/snippet}-->
 
 <style lang="scss">
     .spreadsheet-container-outer {

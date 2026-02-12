@@ -39,9 +39,7 @@
 
     const routeBase = resolveRoute(
         '/(console)/project-[region]-[project]/functions/function-[function]/domains',
-        {
-            ...page.params
-        }
+        page.params
     );
 
     onMount(() => {

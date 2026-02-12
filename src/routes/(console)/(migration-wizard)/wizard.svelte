@@ -81,7 +81,7 @@
     }
 
     function getProjectName(): string {
-        return isExisting ? currentSelectedProject.name : newProjName || 'Appwrite project';
+        return isExisting ? currentSelectedProject.name : newProjName || 'New project';
     }
 
     async function createNewProject() {

@@ -14,7 +14,7 @@
 
     // re-render the key for sheet UI.
     import { hash } from '$lib/helpers/string';
-    import { spreadsheetRenderKey } from '$routes/(console)/project-[region]-[project]/databases/database-[database]/table-[table]/store';
+    import { spreadsheetRenderKey } from '$database/store';
     import { Link } from '$lib/elements';
 
     type CsvImportError = {

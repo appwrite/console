@@ -8,7 +8,7 @@
     import { isSmallViewport } from '$lib/stores/viewport';
     import { IndexType, OrderBy } from '@appwrite.io/console';
     import { capitalize } from '$lib/helpers/string';
-    import { type Columns } from '../table-[table]/store';
+    import type { Columns } from '$database/store';
     import { isRelationship } from '../table-[table]/rows/store';
     import { VARS } from '$lib/system';
     import { sleep } from '$lib/helpers/promises';

@@ -8,10 +8,11 @@
     import { addNotification } from '$lib/stores/notifications';
     import {
         Input as SuggestionsInput,
-        tableColumnSuggestions
+        entityColumnSuggestions
     } from '$database/(suggestions)/index';
 
     import { getTerminologies } from '../helpers';
+    import { resetSampleFieldsConfig } from '$database/store';
 
     let {
         show = $bindable(false),
@@ -35,18 +36,17 @@
     let name = $state('');
     let id = $state(null);
     let error = $state(null);
-    let touchedId = $state(false);
     let creatingEntity = $state(false);
 
     function enableThinkingModeForSuggestions(id: string, name: string) {
         if (!useSuggestions) return;
 
-        if ($tableColumnSuggestions.enabled) {
+        if ($entityColumnSuggestions.enabled) {
             // if enabled, trigger thinking mode!
-            tableColumnSuggestions.update((store) => ({
+            entityColumnSuggestions.update((store) => ({
                 ...store,
                 thinking: true,
-                table: {
+                entity: {
                     id,
                     name
                 }
@@ -73,6 +73,7 @@
             trackError(e, analyticsCreateSubmit);
         } finally {
             creatingEntity = false;
+            resetSampleFieldsConfig();
         }
     }
 
@@ -91,35 +92,19 @@
         show = false;
     }
 
-    function toIdFormat(str: string): string {
-        return str
-            .toLowerCase()
-            .replace(/[^a-z0-9\-_. ]+/g, '')
-            .replace(/ /g, '_')
-            .replace(/^-+/, '')
-            .replace(/\.+$/, '')
-            .replace(/_{2,}/g, '_')
-            .slice(0, 36); // max length
-    }
-
     $effect(() => {
-        if (!touchedId && name) {
-            id = toIdFormat(name);
-        }
-
         if (!show) {
             id = null;
             error = null;
-            touchedId = false;
         }
     });
 
     $effect(() => {
         // reset is OK here, we don't have to check for entity type!
-        if (show && isOnEntitiesPage && $tableColumnSuggestions.table) {
-            tableColumnSuggestions.update((store) => ({
+        if (show && isOnEntitiesPage && $entityColumnSuggestions.entity) {
+            entityColumnSuggestions.update((store) => ({
                 ...store,
-                table: null
+                entity: null
             }));
         }
     });
@@ -132,27 +117,12 @@
         placeholder="Enter {lower} name"
         bind:value={name}
         autofocus
-        required
-        on:input={() => {
-            if (!touchedId) {
-                id = toIdFormat(name);
-            }
-        }} />
+        required />
 
-    <CustomId
-        show
-        bind:id
-        required={false}
-        autofocus={false}
-        name={title}
-        on:input={() => {
-            if (!touchedId) {
-                touchedId = true;
-            }
-        }} />
+    <CustomId show bind:id required={false} autofocus={false} name={title} syncFrom={name} />
 
     {#if useSuggestions}
-        <SuggestionsInput />
+        <SuggestionsInput showSampleCountPicker={!terminology.schema} />
     {/if}
 
     <svelte:fragment slot="footer">

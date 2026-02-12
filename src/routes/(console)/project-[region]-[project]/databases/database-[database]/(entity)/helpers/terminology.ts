@@ -1,13 +1,20 @@
 import type { Page } from '@sveltejs/kit';
 
 import { capitalize, plural } from '$lib/helpers/string';
-import { AppwriteException, type Models } from '@appwrite.io/console';
-import type { Attributes, Columns, Table } from '$database/table-[table]/store';
+import { AppwriteException, type IndexType, type Models } from '@appwrite.io/console';
+import type { Attributes, Collection, Columns, Table } from '$database/store';
 import type { Term, TerminologyResult, TerminologyShape } from '$database/(entity)/helpers/types';
 
+type BaseTerminology = typeof baseTerminology;
+type ImplementedDBTypes = Omit<BaseTerminology, 'vectordb' | 'legacy'>;
+
+/* manual type for the time being because vectordb is pending */
 export type DatabaseType = 'legacy' | 'tablesdb' | 'documentsdb' | 'vectordb';
 
-export type Entity = Partial<Models.Collection | Table> & {
+export type RecordType = ImplementedDBTypes[keyof ImplementedDBTypes]['record'];
+
+export type Entity = Partial<Collection | Table> & {
+    schema: boolean;
     indexes?: Index[];
     fields?: (Attributes | Columns)[];
     recordSecurity?: Models.Collection['documentSecurity'] | Models.Table['rowSecurity'];
@@ -15,13 +22,23 @@ export type Entity = Partial<Models.Collection | Table> & {
 
 export type Field = Partial<Attributes> | Partial<Columns>;
 
+export type Record = Partial<Models.Document | Models.Row> & {
+    entityId?: Models.Document['$collectionId'] | Models.Row['$tableId'];
+};
+
 export type Index = Partial<Models.Index | Models.ColumnIndex> & {
     fields: Models.Index['attributes'] | Models.ColumnIndex['columns'];
+    type: IndexType;
 };
 
 export type EntityList = {
     total: number;
     entities: Entity[];
+};
+
+export type RecordList = {
+    total: number;
+    records: Record[];
 };
 
 export const baseTerminology = {
@@ -75,17 +92,20 @@ const terminologyData = Object.fromEntries(
     ])
 );
 
-const toIndex = (index: Models.Index | Models.ColumnIndex): Index => ({
-    ...index,
-    fields: (index as Models.Index).attributes ?? (index as Models.ColumnIndex).columns ?? []
-});
+export function toSupportiveIndex(index: Models.Index | Models.ColumnIndex): Index {
+    return {
+        ...index,
+        type: index.type as IndexType,
+        fields: (index as Models.Index).attributes ?? (index as Models.ColumnIndex).columns ?? []
+    };
+}
 
 /**
  * Transforms a raw `Collection` / `Table` model to normalized `Entity`.
  */
 export function toSupportiveEntity(raw: Models.Collection | Models.Table): Entity {
     const isTable = 'columns' in raw;
-    const indexes = raw.indexes?.map(toIndex) ?? [];
+    const indexes = raw.indexes?.map(toSupportiveIndex) ?? [];
 
     const fields = isTable ? raw.columns : raw.attributes;
     const recordSecurity = isTable ? raw.rowSecurity : raw.documentSecurity;
@@ -94,12 +114,29 @@ export function toSupportiveEntity(raw: Models.Collection | Models.Table): Entit
         ...raw,
         fields,
         recordSecurity,
-        indexes
+        indexes,
+        schema: !isTable /* not table, so considering schema less */
     } as Entity;
 }
 
 export function toRelationalField(raw: Field): Columns {
     return raw as Columns;
+}
+
+export function toSupportiveRecord(raw: Record | Models.Document | Models.Row): Record {
+    const isRow = '$tableId' in raw;
+    const isRecord = 'entityId' in raw;
+
+    if (isRecord && raw.entityId) {
+        return raw as Record;
+    }
+
+    const entityId = isRow ? (raw as Models.Row).$tableId : (raw as Models.Document).$collectionId;
+
+    return {
+        ...raw,
+        entityId
+    } as Record;
 }
 
 /**
@@ -117,8 +154,11 @@ export function useTerminology(pageOrType: Page | DatabaseType): TerminologyResu
     }
 
     const dbTerminologies = terminologyData[type] || {};
+    const strictSchema = type === 'legacy' || type === 'tablesdb';
+
     return {
         type,
+        schema: strictSchema,
         source: dbTerminologies,
         field: dbTerminologies.field,
         record: dbTerminologies.record,

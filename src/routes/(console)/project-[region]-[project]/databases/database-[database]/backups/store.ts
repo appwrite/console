@@ -7,6 +7,7 @@ export const showCreateBackup = writable(false);
 
 export const presetPolicies = writable<UserBackupPolicy[]>([
     {
+        id: 'hourly',
         label: 'Hourly',
         retained: 1,
         default: true,
@@ -17,6 +18,7 @@ export const presetPolicies = writable<UserBackupPolicy[]>([
         description: 'Runs every hour and is retained for 24 hours'
     },
     {
+        id: 'daily',
         label: 'Daily',
         retained: 7,
         default: true,
@@ -25,6 +27,13 @@ export const presetPolicies = writable<UserBackupPolicy[]>([
         selectedTime: '00:00',
         plainTextFrequency: 'daily',
         description: 'Runs every day and is retained for 7 days'
+    },
+    {
+        id: 'none',
+        label: 'No backup',
+        retained: null,
+        default: false,
+        description: 'Skip backups. You can change this later'
     }
 ]);
 

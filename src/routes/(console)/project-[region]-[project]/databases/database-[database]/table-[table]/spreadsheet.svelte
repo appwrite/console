@@ -12,13 +12,11 @@
     import { type ComponentType, onDestroy, onMount } from 'svelte';
     import type { PageData } from './$types';
     import {
-        buildRowUrl,
-        buildWildcardColumnsQuery,
         isRelationship,
         isRelationshipToMany,
         isSpatialType,
         isString
-    } from './rows/store';
+    } from '$database/table-[table]/rows/store';
     import {
         columns,
         tableColumns,
@@ -29,20 +27,15 @@
         reorderItems,
         columnsOrder,
         columnsWidth,
-        randomDataModalState,
-        spreadsheetLoading,
         showCreateIndexSheet,
-        type SortState,
         Deletion,
         rowActivitySheet,
         paginatedRows,
         paginatedRowsLoading,
-        spreadsheetRenderKey,
-        expandTabs,
         databaseRelatedRowSheetOptions,
-        rowPermissionSheet,
-        type Columns
-    } from './store';
+        rowPermissionSheet
+    } from '$database/table-[table]/store';
+    import { buildFieldUrl } from '$database/(entity)/helpers/navigation';
     import type { Column, ColumnType } from '$lib/helpers/types';
     import {
         Alert,
@@ -82,11 +75,15 @@
         IconViewList,
         IconArrowExpand
     } from '@appwrite.io/pink-icons-svelte';
-    import type { HeaderCellAction, RowCellAction } from './sheetOptions.svelte';
-    import SheetOptions from './sheetOptions.svelte';
     import { isSmallViewport, isTabletViewport } from '$lib/stores/viewport';
-    import { type Field, SpreadsheetContainer } from '$database/(entity)';
-    import EditRowCell from './rows/cell/edit.svelte';
+    import {
+        type Field,
+        SpreadsheetContainer,
+        SpreadsheetOptions,
+        type HeaderCellAction,
+        type RowCellAction
+    } from '$database/(entity)';
+    import EditRowCell from '$database/table-[table]/rows/cell/edit.svelte';
     import { copy } from '$lib/helpers/copy';
     import { writable } from 'svelte/store';
     import { pageToOffset } from '$lib/helpers/load';
@@ -95,6 +92,16 @@
     import { formatNumberWithCommas } from '$lib/helpers/numbers';
     import { chunks } from '$lib/helpers/array';
     import { mapToQueryParams } from '$lib/components/filters/store';
+    import {
+        expandTabs,
+        type Columns,
+        buildWildcardEntitiesQuery,
+        type SortState,
+        randomDataModalState,
+        spreadsheetLoading,
+        spreadsheetRenderKey
+    } from '$database/store';
+    import { SvelteSet } from 'svelte/reactivity';
 
     export let data: PageData;
     export let showRowCreateSheet: {
@@ -168,7 +175,7 @@
             '$updatedAt' /* allowed for reordering */
         ]);
 
-        const seen = new Set<string>();
+        const seen = new SvelteSet<string>();
         const cleanOrder = order.filter((columnId) => {
             if (systemColumns.has(columnId)) return false;
             if (seen.has(columnId)) return false;
@@ -179,6 +186,25 @@
 
         columnsOrder.set(cleanOrder);
         columnsWidth.set(preferences.getColumnWidths(tableId));
+    }
+
+    function handleExpandShortcut(event: KeyboardEvent) {
+        if (!(event.metaKey || event.ctrlKey) || event.key !== 'Enter') return;
+
+        const target = event.target as HTMLElement | null;
+        if (target?.isContentEditable) return;
+        if (target?.tagName === 'INPUT' || target?.tagName === 'TEXTAREA') return;
+
+        if (selectedRows.length !== 1) return;
+
+        const rowId = selectedRows[0];
+        const focusedRow = $paginatedRows.items.find((row) => row.$id === rowId);
+        if (!focusedRow) return;
+
+        event.preventDefault();
+        previouslyFocusedElement = document.activeElement;
+        $databaseRowSheetOptions.autoFocus = false;
+        onSelectSheetOption('update', null, null, 'row', focusedRow);
     }
 
     function makeTableColumns() {
@@ -519,11 +545,15 @@
 
     async function onSelectSheetOption(
         action: HeaderCellAction | RowCellAction,
-        columnId: string,
+        columnId: string | null,
+        column: Columns | null,
         type: 'header' | 'row',
         row: Models.Row | null = null
     ) {
         if (type === 'header') {
+            if (!columnId || !column) {
+                return;
+            }
             if (action === 'update') {
                 $databaseColumnSheetOptions.show = true;
                 $databaseColumnSheetOptions.isEdit = true;
@@ -531,7 +561,15 @@
             }
 
             if (action === 'column-left' || action === 'column-right') {
-                const { to, neighbour } = $databaseColumnSheetOptions.direction;
+                const neighbour = columnId;
+                const to = action === 'column-left' ? 'left' : 'right';
+
+                $databaseColumnSheetOptions.column = column;
+                $databaseColumnSheetOptions.direction = {
+                    neighbour: columnId,
+                    to: action === 'column-left' ? 'left' : 'right'
+                };
+
                 $showCreateColumnSheet.title = `Create column to the ${to} of ${neighbour}`;
                 $showCreateColumnSheet.direction = $databaseColumnSheetOptions.direction;
                 $showCreateColumnSheet.columns = $tableColumns;
@@ -596,7 +634,7 @@
 
             if (action === 'copy-url') {
                 try {
-                    await copy(buildRowUrl(row.$id));
+                    await copy(buildFieldUrl('row', row.$id));
                     addNotification({
                         type: 'success',
                         message: 'Row url copied'
@@ -690,7 +728,7 @@
                     Query.limit(SPREADSHEET_PAGE_LIMIT),
                     Query.offset(pageToOffset(pageNumber, SPREADSHEET_PAGE_LIMIT)),
                     ...filterQueries /* filter queries */,
-                    ...buildWildcardColumnsQuery(table)
+                    ...buildWildcardEntitiesQuery(table)
                 ]
             });
 
@@ -717,7 +755,7 @@
                         getCorrectOrderQuery(),
                         Query.limit(SPREADSHEET_PAGE_LIMIT),
                         Query.offset(pageToOffset(targetPageNum, SPREADSHEET_PAGE_LIMIT)),
-                        ...buildWildcardColumnsQuery(table)
+                        ...buildWildcardEntitiesQuery(table)
                     ]
                 });
 
@@ -791,6 +829,8 @@
     }
 </script>
 
+<svelte:window on:keydown={handleExpandShortcut} />
+
 <SpreadsheetContainer bind:this={spreadsheetContainer}>
     {#key $spreadsheetRenderKey}
         <Spreadsheet.Root
@@ -818,15 +858,6 @@
             bottomActionTooltip={{
                 text: 'Create row',
                 placement: 'top-end'
-            }}
-            expandKbdShortcut="Cmd+Enter"
-            on:expandKbdShortcut={({ detail }) => {
-                const focusedRowId = detail.rowId;
-                const focusedRow = $paginatedRows.items.find((row) => row.$id === focusedRowId);
-
-                previouslyFocusedElement = document.activeElement;
-                $databaseRowSheetOptions.autoFocus = false;
-                onSelectSheetOption('update', null, 'row', focusedRow);
             }}>
             <svelte:fragment slot="header" let:root>
                 {#each $tableColumns as column (column.id)}
@@ -851,12 +882,12 @@
                         </Spreadsheet.Header.Cell>
                     {:else}
                         {@const structureColumn = $columns.find((col) => col.key === column.id)}
-                        <SheetOptions
+                        <SpreadsheetOptions
                             type="header"
                             columnId={column.id}
                             column={structureColumn}
                             onSelect={(option, columnId) =>
-                                onSelectSheetOption(option, columnId, 'header')}>
+                                onSelectSheetOption(option, columnId, structureColumn, 'header')}>
                             {#snippet children(toggle)}
                                 <Spreadsheet.Header.Cell
                                     {root}
@@ -885,7 +916,7 @@
                                     </Layout.Stack>
                                 </Spreadsheet.Header.Cell>
                             {/snippet}
-                        </SheetOptions>
+                        </SpreadsheetOptions>
                     {/if}
                 {/each}
             </svelte:fragment>
@@ -957,6 +988,7 @@
                                                             onSelectSheetOption(
                                                                 'update',
                                                                 null,
+                                                                null,
                                                                 'row',
                                                                 row
                                                             );
@@ -981,11 +1013,8 @@
                                                             direction="row"
                                                             alignItems="center"
                                                             alignContent="center">
-                                                            <Keyboard size="s" key="⌘" />
-                                                            <Keyboard
-                                                                key={'Enter'}
-                                                                autoWidth
-                                                                size="s" />
+                                                            <Keyboard key="⌘" />
+                                                            <Keyboard key={'Enter'} autoWidth />
                                                         </Layout.Stack>
                                                     </Layout.Stack>
                                                 </svelte:fragment>
@@ -1001,12 +1030,12 @@
                                             time={row[columnId]}
                                             canShowPopover={canShowDatetimePopover} />
                                     {:else if columnId === 'actions'}
-                                        <SheetOptions
+                                        <SpreadsheetOptions
                                             type="row"
                                             column={rowColumn}
                                             onSelect={(option) => {
                                                 $databaseRowSheetOptions.autoFocus = true;
-                                                onSelectSheetOption(option, null, 'row', row);
+                                                onSelectSheetOption(option, null, null, 'row', row);
                                             }}
                                             onVisibilityChanged={(visible) => {
                                                 canShowDatetimePopover = !visible;
@@ -1021,7 +1050,7 @@
                                                         color="--fgcolor-neutral-primary" />
                                                 </Button.Button>
                                             {/snippet}
-                                        </SheetOptions>
+                                        </SpreadsheetOptions>
                                     {:else if isRelationship(rowColumn)}
                                         {@const args = getDisplayNamesForTable(row[columnId])}
                                         {#if !isRelationshipToMany(rowColumn)}
@@ -1142,7 +1171,13 @@
                                                     );
                                                 } else {
                                                     $databaseRowSheetOptions.autoFocus = true;
-                                                    onSelectSheetOption('update', null, 'row', row);
+                                                    onSelectSheetOption(
+                                                        'update',
+                                                        null,
+                                                        null,
+                                                        'row',
+                                                        row
+                                                    );
                                                 }
                                             }} />
                                     </svelte:fragment>
@@ -1210,6 +1245,7 @@
                                 variant="secondary"
                                 on:click={() => {
                                     $randomDataModalState.show = true;
+                                    $randomDataModalState.managed = true;
                                 }}>Generate sample data</Button.Button>
                         </div>
                     {/if}
@@ -1335,6 +1371,10 @@
     // very weird because the library already has this!
     :global(.virtual-row:has([data-editing-mode='true'])) {
         z-index: 1 !important;
+    }
+
+    :global(.virtual-row.hover .select-checkbox) {
+        background: none;
     }
 
     :global(.floating-editor) {

@@ -11,30 +11,35 @@
     import { isSmallViewport, isTabletViewport } from '$lib/stores/viewport';
     import { SortButton } from '$lib/components';
     import type { Column } from '$lib/helpers/types';
-    import { SpreadsheetContainer } from '$database/(entity)';
+    import { type DatabaseType, getTerminologies, SpreadsheetContainer } from '$database/(entity)';
     import { onDestroy, onMount, type Snippet } from 'svelte';
     import { debounce } from '$lib/helpers/debounce';
-    import { expandTabs, spreadsheetLoading } from '$database/table-[table]/store';
+    import { expandTabs, spreadsheetLoading } from '$database/store';
+    import { NoSqlEditor } from '$database/collection-[collection]/(components)/editor';
 
-    type Mode = 'rows' | 'rows-filtered' | 'indexes';
+    type Mode = 'records' | 'records-filtered' | 'indexes';
 
     const {
+        type = 'tablesdb',
         mode,
         title,
         actions,
         subtitle,
         showActions = true,
         customColumns = [],
-        onOpenCreateColumn
-    } = $props<{
+        onOpenCreateColumn,
+        showNoSqlEditor = false
+    }: {
+        type?: DatabaseType;
         mode: Mode;
-        customColumns?: Column[];
         title?: string;
         subtitle?: Snippet;
         actions?: Snippet;
         showActions?: boolean;
+        customColumns?: Column[];
+        showNoSqlEditor?: boolean;
         onOpenCreateColumn?: () => Promise<void> | void;
-    }>();
+    } = $props();
 
     let spreadsheetContainer: HTMLElement;
     let headerElement: HTMLElement | null = null;
@@ -47,6 +52,8 @@
     let dynamicOverlayHeight = $state('60.5vh');
 
     const baseColProps = { draggable: false, resizable: false };
+
+    const { terminology } = getTerminologies();
 
     const updateOverlayLeftOffset = () => {
         if (spreadsheetContainer) {
@@ -89,6 +96,8 @@
 
     onMount(async () => {
         if (spreadsheetContainer) {
+            requestAnimationFrame(updateOverlayHeight);
+
             resizeObserver = new ResizeObserver(debouncedUpdateOverlayHeight);
             resizeObserver.observe(spreadsheetContainer);
 
@@ -214,6 +223,51 @@
         return columns;
     };
 
+    const getDocumentsDbColumns = (): Column[] => [
+        {
+            id: '$id',
+            title: '$id',
+            width: 225,
+            minimumWidth: 225,
+            draggable: false,
+            type: 'string',
+            icon: IconFingerPrint,
+            isEditable: false,
+            isPrimary: false
+        },
+        {
+            id: '$createdAt',
+            title: '$createdAt',
+            width: 200,
+            minimumWidth: 200,
+            draggable: false,
+            type: 'datetime',
+            icon: IconCalendar,
+            isEditable: false
+        },
+        {
+            id: '$updatedAt',
+            title: '$updatedAt',
+            width: 200,
+            minimumWidth: 200,
+            draggable: false,
+            type: 'datetime',
+            icon: IconCalendar,
+            isEditable: false
+        },
+        {
+            id: 'actions',
+            title: '',
+            width: 40,
+            isAction: true,
+            draggable: false,
+            type: 'string',
+            resizable: false,
+            isEditable: false,
+            hide: false
+        }
+    ];
+
     const getIndexesColumns = (): Column[] => {
         const columns = [
             { id: 'key', title: 'Key', icon: null, isPrimary: false },
@@ -234,18 +288,32 @@
         return columns;
     };
 
-    const spreadsheetColumns = $derived(mode === 'indexes' ? getIndexesColumns() : getRowColumns());
+    const isRecordMode = $derived(mode === 'records' || mode === 'records-filtered');
+
+    const spreadsheetColumns = $derived.by(() => {
+        return isRecordMode
+            ? type !== 'documentsdb'
+                ? getRowColumns()
+                : getDocumentsDbColumns()
+            : getIndexesColumns();
+    });
 
     const emptyCells = $derived(
         ($isSmallViewport ? 14 : $isTabletViewport ? 17 : 24) + (!$expandTabs ? 2 : 0)
     );
+
+    const modeTerminology = $derived(
+        mode === 'indexes' ? 'indexes' : terminology.record.lower.plural
+    );
 </script>
 
 <div
+    data-type={type}
     data-mode={mode}
+    class:custom-columns={spreadsheetColumns.length > 0}
+    class:no-custom-columns={spreadsheetColumns.length <= 0}
+    data-loading={$spreadsheetLoading}
     bind:this={spreadsheetContainer}
-    class:custom-columns={customColumns.length > 0}
-    class:no-custom-columns={customColumns.length <= 0}
     class="databases-spreadsheet spreadsheet-container-outer">
     <SpreadsheetContainer>
         <Spreadsheet.Root
@@ -265,7 +333,7 @@
                                 icon
                                 variant="extra-compact"
                                 onclick={() => {
-                                    if (mode === 'rows') {
+                                    if (isRecordMode) {
                                         onOpenCreateColumn?.();
                                     }
                                 }}>
@@ -311,15 +379,23 @@
                 {/if}
             </svelte:fragment>
         </Spreadsheet.Root>
+
+        {#snippet noSqlEditor()}
+            {#if showNoSqlEditor}
+                {#if type === 'documentsdb' && mode === 'records'}
+                    <NoSqlEditor loading />
+                {/if}
+            {/if}
+        {/snippet}
     </SpreadsheetContainer>
 
     {#if !$spreadsheetLoading}
         <div
             class="spreadsheet-fade-bottom"
-            class:custom-columns={customColumns.length > 0}
+            class:custom-columns={spreadsheetColumns.length > 0}
             data-collapsed-tabs={!$expandTabs}
-            style:--overlay-left={overlayLeftOffset}
             style:--overlay-top={overlayTopOffset}
+            style:--overlay-left={overlayLeftOffset}
             style:--dynamic-overlay-height={dynamicOverlayHeight}>
             <div class="empty-actions">
                 <Layout.Stack
@@ -328,15 +404,19 @@
                     alignContent="center"
                     style="width: 653px; max-width: {$isSmallViewport ? '353px' : undefined}">
                     <Layout.Stack gap="xs" alignItems="center" alignContent="center">
-                        <Typography.Title>{title ?? `You have no ${mode} yet`}</Typography.Title>
+                        <Typography.Title
+                            >{title ?? `You have no ${modeTerminology} yet`}</Typography.Title>
 
                         {@render subtitle?.()}
                     </Layout.Stack>
 
                     {#if showActions && actions}
-                        {@const inline = mode === 'rows-filtered'}
-                        <div class="controlled-width">
-                            <Layout.Stack {inline}>
+                        {@const isOnlyIndexes = mode === 'indexes' && type === 'documentsdb'}
+                        {@const inline = mode === 'records-filtered' || isOnlyIndexes}
+                        <div class="controlled-width" class:single-mode={isOnlyIndexes}>
+                            <Layout.Stack
+                                {inline}
+                                style="width: {isOnlyIndexes ? '353px' : undefined}">
                                 {#if inline}
                                     {@render actions?.()}
                                 {:else}
@@ -373,6 +453,10 @@
             width: unset;
         }
 
+        &[data-mode='indexes'] {
+            width: 100%;
+        }
+
         &.no-custom-columns {
             @media (max-width: 768px) {
                 & :global(.spreadsheet-wrapper) {
@@ -397,9 +481,8 @@
             pointer-events: none;
         }
 
-        &[data-mode='rows'] {
+        &[data-mode='records'][data-type='tablesdb'] {
             --top-actions-spacing: 50%;
-
             & :global([role='rowheader'] :nth-last-child(2) [role='presentation']) {
                 display: none;
             }
@@ -419,6 +502,19 @@
                     opacity: 0.5;
                 }
             }
+        }
+
+        &[data-mode='records'][data-type='documentsdb'] {
+            position: unset;
+            // disable animation when not loading!
+            &[data-loading='false'] :global(.skeleton) {
+                animation: none;
+            }
+        }
+
+        & :global([data-select='true']) {
+            opacity: 0.85;
+            pointer-events: none;
         }
     }
 
@@ -440,6 +536,9 @@
         justify-content: center;
         transition: none !important;
 
+        // TODO: @itznotabug - check if we need it.
+        height: var(--dynamic-overlay-height, 70.5vh);
+
         &.custom-columns {
             pointer-events: none;
         }
@@ -451,6 +550,11 @@
         @media (min-width: 1440px) {
             width: 538px;
             max-width: 538px;
+        }
+
+        &.single-mode {
+            display: flex;
+            justify-content: center;
         }
     }
 

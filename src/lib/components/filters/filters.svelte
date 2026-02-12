@@ -28,6 +28,7 @@
     export let enableApply = false;
     export let quickFilters = false;
     export let analyticsSource = '';
+    export let schema = true;
     let displayQuickFilters = quickFilters;
 
     const dispatch = createEventDispatcher();
@@ -186,6 +187,7 @@
                                 bind:distanceValue
                                 bind:arrayValues
                                 {columns}
+                                {schema}
                                 {singleCondition}
                                 on:apply={afterApply}
                                 on:clear={() => (filtersAppliedCount = 0)} />
@@ -243,6 +245,7 @@
         {:else}
             <Content
                 {columns}
+                {schema}
                 bind:columnId={selectedColumn}
                 bind:operatorKey
                 bind:value

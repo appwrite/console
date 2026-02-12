@@ -1,0 +1,1041 @@
+<script lang="ts">
+    import { page } from '$app/state';
+    import { goto, invalidate } from '$app/navigation';
+    import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import { Confirm, Id, SortButton } from '$lib/components';
+    import { Dependencies, SPREADSHEET_PAGE_LIMIT } from '$lib/constants';
+    import { Button as ConsoleButton, InputSelect } from '$lib/elements/forms';
+    import { addNotification } from '$lib/stores/notifications';
+    import { preferences } from '$lib/stores/preferences';
+    import { sdk } from '$lib/stores/sdk';
+    import { type Models, Query } from '@appwrite.io/console';
+    import { onMount, onDestroy } from 'svelte';
+    import type { PageData } from './$types';
+    import type { Column } from '$lib/helpers/types';
+    import {
+        Spreadsheet,
+        Button,
+        Layout,
+        Badge,
+        FloatingActionBar,
+        Icon,
+        Typography
+    } from '@appwrite.io/pink-svelte';
+    import DualTimeView from '$lib/components/dualTimeView.svelte';
+    import {
+        IconCalendar,
+        IconDotsHorizontal,
+        IconDuplicate,
+        IconFingerPrint
+    } from '@appwrite.io/pink-icons-svelte';
+    import { isSmallViewport, isTabletViewport } from '$lib/stores/viewport';
+    import { SpreadsheetContainer, useDatabaseSdk } from '$database/(entity)';
+    import { copy } from '$lib/helpers/copy';
+    import { writable } from 'svelte/store';
+    import { pageToOffset } from '$lib/helpers/load';
+    import { hash } from '$lib/helpers/string';
+    import { formatNumberWithCommas } from '$lib/helpers/numbers';
+    import { chunks } from '$lib/helpers/array';
+    import { mapToQueryParams } from '$lib/components/filters/store';
+    import { expandTabs, buildWildcardEntitiesQuery } from '$database/store';
+    import { setupUnsavedChangesGuard } from '$lib/helpers/unsavedChanges';
+    import { mockSuggestions } from '$database/(suggestions)';
+    import {
+        collectionColumns,
+        documentActivitySheet,
+        documentPermissionSheet,
+        noSqlDocument,
+        paginatedDocuments,
+        paginatedDocumentsLoading,
+        sortState,
+        showCreateIndexSheet
+    } from '$database/collection-[collection]/store';
+    import {
+        type SortState,
+        randomDataModalState,
+        spreadsheetRenderKey,
+        spreadsheetLoading
+    } from '$database/store';
+    import {
+        type JsonValue,
+        NoSqlEditor
+    } from '$database/collection-[collection]/(components)/editor';
+    import { buildFieldUrl } from '$database/(entity)/helpers/navigation';
+    import {
+        SpreadsheetOptions,
+        type HeaderCellAction,
+        type RowCellAction
+    } from '$database/(entity)';
+    import { fuzzySearchKeys } from '$lib/helpers/search';
+
+    export let data: PageData;
+
+    $: collection = data.collection;
+    $: documents = writable(data.documents);
+    $: if ($documents) {
+        paginatedDocuments.clear();
+
+        // If we have a new document, add it at the start
+        if ($noSqlDocument.isDirty && $noSqlDocument.isNew) {
+            const tempDoc = $noSqlDocument.document as Models.DefaultDocument;
+            const docsWithTemp = [tempDoc, ...$documents.documents];
+            paginatedDocuments.setPage(1, docsWithTemp);
+        } else {
+            paginatedDocuments.setPage(1, $documents.documents);
+        }
+    }
+
+    const databaseId = page.params.database;
+    const collectionId = page.params.collection;
+    const databaseSdk = useDatabaseSdk(page.params.region, page.params.project, data.database.type);
+
+    const emptyCellsLimit = $spreadsheetLoading
+        ? 30
+        : $isSmallViewport
+          ? 12
+          : $isTabletViewport
+            ? 18
+            : 24;
+
+    let selectedDocuments = [];
+    let spreadsheetContainer: SpreadsheetContainer;
+
+    let currentPage = 1;
+    let jumpToPageReactive = 0;
+
+    let showDelete = false;
+    let selectedDocumentForDelete: Models.Document['$id'] | null = null;
+
+    let showUnsavedChangesModal = false;
+    let confirmNavigation: (() => void | Promise<void>) | null = null;
+
+    async function loadRemoteDocument() {
+        try {
+            noSqlDocument.update({ show: true, loading: true });
+            const documentId = $noSqlDocument.documentId;
+            noSqlDocument.update({ documentId: null }); // reset for later!
+
+            const loadedDocument = await sdk
+                .forProject(page.params.region, page.params.project)
+                .documentsDB.getDocument({
+                    databaseId: page.params.database,
+                    collectionId: page.params.collection,
+                    documentId
+                });
+
+            if (loadedDocument) {
+                noSqlDocument.edit(loadedDocument);
+            }
+        } catch (e) {
+            markFirstDocumentSelected();
+            addNotification({
+                type: 'error',
+                message: e.message
+            });
+        } finally {
+            noSqlDocument.update({ loading: false });
+        }
+    }
+
+    function markFirstDocumentSelected() {
+        const firstDocument = $documents?.documents?.[0];
+        if (firstDocument) {
+            $noSqlDocument.document = firstDocument;
+        }
+    }
+
+    onMount(async () => {
+        sortState.set(data.currentSort as SortState);
+
+        if (data.documents.documents.length) {
+            paginatedDocuments.clear();
+            paginatedDocuments.setPage(1, data.documents.documents);
+        }
+
+        makeCollectionColumns();
+
+        // documentId exists!
+        if ($noSqlDocument.documentId) {
+            await loadRemoteDocument();
+        } else {
+            markFirstDocumentSelected();
+        }
+    });
+
+    export function refreshColumns() {
+        makeCollectionColumns();
+    }
+
+    function makeCollectionColumns() {
+        const selectedColumnsToHide = preferences.getCustomTableColumns(collectionId);
+
+        const customKeys = (
+            preferences.getDisplayNames(collectionId, data.database.type) ?? []
+        ).filter((name) => !name.startsWith('$'));
+
+        const customColumns: Column[] = customKeys.map((key) => ({
+            id: key,
+            title: key,
+            width: 225,
+            minimumWidth: 225,
+            draggable: false,
+            type: 'dynamic',
+            isEditable: false,
+            hide: !!selectedColumnsToHide?.includes(key)
+        }));
+
+        const staticColumns: Column[] = [
+            {
+                id: '$id',
+                title: '$id',
+                width: 225,
+                minimumWidth: 225,
+                draggable: false,
+                type: 'string',
+                icon: IconFingerPrint,
+                isEditable: false,
+                isPrimary: false,
+                hide: false,
+                disable: true
+            },
+            ...customColumns,
+            {
+                id: '$createdAt',
+                title: '$createdAt',
+                width: 200,
+                minimumWidth: 200,
+                draggable: false,
+                type: 'datetime',
+                icon: IconCalendar,
+                isEditable: false,
+                hide: false,
+                disable: true
+            },
+            {
+                id: '$updatedAt',
+                title: '$updatedAt',
+                width: 200,
+                minimumWidth: 200,
+                draggable: false,
+                type: 'datetime',
+                icon: IconCalendar,
+                isEditable: false,
+                hide: false,
+                disable: true
+            },
+            {
+                id: 'actions',
+                title: '',
+                width: 40,
+                isAction: true,
+                draggable: false,
+                type: 'string',
+                resizable: false,
+                isEditable: false,
+                hide: false
+            }
+        ];
+
+        collectionColumns.set(staticColumns);
+    }
+
+    async function sort(query: string | null) {
+        $spreadsheetLoading = true;
+        const url = new URL(page.url);
+        const parsedQueries = data.parsedQueries;
+
+        if (parsedQueries.size > 0) {
+            for (const [tagValue, queryString] of parsedQueries.entries()) {
+                if (queryString.includes('orderAsc') || queryString.includes('orderDesc')) {
+                    parsedQueries.delete(tagValue);
+                }
+            }
+        }
+
+        if (query !== null) {
+            const { attribute, method } = JSON.parse(query);
+            const tagValue = {
+                tag: `${attribute} ${method}`,
+                value: attribute
+            };
+
+            parsedQueries.set(tagValue, query);
+        }
+
+        if (parsedQueries.size === 0) {
+            url.searchParams.delete('query');
+        } else {
+            url.searchParams.set('query', mapToQueryParams(parsedQueries));
+        }
+
+        // save > navigate > restore!
+        spreadsheetContainer.saveGridSheetScroll();
+        await goto(`${url.pathname}${url.search}`);
+        spreadsheetContainer.restoreGridSheetScroll();
+
+        $spreadsheetLoading = false;
+        markFirstDocumentSelected();
+    }
+
+    async function handleDelete() {
+        showDelete = false;
+
+        try {
+            if (selectedDocumentForDelete) {
+                await databaseSdk.deleteRecord({
+                    databaseId,
+                    entityId: collectionId,
+                    recordId: selectedDocumentForDelete
+                });
+            } else {
+                if (selectedDocuments.length) {
+                    for (const batch of chunks(selectedDocuments, 100)) {
+                        await databaseSdk.deleteRecords({
+                            databaseId,
+                            entityId: collectionId,
+                            queries: [Query.equal('$id', batch)]
+                        });
+                    }
+                }
+            }
+
+            await invalidate(Dependencies.DOCUMENTS);
+            trackEvent(Click.DatabaseRowDelete);
+
+            addNotification({
+                type: 'success',
+                message: `${selectedDocuments.length ? selectedDocuments.length : 1} document${selectedDocuments.length > 1 ? 's' : ''} deleted`
+            });
+
+            spreadsheetRenderKey.set(
+                hash([
+                    data.documents.total.toString(),
+                    ...(selectedDocuments as string[]),
+                    selectedDocumentForDelete
+                ])
+            );
+        } catch (error) {
+            addNotification({ type: 'error', message: error.message });
+            trackError(error, Submit.DocumentDelete);
+        } finally {
+            selectedDocuments = [];
+            showDelete = false;
+            selectedDocumentForDelete = null;
+        }
+    }
+
+    async function onSelectSheetOption(
+        action: HeaderCellAction | RowCellAction,
+        document: Models.Document | null = null,
+        columnId: string | null = null
+    ) {
+        // Header actions
+        if (action === 'create-index') {
+            $showCreateIndexSheet.show = true;
+            $showCreateIndexSheet.column = columnId;
+            return;
+        }
+
+        if (action === 'sort-asc') {
+            sortState.set({ column: columnId, direction: 'asc' });
+            await sort(Query.orderAsc(columnId));
+            return;
+        }
+
+        if (action === 'sort-desc') {
+            sortState.set({ column: columnId, direction: 'desc' });
+            await sort(Query.orderDesc(columnId));
+            return;
+        }
+
+        // Row actions
+        if (action === 'update') {
+            noSqlDocument.set({
+                document: document,
+                isNew: false,
+                show: true
+            });
+        }
+
+        if (action === 'duplicate-row') {
+            /**
+             * remove dates because
+             * console can override timestamps!
+             */
+            const { $createdAt, $updatedAt, ...documentWithoutDates } = document;
+
+            noSqlDocument.set({
+                document: documentWithoutDates,
+                isNew: true,
+                show: true
+            });
+        }
+
+        if (action === 'permissions') {
+            $documentPermissionSheet.show = true;
+            $documentPermissionSheet.document = document;
+        }
+
+        if (action === 'copy-url') {
+            try {
+                await copy(buildFieldUrl('document', document.$id));
+                addNotification({
+                    type: 'success',
+                    message: 'Document url copied'
+                });
+            } catch (e) {
+                addNotification({
+                    type: 'error',
+                    message: e.message
+                });
+            }
+        }
+
+        if (action === 'copy-json') {
+            const stringified = JSON.stringify(document, null, 2);
+            try {
+                await copy(stringified);
+                addNotification({
+                    type: 'success',
+                    message: 'Document copied'
+                });
+            } catch (e) {
+                addNotification({
+                    type: 'error',
+                    message: e.message
+                });
+            }
+        }
+
+        if (action === 'delete') {
+            selectedDocumentForDelete = document.$id;
+            showDelete = true;
+        }
+
+        if (action === 'activity') {
+            $documentActivitySheet.show = true;
+            $documentActivitySheet.document = document;
+        }
+    }
+
+    // possibly for auto-save!
+    async function createOrUpdateDocument(jsonValue: JsonValue) {
+        const document = jsonValue as Models.Document;
+
+        /**
+         * remove dates because
+         * console can override timestamps!
+         */
+        const { $createdAt, $updatedAt, $id, ...documentWithoutDates } = document;
+
+        // Set isSaving to trigger the sonner in the editor
+        noSqlDocument.update({ isSaving: true });
+
+        try {
+            if ($noSqlDocument.isNew) {
+                // create
+                await databaseSdk.createRecord({
+                    databaseId,
+                    entityId: collectionId,
+                    recordId: $id,
+                    data: documentWithoutDates ?? {}
+                });
+
+                trackEvent(Submit.DocumentCreate);
+            } else {
+                // update
+                await databaseSdk.updateRecord({
+                    databaseId,
+                    entityId: collectionId,
+                    recordId: $id,
+                    data: documentWithoutDates,
+                    permissions: document.$permissions ?? []
+                });
+
+                trackEvent(Submit.DocumentUpdate);
+            }
+
+            await invalidate(Dependencies.DOCUMENTS);
+            noSqlDocument.reset({ show: true });
+
+            // re-render spreadsheet!
+            spreadsheetRenderKey.set(hash(Date.now().toString()));
+            const firstDocument = $documents?.documents?.[0];
+            if (firstDocument) {
+                noSqlDocument.update({ document: firstDocument });
+            }
+        } catch (error) {
+            addNotification({
+                message: error.message,
+                type: 'error'
+            });
+            trackError(error, Submit.DocumentUpdate);
+        } finally {
+            noSqlDocument.update({ isSaving: false });
+        }
+    }
+
+    function getCorrectOrderQuery() {
+        return $sortState?.column && $sortState?.direction !== 'default'
+            ? $sortState.direction === 'asc'
+                ? Query.orderAsc($sortState.column)
+                : Query.orderDesc($sortState.column)
+            : Query.orderDesc('');
+    }
+
+    async function loadPage(pageNumber: number): Promise<boolean> {
+        if (pageNumber < 1 || pageNumber > totalPages || $paginatedDocuments.hasPage(pageNumber)) {
+            return false;
+        }
+
+        const parsedQueries = data.parsedQueries;
+        const filterQueries = parsedQueries.size ? data.parsedQueries.values() : [];
+
+        $paginatedDocumentsLoading = true;
+        const loadedRows = await sdk
+            .forProject(page.params.region, page.params.project)
+            .documentsDB.listDocuments({
+                databaseId,
+                collectionId,
+                queries: [
+                    getCorrectOrderQuery(),
+                    Query.limit(SPREADSHEET_PAGE_LIMIT),
+                    Query.offset(pageToOffset(pageNumber, SPREADSHEET_PAGE_LIMIT)),
+                    ...filterQueries /* filter queries */,
+                    ...buildWildcardEntitiesQuery(collection)
+                ]
+            });
+
+        paginatedDocuments.setPage(pageNumber, loadedRows.documents);
+        $paginatedDocumentsLoading = false;
+
+        return true;
+    }
+
+    async function handleGoToPage(targetPageNum: number): Promise<void> {
+        jumpToPageReactive = 0;
+        if (targetPageNum < 1 || targetPageNum > totalPages) return;
+
+        if (!$paginatedDocuments.hasPage(targetPageNum)) {
+            paginatedDocuments.setMaxPage(targetPageNum);
+            $paginatedDocumentsLoading = true;
+
+            const loadedRows = await sdk
+                .forProject(page.params.region, page.params.project)
+                .documentsDB.listDocuments({
+                    databaseId,
+                    collectionId,
+                    queries: [
+                        getCorrectOrderQuery(),
+                        Query.limit(SPREADSHEET_PAGE_LIMIT),
+                        Query.offset(pageToOffset(targetPageNum, SPREADSHEET_PAGE_LIMIT)),
+                        ...buildWildcardEntitiesQuery(collection)
+                    ]
+                });
+
+            paginatedDocuments.setPage(targetPageNum, loadedRows.documents);
+            $paginatedDocumentsLoading = false;
+        }
+    }
+
+    $: emptyCellsCount =
+        $paginatedDocuments.virtualLength >= emptyCellsLimit
+            ? 0
+            : emptyCellsLimit - $paginatedDocuments.virtualLength + (!$expandTabs ? 2 : 0);
+
+    $: canShowDatetimePopover = true;
+
+    $: totalPages = Math.ceil($documents.total / SPREADSHEET_PAGE_LIMIT) || 1;
+
+    $: rowSelection =
+        !$spreadsheetLoading && !$paginatedDocumentsLoading ? true : ('disabled' as const);
+
+    const MIN_DOCS_FOR_FUZZY_SUGGESTIONS = 5;
+
+    $: useMockSuggestions =
+        $noSqlDocument.isNew &&
+        ($documents?.documents?.length ?? 0) < MIN_DOCS_FOR_FUZZY_SUGGESTIONS;
+
+    $: suggestedAttributes =
+        $noSqlDocument.isNew && $documents?.documents
+            ? useMockSuggestions
+                ? mockSuggestions.columns.map((column) => column.name)
+                : (fuzzySearchKeys($documents.documents, { minOccurrences: 2 }) ?? [])
+            : [];
+
+    $: showSuggestions = $noSqlDocument.isNew && suggestedAttributes.length > 0;
+
+    const unsubscribeRenderKey = spreadsheetRenderKey.subscribe(() => {
+        const firstDocument = $documents?.documents[0];
+        const currentOpenDocument = $noSqlDocument.document;
+        const isNewOrDirty = $noSqlDocument.isNew || $noSqlDocument.isDirty;
+
+        // check if current document still exists in the list
+        const currentDocStillExists = currentOpenDocument?.$id
+            ? $documents?.documents.some((doc) => doc.$id === currentOpenDocument.$id)
+            : false;
+
+        /* Only reset to first document if current doc was deleted or no doc is open */
+        if (!isNewOrDirty && !currentDocStillExists && firstDocument) {
+            noSqlDocument.update({ document: firstDocument });
+        }
+    });
+
+    onDestroy(() => {
+        unsubscribeRenderKey();
+    });
+
+    const hasUnsavedChanges = () =>
+        Boolean(
+            $noSqlDocument?.hasDataChanged || ($noSqlDocument?.isNew && $noSqlDocument?.isDirty)
+        );
+
+    const requestDiscardChanges = (onConfirm: () => void | Promise<void>) => {
+        if (!hasUnsavedChanges()) {
+            void onConfirm();
+            return;
+        }
+
+        confirmNavigation = onConfirm;
+        showUnsavedChangesModal = true;
+    };
+
+    const { beforeUnload } = setupUnsavedChangesGuard({
+        hasUnsavedChanges,
+        onConfirmNavigate: () => noSqlDocument.reset({ show: false }),
+        shouldBlockNavigation: (navigation) => {
+            const nextPath = navigation.to?.url?.pathname;
+            return Boolean(nextPath && nextPath !== page.url.pathname);
+        },
+        onShowConfirmModal: (_, onConfirm) => {
+            confirmNavigation = onConfirm;
+            showUnsavedChangesModal = true;
+        }
+    });
+</script>
+
+<svelte:window on:beforeunload={beforeUnload} />
+
+<SpreadsheetContainer
+    bind:this={spreadsheetContainer}
+    bind:showEditorSideSheet={$noSqlDocument.show}
+    sideSheetOptions={{
+        sideSheetTitle: $noSqlDocument.document?.$id,
+        submit: {
+            text: $noSqlDocument.documentId ? 'Update' : 'Save',
+            disabled: !$noSqlDocument.hasDataChanged,
+            onClick: async () => {
+                await createOrUpdateDocument($noSqlDocument.document);
+                return true;
+            }
+        }
+    }}
+    sideSheetStateCallbacks={{
+        onClose() {
+            noSqlDocument.reset();
+        }
+    }}>
+    {#key $spreadsheetRenderKey}
+        <Spreadsheet.Root
+            height="100%"
+            allowSelection
+            useVirtualizer
+            selection={rowSelection}
+            loading={$spreadsheetLoading}
+            emptyCells={emptyCellsCount}
+            bind:columns={$collectionColumns}
+            bind:selectedRows={selectedDocuments}
+            rowCount={$paginatedDocuments.virtualLength}
+            bottomActionClick={() => {
+                // (showDocumentCreateSheet.show = true)
+            }}
+            bind:currentPage
+            nextPageTriggerOffset={2}
+            jumpToPageNumber={jumpToPageReactive}
+            loadingMore={$paginatedDocumentsLoading}
+            itemsPerPage={SPREADSHEET_PAGE_LIMIT}
+            loadNextPage={loadPage}
+            loadPreviousPage={loadPage}
+            goToPage={handleGoToPage}
+            bottomActionTooltip={{
+                text: 'Create row',
+                placement: 'top-end'
+            }}>
+            <svelte:fragment slot="header" let:root>
+                {#each $collectionColumns as column (column.id)}
+                    {#if column.isAction}
+                        <Spreadsheet.Header.Cell
+                            {root}
+                            column={column.id}
+                            icon={column.icon ?? undefined} />
+                    {:else}
+                        <SpreadsheetOptions
+                            type="header"
+                            columnId={column.id}
+                            onSelect={(option, columnId) =>
+                                onSelectSheetOption(option, null, columnId)}>
+                            {#snippet children(toggle)}
+                                <Spreadsheet.Header.Cell
+                                    {root}
+                                    column={column.id}
+                                    icon={column.icon ?? undefined}
+                                    on:contextmenu={toggle}>
+                                    <Layout.Stack
+                                        gap="xs"
+                                        direction="row"
+                                        alignItems="center"
+                                        alignContent="center"
+                                        style="min-width: 0;">
+                                        <Typography.Text truncate>
+                                            {column.title}
+                                        </Typography.Text>
+
+                                        <SortButton
+                                            onSort={sort}
+                                            column={column.id}
+                                            state={sortState} />
+                                    </Layout.Stack>
+                                </Spreadsheet.Header.Cell>
+                            {/snippet}
+                        </SpreadsheetOptions>
+                    {/if}
+                {/each}
+            </svelte:fragment>
+
+            <svelte:fragment slot="rows" let:root let:item let:index>
+                {@const document = $paginatedDocuments.getItemAtVirtualIndex(index)}
+                {#if document === null}
+                    <Spreadsheet.Row.Base
+                        {root}
+                        {index}
+                        virtualItem={item}
+                        id={`loading-${index}`}
+                        select={rowSelection}>
+                        {#each $collectionColumns as col}
+                            <Spreadsheet.Cell
+                                root={{ ...root, loading: true }}
+                                column={col.id}
+                                id={`loading-${index}-${col.id}`}
+                                isEditable={false} />
+                        {/each}
+                    </Spreadsheet.Row.Base>
+                {:else}
+                    {@const selection =
+                        $noSqlDocument.isDirty && document.$id === $noSqlDocument.document?.$id
+                            ? 'disabled'
+                            : rowSelection}
+                    {@const isUnsavedRow =
+                        $noSqlDocument.isNew &&
+                        $noSqlDocument.isDirty &&
+                        document.$id === $noSqlDocument.document?.$id}
+                    <button
+                        onclick={() => {
+                            if (isUnsavedRow) return;
+                            if (document.$id === $noSqlDocument.document?.$id) return;
+                            requestDiscardChanges(() => noSqlDocument.edit(document));
+                        }}
+                        style:cursor={isUnsavedRow ? 'default' : 'pointer'}>
+                        <Spreadsheet.Row.Base
+                            {root}
+                            {index}
+                            id={document?.$id}
+                            virtualItem={item}
+                            select={selection}
+                            isSelected={$noSqlDocument?.document?.$id === document.$id}>
+                            {#each $collectionColumns as { id: columnId } (columnId)}
+                                <Spreadsheet.Cell {root} isEditable={false} column={columnId}>
+                                    {#if columnId === '$id'}
+                                        <Id value={document.$id} tooltipPortal tooltipDelay={200}
+                                            >{document.$id}</Id>
+                                    {:else if columnId === '$createdAt' || columnId === '$updatedAt'}
+                                        <DualTimeView
+                                            showDatetime
+                                            time={document[columnId]}
+                                            canShowPopover={canShowDatetimePopover} />
+                                    {:else if columnId === 'actions'}
+                                        {#if isUnsavedRow}
+                                            <Button.Button icon variant="extra-compact" disabled>
+                                                <Icon
+                                                    icon={IconDotsHorizontal}
+                                                    color="--fgcolor-neutral-primary" />
+                                            </Button.Button>
+                                        {:else}
+                                            <SpreadsheetOptions
+                                                type="row"
+                                                onSelect={(option) => {
+                                                    onSelectSheetOption(option, document);
+                                                }}
+                                                onVisibilityChanged={(visible) => {
+                                                    canShowDatetimePopover = !visible;
+                                                }}>
+                                                {#snippet children(toggle)}
+                                                    <Button.Button
+                                                        icon
+                                                        variant="extra-compact"
+                                                        on:click={toggle}>
+                                                        <Icon
+                                                            icon={IconDotsHorizontal}
+                                                            color="--fgcolor-neutral-primary" />
+                                                    </Button.Button>
+                                                {/snippet}
+                                            </SpreadsheetOptions>
+                                        {/if}
+                                    {:else}
+                                        {@const value = document[columnId]}
+                                        {#if value}
+                                            <Typography.Text truncate>{value}</Typography.Text>
+                                        {:else}
+                                            <Badge variant="secondary" size="xs" content="N/A" />
+                                        {/if}
+                                    {/if}
+                                </Spreadsheet.Cell>
+                            {/each}
+                        </Spreadsheet.Row.Base>
+                    </button>
+                {/if}
+            </svelte:fragment>
+
+            <svelte:fragment slot="footer">
+                <Layout.Stack
+                    direction="row"
+                    alignContent="center"
+                    alignItems="center"
+                    justifyContent="space-between">
+                    <Layout.Stack
+                        gap="l"
+                        direction="row"
+                        alignItems="center"
+                        alignContent="center"
+                        inline>
+                        <Typography.Text variant="m-400" color="--fgcolor-neutral-secondary">
+                            <span style:white-space="nowrap">
+                                {selectedDocuments.length
+                                    ? `${selectedDocuments.length} document${selectedDocuments.length === 1 ? '' : 's'} selected`
+                                    : `${formatNumberWithCommas($documents.total)} document${$documents.total === 1 ? '' : 's'}`}
+                            </span>
+                        </Typography.Text>
+
+                        <div
+                            style:height="20px"
+                            style:width="1px"
+                            style:background-color="var(--border-neutral)">
+                        </div>
+
+                        <Layout.Stack
+                            gap="xs"
+                            direction="row"
+                            alignItems="center"
+                            alignContent="center">
+                            <span style:white-space="nowrap"> Page </span>
+
+                            <InputSelect
+                                id="pagination"
+                                value={currentPage}
+                                placeholder="Page"
+                                options={Array.from({ length: totalPages }, (_, i) => ({
+                                    label: `${i + 1}`,
+                                    value: i + 1
+                                }))}
+                                on:change={(e) => (jumpToPageReactive = Number(e.detail))} />
+
+                            <span style:white-space="nowrap">
+                                out of {totalPages}
+                            </span>
+                        </Layout.Stack>
+                    </Layout.Stack>
+
+                    {#if !$isSmallViewport}
+                        <div style:margin-right="var(--space-6)">
+                            <Button.Button
+                                size="xs"
+                                variant="secondary"
+                                on:click={() => {
+                                    $randomDataModalState.show = true;
+                                    $randomDataModalState.columns = true;
+                                    $randomDataModalState.managed = false;
+                                }}>Generate sample data</Button.Button>
+                        </div>
+                    {/if}
+                </Layout.Stack>
+            </svelte:fragment>
+        </Spreadsheet.Root>
+    {/key}
+
+    {#snippet noSqlEditor()}
+        <NoSqlEditor
+            ctrlSave
+            isNew={$noSqlDocument.isNew}
+            loading={$noSqlDocument.loading}
+            bind:data={$noSqlDocument.document}
+            bind:isSaving={$noSqlDocument.isSaving}
+            showHeaderActions={!$isSmallViewport}
+            {showSuggestions}
+            {suggestedAttributes}
+            showMockSuggestions={useMockSuggestions}
+            onDiscard={() => {
+                const firstDocument = $documents?.documents?.[0];
+                if (firstDocument) {
+                    noSqlDocument.edit(firstDocument);
+                } else {
+                    noSqlDocument.reset({ show: false });
+                }
+            }}
+            onSave={async (document) => await createOrUpdateDocument(document)}
+            onChange={(_, hasDataChanged) => noSqlDocument.update({ hasDataChanged })} />
+    {/snippet}
+
+    {#snippet sideSheetHeaderAction()}
+        <Button.Button
+            icon
+            variant="secondary"
+            size="xs"
+            on:click={async () => {
+                await copy(JSON.stringify($noSqlDocument.document, null, 2));
+                addNotification({
+                    type: 'success',
+                    message: 'Document copied',
+                    timeout: 1250
+                });
+            }}>
+            <Icon icon={IconDuplicate}></Icon>
+        </Button.Button>
+    {/snippet}
+
+    {#if selectedDocuments.length > 0}
+        <div class="floating-action-bar">
+            <FloatingActionBar>
+                <svelte:fragment slot="start">
+                    <div style:width="max-content">
+                        <Layout.Stack direction="row" alignItems="center" gap="m">
+                            <Badge content={selectedDocuments.length.toString()} />
+                            <span style:font-size="14px">
+                                {selectedDocuments.length > 1 ? 'documents' : 'document'}
+                                selected
+                            </span>
+                        </Layout.Stack>
+                    </div>
+                </svelte:fragment>
+                <svelte:fragment slot="end">
+                    <ConsoleButton text on:click={() => (selectedDocuments = [])}
+                        >Cancel</ConsoleButton>
+                    <ConsoleButton secondary on:click={() => (showDelete = true)}
+                        >Delete</ConsoleButton>
+                </svelte:fragment>
+            </FloatingActionBar>
+        </div>
+    {/if}
+</SpreadsheetContainer>
+
+{#if showDelete}
+    <Confirm
+        confirmDeletion
+        bind:open={showDelete}
+        onSubmit={handleDelete}
+        title={selectedDocuments.length === 1 ? 'Delete document' : 'Delete documents'}>
+        {@const isSingle = selectedDocumentForDelete !== null}
+
+        <p>
+            {#if isSingle}
+                Are you sure you want to delete this document from <b>{collection.name}</b>?
+            {:else}
+                Are you sure you want to delete <b>{selectedDocuments.length}</b>
+                {selectedDocuments.length > 1 ? 'documents' : 'document'} from
+                <b>{collection.name}</b>?
+            {/if}
+        </p>
+
+        <p class="u-bold">This action is irreversible.</p>
+    </Confirm>
+{/if}
+
+{#if showUnsavedChangesModal}
+    <Confirm
+        bind:open={showUnsavedChangesModal}
+        title="Unsaved changes"
+        onSubmit={(e) => {
+            e.preventDefault();
+            confirmNavigation?.();
+            showUnsavedChangesModal = false;
+        }}>
+        <svelte:fragment slot="footer">
+            <Button.Button
+                size="s"
+                variant="text"
+                on:click={() => {
+                    confirmNavigation = null;
+                    showUnsavedChangesModal = false;
+                }}>
+                Keep editing
+            </Button.Button>
+
+            <Button.Button
+                size="s"
+                variant="secondary"
+                on:click={() => {
+                    confirmNavigation?.();
+                    showUnsavedChangesModal = false;
+                }}>Discard changes</Button.Button>
+        </svelte:fragment>
+
+        <p>You have changes that haven't been saved.</p>
+    </Confirm>
+{/if}
+
+<style lang="scss">
+    .floating-action-bar {
+        left: 50%;
+        bottom: 0;
+        width: 100%;
+        z-index: 14;
+        position: absolute;
+        transform: translateX(-50%);
+    }
+
+    // very weird because the library already has this!
+    :global(.virtual-row:has([data-editing-mode='true'])) {
+        z-index: 1 !important;
+    }
+
+    :global(.virtual-row.hover .select-checkbox) {
+        background: none;
+    }
+
+    :global(.floating-editor) {
+        z-index: 3 !important;
+
+        & :global(:has(textarea)) {
+            left: 2px !important;
+            //margin-inline-end: 1px;
+        }
+
+        & :global(textarea) {
+            padding-inline: 9px;
+            margin-block: -2.75px;
+            min-height: 85px !important;
+        }
+
+        & :global(:has(.link-wrapper) .input) {
+            padding-bottom: 6px !important;
+        }
+
+        & :global(:has(.link-wrapper) textarea) {
+            min-height: 65px !important;
+        }
+
+        & :global(.link-wrapper) {
+            padding-inline: 9px;
+        }
+
+        & :global(input[type='text']) {
+            padding-inline: 8px !important;
+        }
+
+        & :global(.input:has([type^='date'])) {
+            padding: 12px !important;
+        }
+
+        & :global(.input:focus-within) {
+            top: 0 !important;
+        }
+    }
+</style>

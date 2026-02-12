@@ -22,6 +22,8 @@
         allowNoColumns?: boolean;
         showAnyway?: boolean;
         disableButton?: boolean;
+        onCustomOptionClick?: () => void;
+        onPreferencesUpdated?: () => void;
     }
 
     let {
@@ -34,7 +36,9 @@
         hideColumns = false,
         allowNoColumns = false,
         showAnyway = false,
-        disableButton = false
+        disableButton = false,
+        onCustomOptionClick = null,
+        onPreferencesUpdated = null
     }: Props = $props();
 
     let showCountBadge = $state(false);
@@ -53,6 +57,11 @@
         }
     }
 
+    function handlePreferencesUpdated() {
+        updateBadgeState();
+        onPreferencesUpdated?.();
+    }
+
     $effect(() => {
         showCountBadge = !onlyIcon || !!preferences.getKey(preferenceKey, false);
     });
@@ -65,7 +74,8 @@
         {showAnyway}
         {isCustomTable}
         {allowNoColumns}
-        onPreferencesUpdated={updateBadgeState}>
+        {onCustomOptionClick}
+        onPreferencesUpdated={handlePreferencesUpdated}>
         {#snippet children(toggle, selectedColumnsNumber)}
             <Button.Button
                 size="s"
