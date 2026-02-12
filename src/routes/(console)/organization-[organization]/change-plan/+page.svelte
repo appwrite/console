@@ -176,11 +176,12 @@
             if (targetProjectsLimit > 0 && usageLimitsComponent) {
                 const selected = usageLimitsComponent.getSelectedProjects();
                 if (selected?.length) {
+                    const projectsDeletionPromise = selected.map((projectId) => {
+                        return sdk.forConsole.projects.delete({ projectId });
+                    });
+
                     try {
-                        await sdk.forConsole.organizations.updateProjects({
-                            organizationId: data.organization.$id,
-                            projects: selected
-                        });
+                        await Promise.all(projectsDeletionPromise);
                     } catch (projectError) {
                         console.warn('Project selection failed after plan update:', projectError);
                     }
