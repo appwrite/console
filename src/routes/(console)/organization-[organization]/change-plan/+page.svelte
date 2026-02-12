@@ -47,7 +47,7 @@
     let showExitModal = false;
     let formComponent: Form;
     let usageLimitsComponent:
-        | { validateOrAlert: () => boolean; getSelectedProjects: () => string[] }
+        | { validateOrAlert: () => boolean; getProjectsToDelete: () => string[] }
         | undefined;
     let isSubmitting = writable(false);
     let collaborators: string[] =
@@ -180,9 +180,9 @@
             // 2) If the plan has a project limit, delete excess
             const targetProjectsLimit = selectedPlan?.projects ?? 0;
             if (targetProjectsLimit > 0 && usageLimitsComponent) {
-                const selected = usageLimitsComponent.getSelectedProjects();
-                if (selected?.length) {
-                    const projectsDeletionPromise = selected.map((projectId) => {
+                const projectsToDelete = usageLimitsComponent.getProjectsToDelete();
+                if (projectsToDelete?.length) {
+                    const projectsDeletionPromise = projectsToDelete.map((projectId) => {
                         return sdk.forConsole.projects.delete({ projectId });
                     });
 

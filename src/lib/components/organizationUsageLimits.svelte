@@ -101,8 +101,8 @@
         return isValid;
     }
 
-    export function getSelectedProjects(): string[] {
-        return selectedProjects.filter((id) => projects.some((p) => p.$id === id));
+    export function getProjectsToDelete(): string[] {
+        return projectsToDelete.map((project) => project.$id);
     }
 
     function updateSelected() {
@@ -119,7 +119,7 @@
         // parent flow will apply after plan change
         showSelectProject = false;
         showSelectionReminder = false;
-        addNotification({ type: 'success', message: `Projects selected for deleting` });
+        addNotification({ type: 'success', message: `Projects selected` });
     }
 </script>
 
@@ -263,10 +263,10 @@
                 <Alert.Inline
                     status="warning"
                     title="Select the {freePlanLimits.projects} projects you want to keep">
-                    Projects not kept, including all associated data, will be <b
-                        >permanently deleted</b>
-                    on {toLocaleDate($organization.billingNextInvoiceDate)} and cannot be recovered.
-                    This action is irreversible.
+                    Projects not kept, including all associated data, will be
+                    <b>permanently deleted</b> on {toLocaleDate(
+                        $organization.billingNextInvoiceDate
+                    )} and cannot be recovered. This action is irreversible.
                 </Alert.Inline>
             </Layout.Stack>
         </svelte:fragment>
@@ -297,13 +297,13 @@
             </Table.Root>
         </div>
 
-        {#if selectedProjects.length === allowedProjectsToKeep}
+        {#if selectedProjects.length && selectedProjects.length <= allowedProjectsToKeep}
             {@const difference = projects.length - selectedProjects.length}
             {@const messagePrefix =
                 difference > 1 ? `${difference} projects` : `${difference} project`}
             <Alert.Inline
                 status="error"
-                title={`${messagePrefix} will be permanently deleted on <b>${toLocaleDate($organization.billingNextInvoiceDate)}</b>`}>
+                title={`${messagePrefix} will be permanently deleted on ${toLocaleDate($organization.billingNextInvoiceDate)}`}>
                 <b>{formatProjectsToDelete()}</b> and all associated data, will be
                 <b>permanently deleted</b>.
                 <b>This action is irreversible</b>.
@@ -312,8 +312,10 @@
 
         <svelte:fragment slot="footer">
             <Button secondary on:click={() => (showSelectProject = false)}>Cancel</Button>
-            <Button submit disabled={selectedProjects.length !== allowedProjectsToKeep}
-                >Save</Button>
+            <Button
+                submit
+                disabled={!selectedProjects.length ||
+                    selectedProjects.length > allowedProjectsToKeep}>Save</Button>
         </svelte:fragment>
     </Modal>
 {/if}
