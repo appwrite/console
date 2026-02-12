@@ -11,6 +11,7 @@
 
     export let show = false;
     export let variables: Partial<Models.Variable>[];
+    export let productLabel = 'site';
 
     let newVariables: Partial<Models.Variable>[] = [{ key: '', value: '' }];
     let secret = false;
@@ -65,8 +66,8 @@
 
 <Modal bind:show onSubmit={handleVariable} title="Create variables" bind:error>
     <span slot="description">
-        Set the environment variables or secret that will be passed to your site. Global variables
-        can be set in <Link
+        Set the environment variables or secret that will be passed to your {productLabel}. Global
+        variables can be set in <Link
             variant="muted"
             href={`${base}/project-${page.params.region}-${page.params.project}/settings`}
             >project settings</Link

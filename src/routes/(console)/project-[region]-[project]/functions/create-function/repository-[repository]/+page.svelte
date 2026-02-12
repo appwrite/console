@@ -59,6 +59,45 @@
 
     let detectingRuntime = true;
 
+    type DetectedVariable = {
+        key?: string;
+        name?: string;
+        value?: string;
+        secret?: boolean;
+    };
+
+    function normalizeDetectedVariables(detected: DetectedVariable[] = []) {
+        const normalized: Partial<Models.Variable>[] = [];
+        detected.forEach((variable) => {
+            const key = variable.key ?? variable.name;
+            if (!key) {
+                return;
+            }
+            normalized.push({
+                key,
+                value: variable.value ?? '',
+                secret: variable.secret ?? false
+            });
+        });
+        return normalized;
+    }
+
+    function mergeVariables(
+        existing: Partial<Models.Variable>[],
+        detected: Partial<Models.Variable>[]
+    ) {
+        const map = new Map(existing.map((variable) => [variable.key, variable]));
+        detected.forEach((variable) => {
+            if (!variable.key) {
+                return;
+            }
+            if (!map.has(variable.key)) {
+                map.set(variable.key, variable);
+            }
+        });
+        return Array.from(map.values());
+    }
+
     onMount(async () => {
         installation.set(data.installation);
         repository.set(data.repository);
@@ -82,6 +121,10 @@
             entrypoint = detections.entrypoint;
             buildCommand = detections.commands;
             runtime = detections.runtime as Runtime;
+            const detectedVariables = normalizeDetectedVariables(detections?.variables);
+            if (detectedVariables.length) {
+                variables = mergeVariables(variables, detectedVariables);
+            }
 
             trackEvent(Submit.FrameworkDetect, { runtime, source: 'repository' });
         } catch (error) {
@@ -189,7 +232,11 @@
                 installationId={data.installation.$id}
                 repositoryId={data.repository.id} />
 
-            <Configuration bind:buildCommand bind:roles />
+            <Configuration
+                bind:buildCommand
+                bind:roles
+                bind:variables
+                isVariablesLoading={detectingRuntime} />
         </Layout.Stack>
     </Form>
     <svelte:fragment slot="aside">

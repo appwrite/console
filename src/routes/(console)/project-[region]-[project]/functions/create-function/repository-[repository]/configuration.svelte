@@ -3,9 +3,13 @@
     import { Link } from '$lib/elements';
     import { InputText } from '$lib/elements/forms';
     import { Accordion, Fieldset, Layout } from '@appwrite.io/pink-svelte';
+    import type { Models } from '@appwrite.io/console';
+    import EnvironmentVariables from '$lib/components/variables/environmentVariables.svelte';
 
     export let buildCommand = '';
     export let roles: string[] = [];
+    export let variables: Partial<Models.Variable>[] = [];
+    export let isVariablesLoading = false;
 </script>
 
 <Fieldset legend="Settings">
@@ -31,5 +35,12 @@
                 <Roles bind:roles />
             </Layout.Stack>
         </Accordion>
+        <EnvironmentVariables
+            bind:variables
+            productLabel="function"
+            docsLink="https://appwrite.io/docs/products/functions/develop"
+            analyticsSource="function_configuration"
+            analyticsCreateSource="function_configuration"
+            isLoading={isVariablesLoading} />
     </Layout.Stack>
 </Fieldset>

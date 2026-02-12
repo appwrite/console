@@ -47,6 +47,46 @@
     let silentMode = false;
     let domain = data.domain;
     let domainIsValid = true;
+    let isVariablesLoading = true;
+
+    type DetectedVariable = {
+        key?: string;
+        name?: string;
+        value?: string;
+        secret?: boolean;
+    };
+
+    function normalizeDetectedVariables(detected: DetectedVariable[] = []) {
+        const normalized: Partial<Models.Variable>[] = [];
+        detected.forEach((variable) => {
+            const key = variable.key ?? variable.name;
+            if (!key) {
+                return;
+            }
+            normalized.push({
+                key,
+                value: variable.value ?? '',
+                secret: variable.secret ?? false
+            });
+        });
+        return normalized;
+    }
+
+    function mergeVariables(
+        existing: Partial<Models.Variable>[],
+        detected: Partial<Models.Variable>[]
+    ) {
+        const map = new Map(existing.map((variable) => [variable.key, variable]));
+        detected.forEach((variable) => {
+            if (!variable.key) {
+                return;
+            }
+            if (!map.has(variable.key)) {
+                map.set(variable.key, variable);
+            }
+        });
+        return Array.from(map.values());
+    }
 
     onMount(async () => {
         installation.set(data.installation);
@@ -58,6 +98,7 @@
 
     async function detectFramework() {
         try {
+            isVariablesLoading = true;
             const response = await sdk
                 .forProject(page.params.region, page.params.project)
                 .vcs.createRepositoryDetection({
@@ -71,6 +112,10 @@
             installCommand = adapter?.installCommand;
             buildCommand = adapter?.buildCommand;
             outputDirectory = adapter?.outputDirectory;
+            const detectedVariables = normalizeDetectedVariables(response?.variables);
+            if (detectedVariables.length) {
+                variables = mergeVariables(variables, detectedVariables);
+            }
             trackEvent(Submit.FrameworkDetect, {
                 source: 'repository',
                 framework: framework.key
@@ -78,6 +123,8 @@
         } catch (error) {
             framework = data.frameworks.frameworks.find((f) => f.key === 'other');
             trackError(error, Submit.FrameworkDetect);
+        } finally {
+            isVariablesLoading = false;
         }
     }
 
@@ -201,6 +248,7 @@
                     bind:outputDirectory
                     bind:selectedFramework={framework}
                     bind:variables
+                    {isVariablesLoading}
                     frameworks={data.frameworks.frameworks} />
             {/key}
 
