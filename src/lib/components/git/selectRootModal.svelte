@@ -152,7 +152,13 @@
     <span slot="description">
         Select the directory where your site code is located using the menu below.
     </span>
-    <DirectoryPicker {directories} {isLoading} on:select={fetchContents} bind:expanded />
+    <DirectoryPicker
+        {directories}
+        {isLoading}
+        bind:expanded
+        selected={currentPath}
+        openTo={currentPath}
+        on:select={fetchContents} />
 
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (show = false)}>Cancel</Button>

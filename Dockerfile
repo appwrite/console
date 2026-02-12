@@ -39,7 +39,7 @@ ENV NODE_OPTIONS=--max_old_space_size=8192
 
 RUN bun run build
 
-FROM nginx:1.26.3-alpine
+FROM nginx:1.29.5-alpine
 
 EXPOSE 80
 

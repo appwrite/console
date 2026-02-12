@@ -10,6 +10,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { user } from '$lib/stores/user';
     import { organization } from '$lib/stores/organization';
+    import { Scopes } from '@appwrite.io/console';
 
     export let show = false;
 
@@ -91,23 +92,23 @@
             projectId: $project.$id,
             name: `[AUTO-GENERATED] Migration ${new Date().toISOString()}`,
             scopes: [
-                'users.read',
-                'teams.read',
-                'databases.read',
-                'collections.read' /* legacy */,
-                'attributes.read' /* legacy */,
-                'indexes.read',
-                'documents.read' /* legacy */,
-                'tables.read',
-                'columns.read',
-                'rows.read',
-                'files.read',
-                'buckets.read',
-                'functions.read',
-                'execution.read',
-                'locale.read',
-                'avatars.read',
-                'health.read'
+                Scopes.UsersRead,
+                Scopes.TeamsRead,
+                Scopes.DatabasesRead,
+                Scopes.CollectionsRead /* legacy */,
+                Scopes.AttributesRead /* legacy */,
+                Scopes.IndexesRead,
+                Scopes.DocumentsRead /* legacy */,
+                Scopes.TablesRead,
+                Scopes.ColumnsRead,
+                Scopes.RowsRead,
+                Scopes.FilesRead,
+                Scopes.BucketsRead,
+                Scopes.FunctionsRead,
+                Scopes.ExecutionRead,
+                Scopes.LocaleRead,
+                Scopes.AvatarsRead,
+                Scopes.HealthRead
             ]
         });
 

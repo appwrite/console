@@ -3,37 +3,32 @@
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
 
-    export async function submitFloat(
+    export async function submitText(
         databaseId: string,
         tableId: string,
         key: string,
-        data: Partial<Models.ColumnFloat>
+        data: Partial<Models.ColumnText>
     ) {
-        await sdk.forProject(page.params.region, page.params.project).tablesDB.createFloatColumn({
+        await sdk.forProject(page.params.region, page.params.project).tablesDB.createTextColumn({
             databaseId,
             tableId,
             key,
             required: data.required,
-            min: data.min,
-            max: data.max,
             xdefault: data.default,
             array: data.array
         });
     }
-
-    export async function updateFloat(
+    export async function updateText(
         databaseId: string,
         tableId: string,
-        data: Partial<Models.ColumnFloat>,
+        data: Partial<Models.ColumnText>,
         originalKey?: string
     ) {
-        await sdk.forProject(page.params.region, page.params.project).tablesDB.updateFloatColumn({
+        await sdk.forProject(page.params.region, page.params.project).tablesDB.updateTextColumn({
             databaseId,
             tableId,
             key: originalKey,
             required: data.required,
-            min: data.min,
-            max: data.max,
             xdefault: data.default,
             newKey: data.key !== originalKey ? data.key : undefined
         });
@@ -41,20 +36,18 @@
 </script>
 
 <script lang="ts">
-    import { Layout } from '@appwrite.io/pink-svelte';
-    import { InputNumber } from '$lib/elements/forms';
     import { createConservative } from '$lib/helpers/stores';
     import RequiredArrayCheckboxes from './requiredArrayCheckboxes.svelte';
+    import { InputTextarea } from '$lib/elements/forms';
+    import { Layout, Typography } from '@appwrite.io/pink-svelte';
+
+    export let data: Partial<Models.ColumnText> = {
+        required: false,
+        array: false
+    };
 
     export let editing = false;
     export let disabled = false;
-    export let data: Partial<Models.ColumnFloat> = {
-        required: false,
-        min: 0,
-        max: 0,
-        default: 0,
-        array: false
-    };
 
     let savedDefault = data.default;
 
@@ -70,46 +63,30 @@
     const {
         stores: { required, array },
         listen
-    } = createConservative<Partial<Models.ColumnFloat>>({
+    } = createConservative<Partial<Models.ColumnText>>({
         required: false,
         array: false,
         ...data
     });
+
     $: listen(data);
 
     $: handleDefaultState($required || $array);
 </script>
 
-<Layout.Stack direction="row" gap="s">
-    <InputNumber
-        id="min"
-        label="Min"
-        placeholder="Enter size"
-        bind:value={data.min}
-        step="any"
-        {disabled}
-        required={editing} />
-
-    <InputNumber
-        id="max"
-        label="Max"
-        placeholder="Enter size"
-        bind:value={data.max}
-        step="any"
-        {disabled}
-        required={editing} />
+<Layout.Stack gap="xs" direction="column">
+    <Typography.Text variant="m-500" color="--fgcolor-neutral-secondary">
+        Maximum size: 16,383 characters
+    </Typography.Text>
 </Layout.Stack>
 
-<InputNumber
+<InputTextarea
     id="default"
-    label="Default value"
-    placeholder="Enter value"
-    min={data.min}
-    max={data.max}
+    label="Default"
+    placeholder="Enter text"
     bind:value={data.default}
     disabled={data.required || data.array || disabled}
-    nullable={!data.required && !data.array}
-    step="any" />
+    nullable={!data.required && !data.array} />
 
 <RequiredArrayCheckboxes
     {editing}

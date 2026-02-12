@@ -70,8 +70,8 @@
         view={View.Table}
         hideView
         hasFilters
-        hasCustomFiltersOnly
         hasSearch
+        filtersStyle="dropdown"
         analyticsSource="messaging_topics_filter"
         searchPlaceholder="Search by name or ID">
         {#if $canWriteTopics}

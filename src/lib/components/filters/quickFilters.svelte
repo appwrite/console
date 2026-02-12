@@ -13,19 +13,36 @@
     let {
         columns,
         filterCols,
-        analyticsSource
+        analyticsSource,
+        buttonVariant = 'ghost'
     }: {
         columns: Writable<Column[]>;
         filterCols: FilterData[];
         analyticsSource?: string;
+        buttonVariant?: 'ghost' | 'secondary';
     } = $props();
 </script>
 
 <Menu>
-    <Button secondary badge={$parsedTags?.length ? `${$parsedTags.length}` : undefined}>
-        <Icon icon={IconFilterLine} slot="start" size="s" />
-        Filters
-    </Button>
+    {#if buttonVariant === 'secondary'}
+        <Button
+            ariaLabel="Filters"
+            secondary
+            size="s"
+            badge={$parsedTags?.length ? `${$parsedTags.length}` : undefined}>
+            <Icon icon={IconFilterLine} size="s" slot="start" />
+            <span class="text">Filters</span>
+        </Button>
+    {:else}
+        <Button
+            ariaLabel="Filters"
+            text
+            icon
+            size="s"
+            badge={$parsedTags?.length ? `${$parsedTags.length}` : undefined}>
+            <Icon icon={IconFilterLine} size="s" />
+        </Button>
+    {/if}
     <svelte:fragment slot="menu">
         {#each filterCols.filter((f) => f?.options) as filter (filter.title + filter.id)}
             {#if filter.options}
