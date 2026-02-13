@@ -12,6 +12,8 @@
     import { BillingPlanGroup, type Models } from '@appwrite.io/console';
     import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
 
     const {
         projects = [],
@@ -30,6 +32,7 @@
     let hasConfirmedSelection = $state(false);
 
     let isDeletingProjects = $state(false);
+    let deletedProjectIds = $state<Set<string>>(new Set());
     let selectedProjectsToDelete = $state<Array<string>>([]);
     const baseFreePlan = getBasePlanFromGroup(BillingPlanGroup.Starter);
 
@@ -43,8 +46,12 @@
     // When preparing to downgrade to Free, enforce Free plan limit locally (2)
     const allowedProjectsToKeep = $derived(freePlanLimits.projects);
 
+    const filteredProjects = $derived(
+        projects.filter((project) => !deletedProjectIds.has(project.$id))
+    );
+
     const currentUsage = $derived({
-        projects: projects?.length || 0,
+        projects: filteredProjects?.length || 0,
         members: members?.length || 0,
         storage: storageUsage || 0
     });
@@ -86,18 +93,46 @@
         }
 
         if (selectedProjectsToDelete?.length) {
-            const projectsDeletionPromise = selectedProjectsToDelete.map((projectId) => {
-                return sdk.forConsole.projects.delete({ projectId });
-            });
+            const projectsDeletionPromises = selectedProjectsToDelete.map((projectId) => ({
+                projectId,
+                promise: sdk.forConsole.projects.delete({ projectId })
+            }));
 
             try {
-                await Promise.all(projectsDeletionPromise);
-                addNotification({
-                    type: 'success',
-                    message: 'Selected projects were deleted'
+                const results = await Promise.allSettled(
+                    projectsDeletionPromises.map((p) => p.promise)
+                );
+
+                const failed: string[] = [];
+                const successfullyDeleted: string[] = [];
+
+                results.forEach((result, index) => {
+                    const projectId = projectsDeletionPromises[index].projectId;
+                    if (result.status === 'fulfilled') {
+                        successfullyDeleted.push(projectId);
+                    } else {
+                        failed.push(projectId);
+                    }
                 });
-                showSelectProject = false;
-                showSelectionReminder = false;
+
+                if (successfullyDeleted.length > 0) {
+                    deletedProjectIds = new Set([...deletedProjectIds, ...successfullyDeleted]);
+                    await invalidate(Dependencies.ORGANIZATION);
+
+                    addNotification({
+                        type: 'success',
+                        message: `${successfullyDeleted.length} project${successfullyDeleted.length !== 1 ? 's' : ''} deleted successfully`
+                    });
+                }
+
+                if (failed.length > 0) {
+                    error = `Failed to delete ${failed.length} project${failed.length !== 1 ? 's' : ''}`;
+                } else {
+                    showSelectProject = false;
+                    selectedProjectsToDelete = [];
+                    hasConfirmedSelection = false;
+                    showSelectionReminder = false;
+                }
             } catch (exception) {
                 error = exception.message;
             } finally {
