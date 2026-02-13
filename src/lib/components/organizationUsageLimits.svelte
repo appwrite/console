@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Button, InputCheckbox } from '$lib/elements/forms';
+    import { Button, InputText } from '$lib/elements/forms';
     import { getBasePlanFromGroup, getServiceLimit } from '$lib/stores/billing';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { Badge, Icon, Layout, Table, Typography, Tooltip } from '@appwrite.io/pink-svelte';
@@ -29,7 +29,7 @@
     let showSelectProject = $state(false);
     let error = $state<string | null>(null);
     let showSelectionReminder = $state(false);
-    let hasConfirmedSelection = $state(false);
+    let confirmationInput = $state('');
 
     let isDeletingProjects = $state(false);
     let deletedProjectIds = $state<Set<string>>(new Set());
@@ -69,6 +69,8 @@
         members: Math.max(0, currentUsage.members - freePlanLimits.members),
         storage: Math.max(0, storageUsageGB - freePlanLimits.storage)
     });
+
+    const isConfirmationValid = $derived(confirmationInput.trim() === 'I understand');
 
     function formatNumber(num: number): string {
         return formatNumberWithCommas(num);
@@ -130,7 +132,7 @@
                 } else {
                     showSelectProject = false;
                     selectedProjectsToDelete = [];
-                    hasConfirmedSelection = false;
+                    confirmationInput = '';
                     showSelectionReminder = false;
                 }
             } catch (exception) {
@@ -340,10 +342,16 @@
         </Layout.Stack>
 
         {#if selectedProjectsToDelete.length >= requiredToDelete}
-            <InputCheckbox
-                id="confirmation"
-                bind:checked={hasConfirmedSelection}
-                label="I understand these projects will be permanently deleted and cannot be recovered." />
+            <Layout.Stack gap="xs">
+                <InputText
+                    required
+                    id="confirmation"
+                    placeholder="I understand"
+                    disabled={isDeletingProjects}
+                    bind:value={confirmationInput}
+                    label='Type "I understand" to confirm permanent deletion of the selected projects'
+                />
+            </Layout.Stack>
         {/if}
 
         <svelte:fragment slot="footer">
@@ -354,7 +362,7 @@
                 submissionLoader
                 forceShowLoader={isDeletingProjects}
                 disabled={selectedProjectsToDelete.length < requiredToDelete ||
-                    !hasConfirmedSelection}>Delete projects</Button>
+                    !isConfirmationValid}>Delete projects</Button>
         </svelte:fragment>
     </Modal>
 {/if}
