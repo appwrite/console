@@ -1,25 +1,20 @@
 import type { Models } from '@appwrite.io/console';
 
-export type DetectedVariable = {
-    key?: string;
-    name?: string;
-    value?: string;
-    secret?: boolean;
-};
-
-export function normalizeDetectedVariables(detected: DetectedVariable[] = []) {
+export function normalizeDetectedVariables(
+    detected: Models.DetectionVariable[] = []
+): Partial<Models.Variable>[] {
     const normalized: Partial<Models.Variable>[] = [];
-    detected.forEach((variable) => {
-        const key = variable.key ?? variable.name;
+    for (const variable of detected) {
+        const key = variable.name?.trim();
         if (!key) {
-            return;
+            continue;
         }
         normalized.push({
             key,
             value: variable.value ?? '',
-            secret: variable.secret ?? false
+            secret: false
         });
-    });
+    }
     return normalized;
 }
 

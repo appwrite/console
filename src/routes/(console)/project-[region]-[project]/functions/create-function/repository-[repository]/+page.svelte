@@ -198,7 +198,7 @@
                 bind:buildCommand
                 bind:roles
                 bind:variables
-                isVariablesLoading={detectingRuntime} />
+                isLoading={detectingRuntime} />
         </Layout.Stack>
     </Form>
     <svelte:fragment slot="aside">

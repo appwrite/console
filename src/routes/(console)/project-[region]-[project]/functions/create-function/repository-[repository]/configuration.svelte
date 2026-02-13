@@ -4,12 +4,12 @@
     import { InputText } from '$lib/elements/forms';
     import { Accordion, Fieldset, Layout } from '@appwrite.io/pink-svelte';
     import type { Models } from '@appwrite.io/console';
-    import EnvironmentVariables from '$lib/components/variables/environmentVariables.svelte';
+    import { EnvironmentVariables } from '$lib/components/variables';
 
     export let buildCommand = '';
     export let roles: string[] = [];
     export let variables: Partial<Models.Variable>[] = [];
-    export let isVariablesLoading = false;
+    export let isLoading = false;
 </script>
 
 <Fieldset legend="Settings">
@@ -40,6 +40,6 @@
             productLabel="function"
             analyticsSource="function_configuration"
             analyticsCreateSource="function_configuration"
-            isLoading={isVariablesLoading} />
+            {isLoading} />
     </Layout.Stack>
 </Fieldset>

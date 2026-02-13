@@ -4,7 +4,7 @@
     import type { Models } from '@appwrite.io/console';
     import { iconPath } from '$lib/stores/app';
     import { getFrameworkIcon } from '$lib/stores/sites';
-    import EnvironmentVariables from '$lib/components/variables/environmentVariables.svelte';
+    import { EnvironmentVariables } from '$lib/components/variables';
 
     export let frameworks: Models.Framework[];
     export let selectedFramework: Models.Framework;
@@ -14,7 +14,7 @@
         frameworkData?.adapters.find((adapter) => adapter.key === 'static');
 
     export let variables: Partial<Models.Variable>[] = [];
-    export let isVariablesLoading = false;
+    export let isLoading = false;
     export let installCommand = '';
     export let buildCommand = '';
     export let outputDirectory = '';
@@ -103,7 +103,7 @@
                 </Layout.Stack>
             </Accordion>
 
-            <EnvironmentVariables bind:variables isLoading={isVariablesLoading} />
+            <EnvironmentVariables bind:variables {isLoading} />
         </Layout.Stack>
     </Layout.Stack>
 </Fieldset>

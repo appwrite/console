@@ -210,7 +210,7 @@
                     bind:outputDirectory
                     bind:selectedFramework={framework}
                     bind:variables
-                    {isVariablesLoading}
+                    isLoading={isVariablesLoading}
                     frameworks={data.frameworks.frameworks} />
             {/key}
 
