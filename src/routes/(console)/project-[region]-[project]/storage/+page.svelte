@@ -41,7 +41,7 @@
     <ResponsiveContainerHeader
         {columns}
         hasSearch
-        bind:view={data.view}
+        view={data.view}
         searchPlaceholder="Search by name or ID">
         {#if $canWriteBuckets}
             <Tooltip disabled={!isLimited} maxWidth="200px">

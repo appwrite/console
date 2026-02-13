@@ -23,8 +23,8 @@
         view={View.Table}
         hideView
         hasFilters
-        hasCustomFiltersOnly
         hasSearch
+        filtersStyle="dropdown"
         analyticsSource="messaging_providers"
         searchPlaceholder="Search by name or ID">
         {#if $canWriteProviders}

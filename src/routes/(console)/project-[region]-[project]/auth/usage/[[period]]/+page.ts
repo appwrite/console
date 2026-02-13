@@ -7,5 +7,8 @@ export const load: PageLoad = async ({ params }) => {
     const period = isValueOfStringEnum(UsageRange, params.period)
         ? params.period
         : UsageRange.ThirtyDays;
-    return sdk.forProject(params.region, params.project).users.getUsage({ range: period });
+
+    return {
+        ...(await sdk.forProject(params.region, params.project).users.getUsage({ range: period }))
+    };
 };

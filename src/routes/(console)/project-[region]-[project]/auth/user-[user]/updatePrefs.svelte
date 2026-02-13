@@ -22,7 +22,7 @@
 
     $: if (prefs) {
         const currentNormalized = normalizePrefs(prefs);
-        const originalNormalized = normalizePrefs(Object.entries($user.prefs));
+        const originalNormalized = normalizePrefs(Object.entries($user?.prefs ?? {}));
 
         arePrefsDisabled = deepEqual(currentNormalized, originalNormalized);
     }
@@ -31,7 +31,7 @@
     let arePrefsDisabled = true;
 
     onMount(async () => {
-        const entries = Object.entries($user.prefs);
+        const entries = Object.entries($user?.prefs ?? {});
         prefs =
             entries.length > 0
                 ? entries.map(([key, value]) => createPrefRow(key, value))
@@ -78,8 +78,9 @@
                     <Layout.Stack direction="row" alignItems="flex-end">
                         <InputText
                             id={`key-${index}`}
-                            bind:value={pref.key}
-                            on:input={() => {
+                            value={pref.key}
+                            on:input={(e) => {
+                                pref.key = (e.currentTarget as HTMLInputElement).value;
                                 prefs = [...prefs];
                             }}
                             placeholder="Enter key"
@@ -88,8 +89,9 @@
                         <Layout.Stack direction="row" alignItems="flex-end" gap="xs">
                             <InputText
                                 id={`value-${index}`}
-                                bind:value={pref.value}
-                                on:input={() => {
+                                value={pref.value}
+                                on:input={(e) => {
+                                    pref.value = (e.currentTarget as HTMLInputElement).value;
                                     prefs = [...prefs];
                                 }}
                                 placeholder="Enter value"

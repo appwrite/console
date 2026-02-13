@@ -137,7 +137,8 @@
         hideView
         hasSearch
         hasFilters
-        bind:view={data.view}
+        filtersStyle="dropdown"
+        view={data.view}
         analyticsSource="messaging_messages"
         searchPlaceholder="Search by description, type, status, or ID">
         {#if $canWriteMessages}

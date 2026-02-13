@@ -23,7 +23,7 @@
         columns = $bindable(null),
         columnId = $bindable(null),
         columnsOrder = $bindable(null),
-        selectedOption = $bindable('String'),
+        selectedOption = $bindable('Text'),
         createMore = $bindable(false),
         onColumnsReorder = null
     }: {
@@ -63,8 +63,8 @@
             default: null
         };
 
-        /* default to string */
-        selectedOption = 'String';
+        /* default to text */
+        selectedOption = 'Text';
         $option = columnOptions[0];
     }
 

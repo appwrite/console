@@ -11,6 +11,7 @@ export type ProgressbarData = {
 
 export type ProgressbarProps = {
     maxSize: number;
+    hideEmptySegments?: boolean;
     data: Array<ProgressbarData>;
 };
 

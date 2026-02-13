@@ -220,11 +220,11 @@
         </Alert.Inline>
     {/if}
 
-    {#if isCloud && data.currentPlan?.projects !== 0 && projectsToArchive.length === 0 && !freePlanAlertDismissed}
+    {#if isCloud && !data.program && data.currentPlan?.projects !== 0 && projectsToArchive.length === 0 && !freePlanAlertDismissed}
         <Alert.Inline dismissible on:dismiss={dismissFreePlanAlert}>
             <Typography.Text
-                >Your Free plan includes up to 2 projects and limited resources. Upgrade to unlock
-                more capacity and features.</Typography.Text>
+                >Your Free plan includes up to {data.currentPlan?.projects} projects and limited resources.
+                Upgrade to unlock more capacity and features.</Typography.Text>
             <svelte:fragment slot="actions">
                 <Button
                     compact

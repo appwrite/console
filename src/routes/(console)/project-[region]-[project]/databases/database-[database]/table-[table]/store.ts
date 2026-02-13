@@ -14,6 +14,10 @@ export type Columns =
     | Models.ColumnInteger
     | Models.ColumnIp
     | Models.ColumnString
+    | Models.ColumnText
+    | Models.ColumnMediumtext
+    | Models.ColumnLongtext
+    | Models.ColumnVarchar
     | Models.ColumnUrl
     | Models.ColumnPoint
     | Models.ColumnLine
@@ -42,6 +46,7 @@ export type Table = Omit<Models.Table, 'columns'> & {
     columns: Array<Columns>;
 };
 
+export const table = derived(page, ($page) => $page.data.table as Table);
 export const columns = derived(page, ($page) => $page.data.table.columns as Columns[]);
 export const indexes = derived(page, ($page) => $page.data.table.indexes as Models.ColumnIndex[]);
 
