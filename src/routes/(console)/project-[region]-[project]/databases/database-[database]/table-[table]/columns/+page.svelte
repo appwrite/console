@@ -393,7 +393,11 @@
 
             {#each updatedColumnsForSheet as column, index (column.key)}
                 {@const isId = column.key === '$id'}
-                {@const option = columnOptions.find((option) => option.type === column.type)}
+                {@const option = columnOptions.find(
+                    (option) =>
+                        option.type === column.type &&
+                        option.format === ('format' in column ? column.format : undefined)
+                )}
                 {@const isSelectable =
                     column['system'] || column.type === 'relationship' ? 'disabled' : true}
                 <Spreadsheet.Row.Base {root} select={isSelectable} id={column.key}>
