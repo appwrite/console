@@ -113,7 +113,10 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
                     sdk.forConsole.client.headers['X-Appwrite-Console-Fingerprint'] = fingerprint;
                     return sdk.forConsole.projects.updateConsoleAccess({ projectId: params.project });
                 })
-                .catch(() => {});
+                .catch(() => {})
+                .finally(() => {
+                    delete sdk.forConsole.client.headers['X-Appwrite-Console-Fingerprint'];
+                });
         }
     }
 

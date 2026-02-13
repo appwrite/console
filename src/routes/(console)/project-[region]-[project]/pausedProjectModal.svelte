@@ -22,7 +22,11 @@
             const fingerprint = await generateFingerprintToken();
             sdk.forConsole.client.headers['X-Appwrite-Console-Fingerprint'] = fingerprint;
 
-            await sdk.forConsole.projects.createConsoleAccess({ projectId });
+            try {
+                await sdk.forConsole.projects.createConsoleAccess({ projectId });
+            } finally {
+                delete sdk.forConsole.client.headers['X-Appwrite-Console-Fingerprint'];
+            }
 
             addNotification({
                 type: 'success',
