@@ -69,52 +69,46 @@ function getWebGLFingerprint(): string {
     }
 }
 
-function getAudioFingerprint(): Promise<string> {
-    return new Promise((resolve) => {
-        try {
-            const AudioContext =
-                window.AudioContext ||
-                (window as unknown as { webkitAudioContext: typeof window.AudioContext })
-                    .webkitAudioContext;
-            if (!AudioContext) {
-                resolve('');
-                return;
-            }
+async function getAudioFingerprint(): Promise<string> {
+    try {
+        const OfflineCtx =
+            window.OfflineAudioContext ||
+            (window as unknown as { webkitOfflineAudioContext: typeof OfflineAudioContext })
+                .webkitOfflineAudioContext;
+        if (!OfflineCtx) return '';
 
-            const context = new AudioContext();
-            const oscillator = context.createOscillator();
-            const analyser = context.createAnalyser();
-            const gain = context.createGain();
-            const processor = context.createScriptProcessor(4096, 1, 1);
+        const sampleRate = 44100;
+        const length = 4096;
+        const context = new OfflineCtx(1, length, sampleRate);
 
-            gain.gain.value = 0;
-            oscillator.type = 'triangle';
-            oscillator.frequency.value = 10000;
+        const oscillator = context.createOscillator();
+        oscillator.type = 'triangle';
+        oscillator.frequency.value = 10000;
 
-            oscillator.connect(analyser);
-            analyser.connect(processor);
-            processor.connect(gain);
-            gain.connect(context.destination);
+        const compressor = context.createDynamicsCompressor();
+        compressor.threshold.value = -50;
+        compressor.knee.value = 40;
+        compressor.ratio.value = 12;
+        compressor.attack.value = 0;
+        compressor.release.value = 0.25;
 
-            oscillator.start(0);
+        oscillator.connect(compressor);
+        compressor.connect(context.destination);
 
-            const dataArray = new Float32Array(analyser.frequencyBinCount);
-            analyser.getFloatFrequencyData(dataArray);
+        oscillator.start(0);
 
-            let sum = 0;
-            for (let i = 0; i < dataArray.length; i++) {
-                sum += Math.abs(dataArray[i]);
-            }
+        const buffer = await context.startRendering();
+        const samples = buffer.getChannelData(0);
 
-            oscillator.stop();
-            processor.disconnect();
-            context.close();
-
-            resolve(sum.toString());
-        } catch {
-            resolve('');
+        let sum = 0;
+        for (let i = 0; i < samples.length; i++) {
+            sum += Math.abs(samples[i]);
         }
-    });
+
+        return sum.toString();
+    } catch {
+        return '';
+    }
 }
 
 interface StaticSignals {

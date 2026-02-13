@@ -8,11 +8,16 @@
     import { generateFingerprintToken } from '$lib/helpers/fingerprint';
     import { Alert, Layout, Modal, Typography } from '@appwrite.io/pink-svelte';
 
-    export let show = false;
-    export let projectId: string;
+    let {
+        show = $bindable(false),
+        projectId
+    }: {
+        show: boolean;
+        projectId: string;
+    } = $props();
 
-    let loading = false;
-    let error: string | null = null;
+    let loading = $state(false);
+    let error: string | null = $state(null);
 
     async function handleResume() {
         loading = true;
