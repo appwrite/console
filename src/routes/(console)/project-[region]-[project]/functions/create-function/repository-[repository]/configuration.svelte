@@ -38,7 +38,6 @@
         <EnvironmentVariables
             bind:variables
             productLabel="function"
-            docsLink="https://appwrite.io/docs/products/functions/develop"
             analyticsSource="function_configuration"
             analyticsCreateSource="function_configuration"
             isLoading={isVariablesLoading} />

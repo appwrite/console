@@ -27,29 +27,46 @@
     import VariableEditorModal from './variableEditorModal.svelte';
     import SecretVariableModal from './secretVariableModal.svelte';
     import ImportVariablesModal from './importVariablesModal.svelte';
-    import CreateVariableModal from './createVariableModal.svelte';
+    import CreateVariableModal, { type ProductLabel } from './createVariableModal.svelte';
     import DeleteVariableModal from './deleteVariableModal.svelte';
     import UpdateVariableModal from './updateVariableModal.svelte';
     import { Click, trackEvent } from '$lib/actions/analytics';
 
-    export let variables: Partial<Models.Variable>[] = [];
-    export let productLabel = 'site';
-    export let docsLink =
-        'https://appwrite.io/docs/products/sites/develop#accessing-environment-variables';
-    export let analyticsSource = 'site_configuration';
-    export let analyticsCreateSource = 'site_settings';
-    export let isLoading = false;
+    const DOCS_LINKS: Record<ProductLabel, string> = {
+        site: 'https://appwrite.io/docs/products/sites/develop#accessing-environment-variables',
+        function: 'https://appwrite.io/docs/products/functions/develop#environment-variables'
+    };
 
-    let showEditorModal = false;
-    let showImportModal = false;
-    let showSecretModal = false;
-    let showCreate = false;
-    let showUpdate = false;
-    let showDelete = false;
+    let {
+        variables = $bindable([]),
+        productLabel = 'site',
+        analyticsSource = 'site_configuration',
+        analyticsCreateSource = 'site_settings',
+        isLoading = false
+    }: {
+        variables: Partial<Models.Variable>[];
+        productLabel?: ProductLabel;
+        analyticsSource?: string;
+        analyticsCreateSource?: string;
+        isLoading?: boolean;
+    } = $props();
 
-    let currentVariable: Partial<Models.Variable>;
+    let showEditorModal = $state(false);
+    let showImportModal = $state(false);
+    let showSecretModal = $state(false);
+    let showCreate = $state(false);
+    let showUpdate = $state(false);
+    let showDelete = $state(false);
+    let currentVariable = $state<Partial<Models.Variable>>(undefined);
 
-    $: createSource = analyticsCreateSource || analyticsSource;
+    const createSource = $derived(analyticsCreateSource || analyticsSource);
+    const docsLink = $derived(DOCS_LINKS[productLabel]);
+
+    const tableColumns = [
+        { id: 'key', width: { min: 300 } },
+        { id: 'value', width: { min: 280 } },
+        { id: 'actions', width: 40 }
+    ];
 </script>
 
 <Accordion title="Environment variables" badge="Optional" hideDivider>
@@ -61,7 +78,7 @@
                     <Button
                         secondary
                         size="s"
-                        on:mousedown={() => {
+                        on:click={() => {
                             showEditorModal = true;
                             trackEvent(Click.VariablesUpdateClick, {
                                 source: analyticsSource
@@ -72,7 +89,7 @@
                     <Button
                         secondary
                         size="s"
-                        on:mousedown={() => {
+                        on:click={() => {
                             showImportModal = true;
                             trackEvent(Click.VariablesImportClick, {
                                 source: analyticsSource
@@ -85,7 +102,7 @@
                     <Button
                         secondary
                         size="s"
-                        on:mousedown={() => {
+                        on:click={() => {
                             showCreate = true;
                             trackEvent(Click.VariablesCreateClick, {
                                 source: createSource
@@ -97,14 +114,7 @@
             </Layout.Stack>
 
             {#if isLoading && !variables?.length}
-                <Table.Root
-                    class="responsive-table"
-                    let:root
-                    columns={[
-                        { id: 'key', width: { min: 300 } },
-                        { id: 'value', width: { min: 280 } },
-                        { id: 'actions', width: 40 }
-                    ]}>
+                <Table.Root class="responsive-table" let:root columns={tableColumns}>
                     <svelte:fragment slot="header" let:root>
                         <Table.Header.Cell column="key" {root}>Key</Table.Header.Cell>
                         <Table.Header.Cell column="value" {root}>Value</Table.Header.Cell>
@@ -127,13 +137,7 @@
             {:else if variables?.length}
                 <Paginator items={variables} limit={6} hideFooter={variables.length <= 6}>
                     {#snippet children(paginatedItems)}
-                        <Table.Root
-                            let:root
-                            columns={[
-                                { id: 'key', width: { min: 300 } },
-                                { id: 'value', width: { min: 280 } },
-                                { id: 'actions', width: 40 }
-                            ]}>
+                        <Table.Root let:root columns={tableColumns}>
                             <svelte:fragment slot="header" let:root>
                                 <Table.Header.Cell column="key" {root}>Key</Table.Header.Cell>
                                 <Table.Header.Cell column="value" {root}>Value</Table.Header.Cell>
@@ -175,7 +179,7 @@
                                                     variant="text"
                                                     size="s"
                                                     aria-label="More options"
-                                                    on:click={(e) => {
+                                                    onclick={(e) => {
                                                         e.preventDefault();
                                                         toggle(e);
                                                     }}>
@@ -187,7 +191,7 @@
                                                         {#if !variable?.secret}
                                                             <ActionMenu.Item.Button
                                                                 leadingIcon={IconPencil}
-                                                                on:click={(e) => {
+                                                                onclick={(e) => {
                                                                     toggle(e);
                                                                     currentVariable = variable;
                                                                     showUpdate = true;
@@ -198,7 +202,7 @@
                                                         {#if !variable?.secret}
                                                             <ActionMenu.Item.Button
                                                                 leadingIcon={IconEyeOff}
-                                                                on:click={(e) => {
+                                                                onclick={(e) => {
                                                                     toggle(e);
                                                                     currentVariable = variable;
                                                                     showSecretModal = true;
@@ -209,7 +213,7 @@
                                                         <ActionMenu.Item.Button
                                                             status="danger"
                                                             leadingIcon={IconTrash}
-                                                            on:click={(e) => {
+                                                            onclick={(e) => {
                                                                 toggle(e);
                                                                 currentVariable = variable;
                                                                 showDelete = true;
