@@ -129,6 +129,13 @@
         return paymentMethods;
     }
 
+    function hasExcessProjectsForFreePlan(): boolean {
+        const freeBasePlan = getBasePlanFromGroup(BillingPlanGroup.Starter);
+        const freePlanProjectLimit = freeBasePlan?.projects ?? 2;
+        const currentProjectCount = allProjects?.projects?.length ?? 0;
+        return currentProjectCount > freePlanProjectLimit;
+    }
+
     async function handleSubmit() {
         if (isDowngrade) {
             await downgrade();
@@ -156,6 +163,18 @@
     }
 
     async function downgrade() {
+        if (selectedPlan.group === BillingPlanGroup.Starter && hasExcessProjectsForFreePlan()) {
+            const freeBasePlan = getBasePlanFromGroup(BillingPlanGroup.Starter);
+            const freePlanProjectLimit = freeBasePlan?.projects ?? 2;
+            const currentProjectCount = allProjects?.projects?.length ?? 0;
+
+            addNotification({
+                type: 'error',
+                message: `Please delete ${currentProjectCount - freePlanProjectLimit} project${currentProjectCount - freePlanProjectLimit !== 1 ? 's' : ''} before downgrading`
+            });
+            return;
+        }
+
         try {
             // 1) update the plan first
             await sdk.forConsole.organizations.updatePlan({
@@ -290,9 +309,20 @@
 
     $: isUpgrade = selectedPlan.order > $currentPlan?.order;
     $: isDowngrade = selectedPlan.order < $currentPlan?.order;
-    $: isButtonDisabled =
-        $organization?.billingPlanId === selectedPlan.$id ||
-        (isDowngrade && selectedPlan.group === BillingPlanGroup.Starter && data.hasFreeOrgs);
+
+    // Check if projects exceed Free plan limit when downgrading
+    $: isButtonDisabled = (() => {
+        if ($organization?.billingPlanId === selectedPlan.$id) return true;
+        if (isDowngrade && selectedPlan.group === BillingPlanGroup.Starter && data.hasFreeOrgs)
+            return true;
+
+        // Check for excess projects when downgrading to Free plan
+        return (
+            isDowngrade &&
+            selectedPlan.group === BillingPlanGroup.Starter &&
+            hasExcessProjectsForFreePlan()
+        );
+    })();
 </script>
 
 <svelte:head>
