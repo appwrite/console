@@ -46,9 +46,6 @@
     let previousPage: string = resolve('/');
     let showExitModal = false;
     let formComponent: Form;
-    let usageLimitsComponent:
-        | { validateOrAlert: () => boolean; getSelectedProjects: () => string[] }
-        | undefined;
     let isSubmitting = writable(false);
     let collaborators: string[] =
         data?.members?.memberships
@@ -62,7 +59,7 @@
     let feedbackDowngradeReason: string;
     let feedbackMessage: string;
     let orgUsage: Models.UsageOrganization;
-    let allProjects: { projects: Models.Project[] } | undefined;
+    let allProjects: { projects: Models.Project[] } = { projects: [] };
 
     $: paymentMethods = null;
 
@@ -132,18 +129,15 @@
         return paymentMethods;
     }
 
+    function hasExcessProjectsForFreePlan(): boolean {
+        const freeBasePlan = getBasePlanFromGroup(BillingPlanGroup.Starter);
+        const freePlanProjectLimit = freeBasePlan?.projects ?? 2;
+        const currentProjectCount = allProjects.projects.length;
+        return currentProjectCount > freePlanProjectLimit;
+    }
+
     async function handleSubmit() {
         if (isDowngrade) {
-            // If target plan has a non-zero project limit, ensure selection made
-            const targetProjectsLimit = selectedPlan?.projects ?? 0;
-            const shouldShowProjectSelector =
-                targetProjectsLimit > 0 && allProjects.projects.length > targetProjectsLimit;
-
-            if (shouldShowProjectSelector && usageLimitsComponent?.validateOrAlert) {
-                const ok = usageLimitsComponent.validateOrAlert();
-                if (!ok) return;
-            }
-
             await downgrade();
         } else if (isUpgrade) {
             await upgrade();
@@ -169,6 +163,18 @@
     }
 
     async function downgrade() {
+        if (selectedPlan.group === BillingPlanGroup.Starter && hasExcessProjectsForFreePlan()) {
+            const freeBasePlan = getBasePlanFromGroup(BillingPlanGroup.Starter);
+            const freePlanProjectLimit = freeBasePlan?.projects ?? 2;
+            const currentProjectCount = allProjects?.projects?.length ?? 0;
+
+            addNotification({
+                type: 'error',
+                message: `Please delete ${currentProjectCount - freePlanProjectLimit} project${currentProjectCount - freePlanProjectLimit !== 1 ? 's' : ''} before downgrading`
+            });
+            return;
+        }
+
         try {
             // 1) update the plan first
             await sdk.forConsole.organizations.updatePlan({
@@ -176,22 +182,6 @@
                 billingPlan: selectedPlan.$id,
                 paymentMethodId
             });
-
-            // 2) If the target plan has a project limit, apply selected projects now
-            const targetProjectsLimit = selectedPlan?.projects ?? 0;
-            if (targetProjectsLimit > 0 && usageLimitsComponent) {
-                const selected = usageLimitsComponent.getSelectedProjects();
-                if (selected?.length) {
-                    try {
-                        await sdk.forConsole.organizations.updateProjects({
-                            organizationId: data.organization.$id,
-                            projects: selected
-                        });
-                    } catch (projectError) {
-                        console.warn('Project selection failed after plan update:', projectError);
-                    }
-                }
-            }
 
             await Promise.all([trackDowngradeFeedback(), invalidate(Dependencies.ORGANIZATION)]);
 
@@ -319,9 +309,19 @@
 
     $: isUpgrade = selectedPlan.order > $currentPlan?.order;
     $: isDowngrade = selectedPlan.order < $currentPlan?.order;
-    $: isButtonDisabled =
-        $organization?.billingPlanId === selectedPlan.$id ||
-        (isDowngrade && selectedPlan.group === BillingPlanGroup.Starter && data.hasFreeOrgs);
+
+    // Check if projects exceed Free plan limit when downgrading
+    $: isButtonDisabled = (() => {
+        const freeBasePlan = getBasePlanFromGroup(BillingPlanGroup.Starter);
+        const freePlanProjectLimit = freeBasePlan?.projects ?? 2;
+        const hasExcessProjects = allProjects.projects.length > freePlanProjectLimit;
+
+        if ($organization?.billingPlanId === selectedPlan.$id) return true;
+        if (isDowngrade && selectedPlan.group === BillingPlanGroup.Starter && data.hasFreeOrgs)
+            return true;
+
+        return isDowngrade && selectedPlan.group === BillingPlanGroup.Starter && hasExcessProjects;
+    })();
 </script>
 
 <svelte:head>
@@ -401,9 +401,8 @@
                         {/if}
 
                         <OrganizationUsageLimits
-                            bind:this={usageLimitsComponent}
                             organization={data.organization}
-                            projects={allProjects?.projects || []}
+                            bind:projects={allProjects.projects}
                             members={data.members?.memberships || []}
                             storageUsage={orgUsage?.storageTotal ?? 0} />
                     {/if}

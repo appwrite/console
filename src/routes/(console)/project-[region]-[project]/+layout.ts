@@ -18,6 +18,16 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
     depends(Dependencies.PROJECT);
 
     const project = await sdk.forConsole.projects.get({ projectId: params.project });
+    if (project.status !== 'active') {
+        // project isn't active, redirect back to organizations page
+        redirect(
+            303,
+            resolve('/(console)/organization-[organization]', {
+                organization: project.teamId
+            })
+        );
+    }
+
     project.region ??= 'default';
 
     // fast path without a network call!
