@@ -231,7 +231,13 @@
                     {/snippet}
                 </Paginator>
             {:else}
-                <Empty on:click={() => (showCreate = true)}>Create variables to get started</Empty>
+                <Empty
+                    on:click={() => {
+                        showCreate = true;
+                        trackEvent(Click.VariablesCreateClick, {
+                            source: createSource
+                        });
+                    }}>Create variables to get started</Empty>
             {/if}
         </Layout.Stack>
     </Layout.Stack>
