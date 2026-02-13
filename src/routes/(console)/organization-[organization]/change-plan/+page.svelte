@@ -59,7 +59,7 @@
     let feedbackDowngradeReason: string;
     let feedbackMessage: string;
     let orgUsage: Models.UsageOrganization;
-    let allProjects: { projects: Models.Project[] } | undefined;
+    let allProjects: { projects: Models.Project[] } = { projects: [] };
 
     $: paymentMethods = null;
 
@@ -132,7 +132,7 @@
     function hasExcessProjectsForFreePlan(): boolean {
         const freeBasePlan = getBasePlanFromGroup(BillingPlanGroup.Starter);
         const freePlanProjectLimit = freeBasePlan?.projects ?? 2;
-        const currentProjectCount = allProjects?.projects?.length ?? 0;
+        const currentProjectCount = allProjects.projects.length;
         return currentProjectCount > freePlanProjectLimit;
     }
 
@@ -312,16 +312,15 @@
 
     // Check if projects exceed Free plan limit when downgrading
     $: isButtonDisabled = (() => {
+        const freeBasePlan = getBasePlanFromGroup(BillingPlanGroup.Starter);
+        const freePlanProjectLimit = freeBasePlan?.projects ?? 2;
+        const hasExcessProjects = allProjects.projects.length > freePlanProjectLimit;
+
         if ($organization?.billingPlanId === selectedPlan.$id) return true;
         if (isDowngrade && selectedPlan.group === BillingPlanGroup.Starter && data.hasFreeOrgs)
             return true;
 
-        // Check for excess projects when downgrading to Free plan
-        return (
-            isDowngrade &&
-            selectedPlan.group === BillingPlanGroup.Starter &&
-            hasExcessProjectsForFreePlan()
-        );
+        return isDowngrade && selectedPlan.group === BillingPlanGroup.Starter && hasExcessProjects;
     })();
 </script>
 
@@ -403,7 +402,7 @@
 
                         <OrganizationUsageLimits
                             organization={data.organization}
-                            projects={allProjects?.projects || []}
+                            bind:projects={allProjects.projects}
                             members={data.members?.memberships || []}
                             storageUsage={orgUsage?.storageTotal ?? 0} />
                     {/if}

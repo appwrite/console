@@ -15,10 +15,10 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
 
-    const {
-        projects = [],
+    let {
         members = [],
-        storageUsage = 0
+        storageUsage = 0,
+        projects = $bindable([])
     }: {
         storageUsage?: number;
         projects?: Models.Project[];
@@ -32,7 +32,6 @@
     let confirmationInput = $state('');
 
     let isDeletingProjects = $state(false);
-    let deletedProjectIds = $state<Set<string>>(new Set());
     let selectedProjectsToDelete = $state<Array<string>>([]);
     const baseFreePlan = getBasePlanFromGroup(BillingPlanGroup.Starter);
 
@@ -46,12 +45,8 @@
     // When preparing to downgrade to Free, enforce Free plan limit locally (2)
     const allowedProjectsToKeep = $derived(freePlanLimits.projects);
 
-    const filteredProjects = $derived(
-        projects.filter((project) => !deletedProjectIds.has(project.$id))
-    );
-
     const currentUsage = $derived({
-        projects: filteredProjects?.length || 0,
+        projects: projects?.length || 0,
         members: members?.length || 0,
         storage: storageUsage || 0
     });
@@ -118,7 +113,6 @@
                 });
 
                 if (successfullyDeleted.length > 0) {
-                    deletedProjectIds = new Set([...deletedProjectIds, ...successfullyDeleted]);
                     await invalidate(Dependencies.ORGANIZATION);
 
                     addNotification({
@@ -130,10 +124,14 @@
                 if (failed.length > 0) {
                     error = `Failed to delete ${failed.length} project${failed.length !== 1 ? 's' : ''}`;
                 } else {
+                    confirmationInput = '';
                     showSelectProject = false;
                     selectedProjectsToDelete = [];
-                    confirmationInput = '';
                     showSelectionReminder = false;
+
+                    if (successfullyDeleted.length > 0) {
+                        projects = projects.filter((p) => !successfullyDeleted.includes(p.$id));
+                    }
                 }
             } catch (exception) {
                 error = exception.message;
@@ -349,8 +347,7 @@
                     placeholder="I understand"
                     disabled={isDeletingProjects}
                     bind:value={confirmationInput}
-                    label='Type "I understand" to confirm permanent deletion of the selected projects'
-                />
+                    label={`Type "I understand" to confirm permanent deletion of the selected projects`} />
             </Layout.Stack>
         {/if}
 
