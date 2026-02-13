@@ -46,9 +46,6 @@
     let previousPage: string = resolve('/');
     let showExitModal = false;
     let formComponent: Form;
-    let usageLimitsComponent:
-        | { validateOrAlert: () => boolean; getProjectsToDelete: () => string[] }
-        | undefined;
     let isSubmitting = writable(false);
     let collaborators: string[] =
         data?.members?.memberships
@@ -134,16 +131,6 @@
 
     async function handleSubmit() {
         if (isDowngrade) {
-            // If target plan has a non-zero project limit, ensure selection made
-            const targetProjectsLimit = selectedPlan?.projects ?? 0;
-            const shouldShowProjectSelector =
-                targetProjectsLimit > 0 && allProjects.projects.length > targetProjectsLimit;
-
-            if (shouldShowProjectSelector && usageLimitsComponent?.validateOrAlert) {
-                const ok = usageLimitsComponent.validateOrAlert();
-                if (!ok) return;
-            }
-
             await downgrade();
         } else if (isUpgrade) {
             await upgrade();
@@ -176,23 +163,6 @@
                 billingPlan: selectedPlan.$id,
                 paymentMethodId
             });
-
-            // 2) If the plan has a project limit, delete excess
-            const targetProjectsLimit = selectedPlan?.projects ?? 0;
-            if (targetProjectsLimit > 0 && usageLimitsComponent) {
-                const projectsToDelete = usageLimitsComponent.getProjectsToDelete();
-                if (projectsToDelete?.length) {
-                    const projectsDeletionPromise = projectsToDelete.map((projectId) => {
-                        return sdk.forConsole.projects.delete({ projectId });
-                    });
-
-                    try {
-                        await Promise.all(projectsDeletionPromise);
-                    } catch (projectError) {
-                        console.warn('Project selection failed after plan update:', projectError);
-                    }
-                }
-            }
 
             await Promise.all([trackDowngradeFeedback(), invalidate(Dependencies.ORGANIZATION)]);
 
@@ -402,7 +372,6 @@
                         {/if}
 
                         <OrganizationUsageLimits
-                            bind:this={usageLimitsComponent}
                             organization={data.organization}
                             projects={allProjects?.projects || []}
                             members={data.members?.memberships || []}
