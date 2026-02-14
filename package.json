@@ -42,7 +42,7 @@
         "https://pkg.vc/-/@appwrite/@appwrite.io/pink-svelte@a4067bf": "https://pkg.vc/-/@appwrite/@appwrite.io/pink-svelte@a4067bf",
         "ignore": "^6.0.2",
         "nanoid": "^5.1.5",
-        "nanotar": "^0.1.1",
+        "nanotar": "^0.2.1",
         "pretty-bytes": "^6.1.1",
         "remarkable": "^2.0.1",
         "svelte-confetti": "^1.4.0",
