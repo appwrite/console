@@ -15,6 +15,11 @@
     export let options: EChartsOption;
     export let series: (BarSeriesOption | LineSeriesOption)[];
     export let formatted: 'days' | 'hours' = 'days';
+    export let setOptionConfig: {
+        notMerge?: boolean;
+        lazyUpdate?: boolean;
+        replaceMerge?: string[];
+    } = {};
 
     let chart: ECharts;
     let container: HTMLDivElement;
@@ -54,7 +59,7 @@
 
     const setOption = () => {
         if (chart && !chart.isDisposed()) {
-            chart.setOption(option);
+            chart.setOption(option, setOptionConfig);
         }
     };
 
