@@ -81,7 +81,7 @@
         if (isSpatialType(column) && Array.isArray(value)) {
             stringValue = JSON.stringify(value);
         } else if (array && Array.isArray(value)) {
-            stringValue = value.map(String).join(', ');
+            stringValue = JSON.stringify(value, null, 2);
         } else if (value !== null && value !== undefined) {
             stringValue = String(value);
         } else {
@@ -91,12 +91,13 @@
 
     $effect(() => {
         if (array) {
-            const newArray = stringValue
-                .split(',')
-                .map((item) => parseValue(item))
-                .filter((item) => item !== null);
-            if (JSON.stringify(newArray) !== JSON.stringify(value)) {
-                value = newArray as string[] | number[] | boolean[];
+            try {
+                const parsed = JSON.parse(stringValue);
+                if (Array.isArray(parsed) && JSON.stringify(parsed) !== JSON.stringify(value)) {
+                    value = parsed;
+                }
+            } catch {
+                // Invalid JSON - don't update value
             }
         } else {
             let parsedValue = parseValue(stringValue);
@@ -135,14 +136,14 @@
         } else {
             switch (column.type) {
                 case 'integer':
-                    return 'Enter integers separated by commas';
+                    return 'Enter JSON array, e.g. [1, 2, 3]';
                 case 'double':
-                    return 'Enter numbers separated by commas';
+                    return 'Enter JSON array, e.g. [1.5, 2.5]';
                 case 'boolean':
-                    return 'Enter true/false separated by commas';
+                    return 'Enter JSON array, e.g. [true, false]';
                 case 'string':
                 default:
-                    return 'Enter strings separated by commas';
+                    return 'Enter JSON array, e.g. ["item1", "item2"]';
             }
         }
     };
