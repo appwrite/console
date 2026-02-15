@@ -227,8 +227,11 @@
                                     size="s"
                                     secondary
                                     class="small-button-dimensions"
-                                    disabled={!(hasColumns && hasValidColumns && data.rows.total) ||
-                                        disableButton}
+                                    disabled={!(
+                                        hasColumns &&
+                                        hasValidColumns &&
+                                        data.rows?.total
+                                    ) || disableButton}
                                     on:click={() => {
                                         trackEvent(Click.DatabaseExportCsv);
                                         goto(getTableExportUrl());
@@ -239,13 +242,13 @@
                                 <svelte:fragment slot="tooltip">Export CSV</svelte:fragment>
                             </Tooltip>
 
-                            <Tooltip disabled={isRefreshing || !data.rows.total} placement="top">
+                            <Tooltip disabled={isRefreshing || !data.rows?.total} placement="top">
                                 <Button
                                     icon
                                     size="s"
                                     secondary
                                     disabled={isRefreshing ||
-                                        !data.rows.total ||
+                                        !data.rows?.total ||
                                         !(hasColumns && hasValidColumns) ||
                                         disableButton}
                                     class="small-button-dimensions"
@@ -299,7 +302,7 @@
 
     <div class="databases-spreadsheet">
         {#if hasColumns && hasValidColumns && $tableColumnSuggestions.force !== true}
-            {#if data.rows.total}
+            {#if data.rows?.total}
                 <Divider />
                 <SpreadSheet {data} bind:showRowCreateSheet={$showRowCreateSheet} />
             {:else if $hasPageQueries}
@@ -347,7 +350,7 @@
                 </EmptySheet>
             {/if}
         {:else if isCloud && canShowSuggestionsSheet}
-            <SuggestionsEmptySheet userColumns={$tableColumns} userDataRows={data.rows.rows} />
+            <SuggestionsEmptySheet userColumns={$tableColumns} userDataRows={data.rows?.rows} />
         {:else}
             <EmptySheet mode="rows" showActions={$canWriteTables} title="You have no columns yet">
                 {#snippet subtitle()}
