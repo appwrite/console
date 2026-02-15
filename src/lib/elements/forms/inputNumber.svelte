@@ -19,17 +19,7 @@
     export let leadingIcon: ComponentType | undefined = undefined;
 
     let error: string;
-    // TODO: Remove this once Pink Svelte is fixed
-    $: if (value !== null && typeof value === 'object' && 'target' in (value as object)) {
-        const event = value as Event;
-        const target = event.target as HTMLInputElement;
-        if (target?.value !== undefined) {
-            const parsedValue = target.value === '' ? null : Number(target.value);
-            value = Number.isNaN(parsedValue) ? null : parsedValue;
-        } else {
-            value = null;
-        }
-    }
+
     const handleInvalid = (event: Event & { currentTarget: EventTarget & HTMLInputElement }) => {
         event.preventDefault();
 
