@@ -241,10 +241,19 @@
 
     $: organizationId = currentProject?.teamId;
 
+    // Should reload if
+    // 1. Not loading and
+    // 2. There is a current project and loaded projects
+    //    a. Team ID mismatch
+    //    b. Total project count mismatch
+    // 3. No loaded projects
     $: shouldReloadProjects = isLoadingProjects
         ? false
         : currentProject && loadedProjects.projects.length
-          ? loadedProjects.projects[0].teamId != currentProject.teamId
+          ? // All projects in cache belong to same org, so check first project's teamId
+            loadedProjects.projects[0].teamId != currentProject.teamId ||
+            (page.data?.allProjectsCount !== undefined &&
+                loadedProjects.total !== page.data.allProjectsCount)
           : !loadedProjects.projects.length;
 
     $: if (shouldReloadProjects) {
