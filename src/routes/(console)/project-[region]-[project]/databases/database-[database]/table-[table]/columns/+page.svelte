@@ -396,7 +396,8 @@
                 {@const option = columnOptions.find(
                     (option) =>
                         option.type === column.type &&
-                        option.format === ('format' in column ? column.format : undefined)
+                        option.format ===
+                            ('format' in column && column.format ? column.format : undefined)
                 )}
                 {@const isSelectable =
                     column['system'] || column.type === 'relationship' ? 'disabled' : true}
@@ -425,7 +426,7 @@
                                 {:else if column.key === '$id'}
                                     <Icon icon={IconFingerPrint} size="s" />
                                 {:else}
-                                    <Icon icon={option.icon} size="s" />
+                                    <Icon icon={option?.icon ?? IconViewList} size="s" />
                                 {/if}
 
                                 <Layout.Stack
