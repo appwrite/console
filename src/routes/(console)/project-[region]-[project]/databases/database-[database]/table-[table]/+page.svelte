@@ -309,6 +309,9 @@
                 <EmptySheet
                     mode="rows-filtered"
                     title="There are no rows that match your filters"
+                    onOpenCreateColumn={() => {
+                        $showCreateColumnSheet.show = true;
+                    }}
                     customColumns={createTableColumns(table.fields, selected)}>
                     {#snippet actions()}
                         <Button
@@ -329,6 +332,9 @@
                 <EmptySheet
                     mode="rows"
                     showActions={$canWriteRows}
+                    onOpenCreateColumn={() => {
+                        $showCreateColumnSheet.show = true;
+                    }}
                     customColumns={createTableColumns(table.fields, selected)}>
                     {#snippet actions()}
                         <EmptySheetCards

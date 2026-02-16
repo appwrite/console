@@ -10,12 +10,14 @@
     import type { Column } from '$lib/helpers/types';
     import { preferences } from '$lib/stores/preferences';
     import { onMount } from 'svelte';
+    import { realtime } from '$lib/stores/sdk';
 
     import { showColumnsSuggestionsModal } from '../(suggestions)/store';
     import IconAINotification from '../(suggestions)/icon/aiNotification.svelte';
     import { type Columns, type ColumnDirection, showCreateColumnSheet } from './store';
     import { isCloud } from '$lib/system';
     import { slide } from 'svelte/transition';
+    import { setupColumnObserver } from '../(observer)/columnObserver';
 
     let {
         direction = null,
@@ -144,11 +146,61 @@
     }
 
     export async function submit() {
+        const createdKey = key;
+        let stopObserver: (() => void) | null = null;
+        let waitPromise: Promise<void> | null = null;
+        let startWaiting: ((count: number) => void) | null = null;
+
+        if (createdKey) {
+            const observer = setupColumnObserver();
+            waitPromise = observer.waitPromise;
+            startWaiting = observer.startWaiting;
+
+            const unsubscribe = realtime.forProject(
+                page.params.region,
+                ['project', 'console'],
+                (response) => {
+                    const payload = response.payload as Columns;
+
+                    // We only care about the column we just created
+                    if (payload?.key !== createdKey) return;
+
+                    observer.columnCreationHandler(response);
+                }
+            );
+
+            stopObserver = () => {
+                unsubscribe();
+                observer.cleanup();
+            };
+        }
+
         try {
             await $option.create(databaseId, tableId, key, data);
 
             columnId = key;
             insertColumnInOrder();
+
+            if (createdKey && waitPromise && startWaiting && stopObserver) {
+                startWaiting(1);
+
+                waitPromise
+                    .then(async () => {
+                        await invalidate(Dependencies.TABLE);
+                    })
+                    .catch((error) => {
+                        // avoid unhandled rejections if invalidate(Dependencies.TABLE) fails
+                        console.error(error);
+                        if (error instanceof Error) {
+                            trackError(error, Submit.ColumnCreate);
+                        }
+                    })
+                    .finally(() => {
+                        stopObserver?.();
+                    });
+            } else {
+                stopObserver?.();
+            }
 
             await invalidate(Dependencies.TABLE);
 
@@ -165,6 +217,7 @@
             }
             return false; // close sheet
         } catch (e) {
+            stopObserver?.();
             addNotification({
                 type: 'error',
                 message: e.message
