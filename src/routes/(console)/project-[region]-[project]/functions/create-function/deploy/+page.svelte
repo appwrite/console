@@ -239,7 +239,7 @@
                         id="installCommand"
                         name="installCommand"
                         bind:value={installCommand}
-                        placeholder="e.g., npm install" />
+                        placeholder="e.g., pnpm install" />
                 </Layout.Stack>
             </Fieldset>
 

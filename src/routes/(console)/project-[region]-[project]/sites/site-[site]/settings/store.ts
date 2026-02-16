@@ -44,12 +44,12 @@ export const adapterDataList = [
         framework: 'nuxt',
         ssr: {
             desc: 'Set build command to $ in site settings.',
-            code: ['npm run build'],
+            code: ['pnpm run build'],
             url: 'https://nuxt.com/docs/getting-started/deployment'
         },
         static: {
             desc: 'Set build command to $ in site settings.',
-            code: ['npm run generate'],
+            code: ['pnpm run generate'],
             url: 'https://nuxt.com/docs/getting-started/deployment#static-hosting'
         }
     },

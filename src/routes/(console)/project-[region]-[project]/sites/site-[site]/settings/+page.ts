@@ -1,6 +1,7 @@
 import { sdk } from '$lib/stores/sdk';
 import { Dependencies } from '$lib/constants';
 import { isCloud } from '$lib/system';
+import { normalizeFrameworkCommands } from '$lib/helpers/packageManager';
 
 export const load = async ({ params, depends, parent }) => {
     depends(Dependencies.VARIABLES);
@@ -19,6 +20,7 @@ export const load = async ({ params, depends, parent }) => {
                 ? sdk.forProject(params.region, params.project).sites.listSpecifications()
                 : Promise.resolve({ specifications: [], total: 0 })
         ]);
+    normalizeFrameworkCommands(frameworks);
 
     // Conflicting variables first
     variables.variables = variables.variables.sort((var1, var2) => {

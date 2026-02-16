@@ -22,6 +22,7 @@
     import RepoCard from './repoCard.svelte';
     import { getIconFromRuntime } from '$lib/stores/runtimes';
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
+    import { toPnpmCommand } from '$lib/helpers/packageManager';
 
     export let data;
 
@@ -80,7 +81,7 @@
                 })) as unknown as Models.DetectionRuntime; /* SDK return type is wrong atm */
 
             entrypoint = detections.entrypoint;
-            buildCommand = detections.commands;
+            buildCommand = toPnpmCommand(detections.commands);
             runtime = detections.runtime as Runtime;
 
             trackEvent(Submit.FrameworkDetect, { runtime, source: 'repository' });

@@ -3,6 +3,7 @@ import { redirect } from '@sveltejs/kit';
 import { base } from '$app/paths';
 import type { PageLoad } from './$types';
 import { getNestedRootDirectory, getRepositoryInfo } from '$lib/helpers/github';
+import { normalizeFrameworkCommands } from '$lib/helpers/packageManager';
 
 export const load: PageLoad = async ({ url, params }) => {
     const repository = url.searchParams.get('repo') || url.searchParams.get('repository');
@@ -26,6 +27,7 @@ export const load: PageLoad = async ({ url, params }) => {
             .vcs.listInstallations()
             .catch(() => null)
     ]);
+    normalizeFrameworkCommands(frameworks);
 
     return {
         envKeys,

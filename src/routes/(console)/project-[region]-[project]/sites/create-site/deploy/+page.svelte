@@ -266,11 +266,11 @@
                 <Layout.Stack gap="m">
                     <Input.Text
                         label="Install command"
-                        placeholder={installCommand || 'npm install'}
+                        placeholder={installCommand || 'pnpm install'}
                         bind:value={installCommand} />
                     <Input.Text
                         label="Build command"
-                        placeholder={buildCommand || 'npm run build'}
+                        placeholder={buildCommand || 'pnpm run build'}
                         bind:value={buildCommand} />
                     <Input.Text
                         label="Output directory"
