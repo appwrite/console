@@ -34,20 +34,37 @@
     let directories = $state<Directory[]>([
         {
             title: 'Root',
-            fullPath: './',
+            fullPath: '/',
             fileCount: 0,
-            thumbnailUrl: 'root',
+            thumbnailUrl: $iconPath('empty', 'grayscale'),
             children: [],
             loading: false
         }
     ]);
-    let currentPath = $state('./');
+    let currentPath = $state('/');
     let expandedStore = writable<string[]>([]);
     let initialized = $state(false);
-    let initialPath = $state('./');
-    let isFetching = false;
+    let treeVersion = $state(0);
+    let initialPath = $state('/');
+    const inFlightPaths = new Set<string>();
 
     let hasChanges = $derived(currentPath !== initialPath);
+
+    function normalizePath(path: string): string {
+        if (!path || path === './' || path === '/') return '/';
+        const trimmed = path.replace(/^\.\//, '').replace(/^\/+/, '').replace(/\/$/, '');
+        return `/${trimmed}`;
+    }
+
+    function toProviderPath(path: string): string {
+        const normalized = normalizePath(path);
+        if (normalized === '/') return './';
+        return `./${normalized.slice(1)}`;
+    }
+
+    function bumpTreeVersion() {
+        treeVersion += 1;
+    }
 
     async function detectRuntimeOrFramework(path: string): Promise<string | null> {
         try {
@@ -58,14 +75,14 @@
                     providerRepositoryId: $repository.id,
                     type:
                         product === 'sites' ? VCSDetectionType.Framework : VCSDetectionType.Runtime,
-                    providerRootDirectory: path
+                    providerRootDirectory: toProviderPath(path)
                 });
 
             const iconName =
                 product === 'sites'
                     ? detection.framework
                     : (detection as unknown as Models.DetectionRuntime).runtime;
-            return $iconPath(iconName, 'color');
+            return iconName ? $iconPath(iconName, 'color') : null;
         } catch (err) {
             return null;
         }
@@ -92,21 +109,22 @@
                         .filter((e) => e.isDirectory)
                         .map((dir) => ({
                             title: dir.name,
-                            fullPath: `./${dir.name}`,
+                            fullPath: `/${dir.name}`,
                             fileCount: undefined,
                             // set logo for root directories
-                            thumbnailUrl: dir.name,
+                            thumbnailUrl: $iconPath('empty', 'grayscale'),
                             loading: false
                         }))
                 };
 
-                const detectedIcon = await detectRuntimeOrFramework('./');
+                const detectedIcon = await detectRuntimeOrFramework('/');
                 if (detectedIcon) {
                     directories[0].thumbnailUrl = detectedIcon;
                 }
 
                 isLoading = false;
-                expandedStore.update((exp) => [...exp, './']);
+                expandedStore.update((exp) => [...new Set([...exp, '/'])]);
+                bumpTreeVersion();
             } catch (error) {
                 console.error('Failed to load root directory:', error);
                 isLoading = false;
@@ -115,7 +133,7 @@
     });
 
     function getDirByPath(path: string): Directory | null {
-        const segments = path.split('/').filter((s) => s !== '.' && s !== '');
+        const segments = path.split('/').filter((s) => s !== '');
         let node: Directory | null = directories[0] ?? null;
         for (const seg of segments) {
             const next = node?.children?.find((d) => d.title === seg) ?? null;
@@ -130,8 +148,8 @@
         const targetDir = getDirByPath(path);
         if (!targetDir || targetDir.fileCount !== undefined) return;
 
-        if (isFetching) return;
-        isFetching = true;
+        if (inFlightPaths.has(path)) return;
+        inFlightPaths.add(path);
         targetDir.loading = true;
 
         try {
@@ -140,7 +158,7 @@
                 .vcs.getRepositoryContents({
                     installationId: $installation.$id,
                     providerRepositoryId: $repository.id,
-                    providerRootDirectory: path,
+                    providerRootDirectory: toProviderPath(path),
                     providerReference: branch
                 });
 
@@ -160,51 +178,61 @@
                 targetDir.thumbnailUrl = detectedIcon;
             }
 
-            targetDir.children = contentDirectories.map((dir) => {
-                return {
-                    title: dir.name,
-                    fullPath: `${path}/${dir.name}`,
-                    fileCount: undefined,
-                    thumbnailUrl: dir.name
-                };
-            });
+            const nextChildren = contentDirectories.map((dir) => ({
+                title: dir.name,
+                fullPath: path === '/' ? `/${dir.name}` : `${path}/${dir.name}`,
+                fileCount: undefined,
+                thumbnailUrl: $iconPath('empty', 'grayscale')
+            }));
+            targetDir.children = nextChildren;
+            bumpTreeVersion();
 
             expandedStore.update((exp) => [...new Set([...exp, path])]);
         } catch (error) {
             console.error('Failed to load directory:', error);
         } finally {
             targetDir.loading = false;
-            isFetching = false;
+            inFlightPaths.delete(path);
         }
-    }
-
-    function normalizePath(path: string): string {
-        if (!path || path === './') return './';
-        const trimmed = path.replace(/\/$/, '');
-        return trimmed.startsWith('./') ? trimmed : `./${trimmed}`;
     }
 
     async function expandToPath(path: string) {
         const normalized = normalizePath(path);
-        const segments = normalized.split('/').filter((s) => s !== '.' && s !== '');
+        const segments = normalized.split('/').filter((s) => s !== '');
 
-        expandedStore.update((exp) => [...new Set([...exp, './'])]);
+        const pathsToExpand = ['/'];
 
         let currentDir = directories[0];
-        let currentPath = './';
+        let currentPath = '/';
 
         for (const segment of segments) {
-            currentPath = currentPath === './' ? `./${segment}` : `${currentPath}/${segment}`;
+            currentPath = currentPath === '/' ? `/${segment}` : `${currentPath}/${segment}`;
+            pathsToExpand.push(currentPath);
 
-            // Load the parent directory if not already loaded
-            await loadPath(currentDir.fullPath);
+            if (!currentDir.children) {
+                currentDir.children = [];
+            }
 
-            // Find the next directory
-            const nextDir = currentDir.children?.find((d) => d.title === segment);
-            if (!nextDir) return; // Path doesn't exist
+            let nextDir = currentDir.children.find((d) => d.title === segment);
+            if (!nextDir) {
+                nextDir = {
+                    title: segment,
+                    fullPath: currentPath,
+                    fileCount: undefined,
+                    thumbnailUrl: $iconPath('empty', 'grayscale'),
+                    children: []
+                };
+                currentDir.children = [...currentDir.children, nextDir];
+            }
 
             currentDir = nextDir;
-            expandedStore.update((exp) => [...new Set([...exp, currentPath])]);
+        }
+
+        expandedStore.update((exp) => [...new Set([...exp, ...pathsToExpand])]);
+        bumpTreeVersion();
+
+        for (const pathToLoad of pathsToExpand) {
+            loadPath(pathToLoad);
         }
 
         currentPath = normalized;
@@ -213,7 +241,7 @@
     $effect(() => {
         if (show && !initialized && !isLoading) {
             initialized = true;
-            const normalized = normalizePath(rootDir || './');
+            const normalized = normalizePath(rootDir || '/');
             initialPath = normalized;
             currentPath = normalized;
             expandToPath(normalized);
@@ -227,12 +255,10 @@
         }
     });
 
-    async function handleSelect(e: CustomEvent) {
-        const path = e.detail.fullPath as string;
-        if (isFetching) return;
-
+    async function handleSelect(detail: { fullPath: string }) {
+        const path = detail.fullPath as string;
         currentPath = path;
-        await loadPath(path);
+        loadPath(path);
     }
 
     function handleSubmit() {
@@ -245,13 +271,15 @@
     <span slot="description">
         Select the directory where your site code is located using the menu below.
     </span>
-    <DirectoryPicker
-        {directories}
-        {isLoading}
-        bind:expanded={expandedStore}
-        bind:selected={currentPath}
-        openTo={initialPath}
-        on:select={handleSelect} />
+    {#key treeVersion}
+        <DirectoryPicker
+            {directories}
+            {isLoading}
+            bind:expanded={expandedStore}
+            bind:selected={currentPath}
+            openTo={initialPath}
+            onSelect={handleSelect} />
+    {/key}
 
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (show = false)}>Cancel</Button>
