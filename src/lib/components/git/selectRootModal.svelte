@@ -50,6 +50,14 @@
 
     let hasChanges = $derived(currentPath !== initialPath);
 
+    const iconAliases = new Map([
+        ['svelte-kit', 'svelte'],
+        ['sveltekit', 'svelte'],
+        ['svelte_kit', 'svelte'],
+        ['sveltejs', 'svelte'],
+        ['other', 'empty']
+    ]);
+
     function normalizePath(path: string): string {
         if (!path || path === './' || path === '/') return '/';
         const trimmed = path.replace(/^\.\//, '').replace(/^\/+/, '').replace(/\/$/, '');
@@ -64,6 +72,13 @@
 
     function bumpTreeVersion() {
         treeVersion += 1;
+    }
+
+    function resolveIconUrl(rawIconName: string | null | undefined): string | null {
+        if (!rawIconName) return null;
+        const normalized = rawIconName.toLowerCase();
+        const iconName = iconAliases.get(normalized) ?? normalized;
+        return $iconPath(iconName, 'color');
     }
 
     async function detectRuntimeOrFramework(path: string): Promise<string | null> {
@@ -82,7 +97,7 @@
                 product === 'sites'
                     ? detection.framework
                     : (detection as unknown as Models.DetectionRuntime).runtime;
-            return iconName ? $iconPath(iconName, 'color') : null;
+            return resolveIconUrl(iconName);
         } catch (err) {
             return null;
         }
