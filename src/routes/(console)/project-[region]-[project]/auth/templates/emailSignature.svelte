@@ -3,11 +3,18 @@
     import { CardGrid, EmptyCardImageCloud } from '$lib/components';
     import Button from '$lib/elements/forms/button.svelte';
     import { app } from '$lib/stores/app';
-    import { upgradeURL } from '$lib/stores/billing';
+    import { getChangePlanUrl } from '$lib/stores/billing';
     import EmailDark from './email-footer-dark.png';
     import EmailLight from './email-footer-light.png';
     import EmailMobileDark from './email-footer-mobile-dark.png';
     import EmailMobileLight from './email-footer-mobile-light.png';
+    import type { Models } from '@appwrite.io/console';
+
+    const {
+        project
+    }: {
+        project: Models.Project;
+    } = $props();
 </script>
 
 <CardGrid>
@@ -15,7 +22,7 @@
     Enable or disable Appwrite branding in your email template signature.
 
     <svelte:fragment slot="aside">
-        <EmptyCardImageCloud source="email_signature_card" let:nextTier>
+        <EmptyCardImageCloud responsive source="email_signature_card" let:nextTier>
             <svelte:fragment slot="image">
                 <div class=" is-only-mobile u-width-full-line u-height-100-percent">
                     {#if $app.themeInUse === 'dark'}
@@ -54,7 +61,7 @@
                     class="u-margin-block-start-32"
                     secondary
                     fullWidth
-                    href={$upgradeURL}
+                    href={getChangePlanUrl(project.teamId)}
                     on:click={() => {
                         trackEvent(Click.OrganizationClickUpgrade, {
                             from: 'button',

@@ -16,7 +16,7 @@
 
     const dispatch = createEventDispatcher();
 
-    let id: string;
+    let id: string = '';
     let error: string;
     let showCustomId = false;
     let disabled: boolean = false;
@@ -28,7 +28,7 @@
             disabled = true;
             showSubmissionLoader = true;
             const project = await sdk.forConsole.projects.create({
-                projectId: id ?? ID.unique(),
+                projectId: id || ID.unique(),
                 name,
                 teamId
             });

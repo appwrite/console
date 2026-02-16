@@ -248,7 +248,7 @@
     <DirectoryPicker
         {directories}
         {isLoading}
-        expanded={expandedStore}
+        bind:expanded={expandedStore}
         bind:selected={currentPath}
         openTo={initialPath}
         on:select={handleSelect} />

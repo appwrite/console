@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { table } from '../store';
     import { page } from '$app/state';
     import { sdk } from '$lib/stores/sdk';
     import { invalidate } from '$app/navigation';
@@ -10,20 +9,26 @@
     import { addNotification } from '$lib/stores/notifications';
     import { symmetricDifference } from '$lib/helpers/array';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import type { Entity } from '$database/(entity)';
+    import { onMount } from 'svelte';
 
     let {
-        row = $bindable(null)
+        table,
+        row = $bindable(null),
+        arePermsDisabled = $bindable(true)
     }: {
+        table: Entity;
         row: Models.DefaultRow | Models.Row;
+        arePermsDisabled?: boolean;
     } = $props();
 
-    let permissions = $state(row.$permissions);
-    let arePermsDisabled = $state(true);
     let showPermissionAlert = $state(true);
+    let permissions = $state(row.$permissions);
 
-    export function disableSubmit() {
-        return arePermsDisabled;
-    }
+    onMount(() => {
+        /* silences the not read error warning */
+        arePermsDisabled;
+    });
 
     export async function updatePermissions() {
         try {
@@ -70,7 +75,7 @@
     >.
 </p>
 
-{#if $table.rowSecurity}
+{#if table.recordSecurity}
     {#if showPermissionAlert}
         <Alert.Inline
             status="info"

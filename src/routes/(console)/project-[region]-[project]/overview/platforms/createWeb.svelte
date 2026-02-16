@@ -20,14 +20,15 @@
         IconSvelte,
         IconReact,
         IconNuxt,
+        IconTanstack,
         IconInfo,
         IconExternalLink,
         IconAngular,
         IconJs
     } from '@appwrite.io/pink-icons-svelte';
     import { page } from '$app/state';
-    import { type ComponentType, onMount } from 'svelte';
-    import { sdk } from '$lib/stores/sdk';
+    import { onMount } from 'svelte';
+    import { realtime, sdk } from '$lib/stores/sdk';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { addNotification } from '$lib/stores/notifications';
     import { fade } from 'svelte/transition';
@@ -38,6 +39,7 @@
         ReactFrameworkIcon,
         SvelteFrameworkIcon,
         NuxtFrameworkIcon,
+        TanStackFrameworkIcon,
         NextjsFrameworkIcon,
         VueFrameworkIcon,
         NoFrameworkIcon,
@@ -46,14 +48,21 @@
     } from './components/index';
     import { extendedHostnameRegex } from '$lib/helpers/string';
     import { project } from '../../store';
+    import {
+        type PlatformProps,
+        type FrameworkType,
+        type LLMPromptConfig,
+        getCorrectTitle
+    } from './store';
+    import LlmBanner from './llmBanner.svelte';
 
-    export let key;
+    let { key, isConnectPlatform = false, platform = PlatformType.Web }: PlatformProps = $props();
 
-    let showExitModal = false;
-    let isPlatformCreated = !!key;
-    let isCreatingPlatform = false;
-    let connectionSuccessful = false;
-    let isChangingFramework = false;
+    let showExitModal = $state(false);
+    let isCreatingPlatform = $state(false);
+    let connectionSuccessful = $state(false);
+    let isChangingFramework = $state(false);
+    let isPlatformCreated = $state(isConnectPlatform);
 
     const projectId = page.params.project;
 
@@ -61,19 +70,9 @@
 ${prefix}APPWRITE_PROJECT_NAME = "${$project.name}"
 ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}"
         `;
-    type FrameworkType = {
-        key: string;
-        label: string;
-        icon: ComponentType;
-        smallIcon: ComponentType;
-        portNumber: number;
-        runCommand: string;
-        updateConfigCode: string;
-    };
-    export let platform: PlatformType = PlatformType.Flutterandroid;
-    export let selectedFrameworkKey: string | undefined = key ? key : undefined;
-    let hostname;
-    let hostnameError = false;
+
+    let hostname = $state(null);
+    let hostnameError = $state(false);
 
     let frameworks: Array<FrameworkType> = [
         {
@@ -139,6 +138,15 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
 };`
         },
         {
+            key: 'tanstack-start',
+            label: 'TanStack Start',
+            icon: TanStackFrameworkIcon,
+            smallIcon: IconTanstack,
+            portNumber: 3000,
+            runCommand: 'npm run dev',
+            updateConfigCode: updateConfigCode('VITE_')
+        },
+        {
             key: 'js',
             label: 'JavaScript',
             icon: JavascriptFrameworkIcon,
@@ -149,11 +157,67 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
         }
     ];
 
-    $: selectedFramework = frameworks.find((framework) => framework.key === selectedFrameworkKey);
-    $: selectedFrameworkIcon = selectedFramework ? selectedFramework.icon : NoFrameworkIcon;
+    const selectedFramework = $derived(frameworks.find((framework) => framework.key === key));
+
+    const selectedFrameworkIcon = $derived(
+        selectedFramework ? selectedFramework.icon : NoFrameworkIcon
+    );
+
+    const llmConfig: LLMPromptConfig = $derived({
+        alreadyExistsInstructions: `
+Install the Appwrite web SDK using the following command. Respect the user's package manager of choice. Do not use NPM if the user uses Bun for example.
+
+\`\`\`bash
+npm install appwrite
+\`\`\`
+        
+Create a new \`appwrite.js\` (or equivalent, respecting the framework and language, don't create a JS file if TS is being used in the project) file in a suitable lib directory and have the following code:
+
+\`\`\`js
+import { Client, Account, Databases } from "appwrite";
+
+const client = new Client()
+    .setEndpoint("${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}")
+    .setProject("${projectId}");
+
+const account = new Account(client);
+const databases = new Databases(client);
+
+export { client, account, databases };
+\`\`\`
+
+When the app is opened, make it so that the following function is automatically called which will ping the Appwrite backend server to verify the setup. Let the user know about this function being added
+
+\`\`\`js
+client.ping();
+\`\`\`
+`,
+        title: `Copy prompt: starter kit for Appwrite in ${selectedFramework?.label || 'Web'}`,
+        cloneCommand: `git clone https://github.com/appwrite/starter-for-${selectedFramework?.key}\ncd starter-for-${selectedFramework?.key}`,
+        configFile:
+            selectedFramework?.key === 'angular'
+                ? 'src/environments/environment.ts'
+                : 'appwrite.js',
+        configCode:
+            // selectedFramework?.key === 'angular'
+            //     ? `APPWRITE_PROJECT_ID=${projectId}\nAPPWRITE_PROJECT_NAME=${$project.name}\nAPPWRITE_ENDPOINT=${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}`
+            //     : `
+            //     const client = new Client()
+            //         .setEndpoint("${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}")
+            //         .setProject("${projectId}");
+            //     `,
+            `APPWRITE_PROJECT_ID = "${projectId}"
+APPWRITE_PROJECT_NAME = "${$project.name}"
+APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}"`,
+        configLanguage: selectedFramework?.key === 'angular' ? 'ts' : 'dotenv',
+        runInstructions: `Install project dependencies using \`npm install\`, then run the app using \`${selectedFramework?.runCommand}\`. Demo app runs on http://localhost:${selectedFramework?.portNumber}. Click the \`Send a ping\` button to verify the setup.`,
+        using: 'the terminal or VSCode'
+    });
 
     async function createWebPlatform() {
-        hostnameError = hostname !== '' ? !new RegExp(extendedHostnameRegex).test(hostname) : null;
+        const hostnameRegex = new RegExp(extendedHostnameRegex);
+        const finalHostname = hostname?.trim() || 'localhost';
+        hostnameError = !hostnameRegex.test(finalHostname);
 
         if (hostnameError) {
             return;
@@ -165,8 +229,8 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
                 projectId,
                 type: PlatformType.Web,
                 name: `${selectedFramework.label} app`,
-                key: selectedFrameworkKey,
-                hostname: hostname === '' ? undefined : hostname
+                key: key,
+                hostname: finalHostname
             });
 
             isPlatformCreated = true;
@@ -179,8 +243,7 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
                 message: 'Platform created.'
             });
 
-            invalidate(Dependencies.PROJECT);
-            invalidate(Dependencies.PLATFORMS);
+            await invalidate(Dependencies.PROJECT);
         } catch (error) {
             trackError(error, Submit.PlatformCreate);
             addNotification({
@@ -197,7 +260,7 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
     }
 
     onMount(() => {
-        const unsubscribe = sdk.forConsole.client.subscribe('console', (response) => {
+        const unsubscribe = realtime.forConsole(page.params.region, 'console', (response) => {
             if (response.events.includes(`projects.${projectId}.ping`)) {
                 connectionSuccessful = true;
                 invalidate(Dependencies.ORGANIZATION);
@@ -213,7 +276,10 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
     });
 </script>
 
-<Wizard title="Add web platform" bind:showExitModal confirmExit={!isPlatformCreated}>
+<Wizard
+    bind:showExitModal
+    confirmExit={!isPlatformCreated}
+    title={getCorrectTitle(isConnectPlatform, 'Web')}>
     <Layout.Stack gap="xxl">
         <!-- Step One -->
         {#if !isPlatformCreated || isChangingFramework}
@@ -224,7 +290,7 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
                             <div class="frameworks">
                                 {#each frameworks as framework}
                                     <Card.Selector
-                                        bind:group={selectedFrameworkKey}
+                                        bind:group={key}
                                         name="framework"
                                         id={framework.key}
                                         value={framework.key}
@@ -260,7 +326,8 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
                                         protocol or port number required.
                                     </span>
                                 </Tooltip>
-                            </InputText></Fieldset>
+                            </InputText>
+                        </Fieldset>
                         <Layout.Stack direction="row" justifyContent="flex-end">
                             <Button submit disabled={!selectedFramework}>Create platform</Button>
                         </Layout.Stack>
@@ -277,6 +344,7 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
                     <Button
                         size="s"
                         secondary
+                        disabled={isConnectPlatform}
                         on:click={() => {
                             isChangingFramework = true;
                         }}>Change</Button>
@@ -287,6 +355,8 @@ ${prefix}APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.p
         {#if isPlatformCreated && !isChangingFramework}
             <Fieldset legend="Clone starter" badge="Optional">
                 <Layout.Stack gap="l">
+                    <LlmBanner config={llmConfig} openers={['cursor', 'lovable']} />
+
                     <Typography.Text variant="m-500">
                         1. If you're starting a new project, you can clone our starter kit from
                         GitHub using the terminal or VSCode.

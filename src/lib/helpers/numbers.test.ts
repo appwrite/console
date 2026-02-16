@@ -3,7 +3,8 @@ import {
     abbreviateNumber,
     formatCurrency,
     formatNumberWithCommas,
-    toDecimals
+    toDecimals,
+    toExponential
 } from '$lib/helpers/numbers';
 
 /*
@@ -82,4 +83,40 @@ test('format number according to specified locale and currency', () => {
 
 test('return the input as a string if it is not a number', () => {
     expect(formatCurrency(NaN)).toEqual('NaN');
+});
+
+test('format regular numbers correctly', () => {
+    expect(toExponential(1234567)).toEqual('1.23e+6');
+    expect(toExponential(900719925474103)).toEqual('9.01e+14');
+});
+
+test('format bigint correctly without precision loss', () => {
+    expect(toExponential(900719925474103n)).toEqual('9.00e+14');
+    expect(toExponential(123456789012345678901234567890n)).toEqual('1.23e+29');
+});
+
+test('handle negative numbers correctly', () => {
+    expect(toExponential(-1234567)).toEqual('-1.23e+6');
+    expect(toExponential(-900719925474103n)).toEqual('-9.00e+14');
+});
+
+test('handle small numbers correctly', () => {
+    expect(toExponential(123)).toEqual('1.23e+2');
+});
+
+test('handle zero correctly', () => {
+    expect(toExponential(0)).toEqual('0.00e+0');
+    expect(toExponential(0n)).toEqual('0.00e+0');
+    expect(toExponential(0n, 0)).toEqual('0e+0');
+});
+
+test('validate fractionDigits range', () => {
+    expect(() => toExponential(123, -1)).toThrow(RangeError);
+    expect(() => toExponential(123, 101)).toThrow(RangeError);
+    expect(() => toExponential(123n, -1)).toThrow(RangeError);
+});
+
+test('truncate non-integer fractionDigits', () => {
+    expect(toExponential(123456, 2.9)).toEqual('1.23e+5');
+    expect(toExponential(123456n, 2.9)).toEqual('1.23e+5');
 });

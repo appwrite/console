@@ -1,5 +1,6 @@
 <script lang="ts">
     import { Card, Layout, Button } from '@appwrite.io/pink-svelte';
+    import { Form } from '$lib/elements/forms';
     import { isCloud } from '$lib/system';
     import { sdk } from '$lib/stores/sdk';
     import { ID, Region } from '@appwrite.io/console';
@@ -7,12 +8,13 @@
     import { Dependencies } from '$lib/constants';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { goto, invalidate } from '$app/navigation';
-    import { base } from '$app/paths';
+    import { base, resolve } from '$app/paths';
     import { addNotification } from '$lib/stores/notifications';
     import CreateProject from '$lib/layout/createProject.svelte';
     import { loadAvailableRegions } from '$routes/(console)/regions';
     import { regions as regionsStore } from '$lib/stores/organization';
     import { user } from '$lib/stores/user';
+    import { showOnboardingAnimation } from '$lib/stores/layout';
 
     let isLoading = false;
     let startAnimation = false;
@@ -56,10 +58,17 @@
             });
 
             startAnimation = true;
+            showOnboardingAnimation.set(true);
 
             setTimeout(async () => {
                 await invalidate(Dependencies.ACCOUNT);
-                goto(`${base}/project-${project.region ?? 'default'}-${project.$id}`);
+                await goto(
+                    resolve('/(console)/project-[region]-[project]', {
+                        region: project.region ?? 'default',
+                        project: project.$id
+                    })
+                );
+                showOnboardingAnimation.set(false);
             }, 3000);
         } catch (e) {
             trackError(e, Submit.ProjectCreate);
@@ -97,24 +106,22 @@
             class="u-only-dark"
             alt="Appwrite Logo" />
         <Card.Base variant="primary" padding="l">
-            <CreateProject
-                showTitle
-                bind:projectName
-                bind:id={projectId}
-                bind:region={projectRegion}
-                regions={$regionsStore?.regions}>
-                {#snippet submit()}
-                    <Layout.Stack direction="row" justifyContent="flex-end">
-                        <Button.Button
-                            on:click={createProject}
-                            type="submit"
-                            variant="primary"
-                            size="s">
-                            Create
-                        </Button.Button>
-                    </Layout.Stack>
-                {/snippet}
-            </CreateProject>
+            <Form noStyle onSubmit={createProject}>
+                <CreateProject
+                    showTitle
+                    bind:projectName
+                    bind:id={projectId}
+                    bind:region={projectRegion}
+                    regions={$regionsStore?.regions}>
+                    {#snippet submit()}
+                        <Layout.Stack direction="row" justifyContent="flex-end">
+                            <Button.Button type="submit" variant="primary" size="s">
+                                Create
+                            </Button.Button>
+                        </Layout.Stack>
+                    {/snippet}
+                </CreateProject>
+            </Form>
         </Card.Base>
     {/if}
 </div>

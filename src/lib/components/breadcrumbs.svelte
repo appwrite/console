@@ -22,10 +22,9 @@
     import { base } from '$app/paths';
     import { currentPlan, newOrgModal, organization } from '$lib/stores/organization';
     import { Click, trackEvent } from '$lib/actions/analytics';
-    import { ID, type Models, Query } from '@appwrite.io/console';
+    import { BillingPlanGroup, ID, type Models, Query } from '@appwrite.io/console';
     import { sdk } from '$lib/stores/sdk';
     import { page } from '$app/state';
-    import { BillingPlan } from '$lib/constants';
     import { onDestroy } from 'svelte';
 
     type Organization = {
@@ -140,7 +139,8 @@
                 queries: [
                     Query.equal('teamId', organizationId ?? page.data.currentOrgId),
                     Query.limit(5),
-                    Query.orderDesc('$updatedAt')
+                    Query.orderDesc('$updatedAt'),
+                    Query.select(['$id', 'name', 'region', 'teamId'])
                 ]
             })) ?? loadedProjects;
 
@@ -253,7 +253,9 @@
 
     let badgeType: 'success' | undefined;
     $: badgeType =
-        $organization && $organization.billingPlan !== BillingPlan.FREE ? 'success' : undefined;
+        $organization && $organization?.billingPlanDetails?.group !== BillingPlanGroup.Starter
+            ? 'success'
+            : undefined;
 </script>
 
 <svelte:window on:resize={onResize} />

@@ -1,6 +1,5 @@
 <script lang="ts">
     import { Button, InputText } from '$lib/elements/forms';
-    import type { PaymentList, PaymentMethodData } from '$lib/sdk/billing';
     import { hasStripePublicKey, isCloud } from '$lib/system';
     import { onMount } from 'svelte';
     import PaymentModal from './paymentModal.svelte';
@@ -10,22 +9,23 @@
     import InputSelect from '$lib/elements/forms/inputSelect.svelte';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
+    import type { Models } from '@appwrite.io/console';
 
-    export let value: string;
     export let taxId = '';
-    export let methods: PaymentList;
+    export let value: string;
+    export let methods: Models.PaymentMethodList;
 
     let showTaxId = false;
     let showPaymentModal = false;
 
-    async function cardSaved(event: CustomEvent<PaymentMethodData>) {
-        value = event.detail.$id;
+    async function cardSaved(card: Models.PaymentMethod) {
+        value = card.$id;
 
         if (value) {
             methods = {
                 ...methods,
                 total: methods.total + 1,
-                paymentMethods: [...methods.paymentMethods, event.detail]
+                paymentMethods: [...methods.paymentMethods, card]
             };
         }
 
@@ -98,7 +98,7 @@
 </Layout.Stack>
 
 {#if showPaymentModal && isCloud && hasStripePublicKey}
-    <PaymentModal bind:show={showPaymentModal} on:submit={cardSaved}>
+    <PaymentModal bind:show={showPaymentModal} onCardSubmit={cardSaved}>
         <svelte:fragment slot="end">
             <Selector.Checkbox
                 id="taxIdCheck"

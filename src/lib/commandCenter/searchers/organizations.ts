@@ -1,13 +1,10 @@
+import { resolve } from '$app/paths';
 import { goto } from '$app/navigation';
-import { base } from '$app/paths';
-import { sdk } from '$lib/stores/sdk';
 import type { Searcher } from '../commands';
-import { isCloud } from '$lib/system';
+import { getTeamOrOrganizationList } from '$lib/stores/organization';
 
 export const orgSearcher = (async (query: string) => {
-    const { teams } = !isCloud
-        ? await sdk.forConsole.teams.list()
-        : await sdk.forConsole.billing.listOrganization();
+    const { teams } = await getTeamOrOrganizationList();
 
     return teams
         .filter((organization) => organization.name.toLowerCase().includes(query.toLowerCase()))
@@ -15,7 +12,11 @@ export const orgSearcher = (async (query: string) => {
             return {
                 label: organization.name,
                 callback: () => {
-                    goto(`${base}/organization-${organization.$id}`);
+                    goto(
+                        resolve('/(console)/organization-[organization]', {
+                            organization: organization.$id
+                        })
+                    );
                 },
                 group: 'organizations'
             } as const;

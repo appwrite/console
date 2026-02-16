@@ -1,15 +1,16 @@
 <script lang="ts">
     import { scopes } from '$lib/constants';
     import { Fieldset, Layout, Selector } from '@appwrite.io/pink-svelte';
+    import type { Scopes } from '@appwrite.io/console';
 
     export let templateScopes: string[];
-    export let selectedScopes: string[];
+    export let selectedScopes: Scopes[];
     export let execute = true;
 
     let scopeList = scopes
         .filter((s) => templateScopes.includes(s.scope))
         .map((s) => {
-            selectedScopes.push(s.scope);
+            selectedScopes.push(s.scope as Scopes);
             return {
                 value: s,
                 checked: true
@@ -17,7 +18,7 @@
         });
 </script>
 
-<Fieldset legend="Permissions">
+<Fieldset legend="Security">
     <Layout.Stack gap="l">
         <Selector.Switch
             id="execute"
@@ -37,7 +38,7 @@
                     on:change={() => {
                         selectedScopes = scopeList
                             .filter((s) => s.checked)
-                            .map((s) => s.value.scope);
+                            .map((s) => s.value.scope as Scopes);
                     }}>
                 </Selector.Switch>
             {/each}

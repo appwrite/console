@@ -20,10 +20,9 @@
 <script lang="ts">
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import { realtime, sdk } from '$lib/stores/sdk';
+    import { type RealtimeResponse, realtime, sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import {
-        table,
         columnsOrder,
         databaseColumnSheetOptions,
         databaseRowSheetOptions,
@@ -35,84 +34,124 @@
         spreadsheetRenderKey,
         expandTabs,
         databaseRelatedRowSheetOptions,
-        rowPermissionSheet
+        rowPermissionSheet,
+        type Columns,
+        isWaterfallFromFaker
     } from './store';
     import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import CreateColumn from './createColumn.svelte';
     import { CreateColumnPanel } from '$lib/commandCenter/panels';
-    import { database, showCreateTable } from '../store';
-    import { project } from '../../../store';
+    import { showCreateEntity } from '../store';
     import { page } from '$app/state';
-    import { base } from '$app/paths';
     import { canWriteTables } from '$lib/stores/roles';
-    import { IconEye, IconLockClosed, IconPlus, IconPuzzle } from '@appwrite.io/pink-icons-svelte';
-    import SideSheet from './layout/sidesheet.svelte';
+    import {
+        IconChevronDown,
+        IconChevronUp,
+        IconEye,
+        IconLockClosed,
+        IconPlus,
+        IconPuzzle
+    } from '@appwrite.io/pink-icons-svelte';
+    import { type Field, SideSheet, useTerminology } from '$database/(entity)';
     import EditRow from './rows/edit.svelte';
     import EditRelatedRow from './rows/editRelated.svelte';
     import EditColumn from './columns/edit.svelte';
     import RowActivity from './rows/activity.svelte';
     import EditRowPermissions from './rows/editPermissions.svelte';
-    import { Dialog, Layout, Typography, Selector } from '@appwrite.io/pink-svelte';
+    import { Dialog, Layout, Typography, Selector, Icon } from '@appwrite.io/pink-svelte';
     import { Button, Seekbar } from '$lib/elements/forms';
-    import { generateFakeRecords, generateColumns } from '$lib/helpers/faker';
+    import { generateFakeRecords, generateFields } from '$lib/helpers/faker';
     import { addNotification } from '$lib/stores/notifications';
-    import { sleep } from '$lib/helpers/promises';
-    import CreateIndex from './indexes/createIndex.svelte';
     import { hash } from '$lib/helpers/string';
     import { preferences } from '$lib/stores/preferences';
     import { buildRowUrl, isRelationship } from './rows/store';
     import { chunks } from '$lib/helpers/array';
     import { Submit, trackEvent } from '$lib/actions/analytics';
 
+    import type { LayoutData } from './$types';
+
+    import { CreateIndex } from '$database/(entity)';
+    import { resolveRoute, withPath } from '$lib/stores/navigation';
+    import { isTabletViewport } from '$lib/stores/viewport';
+    import { showColumnsSuggestionsModal } from '../(suggestions)';
     import IndexesSuggestions from '../(suggestions)/indexes.svelte';
-    import { showIndexesSuggestions, tableColumnSuggestions } from '../(suggestions)';
+    import ColumnsSuggestions from '../(suggestions)/columns.svelte';
+    import { setupColumnObserver } from '../(observer)/columnObserver';
+
+    export let data: LayoutData;
 
     let editRow: EditRow;
     let editRelatedRow: EditRelatedRow;
     let editRowPermissions: EditRowPermissions;
 
+    let editRowDisabled = true;
+    let editRelatedRowDisabled = true;
+    let editRowPermissionsDisabled = true;
+
     let createIndex: CreateIndex;
     let createColumn: CreateColumn;
-    let selectedOption: Option['name'] = 'String';
+    let selectedOption: Option['name'] = 'Text';
     let createMoreColumns = false;
 
-    /**
-     * adding a lot of fake data will trigger the realtime below
-     * and will keep invalidating the `Dependencies.TABLE` making a lot of API noise!
-     */
-    let isWaterfallFromFaker = false;
+    /* terminology */
+    const { type: databaseType } = useTerminology(page);
+
+    let columnCreationHandler: ((response: RealtimeResponse) => void) | null = null;
+
+    // manual management of focus is needed!
+    const autoFocusAction = (node: HTMLElement, shouldFocus: boolean) => {
+        const button = node.querySelector('button');
+        if (!button) return;
+
+        const handleBlur = () => button.classList.remove('focus-visible');
+        const applyFocus = (focus: boolean) => {
+            if (focus) {
+                button.classList.add('focus-visible');
+                button.focus();
+            } else {
+                button.classList.remove('focus-visible');
+            }
+        };
+
+        button.addEventListener('blur', handleBlur);
+        applyFocus(shouldFocus);
+
+        return {
+            update: applyFocus,
+            destroy() {
+                button.removeEventListener('blur', handleBlur);
+                button.classList.remove('focus-visible');
+            }
+        };
+    };
+
+    $: table = data.table;
+    $: basePath = resolveRoute(
+        '/(console)/project-[region]-[project]/databases/database-[database]/table-[table]',
+        page.params
+    );
 
     onMount(() => {
         expandTabs.set(preferences.getKey('tableHeaderExpanded', true));
 
-        return realtime
-            .forProject(page.params.region, page.params.project)
-            .subscribe(['project', 'console'], (response) => {
-                if (
-                    response.events.includes('databases.*.tables.*.columns.*') ||
-                    response.events.includes('databases.*.tables.*.indexes.*')
-                ) {
-                    // don't invalidate when -
-                    // 1. from faker
-                    // 2. ai columns creation
-                    // 3. ai indexes creation
-                    if (
-                        !isWaterfallFromFaker &&
-                        !$showIndexesSuggestions &&
-                        !$tableColumnSuggestions.table
-                    ) {
-                        invalidate(Dependencies.TABLE);
-                    }
+        return realtime.forProject(page.params.region, ['project', 'console'], (response) => {
+            if (
+                response.events.includes('databases.*.tables.*.columns.*') ||
+                response.events.includes('databases.*.tables.*.indexes.*')
+            ) {
+                if ($isWaterfallFromFaker) {
+                    columnCreationHandler?.(response);
                 }
-            });
+            }
+        });
     });
 
     // TODO: use route ids instead of pathname
     $: $registerCommands([
         {
             label: 'Create row',
-            keys: page.url.pathname.endsWith($table.$id) ? ['t'] : ['t', 'd'],
-            callback: () => ($showCreateTable = true),
+            keys: page.url.pathname.endsWith(table?.$id) ? ['t'] : ['t', 'd'],
+            callback: () => ($showCreateEntity = true),
             icon: IconPlus,
             group: 'rows'
         },
@@ -130,20 +169,16 @@
             label: 'Go to rows',
             keys: ['g', 'd'],
             callback() {
-                goto(
-                    `${base}/project-${page.params.region}-${page.params.project}/databases/database-${$database?.$id}/table-${$table?.$id}`
-                );
+                goto(basePath);
             },
-            disabled: page.url.pathname.endsWith($table.$id),
+            disabled: page.url.pathname.endsWith(table?.$id),
             group: 'tables'
         },
         {
             label: 'Go to columns',
             keys: ['g', 'a'],
             callback() {
-                goto(
-                    `${base}/project-${page.params.region}-${page.params.project}/databases/database-${$database?.$id}/table-${$table?.$id}/columns`
-                );
+                goto(withPath(basePath, '/columns'));
             },
             disabled: page.url.pathname.endsWith('columns'),
             group: 'tables'
@@ -152,9 +187,7 @@
             label: 'Go to indexes',
             keys: ['g', 'i'],
             callback() {
-                goto(
-                    `${base}/project-${page.params.region}-${page.params.project}/databases/database-${$database?.$id}/table-${$table?.$id}/indexes`
-                );
+                goto(withPath(basePath, '/indexes'));
             },
             disabled: page.url.pathname.endsWith('indexes'),
             group: 'tables'
@@ -163,9 +196,7 @@
             label: 'Go to activity',
             keys: ['g', 'c'],
             callback() {
-                goto(
-                    `${base}/project-${page.params.region}-${page.params.project}/databases/database-${$database?.$id}/table-${$table?.$id}/activity`
-                );
+                goto(withPath(basePath, '/activity'));
             },
             disabled: page.url.pathname.endsWith('activity'),
             group: 'tables'
@@ -174,9 +205,7 @@
             label: 'Go to usage',
             keys: ['g', 'u'],
             callback() {
-                goto(
-                    `${base}/project-${page.params.region}-${page.params.project}/databases/database-${$database?.$id}/table-${$table?.$id}/usage`
-                );
+                goto(withPath(basePath, '/usage'));
             },
             disabled: page.url.pathname.endsWith('usage'),
             group: 'tables'
@@ -185,19 +214,15 @@
             label: 'Go to settings',
             keys: ['g', 's'],
             callback() {
-                goto(
-                    `${base}/project-${page.params.region}-${page.params.project}/databases/database-${$database?.$id}/table-${$table?.$id}/settings`
-                );
+                goto(withPath(basePath, '/settings'));
             },
             disabled: page.url.pathname.endsWith('settings') || !$canWriteTables,
             group: 'tables'
         },
         {
             label: 'Display Name',
-            async callback() {
-                await goto(
-                    `${base}/project-${$project.region}-${$project.$id}/databases/database-${$database.$id}/table-${$table.$id}/settings#display-name`
-                );
+            callback() {
+                goto(withPath(basePath, '/settings#display-name'));
             },
             group: 'tables',
             disabled:
@@ -208,10 +233,8 @@
         },
         {
             label: 'Permissions',
-            async callback() {
-                await goto(
-                    `${base}/project-${$project.region}-${$project.$id}/databases/database-${$database.$id}/table-${$table.$id}/settings#permissions`
-                );
+            callback() {
+                goto(withPath(basePath, '/settings#permissions'));
             },
             group: 'tables',
             disabled:
@@ -222,10 +245,8 @@
         },
         {
             label: 'Row security',
-            async callback() {
-                await goto(
-                    `${base}/project-${$project.region}-${$project.$id}/databases/database-${$database.$id}/table-${$table.$id}/settings#row-security`
-                );
+            callback() {
+                goto(withPath(basePath, '/settings#row-security'));
             },
             group: 'tables',
             disabled:
@@ -254,20 +275,46 @@
     });
 
     async function createFakeData() {
-        isWaterfallFromFaker = true;
+        isWaterfallFromFaker.set(true);
 
         $spreadsheetLoading = true;
         $randomDataModalState.show = false;
 
-        let columns = $table.columns;
-        const hasAnyRelationships = columns.some((column) => isRelationship(column));
-        const filteredColumns = columns.filter((col) => col.type !== 'relationship');
+        let columns: Field[] = [];
+        const currentFields = table.fields;
+        const hasAnyRelationships = currentFields.some((field: Field) => isRelationship(field));
+        const filteredColumns = currentFields.filter(
+            (field: Field) => field.type !== 'relationship'
+        );
 
         if (!filteredColumns.length) {
             try {
-                columns = await generateColumns($project, page.params.database, page.params.table);
+                const {
+                    startWaiting,
+                    waitPromise,
+                    columnCreationHandler: handler
+                } = setupColumnObserver();
+
+                columnCreationHandler = handler;
+
+                const project = {
+                    id: page.params.project,
+                    region: page.params.region
+                };
+
+                columns = await generateFields(
+                    project,
+                    page.params.database,
+                    page.params.table,
+                    databaseType
+                );
+
+                startWaiting(columns.length);
+                await waitPromise;
 
                 await invalidate(Dependencies.TABLE);
+                columns = page.data.table.columns as Columns[];
+
                 trackEvent(Submit.ColumnCreate, { type: 'faker' });
             } catch (e) {
                 addNotification({
@@ -276,11 +323,12 @@
                 });
                 $spreadsheetLoading = false;
                 return;
+            } finally {
+                columnCreationHandler = null;
             }
+        } else {
+            columns = currentFields as Columns[];
         }
-
-        /* let the columns be processed! */
-        await sleep(1250);
 
         let rowIds = [];
         try {
@@ -330,10 +378,8 @@
             $randomDataModalState.value = 25;
         }
 
-        /* api is too fast! */
-        // await sleep(1250);
         $spreadsheetLoading = false;
-        isWaterfallFromFaker = false;
+        isWaterfallFromFaker.set(false);
 
         spreadsheetRenderKey.set(hash(rowIds));
     }
@@ -341,10 +387,12 @@
     $: if (!$showCreateColumnSheet.show) {
         createMoreColumns = false;
     }
+
+    $: currentRowId = $databaseRowSheetOptions.row?.$id ?? $databaseRowSheetOptions.rowId;
 </script>
 
 <svelte:head>
-    <title>{$table?.name ?? 'Table'} - Appwrite</title>
+    <title>{table?.name ?? 'Table'} - Appwrite</title>
 </svelte:head>
 
 <slot />
@@ -397,24 +445,79 @@
 </SideSheet>
 
 <SideSheet
-    closeOnBlur
     title={$databaseRowSheetOptions.title}
     bind:show={$databaseRowSheetOptions.show}
     submit={{
         text: 'Update',
-        disabled: editRow?.isDisabled(),
+        disabled: editRowDisabled,
         onClick: async () => await editRow?.update()
     }}
     topAction={{
         mode: 'copy-tag',
         text: 'Row URL',
-        show: !!($databaseRowSheetOptions.rowId ?? $databaseRowSheetOptions.row?.$id),
-        value: buildRowUrl($databaseRowSheetOptions.rowId ?? $databaseRowSheetOptions.row?.$id)
+        show: !!currentRowId,
+        value: buildRowUrl(currentRowId)
     }}>
-    <EditRow
-        bind:this={editRow}
-        bind:row={$databaseRowSheetOptions.row}
-        bind:rowId={$databaseRowSheetOptions.rowId} />
+    {#snippet topEndActions()}
+        {@const rows = $databaseRowSheetOptions.rows ?? []}
+        {@const currentIndex = $databaseRowSheetOptions.rowIndex ?? -1}
+        {@const isFirstRow = currentIndex <= 0}
+        {@const isLastRow = currentIndex >= rows.length - 1}
+
+        {#if !$isTabletViewport}
+            {@const shouldFocusPrev = !$databaseRowSheetOptions.autoFocus && !isFirstRow}
+            {@const shouldFocusNext =
+                !$databaseRowSheetOptions.autoFocus && isFirstRow && !isLastRow}
+
+            <div use:autoFocusAction={shouldFocusPrev} class:nav-button-wrapper={shouldFocusPrev}>
+                <Button
+                    icon
+                    text
+                    size="xs"
+                    on:click={() => {
+                        if (currentIndex > 0) {
+                            databaseRowSheetOptions.update((opts) => ({
+                                ...opts,
+                                row: rows[currentIndex - 1],
+                                rowIndex: currentIndex - 1
+                            }));
+                        }
+                    }}
+                    disabled={isFirstRow}>
+                    <Icon icon={IconChevronUp} />
+                </Button>
+            </div>
+
+            <div use:autoFocusAction={shouldFocusNext} class:nav-button-wrapper={shouldFocusNext}>
+                <Button
+                    icon
+                    text
+                    size="xs"
+                    on:click={() => {
+                        if (currentIndex < rows.length - 1) {
+                            databaseRowSheetOptions.update((opts) => ({
+                                ...opts,
+                                row: rows[currentIndex + 1],
+                                rowIndex: currentIndex + 1
+                            }));
+                        }
+                    }}
+                    disabled={isLastRow}>
+                    <Icon icon={IconChevronDown} />
+                </Button>
+            </div>
+        {/if}
+    {/snippet}
+
+    {#key currentRowId}
+        <EditRow
+            {table}
+            bind:this={editRow}
+            bind:row={$databaseRowSheetOptions.row}
+            bind:rowId={$databaseRowSheetOptions.rowId}
+            bind:disabled={editRowDisabled}
+            autoFocus={$databaseRowSheetOptions.autoFocus} />
+    {/key}
 </SideSheet>
 
 <SideSheet
@@ -423,13 +526,14 @@
     bind:show={$databaseRelatedRowSheetOptions.show}
     submit={{
         text: 'Update',
-        disabled: editRelatedRow?.isDisabled(),
+        disabled: editRelatedRowDisabled,
         onClick: async () => await editRelatedRow?.update()
     }}>
     <EditRelatedRow
         bind:this={editRelatedRow}
         rows={$databaseRelatedRowSheetOptions.rows}
-        tableId={$databaseRelatedRowSheetOptions.tableId} />
+        tableId={$databaseRelatedRowSheetOptions.tableId}
+        bind:disabledState={editRelatedRowDisabled} />
 </SideSheet>
 
 <SideSheet
@@ -443,9 +547,23 @@
         }
     }}>
     <CreateIndex
+        entity={table}
         bind:this={createIndex}
         bind:showCreateIndex={$showCreateIndexSheet.show}
-        externalColumnKey={$showCreateIndexSheet.column} />
+        externalFieldKey={$showCreateIndexSheet.column}
+        onCreateIndex={async (index) => {
+            await sdk.forProject(page.params.region, page.params.project).tablesDB.createIndex({
+                databaseId: page.params.database,
+                tableId: page.params.table,
+                key: index.key,
+                type: index.type,
+                columns: index.fields,
+                lengths: index.lengths,
+                orders: index.orders
+            });
+
+            await invalidate(Dependencies.TABLE);
+        }} />
 </SideSheet>
 
 <SideSheet
@@ -453,11 +571,15 @@
     title="Row permissions"
     bind:show={$rowPermissionSheet.show}
     submit={{
-        text: 'Create',
-        disabled: editRowPermissions?.disableSubmit(),
+        text: 'Update',
+        disabled: editRowPermissionsDisabled,
         onClick: async () => editRowPermissions?.updatePermissions()
     }}>
-    <EditRowPermissions bind:this={editRowPermissions} bind:row={$rowPermissionSheet.row} />
+    <EditRowPermissions
+        {table}
+        bind:this={editRowPermissions}
+        bind:row={$rowPermissionSheet.row}
+        bind:arePermsDisabled={editRowPermissionsDisabled} />
 </SideSheet>
 
 <SideSheet title="Row activity" bind:show={$rowActivitySheet.show} closeOnBlur>
@@ -482,4 +604,13 @@
     </svelte:fragment>
 </Dialog>
 
-<IndexesSuggestions />
+<ColumnsSuggestions bind:show={$showColumnsSuggestionsModal} />
+
+<IndexesSuggestions {table} />
+
+<style lang="scss">
+    // not the best solution but needed!
+    .nav-button-wrapper :global(button.focus-visible) {
+        outline: var(--border-width-l) solid var(--border-focus);
+    }
+</style>

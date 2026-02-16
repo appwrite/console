@@ -1,3 +1,5 @@
+import { clampMin } from './numbers';
+
 /**
  * Capitalizes the first letter of a string
  *
@@ -19,6 +21,49 @@ export function capitalize(str: string): string {
  */
 export function singular(str: string): string {
     return str.replace(/s$/, '');
+}
+
+/**
+ * Given a string, returns the plural version of it.
+ *
+ * Handles common English pluralization rules:
+ * - Words ending in consonant + y → ies
+ * - Words ending in vowel + y → s
+ * - Words ending in sibilants (s, sh, ch, x, z) → es
+ * - Regular words → s
+ *
+ * @export
+ * @param {string} str
+ * @returns {string}
+ */
+export function plural(str: string): string {
+    if (!str) return str;
+
+    const lower = str.toLowerCase();
+
+    // Words ending in sibilants: s, sh, ch, x, z
+    if (
+        lower.endsWith('s') ||
+        lower.endsWith('x') ||
+        lower.endsWith('z') ||
+        lower.endsWith('ch') ||
+        lower.endsWith('sh')
+    ) {
+        return str + 'es';
+    }
+
+    // Words ending in consonant + y → ies
+    // Words ending in vowel + y → s
+    if (str.endsWith('y')) {
+        const beforeY = str.slice(-2, -1).toLowerCase();
+        if (beforeY && !['a', 'e', 'i', 'o', 'u'].includes(beforeY)) {
+            return str.slice(0, -1) + 'ies';
+        }
+        return str + 's';
+    }
+
+    // Default: add 's'
+    return str + 's';
 }
 
 /**
@@ -45,8 +90,8 @@ const formatter = Intl.NumberFormat('en', {
     notation: 'compact'
 });
 
-export function formatNum(number: number): string {
-    return formatter.format(number);
+export function formatNum(number: number, min: number = 0): string {
+    return formatter.format(clampMin(number, min));
 }
 
 /**

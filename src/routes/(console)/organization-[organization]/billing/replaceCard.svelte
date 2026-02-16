@@ -3,27 +3,38 @@
     import { FakeModal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
-    import type { Organization } from '$lib/stores/organization';
     import { Dependencies } from '$lib/constants';
     import { setPaymentMethod, submitStripeCard } from '$lib/stores/stripe';
     import { onMount } from 'svelte';
-    import type { PaymentList, PaymentMethodData } from '$lib/sdk/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { PaymentBoxes } from '$lib/components/billing';
-    import type { PaymentMethod } from '@stripe/stripe-js';
+    import type { PaymentMethod as StripePaymentMethod } from '@stripe/stripe-js';
+    import type { Models } from '@appwrite.io/console';
 
-    export let organization: Organization;
-    export let show = false;
-    export let isBackup = false;
-    export let methods: PaymentList;
+    let {
+        show = $bindable(false),
+        isBackup = false,
+        methods,
+        organization
+    }: {
+        show?: boolean;
+        isBackup?: boolean;
+        methods: Models.PaymentMethodList;
+        organization: Models.Organization;
+    } = $props();
 
-    let name: string;
-    let error: string;
-    let selectedPaymentMethodId: string;
-    let showState: boolean = false;
-    let state: string = '';
-    let paymentMethod: PaymentMethod | null = null;
+    let name: string | null = $state(null);
+    let error: string | null = $state(null);
+    let showState: boolean = $state(false);
+    let countryState: string | null = $state(null);
+    let paymentMethod: StripePaymentMethod | null = $state(null);
+    let selectedPaymentMethodId: string | null = $state(null);
+
+    const filteredMethods = $derived(methods?.paymentMethods.filter((method) => !!method?.last4));
+    const submitEvent = $derived(
+        isBackup ? Submit.OrganizationBackupPaymentUpdate : Submit.OrganizationPaymentUpdate
+    );
 
     onMount(async () => {
         if (!organization.paymentMethodId && !organization.backupPaymentMethodId) {
@@ -45,22 +56,22 @@
     async function handleSubmit() {
         try {
             if (selectedPaymentMethodId === '$new') {
-                if (showState && !state) {
+                if (showState && !countryState) {
                     throw Error('Please select a state');
                 }
-                let method: PaymentMethodData;
+                let method: Models.PaymentMethod;
                 if (showState) {
-                    method = await setPaymentMethod(paymentMethod.id, name, state);
+                    method = await setPaymentMethod(paymentMethod.id, name, countryState);
                 } else {
                     const card = await submitStripeCard(name, organization.$id);
                     if (card && Object.hasOwn(card, 'id')) {
-                        if ((card as PaymentMethod).card?.country === 'US') {
-                            paymentMethod = card as PaymentMethod;
+                        if ((card as StripePaymentMethod).card?.country === 'US') {
+                            paymentMethod = card as StripePaymentMethod;
                             showState = true;
                             return;
                         }
                     } else if (card && Object.hasOwn(card, '$id')) {
-                        method = card as PaymentMethodData;
+                        method = card as Models.PaymentMethod;
                     }
                 }
                 selectedPaymentMethodId = method.$id;
@@ -69,58 +80,52 @@
                 ? await addBackupPaymentMethod(selectedPaymentMethodId)
                 : await addPaymentMethod(selectedPaymentMethodId);
 
+            await invalidate(Dependencies.PAYMENT_METHODS);
+
             addNotification({
                 type: 'success',
                 message: `Your ${isBackup ? 'backup' : 'default'} payment method has been updated`
             });
-            invalidate(Dependencies.ORGANIZATION);
-            trackEvent(
-                isBackup ? Submit.OrganizationBackupPaymentDelete : Submit.OrganizationPaymentDelete
-            );
+            trackEvent(submitEvent);
             show = false;
-        } catch (e) {
-            error = e.message;
-            trackError(
-                e,
-                isBackup ? Submit.OrganizationBackupPaymentDelete : Submit.OrganizationPaymentDelete
-            );
+        } catch (err) {
+            error = err.message;
+            trackError(err, submitEvent);
         }
     }
 
     async function addPaymentMethod(paymentMethodId: string) {
         try {
-            await sdk.forConsole.billing.setOrganizationPaymentMethod(
-                organization.$id,
+            await sdk.forConsole.organizations.setDefaultPaymentMethod({
+                organizationId: organization.$id,
                 paymentMethodId
-            );
-        } catch (e) {
-            error = e.message;
+            });
+        } catch (err) {
+            error = err.message;
         }
     }
 
     async function addBackupPaymentMethod(paymentMethodId: string) {
         try {
-            await sdk.forConsole.billing.setOrganizationPaymentMethodBackup(
-                organization.$id,
+            await sdk.forConsole.organizations.setBackupPaymentMethod({
+                organizationId: organization.$id,
                 paymentMethodId
-            );
-        } catch (e) {
-            error = e.message;
+            });
+        } catch (err) {
+            error = err.message;
         }
     }
-
-    $: filteredMethods = methods?.paymentMethods.filter((method) => !!method?.last4);
 </script>
 
 <FakeModal bind:show bind:error onSubmit={handleSubmit} size="big" title="Replace payment method">
     <p class="text">Replace the existing payment method for your organization.</p>
 
     <PaymentBoxes
-        methods={filteredMethods}
         bind:name
-        bind:paymentMethod
         bind:showState
-        bind:state
+        bind:paymentMethod
+        methods={filteredMethods}
+        bind:state={countryState}
         bind:group={selectedPaymentMethodId}
         defaultMethod={organization?.paymentMethodId}
         backupMethod={organization?.backupPaymentMethodId}

@@ -2,13 +2,13 @@
     import { CardGrid, CreditCardInfo, Empty } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { paymentMethods } from '$lib/stores/billing';
-    import type { PaymentMethodData } from '$lib/sdk/billing';
-    import { organizationList, type Organization } from '$lib/stores/organization';
+    import { organizationList } from '$lib/stores/organization';
     import { base } from '$app/paths';
     import EditPaymentModal from './editPaymentModal.svelte';
     import DeletePaymentModal from './deletePaymentModal.svelte';
     import { hasStripePublicKey, isCloud } from '$lib/system';
     import PaymentModal from '$lib/components/billing/paymentModal.svelte';
+    import UpdateStateModal from '$lib/components/billing/updateStateModal.svelte';
     import {
         IconDotsHorizontal,
         IconInfo,
@@ -26,22 +26,23 @@
         Tag,
         Typography
     } from '@appwrite.io/pink-svelte';
+    import type { Models } from '@appwrite.io/console';
 
     export let showPayment = false;
     let showDropdown = [];
-    let selectedMethod: PaymentMethodData;
-    let selectedLinkedOrgs: Organization[] = [];
+    let selectedMethod: Models.PaymentMethod;
+    let selectedLinkedOrgs: Array<Models.Organization> = [];
     let showDelete = false;
     let showEdit = false;
+    let showUpdateState = false;
+    let paymentMethodNeedingState: Models.PaymentMethod | null = null;
     let isLinked = false;
 
-    $: orgList = $organizationList.teams as unknown as Organization[];
+    $: orgList = $organizationList.teams as unknown as Array<Models.Organization>;
 
-    $: filteredMethods = $paymentMethods?.paymentMethods.filter(
-        (method: PaymentMethodData) => !!method?.last4
-    );
+    $: filteredMethods = $paymentMethods?.paymentMethods.filter((method) => !!method?.last4);
 
-    const isMethodLinkedToOrg = (methodId: string, org: Organization) =>
+    const isMethodLinkedToOrg = (methodId: string, org: Models.Organization) =>
         methodId === org.paymentMethodId || methodId === org.backupPaymentMethodId;
 
     $: linkedMethodIds = new Set(
@@ -49,9 +50,30 @@
     );
     $: hasLinkedOrgs = filteredMethods.some((method) => linkedMethodIds.has(method.$id));
     $: hasPaymentError = filteredMethods.some((method) => method?.lastError || method?.expired);
+
+    // Check for US payment methods without state
+    $: {
+        if ($paymentMethods?.paymentMethods && !showUpdateState && !paymentMethodNeedingState) {
+            const usMethodWithoutState = $paymentMethods.paymentMethods.find(
+                (method: Models.PaymentMethod) =>
+                    method?.country?.toLowerCase() === 'us' &&
+                    (!method.state || method.state.trim() === '') &&
+                    !!method.last4
+            );
+            if (usMethodWithoutState) {
+                paymentMethodNeedingState = usMethodWithoutState;
+                showUpdateState = true;
+            }
+        }
+    }
+
+    // Reset when modal is closed
+    $: if (!showUpdateState && paymentMethodNeedingState) {
+        paymentMethodNeedingState = null;
+    }
 </script>
 
-<CardGrid>
+<CardGrid overflow={false}>
     <svelte:fragment slot="title">Payment methods</svelte:fragment>
     View or update your payment methods. These can be applied to any organizations you have created.
     <svelte:fragment slot="aside">
@@ -59,7 +81,7 @@
             <Table.Root
                 let:root
                 columns={[
-                    { id: 'cc', width: 140 },
+                    { id: 'cc', width: { min: 225 } },
                     { id: 'name', width: { min: 140 } },
                     { id: 'expiry', width: 100 },
                     { id: 'status', width: 110, hide: !hasPaymentError },
@@ -169,4 +191,7 @@
         method={selectedMethod.$id}
         bind:showDelete
         linkedOrgs={selectedLinkedOrgs} />
+{/if}
+{#if showUpdateState && paymentMethodNeedingState && isCloud && hasStripePublicKey}
+    <UpdateStateModal bind:show={showUpdateState} paymentMethod={paymentMethodNeedingState} />
 {/if}

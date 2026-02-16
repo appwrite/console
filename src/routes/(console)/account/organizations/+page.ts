@@ -1,9 +1,8 @@
-import { Query } from '@appwrite.io/console';
-import { sdk } from '$lib/stores/sdk';
-import { getLimit, getPage, pageToOffset } from '$lib/helpers/load';
-import { CARD_LIMIT } from '$lib/constants';
 import type { PageLoad } from './$types';
-import { isCloud } from '$lib/system';
+import { CARD_LIMIT } from '$lib/constants';
+import { Query } from '@appwrite.io/console';
+import { getLimit, getPage, pageToOffset } from '$lib/helpers/load';
+import { getTeamOrOrganizationList } from '$lib/stores/organization';
 
 export const load: PageLoad = async ({ url, route }) => {
     const page = getPage(url);
@@ -12,9 +11,7 @@ export const load: PageLoad = async ({ url, route }) => {
 
     const queries = [Query.offset(offset), Query.limit(limit), Query.orderDesc('')];
 
-    const organizations = !isCloud
-        ? await sdk.forConsole.teams.list({ queries })
-        : await sdk.forConsole.billing.listOrganization(queries);
+    const organizations = await getTeamOrOrganizationList(queries);
 
     return {
         offset,

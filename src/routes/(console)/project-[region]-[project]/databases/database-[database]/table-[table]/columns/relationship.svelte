@@ -56,19 +56,18 @@
 </script>
 
 <script lang="ts">
-    import { InputText, InputSelect } from '$lib/elements/forms';
     import { onMount } from 'svelte';
     import { Box } from '$lib/components';
-    import { table } from '../store';
     import arrowOne from './arrow-one.svg';
     import arrowTwo from './arrow-two.svg';
     import { camelize } from '$lib/helpers/string';
+    import { debounce } from '$lib/helpers/debounce';
+    import { InputText, InputSelect } from '$lib/elements/forms';
     import { Card, Layout, Input } from '@appwrite.io/pink-svelte';
     import { IconArrowSmRight, IconSwitchHorizontal } from '@appwrite.io/pink-icons-svelte';
-    import { debounce } from '$lib/helpers/debounce';
 
-    // Props
     export let editing = false;
+    export let disabled = false;
     export let data: Models.ColumnRelationship;
 
     // Constants
@@ -121,7 +120,9 @@
     });
 
     // Reactive statements
-    $: tables = tableList?.tables?.filter((n) => n.$id !== $table.$id) ?? [];
+    $: currentTable = page.data.table;
+
+    $: tables = tableList?.tables?.filter((n) => n.$id !== currentTable.$id) ?? [];
 
     $: if (editing) {
         way = data.twoWay ? 'two' : 'one';
@@ -129,7 +130,7 @@
         if (way === 'two') {
             data.twoWay = true;
             if (!data.twoWayKey) {
-                data.twoWayKey = camelize($table.name);
+                data.twoWayKey = camelize(currentTable.name);
             }
         } else {
             data.twoWay = false;
@@ -158,7 +159,7 @@
         bind:group={way}
         name="one"
         value="one"
-        disabled={editing}
+        disabled={editing || disabled}
         icon={IconArrowSmRight}>
         One Relation column within this table
     </Card.Selector>
@@ -167,7 +168,7 @@
         bind:group={way}
         name="two"
         value="two"
-        disabled={editing}
+        disabled={editing || disabled}
         icon={IconSwitchHorizontal}>
         One Relation column within this table and another within the related table
     </Card.Selector>
@@ -180,7 +181,7 @@
     placeholder="Select a table"
     bind:value={data.relatedTable}
     on:change={updateKeyName}
-    disabled={editing}
+    disabled={editing || disabled}
     options={tables?.map((n) => ({ value: n.$id, label: `${n.name} (${n.$id})` })) ?? []} />
 
 {#if data?.relatedTable}
@@ -190,7 +191,8 @@
         placeholder="Enter key"
         bind:value={data.key}
         helper="Allowed characters: a-z, A-Z, 0-9, -, ."
-        required />
+        required
+        {disabled} />
 
     {#if way === 'two'}
         <InputText
@@ -199,6 +201,7 @@
             placeholder="Enter key"
             bind:value={data.twoWayKey}
             required
+            {disabled}
             helper="Allowed characters: a-z, A-Z, 0-9, -, . Once created, column key cannot be
                 adjusted to maintain data integrity."
             readonly={editing} />
@@ -211,12 +214,12 @@
         required
         placeholder="Select a relation"
         options={relationshipType}
-        disabled={editing} />
+        disabled={editing || disabled} />
 
     <div class="u-flex u-flex-vertical u-gap-16">
         <Box>
             <div class="u-flex u-align u-cross-center u-main-center u-gap-32">
-                <span data-private>{camelize($table.name)}</span>
+                <span data-private>{camelize(currentTable.name)}</span>
                 {#if data.twoWay}
                     <img src={arrowTwo} alt={'Two way relationship'} />
                 {:else}
@@ -228,7 +231,7 @@
         {#if data.relationType}
             <div>
                 <p class="u-text-center">
-                    <b data-private>{camelize($table.name)}</b> can contain {[
+                    <b data-private>{camelize(currentTable.name)}</b> can contain {[
                         'oneToOne',
                         'manyToOne'
                     ].includes(data.relationType)
@@ -241,7 +244,7 @@
                     can belong to {['oneToOne', 'oneToMany'].includes(data.relationType)
                         ? 'one'
                         : 'many'}
-                    <b data-private>{camelize($table.name)}</b>
+                    <b data-private>{camelize(currentTable.name)}</b>
                 </p>
             </div>
         {/if}
@@ -251,6 +254,7 @@
         label="On deleting a row"
         bind:value={data.onDelete}
         required
+        {disabled}
         placeholder="Select a deletion method"
         options={deleteOptions} />
 {/if}

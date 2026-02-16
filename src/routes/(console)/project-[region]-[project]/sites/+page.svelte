@@ -25,7 +25,8 @@
     import { onMount } from 'svelte';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import { sdk } from '$lib/stores/sdk';
+    import { realtime } from '$lib/stores/sdk';
+    import { page } from '$app/state';
 
     export let data;
 
@@ -39,8 +40,7 @@
             },
             keys: ['c'],
             disabled:
-                isServiceLimited('sites', $organization?.billingPlan, data.siteList?.total) ||
-                !$canWriteSites,
+                isServiceLimited('sites', $organization, data.siteList?.total) || !$canWriteSites,
             icon: IconPlus,
             group: 'sites'
         }
@@ -49,7 +49,7 @@
     $updateCommandGroupRanks({ sites: 1000 });
 
     onMount(() => {
-        return sdk.forConsole.client.subscribe('console', (response) => {
+        return realtime.forConsole(page.params.region, 'console', (response) => {
             if (response.events.includes('sites.*')) {
                 invalidate(Dependencies.SITES);
             }

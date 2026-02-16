@@ -14,7 +14,7 @@
     import Details from './details.svelte';
     import ExportModal from './exportModal.svelte';
     import { readOnly } from '$lib/stores/billing';
-    import type { Models } from '@appwrite.io/console';
+    import { Scopes, type Models } from '@appwrite.io/console';
     import { canWriteProjects } from '$lib/stores/roles';
     import {
         IconCloud,
@@ -38,13 +38,11 @@
     let migration: Models.Migration = null;
 
     onMount(() => {
-        return realtime
-            .forProject(page.params.region, page.params.project)
-            .subscribe(['project', 'console'], (response) => {
-                if (response.events.includes('migrations.*')) {
-                    invalidate(Dependencies.MIGRATIONS);
-                }
-            });
+        return realtime.forProject(page.params.region, ['project', 'console'], (response) => {
+            if (response.events.includes('migrations.*')) {
+                invalidate(Dependencies.MIGRATIONS);
+            }
+        });
     });
 
     $: $registerCommands([
@@ -92,23 +90,23 @@
             projectId: $project.$id,
             name: `[AUTO-GENERATED] Migration ${new Date().toISOString()}`,
             scopes: [
-                'users.read',
-                'teams.read',
-                'databases.read',
-                'collections.read' /* legacy */,
-                'attributes.read' /* legacy */,
-                'indexes.read',
-                'documents.read' /* legacy */,
-                'tables.read',
-                'columns.read',
-                'rows.read',
-                'files.read',
-                'buckets.read',
-                'functions.read',
-                'execution.read',
-                'locale.read',
-                'avatars.read',
-                'health.read'
+                Scopes.UsersRead,
+                Scopes.TeamsRead,
+                Scopes.DatabasesRead,
+                Scopes.CollectionsRead /* legacy */,
+                Scopes.AttributesRead /* legacy */,
+                Scopes.IndexesRead,
+                Scopes.DocumentsRead /* legacy */,
+                Scopes.TablesRead,
+                Scopes.ColumnsRead,
+                Scopes.RowsRead,
+                Scopes.FilesRead,
+                Scopes.BucketsRead,
+                Scopes.FunctionsRead,
+                Scopes.ExecutionRead,
+                Scopes.LocaleRead,
+                Scopes.AvatarsRead,
+                Scopes.HealthRead
             ]
         });
 

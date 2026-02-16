@@ -40,10 +40,11 @@
 
 <script lang="ts">
     import { isCloud } from '$lib/system';
-    import { upgradeURL } from '$lib/stores/billing';
+    import { getChangePlanUrl } from '$lib/stores/billing';
     import { currentPlan } from '$lib/stores/organization';
     import { createConservative } from '$lib/helpers/stores';
     import { ActionMenu, Selector } from '@appwrite.io/pink-svelte';
+    import RequiredArrayCheckboxes from './requiredArrayCheckboxes.svelte';
     import { InputNumber, InputText, InputTextarea } from '$lib/elements/forms';
     import { Popover, Layout, Tag, Typography, Link } from '@appwrite.io/pink-svelte';
 
@@ -55,6 +56,10 @@
     };
 
     export let editing = false;
+    export let disabled = false;
+    export let autoIncreaseSize = false;
+
+    const organizationId = page.data?.organization?.$id ?? page.data?.project?.$id;
 
     let savedDefault = data.default;
 
@@ -82,12 +87,17 @@
 
     // Check plan on cloud, always allow on self-hosted
     $: supportsStringEncryption = isCloud ? $currentPlan?.databasesAllowEncrypt : true;
+
+    $: if (autoIncreaseSize && data.encrypt && data.size < 150) {
+        data.size = 150;
+    }
 </script>
 
 <InputNumber
     id="size"
     label="Size"
     required
+    {disabled}
     placeholder="Enter size"
     bind:value={data.size}
     min={supportsStringEncryption && data.encrypt ? 150 : undefined}
@@ -102,44 +112,34 @@
     placeholder="Enter string"
     maxlength={data.size}
     bind:value={data.default}
-    disabled={data.required || data.array}
+    disabled={data.required || data.array || disabled}
     nullable={!data.required && !data.array} />
 
-<Selector.Checkbox
-    size="s"
-    id="required"
-    label="Required"
-    bind:checked={data.required}
-    disabled={data.array}
-    description="Indicate whether this column is required." />
-
-<Selector.Checkbox
-    size="s"
-    id="array"
-    label="Array"
-    bind:checked={data.array}
-    disabled={data.required || editing}
-    description="Indicate whether this column is an array. Defaults to an empty array." />
+<RequiredArrayCheckboxes
+    {editing}
+    {disabled}
+    bind:array={data.array}
+    bind:required={data.required} />
 
 <Layout.Stack gap="xs" direction="column">
     <div
         class="popover-holder"
-        class:cursor-not-allowed={editing}
-        class:disabled-checkbox={!supportsStringEncryption || editing}>
+        class:cursor-not-allowed={editing || disabled}
+        class:disabled-checkbox={!supportsStringEncryption || editing || disabled}>
         <Layout.Stack inline gap="s" alignItems="flex-start" direction="row">
             <Popover let:toggle placement="bottom-start">
                 <Selector.Checkbox
                     size="s"
                     id="encrypt"
                     bind:checked={data.encrypt}
-                    disabled={!supportsStringEncryption || editing} />
+                    disabled={!supportsStringEncryption || editing || disabled} />
 
                 <Layout.Stack gap="xxs" direction="column">
                     <button
                         type="button"
-                        disabled={editing}
+                        disabled={editing || disabled}
                         class:cursor-pointer={!editing}
-                        class:cursor-not-allowed={editing}
+                        class:cursor-not-allowed={editing || disabled}
                         on:click={(e) => {
                             if (!supportsStringEncryption) {
                                 toggle(e);
@@ -162,7 +162,8 @@
 
                 <ActionMenu.Root width="180px" slot="tooltip">
                     <Typography.Text variant="m-500">
-                        Available on Pro plan. <Link.Anchor href={$upgradeURL}>Upgrade</Link.Anchor>
+                        Available on Pro plan. <Link.Anchor href={getChangePlanUrl(organizationId)}
+                            >Upgrade</Link.Anchor>
                         to enable encrypted columns.
                     </Typography.Text>
                 </ActionMenu.Root>

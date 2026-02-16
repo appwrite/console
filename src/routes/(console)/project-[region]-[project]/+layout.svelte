@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { BackupRestoreBox, MigrationBox, UploadBox } from '$lib/components';
+    import { BackupRestoreBox, MigrationBox, UploadBox, CsvExportBox } from '$lib/components';
     import { realtime } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { project, stats } from './store';
@@ -27,15 +27,13 @@
     import CsvImportBox from '$lib/components/csvImportBox.svelte';
 
     onMount(() => {
-        return realtime
-            .forProject(page.params.region, page.params.project)
-            .subscribe(['project', 'console'], (response) => {
-                if (response.events.includes('stats.connections')) {
-                    for (const [projectId, value] of Object.entries(response.payload)) {
-                        stats.add(projectId, [new Date(response.timestamp).toISOString(), value]);
-                    }
+        return realtime.forProject(page.params.region, ['project', 'console'], (response) => {
+            if (response.events.includes('stats.connections')) {
+                for (const [projectId, value] of Object.entries(response.payload)) {
+                    stats.add(projectId, [new Date(response.timestamp).toISOString(), value]);
                 }
-            });
+            }
+        });
     });
 
     $: $registerCommands([
@@ -121,12 +119,13 @@
     <MigrationBox />
     <BackupRestoreBox />
     <CsvImportBox />
+    <CsvExportBox />
 </div>
 
 <style>
     .layout-level-progress-bars {
         gap: 1rem;
-        z-index: 2;
+        z-index: 100;
         display: flex;
         flex-direction: column;
 

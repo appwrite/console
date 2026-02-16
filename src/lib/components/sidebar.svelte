@@ -12,8 +12,7 @@
         Button,
         Layout,
         Avatar,
-        Typography,
-        Badge
+        Typography
     } from '@appwrite.io/pink-svelte';
 
     import {
@@ -80,13 +79,7 @@
         { name: 'Functions', icon: IconLightningBolt, slug: 'functions', category: 'build' },
         { name: 'Messaging', icon: IconChatBubble, slug: 'messaging', category: 'build' },
         { name: 'Storage', icon: IconFolder, slug: 'storage', category: 'build' },
-        {
-            name: 'Sites',
-            icon: IconGlobeAlt,
-            slug: 'sites',
-            category: 'deploy',
-            badge: 'Early access'
-        }
+        { name: 'Sites', icon: IconGlobeAlt, slug: 'sites', category: 'deploy' }
     ];
 
     const isSelected = (service: string): boolean => {
@@ -108,11 +101,7 @@
     style:--overlay-on-neutral={$app.themeInUse === 'dark'
         ? 'var(--neutral-750)'
         : 'var(--neutral-100)'}>
-    <Sidebar.Base
-        {...$$props}
-        bind:state
-        on:resize={(event) => updateSidebarState(event.detail)}
-        resizable>
+    <Sidebar.Base bind:state resizable on:resize={(event) => updateSidebarState(event.detail)}>
         <div slot="top">
             <div class="only-mobile-tablet top">
                 <div class="icons search-icon">
@@ -239,12 +228,6 @@
                                     class:has-text={state === 'open'}
                                     class="link-text">
                                     {projectOption.name}
-                                    {#if projectOption?.badge}
-                                        <Badge
-                                            variant="secondary"
-                                            content={projectOption.badge}
-                                            size="xs" />
-                                    {/if}
                                 </span>
                             </a>
                             <span slot="tooltip">{projectOption.name}</span>
@@ -272,7 +255,7 @@
                         </div>
                     {/if}
                 </Layout.Stack>
-            {:else if $isSmallViewport}
+            {:else if $isTabletViewport}
                 <div class="action-buttons">
                     <Layout.Stack direction="column" gap="s">
                         <DropList show={$feedback.show} scrollable>

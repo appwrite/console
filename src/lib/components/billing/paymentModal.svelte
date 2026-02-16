@@ -1,26 +1,31 @@
 <script lang="ts">
     import { FakeModal } from '$lib/components';
     import { InputText, Button } from '$lib/elements/forms';
-    import { createEventDispatcher, onMount } from 'svelte';
-    import { initializeStripe, setPaymentMethod, submitStripeCard } from '$lib/stores/stripe';
+    import { onMount, onDestroy } from 'svelte';
+    import {
+        initializeStripe,
+        setPaymentMethod,
+        submitStripeCard,
+        unmountPaymentElement
+    } from '$lib/stores/stripe';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
     import { page } from '$app/state';
     import { Spinner } from '@appwrite.io/pink-svelte';
-    import type { PaymentMethod } from '@stripe/stripe-js';
+    import type { PaymentMethod as StripePaymentMethod } from '@stripe/stripe-js';
     import StatePicker from './statePicker.svelte';
+    import type { Models } from '@appwrite.io/console';
 
     export let show = false;
+    export let onCardSubmit: ((card: Models.PaymentMethod) => void) | null = null;
 
-    const dispatch = createEventDispatcher();
-
-    let name: string;
-    let error: string;
     let modal: FakeModal;
-    let showState: boolean = false;
+    let name: string;
     let state: string = '';
-    let paymentMethod: PaymentMethod | null = null;
+    let error: string = null;
+    let showState: boolean = false;
+    let paymentMethod: StripePaymentMethod | null = null;
 
     async function handleSubmit() {
         try {
@@ -32,7 +37,7 @@
                 const card = await setPaymentMethod(paymentMethod.id, name, state);
                 modal.closeModal();
                 await invalidate(Dependencies.PAYMENT_METHODS);
-                dispatch('submit', card);
+                onCardSubmit?.(card);
                 addNotification({
                     type: 'success',
                     message: 'A new payment method has been added to your account'
@@ -42,15 +47,15 @@
 
             const card = await submitStripeCard(name, page?.params?.organization ?? null);
             if (card && Object.hasOwn(card, 'id')) {
-                if ((card as PaymentMethod).card?.country === 'US') {
-                    paymentMethod = card as PaymentMethod;
+                if ((card as StripePaymentMethod).card?.country === 'US') {
+                    paymentMethod = card as StripePaymentMethod;
                     showState = true;
                     return;
                 }
             }
             modal.closeModal();
             await invalidate(Dependencies.PAYMENT_METHODS);
-            dispatch('submit', card);
+            onCardSubmit?.(card as Models.PaymentMethod);
             addNotification({
                 type: 'success',
                 message: 'A new payment method has been added to your account'
@@ -89,6 +94,8 @@
         };
     });
 
+    onDestroy(unmountPaymentElement);
+
     $: if (element) {
         observer.observe(element, { childList: true });
     }
@@ -99,7 +106,8 @@
     bind:show
     title="Add payment method"
     bind:error
-    onSubmit={handleSubmit}>
+    onSubmit={handleSubmit}
+    skipEnterOnBackdrop={showState}>
     <slot />
     {#if showState}
         <StatePicker card={paymentMethod} bind:state />

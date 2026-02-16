@@ -18,7 +18,7 @@
     import { Card } from '$lib/components';
     import { page } from '$app/state';
     import { onMount } from 'svelte';
-    import { sdk } from '$lib/stores/sdk';
+    import { realtime, sdk } from '$lib/stores/sdk';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { addNotification } from '$lib/stores/notifications';
     import { fade } from 'svelte/transition';
@@ -27,12 +27,41 @@
     import { PlatformType } from '@appwrite.io/console';
     import { app } from '$lib/stores/app';
     import { project } from '../../store';
+    import { getCorrectTitle, type PlatformProps } from './store';
+    import LlmBanner from './llmBanner.svelte';
 
-    let showExitModal = false;
-    let isPlatformCreated = false;
-    let isCreatingPlatform = false;
-    let connectionSuccessful = false;
+    let { isConnectPlatform = false, platform = PlatformType.Appleios }: PlatformProps = $props();
+
+    let showExitModal = $state(false);
+    let isCreatingPlatform = $state(false);
+    let connectionSuccessful = $state(false);
+    let isPlatformCreated = $state(isConnectPlatform);
+
     const projectId = page.params.project;
+
+    const alreadyExistsInstructions = `
+Install the Appwrite iOS SDK using the following package URL:
+
+\`\`\`
+https://github.com/appwrite/sdk-for-apple
+\`\`\`
+
+From a suitable lib directory, export the Appwrite client as a global variable:
+
+\`\`\`
+let client = Client()
+    .setEndpoint("${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}")
+    .setProject("${projectId}")
+
+let account = Account(client)
+\`\`\`
+
+On the homepage of the app, create a button that says "Send a ping" and when clicked, it should call the following function:
+
+\`\`\`
+client.ping()
+\`\`\`
+`;
 
     const gitCloneCode =
         '\ngit clone https://github.com/appwrite/starter-for-ios\ncd starter-for-ios\n';
@@ -41,9 +70,7 @@
 APPWRITE_PROJECT_NAME: "${$project.name}"
 APPWRITE_PUBLIC_ENDPOINT: "${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}"`;
 
-    export let platform: PlatformType = PlatformType.Appleios;
-
-    let platforms: { [key: string]: PlatformType } = {
+    const platforms: { [key: string]: PlatformType } = {
         iOS: PlatformType.Appleios,
         macOS: PlatformType.Applemacos,
         watchOS: PlatformType.Applewatchos,
@@ -70,8 +97,7 @@ APPWRITE_PUBLIC_ENDPOINT: "${sdk.forProject(page.params.region, page.params.proj
                 message: 'Platform created.'
             });
 
-            invalidate(Dependencies.PROJECT);
-            invalidate(Dependencies.PLATFORMS);
+            await invalidate(Dependencies.PROJECT);
         } catch (error) {
             trackError(error, Submit.PlatformCreate);
             addNotification({
@@ -88,7 +114,7 @@ APPWRITE_PUBLIC_ENDPOINT: "${sdk.forProject(page.params.region, page.params.proj
     }
 
     onMount(() => {
-        const unsubscribe = sdk.forConsole.client.subscribe('console', (response) => {
+        const unsubscribe = realtime.forConsole(page.params.region, 'console', (response) => {
             if (response.events.includes(`projects.${projectId}.ping`)) {
                 connectionSuccessful = true;
                 invalidate(Dependencies.ORGANIZATION);
@@ -104,7 +130,10 @@ APPWRITE_PUBLIC_ENDPOINT: "${sdk.forProject(page.params.region, page.params.proj
     });
 </script>
 
-<Wizard title="Add Apple platform" bind:showExitModal confirmExit={!isPlatformCreated}>
+<Wizard
+    bind:showExitModal
+    confirmExit={!isPlatformCreated}
+    title={getCorrectTitle(isConnectPlatform, 'Apple')}>
     <Layout.Stack gap="xxl">
         <Form onSubmit={createApplePlatform}>
             <Layout.Stack gap="xxl">
@@ -192,6 +221,12 @@ APPWRITE_PUBLIC_ENDPOINT: "${sdk.forProject(page.params.region, page.params.proj
         {#if isPlatformCreated}
             <Fieldset legend="Clone starter" badge="Optional">
                 <Layout.Stack gap="l">
+                    <LlmBanner
+                        platform="apple"
+                        {configCode}
+                        {alreadyExistsInstructions}
+                        openers={['cursor']} />
+
                     <Typography.Text variant="m-500">
                         1. If you're starting a new project, you can clone our starter kit from
                         GitHub using the terminal or XCode.

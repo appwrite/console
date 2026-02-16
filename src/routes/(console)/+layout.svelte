@@ -1,12 +1,12 @@
 <script lang="ts">
     import { page } from '$app/state';
-    import { BillingPlan, INTERVAL } from '$lib/constants';
+    import { INTERVAL } from '$lib/constants';
     import Footer from '$lib/layout/footer.svelte';
     import Shell from '$lib/layout/shell.svelte';
 
     import { app } from '$lib/stores/app';
     import { database, checkForDatabaseBackupPolicies } from '$lib/stores/database';
-    import { newOrgModal, organization, type Organization } from '$lib/stores/organization';
+    import { newOrgModal, organization } from '$lib/stores/organization';
     import { wizard } from '$lib/stores/wizard';
     import { afterUpdate, onMount } from 'svelte';
     import { loading } from '$routes/store';
@@ -15,15 +15,12 @@
     import {
         calculateTrialDay,
         checkForEnterpriseTrial,
-        checkForMandate,
         checkForMarkedForDeletion,
         checkForMissingPaymentMethod,
         checkForNewDevUpgradePro,
-        checkForProjectsLimit,
         checkForUsageLimit,
         checkPaymentAuthorizationRequired,
         paymentExpired,
-        plansInfo,
         showUsageRatesModal
     } from '$lib/stores/billing';
     import { goto } from '$app/navigation';
@@ -41,11 +38,11 @@
     import { showSupportModal } from './wizard/support/store';
     import { activeHeaderAlert, consoleVariables } from './store';
 
-    import { base } from '$app/paths';
+    import { base, resolve } from '$app/paths';
     import { headerAlert } from '$lib/stores/headerAlert';
     import { UsageRates } from '$lib/components/billing';
     import { canSeeProjects } from '$lib/stores/roles';
-    import { BottomModalAlert, EmailVerificationBanner } from '$lib/components';
+    import { BottomModalAlert } from '$lib/components';
     import {
         IconAnnotation,
         IconBookOpen,
@@ -56,9 +53,7 @@
         IconSparkles,
         IconSwitchHorizontal
     } from '@appwrite.io/pink-icons-svelte';
-    import type { LayoutData } from './$types';
-
-    export let data: LayoutData;
+    import type { Models } from '@appwrite.io/console';
 
     function kebabToSentenceCase(str: string) {
         return str
@@ -76,9 +71,7 @@
     $: $registerCommands([
         {
             label: 'Go to Projects',
-            callback: () => {
-                goto(base);
-            },
+            callback: () => goto(resolve('/')),
             keys: ['g', 'p'],
             group: 'navigation',
             disabled:
@@ -292,25 +285,21 @@
     });
 
     let currentOrganizationId = null;
-    async function checkForUsageLimits(org: Organization) {
+    async function checkForUsageLimits(org: Models.Organization) {
         if (!org) return;
         if (currentOrganizationId === org.$id) return;
         if (isCloud) {
             currentOrganizationId = org.$id;
-            const orgProjectCount =
-                data.currentOrgId === org.$id ? data.allProjectsCount : undefined;
-            await checkForProjectsLimit(org, orgProjectCount);
             checkForEnterpriseTrial(org);
             await checkForUsageLimit(org);
             checkForMarkedForDeletion(org);
             await checkForNewDevUpgradePro(org);
 
-            if (org?.billingPlan !== BillingPlan.FREE) {
+            if (org?.billingPlanDetails.requiresPaymentMethod) {
                 await paymentExpired(org);
                 await checkPaymentAuthorizationRequired(org);
-                await checkForMandate(org);
 
-                if ($plansInfo.get(org.billingPlan)?.trialDays) {
+                if (org?.billingTrialDays) {
                     calculateTrialDay(org);
                 }
             }
@@ -334,8 +323,6 @@
 <CommandCenter />
 <Shell
     showSideNavigation={page.url.pathname !== '/' &&
-        !page?.params.organization &&
-        !page.url.pathname.includes(base + '/account') &&
         !page.url.pathname.includes(base + '/card') &&
         !page.url.pathname.includes(base + '/onboarding')}
     showHeader={!page.url.pathname.includes(base + '/onboarding/create-project')}
@@ -345,8 +332,6 @@
     <slot />
     <Footer slot="footer" />
 </Shell>
-
-<EmailVerificationBanner />
 
 {#if $wizard.show && $wizard.component}
     <svelte:component this={$wizard.component} {...$wizard.props} />

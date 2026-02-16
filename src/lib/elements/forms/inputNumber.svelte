@@ -5,21 +5,31 @@
     export let label: string = null;
     export let id: string;
     export let name = id;
-    export let value: number = null;
+    export let value: number | bigint = null;
     export let placeholder = '';
     export let required = false;
     export let nullable = false;
     export let disabled = false;
     export let readonly = false;
     export let autofocus = false;
-    export let min: number = null;
-    export let max: number = null;
+    export let min: number | bigint = null;
+    export let max: number | bigint = null;
     export let step: number | 'any' = 1;
     export let helper: string = undefined;
     export let leadingIcon: ComponentType | undefined = undefined;
 
     let error: string;
-
+    // TODO: Remove this once Pink Svelte is fixed
+    $: if (value !== null && typeof value === 'object' && 'target' in (value as object)) {
+        const event = value as Event;
+        const target = event.target as HTMLInputElement;
+        if (target?.value !== undefined) {
+            const parsedValue = target.value === '' ? null : Number(target.value);
+            value = Number.isNaN(parsedValue) ? null : parsedValue;
+        } else {
+            value = null;
+        }
+    }
     const handleInvalid = (event: Event & { currentTarget: EventTarget & HTMLInputElement }) => {
         event.preventDefault();
 

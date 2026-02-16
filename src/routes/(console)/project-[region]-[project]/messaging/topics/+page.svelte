@@ -71,6 +71,7 @@
         hideView
         hasFilters
         hasSearch
+        filtersStyle="dropdown"
         analyticsSource="messaging_topics_filter"
         searchPlaceholder="Search by name or ID">
         {#if $canWriteTopics}
@@ -97,11 +98,7 @@
     {:else if $hasPageQueries}
         <EmptyFilter resource="topics" />
     {:else if data.search}
-        <EmptySearch>
-            <div class="u-text-center">
-                <b>Sorry, we couldn't find '{data.search}'</b>
-                <p>There are no topics that match your search.</p>
-            </div>
+        <EmptySearch target="topics" search={data.search}>
             <Button
                 secondary
                 href={`${base}/project-${page.params.region}-${page.params.project}/messaging/topics`}>

@@ -1,7 +1,6 @@
 <script lang="ts">
     import { WizardStep } from '$lib/layout';
     import { onMount } from 'svelte';
-    import type { PaymentList, PaymentMethodData } from '$lib/sdk/billing';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { isStripeInitialized, setPaymentMethod, submitStripeCard } from '$lib/stores/stripe';
@@ -9,16 +8,17 @@
     import { PaymentBoxes } from '$lib/components/billing';
     import { addCreditWizardStore } from '../store';
     import { organization } from '$lib/stores/organization';
-    import type { PaymentMethod } from '@stripe/stripe-js';
+    import type { Models } from '@appwrite.io/console';
+    import type { PaymentMethod as StripePaymentMethod } from '@stripe/stripe-js';
 
-    let methods: PaymentList;
     let name: string;
-    let showState: boolean = false;
     let state: string = '';
-    let paymentMethod: PaymentMethod | null = null;
+    let showState: boolean = false;
+    let methods: Models.PaymentMethodList;
+    let paymentMethod: StripePaymentMethod | null = null;
 
     onMount(async () => {
-        methods = await sdk.forConsole.billing.listPaymentMethods();
+        methods = await sdk.forConsole.account.listPaymentMethods();
         $addCreditWizardStore.paymentMethodId =
             methods.paymentMethods.find((method) => !!method?.last4)?.$id ?? null;
     });
@@ -28,19 +28,19 @@
             if (showState && !state) {
                 throw Error('Please select a state');
             }
-            let method: PaymentMethodData;
+            let method: Models.PaymentMethod;
             if (showState) {
                 method = await setPaymentMethod(paymentMethod.id, name, state);
             } else {
                 const card = await submitStripeCard(name, $organization.$id);
                 if (card && Object.hasOwn(card, 'id')) {
-                    if ((card as PaymentMethod).card?.country === 'US') {
-                        paymentMethod = card as PaymentMethod;
+                    if ((card as StripePaymentMethod).card?.country === 'US') {
+                        paymentMethod = card as StripePaymentMethod;
                         showState = true;
                         return;
                     }
                 } else if (card && Object.hasOwn(card, '$id')) {
-                    method = card as PaymentMethodData;
+                    method = card as Models.PaymentMethod;
                 }
             }
             $addCreditWizardStore.paymentMethodId = method.$id;

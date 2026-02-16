@@ -6,16 +6,18 @@
     import { organization } from '$lib/stores/organization';
     import { Dependencies } from '$lib/constants';
     import { onMount } from 'svelte';
-    import type { AddressesList } from '$lib/sdk/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { base } from '$app/paths';
     import { Alert, Badge, Card, Layout, Skeleton } from '@appwrite.io/pink-svelte';
-    import { page } from '$app/state';
+    import type { Models } from '@appwrite.io/console';
 
     export let show = false;
+    export let locale: Models.Locale;
+    export let countryList: Models.CountryList;
+
     let loading = true;
-    let addresses: AddressesList;
+    let addresses: Models.BillingAddressList;
     let selectedAddress: string;
     let error: string;
     let country: string;
@@ -33,7 +35,7 @@
 
     onMount(async () => {
         loading = true;
-        addresses = await sdk.forConsole.billing.listAddresses();
+        addresses = await sdk.forConsole.account.listBillingAddresses();
 
         const firstNonCurrentAddress = addresses?.billingAddresses?.find(
             (address) => address.$id !== $organization?.billingAddressId
@@ -44,13 +46,9 @@
                 : null
             : null;
 
-        const locale = await sdk.forProject(page.params.region, page.params.project).locale.get();
         if (locale?.countryCode) {
             country = locale.countryCode;
         }
-        const countryList = await sdk
-            .forProject(page.params.region, page.params.project)
-            .locale.listCountries();
         options = countryList.countries.map((country) => {
             return {
                 value: country.code,
@@ -65,15 +63,19 @@
             if (selectedAddress === $organization.billingAddressId) {
                 show = false;
             } else if (selectedAddress === '$new') {
-                const address = await sdk.forConsole.billing.createAddress(
+                const address = await sdk.forConsole.account.createBillingAddress({
                     country,
                     streetAddress,
                     city,
                     state,
-                    postalCode ? postalCode : undefined,
-                    addressLine2 ? postalCode : undefined
-                );
-                await sdk.forConsole.billing.setBillingAddress($organization.$id, address.$id);
+                    postalCode: postalCode ? postalCode : undefined,
+                    addressLine2: addressLine2 ? addressLine2 : undefined
+                });
+
+                await sdk.forConsole.organizations.setBillingAddress({
+                    organizationId: $organization.$id,
+                    billingAddressId: address.$id
+                });
 
                 invalidate(Dependencies.ORGANIZATION);
                 invalidate(Dependencies.ADDRESS);
@@ -88,7 +90,10 @@
                     message: `Your billing address has been updated`
                 });
             } else {
-                await sdk.forConsole.billing.setBillingAddress($organization.$id, selectedAddress);
+                await sdk.forConsole.organizations.setBillingAddress({
+                    organizationId: $organization.$id,
+                    billingAddressId: selectedAddress
+                });
 
                 invalidate(Dependencies.ORGANIZATION);
                 invalidate(Dependencies.ADDRESS);

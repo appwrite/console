@@ -1,80 +1,58 @@
 import { isCloud } from '$lib/system';
 import { isSameDay } from '$lib/helpers/date';
-import { type BottomModalAlertItem, showBottomModalAlert } from '$lib/stores/bottom-alerts';
-import SpatialColumnsLight from '$lib/images/promos/spatial-columns-api-light.png';
-import SpatialColumnsDark from '$lib/images/promos/spatial-columns-api-dark.png';
-import InversionQueriesDark from '$lib/images/promos/inversion-queries-dark.png';
-import InversionQueriesLight from '$lib/images/promos/inversion-queries-light.png';
-import TimeHelperQueriesDark from '$lib/images/promos/time-helper-queries-dark.png';
-import TimeHelperQueriesLight from '$lib/images/promos/time-helper-queries-light.png';
+import Imagine from '$lib/components/promos/imagine.svelte';
+import {
+    type BottomModalAlertItem,
+    setMobileSingleAlertLayout,
+    showBottomModalAlert
+} from '$lib/stores/bottom-alerts';
+
+const SHOW_IMAGINE_PROMO = true;
 
 const listOfPromotions: BottomModalAlertItem[] = [];
 
-if (isCloud) {
-    const spatialColumnsPromo: BottomModalAlertItem = {
-        id: 'modal:spatial_columns_announcement',
-        src: {
-            dark: SpatialColumnsDark,
-            light: SpatialColumnsLight
-        },
-        title: 'Announcing API for spatial columns',
-        message: 'Store and query geo data directly in your database.',
-        plan: 'free',
+if (isCloud && SHOW_IMAGINE_PROMO) {
+    const imaginePromo: BottomModalAlertItem = {
+        id: 'modal:imagine.dev',
+        backgroundComponent: Imagine,
+        title: 'Introducing Imagine',
+        message: 'The most complete AI builder to date',
         importance: 8,
-        scope: 'project',
+        scope: 'everywhere',
+        plan: 'free',
         cta: {
-            text: 'Read announcement',
-            link: () => 'https://appwrite.io/blog/post/announcing-spatial-columns',
+            text: 'Try it now',
+            color: {
+                light: '#FFFFFF',
+                dark: '#000000'
+            },
+            background: {
+                light: '#000000',
+                dark: '#FFFFFF'
+            },
+            backgroundHover: {
+                light: '#333333',
+                dark: '#CCCCCC'
+            },
+            link: () => 'https://imagine.dev',
             external: true,
             hideOnClick: true
         },
         show: true
     };
 
-    const inversionQueriesPromo: BottomModalAlertItem = {
-        id: 'modal:inversion_queries_announcement',
-        src: {
-            dark: InversionQueriesDark,
-            light: InversionQueriesLight
-        },
-        title: 'Announcing inversion queries',
-        message: 'New NOT operators to exclude data directly in queries.',
-        plan: 'free',
-        importance: 8,
-        scope: 'project',
-        cta: {
-            text: 'Read announcement',
-            link: () => 'https://appwrite.io/blog/post/announcing-inversion-queries',
-            external: true,
-            hideOnClick: true
-        },
-        show: true
-    };
-
-    const timeHelperQueriesPromo: BottomModalAlertItem = {
-        id: 'modal:time_helper_queries_announcement',
-        src: {
-            dark: TimeHelperQueriesDark,
-            light: TimeHelperQueriesLight
-        },
-        title: 'Announcing Time helper queries',
-        message: 'New before/after filters for simpler time-based queries.',
-        plan: 'free',
-        importance: 8,
-        scope: 'project',
-        cta: {
-            text: 'Read announcement',
-            link: () => 'https://appwrite.io/blog/post/announcing-time-helper-queries',
-            external: true,
-            hideOnClick: true
-        },
-        show: true
-    };
-    listOfPromotions.push(spatialColumnsPromo, inversionQueriesPromo, timeHelperQueriesPromo);
+    listOfPromotions.push(imaginePromo);
 }
 
 export function addBottomModalAlerts() {
     listOfPromotions.forEach((promotion) => showBottomModalAlert(promotion));
+
+    // only for imagine!
+    if (listOfPromotions.length > 0) {
+        const imaginePromo = listOfPromotions[0];
+        const { cta, title, message } = imaginePromo;
+        setMobileSingleAlertLayout({ enabled: true, cta, title, message });
+    }
 }
 
 // use this for time based promo handling

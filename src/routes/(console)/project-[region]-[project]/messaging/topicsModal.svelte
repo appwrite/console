@@ -4,7 +4,6 @@
     import { sdk } from '$lib/stores/sdk';
     import { MessagingProviderType, type Models, Query } from '@appwrite.io/console';
     import { createEventDispatcher } from 'svelte';
-    import { getTotal } from './wizard/store';
     import {
         Badge,
         Card,
@@ -17,21 +16,41 @@
     import { getProviderText } from './helper';
     import { page } from '$app/state';
 
-    export let providerType: MessagingProviderType;
-    export let show: boolean;
-    export let topicsById: Record<string, Models.Topic>;
-    export let title = 'Select topics';
+    let {
+        providerType,
+        show = $bindable(),
+        topicsById = $bindable(),
+        title = 'Select topics'
+    }: {
+        providerType: MessagingProviderType;
+        show: boolean;
+        topicsById: Record<string, Models.Topic>;
+        title?: string;
+    } = $props();
 
     const dispatch = createEventDispatcher();
 
-    let search = '';
-    let offset = 0;
-    let totalResults = 0;
-    let topicResultsById: Record<string, Models.Topic> = {}; // use a hash map so we can quickly look up a user by id
-    let selected: Record<string, Models.Topic> = {};
-    let hasSelection = false;
+    let offset = $state(0);
+    let search = $state('');
+    let totalResults = $state(0);
+    let emptyTopicsExists = $state(false);
+    let selected = $state<Record<string, Models.Topic>>({});
+    let topicResultsById = $state<Record<string, Models.Topic>>({});
+    let wasOpen = $state(false);
+    let previousSearch = $state('');
 
-    let emptyTopicsExists = false;
+    function getTopicTotal(topic: Models.Topic): number {
+        switch (providerType) {
+            case MessagingProviderType.Email:
+                return topic.emailTotal;
+            case MessagingProviderType.Sms:
+                return topic.smsTotal;
+            case MessagingProviderType.Push:
+                return topic.pushTotal;
+            default:
+                return 0;
+        }
+    }
 
     function reset() {
         offset = 0;
@@ -76,63 +95,82 @@
     }
 
     function onTopicSelection(event: CustomEvent<boolean>, topic: Models.Topic) {
+        const updatedSelected = { ...selected };
+
         if (event.detail) {
-            selected = {
-                ...selected,
-                [topic.$id]: topic
-            };
+            updatedSelected[topic.$id] = topic;
         } else {
-            const { [topic.$id]: _, ...rest } = selected;
-            selected = rest;
+            delete updatedSelected[topic.$id];
         }
+
+        selected = updatedSelected;
     }
 
-    $: if (show) {
-        request();
-    }
-    $: if (offset !== null) {
-        request();
-    }
-    $: if (search !== null) {
-        offset = 0;
-        request();
-    }
+    const selectedSize = $derived(Object.keys(selected).length);
+    const hasSelection = $derived(selectedSize > 0);
 
-    $: selectedSize = Object.keys(selected).length;
+    const topicsWithState = $derived(
+        Object.entries(topicResultsById).map(([topicId, topic]) => ({
+            topicId,
+            topic,
+            checked: !!selected[topicId],
+            disabled: !!topicsById[topicId]
+        }))
+    );
 
-    $: hasSelection = selectedSize > 0;
+    $effect(() => {
+        const searchChanged = search !== previousSearch;
+        if (searchChanged) {
+            previousSearch = search;
+            offset = 0;
+        }
+    });
 
-    $: if (show) {
-        selected = topicsById;
-    }
+    $effect(() => {
+        const hasValidData = offset !== null || search !== null;
+        const shouldFetch = show && hasValidData;
+        if (shouldFetch) {
+            request();
+        }
+    });
+
+    $effect(() => {
+        const isOpening = show && !wasOpen;
+        if (isOpening) {
+            selected = topicsById;
+        }
+        wasOpen = show;
+    });
 </script>
 
 <Modal {title} bind:show onSubmit={submit} on:close={reset}>
-    <Typography.Text>
-        Select existing topics you want to send this message to its targets. The message will be
-        sent only to {getProviderText(providerType)} targets.
-    </Typography.Text>
+    <svelte:fragment slot="description">
+        <Typography.Text>
+            Select existing topics you want to send this message to its targets. The message will be
+            sent only to {getProviderText(providerType)} targets.
+        </Typography.Text>
+    </svelte:fragment>
     <Layout.Stack>
         <InputSearch
             autofocus
             disabled={totalResults === 0 && !search}
             placeholder="Search for topics"
             bind:value={search} />
-        {#if Object.keys(topicResultsById).length > 0 && !emptyTopicsExists}
+        {#if topicsWithState.length > 0 && !emptyTopicsExists}
             <Table.Root columns={1} let:root>
-                {#each Object.entries(topicResultsById) as [topicId, topic]}
+                {#each topicsWithState as { topicId, topic, checked, disabled } (topicId)}
                     <Table.Row.Base {root}>
                         <Table.Cell {root}>
                             <Layout.Stack direction="row" alignItems="center" gap="s">
                                 <Selector.Checkbox
                                     id={topicId}
                                     label={topic.name}
-                                    disabled={!!topicsById[topicId]}
-                                    checked={!!selected[topicId]}
+                                    {checked}
+                                    {disabled}
                                     on:change={(event) => onTopicSelection(event, topic)}>
                                 </Selector.Checkbox>
                                 <span>
-                                    ({getTotal(topic)} targets)
+                                    ({getTopicTotal(topic)} targets)
                                 </span>
                             </Layout.Stack>
                         </Table.Cell>
@@ -154,7 +192,7 @@
                 <Empty
                     type="secondary"
                     title={`You have no topics${
-                        emptyTopicsExists ? ` with ${providerType.toUpperCase()} targets` : ''
+                        emptyTopicsExists ? ` with ${providerType.toLowerCase()} targets` : ''
                     }`}
                     description={`Create a topic to see them here.`}>
                     <Button
@@ -174,7 +212,7 @@
                 <Badge variant="secondary" content={selectedSize.toString()} />
                 <span>Topics selected</span>
             </Layout.Stack>
-            <Button submit disabled={!hasSelection}>Add</Button>
+            <Button submit disabled={!hasSelection}>Create</Button>
         </Layout.Stack>
     </svelte:fragment>
 </Modal>

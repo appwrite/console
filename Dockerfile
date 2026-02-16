@@ -1,17 +1,11 @@
-FROM --platform=$BUILDPLATFORM node:20-alpine AS build
+FROM --platform=$BUILDPLATFORM oven/bun:alpine AS build
 
 WORKDIR /app
 
-ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
-RUN npm i -g corepack@latest
-RUN corepack enable
-RUN corepack prepare pnpm@10.0.0 --activate
-
 ADD ./package.json /app/package.json
-ADD ./pnpm-lock.yaml /app/pnpm-lock.yaml
+ADD ./bun.lock /app/bun.lock
 
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+RUN bun install --frozen-lockfile
 
 ADD ./build.js /app/build.js
 ADD ./tsconfig.json /app/tsconfig.json
@@ -43,9 +37,9 @@ ENV SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN
 ENV SENTRY_RELEASE=$SENTRY_RELEASE
 ENV NODE_OPTIONS=--max_old_space_size=8192
 
-RUN pnpm run build
+RUN bun run build
 
-FROM nginx:1.26.3-alpine
+FROM nginx:1.29.5-alpine
 
 EXPOSE 80
 

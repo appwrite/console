@@ -25,8 +25,9 @@
     import { writable } from 'svelte/store';
     import type { Column } from '$lib/helpers/types';
     import { base } from '$app/paths';
-    import { Icon, Layout } from '@appwrite.io/pink-svelte';
+    import { Icon, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { Link } from '$lib/elements';
 
     export let data;
     let showAdd = false;
@@ -71,9 +72,7 @@
             await Promise.all(promises);
             addNotification({
                 type: 'success',
-                message: `Added ${targetIds.length} subscriber${
-                    targetIds.length > 1 ? 's' : ''
-                } to topic`
+                message: `${targetIds.length} subscriber${targetIds.length !== 1 ? 's' : ''} created`
             });
             trackEvent(Submit.MessagingTopicSubscriberAdd);
             await invalidate(Dependencies.MESSAGING_TOPIC_SUBSCRIBERS);
@@ -89,7 +88,7 @@
 
 <Container>
     <Layout.Stack direction="row" justifyContent="space-between">
-        <SearchQuery placeholder="Search by type or IDs"></SearchQuery>
+        <SearchQuery placeholder="Search by type or ID"></SearchQuery>
         <Layout.Stack direction="row" inline>
             <Filters query={data.query} {columns} analyticsSource="messaging_topics" />
             <ViewSelector ui="new" view={View.Table} {columns} hideView />
@@ -100,7 +99,7 @@
                 }}
                 event="create_subscriber">
                 <Icon icon={IconPlus} slot="start" size="s" />
-                Add subscriber
+                Create subscriber
             </Button>
         </Layout.Stack>
     </Layout.Stack>
@@ -116,14 +115,11 @@
     {:else if $hasPageQueries}
         <EmptyFilter resource="subscribers" />
     {:else if data.search}
-        <EmptySearch>
-            <div class="u-text-center">
-                <b>Sorry, we couldn't find '{data.search}'</b>
-                <p>There are no subscribers that match your search.</p>
-            </div>
+        <EmptySearch bind:search={data.search} target="subscribers">
             <Button
                 secondary
                 href={`${base}/project-${page.params.region}-${page.params.project}/messaging/topics/topic-${page.params.topic}/subscribers`}>
+                Clear Search
             </Button>
         </EmptySearch>
     {:else}
@@ -141,13 +137,14 @@
     bind:targetsById={$targetsById}
     on:update={addTargets}>
     <svelte:fragment slot="description">
-        <p class="text">
-            Add subscribers to this topic by selecting the targets for directing messages. <a
+        <Typography.Text>
+            Create subscribers for this topic by selecting the targets for directing messages.{' '}
+            <Link
                 href="https://appwrite.io/docs/products/messaging/topics#subscribe-targets-to-topics"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="link">Learn more about subscribers</a
-            >.
-        </p>
+                external>
+                Learn more
+            </Link>
+            .
+        </Typography.Text>
     </svelte:fragment>
 </UserTargetsModal>

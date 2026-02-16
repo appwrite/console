@@ -8,8 +8,12 @@
     import AvailableCredit from './availableCredit.svelte';
     import PaymentHistory from './paymentHistory.svelte';
     import TaxId from './taxId.svelte';
-    import { failedInvoice, tierToPlan, upgradeURL, useNewPricingModal } from '$lib/stores/billing';
-    import type { PaymentMethodData } from '$lib/sdk/billing';
+    import {
+        failedInvoice,
+        billingIdToPlan,
+        getChangePlanUrl,
+        useNewPricingModal
+    } from '$lib/stores/billing';
     import { onMount } from 'svelte';
     import { page } from '$app/state';
     import { confirmPayment } from '$lib/stores/stripe';
@@ -21,25 +25,20 @@
     import { Alert } from '@appwrite.io/pink-svelte';
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import { base } from '$app/paths';
     import type { PageData } from './$types';
+    import { resolve } from '$app/paths';
 
     export let data: PageData;
-    let organization = data.organization;
 
-    // why are these reactive?
-    $: defaultPaymentMethod = data?.paymentMethods?.paymentMethods?.find(
-        (method: PaymentMethodData) => method.$id === organization?.paymentMethodId
-    );
-
-    $: backupPaymentMethod = data?.paymentMethods?.paymentMethods?.find(
-        (method: PaymentMethodData) => method.$id === organization?.backupPaymentMethodId
-    );
+    $: organization = data.organization;
+    $: baseUrl = resolve('/(console)/organization-[organization]/billing', {
+        organization: page.params.organization
+    });
 
     onMount(async () => {
         if (page.url.searchParams.has('type')) {
             if (page.url.searchParams.get('type') === 'upgrade') {
-                goto($upgradeURL);
+                await goto(getChangePlanUrl(page.params.organization));
             }
 
             if (
@@ -47,17 +46,17 @@
                 page.url.searchParams.get('type') === 'confirmation'
             ) {
                 const invoiceId = page.url.searchParams.get('invoice');
-                const invoice = await sdk.forConsole.billing.getInvoice(
-                    page.params.organization,
+                const invoice = await sdk.forConsole.organizations.getInvoice({
+                    organizationId: page.params.organization,
                     invoiceId
-                );
+                });
 
-                await confirmPayment(
-                    organization.$id,
-                    invoice.clientSecret,
-                    organization.paymentMethodId,
-                    `${base}/organization-${organization.$id}/billing?type=validate-invoice&invoice=${invoice.$id}`
-                );
+                await confirmPayment({
+                    clientSecret: invoice.clientSecret,
+                    paymentMethodId: organization.paymentMethodId,
+                    orgId: organization.$id,
+                    route: `${baseUrl}?type=validate-invoice&invoice=${invoice.$id}`
+                });
             }
 
             if (
@@ -65,9 +64,14 @@
                 page.url.searchParams.get('type') === 'validate-invoice'
             ) {
                 const invoiceId = page.url.searchParams.get('invoice');
-                await sdk.forConsole.billing.updateInvoiceStatus(organization.$id, invoiceId);
-                invalidate(Dependencies.INVOICES);
-                invalidate(Dependencies.ORGANIZATION);
+                await sdk.forConsole.organizations.validateInvoice({
+                    organizationId: organization.$id,
+                    invoiceId
+                });
+                await Promise.all([
+                    invalidate(Dependencies.INVOICES),
+                    invalidate(Dependencies.ORGANIZATION)
+                ]);
             }
 
             if (
@@ -75,17 +79,21 @@
                 page.url.searchParams.get('type') === 'retry'
             ) {
                 const invoiceId = page.url.searchParams.get('invoice');
-                const invoice = await sdk.forConsole.billing.getInvoice(
-                    page.params.organization,
+                const invoice = await sdk.forConsole.organizations.getInvoice({
+                    organizationId: page.params.organization,
                     invoiceId
-                );
+                });
                 selectedInvoice.set(invoice);
                 showRetryModal.set(true);
             }
         }
         if (page.url.searchParams.has('clientSecret')) {
             const clientSecret = page.url.searchParams.get('clientSecret');
-            await confirmPayment(organization.$id, clientSecret, organization.paymentMethodId);
+            await confirmPayment({
+                clientSecret,
+                paymentMethodId: organization.paymentMethodId,
+                orgId: organization.$id
+            });
         }
     });
 </script>
@@ -113,7 +121,7 @@
             </Alert.Inline>
         {/if}
     {/if}
-    {#if defaultPaymentMethod?.failed && !backupPaymentMethod}
+    {#if data.primaryPaymentMethod?.failed && !data.backupPaymentMethod}
         <Alert.Inline
             status="error"
             title={`The default payment method for ${organization.name} has expired`}>
@@ -123,33 +131,43 @@
     {/if}
     {#if organization?.billingPlanDowngrade}
         <Alert.Inline status="info">
-            Your organization has changed to {tierToPlan(organization?.billingPlanDowngrade).name} plan.
-            You will continue to have access to {tierToPlan(organization?.billingPlan).name} plan features
-            until your billing period ends on {toLocaleDate(organization.billingNextInvoiceDate)}.
+            Your organization has changed to {billingIdToPlan(organization?.billingPlanDowngrade)
+                .name} plan. You will continue to have access to {organization?.billingPlanDetails
+                ?.name} plan features until your billing period ends on {toLocaleDate(
+                organization.billingNextInvoiceDate
+            )}.
         </Alert.Inline>
     {/if}
     {#if $useNewPricingModal}
         <PlanSummary
-            availableCredit={data?.availableCredit}
-            currentPlan={data?.currentPlan}
-            nextPlan={data?.nextPlan}
-            currentAggregation={data?.billingAggregation} />
+            availableCredit={data.availableCredit}
+            currentPlan={data.currentPlan}
+            nextPlan={data.nextPlan}
+            currentAggregation={data.billingAggregation}
+            limit={data.limit}
+            offset={data.offset} />
     {:else}
         <PlanSummaryOld
-            availableCredit={data?.availableCredit}
-            currentPlan={data?.currentPlan}
-            currentAggregation={data?.billingAggregation}
-            currentInvoice={data?.billingInvoice} />
+            availableCredit={data.availableCredit}
+            currentPlan={data.currentPlan}
+            currentAggregation={data.billingAggregation}
+            currentInvoice={data.billingInvoice} />
     {/if}
     <PaymentHistory />
-    <PaymentMethods organization={data?.organization} methods={data?.paymentMethods} />
+
+    <PaymentMethods
+        organization={data.organization}
+        paymentMethods={data.paymentMethods}
+        backupMethod={data.backupPaymentMethod}
+        primaryMethod={data.primaryPaymentMethod} />
+
     <BillingAddress
-        organization={data?.organization}
-        billingAddress={data?.billingAddress}
-        locale={data?.locale}
-        countryList={data?.countryList} />
+        locale={data.locale}
+        countryList={data.countryList}
+        organization={data.organization}
+        billingAddress={data.billingAddress} />
     <TaxId />
-    <BudgetCap organization={data?.organization} currentPlan={data?.currentPlan} />
+    <BudgetCap organization={data.organization} currentPlan={data.currentPlan} />
     <AvailableCredit areCreditsSupported={data.areCreditsSupported} />
 </Container>
 

@@ -2,6 +2,7 @@
     import { SearchQuery, ViewSelector } from '$lib/components';
     import { FiltersBottomSheet, ParsedTagList, queryParamToMap } from '$lib/components/filters';
     import QuickFilters from '$lib/components/filters/quickFilters.svelte';
+
     import Button from '$lib/elements/forms/button.svelte';
     import { View } from '$lib/helpers/load';
     import type { Column } from '$lib/helpers/types';
@@ -13,7 +14,7 @@
     import DisplaySettingsModal from './displaySettingsModal.svelte';
     import { buildFilterCol } from '$lib/components/filters/quickFilters';
     import { afterNavigate } from '$app/navigation';
-    import { setFilters } from '$lib/components/filters/setFilters';
+    import { parsedTags, setFilters } from '$lib/components/filters/setFilters';
 
     let {
         columns,
@@ -23,6 +24,7 @@
         hasSearch = false,
         searchPlaceholder = 'Search by ID',
         hasFilters = false,
+        filtersStyle = 'chips',
         analyticsSource = '',
         children
     }: {
@@ -33,6 +35,7 @@
         hasSearch?: boolean;
         searchPlaceholder?: string;
         hasFilters?: boolean;
+        filtersStyle?: 'chips' | 'dropdown';
         analyticsSource?: string;
         children?: Snippet;
     } = $props();
@@ -45,8 +48,11 @@
     let showDisplaySettingsModal = $state(false);
     let showFilters = $state(false);
 
-    let filterCols = $derived(
+    const filterCols = $derived(
         $columns.map((col) => (col.filter !== false ? buildFilterCol(col) : null)).filter(Boolean)
+    );
+    const filtersBadge = $derived(
+        filtersStyle === 'dropdown' && $parsedTags?.length ? `${$parsedTags.length}` : undefined
     );
 
     afterNavigate((p) => {
@@ -55,7 +61,6 @@
         const localQueries = queryParamToMap(paramQueries || '[]');
         const localTags = Array.from(localQueries.keys());
         setFilters(localTags, filterCols, $columns);
-        filterCols = filterCols;
     });
 </script>
 
@@ -99,18 +104,48 @@
                 {#if showSearch && hasSearch}
                     <SearchQuery placeholder={searchPlaceholder} />
                 {/if}
+                {#if hasFilters && filtersStyle === 'chips'}
+                    <div style="overflow-x: auto;">
+                        <ParsedTagList {columns} {analyticsSource} />
+                    </div>
+                {/if}
             </Layout.Stack>
         {:else}
-            <Layout.Stack direction="row" justifyContent="space-between">
-                <Layout.Stack direction="row" alignItems="center">
+            <Layout.Stack direction="row" justifyContent="space-between" alignItems="flex-start">
+                <Layout.Stack
+                    direction="row"
+                    alignItems="flex-start"
+                    gap="m"
+                    style="min-width: 0; flex: 1 1 auto;">
                     {#if hasSearch}
-                        <SearchQuery placeholder={searchPlaceholder} />
+                        <div style="flex: 0 0 auto; max-width: 360px; min-width: 0;">
+                            <SearchQuery placeholder={searchPlaceholder} />
+                        </div>
                     {/if}
-                    {#if hasFilters && $columns?.length}
-                        <QuickFilters {columns} {analyticsSource} {filterCols} />
+                    {#if hasFilters && filtersStyle === 'chips'}
+                        <!-- Tags with Filters button (rendered inside ParsedTagList) -->
+                        <Layout.Stack
+                            direction="row"
+                            alignItems="center"
+                            gap="s"
+                            wrap="wrap"
+                            style="min-width: 0; flex: 1 1 auto;">
+                            <ParsedTagList {columns} {analyticsSource} />
+                        </Layout.Stack>
                     {/if}
                 </Layout.Stack>
-                <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
+                <Layout.Stack
+                    direction="row"
+                    alignItems="center"
+                    justifyContent="flex-end"
+                    style="align-self: flex-start; white-space: nowrap;">
+                    {#if hasFilters && filtersStyle === 'dropdown'}
+                        <QuickFilters
+                            {columns}
+                            {analyticsSource}
+                            buttonVariant="secondary"
+                            filterCols={filterCols.filter((f) => f?.options)} />
+                    {/if}
                     {#if hasDisplaySettings}
                         <ViewSelector ui="new" {view} {columns} {hideView} {hideColumns} />
                     {/if}
@@ -120,7 +155,6 @@
                 </Layout.Stack>
             </Layout.Stack>
         {/if}
-        <ParsedTagList />
     </Layout.Stack>
 </header>
 
@@ -160,7 +194,12 @@
 {/snippet}
 
 {#snippet filtersButton(icon = false)}
-    <Button ariaLabel="Filters" on:click={() => (showFilters = !showFilters)} secondary {icon}>
+    <Button
+        ariaLabel="Filters"
+        on:click={() => (showFilters = !showFilters)}
+        text
+        {icon}
+        badge={filtersBadge}>
         <Icon icon={IconFilterLine} />
     </Button>
 {/snippet}

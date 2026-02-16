@@ -16,13 +16,13 @@
         Typography
     } from '@appwrite.io/pink-svelte';
     import { isRelationship, isSpatialType, isString } from '../rows/store';
-    import FailedModal from '../failedModal.svelte';
     import {
         columns,
         type Columns,
         type ColumnsWidth,
         indexes,
         isCsvImportInProgress,
+        isWaterfallFromFaker,
         reorderItems,
         showCreateIndexSheet
     } from '../store';
@@ -40,20 +40,27 @@
         IconTrash,
         IconViewList,
         IconLockClosed,
-        IconFingerPrint
+        IconFingerPrint,
+        IconMail
     } from '@appwrite.io/pink-icons-svelte';
     import { type ComponentProps, onDestroy, onMount } from 'svelte';
     import { Click, trackEvent } from '$lib/actions/analytics';
-    import CsvDisabled from '../csvDisabled.svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
-    import SideSheet from '../layout/sidesheet.svelte';
-    import SpreadsheetContainer from '../layout/spreadsheet.svelte';
+    import { SideSheet, SpreadsheetContainer, FailedModal, CsvDisabled } from '$database/(entity)';
     import { showCreateColumnSheet } from '../store';
     import { type Models } from '@appwrite.io/console';
     import { preferences } from '$lib/stores/preferences';
     import { page } from '$app/state';
     import { debounce } from '$lib/helpers/debounce';
+    import {
+        LARGE_NUMBER_THRESHOLD,
+        LARGE_NUMBER_THRESHOLD_NUM,
+        toExponential
+    } from '$lib/helpers/numbers';
     import type { PageData } from './$types';
+    import { realtime } from '$lib/stores/sdk';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
 
     const {
         data
@@ -125,7 +132,7 @@
     const columnFormatIcon = {
         ip: IconLocationMarker,
         url: IconLink,
-        email: IconLink,
+        email: IconMail,
         enum: IconViewList
     };
 
@@ -139,6 +146,16 @@
     onMount(() => {
         columnsOrder = preferences.getColumnOrder(tableId);
         columnsWidth = preferences.getColumnWidths(tableId + '#columns');
+
+        return realtime.forProject(page.params.region, ['project', 'console'], async (response) => {
+            if (
+                response.events.includes('databases.*.tables.*.columns.*.delete') ||
+                (response.events.includes('databases.*.tables.*.columns.*.update') &&
+                    !$isWaterfallFromFaker)
+            ) {
+                await invalidate(Dependencies.TABLE);
+            }
+        });
     });
 
     function getColumnStatusBadge(status: string): ComponentProps<Badge>['type'] {
@@ -154,24 +171,77 @@
         }
     }
 
-    function getMinMaxSizeForColumn(column: Columns): string | undefined {
-        if (column.type === 'string' && !column['format'] && column.key !== '$id') {
+    function formatLargeNumber(num: number | bigint): string {
+        // type-safe abs comparison
+        if (typeof num === 'bigint') {
+            const absNum = num < 0n ? -num : num;
+            if (absNum < LARGE_NUMBER_THRESHOLD) {
+                return num.toString();
+            }
+        } else {
+            const absNum = Math.abs(num);
+            if (absNum < LARGE_NUMBER_THRESHOLD_NUM) {
+                return num.toString();
+            }
+        }
+
+        return toExponential(num);
+    }
+
+    function getMinMaxSizeForColumn(
+        column: Columns
+    ): { display: string; tooltip?: string } | undefined {
+        if (
+            (column.type === 'string' || column.type === 'varchar') &&
+            !column['format'] &&
+            column.key !== '$id'
+        ) {
             const stringColumn = column as Models.ColumnString;
-            return `Size: ${stringColumn.size}`;
+            return { display: `Size: ${stringColumn.size}` };
         } else if (column.type === 'integer' || column.type === 'double') {
             const numbersColumn = column as Models.ColumnInteger | Models.ColumnFloat;
             const { min, max } = numbersColumn;
 
-            const hasValidMin = min > Number.MIN_SAFE_INTEGER;
-            const hasValidMax = max < Number.MAX_SAFE_INTEGER;
+            const isMinBigInt = typeof min === 'bigint';
+            const isMaxBigInt = typeof max === 'bigint';
+
+            const hasValidMin = isMinBigInt || min > Number.MIN_SAFE_INTEGER;
+            const hasValidMax = isMaxBigInt || max < Number.MAX_SAFE_INTEGER;
+
+            let display: string | undefined;
+            let tooltip: string | undefined;
 
             if (hasValidMin && hasValidMax) {
-                return `Min: ${min}, Max: ${max}`;
+                display = `Min: ${formatLargeNumber(min)}, Max: ${formatLargeNumber(max)}`;
+                const shouldShowTooltip =
+                    (isMinBigInt
+                        ? (min < 0n ? -min : min) >= LARGE_NUMBER_THRESHOLD
+                        : Math.abs(min) >= LARGE_NUMBER_THRESHOLD_NUM) ||
+                    (isMaxBigInt
+                        ? (max < 0n ? -max : max) >= LARGE_NUMBER_THRESHOLD
+                        : Math.abs(max) >= LARGE_NUMBER_THRESHOLD_NUM);
+                if (shouldShowTooltip) {
+                    tooltip = `Min: ${min.toLocaleString()}\nMax: ${max.toLocaleString()}`;
+                }
             } else if (hasValidMin) {
-                return `Min: ${min}`;
+                display = `Min: ${formatLargeNumber(min)}`;
+                const shouldShowTooltip = isMinBigInt
+                    ? (min < 0n ? -min : min) >= LARGE_NUMBER_THRESHOLD
+                    : Math.abs(min) >= LARGE_NUMBER_THRESHOLD_NUM;
+                if (shouldShowTooltip) {
+                    tooltip = `Min: ${min.toLocaleString()}`;
+                }
             } else if (hasValidMax) {
-                return `Max: ${max}`;
+                display = `Max: ${formatLargeNumber(max)}`;
+                const shouldShowTooltip = isMaxBigInt
+                    ? (max < 0n ? -max : max) >= LARGE_NUMBER_THRESHOLD
+                    : Math.abs(max) >= LARGE_NUMBER_THRESHOLD_NUM;
+                if (shouldShowTooltip) {
+                    tooltip = `Max: ${max.toLocaleString()}`;
+                }
             }
+
+            return display ? { display, tooltip } : undefined;
         } else {
             return undefined;
         }
@@ -244,9 +314,15 @@
     const spreadsheetColumns = $derived([
         {
             id: 'key',
-            width: getColumnWidth('key', 300),
-            minimumWidth: 300,
+            width: getColumnWidth('key', 380),
+            minimumWidth: 380,
             resizable: true
+        },
+        {
+            id: 'type',
+            width: 150,
+            minimumWidth: 150,
+            resizable: false
         },
         {
             id: 'indexed',
@@ -299,8 +375,8 @@
     <SpreadsheetContainer>
         <Spreadsheet.Root
             let:root
-            allowSelection
             height="100%"
+            allowSelection
             emptyCells={emptyCellsCount}
             bind:selectedRows={selectedColumns}
             columns={spreadsheetColumns}
@@ -308,6 +384,7 @@
             on:columnsResize={(resize) => saveColumnsWidth(resize.detail)}>
             <svelte:fragment slot="header" let:root>
                 <Spreadsheet.Header.Cell column="key" {root}>Column name</Spreadsheet.Header.Cell>
+                <Spreadsheet.Header.Cell column="type" {root}>Type</Spreadsheet.Header.Cell>
                 <Spreadsheet.Header.Cell column="indexed" {root}>Indexed</Spreadsheet.Header.Cell>
                 <Spreadsheet.Header.Cell column="default" {root}
                     >Default value</Spreadsheet.Header.Cell>
@@ -315,7 +392,13 @@
             </svelte:fragment>
 
             {#each updatedColumnsForSheet as column, index (column.key)}
-                {@const option = columnOptions.find((option) => option.type === column.type)}
+                {@const isId = column.key === '$id'}
+                {@const option = columnOptions.find(
+                    (option) =>
+                        option.type === column.type &&
+                        option.format ===
+                            ('format' in column && column.format ? column.format : undefined)
+                )}
                 {@const isSelectable =
                     column['system'] || column.type === 'relationship' ? 'disabled' : true}
                 <Spreadsheet.Row.Base {root} select={isSelectable} id={column.key}>
@@ -343,7 +426,7 @@
                                 {:else if column.key === '$id'}
                                     <Icon icon={IconFingerPrint} size="s" />
                                 {:else}
-                                    <Icon icon={option.icon} size="s" />
+                                    <Icon icon={option?.icon ?? IconViewList} size="s" />
                                 {/if}
 
                                 <Layout.Stack
@@ -359,8 +442,9 @@
                                             {column.key}{column.array ? '[]' : undefined}
                                         {/if}
                                     </Typography.Text>
+
                                     {#if isString(column) && column.encrypt}
-                                        <Tooltip>
+                                        <Tooltip portal>
                                             <Icon
                                                 size="s"
                                                 icon={IconLockClosed}
@@ -368,13 +452,7 @@
                                             <div slot="tooltip">Encrypted</div>
                                         </Tooltip>
                                     {/if}
-                                </Layout.Stack>
-                                <Layout.Stack
-                                    gap="s"
-                                    inline
-                                    direction="row"
-                                    alignItems="center"
-                                    style="flex:0 0 auto; white-space:nowrap;">
+
                                     {#if column.status !== 'available'}
                                         <Badge
                                             size="s"
@@ -398,11 +476,24 @@
                             {@const minMaxSize = getMinMaxSizeForColumn(column)}
                             {@const relationType = getRelationshipTypeForColumn(column)}
                             {#if minMaxSize}
-                                <Typography.Caption
-                                    variant="400"
-                                    color="--fgcolor-neutral-tertiary">
-                                    {minMaxSize}
-                                </Typography.Caption>
+                                {#if minMaxSize.tooltip}
+                                    <Tooltip portal maxWidth="fit-content" placement="top">
+                                        <Typography.Caption
+                                            variant="400"
+                                            color="--fgcolor-neutral-tertiary">
+                                            {minMaxSize.display}
+                                        </Typography.Caption>
+                                        <div slot="tooltip" style="white-space: pre-line;">
+                                            {minMaxSize.tooltip}
+                                        </div>
+                                    </Tooltip>
+                                {:else}
+                                    <Typography.Caption
+                                        variant="400"
+                                        color="--fgcolor-neutral-tertiary">
+                                        {minMaxSize.display}
+                                    </Typography.Caption>
+                                {/if}
                             {:else if relationType}
                                 <Typography.Caption
                                     variant="400"
@@ -412,12 +503,17 @@
                             {/if}
                         </Layout.Stack>
                     </Spreadsheet.Cell>
+                    <Spreadsheet.Cell column="type" {root} isEditable={false}>
+                        {@const columnType = column['format'] ? column['format'] : column.type}
+                        {columnType.toLowerCase()}
+                    </Spreadsheet.Cell>
                     <Spreadsheet.Cell column="indexed" {root} isEditable={false}>
-                        {@const isActuallyIndexed = $indexes.some((index) =>
-                            index.columns.includes(column.key)
-                        )}
+                        <!-- $id is always indexed internally -->
+                        {@const isActuallyIndexed =
+                            isId || $indexes.some((index) => index.columns.includes(column.key))}
 
-                        {@const checked = isActuallyIndexed || !!columnIndexMap[column.key]}
+                        <!-- $id is always indexed internally -->
+                        {@const checked = isId || isActuallyIndexed || !!columnIndexMap[column.key]}
 
                         <Selector.Checkbox
                             size="s"
@@ -434,15 +530,18 @@
                             }} />
                     </Spreadsheet.Cell>
                     <Spreadsheet.Cell column="default" {root} isEditable={false}>
-                        {@const _default =
-                            column?.default !== null && column?.default !== undefined
-                                ? column?.default
-                                : null}
+                        {@const _default = column.required
+                            ? '-'
+                            : column?.default !== null && column?.default !== undefined
+                              ? column?.default
+                              : null}
 
                         {#if _default === null}
                             <Badge variant="secondary" content="NULL" size="xs" />
+                        {:else if isSpatialType(column)}
+                            {JSON.stringify(_default)}
                         {:else}
-                            {isSpatialType(column) ? JSON.stringify(_default) : _default}
+                            {_default}
                         {/if}
                     </Spreadsheet.Cell>
                     <Spreadsheet.Cell column="actions" {root} isEditable={false}>
@@ -452,8 +551,7 @@
                                     <Icon icon={IconDotsHorizontal} size="s" />
                                 </Button>
                             </CsvDisabled>
-                        {:else if column.key !== '$sequence'}
-                            <!-- TODO: no portal, rather see if we can fix the cell -->
+                        {:else if !isId}
                             <Popover let:toggle padding="none" placement="bottom-end" portal>
                                 <Button text icon ariaLabel="more options" on:click={toggle}>
                                     <Icon icon={IconDotsHorizontal} size="s" />
@@ -547,9 +645,9 @@
 </div>
 
 {#if selectedColumn}
-    <DeleteColumn bind:showDelete bind:selectedColumn />
+    <DeleteColumn table={data.table} bind:showDelete bind:selectedColumn />
 {:else if selectedColumns && selectedColumns.length}
-    <DeleteColumn bind:showDelete bind:selectedColumn={selectedColumns} />
+    <DeleteColumn table={data.table} bind:showDelete bind:selectedColumn={selectedColumns} />
 {/if}
 
 <SideSheet
@@ -562,9 +660,7 @@
     <EditColumn showEdit isModal={false} {selectedColumn} bind:this={editColumn} />
 </SideSheet>
 
-{#if showFailed}
-    <FailedModal bind:show={showFailed} title="Create attribute" header="Creation failed" {error} />
-{/if}
+<FailedModal bind:show={showFailed} title="Create column" header="Creation failed" {error} />
 
 <style>
     .floating-action-bar {

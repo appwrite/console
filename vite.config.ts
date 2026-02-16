@@ -15,7 +15,7 @@ export default defineConfig({
         sveltekit()
     ],
     optimizeDeps: {
-        include: ['echarts', 'prismjs']
+        include: ['echarts']
     },
     css: {
         preprocessorOptions: {
@@ -25,14 +25,7 @@ export default defineConfig({
         }
     },
     ssr: {
-        noExternal: [
-            '@analytics/google-analytics',
-            'analytics',
-            'dayjs',
-            'echarts',
-            'prismjs',
-            'zrender'
-        ]
+        noExternal: ['@analytics/google-analytics', 'analytics', 'dayjs', 'echarts', 'zrender']
     },
     server: {
         port: 3000

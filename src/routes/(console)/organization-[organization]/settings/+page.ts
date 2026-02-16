@@ -9,8 +9,14 @@ export const load: PageLoad = async ({ depends, params, parent }) => {
     depends(Dependencies.ORGANIZATION);
 
     const [projects, invoices] = await Promise.all([
-        sdk.forConsole.projects.list({ queries: [Query.equal('teamId', params.organization)] }),
-        isCloud ? sdk.forConsole.billing.listInvoices(params.organization) : undefined
+        sdk.forConsole.projects.list({
+            queries: [Query.equal('teamId', params.organization), Query.select(['$id', 'name'])]
+        }),
+        isCloud
+            ? sdk.forConsole.organizations.listInvoices({
+                  organizationId: params.organization
+              })
+            : undefined
     ]);
 
     return {

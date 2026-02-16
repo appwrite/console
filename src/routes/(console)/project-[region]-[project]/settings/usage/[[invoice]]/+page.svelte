@@ -1,20 +1,25 @@
 <script lang="ts">
     import { Container } from '$lib/layout';
     import { CardGrid, Card, ProgressBarBig } from '$lib/components';
-    import { showUsageRatesModal, tierToPlan, upgradeURL } from '$lib/stores/billing';
+    import {
+        showUsageRatesModal,
+        billingIdToPlan,
+        getChangePlanUrl,
+        planHasGroup
+    } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { Button } from '$lib/elements/forms';
     import { bytesToSize, humanFileSize, mbSecondsToGBHours } from '$lib/helpers/sizeConvertion';
     import { BarChart, Legend } from '$lib/charts';
     import { formatNum } from '$lib/helpers/string';
     import { total } from '$lib/layout/usage.svelte';
-    import { BillingPlan } from '$lib/constants.js';
     import { base } from '$app/paths';
-    import { formatCurrency, formatNumberWithCommas } from '$lib/helpers/numbers';
+    import { formatCurrency, formatNumberWithCommas, clampMin } from '$lib/helpers/numbers';
     import { getCountryName } from '$lib/helpers/diallingCodes.js';
     import { Accordion, Icon, Layout, Link, Table, Typography } from '@appwrite.io/pink-svelte';
     import { IconChartSquareBar } from '@appwrite.io/pink-icons-svelte';
     import { page } from '$app/state';
+    import { BillingPlanGroup } from '@appwrite.io/console';
 
     export let data;
 
@@ -30,53 +35,58 @@
         data.usage.buildsStorageTotal;
     $: imageTransformations = data.usage.imageTransformations;
     $: imageTransformationsTotal = data.usage.imageTransformationsTotal;
+    $: screenshotsGenerated = data.usage.screenshotsGenerated;
+    $: screenshotsGeneratedTotal = data.usage.screenshotsGeneratedTotal;
     $: dbReads = data.usage.databasesReads;
     $: dbWrites = data.usage.databasesWrites;
 
     $: legendData = [
         {
             name: 'Reads',
-            value: data.usage.databasesReads.reduce((sum, item) => sum + item.value, 0)
+            value: clampMin(data.usage.databasesReads.reduce((sum, item) => sum + item.value, 0))
         },
         {
             name: 'Writes',
-            value: data.usage.databasesWrites.reduce((sum, item) => sum + item.value, 0)
+            value: clampMin(data.usage.databasesWrites.reduce((sum, item) => sum + item.value, 0))
         }
     ];
 
-    const tier = data?.currentInvoice?.plan ?? $organization?.billingPlan;
-    const plan = tierToPlan(tier).name;
+    $: currentPlanId = data?.currentInvoice?.plan ?? $organization?.billingPlanId;
+    $: currentBillingPlan = billingIdToPlan(currentPlanId);
 </script>
 
 <Container>
     <div class="u-flex u-cross-center u-main-space-between">
         <Typography.Title>Usage</Typography.Title>
 
-        {#if $organization?.billingPlan === BillingPlan.FREE}
-            <Button href={$upgradeURL}>
+        <!-- always show upgrade on free -->
+        {#if planHasGroup(currentBillingPlan, BillingPlanGroup.Starter)}
+            <Button href={getChangePlanUrl(data.project.teamId)}>
                 <span class="text">Upgrade</span>
             </Button>
         {/if}
     </div>
+
     <div class="u-flex u-main-space-between common-section u-cross-center">
-        {#if $organization.billingPlan === BillingPlan.SCALE}
+        {#if planHasGroup(currentBillingPlan, BillingPlanGroup.Scale)}
             <p class="text">
                 On the Scale plan, you'll be charged only for any usage that exceeds the thresholds
                 per resource listed below. <Link.Button
                     on:click={() => ($showUsageRatesModal = true)}
                     >Learn more about plan usage limits.</Link.Button>
             </p>
-        {:else if $organization.billingPlan === BillingPlan.PRO}
+        {:else if planHasGroup(currentBillingPlan, BillingPlanGroup.Pro)}
             <p class="text">
                 On the Pro plan, you'll be charged only for any usage that exceeds the thresholds
                 per resource listed below. <Link.Button
                     on:click={() => ($showUsageRatesModal = true)}
                     >Learn more about plan usage limits.</Link.Button>
             </p>
-        {:else if $organization.billingPlan === BillingPlan.FREE}
+        {:else if planHasGroup(currentBillingPlan, BillingPlanGroup.Starter)}
             <p class="text">
-                If you exceed the limits of the {plan} plan, services for your projects may be disrupted.
-                <Link.Anchor href={$upgradeURL} class="link"
+                If you exceed the limits of the {currentBillingPlan.name} plan, services for your projects
+                may be disrupted.
+                <Link.Anchor href={getChangePlanUrl(data.project.teamId)} class="link"
                     >Upgrade for greater capacity</Link.Anchor
                 >.
             </p>
@@ -229,6 +239,44 @@
                         {
                             name: 'Image transformations',
                             data: [...imageTransformations.map((e) => [e.date, e.value])]
+                        }
+                    ]} />
+            {:else}
+                <Card isDashed>
+                    <Layout.Stack gap="xs" alignItems="center" justifyContent="center">
+                        <Icon icon={IconChartSquareBar} size="l" />
+                        <Typography.Text variant="m-600">No data to show</Typography.Text>
+                    </Layout.Stack>
+                </Card>
+            {/if}
+        </svelte:fragment>
+    </CardGrid>
+    <CardGrid>
+        <svelte:fragment slot="title">Screenshots generated</svelte:fragment>
+        Total unique screenshots generated in your project.
+        <svelte:fragment slot="aside">
+            {#if screenshotsGenerated}
+                {@const current = formatNum(screenshotsGeneratedTotal)}
+                <div class="u-flex u-flex-vertical">
+                    <div class="u-flex u-main-space-between">
+                        <p>
+                            <span class="heading-level-4">{current}</span>
+                            <span class="body-text-1 u-bold">Screenshots generated</span>
+                        </p>
+                    </div>
+                </div>
+                <BarChart
+                    options={{
+                        yAxis: {
+                            axisLabel: {
+                                formatter: formatNum
+                            }
+                        }
+                    }}
+                    series={[
+                        {
+                            name: 'Screenshots generated',
+                            data: [...screenshotsGenerated.map((e) => [e.date, e.value])]
                         }
                     ]} />
             {:else}

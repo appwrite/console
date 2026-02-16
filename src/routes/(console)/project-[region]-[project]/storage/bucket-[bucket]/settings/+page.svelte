@@ -32,7 +32,8 @@
                 allowedFileExtensions: values.allowedFileExtensions,
                 compression: values.compression,
                 encryption: values.encryption,
-                antivirus: values.antivirus
+                antivirus: values.antivirus,
+                transformations: values.transformations
             });
 
             await invalidate(Dependencies.BUCKET);
@@ -101,7 +102,8 @@
         $permissions: permissions,
         encryption,
         antivirus,
-        compression
+        compression,
+        transformations
     } = data.bucket;
 
     const compressionOptions = [
@@ -214,6 +216,18 @@
             }
         );
     }
+
+    function updateTransformations() {
+        updateBucket(
+            data.bucket,
+            {
+                transformations
+            },
+            {
+                trackEventName: Submit.BucketUpdateTransformations
+            }
+        );
+    }
 </script>
 
 <Container>
@@ -317,7 +331,7 @@
     <Form onSubmit={updateSecurity}>
         <CardGrid>
             <svelte:fragment slot="title">Security settings</svelte:fragment>
-            Enable or disable security services for the bucket including <b>Ecryption</b>
+            Enable or disable security services for the bucket including <b>Encryption</b>
             and <b>Antivirus scanning.</b>
             <svelte:fragment slot="aside">
                 <Selector.Switch
@@ -365,6 +379,28 @@
         </CardGrid>
     </Form>
 
+    <Form onSubmit={updateTransformations}>
+        <CardGrid>
+            <svelte:fragment slot="title">Image transformations</svelte:fragment>
+            <svelte:fragment slot="aside">
+                <Selector.Switch
+                    label="Image transformations"
+                    id="transformations"
+                    bind:checked={transformations}
+                    description="Enabling this option allows image manipulation through the API, including resizing, cropping, and format conversion." />
+            </svelte:fragment>
+
+            <svelte:fragment slot="actions">
+                <Button
+                    disabled={transformations === data.bucket.transformations ||
+                        ($readOnly && !GRACE_PERIOD_OVERRIDE)}
+                    submit>
+                    Update
+                </Button>
+            </svelte:fragment>
+        </CardGrid>
+    </Form>
+
     <UpdateMaxFileSize currentPlan={data.currentPlan} bucket={data.bucket} />
 
     <Form onSubmit={updateAllowedExtensions}>
@@ -381,7 +417,7 @@
                             placeholder="Select or type user labels"
                             bind:tags={extensions} />
                     {/key}
-                    <Layout.Stack direction="row">
+                    <Layout.Stack direction="row" wrap="wrap">
                         {#each suggestedExtensions as ext}
                             <Tag
                                 size="s"

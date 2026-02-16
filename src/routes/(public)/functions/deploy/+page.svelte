@@ -5,7 +5,6 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import CustomId from '$lib/components/customId.svelte';
     import { Button, Form, InputSelect } from '$lib/elements/forms';
-    import type { AllowedRegions } from '$lib/sdk/billing.js';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { isCloud } from '$lib/system';
@@ -24,6 +23,7 @@
     import { filterRegions } from '$lib/helpers/regions';
     import { loadAvailableRegions } from '$routes/(console)/regions';
     import { regions as regionsStore } from '$lib/stores/organization';
+    import type { AllowedRegions } from '$lib/sdk/billing';
 
     let { data } = $props();
 
@@ -43,7 +43,11 @@
         loadingProjects = true;
 
         projects = await sdk.forConsole.projects.list({
-            queries: [Query.equal('teamId', selectedOrg), Query.orderDesc('')]
+            queries: [
+                Query.equal('teamId', selectedOrg),
+                Query.orderDesc(''),
+                Query.select(['$id', 'name'])
+            ]
         });
 
         selectedProject = projects?.total ? projects.projects[0].$id : null;
@@ -215,9 +219,9 @@
                                         : undefined}
                                     disabled={loadingProjects}
                                     options={[
-                                        ...(projects?.projects?.map((p) => ({
-                                            label: p.name,
-                                            value: p.$id
+                                        ...(projects?.projects?.map((project) => ({
+                                            label: project.name,
+                                            value: project.$id
                                         })) ?? []),
                                         {
                                             label: 'Create project',

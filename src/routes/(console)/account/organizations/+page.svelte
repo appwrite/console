@@ -13,12 +13,10 @@
     import { sdk } from '$lib/stores/sdk';
     import type { PageData } from './$types';
     import { isCloud } from '$lib/system';
-    import { Badge } from '@appwrite.io/pink-svelte';
+    import { Badge, Skeleton } from '@appwrite.io/pink-svelte';
     import type { Models } from '@appwrite.io/console';
-    import type { Organization } from '$lib/stores/organization';
-    import { daysLeftInTrial, plansInfo, tierToPlan } from '$lib/stores/billing';
+    import { daysLeftInTrial, billingIdToPlan } from '$lib/stores/billing';
     import { toLocaleDate } from '$lib/helpers/date';
-    import { BillingPlan } from '$lib/constants';
     import { goto } from '$app/navigation';
     import { Icon, Tooltip, Typography } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
@@ -36,33 +34,56 @@
         return memberships.memberships.map((team) => team.userName || team.userEmail);
     }
 
-    function isOrganizationOnTrial(organization: Organization): boolean {
+    async function getPlanName(billingPlan: string | undefined): Promise<string> {
+        if (!billingPlan) return 'Unknown';
+
+        // For known plans, use tierToPlan
+        const tierData = billingIdToPlan(billingPlan);
+
+        // If it's not a custom plan, or we got a non-custom result, return the name
+        if (tierData.name !== 'Custom') {
+            return tierData.name;
+        }
+
+        // For custom plans, fetch from API
+        try {
+            const plan = await sdk.forConsole.console.getPlan({
+                planId: billingPlan
+            });
+            return plan.name;
+        } catch (error) {
+            // Fallback to 'Custom' if fetch fails
+            return 'Custom';
+        }
+    }
+
+    function isOrganizationOnTrial(organization: Models.Organization): boolean {
         if (!organization?.billingTrialStartDate) return false;
         if ($daysLeftInTrial <= 0) return false;
-        if (organization.billingPlan === BillingPlan.FREE) return false;
+        if (!organization.billingPlanDetails.trial) return false;
 
-        return !!$plansInfo.get(organization.billingPlan)?.trialDays;
+        return !!organization?.billingTrialDays;
     }
 
-    function isNonPayingOrganization(organization: Organization): boolean {
-        return (
-            organization?.billingPlan === BillingPlan.FREE ||
-            organization?.billingPlan === BillingPlan.GITHUB_EDUCATION
-        );
+    function isNonPayingOrganization(organization: Models.Organization): boolean {
+        // plan doesn't require payments, it is a non-paying org!
+        return !organization?.billingPlanDetails.requiresPaymentMethod;
     }
 
-    function isPayingOrganization(team: Models.Preferences | Organization): Organization | null {
+    function isPayingOrganization(
+        team: Models.Preferences | Models.Organization
+    ): Models.Organization | null {
         const isPayingOrganization =
             isCloudOrg(team) && !isOrganizationOnTrial(team) && !isNonPayingOrganization(team);
 
-        if (isPayingOrganization) return team as Organization;
+        if (isPayingOrganization) return team as Models.Organization;
         else return null;
     }
 
     function isCloudOrg(
-        data: Partial<Models.TeamList<Models.Preferences>> | Organization
-    ): data is Organization {
-        return isCloud && 'billingPlan' in data;
+        data: Partial<Models.TeamList<Models.Preferences>> | Models.Organization
+    ): data is Models.Organization {
+        return isCloud && 'billingPlanId' in data;
     }
 
     function createOrg() {
@@ -92,6 +113,9 @@
             {#each data.organizations.teams as organization}
                 {@const avatarList = getMemberships(organization.$id)}
                 {@const payingOrg = isPayingOrganization(organization)}
+                {@const planName = isCloudOrg(organization)
+                    ? getPlanName(organization.billingPlanId)
+                    : null}
 
                 <GridItem1 href={`${base}/organization-${organization.$id}`}>
                     <svelte:fragment slot="eyebrow">
@@ -104,16 +128,19 @@
                     <svelte:fragment slot="status">
                         {#if isCloudOrg(organization)}
                             {#if isNonPayingOrganization(organization)}
-                                <Tooltip>
-                                    <Badge
-                                        size="xs"
-                                        variant="secondary"
-                                        content={tierToPlan(organization?.billingPlan)?.name} />
+                                {#if planName}
+                                    {#await planName}
+                                        <Skeleton width={30} height={20} variant="line" />
+                                    {:then name}
+                                        <Tooltip>
+                                            <Badge size="xs" variant="secondary" content={name} />
 
-                                    <span slot="tooltip">
-                                        You are limited to 1 free organization per account
-                                    </span>
-                                </Tooltip>
+                                            <span slot="tooltip">
+                                                You are limited to 1 free organization per account
+                                            </span>
+                                        </Tooltip>
+                                    {/await}
+                                {/if}
                             {/if}
 
                             {#if isOrganizationOnTrial(organization)}
@@ -132,16 +159,20 @@
                             {/if}
 
                             {#if payingOrg}
-                                <Badge
-                                    size="xs"
-                                    type="success"
-                                    variant="secondary"
-                                    content={tierToPlan(payingOrg?.billingPlan)?.name} />
+                                {#await planName}
+                                    <Skeleton width={30} height={20} variant="line" />
+                                {:then name}
+                                    <Badge
+                                        size="xs"
+                                        type="success"
+                                        variant="secondary"
+                                        content={name} />
+                                {/await}
                             {/if}
                         {/if}
                     </svelte:fragment>
                     {#await avatarList}
-                        <span class="avatar is-color-empty"></span>
+                        <Skeleton width={40} height={40} variant="circle" />
                     {:then avatars}
                         <AvatarGroup {avatars} />
                     {/await}

@@ -1,7 +1,6 @@
 <script lang="ts">
-    import { Button } from '$lib/elements/forms';
-    import { getServiceLimit, plansInfo } from '$lib/stores/billing';
-    import { BillingPlan } from '$lib/constants';
+    import { Button, InputText } from '$lib/elements/forms';
+    import { getBasePlanFromGroup, getServiceLimit } from '$lib/stores/billing';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { Badge, Icon, Layout, Table, Typography, Tooltip } from '@appwrite.io/pink-svelte';
     import { IconArrowUp, IconInfo } from '@appwrite.io/pink-icons-svelte';
@@ -9,76 +8,64 @@
     import { formatNumberWithCommas } from '$lib/helpers/numbers';
     import { Modal } from '$lib/components';
     import { Alert } from '@appwrite.io/pink-svelte';
+    import { toLocaleDateTime } from '$lib/helpers/date';
+    import { BillingPlanGroup, type Models } from '@appwrite.io/console';
+    import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
-    import { toLocaleDate, toLocaleDateTime } from '$lib/helpers/date';
-    import { organization, type Organization } from '$lib/stores/organization';
-    import type { Models } from '@appwrite.io/console';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
 
-    // Props
-    type Props = {
-        organization: Organization;
+    let {
+        members = [],
+        storageUsage = 0,
+        projects = $bindable([])
+    }: {
+        storageUsage?: number;
         projects?: Models.Project[];
         members?: Models.Membership[];
-        storageUsage?: number;
-    };
-
-    const { projects = [], members = [], storageUsage = 0 }: Props = $props();
+        organization: Models.Organization;
+    } = $props();
 
     let showSelectProject = $state(false);
-    let selectedProjects = $state<string[]>([]);
     let error = $state<string | null>(null);
     let showSelectionReminder = $state(false);
+    let confirmationInput = $state('');
+
+    let isDeletingProjects = $state(false);
+    let selectedProjectsToDelete = $state<Array<string>>([]);
+    const baseFreePlan = getBasePlanFromGroup(BillingPlanGroup.Starter);
 
     // Derived state using runes
-    let freePlanLimits = $derived({
-        projects: $plansInfo?.get(BillingPlan.FREE)?.projects,
-        members: getServiceLimit('members', BillingPlan.FREE),
-        storage: getServiceLimit('storage', BillingPlan.FREE)
+    const freePlanLimits = $derived({
+        projects: baseFreePlan?.projects,
+        members: getServiceLimit('members', null, baseFreePlan),
+        storage: getServiceLimit('storage', null, baseFreePlan)
     });
 
     // When preparing to downgrade to Free, enforce Free plan limit locally (2)
-    let allowedProjectsToKeep = $derived(freePlanLimits.projects);
+    const allowedProjectsToKeep = $derived(freePlanLimits.projects);
 
-    let currentUsage = $derived({
+    const currentUsage = $derived({
         projects: projects?.length || 0,
         members: members?.length || 0,
         storage: storageUsage || 0
     });
 
-    let storageUsageGB = $derived(storageUsage / (1024 * 1024 * 1024));
+    const storageUsageGB = $derived(storageUsage / (1024 * 1024 * 1024));
 
-    let isLimitExceeded = $derived({
+    const isLimitExceeded = $derived({
         projects: currentUsage.projects > freePlanLimits.projects,
         members: currentUsage.members > freePlanLimits.members,
         storage: storageUsageGB > freePlanLimits.storage
     });
 
-    let excessUsage = $derived({
+    const excessUsage = $derived({
         projects: Math.max(0, currentUsage.projects),
         members: Math.max(0, currentUsage.members - freePlanLimits.members),
         storage: Math.max(0, storageUsageGB - freePlanLimits.storage)
     });
 
-    // projects that would be archived with the current selection
-    let projectsToArchive = $derived(
-        projects.filter((project) => !selectedProjects.includes(project.$id))
-    );
-
-    function formatProjectsToArchive(): string {
-        let result = '';
-        projectsToArchive.forEach((project, index) => {
-            const isLast = index === projectsToArchive.length - 1;
-            const isSecondLast = index === projectsToArchive.length - 2;
-
-            result += `${index === 0 ? '' : ' '}${project.name}`;
-
-            if (!isLast) {
-                if (isSecondLast) result += ' and';
-                else result += ',';
-            }
-        });
-        return result;
-    }
+    const isConfirmationValid = $derived(confirmationInput.trim() === 'I understand');
 
     function formatNumber(num: number): string {
         return formatNumberWithCommas(num);
@@ -90,33 +77,68 @@
         trackEvent(Click.OrganizationClickUpgrade, { source: 'usage_limits_manage_projects' });
     }
 
-    // Expose validation for parent to call before submitting downgrade
-    export function validateOrAlert(): boolean {
-        const filteredSelection = selectedProjects.filter((id) =>
-            projects.some((p) => p.$id === id)
-        );
-        const isValid = filteredSelection.length === allowedProjectsToKeep;
-        showSelectionReminder = !isValid && isLimitExceeded.projects;
-        return isValid;
-    }
-
-    export function getSelectedProjects(): string[] {
-        return selectedProjects.filter((id) => projects.some((p) => p.$id === id));
-    }
-
-    function updateSelected() {
+    async function deleteSelected() {
         error = null;
-        const filteredSelection = selectedProjects.filter((id) =>
-            projects.some((p) => p.$id === id)
-        );
-        if (filteredSelection.length !== allowedProjectsToKeep) {
-            error = `You must select exactly ${allowedProjectsToKeep} projects to keep.`;
+        isDeletingProjects = true;
+
+        const excessBy = isLimitExceeded.projects ? projects.length - allowedProjectsToKeep : 0;
+        const isUnderLimitPostSelection = selectedProjectsToDelete.length >= excessBy;
+
+        if (!isUnderLimitPostSelection) {
+            error = `You can keep a maximum ${allowedProjectsToKeep} projects on the selected plan.`;
             return;
         }
-        // Keep selection locally; parent flow will apply after plan change
-        showSelectProject = false;
-        showSelectionReminder = false;
-        addNotification({ type: 'success', message: `Projects selected for archiving` });
+
+        if (selectedProjectsToDelete?.length) {
+            const projectsDeletionPromises = selectedProjectsToDelete.map((projectId) => ({
+                projectId,
+                promise: sdk.forConsole.projects.delete({ projectId })
+            }));
+
+            try {
+                const results = await Promise.allSettled(
+                    projectsDeletionPromises.map((p) => p.promise)
+                );
+
+                const failed: string[] = [];
+                const successfullyDeleted: string[] = [];
+
+                results.forEach((result, index) => {
+                    const projectId = projectsDeletionPromises[index].projectId;
+                    if (result.status === 'fulfilled') {
+                        successfullyDeleted.push(projectId);
+                    } else {
+                        failed.push(projectId);
+                    }
+                });
+
+                if (successfullyDeleted.length > 0) {
+                    await invalidate(Dependencies.ORGANIZATION);
+
+                    addNotification({
+                        type: 'success',
+                        message: `${successfullyDeleted.length} project${successfullyDeleted.length !== 1 ? 's' : ''} deleted successfully`
+                    });
+                }
+
+                if (failed.length > 0) {
+                    error = `Failed to delete ${failed.length} project${failed.length !== 1 ? 's' : ''}`;
+                } else {
+                    confirmationInput = '';
+                    showSelectProject = false;
+                    selectedProjectsToDelete = [];
+                    showSelectionReminder = false;
+
+                    if (successfullyDeleted.length > 0) {
+                        projects = projects.filter((p) => !successfullyDeleted.includes(p.$id));
+                    }
+                }
+            } catch (exception) {
+                error = exception.message;
+            } finally {
+                isDeletingProjects = false;
+            }
+        }
     }
 </script>
 
@@ -219,11 +241,7 @@
                             </Typography.Text>
                         </Layout.Stack>
                     {:else}
-                        <Typography.Text color="--fgcolor-neutral-secondary">
-                            {formatNumber(currentUsage.members)} / {formatNumber(
-                                freePlanLimits.members
-                            )}
-                        </Typography.Text>
+                        <Typography.Text color="--fgcolor-neutral-secondary">N/A</Typography.Text>
                     {/if}
                 </Table.Cell>
                 <Table.Cell column="manage" {root}></Table.Cell>
@@ -258,54 +276,90 @@
 </Layout.Stack>
 
 {#if showSelectProject}
-    <Modal bind:show={showSelectProject} title="Manage projects" onSubmit={updateSelected}>
-        <svelte:fragment slot="description">
-            Choose which {freePlanLimits.projects} projects to keep. Projects over the limit will be
-            blocked after your billing cycle ends on {toLocaleDate(
-                $organization.billingNextInvoiceDate
-            )}.
-        </svelte:fragment>
+    {@const requiredToDelete = currentUsage.projects - allowedProjectsToKeep}
+    <Modal
+        bind:show={showSelectProject}
+        title="Delete projects to downgrade"
+        onSubmit={deleteSelected}
+        dismissible={false}>
+        <Typography.Text slot="description">
+            The Free plan lets you keep {allowedProjectsToKeep} projects. Select projects you want to
+            permanently delete.
+        </Typography.Text>
 
         {#if error}
             <Alert.Inline status="error" title="Error">{error}</Alert.Inline>
-        {/if}
-
-        <div>
-            <Table.Root
-                let:root
-                allowSelection
-                bind:selectedRows={selectedProjects}
-                columns={[{ id: 'name' }, { id: 'created' }]}>
-                <svelte:fragment slot="header" let:root>
-                    <Table.Header.Cell column="name" {root}>Project Name</Table.Header.Cell>
-                    <Table.Header.Cell column="created" {root}>Created</Table.Header.Cell>
-                </svelte:fragment>
-                {#each projects as project}
-                    <Table.Row.Base {root} id={project.$id}>
-                        <Table.Cell column="name" {root}
-                            ><Typography.Text truncate>{project.name}</Typography.Text></Table.Cell>
-                        <Table.Cell column="created" {root}>
-                            {toLocaleDateTime(project.$createdAt)}
-                        </Table.Cell>
-                    </Table.Row.Base>
-                {/each}
-            </Table.Root>
-        </div>
-        {#if selectedProjects.length === allowedProjectsToKeep}
-            {@const difference = projects.length - selectedProjects.length}
-            {@const messagePrefix =
-                difference > 1 ? `${difference} projects` : `${difference} project`}
+        {:else}
             <Alert.Inline
                 status="warning"
-                title={`${messagePrefix} will be archived on ${toLocaleDate($organization.billingNextInvoiceDate)}`}>
-                {formatProjectsToArchive()} will be archived
+                title="The selected projects will be permanently deleted">
+                The selected projects and all associated data will be permanently deleted and cannot
+                be recovered.
             </Alert.Inline>
+        {/if}
+
+        <Layout.Stack gap="m">
+            <Layout.Stack gap="s" direction="row">
+                <Typography.Text
+                    >Select {requiredToDelete} project{requiredToDelete !== 1 ? 's' : ''} to delete</Typography.Text>
+
+                <Badge
+                    size="xs"
+                    variant="secondary"
+                    content={`${selectedProjectsToDelete.length} selected`} />
+            </Layout.Stack>
+
+            <div class="controlled-selection">
+                <Table.Root
+                    let:root
+                    allowSelection
+                    bind:selectedRows={selectedProjectsToDelete}
+                    columns={[{ id: 'name' }, { id: 'created' }]}>
+                    <svelte:fragment slot="header" let:root>
+                        <Table.Header.Cell column="name" {root}>Project Name</Table.Header.Cell>
+                        <Table.Header.Cell column="created" {root}>Created</Table.Header.Cell>
+                    </svelte:fragment>
+                    {#each projects as project}
+                        {@const isRowSelected = selectedProjectsToDelete.includes(project.$id)}
+                        {@const shouldDisable =
+                            !isRowSelected && selectedProjectsToDelete.length >= requiredToDelete}
+                        <Table.Row.Base
+                            {root}
+                            id={project.$id}
+                            select={shouldDisable ? 'disabled' : undefined}>
+                            <Table.Cell column="name" {root}
+                                ><Typography.Text truncate>{project.name}</Typography.Text
+                                ></Table.Cell>
+                            <Table.Cell column="created" {root}>
+                                {toLocaleDateTime(project.$createdAt)}
+                            </Table.Cell>
+                        </Table.Row.Base>
+                    {/each}
+                </Table.Root>
+            </div>
+        </Layout.Stack>
+
+        {#if selectedProjectsToDelete.length >= requiredToDelete}
+            <Layout.Stack gap="xs">
+                <InputText
+                    required
+                    id="confirmation"
+                    placeholder="I understand"
+                    disabled={isDeletingProjects}
+                    bind:value={confirmationInput}
+                    label={`Type "I understand" to confirm permanent deletion of the selected projects`} />
+            </Layout.Stack>
         {/if}
 
         <svelte:fragment slot="footer">
             <Button secondary on:click={() => (showSelectProject = false)}>Cancel</Button>
-            <Button submit disabled={selectedProjects.length !== allowedProjectsToKeep}
-                >Save</Button>
+            <Button
+                submit
+                danger
+                submissionLoader
+                forceShowLoader={isDeletingProjects}
+                disabled={selectedProjectsToDelete.length < requiredToDelete ||
+                    !isConfirmationValid}>Delete projects</Button>
         </svelte:fragment>
     </Modal>
 {/if}
@@ -349,6 +403,16 @@
         .responsive-table :global(td:nth-child(4)) {
             width: 96px;
             min-width: 96px;
+        }
+    }
+
+    .controlled-selection :global([role='rowheader']) {
+        pointer-events: none;
+
+        :global([role='cell']) {
+            opacity: 0.5;
+            cursor: not-allowed;
+            color: var(--fgcolor-neutral-secondary);
         }
     }
 </style>

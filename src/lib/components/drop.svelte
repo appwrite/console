@@ -4,7 +4,7 @@
 
 <script lang="ts">
     import { createPopper, type Instance } from '@popperjs/core';
-    import { createEventDispatcher, onDestroy, onMount } from 'svelte';
+    import { createEventDispatcher, onDestroy, onMount, hasContext } from 'svelte';
 
     export let show = false;
     export let noArrow = false;
@@ -17,6 +17,10 @@
     export let display = 'block';
     export let arrowSize = 10;
     export let isPopover = false;
+    export let portal = false;
+
+    const inModal = hasContext('dialog-group');
+    const shouldPortalTooltip = portal || inModal;
 
     const dispatch = createEventDispatcher<{
         blur: undefined;
@@ -26,6 +30,22 @@
     let tooltip: HTMLDivElement;
     let arrow: HTMLDivElement;
     let instance: Instance;
+
+    function portalAction(node: HTMLElement) {
+        if (!shouldPortalTooltip) return;
+
+        const bodyElement = document.body;
+        const target = inModal ? node.closest('dialog[open]') || bodyElement : bodyElement;
+        target.appendChild(node);
+
+        return {
+            destroy() {
+                if (node.parentElement === target) {
+                    target.removeChild(node);
+                }
+            }
+        };
+    }
 
     onMount(() => {
         instance = createPopper(element, tooltip, {
@@ -116,6 +136,7 @@
 </div>
 
 <div
+    use:portalAction
     class="drop-tooltip"
     bind:this={tooltip}
     class:u-width-full-line={fullWidth}

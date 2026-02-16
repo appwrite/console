@@ -13,6 +13,7 @@
     import { Click, trackEvent } from '$lib/actions/analytics';
     import RepositoryBehaviour from '$lib/components/git/repositoryBehaviour.svelte';
     import { page } from '$app/state';
+    import { connectGitHub } from '$lib/stores/git';
 
     let {
         show = $bindable(false),
@@ -111,7 +112,6 @@
                         repository.set(e);
                         repositoryName = e.name;
                         selectedRepository = e.id;
-                        connectRepo();
                     }} />
             {/if}
         </Layout.Stack>
@@ -121,7 +121,7 @@
     <svelte:fragment slot="footer">
         {#if repositoryBehaviour === 'existing'}
             <Layout.Stack>
-                <Link variant="quiet" href="#/">
+                <Link variant="quiet" href={connectGitHub(callbackState).toString()}>
                     <Layout.Stack direction="row" gap="xs">
                         Missing a repository? check your permissions <Icon
                             icon={IconArrowSmRight} />

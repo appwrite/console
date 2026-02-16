@@ -17,10 +17,28 @@ export async function createFreeProject(page: Page): Promise<Metadata> {
         await page.waitForURL(/\/organization-[^/]+/);
         await page.getByRole('button', { name: 'create project' }).first().click();
         const dialog = page.locator('dialog[open]');
+
         await dialog.getByPlaceholder('Project name').fill('test project');
+
+        let region = 'fra'; // for fallback
+        const regionPicker = dialog.locator('button[role="combobox"]');
+        if (await regionPicker.isVisible()) {
+            await regionPicker.click();
+            const firstEnabledOption = page
+                .locator('[role="option"]:not([data-disabled="true"])')
+                .first();
+
+            if ((await firstEnabledOption.count()) > 0) {
+                const selectedRegion = await firstEnabledOption.getAttribute('data-value');
+                await firstEnabledOption.click();
+                region = selectedRegion?.replace(/"/g, '') || 'fra';
+            }
+        }
+
         await dialog.getByRole('button', { name: 'create' }).click();
-        await page.waitForURL(/\/project-fra-[^/]+/);
-        expect(page.url()).toContain('/console/project-fra-');
+
+        await page.waitForURL(new RegExp(`/project-${region}-[^/]+`));
+        expect(page.url()).toContain(`/console/project-${region}-`);
 
         return getProjectIdFromUrl(page.url());
     });

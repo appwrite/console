@@ -10,7 +10,7 @@
         InputTime,
         Label
     } from '$lib/elements/forms';
-    import { ID } from '@appwrite.io/console';
+    import { ID, type Models } from '@appwrite.io/console';
     import { capitalize } from '$lib/helpers/string';
     import { backupRetainingOptions, customRetainingOptions } from '../store';
     import { presetPolicies, showCreatePolicy } from './store';
@@ -20,18 +20,18 @@
         type UserBackupPolicy
     } from '$lib/helpers/backups';
     import { InputNumber } from '$lib/elements/forms/index.js';
-    import { organization } from '$lib/stores/organization';
-    import { BillingPlan } from '$lib/constants';
+    import { currentPlan } from '$lib/stores/organization';
     import { Card, Icon, Layout, Link, Tag, Typography } from '@appwrite.io/pink-svelte';
     import { IconPencil, IconTrash } from '@appwrite.io/pink-icons-svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
     import { goto } from '$app/navigation';
-    import { upgradeURL } from '$lib/stores/billing';
+    import { getChangePlanUrl } from '$lib/stores/billing';
 
     export let isShowing: boolean;
     export let isFromBackupsTab: boolean = false;
     export let title: string | undefined = undefined;
     export let subtitle: string | undefined = undefined;
+    export let project: Models.Project;
 
     export let totalPolicies: UserBackupPolicy[] = [];
 
@@ -149,7 +149,7 @@
         );
 
         // pre-check the hourly if on pro plan
-        if ($organization.billingPlan === BillingPlan.PRO && isFromBackupsTab) {
+        if ($currentPlan?.backupPolicies === 1 && isFromBackupsTab) {
             presetPolicies.update((all) =>
                 all.map((policy) => {
                     policy.id = ID.unique();
@@ -176,7 +176,7 @@
 </script>
 
 <div class="u-flex-vertical u-gap-16">
-    {#if $organization.billingPlan === BillingPlan.SCALE}
+    {#if $currentPlan?.backupPolicies > 1}
         {#if title || subtitle}
             <div class="body-text-2">
                 {#if title}
@@ -195,7 +195,7 @@
     {/if}
 
     <!-- because we show a set of pre-defined ones -->
-    {#if $organization.billingPlan === BillingPlan.PRO}
+    {#if $currentPlan?.backupPolicies === 1}
         {@const dailyPolicy = $presetPolicies[1]}
 
         {#if isFromBackupsTab}
@@ -214,7 +214,7 @@
                         on:click={() => {
                             isShowing = false;
                             $showCreatePolicy = false;
-                            goto($upgradeURL);
+                            goto(getChangePlanUrl(project.teamId));
                         }}>Upgrade your plan</Button> to add customized backup policies.
                 </Layout.Stack>
             </Layout.Stack>
@@ -230,7 +230,7 @@
                         <Link.Button
                             on:click={() => {
                                 isShowing = false;
-                                goto($upgradeURL);
+                                goto(getChangePlanUrl(project.teamId));
                             }}>Upgrade your plan</Link.Button>
                         to add customized backup policies.
                     </Typography.Text>

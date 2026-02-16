@@ -4,19 +4,20 @@
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { Container, ResponsiveContainerHeader } from '$lib/layout';
-    import { sdk } from '$lib/stores/sdk';
+    import { realtime } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import { project } from '$routes/(console)/project-[region]-[project]/store';
     import { base } from '$app/paths';
     import { Icon, Tooltip } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import Table from './table.svelte';
     import { columns } from './store';
+    import type { PageProps } from './$types';
+    import { page } from '$app/state';
 
-    export let data;
+    let { data }: PageProps = $props();
 
     onMount(() => {
-        return sdk.forConsole.client.subscribe('console', (response) => {
+        return realtime.forConsole(page.params.region, 'console', (response) => {
             if (response.events.includes('functions.*.executions.*')) {
                 invalidate(Dependencies.EXECUTIONS);
             }
@@ -30,7 +31,7 @@
             <div>
                 <Button
                     event="execute_function"
-                    href={`${base}/project-${$project.region}-${$project.$id}/functions/function-${data.func.$id}/executions/execute-function`}
+                    href={`${base}/project-${page.params.region}-${page.params.project}/functions/function-${data.func.$id}/executions/execute-function`}
                     disabled={!data.func.$id || !data.func?.deploymentId}>
                     <Icon icon={IconPlus} size="s" slot="start" />
                     Create execution
@@ -67,7 +68,7 @@
                         <Button
                             secondary
                             event="execute_function"
-                            href={`${base}/project-${$project.region}-${$project.$id}/functions/function-${data.func.$id}/executions/execute-function`}
+                            href={`${base}/project-${page.params.region}-${page.params.project}/functions/function-${data.func.$id}/executions/execute-function`}
                             disabled={!data.func.$id || !data.func?.deploymentId}>
                             Create execution
                         </Button>

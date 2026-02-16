@@ -9,7 +9,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { installation, repository, sortBranches } from '$lib/stores/vcs';
-    import { Runtime, VCSDeploymentType, type Models } from '@appwrite.io/console';
+    import { Runtime, VCSReferenceType, type Models, type Scopes } from '@appwrite.io/console';
     import { IconGithub } from '@appwrite.io/pink-icons-svelte';
     import { Icon, Input, Layout, Skeleton, Typography } from '@appwrite.io/pink-svelte';
     import { func } from '../store';
@@ -87,7 +87,7 @@
                     logging: $func.logging || undefined,
                     entrypoint: $func.entrypoint,
                     commands: $func.commands || undefined,
-                    scopes: $func.scopes || undefined,
+                    scopes: ($func.scopes as Scopes[]) || undefined,
                     installationId: $installation.$id || undefined,
                     providerRepositoryId: selectedRepository || undefined,
                     providerBranch: branch || undefined
@@ -98,7 +98,7 @@
                     .forProject(page.params.region, page.params.project)
                     .functions.createVcsDeployment({
                         functionId: $func.$id,
-                        type: VCSDeploymentType.Commit,
+                        type: VCSReferenceType.Commit,
                         reference: commit,
                         activate
                     });
@@ -107,7 +107,7 @@
                     .forProject(page.params.region, page.params.project)
                     .functions.createVcsDeployment({
                         functionId: $func.$id,
-                        type: VCSDeploymentType.Branch,
+                        type: VCSReferenceType.Branch,
                         reference: branch,
                         activate
                     });

@@ -139,7 +139,7 @@
 </script>
 
 <Modal {title} bind:show onSubmit={submit} on:close={reset}>
-    <slot name="description" />
+    <slot name="description" slot="description" />
     <Layout.Stack>
         <InputSearch
             autofocus
@@ -216,7 +216,7 @@
                 <Badge variant="secondary" content={selectedUsers.toString()} />
                 <span>Users selected</span>
             </Layout.Stack>
-            <Button submit disabled={!hasSelection}>Add</Button>
+            <Button submit disabled={!hasSelection}>Create</Button>
         </Layout.Stack>
     </svelte:fragment>
 </Modal>

@@ -1,8 +1,9 @@
 import { writable } from 'svelte/store';
-import { IndexType } from '@appwrite.io/console';
+import { IndexType, OrderBy } from '@appwrite.io/console';
 import { columnOptions } from '../table-[table]/columns/store';
 
 export type TableColumnSuggestions = {
+    force: boolean;
     enabled: boolean;
     thinking: boolean;
     context?: string | undefined;
@@ -18,24 +19,24 @@ export type SuggestedColumnSchema = {
     key: string;
     type: string;
     required: boolean;
+    array?: boolean;
     default?: string | number | boolean | number[] | number[][] | number[][][] | null;
     size?: number;
     min?: number;
     max?: number;
     format?: string | null;
+    encrypt?: boolean | null;
+    elements?: string[];
+    isPlaceholder?: boolean;
 };
 
-export enum IndexOrder {
-    ASC = 'ASC',
-    DESC = 'DESC',
-    NONE = null
-}
+export type IndexOrder = OrderBy | null;
 
 export type SuggestedIndexSchema = {
     key: string;
     type: IndexType;
     orders: IndexOrder;
-    columns: string[];
+    fields: string[];
     lengths?: number[] | undefined;
 };
 
@@ -43,10 +44,13 @@ export const tableColumnSuggestions = writable<TableColumnSuggestions>({
     enabled: false,
     context: null,
     thinking: false,
-    table: null
+    table: null,
+    force: false
 });
 
 export const showIndexesSuggestions = writable<boolean>(false);
+
+export const showColumnsSuggestionsModal = writable<boolean>(false);
 
 export const mockSuggestions: { total: number; columns: ColumnInput[] } = {
     total: 7,
@@ -68,7 +72,7 @@ export const mockSuggestions: { total: number; columns: ColumnInput[] } = {
             formatOptions: null
         },
         {
-            name: 'publishedYear',
+            name: 'year',
             type: 'integer',
             size: null,
             format: null,
@@ -79,7 +83,7 @@ export const mockSuggestions: { total: number; columns: ColumnInput[] } = {
             }
         },
         {
-            name: 'genre',
+            name: 'category',
             type: 'string',
             size: 64,
             format: null,
@@ -88,7 +92,7 @@ export const mockSuggestions: { total: number; columns: ColumnInput[] } = {
             default: null
         },
         {
-            name: 'isbn',
+            name: 'code',
             type: 'string',
             size: 13,
             required: false,
@@ -96,7 +100,7 @@ export const mockSuggestions: { total: number; columns: ColumnInput[] } = {
             default: null
         },
         {
-            name: 'language',
+            name: 'spokenLanguage',
             type: 'string',
             size: 32,
             format: null,
@@ -105,7 +109,7 @@ export const mockSuggestions: { total: number; columns: ColumnInput[] } = {
             default: null
         },
         {
-            name: 'pageCount',
+            name: 'count',
             type: 'integer',
             required: false,
             min: 1,
@@ -123,9 +127,11 @@ export type ColumnInput = {
     min?: number;
     max?: number;
     format?: string;
+    elements?: string[];
     formatOptions?: {
         min?: number;
         max?: number;
+        elements?: string[];
     };
 };
 
@@ -134,8 +140,9 @@ export function mapSuggestedColumns<T extends ColumnInput>(columns: T[]): Sugges
         key: col.name,
         type: col.type,
         required: col.required ?? false,
+        array: false,
         default: col.default ?? null,
-        size: col.type === 'string' ? (col.size ?? undefined) : undefined,
+        size: col.type === 'string' || col.type === 'varchar' ? (col.size ?? undefined) : undefined,
         min:
             col.type === 'integer' || col.type === 'double'
                 ? (col.min ?? col.formatOptions?.min ?? undefined)
@@ -144,7 +151,11 @@ export function mapSuggestedColumns<T extends ColumnInput>(columns: T[]): Sugges
             col.type === 'integer' || col.type === 'double'
                 ? (col.max ?? col.formatOptions?.max ?? undefined)
                 : undefined,
-        format: col.format ?? null
+        format: col.format ?? null,
+        elements:
+            col.format === 'enum'
+                ? (col.elements ?? col.formatOptions?.elements ?? undefined)
+                : undefined
     }));
 }
 

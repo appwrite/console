@@ -10,14 +10,21 @@
     } from '$lib/stores/bottom-alerts';
     import { onMount } from 'svelte';
     import { organization } from '$lib/stores/organization';
-    import { BillingPlan } from '$lib/constants';
-    import { upgradeURL } from '$lib/stores/billing';
+    import { canUpgrade, getChangePlanUrl } from '$lib/stores/billing';
     import { addBottomModalAlerts } from '$routes/(console)/bottomAlerts';
     import { project } from '$routes/(console)/project-[region]-[project]/store';
     import { page } from '$app/state';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { goto } from '$app/navigation';
     import { Typography } from '@appwrite.io/pink-svelte';
+
+    function resolveThemeColor(
+        color: Record<'light' | 'dark', string> | string | undefined
+    ): string | undefined {
+        if (!color) return undefined;
+        if (typeof color === 'string') return color;
+        return color[$app.themeInUse];
+    }
 
     let currentIndex = $state(0);
     let openModalOnMobile = $state(false);
@@ -100,6 +107,12 @@
             message: 'Explore new features to enhance your projects and improve security.'
         };
 
+        // override
+        if (currentModalAlert?.sameContentOnMobileLayout) {
+            fallback.title = currentModalAlert?.title;
+            fallback.message = currentModalAlert?.message;
+        }
+
         const shouldApplyConfig = config?.enabled === true && visibleAlerts.length === 1;
 
         return {
@@ -128,13 +141,14 @@
     // the button component cannot have both href and on:click!
     function triggerWindowLink(alert: BottomModalAlertItem, event?: string) {
         const alertAction = alert.cta;
-        const shouldShowUpgrade = showUpgrade();
+        const shouldShowUpgrade = canUpgrade($organization?.billingPlanDetails);
 
         // for correct event tracking after removal
         const currentModalId = currentModalAlert.id;
+        const organizationId = $project.teamId ?? $organization.$id;
 
         const url = shouldShowUpgrade
-            ? $upgradeURL
+            ? getChangePlanUrl(organizationId)
             : alertAction.link({
                   organization: $organization,
                   project: $project
@@ -156,26 +170,11 @@
         });
     }
 
-    function showUpgrade() {
-        const plan = currentModalAlert.plan;
-        const organizationPlan = $organization?.billingPlan;
-        switch (plan) {
-            case 'free':
-                return false;
-            case 'pro':
-                return organizationPlan === BillingPlan.FREE;
-            case 'scale':
-                return (
-                    organizationPlan === BillingPlan.FREE || organizationPlan === BillingPlan.PRO
-                );
-        }
-    }
-
     onMount(addBottomModalAlerts);
 </script>
 
 {#if !isOnOnboarding && filteredModalAlerts.length > 0 && currentModalAlert}
-    {@const shouldShowUpgrade = showUpgrade()}
+    {@const shouldShowUpgrade = canUpgrade($organization?.billingPlanDetails)}
     <div class="main-alert-wrapper is-not-mobile">
         <div class="alert-container">
             <article class="card">
@@ -199,7 +198,10 @@
                     </button>
 
                     <div class="content-wrapper u-flex-vertical u-gap-16">
-                        {#if $app.themeInUse === 'dark'}
+                        {#if currentModalAlert.backgroundComponent}
+                            {@const BackgroundComponent = currentModalAlert.backgroundComponent}
+                            <BackgroundComponent />
+                        {:else if $app.themeInUse === 'dark'}
                             <img
                                 src={currentModalAlert.src.dark}
                                 alt={currentModalAlert.title}
@@ -258,17 +260,27 @@
                         <div
                             class="buttons u-flex u-flex-vertical-mobile u-gap-4 u-padding-inline-8 u-padding-block-8">
                             <Button
+                                size="xs"
                                 fullWidthMobile
                                 secondary={!hasOnlyPrimaryCta}
                                 class={`${hasOnlyPrimaryCta ? 'only-primary-cta' : ''}`}
+                                --bgcolor-accent={resolveThemeColor(
+                                    currentModalAlert.cta.background
+                                )}
+                                --bgcolor-accent-secondary={resolveThemeColor(
+                                    currentModalAlert.cta.backgroundHover
+                                )}
                                 on:click={() => triggerWindowLink(currentModalAlert)}>
-                                {currentModalAlert.cta.text}
+                                <span style:color={resolveThemeColor(currentModalAlert.cta.color)}>
+                                    {currentModalAlert.cta.text}
+                                </span>
                             </Button>
 
                             {#if currentModalAlert.learnMore}
                                 <!-- docs, learn-more, etc always external -->
                                 <Button
                                     text
+                                    size="xs"
                                     class="button"
                                     external
                                     fullWidthMobile
@@ -310,7 +322,10 @@
                         </button>
 
                         <div class="content-wrapper u-flex-vertical u-gap-16">
-                            {#if $app.themeInUse === 'dark'}
+                            {#if currentModalAlert.backgroundComponent}
+                                {@const BackgroundComponent = currentModalAlert.backgroundComponent}
+                                <BackgroundComponent />
+                            {:else if $app.themeInUse === 'dark'}
                                 <img
                                     src={currentModalAlert.src.dark}
                                     alt={currentModalAlert.title}
@@ -355,7 +370,7 @@
                                 </div>
                             {/if}
 
-                            <div class="u-flex-vertical u-gap-8 u-padding-inline-8">
+                            <div class="u-flex-vertical u-gap-4 u-padding-inline-8">
                                 <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
                                     {currentModalAlert.title}
                                 </Typography.Text>
@@ -372,22 +387,35 @@
                             <div
                                 class="buttons u-flex u-flex-vertical-mobile u-gap-4 u-padding-inline-8 u-padding-block-8">
                                 <Button
+                                    size="xs"
                                     secondary={!hasOnlyPrimaryCta}
                                     class="button"
                                     fullWidthMobile
+                                    --bgcolor-accent={resolveThemeColor(
+                                        currentModalAlert.cta.background
+                                    )}
+                                    --bgcolor-accent-secondary={resolveThemeColor(
+                                        currentModalAlert.cta.backgroundHover
+                                    )}
                                     on:click={() => {
                                         openModalOnMobile = false;
                                         triggerWindowLink(currentModalAlert);
                                     }}>
-                                    {shouldShowUpgrade
-                                        ? 'Upgrade plan'
-                                        : currentModalAlert.cta.text}
+                                    <span
+                                        style:color={resolveThemeColor(
+                                            currentModalAlert.cta.color
+                                        )}>
+                                        {shouldShowUpgrade
+                                            ? 'Upgrade plan'
+                                            : currentModalAlert.cta.text}
+                                    </span>
                                 </Button>
 
                                 {#if currentModalAlert.learnMore}
                                     <!-- docs, learn-more, etc always external -->
                                     <Button
                                         text
+                                        size="xs"
                                         class="button"
                                         external
                                         fullWidthMobile
@@ -424,7 +452,7 @@
                 <div class="u-flex-vertical u-gap-4">
                     <div class="u-flex u-cross-center u-main-space-between">
                         <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
-                            {currentModalAlert.title}
+                            {mobileConfig.title}
                         </Typography.Text>
                         <button onclick={hideAllModalAlerts} aria-label="Close">
                             <span class="icon-x"></span>
@@ -447,6 +475,9 @@
 <style>
     .card {
         padding: 0.5rem;
+        box-shadow:
+            0 8px 16px 0 rgba(0, 0, 0, 0.02),
+            0 20px 24px 0 rgba(0, 0, 0, 0.02);
     }
 
     .main-alert-wrapper {
@@ -466,6 +497,7 @@
 
     .icon-inline-tag {
         top: 1rem;
+        z-index: 1;
         right: 1rem;
 
         cursor: pointer;

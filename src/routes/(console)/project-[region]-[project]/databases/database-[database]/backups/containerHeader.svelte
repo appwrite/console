@@ -1,15 +1,15 @@
 <script lang="ts">
+    import { goto } from '$app/navigation';
     import { DropList } from '$lib/components';
     import { Button } from '$lib/elements/forms';
+    import { getChangePlanUrl } from '$lib/stores/billing';
     import { IconInfo, IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { Badge, Icon, Layout, Tag, Typography } from '@appwrite.io/pink-svelte';
-    import { goto } from '$app/navigation';
-    import { upgradeURL } from '$lib/stores/billing';
-    import { BillingPlan } from '$lib/constants';
-    import { organization } from '$lib/stores/organization';
+    import type { Models } from '@appwrite.io/console';
 
     export let isFlex = true;
     export let title: string;
+    export let project: Models.Project;
 
     export let buttonText: string = null;
     export let policiesCreated: number = 0;
@@ -23,8 +23,8 @@
 </script>
 
 <header
-    class:is-disabled={buttonDisabled}
     class:u-flex={isFlex}
+    class:is-disabled={buttonDisabled}
     class="u-gap-12 common-section u-main-space-between u-flex-wrap">
     <Layout.Stack
         direction="row"
@@ -50,7 +50,7 @@
                     paddingBlock="var(--space-5, 12px)"
                     paddingInline="var(--space-6, 16px)"
                     resetListPadding>
-                    {#if $organization?.billingPlan === BillingPlan.PRO}
+                    {#if maxPolicies === 1}
                         <Tag
                             size="s"
                             style="white-space: nowrap; max-width: none;"
@@ -75,7 +75,7 @@
                                     class="u-underline"
                                     on:click={() => {
                                         showDropdown = !showDropdown;
-                                        goto($upgradeURL);
+                                        goto(getChangePlanUrl(project.teamId));
                                     }}>Upgrade your plan</button> to add customized backup policies.
                             </span>
                         </slot>

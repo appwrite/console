@@ -2,34 +2,32 @@
     import { Click, Submit, trackEvent } from '$lib/actions/analytics';
     import { CardGrid } from '$lib/components';
     import { Alert } from '@appwrite.io/pink-svelte';
-    import { BillingPlan } from '$lib/constants';
     import { Button, Form, InputNumber, InputSelect } from '$lib/elements/forms';
     import { humanFileSize, sizeToBytes } from '$lib/helpers/sizeConvertion';
     import { createByteUnitPair } from '$lib/helpers/unit';
-    import { readOnly, upgradeURL } from '$lib/stores/billing';
+    import { getChangePlanUrl, isStarterPlan, readOnly } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
     import { updateBucket } from './+page.svelte';
-    import type { Plan } from '$lib/sdk/billing';
-    import type { Models } from '@appwrite.io/console';
+    import { type Models } from '@appwrite.io/console';
 
     export let bucket: Models.Bucket;
-    export let currentPlan: Plan | null;
+    export let currentPlan: Models.BillingPlan | null;
 
     const service = currentPlan ? currentPlan['fileSize'] : null;
     const { value, unit, baseValue, units } = createByteUnitPair(bucket.maximumFileSize, 1000);
     const options = units.map((v) => ({ label: v.name, value: v.name }));
     $: selectedUnit = $unit;
 
-    const maxValue = function formMaxFileSize() {
-        return (service * 1000 * 1000) / units.find((unit) => unit.name === selectedUnit).value;
-    };
+    $: maxValue = (service * 1000 * 1000) / units.find((unit) => unit.name === selectedUnit).value;
+
+    $: step = $unit === 'Gigabytes' ? 0.01 : 1;
 
     function updateMaxSize() {
         updateBucket(
             bucket,
             {
-                maximumFileSize: $baseValue
+                maximumFileSize: Math.round($baseValue)
             },
             {
                 trackEventName: Submit.BucketUpdateSize,
@@ -46,29 +44,35 @@
         <svelte:fragment slot="aside">
             {#if isCloud}
                 {@const size = humanFileSize(sizeToBytes(service, 'MB', 1000))}
-                <Alert.Inline status="info">
-                    The {currentPlan.name} plan has a maximum upload file size limit of {Math.floor(
-                        parseInt(size.value)
-                    )}{size.unit}.
-                    {#if $organization?.billingPlan === BillingPlan.FREE}
-                        Upgrade to allow files of a larger size.
-                    {/if}
-                    <svelte:fragment slot="actions">
-                        {#if $organization?.billingPlan === BillingPlan.FREE}
+                <!-- always show upgrade on starters -->
+                {@const isStarter = isStarterPlan($organization.billingPlanId)}
+                {#if isStarter}
+                    <Alert.Inline status="info">
+                        The {currentPlan.name} plan has a maximum upload file size limit of {Math.floor(
+                            parseInt(size.value)
+                        )}{size.unit}. Upgrade to allow files of a larger size.
+                        <svelte:fragment slot="actions">
                             <div class="alert-buttons u-flex">
                                 <Button
                                     text
-                                    href={$upgradeURL}
+                                    href={getChangePlanUrl($organization.$id)}
                                     on:click={() => {
                                         trackEvent(Click.OrganizationClickUpgrade, {
                                             source: 'bucket_settings'
                                         });
                                     }}>Upgrade plan</Button>
                             </div>
-                        {/if}
-                    </svelte:fragment>
-                </Alert.Inline>
+                        </svelte:fragment>
+                    </Alert.Inline>
+                {:else}
+                    <Alert.Inline status="info">
+                        The {currentPlan.name} plan has a maximum upload file size limit of {Math.floor(
+                            parseInt(size.value)
+                        )}{size.unit}.
+                    </Alert.Inline>
+                {/if}
             {/if}
+
             <InputNumber
                 required
                 id="size"
@@ -76,7 +80,8 @@
                 disabled={$readOnly && !GRACE_PERIOD_OVERRIDE}
                 placeholder={bucket.maximumFileSize.toString()}
                 min={0}
-                max={isCloud ? maxValue() : Infinity}
+                {step}
+                max={isCloud ? maxValue : Infinity}
                 bind:value={$value} />
             <InputSelect required id="bytes" label="Bytes" {options} bind:value={$unit} />
         </svelte:fragment>

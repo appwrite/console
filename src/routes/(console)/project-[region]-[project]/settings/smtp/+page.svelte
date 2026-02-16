@@ -2,32 +2,40 @@
     import { CardGrid } from '$lib/components';
     import { Button, Form, InputText, InputEmail } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
-    import { project } from '../../store';
     import InputPassword from '$lib/elements/forms/inputPassword.svelte';
     import { sdk } from '$lib/stores/sdk';
     import { invalidate } from '$app/navigation';
-    import { BillingPlan, Dependencies } from '$lib/constants';
+    import { Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
     import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import InputNumber from '$lib/elements/forms/inputNumber.svelte';
-    import { base } from '$app/paths';
+    import { resolve } from '$app/paths';
     import deepEqual from 'deep-equal';
-    import { onMount } from 'svelte';
-    import { organization } from '$lib/stores/organization';
+    import { currentPlan } from '$lib/stores/organization';
     import { type SMTPSecure } from '@appwrite.io/console';
     import InputSelect from '$lib/elements/forms/inputSelect.svelte';
-    import { upgradeURL } from '$lib/stores/billing';
+    import { getChangePlanUrl } from '$lib/stores/billing';
     import { Link, Selector, Alert } from '@appwrite.io/pink-svelte';
+    import type { PageProps } from './$types';
+    import { isCloud } from '$lib/system';
 
-    let enabled = false;
-    let senderName: string;
-    let senderEmail: string;
-    let replyTo: string;
-    let host: string;
-    let port: number;
-    let username: string;
-    let password: string;
-    let secure: string;
+    const { data }: PageProps = $props();
+
+    const { project } = data;
+
+    let enabled: boolean = $state(false);
+
+    let replyTo: string = $state('');
+    let senderName: string = $state('');
+    let senderEmail: string = $state('');
+
+    let host: string = $state('');
+    let port: number = $state(null);
+
+    let username: string = $state('');
+    let password: string = $state('');
+
+    let secure: string = $state('');
 
     const options = [
         { value: 'tls', label: 'TLS' },
@@ -35,33 +43,37 @@
         { value: '', label: 'None' }
     ];
 
-    onMount(() => {
-        enabled = $project.smtpEnabled ?? false;
-        senderName = $project.smtpSenderName;
-        senderEmail = $project.smtpSenderEmail;
-        replyTo = $project.smtpReplyTo;
-        host = $project.smtpHost;
-        port = $project.smtpPort;
-        username = $project.smtpUsername;
-        password = $project.smtpPassword;
-        secure = $project.smtpSecure === 'tls' ? 'tls' : $project.smtpSecure === 'ssl' ? 'ssl' : '';
+    const isButtonDisabled = $derived.by(() => {
+        return deepEqual(
+            {
+                enabled,
+                senderName,
+                senderEmail,
+                replyTo,
+                host,
+                port: port ?? '',
+                username,
+                password,
+                secure
+            },
+            {
+                enabled: project.smtpEnabled,
+                senderName: project.smtpSenderName,
+                senderEmail: project.smtpSenderEmail,
+                replyTo: project.smtpReplyTo,
+                host: project.smtpHost,
+                port: project.smtpPort,
+                username: project.smtpUsername,
+                password: project.smtpPassword,
+                secure: project.smtpSecure
+            }
+        );
     });
 
     async function updateSmtp() {
         try {
-            if (!enabled) {
-                enabled = false;
-                senderName = undefined;
-                senderEmail = undefined;
-                replyTo = undefined;
-                host = undefined;
-                port = undefined;
-                username = undefined;
-                password = undefined;
-            }
-
             await sdk.forConsole.projects.updateSMTP({
-                projectId: $project.$id,
+                projectId: project.$id,
                 enabled,
                 senderName: senderName || undefined,
                 senderEmail: senderEmail || undefined,
@@ -76,7 +88,7 @@
             invalidate(Dependencies.PROJECT);
             addNotification({
                 type: 'success',
-                message: 'SMTP server has been ' + (enabled ? 'enabled.' : 'disabled.')
+                message: `SMTP server has been ${enabled ? 'enabled.' : 'disabled.'}`
             });
             trackEvent(Submit.ProjectUpdateSMTP);
         } catch (error) {
@@ -88,31 +100,30 @@
         }
     }
 
-    $: isButtonDisabled = deepEqual(
-        { enabled, senderName, senderEmail, replyTo, host, port, username, password, secure },
-        {
-            enabled: $project.smtpEnabled,
-            senderName: $project.smtpSenderName,
-            senderEmail: $project.smtpSenderEmail,
-            replyTo: $project.smtpReplyTo,
-            host: $project.smtpHost,
-            port: $project.smtpPort,
-            username: $project.smtpUsername,
-            password: $project.smtpPassword,
-            secure: $project.smtpSecure
-        }
-    );
+    $effect(() => {
+        enabled = project.smtpEnabled ?? false;
+        senderName = project.smtpSenderName;
+        senderEmail = project.smtpSenderEmail;
+        replyTo = project.smtpReplyTo;
+        host = project.smtpHost;
+        port = project.smtpPort;
+        username = project.smtpUsername;
+        password = project.smtpPassword;
+        secure = project.smtpSecure === 'tls' ? 'tls' : project.smtpSecure === 'ssl' ? 'ssl' : '';
+    });
 
-    $: if (!enabled) {
-        senderName = undefined;
-        senderEmail = undefined;
-        replyTo = undefined;
-        host = undefined;
-        port = undefined;
-        username = undefined;
-        password = undefined;
-        secure = undefined;
-    }
+    $effect(() => {
+        if (!enabled) {
+            senderName = '';
+            senderEmail = '';
+            replyTo = '';
+            host = '';
+            port = null;
+            username = '';
+            password = '';
+            secure = '';
+        }
+    });
 </script>
 
 <Container>
@@ -120,17 +131,20 @@
         <CardGrid>
             <svelte:fragment slot="title">SMTP server</svelte:fragment>
             You can customize the email service by providing your own SMTP server. View your email templates
-            <Link.Anchor href={`${base}/project-${$project.region}-${$project.$id}/auth/templates`}
-                >here</Link.Anchor>
+            <Link.Anchor
+                href={resolve('/(console)/project-[region]-[project]/auth/templates', {
+                    project: project.$id,
+                    region: project.region
+                })}>here</Link.Anchor>
             <svelte:fragment slot="aside">
-                {#if $organization.billingPlan === BillingPlan.FREE}
+                {#if isCloud && !$currentPlan.customSmtp}
                     <Alert.Inline
                         status="info"
-                        title="Custom SMTP is a Pro plan feature. Upgrade to enable custom SMTP sever.">
+                        title="Custom SMTP is a paid plan feature. Upgrade to enable custom SMTP server.">
                         <svelte:fragment slot="actions">
                             <Button
                                 compact
-                                href={$upgradeURL}
+                                href={getChangePlanUrl(project.teamId)}
                                 on:click={() => {
                                     trackEvent(Click.OrganizationClickUpgrade, {
                                         source: 'project_settings'
@@ -196,9 +210,7 @@
                 {/if}
             </svelte:fragment>
             <svelte:fragment slot="actions">
-                <Button
-                    submit
-                    disabled={isButtonDisabled || $organization.billingPlan === BillingPlan.FREE}>
+                <Button submit disabled={isButtonDisabled || (isCloud && !$currentPlan.customSmtp)}>
                     Update
                 </Button>
             </svelte:fragment>

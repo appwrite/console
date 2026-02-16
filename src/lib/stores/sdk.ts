@@ -3,6 +3,7 @@ import {
     Account,
     Assistant,
     Avatars,
+    Backups,
     Client,
     Console,
     Functions,
@@ -21,10 +22,11 @@ import {
     Sites,
     Tokens,
     TablesDB,
-    Domains
+    Domains,
+    /*DocumentsDB,*/
+    Realtime,
+    Organizations
 } from '@appwrite.io/console';
-import { Billing } from '../sdk/billing';
-import { Backups } from '../sdk/backups';
 import { Sources } from '$lib/sdk/sources';
 import {
     REGION_FRA,
@@ -32,14 +34,15 @@ import {
     REGION_SYD,
     REGION_SFO,
     REGION_SGP,
+    REGION_TOR,
     SUBDOMAIN_FRA,
     SUBDOMAIN_NYC,
     SUBDOMAIN_SFO,
     SUBDOMAIN_SYD,
-    SUBDOMAIN_SGP
+    SUBDOMAIN_SGP,
+    SUBDOMAIN_TOR
 } from '$lib/constants';
 import { building } from '$app/environment';
-import { getProjectId } from '$lib/helpers/project';
 
 export function getApiEndpoint(region?: string): string {
     if (building) return '';
@@ -67,6 +70,8 @@ const getSubdomain = (region?: string) => {
             return SUBDOMAIN_SFO;
         case REGION_SGP:
             return SUBDOMAIN_SGP;
+        case REGION_TOR:
+            return SUBDOMAIN_TOR;
         default:
             return '';
     }
@@ -86,11 +91,12 @@ function createConsoleSdk(client: Client) {
         migrations: new Migrations(client),
         console: new Console(client),
         assistant: new Assistant(client),
-        billing: new Billing(client),
         sources: new Sources(client),
         sites: new Sites(client),
         domains: new Domains(client),
-        storage: new Storage(client)
+        storage: new Storage(client),
+        realtime: new Realtime(client),
+        organizations: new Organizations(client)
     };
 }
 
@@ -106,7 +112,6 @@ if (!building) {
     scopedConsoleClient.setProject('console');
     clientConsole.setEndpoint(endpoint).setProject('console');
 
-    clientRealtime.setEndpoint(endpoint).setProject('console');
     clientProject.setEndpoint(endpoint).setMode('admin');
     clientRealtime.setEndpoint(endpoint).setProject('console');
 }
@@ -131,16 +136,37 @@ const sdkForProject = {
     migrations: new Migrations(clientProject),
     sites: new Sites(clientProject),
     tablesDB: new TablesDB(clientProject),
+    /*documentsDB: new DocumentsDB(clientProject),*/
     console: new Console(clientProject) // for suggestions API
 };
 
 export const realtime = {
-    forProject(region: string, _projectId: string) {
+    forProject(
+        region: string,
+        channels: string | string[],
+        callback: AppwriteRealtimeResponseEvent
+    ) {
         const endpoint = getApiEndpoint(region);
         if (endpoint !== clientRealtime.config.endpoint) {
             clientRealtime.setEndpoint(endpoint);
         }
-        return clientRealtime;
+
+        // because uses a different client!
+        const realtime = new Realtime(clientRealtime);
+
+        return createRealtimeSubscription(realtime, channels, callback);
+    },
+
+    forConsole(
+        region: string,
+        channels: string | string[],
+        callback: AppwriteRealtimeResponseEvent
+    ): () => void {
+        const realtimeInstance = region
+            ? sdk.forConsoleIn(region).realtime
+            : sdk.forConsole.realtime;
+
+        return createRealtimeSubscription(realtimeInstance, channels, callback);
     }
 };
 
@@ -170,8 +196,8 @@ export const sdk = {
 };
 
 export enum RuleType {
-    DEPLOYMENT = 'deployment',
     API = 'api',
+    DEPLOYMENT = 'deployment',
     REDIRECT = 'redirect'
 }
 
@@ -185,6 +211,24 @@ export enum RuleTrigger {
     MANUAL = 'manual'
 }
 
-export const createAdminClient = () => {
-    return new Client().setEndpoint(getApiEndpoint()).setMode('admin').setProject(getProjectId());
+export type RealtimeResponse = {
+    events: string[];
+    channels: string[];
+    timestamp: string;
+    payload: unknown;
 };
+
+export type AppwriteRealtimeResponseEvent = (response: RealtimeResponse) => void;
+
+function createRealtimeSubscription(
+    realtimeInstance: Realtime,
+    channels: string | string[],
+    callback: AppwriteRealtimeResponseEvent
+): () => void {
+    const channelsArray = Array.isArray(channels) ? channels : [channels];
+    const subscriptionPromise = realtimeInstance.subscribe(channelsArray, callback);
+
+    return () => {
+        subscriptionPromise.then((sub) => sub.close());
+    };
+}

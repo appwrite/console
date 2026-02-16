@@ -17,6 +17,7 @@
     import { ThemeDark, ThemeLight, ThemeDarkCloud, ThemeLightCloud } from '../themes';
     import { isSmallViewport, updateViewport } from '$lib/stores/viewport';
     import { feedback } from '$lib/stores/feedback';
+    import '$lib/profiles/css/base.css';
 
     function resolveTheme(theme: AppStore['themeInUse']) {
         switch (theme) {
@@ -68,11 +69,16 @@
 
         if (page.url.searchParams.has('code')) {
             const code = page.url.searchParams.get('code');
-            const coupon = await sdk.forConsole.billing.getCoupon(code).catch<null>(() => null);
+            const coupon = await sdk.forConsole.console
+                .getCoupon({
+                    couponId: code
+                })
+                .catch<null>(() => null);
             if (coupon?.campaign) {
-                const campaign = await sdk.forConsole.billing
-                    .getCampaign(coupon.campaign)
+                const campaign = await sdk.forConsole.console
+                    .getCampaign({ campaignId: coupon.campaign })
                     .catch<null>(() => null);
+
                 if (campaign && $user) {
                     goto(`${base}/apply-credit?${page.url.searchParams}`);
                     loading.set(false);
@@ -83,9 +89,10 @@
 
         if ($user && page.url.searchParams.has('campaign')) {
             const campaignId = page.url.searchParams.get('campaign');
-            const campaign = await sdk.forConsole.billing
-                .getCampaign(campaignId)
+            const campaign = await sdk.forConsole.console
+                .getCampaign({ campaignId })
                 .catch<null>(() => null);
+
             if (campaign) {
                 goto(`${base}/apply-credit?${page.url.searchParams}`);
 
@@ -287,6 +294,11 @@
                 }
             }
         }
+    }
+
+    /* Fix when no vertical scrollbar is present, some environments reserve a gutter by default */
+    html {
+        scrollbar-gutter: auto !important;
     }
 
     /* TODO: remove this block once Pink V2 is incorporated */

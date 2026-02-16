@@ -14,7 +14,9 @@
     import { addNotification } from '$lib/stores/notifications';
     import { writable } from 'svelte/store';
     import Scopes from '../api-keys/scopes.svelte';
+    import { type Scopes as ScopesType } from '@appwrite.io/console';
     import { page } from '$app/state';
+    import { copy } from '$lib/helpers/copy';
 
     const projectId = page.params.project;
 
@@ -22,13 +24,13 @@
     let formComponent: Form;
     let isSubmitting = writable(false);
 
-    let scopes: string[] = [];
-    let name = '',
-        expire = '';
+    let scopes: ScopesType[] = [];
+    let name = '';
+    let expire: string | null = null;
 
     async function create() {
         try {
-            const { $id } = await sdk.forConsole.projects.createKey({
+            const { $id, secret } = await sdk.forConsole.projects.createKey({
                 projectId,
                 name,
                 scopes,
@@ -45,7 +47,21 @@
             );
             addNotification({
                 message: `API key has been created`,
-                type: 'success'
+                type: 'success',
+                buttons: [
+                    {
+                        name: 'Copy API key',
+                        method: async () => {
+                            await copy(secret);
+                        }
+                    },
+                    {
+                        name: 'Copy endpoint',
+                        method: async () => {
+                            await copy(sdk.forConsole.client.config.endpoint);
+                        }
+                    }
+                ]
             });
         } catch (error) {
             addNotification({

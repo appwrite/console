@@ -11,7 +11,7 @@
     import { Fieldset, Layout, Icon, Input, Tag } from '@appwrite.io/pink-svelte';
     import { IconGithub, IconPencil } from '@appwrite.io/pink-icons-svelte';
     import { onMount } from 'svelte';
-    import { ID, Runtime } from '@appwrite.io/console';
+    import { ID, Runtime, TemplateReferenceType, type Scopes } from '@appwrite.io/console';
     import { CustomId } from '$lib/components';
     import { getIconFromRuntime } from '$lib/stores/runtimes';
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
@@ -39,7 +39,7 @@
     let specification = $state('');
     let runtime = $state<Runtime>();
     let installCommand = $state('');
-    let selectedScopes = $state<string[]>([]);
+    let selectedScopes = $state<Scopes[]>([]);
     let rootDir = $state(data.repository?.rootDirectory);
     let variables = $state<Array<{ key: string; value: string; secret: boolean }>>([]);
 
@@ -134,7 +134,8 @@
                     repository: data.repository.name,
                     owner: data.repository.owner,
                     rootDirectory: rootDir || '.',
-                    version: latestTag ?? '1.0.0',
+                    type: TemplateReferenceType.Tag,
+                    reference: latestTag ?? '1.0.0',
                     activate: true
                 });
 

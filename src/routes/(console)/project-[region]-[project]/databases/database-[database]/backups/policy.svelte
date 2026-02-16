@@ -11,7 +11,6 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import EmptyDark from '$lib/images/backups/backups-dark.png';
     import EmptyLight from '$lib/images/backups/backups-light.png';
-    import type { BackupPolicy, BackupPolicyList } from '$lib/sdk/backups';
     import { backupFrequencies } from '$lib/helpers/backups';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import {
@@ -27,21 +26,22 @@
     import { Confirm } from '$lib/components/index.js';
     import Ellipse from './components/Ellipse.svelte';
     import { page } from '$app/state';
+    import { type Models } from '@appwrite.io/console';
 
     let showDelete = false;
-    let selectedPolicy: BackupPolicy = null;
+    let selectedPolicy: Models.BackupPolicy = null;
 
     let showEveryPolicy = false;
 
     export let showCreatePolicy = false;
-    export let policies: BackupPolicyList;
+    export let policies: Models.BackupPolicyList;
     export let lastBackupDates: Record<string, string>;
 
     async function deletePolicy() {
         try {
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .backups.deletePolicy(selectedPolicy.$id);
+            await sdk.forProject(page.params.region, page.params.project).backups.deletePolicy({
+                policyId: selectedPolicy.$id
+            });
             addNotification({
                 type: 'success',
                 message: 'Backup policy has been deleted'

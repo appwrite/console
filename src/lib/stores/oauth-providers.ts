@@ -13,6 +13,7 @@ export type Provider = {
     name: string;
     icon: string;
     docs?: string;
+    internal?: true;
     component: Component;
 };
 
@@ -26,7 +27,7 @@ export const oAuthProviders: Record<string, Provider> = {
     apple: {
         name: 'Apple',
         icon: 'apple',
-        docs: 'https://developer.apple.com/',
+        docs: 'https://developer.apple.com/sign-in-with-apple/',
         component: Apple
     },
     auth0: {
@@ -113,6 +114,13 @@ export const oAuthProviders: Record<string, Provider> = {
         docs: 'https://developer.github.com',
         component: Main
     },
+    githubImagine: {
+        name: 'GitHub',
+        icon: 'github',
+        docs: 'https://developer.github.com',
+        component: Main,
+        internal: true
+    },
     gitlab: {
         name: 'GitLab',
         icon: 'gitlab',
@@ -124,6 +132,13 @@ export const oAuthProviders: Record<string, Provider> = {
         icon: 'google',
         docs: 'https://support.google.com/googleapi/answer/6158849',
         component: Google
+    },
+    googleImagine: {
+        name: 'Google',
+        icon: 'google',
+        docs: 'https://support.google.com/googleapi/answer/6158849',
+        component: Google,
+        internal: true
     },
     linkedin: {
         name: 'LinkedIn',

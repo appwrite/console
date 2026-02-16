@@ -13,7 +13,14 @@
     import type { PageData } from './$types';
     import { addNotification } from '$lib/stores/notifications';
     import { onMount } from 'svelte';
-    import { Badge, Layout, Table, Typography, Icon } from '@appwrite.io/pink-svelte';
+    import {
+        Badge,
+        Layout,
+        Table,
+        Typography,
+        Icon,
+        InteractiveText
+    } from '@appwrite.io/pink-svelte';
     import { IconGlobeAlt } from '@appwrite.io/pink-icons-svelte';
 
     export let data: PageData;
@@ -90,11 +97,12 @@
     </Layout.Stack>
 
     <Table.Root
+        class="responsive-table"
         let:root
         columns={[
-            { id: 'client' },
-            { id: 'location', width: 200 },
-            { id: 'ip', width: 200 },
+            { id: 'client', width: { min: 450 } },
+            { id: 'location', width: { min: 200 } },
+            { id: 'ip', width: { min: 330 } },
             { id: 'actions', width: 100 }
         ]}>
         <svelte:fragment slot="header" let:root>
@@ -146,7 +154,7 @@
                     {/if}
                 </Table.Cell>
                 <Table.Cell column="ip" {root}>
-                    {session.ip}
+                    <InteractiveText variant="copy" text={session.ip} isVisible />
                 </Table.Cell>
                 <Table.Cell column="actions" {root}>
                     <Button size="xs" secondary on:click={() => logout(session)}>Sign out</Button>

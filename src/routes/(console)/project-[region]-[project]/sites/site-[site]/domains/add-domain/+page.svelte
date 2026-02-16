@@ -57,13 +57,12 @@
 
     async function addDomain() {
         const apexDomain = getApexDomain(domainName);
-        let domain = data.domains?.domains.find((d: Models.Domain) => d.domain === apexDomain);
-
         const isSiteDomain = domainName.endsWith($regionalConsoleVariables._APP_DOMAIN_SITES);
+        const domain = data.domainsList.domains.find((d) => d.domain === apexDomain);
 
         if (isCloud && apexDomain && !domain && !isSiteDomain) {
             try {
-                domain = await sdk.forConsole.domains.create({
+                await sdk.forConsole.domains.create({
                     teamId: $project.teamId,
                     domain: apexDomain
                 });
@@ -108,12 +107,18 @@
                         siteId: page.params.site
                     });
             }
-            if (rule?.status === 'verified') {
+
+            await invalidate(Dependencies.SITES_DOMAINS);
+
+            const verified = rule?.status !== 'created';
+            if (verified) {
+                addNotification({
+                    type: 'success',
+                    message: 'Domain verified successfully'
+                });
                 await goto(routeBase);
-                await invalidate(Dependencies.SITES_DOMAINS);
             } else {
                 await goto(`${routeBase}/add-domain/verify-${domainName}?rule=${rule.$id}`);
-                await invalidate(Dependencies.SITES_DOMAINS);
             }
         } catch (error) {
             addNotification({

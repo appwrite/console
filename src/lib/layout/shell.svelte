@@ -5,18 +5,17 @@
     import { activeHeaderAlert } from '$routes/(console)/store';
     import { onMount, setContext } from 'svelte';
     import { writable } from 'svelte/store';
-    import { showSubNavigation } from '$lib/stores/layout';
+    import { showSubNavigation, showOnboardingAnimation } from '$lib/stores/layout';
     import { organization, organizationList } from '$lib/stores/organization';
+
     import { sdk } from '$lib/stores/sdk';
     import { user } from '$lib/stores/user';
-    import { tierToPlan } from '$lib/stores/billing';
     import { isCloud } from '$lib/system';
     import SideNavigation from '$lib/layout/navigation.svelte';
     import { hasOnboardingDismissed } from '$lib/helpers/onboarding';
     import { isSidebarOpen, noWidthTransition } from '$lib/stores/sidebar';
-    import { BillingPlan } from '$lib/constants';
     import { page } from '$app/stores';
-    import type { Models } from '@appwrite.io/console';
+    import { BillingPlanGroup, type Models } from '@appwrite.io/console';
     import { getSidebarState, isInDatabasesRoute, updateSidebarState } from '$lib/helpers/sidebar';
     import { isTabletViewport } from '$lib/stores/viewport';
 
@@ -155,14 +154,19 @@
             })
             .toString(),
 
-        organizations: $organizationList.teams.map((org) => {
-            const billingPlan = org['billingPlan'];
+        organizations: $organizationList.teams.map((team) => {
+            let billingPlan: Models.BillingPlan | null = null;
+
+            if (isCloud) {
+                billingPlan = (team as Models.Organization).billingPlanDetails;
+            }
+
             return {
-                name: org.name,
-                $id: org.$id,
-                showUpgrade: billingPlan === BillingPlan.FREE,
-                tierName: isCloud ? tierToPlan(billingPlan).name : null,
-                isSelected: $organization?.$id === org.$id
+                name: team.name,
+                $id: team.$id,
+                isSelected: $organization?.$id === team.$id,
+                tierName: isCloud ? billingPlan.name : null,
+                showUpgrade: isCloud ? billingPlan.group === BillingPlanGroup.Starter : false
             };
         }),
 
@@ -173,7 +177,9 @@
 
     $: subNavigation = $page.data.subNavigation;
 
-    $: isProjectPage = $page.route?.id?.includes('project-');
+    $: shouldRenderSidebar =
+        !$isNewWizardStatusOpen && showSideNavigation && !$showOnboardingAnimation;
+    $: hasSidebarSpace = shouldRenderSidebar && !$isTabletViewport && !!selectedProject;
 
     $: {
         if ($isSidebarOpen) {
@@ -199,13 +205,13 @@
     class:is-open={$showSubNavigation}
     class:u-hide={$wizard.show || $wizard.cover}
     class:is-fixed-layout={$activeHeaderAlert?.show}
-    class:no-header={!showHeader}
+    class:no-header={!showHeader || $showOnboardingAnimation}
     style:--p-side-size={sideSize}>
-    {#if showHeader}
+    {#if showHeader && !$showOnboardingAnimation}
         <Navbar {...navbarProps} bind:sideBarIsOpen={$isSidebarOpen} bind:showAccountMenu />
     {/if}
 
-    {#if !$isNewWizardStatusOpen && isProjectPage}
+    {#if shouldRenderSidebar}
         <Sidebar
             project={selectedProject}
             progressCard={getProgressCard()}
@@ -216,13 +222,15 @@
             bind:state />
     {/if}
 
-    <SideNavigation bind:subNavigation />
+    {#if !$showOnboardingAnimation}
+        <SideNavigation bind:subNavigation />
+    {/if}
 
     <div
         class="content"
         class:has-transition={showContentTransition}
-        class:icons-content={state === 'icons' && isProjectPage}
-        class:no-sidebar={!showSideNavigation}>
+        class:icons-content={state === 'icons' && selectedProject}
+        class:no-sidebar={!hasSidebarSpace}>
         <section class="main-content" data-test={showSideNavigation}>
             {#if $page.data?.header}
                 <div class="layout-header">

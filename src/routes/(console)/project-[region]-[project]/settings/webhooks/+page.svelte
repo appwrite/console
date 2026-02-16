@@ -1,8 +1,8 @@
 <script lang="ts">
-    import { base } from '$app/paths';
+    import { base, resolve } from '$app/paths';
     import { page } from '$app/state';
     import { Empty, Id } from '$lib/components';
-    import { toLocaleDateTime } from '$lib/helpers/date';
+    import DualTimeView from '$lib/components/dualTimeView.svelte';
     import { Container } from '$lib/layout';
     import { Button } from '$lib/elements/forms';
     import type { PageData } from './$types';
@@ -11,11 +11,13 @@
     import { type Models } from '@appwrite.io/console';
     import FailedModal from './failedModal.svelte';
     import { canWriteWebhooks } from '$lib/stores/roles';
-    import { Icon, Layout, Link, Status, Table } from '@appwrite.io/pink-svelte';
+    import { Icon, Layout, Link, Status, Table, Tooltip } from '@appwrite.io/pink-svelte';
     import ViewSelector from '$lib/components/viewSelector.svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { View } from '$lib/helpers/load';
     import { goto } from '$app/navigation';
+    import { isServiceLimited } from '$lib/stores/billing';
+    import { organization } from '$lib/stores/organization';
 
     export let data: PageData;
 
@@ -23,18 +25,31 @@
     let selectedWebhook: Models.Webhook;
 
     $: $updateCommandGroupRanks({ webhooks: 20, domains: 10 });
+    $: isLimited = isServiceLimited('webhooks', $organization, data.webhooks.total);
+    $: webhooksCreateUrl = resolve(
+        '/(console)/project-[region]-[project]/settings/webhooks/create',
+        {
+            project: page.params.project,
+            region: page.params.region
+        }
+    );
 </script>
 
 <Container>
     <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
         <ViewSelector ui="new" {columns} view={View.Table} hideView />
         {#if $canWriteWebhooks}
-            <Button
-                href={`${base}/project-${page.params.region}-${page.params.project}/settings/webhooks/create`}
-                event="create_webhook">
-                <Icon icon={IconPlus} slot="start" size="s" />
-                Create webhook
-            </Button>
+            <Tooltip disabled={!isLimited} maxWidth="200px">
+                <div>
+                    <Button disabled={isLimited} event="create_webhook" href={webhooksCreateUrl}>
+                        <Icon icon={IconPlus} slot="start" size="s" />
+                        Create webhook
+                    </Button>
+                </div>
+                <svelte:fragment slot="tooltip">
+                    You have reached the maximum number of webhooks for your plan.
+                </svelte:fragment>
+            </Tooltip>
         {/if}
     </Layout.Stack>
 
@@ -58,7 +73,11 @@
                             {:else if column.id === 'events'}
                                 {webhook.events.length}
                             {:else if column.type === 'datetime'}
-                                {webhook[column.id] ? toLocaleDateTime(webhook[column.id]) : '-'}
+                                {#if webhook[column.id]}
+                                    <DualTimeView time={webhook[column.id]} showDatetime />
+                                {:else}
+                                    -
+                                {/if}
                             {:else if column.id === 'enabled'}
                                 <Layout.Stack direction="row" gap="s" alignItems="normal">
                                     <Status

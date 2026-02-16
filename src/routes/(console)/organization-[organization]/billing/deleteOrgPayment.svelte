@@ -3,8 +3,8 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { organization } from '$lib/stores/organization';
-    import { BillingPlan, Dependencies } from '$lib/constants';
+    import { currentPlan, organization } from '$lib/stores/organization';
+    import { Dependencies } from '$lib/constants';
     import Confirm from '$lib/components/confirm.svelte';
     import { Typography } from '@appwrite.io/pink-svelte';
 
@@ -16,16 +16,18 @@
     let error: string;
 
     async function removeDefaultMethod() {
-        if ($organization?.billingPlan !== BillingPlan.FREE && !hasOtherMethod) return;
+        if ($currentPlan?.requiresPaymentMethod && !hasOtherMethod) return;
 
         try {
-            await sdk.forConsole.billing.removeOrganizationPaymentMethod($organization.$id);
+            await sdk.forConsole.organizations.deleteDefaultPaymentMethod({
+                organizationId: $organization.$id
+            });
             addNotification({
                 type: 'success',
                 message: `The payment method has been removed from ${$organization.name}`
             });
             trackEvent(Submit.OrganizationPaymentDelete);
-            invalidate(Dependencies.ORGANIZATION);
+            await invalidate(Dependencies.PAYMENT_METHODS);
             showDelete = false;
         } catch (e) {
             error = e.message;
@@ -34,18 +36,21 @@
             showDelete = false;
         }
     }
-    async function removeBackuptMethod() {
-        if ($organization?.billingPlan !== BillingPlan.FREE && !hasOtherMethod) return;
+
+    async function removeBackupMethod() {
+        if ($currentPlan?.requiresPaymentMethod && !hasOtherMethod) return;
         showDelete = false;
 
         try {
-            await sdk.forConsole.billing.removeOrganizationPaymentMethodBackup($organization.$id);
+            await sdk.forConsole.organizations.deleteBackupPaymentMethod({
+                organizationId: $organization.$id
+            });
             addNotification({
                 type: 'success',
                 message: `The payment method has been removed from ${$organization.name}`
             });
             trackEvent(Submit.OrganizationBackupPaymentDelete);
-            invalidate(Dependencies.ORGANIZATION);
+            await invalidate(Dependencies.PAYMENT_METHODS);
             showDelete = false;
         } catch (e) {
             error = e.message;
@@ -65,10 +70,10 @@
     </Confirm>
 {:else}
     <Confirm
-        onSubmit={isBackup ? removeBackuptMethod : removeDefaultMethod}
-        title="Remove payment method"
+        bind:error
         bind:open={showDelete}
-        bind:error>
+        title="Remove payment method"
+        onSubmit={isBackup ? removeBackupMethod : removeDefaultMethod}>
         <Typography.Text>
             Are you sure you want to remove the payment method from <b>{$organization?.name}</b>?
         </Typography.Text>

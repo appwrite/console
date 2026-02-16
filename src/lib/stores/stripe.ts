@@ -1,6 +1,6 @@
 import type {
     Appearance,
-    PaymentMethod,
+    PaymentMethod as StripePaymentMethod,
     Stripe,
     StripeElement,
     StripeElements
@@ -8,27 +8,31 @@ import type {
 import { sdk } from './sdk';
 import { app } from './app';
 import { get, writable } from 'svelte/store';
-import type { PaymentMethodData } from '$lib/sdk/billing';
 import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
 import { addNotification } from './notifications';
 import { organization } from './organization';
-import { base } from '$app/paths';
+import { resolve } from '$app/paths';
 import { ThemeDarkCloud, ThemeLightCloud } from '$themes';
 import Color from 'color';
+import type { Models } from '@appwrite.io/console';
 
 export const stripe = writable<Stripe>();
-let paymentMethod: PaymentMethodData;
+export const isStripeInitialized = writable(false);
+
 let clientSecret: string;
 let elements: StripeElements;
 let paymentElement: StripeElement;
-
-export const isStripeInitialized = writable(false);
+let paymentMethod: Models.PaymentMethod;
 
 export async function initializeStripe(node: HTMLElement) {
     if (!get(stripe)) return;
+
+    // cleanup any existing state
+    await unmountPaymentElement();
+
     isStripeInitialized.set(true);
 
-    const methods = await sdk.forConsole.billing.listPaymentMethods();
+    const methods = await sdk.forConsole.account.listPaymentMethods();
 
     // Get the client secret from empty payment method if available
     clientSecret = methods.paymentMethods?.filter(
@@ -37,7 +41,7 @@ export async function initializeStripe(node: HTMLElement) {
 
     // If there is no payment method, create an empty one and get the client secret
     if (!clientSecret) {
-        paymentMethod = await sdk.forConsole.billing.createPaymentMethod();
+        paymentMethod = await sdk.forConsole.account.createPaymentMethod();
         clientSecret = paymentMethod.clientSecret;
     }
 
@@ -54,17 +58,27 @@ export async function initializeStripe(node: HTMLElement) {
 
 export async function unmountPaymentElement() {
     isStripeInitialized.set(false);
-    paymentElement?.unmount();
+
+    if (paymentElement) {
+        try {
+            paymentElement.unmount();
+            paymentElement.destroy();
+        } catch (e) {
+            console.debug('Payment element cleanup:', e.message);
+        }
+    }
+
+    elements = null;
     clientSecret = null;
     paymentMethod = null;
-    elements = null;
+    paymentElement = null;
 }
 
 export async function submitStripeCard(name: string, organizationId?: string) {
     try {
         // If a payment method was created during initialization, use it, otherwise create a new one
         if (!paymentMethod) {
-            paymentMethod = await sdk.forConsole.billing.createPaymentMethod();
+            paymentMethod = await sdk.forConsole.account.createPaymentMethod();
             clientSecret = paymentMethod.clientSecret;
         }
 
@@ -102,15 +116,35 @@ export async function submitStripeCard(name: string, organizationId?: string) {
         }
 
         if (setupIntent && setupIntent.status === 'succeeded') {
-            if ((setupIntent.payment_method as PaymentMethod).card?.country === 'US') {
+            const pm = setupIntent.payment_method as StripePaymentMethod | string | undefined;
+            // If Stripe returned an expanded PaymentMethod object, check the card country.
+            // If it returned a string id (common), `typeof pm === 'string'` and we skip this.
+            if (typeof pm !== 'string' && pm?.card?.country === 'US') {
                 // need to get state
-                return setupIntent.payment_method as PaymentMethod;
+                return pm as StripePaymentMethod;
             }
-            const method = await sdk.forConsole.billing.setPaymentMethod(
-                paymentMethod.$id,
-                (setupIntent.payment_method as PaymentMethod).id,
+
+            // The backend expects a provider method ID (string). Extract the id
+            // whether Stripe returned the id string or an expanded object.
+            let providerId: string | undefined;
+            if (typeof pm === 'string') {
+                providerId = pm;
+            } else {
+                providerId = (pm as StripePaymentMethod)?.id;
+            }
+
+            if (!providerId) {
+                const e = new Error('Unable to verify payment method.');
+                trackError(e, Submit.PaymentMethodCreate);
+                throw e;
+            }
+
+            const method = await sdk.forConsole.account.updatePaymentMethodProvider({
+                paymentMethodId: paymentMethod.$id,
+                providerMethodId: providerId,
                 name
-            );
+            });
+
             paymentElement.destroy();
             isStripeInitialized.set(false);
             trackEvent(Submit.PaymentMethodCreate);
@@ -136,12 +170,12 @@ export async function setPaymentMethod(providerMethodId: string, name: string, s
         return;
     }
     try {
-        const method = await sdk.forConsole.billing.setPaymentMethod(
-            paymentMethod.$id,
-            providerMethodId,
+        const method = await sdk.forConsole.account.updatePaymentMethodProvider({
+            paymentMethodId: paymentMethod.$id,
+            providerMethodId: providerMethodId,
             name,
             state
-        );
+        });
         paymentElement.destroy();
         isStripeInitialized.set(false);
         trackEvent(Submit.PaymentMethodCreate);
@@ -152,17 +186,22 @@ export async function setPaymentMethod(providerMethodId: string, name: string, s
     }
 }
 
-export async function confirmPayment(
-    orgId: string,
-    clientSecret: string,
-    paymentMethodId: string,
-    route?: string
-) {
-    try {
-        const url =
-            window.location.origin + (route ? route : `${base}/organization-${orgId}/billing`);
+export async function confirmPayment(config: {
+    clientSecret: string;
+    paymentMethodId: string;
+    orgId?: string;
+    route?: string;
+}) {
+    const { clientSecret, paymentMethodId, orgId, route } = config;
 
-        const paymentMethod = await sdk.forConsole.billing.getPaymentMethod(paymentMethodId);
+    try {
+        const resolvedUrl = resolve('/(console)/organization-[organization]/billing', {
+            organization: orgId
+        });
+
+        const url = window.location.origin + (route ? route : resolvedUrl);
+
+        const paymentMethod = await sdk.forConsole.account.getPaymentMethod({ paymentMethodId });
 
         const { error } = await get(stripe).confirmPayment({
             clientSecret: clientSecret,
@@ -171,6 +210,7 @@ export async function confirmPayment(
                 payment_method: paymentMethod.providerMethodId
             }
         });
+
         if (error) {
             throw error.message;
         }

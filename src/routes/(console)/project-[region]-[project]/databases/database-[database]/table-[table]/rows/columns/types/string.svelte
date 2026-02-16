@@ -20,6 +20,10 @@
         limited?: boolean;
         column:
             | Models.ColumnString
+            | Models.ColumnVarchar
+            | Models.ColumnText
+            | Models.ColumnMediumtext
+            | Models.ColumnLongtext
             | Models.ColumnInteger
             | Models.ColumnFloat
             | Models.ColumnBoolean
@@ -32,8 +36,8 @@
     const maxlength = $derived(
         limited
             ? undefined
-            : column.type === 'string'
-              ? (column as Models.ColumnString).size
+            : column.type === 'string' || column.type === 'varchar'
+              ? (column as Models.ColumnString | Models.ColumnVarchar).size
               : undefined
     );
 
@@ -95,9 +99,20 @@
                 value = newArray as string[] | number[] | boolean[];
             }
         } else {
-            const parsedValue = isSpatialType(column)
-                ? JSON.parse(stringValue)
-                : parseValue(stringValue);
+            let parsedValue = parseValue(stringValue);
+
+            if (isSpatialType(column)) {
+                if (!stringValue?.trim()) {
+                    parsedValue = null;
+                } else {
+                    try {
+                        parsedValue = JSON.parse(stringValue);
+                    } catch {
+                        return;
+                    }
+                }
+            }
+
             if (JSON.stringify(parsedValue) !== JSON.stringify(value)) {
                 value = parsedValue;
             }
