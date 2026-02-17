@@ -46,7 +46,8 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
         sdk.forConsoleIn(project.region).console.variables(),
         isCloud
             ? sdk.forConsole.organizations.getScopes({
-                  organizationId: project.teamId
+                  organizationId: project.teamId,
+                  projectId: params.project
               })
             : null,
 
