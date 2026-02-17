@@ -27,6 +27,7 @@
     import Configuration from '../../configuration.svelte';
     import Domain from '../../domain.svelte';
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
+    import { normalizeDetectedVariables, mergeVariables } from '$lib/helpers/variables';
 
     export let data;
     let showExitModal = false;
@@ -47,6 +48,7 @@
     let silentMode = false;
     let domain = data.domain;
     let domainIsValid = true;
+    let isVariablesLoading = true;
 
     onMount(async () => {
         installation.set(data.installation);
@@ -58,6 +60,7 @@
 
     async function detectFramework() {
         try {
+            isVariablesLoading = true;
             const response = await sdk
                 .forProject(page.params.region, page.params.project)
                 .vcs.createRepositoryDetection({
@@ -71,6 +74,10 @@
             installCommand = adapter?.installCommand;
             buildCommand = adapter?.buildCommand;
             outputDirectory = adapter?.outputDirectory;
+            const detectedVariables = normalizeDetectedVariables(response?.variables);
+            if (detectedVariables.length) {
+                variables = mergeVariables(variables, detectedVariables);
+            }
             trackEvent(Submit.FrameworkDetect, {
                 source: 'repository',
                 framework: framework.key
@@ -78,6 +85,8 @@
         } catch (error) {
             framework = data.frameworks.frameworks.find((f) => f.key === 'other');
             trackError(error, Submit.FrameworkDetect);
+        } finally {
+            isVariablesLoading = false;
         }
     }
 
@@ -201,6 +210,7 @@
                     bind:outputDirectory
                     bind:selectedFramework={framework}
                     bind:variables
+                    isLoading={isVariablesLoading}
                     frameworks={data.frameworks.frameworks} />
             {/key}
 
