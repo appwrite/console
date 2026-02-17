@@ -633,8 +633,7 @@
                             {/if}
                         </div>
                         <svelte:fragment slot="tooltip">
-                            Your payment is still being processed, check with your payment
-                            provider.
+                            Your payment is still being processed, check with your payment provider.
                         </svelte:fragment>
                     </Tooltip>
                     {#if !currentPlan?.usagePerProject}
