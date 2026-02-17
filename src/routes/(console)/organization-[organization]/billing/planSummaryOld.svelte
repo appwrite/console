@@ -31,6 +31,7 @@
     const isTrial =
         new Date($organization?.billingStartDate).getTime() - today.getTime() > 0 &&
         $organization?.billingTrialDays; /* number of trial days. */
+    $: isUpgrading = $organization?.status === 'upgrading';
 
     const extraUsage = currentInvoice ? currentInvoice.amount - currentPlan?.price : 0;
 </script>
@@ -41,9 +42,11 @@
         A breakdown of your estimated upcoming payment for the current billing period. Totals displayed
         exclude accumulated credits and applicable taxes.
         <svelte:fragment slot="aside">
-            <p class="text u-bold">
-                Due at: {toLocaleDate($organization?.billingNextInvoiceDate)}
-            </p>
+            <Layout.Stack gap="xs">
+                <p class="text u-bold">
+                    Due at: {toLocaleDate($organization?.billingNextInvoiceDate)}
+                </p>
+            </Layout.Stack>
             <Card.Base variant="secondary" padding="s">
                 <Layout.Stack>
                     <Layout.Stack direction="row" justifyContent="space-between">
@@ -165,50 +168,55 @@
             </Card.Base>
         </svelte:fragment>
         <svelte:fragment slot="actions">
-            {#if !currentPlan.requiresPaymentMethod}
-                <div
-                    class="u-flex u-flex-vertical-mobile u-cross-center u-gap-16 u-flex-wrap u-width-full-line u-main-end">
-                    {#if !currentPlan?.usagePerProject}
-                        <Button text href={`${base}/organization-${$organization?.$id}/usage`}>
-                            View estimated usage
-                        </Button>
-                    {/if}
+            <div
+                class="u-flex u-flex-vertical-mobile u-cross-center u-gap-16 u-flex-wrap u-width-full-line u-main-end">
+                <Tooltip disabled={!isUpgrading}>
+                    <div>
+                        {#if !currentPlan.requiresPaymentMethod}
+                            <Button
+                                disabled={$organization?.markedForDeletion || isUpgrading}
+                                href={getChangePlanUrl($organization?.$id)}
+                                on:click={() =>
+                                    trackEvent(Click.OrganizationClickUpgrade, {
+                                        from: 'button',
+                                        source: 'billing_tab'
+                                    })}>
+                                Upgrade
+                            </Button>
+                        {:else if $organization?.billingPlanDowngrade !== null}
+                            <Button
+                                text
+                                disabled={isUpgrading}
+                                on:click={() => (showCancel = true)}>
+                                Cancel change
+                            </Button>
+                        {:else}
+                            <Button
+                                text
+                                disabled={$organization?.markedForDeletion || isUpgrading}
+                                href={getChangePlanUrl($organization?.$id)}
+                                on:click={() =>
+                                    trackEvent(Click.OrganizationClickUpgrade, {
+                                        from: 'button',
+                                        source: 'billing_tab'
+                                    })}>
+                                Change plan
+                            </Button>
+                        {/if}
+                    </div>
+                    <svelte:fragment slot="tooltip">
+                        Your payment is still being processed, check with your payment provider.
+                    </svelte:fragment>
+                </Tooltip>
+                {#if !currentPlan?.usagePerProject}
                     <Button
-                        disabled={$organization?.markedForDeletion}
-                        href={getChangePlanUrl($organization?.$id)}
-                        on:click={() =>
-                            trackEvent(Click.OrganizationClickUpgrade, {
-                                from: 'button',
-                                source: 'billing_tab'
-                            })}>
-                        Upgrade
+                        text={!currentPlan.requiresPaymentMethod}
+                        secondary={currentPlan.requiresPaymentMethod}
+                        href={`${base}/organization-${$organization?.$id}/usage`}>
+                        View estimated usage
                     </Button>
-                </div>
-            {:else}
-                <div
-                    class="u-flex u-flex-vertical-mobile u-cross-center u-gap-16 u-flex-wrap u-width-full-line u-main-end">
-                    {#if $organization?.billingPlanDowngrade !== null}
-                        <Button text on:click={() => (showCancel = true)}>Cancel change</Button>
-                    {:else}
-                        <Button
-                            text
-                            disabled={$organization?.markedForDeletion}
-                            href={getChangePlanUrl($organization?.$id)}
-                            on:click={() =>
-                                trackEvent(Click.OrganizationClickUpgrade, {
-                                    from: 'button',
-                                    source: 'billing_tab'
-                                })}>
-                            Change plan
-                        </Button>
-                    {/if}
-                    {#if !currentPlan?.usagePerProject}
-                        <Button secondary href={`${base}/organization-${$organization?.$id}/usage`}>
-                            View estimated usage
-                        </Button>
-                    {/if}
-                </div>
-            {/if}
+                {/if}
+            </div>
         </svelte:fragment>
     </CardGrid>
 {/if}
