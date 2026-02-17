@@ -6,7 +6,7 @@
     import { base } from '$app/paths';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import Upgrade from '$lib/components/roles/upgrade.svelte';
-    import { getRoleLabel } from '$lib/stores/billing';
+    import { getServiceLimit, readOnly, getRoleLabel } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { currentPlan, newMemberModal, organization } from '$lib/stores/organization';
     import { isOwner } from '$lib/stores/roles';
@@ -14,7 +14,7 @@
     import type { Models } from '@appwrite.io/console';
     import Delete from '../deleteMember.svelte';
     import Edit from './edit.svelte';
-    import { isCloud } from '$lib/system';
+    import { isCloud, GRACE_PERIOD_OVERRIDE } from '$lib/system';
     import {
         IconDotsHorizontal,
         IconInfo,
@@ -45,8 +45,10 @@
     // Calculate if button should be disabled and tooltip should show
     $: memberCount = data.organizationMembers?.total ?? 0;
     $: supportsMembers = $organization?.billingPlanDetails?.addons?.seats;
-    $: isFreeWithMembers = !supportsMembers && memberCount >= 1;
-    $: isButtonDisabled = isCloud ? isFreeWithMembers : false;
+    $: limit = getServiceLimit('members', null, $currentPlan) || Infinity;
+    $: isLimited = limit !== 0 && limit < Infinity;
+    $: isButtonDisabled =
+        isCloud && (($readOnly && !GRACE_PERIOD_OVERRIDE) || (isLimited && memberCount >= limit));
 
     const resend = async (member: Models.Membership) => {
         try {
