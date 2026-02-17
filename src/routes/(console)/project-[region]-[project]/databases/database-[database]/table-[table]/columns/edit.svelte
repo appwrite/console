@@ -51,8 +51,6 @@
         return opt.type === selectedColumn.type;
     }) as Option;
 
-    $: console.log({ option, selectedColumn });
-
     export async function submit() {
         try {
             await option.update(databaseId, tableId, selectedColumn, originalKey);
