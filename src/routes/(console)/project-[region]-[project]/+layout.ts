@@ -8,7 +8,7 @@ import { get } from 'svelte/store';
 import { headerAlert } from '$lib/stores/headerAlert';
 import PaymentFailed from '$lib/components/billing/alerts/paymentFailed.svelte';
 import { loadAvailableRegions } from '$routes/(console)/regions';
-import { type Models, Platform } from '@appwrite.io/console';
+import { type Models, Platform, Status } from '@appwrite.io/console';
 import { redirect } from '@sveltejs/kit';
 import { resolve } from '$app/paths';
 import { generateFingerprintToken } from '$lib/helpers/fingerprint';
@@ -19,7 +19,7 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
     depends(Dependencies.PROJECT);
 
     const project = await sdk.forConsole.projects.get({ projectId: params.project });
-    if (project.status !== 'active') {
+    if (project.status !== 'active' && project.status !== 'paused') {
         // project isn't active, redirect back to organizations page
         redirect(
             303,
