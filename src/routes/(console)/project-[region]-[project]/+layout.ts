@@ -113,7 +113,9 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
         if (projectInactivityDays > 0 && consoleAccessedAt) {
             const lastAccess = new Date(consoleAccessedAt);
             const now = new Date();
-            const diffDays = Math.floor((now.getTime() - lastAccess.getTime()) / (1000 * 60 * 60 * 24));
+            const diffDays = Math.floor(
+                (now.getTime() - lastAccess.getTime()) / (1000 * 60 * 60 * 24)
+            );
             isPaused = diffDays >= projectInactivityDays;
         }
 
@@ -121,7 +123,9 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
             generateFingerprintToken()
                 .then((fingerprint) => {
                     sdk.forConsole.client.headers['X-Appwrite-Console-Fingerprint'] = fingerprint;
-                    return sdk.forConsole.projects.updateConsoleAccess({ projectId: params.project });
+                    return sdk.forConsole.projects.updateConsoleAccess({
+                        projectId: params.project
+                    });
                 })
                 .catch(() => {})
                 .finally(() => {

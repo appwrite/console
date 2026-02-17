@@ -58,9 +58,7 @@
 
 <Modal title="Project paused" bind:open={show} size="s" dismissible={false}>
     <Layout.Stack gap="m">
-        <Typography.Text>
-            This project has been paused due to inactivity.
-        </Typography.Text>
+        <Typography.Text>This project has been paused due to inactivity.</Typography.Text>
         <Typography.Text>
             Your data is safe and will remain intact. Resume the project to continue using it.
         </Typography.Text>
