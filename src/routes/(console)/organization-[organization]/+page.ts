@@ -5,12 +5,17 @@ import { getLimit, getPage, getSearch, pageToOffset } from '$lib/helpers/load';
 import { CARD_LIMIT, Dependencies } from '$lib/constants';
 import type { PageLoad } from './$types';
 import { redirect } from '@sveltejs/kit';
-import { base } from '$app/paths';
+import { resolve } from '$app/paths';
 
 export const load: PageLoad = async ({ params, url, route, depends, parent }) => {
     const { scopes } = await parent();
     if (!scopes.includes('projects.read') && scopes.includes('billing.read')) {
-        return redirect(301, `${base}/organization-${params.organization}/billing`);
+        return redirect(
+            301,
+            resolve('/(console)/organization-[organization]/billing', {
+                organization: params.organization
+            })
+        );
     }
 
     depends(Dependencies.ORGANIZATION);
@@ -20,76 +25,33 @@ export const load: PageLoad = async ({ params, url, route, depends, parent }) =>
     const offset = pageToOffset(page, limit);
     const search = getSearch(url);
 
-    const archivedPageRaw = parseInt(url.searchParams.get('archivedPage') || '1', 10);
-    const archivedPage =
-        Number.isFinite(archivedPageRaw) && archivedPageRaw > 0 ? archivedPageRaw : 1;
-    const archivedOffset = pageToOffset(archivedPage, limit);
-
     const searchQueries = search
         ? [Query.or([Query.search('search', search), Query.contains('labels', search)])]
         : [];
-    const commonQueries = [Query.equal('teamId', params.organization)];
     const activeQueries = isCloud
         ? [Query.or([Query.equal('status', ['active', 'paused']), Query.isNull('status')])]
         : [];
 
-    const [activeProjects, archivedProjects, activeTotal, archivedTotal] = await Promise.all([
-        sdk.forConsole.projects.list({
-            queries: [
-                Query.offset(offset),
-                Query.limit(limit),
-                Query.orderDesc(''),
-                ...commonQueries,
-                ...searchQueries,
-                ...activeQueries
-            ]
-        }),
-        isCloud
-            ? sdk.forConsole.projects.list({
-                  queries: [
-                      Query.offset(archivedOffset),
-                      Query.limit(limit),
-                      Query.orderDesc(''),
-                      ...commonQueries,
-                      ...searchQueries,
-                      Query.equal('status', 'archived')
-                  ]
-              })
-            : Promise.resolve({ projects: [], total: 0 }),
-        sdk.forConsole.projects.list({
-            queries: [...commonQueries, ...activeQueries, ...searchQueries]
-        }),
-        isCloud
-            ? sdk.forConsole.projects.list({
-                  queries: [...commonQueries, ...searchQueries, Query.equal('status', 'archived')]
-              })
-            : Promise.resolve({ projects: [], total: 0 })
-    ]);
+    const activeProjects = await sdk.forConsole.projects.list({
+        queries: [
+            ...searchQueries,
+            ...activeQueries,
+            Query.offset(offset),
+            Query.limit(limit),
+            Query.orderDesc(''),
+            Query.equal('teamId', params.organization)
+        ]
+    });
 
     // set `default` if no region!
     for (const project of activeProjects.projects) {
         project.region ??= 'default';
     }
-    if (isCloud) {
-        for (const project of archivedProjects.projects) {
-            project.region ??= 'default';
-        }
-    }
 
     return {
-        offset,
         limit,
-        projects: {
-            ...activeProjects,
-            projects: activeProjects.projects,
-            total: activeTotal.total
-        },
-        activeProjectsPage: activeProjects.projects,
-        archivedProjectsPage: archivedProjects.projects,
-        activeTotalOverall: activeTotal.total,
-        archivedTotalOverall: archivedTotal.total,
-        archivedOffset,
-        archivedPage,
-        search
+        offset,
+        search,
+        projects: activeProjects
     };
 };

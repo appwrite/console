@@ -136,14 +136,14 @@
         formData.append('message', $supportData.message);
         formData.append('tags[]', categoryTopicTag);
         formData.append(
-            'customFields',
-            JSON.stringify([
-                { id: '41612', value: $supportData.category },
-                { id: '48492', value: $organization?.$id ?? '' },
-                { id: '48491', value: $supportData?.project ?? '' },
-                { id: '56023', value: $supportData?.severity ?? '' },
-                { id: '56024', value: $organization?.billingPlanId ?? '' }
-            ])
+            'metaFields',
+            JSON.stringify({
+                category: $supportData.category,
+                orgId: $organization?.$id ?? '',
+                projectId: $supportData?.project ?? '',
+                severity: $supportData?.severity ?? '',
+                billingPlan: $organization?.billingPlanId ?? ''
+            })
         );
         if (files && files.length > 0) {
             formData.append('attachment', files[0]);
