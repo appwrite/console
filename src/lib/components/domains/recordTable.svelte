@@ -54,8 +54,6 @@
             case 'cname':
                 if (service === 'sites') {
                     return $regionalConsoleVariables._APP_DOMAIN_SITES;
-                } else if (service === 'functions') {
-                    return $regionalConsoleVariables._APP_DOMAIN_FUNCTIONS;
                 } else {
                     return $regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME;
                 }
