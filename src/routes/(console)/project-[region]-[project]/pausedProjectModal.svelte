@@ -4,9 +4,10 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
-    import { trackError } from '$lib/actions/analytics';
+    import { Submit, trackError } from '$lib/actions/analytics';
     import { generateFingerprintToken } from '$lib/helpers/fingerprint';
     import { Alert, Layout, Modal, Typography } from '@appwrite.io/pink-svelte';
+    import { Status } from '@appwrite.io/console';
 
     let {
         show = $bindable(false),
@@ -28,7 +29,7 @@
             sdk.forConsole.client.headers['X-Appwrite-Console-Fingerprint'] = fingerprint;
 
             try {
-                await sdk.forConsole.projects.createConsoleAccess({ projectId });
+                await sdk.forConsole.projects.updateStatus({ projectId, status: Status.Active });
             } finally {
                 delete sdk.forConsole.client.headers['X-Appwrite-Console-Fingerprint'];
             }
@@ -48,7 +49,7 @@
                     ? String((e as { message: string }).message)
                     : 'Failed to resume project. Please try again.';
             error = message;
-            trackError(e, 'resume_paused_project');
+            trackError(e, Submit.ProjectResume);
         } finally {
             loading = false;
         }
