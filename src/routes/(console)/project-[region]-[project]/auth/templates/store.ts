@@ -51,13 +51,13 @@ export const templates = [
         component: EmailVerificationTemplate
     },
     {
-        key: 'magicSession' as EmailTemplateType,
+        key: EmailTemplateType.MagicSession,
         title: 'Magic URL',
         description: 'Send an email to users that sign in with a magic URL.',
         component: EmailMagicUrlTemplate
     },
     {
-        key: 'otpSession' as EmailTemplateType,
+        key: EmailTemplateType.OtpSession,
         title: 'OTP session',
         description: 'Send an email to users that sign in with a email OTP.',
         component: EmailOtpSessionTemplate
@@ -75,13 +75,13 @@ export const templates = [
         component: EmailInviteTemplate
     },
     {
-        key: 'mfaChallenge' as EmailTemplateType,
+        key: EmailTemplateType.MfaChallenge,
         title: '2FA verification',
         description: 'Send a two-factor authentication email to a user.',
         component: Email2FaTemplate
     },
     {
-        key: 'sessionAlert' as EmailTemplateType,
+        key: EmailTemplateType.SessionAlert,
         title: 'Session alert',
         description: 'Send an email to users when a new session is created.',
         component: EmailSessionAlertTemplate,
