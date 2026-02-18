@@ -22,11 +22,12 @@
     import { onMount, type ComponentType } from 'svelte';
     import { canWriteProjects } from '$lib/stores/roles';
     import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
-    import { Alert, Badge, Icon, Layout, Tooltip, Typography } from '@appwrite.io/pink-svelte';
+    import { Alert, Badge, Icon, Layout, Tag, Tooltip, Typography } from '@appwrite.io/pink-svelte';
     import {
         IconAndroid,
         IconApple,
         IconCode,
+        IconExclamationCircle,
         IconFlutter,
         IconPlus,
         IconReact,
@@ -208,6 +209,15 @@
                     </svelte:fragment>
                     <svelte:fragment slot="title">
                         {project.name}
+                    </svelte:fragment>
+
+                    <svelte:fragment slot="status">
+                        {#if project.status === 'paused'}
+                            <Tag size="s" style="white-space: nowrap;">
+                                <Icon icon={IconExclamationCircle} size="s" slot="start" />
+                                Paused
+                            </Tag>
+                        {/if}
                     </svelte:fragment>
 
                     {#each platforms.slice(0, 2) as platform}

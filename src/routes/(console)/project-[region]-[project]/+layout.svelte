@@ -25,6 +25,11 @@
         canWriteSites
     } from '$lib/stores/roles';
     import CsvImportBox from '$lib/components/csvImportBox.svelte';
+    import { isCloud } from '$lib/system';
+    import PausedProjectModal from './pausedProjectModal.svelte';
+    import type { LayoutData } from './$types';
+
+    export let data: LayoutData;
 
     onMount(() => {
         return realtime.forProject(page.params.region, ['project', 'console'], (response) => {
@@ -113,6 +118,10 @@
 </script>
 
 <slot />
+
+{#if isCloud && data.project?.status === 'paused'}
+    <PausedProjectModal show={true} projectId={data.project.$id} />
+{/if}
 
 <div class="layout-level-progress-bars">
     <UploadBox />
