@@ -3,10 +3,7 @@
     import { Uniform, MeshBasicMaterial, Vector2 } from 'three';
     import noise from './threlte/shaders/noise.glsl?raw';
     import { onMount } from 'svelte';
-    import { useViewport } from '@threlte/extras';
-
-    const { invalidate } = useThrelte();
-    const viewport = useViewport();
+    const { invalidate, size } = useThrelte();
 
     let uAspect: Uniform;
     let uOpacity: Uniform;
@@ -14,8 +11,8 @@
     let uViewportSize: Uniform;
 
     $effect(() => {
-        const width = $viewport.width;
-        const height = $viewport.height;
+        const width = $size.width || 1;
+        const height = $size.height || 1;
         if (uAspect) {
             uAspect.value = width / height;
             invalidate();
@@ -30,10 +27,13 @@
     let material = $state<MeshBasicMaterial>(new MeshBasicMaterial());
 
     onMount(() => {
-        uAspect = new Uniform($viewport.width / $viewport.height);
+        const width = $size.width || 1;
+        const height = $size.height || 1;
+
+        uAspect = new Uniform(width / height);
         uOpacity = new Uniform(0);
         uTime = new Uniform(0);
-        uViewportSize = new Uniform(new Vector2($viewport.width, $viewport.height));
+        uViewportSize = new Uniform(new Vector2(width, height));
 
         material.onBeforeCompile = (shader) => {
             shader.uniforms.uTime = uTime;
@@ -104,6 +104,6 @@
 </script>
 
 <T.OrthographicCamera position={[0, 0, 10]} fov={10} near={0.1} far={1000} makeDefault />
-<T.Mesh scale={[$viewport.width, $viewport.height, 1]} {material}>
+<T.Mesh scale={[$size.width || 1, $size.height || 1, 1]} {material}>
     <T.PlaneGeometry args={[1, 1]} />
 </T.Mesh>
