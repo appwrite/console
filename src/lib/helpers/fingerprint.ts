@@ -205,6 +205,11 @@ export async function generateFingerprintToken(): Promise<string> {
 
     const payload = JSON.stringify(signals);
     const encoded = btoa(payload);
+
+    if (!SECRET) {
+        return encoded;
+    }
+
     const signature = await hmacSha256(encoded, SECRET);
 
     return `${encoded}.${signature}`;
