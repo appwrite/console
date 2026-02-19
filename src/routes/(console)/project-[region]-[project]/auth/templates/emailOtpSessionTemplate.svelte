@@ -23,12 +23,12 @@
         try {
             const template = await loadEmailTemplate(
                 project.$id,
-                EmailTemplateType.Otpsession,
+                EmailTemplateType.OtpSession,
                 locale
             );
             emailTemplate.set(template);
             $baseEmailTemplate = { ...$emailTemplate };
-            trackEvent(Submit.EmailChangeLocale, { locale, type: EmailTemplateType.Otpsession });
+            trackEvent(Submit.EmailChangeLocale, { locale, type: EmailTemplateType.OtpSession });
         } catch (error) {
             trackError(error, Submit.EmailChangeLocale);
             addNotification({

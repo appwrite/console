@@ -22,6 +22,7 @@
     import RepoCard from './repoCard.svelte';
     import { getIconFromRuntime } from '$lib/stores/runtimes';
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
+    import { normalizeDetectedVariables, mergeVariables } from '$lib/helpers/variables';
 
     export let data;
 
@@ -82,6 +83,10 @@
             entrypoint = detections.entrypoint;
             buildCommand = detections.commands;
             runtime = detections.runtime as Runtime;
+            const detectedVariables = normalizeDetectedVariables(detections?.variables);
+            if (detectedVariables.length) {
+                variables = mergeVariables(variables, detectedVariables);
+            }
 
             trackEvent(Submit.FrameworkDetect, { runtime, source: 'repository' });
         } catch (error) {
@@ -189,7 +194,11 @@
                 installationId={data.installation.$id}
                 repositoryId={data.repository.id} />
 
-            <Configuration bind:buildCommand bind:roles />
+            <Configuration
+                bind:buildCommand
+                bind:roles
+                bind:variables
+                isLoading={detectingRuntime} />
         </Layout.Stack>
     </Form>
     <svelte:fragment slot="aside">

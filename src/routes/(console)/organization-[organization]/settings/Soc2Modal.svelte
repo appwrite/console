@@ -68,13 +68,11 @@
                 firstName: ($user?.name ?? '').slice(0, 40),
                 message: `SOC-2 request for ${$organization?.name ?? ''} (${$organization?.$id ?? ''})`,
                 tags: ['cloud'],
-                customFields: [
-                    { id: '41612', value: 'SOC-2' },
-                    { id: '48493', value: $user?.name ?? '' },
-                    { id: '48492', value: $organization?.$id ?? '' },
-                    { id: '48490', value: $user?.$id ?? '' }
-                ],
                 metaFields: {
+                    category: 'SOC-2',
+                    userName: $user?.name ?? '',
+                    orgId: $organization?.$id ?? '',
+                    userId: $user?.$id ?? '',
                     employees: employees,
                     country: country,
                     role: role,
