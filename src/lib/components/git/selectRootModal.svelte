@@ -6,7 +6,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { installation, repository } from '$lib/stores/vcs';
     import { VCSDetectionType, type Models } from '@appwrite.io/console';
-    import { DirectoryPicker } from '@appwrite.io/pink-svelte';
+    import DirectoryPicker from '$lib/components/git/DirectoryPicker.svelte';
     import { writable } from 'svelte/store';
 
     type Directory = {
@@ -15,6 +15,7 @@
         fileCount?: number;
         thumbnailUrl?: string;
         children?: Directory[];
+        hasChildren?: boolean;
         loading?: boolean;
     };
 
@@ -33,20 +34,24 @@
     let isLoading = $state(true);
     let directories = $state<Directory[]>([
         {
-            title: 'Root',
+            title: 'Repository (root)',
             fullPath: '/',
-            fileCount: 0,
+            fileCount: undefined,
             thumbnailUrl: $iconPath('empty', 'grayscale'),
             children: [],
+            hasChildren: true,
             loading: false
         }
     ]);
     let currentPath = $state('/');
     let expandedStore = writable<string[]>([]);
     let initialized = $state(false);
-    let treeVersion = $state(0);
     let initialPath = $state('/');
     const inFlightPaths = new Set<string>();
+    const contentsCache = new Map<
+        string,
+        { fileCount: number; directories: Array<{ name: string }> }
+    >();
 
     let hasChanges = $derived(currentPath !== initialPath);
 
@@ -68,10 +73,6 @@
         const normalized = normalizePath(path);
         if (normalized === '/') return './';
         return `./${normalized.slice(1)}`;
-    }
-
-    function bumpTreeVersion() {
-        treeVersion += 1;
     }
 
     function resolveIconUrl(rawIconName: string | null | undefined): string | null {
@@ -103,34 +104,103 @@
         }
     }
 
+    async function fetchContents(path: string) {
+        const cached = contentsCache.get(path);
+        if (cached) return cached;
+
+        const content = await sdk
+            .forProject(page.params.region, page.params.project)
+            .vcs.getRepositoryContents({
+                installationId: $installation.$id,
+                providerRepositoryId: $repository.id,
+                providerRootDirectory: toProviderPath(path),
+                providerReference: branch
+            });
+
+        const fileCount = content.contents?.length ?? 0;
+        const directories = content.contents
+            .filter((e) => e.isDirectory)
+            .map((dir) => ({ name: dir.name }));
+
+        const result = { fileCount, directories };
+        contentsCache.set(path, result);
+        return result;
+    }
+
+    function ensureChildren(path: string, directories: Array<{ name: string }>) {
+        const targetDir = getDirByPath(path);
+        if (!targetDir) return;
+
+        if (directories.length === 0) {
+            targetDir.hasChildren = false;
+            targetDir.children = [];
+            return;
+        }
+
+        const existingByTitle = new Map(
+            (targetDir.children ?? []).map((child) => [child.title, child])
+        );
+        targetDir.children = directories.map((dir) => {
+            const fullPath = path === '/' ? `/${dir.name}` : `${path}/${dir.name}`;
+            const existing = existingByTitle.get(dir.name);
+            if (existing) {
+                existing.fullPath = fullPath;
+                existing.hasChildren = true;
+                existing.loading = existing.loading ?? false;
+                existing.thumbnailUrl = existing.thumbnailUrl ?? $iconPath('empty', 'grayscale');
+                existing.children = existing.children ?? [];
+                return existing;
+            }
+            return {
+                title: dir.name,
+                fullPath,
+                fileCount: undefined,
+                thumbnailUrl: $iconPath('empty', 'grayscale'),
+                children: [],
+                hasChildren: true,
+                loading: false
+            };
+        });
+    }
+
+    async function prefetchPath(path: string) {
+        const normalized = normalizePath(path);
+        const segments = normalized.split('/').filter((s) => s !== '');
+        const pathsToLoad = ['/'];
+        let currentPath = '/';
+
+        for (const segment of segments) {
+            currentPath = currentPath === '/' ? `/${segment}` : `${currentPath}/${segment}`;
+            pathsToLoad.push(currentPath);
+        }
+
+        for (const pathToLoad of pathsToLoad) {
+            const { fileCount, directories } = await fetchContents(pathToLoad);
+            const targetDir = getDirByPath(pathToLoad);
+            if (targetDir) {
+                targetDir.fileCount = fileCount;
+            }
+            ensureChildren(pathToLoad, directories);
+        }
+    }
+
     $effect(() => {
         if (!isLoading) return;
 
         (async () => {
             try {
-                const content = await sdk
-                    .forProject(page.params.region, page.params.project)
-                    .vcs.getRepositoryContents({
-                        installationId: $installation.$id,
-                        providerRepositoryId: $repository.id,
-                        providerRootDirectory: './',
-                        providerReference: branch
-                    });
+                const content = await fetchContents('/');
+
+                const repoTitle = $repository?.name
+                    ? `${$repository.name} (root)`
+                    : 'Repository (root)';
 
                 directories[0] = {
                     ...directories[0],
-                    fileCount: content.contents?.length ?? 0,
-                    children: content.contents
-                        .filter((e) => e.isDirectory)
-                        .map((dir) => ({
-                            title: dir.name,
-                            fullPath: `/${dir.name}`,
-                            fileCount: undefined,
-                            // set logo for root directories
-                            thumbnailUrl: $iconPath('empty', 'grayscale'),
-                            loading: false
-                        }))
+                    title: repoTitle,
+                    fileCount: content.fileCount
                 };
+                ensureChildren('/', content.directories);
 
                 const detectedIcon = await detectRuntimeOrFramework('/');
                 if (detectedIcon) {
@@ -139,7 +209,7 @@
 
                 isLoading = false;
                 expandedStore.update((exp) => [...new Set([...exp, '/'])]);
-                bumpTreeVersion();
+                prefetchPath(rootDir || '/');
             } catch (error) {
                 console.error('Failed to load root directory:', error);
                 isLoading = false;
@@ -163,24 +233,20 @@
         const targetDir = getDirByPath(path);
         if (!targetDir || targetDir.fileCount !== undefined) return;
 
+        if (!targetDir.children) {
+            targetDir.children = [];
+        }
+
         if (inFlightPaths.has(path)) return;
         inFlightPaths.add(path);
         targetDir.loading = true;
 
         try {
-            const content = await sdk
-                .forProject(page.params.region, page.params.project)
-                .vcs.getRepositoryContents({
-                    installationId: $installation.$id,
-                    providerRepositoryId: $repository.id,
-                    providerRootDirectory: toProviderPath(path),
-                    providerReference: branch
-                });
-
-            const fileCount = content.contents?.length ?? 0;
-            const contentDirectories = content.contents.filter((e) => e.isDirectory);
+            const { fileCount, directories: contentDirectories } = await fetchContents(path);
 
             if (contentDirectories.length === 0) {
+                targetDir.hasChildren = false;
+                targetDir.children = [];
                 expandedStore.update((exp) => [...new Set([...exp, path])]);
                 return;
             }
@@ -193,14 +259,7 @@
                 targetDir.thumbnailUrl = detectedIcon;
             }
 
-            const nextChildren = contentDirectories.map((dir) => ({
-                title: dir.name,
-                fullPath: path === '/' ? `/${dir.name}` : `${path}/${dir.name}`,
-                fileCount: undefined,
-                thumbnailUrl: $iconPath('empty', 'grayscale')
-            }));
-            targetDir.children = nextChildren;
-            bumpTreeVersion();
+            ensureChildren(path, contentDirectories);
 
             expandedStore.update((exp) => [...new Set([...exp, path])]);
         } catch (error) {
@@ -235,7 +294,8 @@
                     fullPath: currentPath,
                     fileCount: undefined,
                     thumbnailUrl: $iconPath('empty', 'grayscale'),
-                    children: []
+                    children: [],
+                    hasChildren: true
                 };
                 currentDir.children = [...currentDir.children, nextDir];
             }
@@ -244,10 +304,11 @@
         }
 
         expandedStore.update((exp) => [...new Set([...exp, ...pathsToExpand])]);
-        bumpTreeVersion();
 
+        // ensure each segment loads in order so deeper children appear
         for (const pathToLoad of pathsToExpand) {
-            loadPath(pathToLoad);
+            // eslint-disable-next-line no-await-in-loop
+            await loadPath(pathToLoad);
         }
 
         currentPath = normalized;
@@ -286,15 +347,14 @@
     <span slot="description">
         Select the directory where your site code is located using the menu below.
     </span>
-    {#key treeVersion}
-        <DirectoryPicker
-            {directories}
-            {isLoading}
-            bind:expanded={expandedStore}
-            bind:selected={currentPath}
-            openTo={initialPath}
-            onSelect={handleSelect} />
-    {/key}
+    <DirectoryPicker
+        {directories}
+        {isLoading}
+        bind:expanded={expandedStore}
+        bind:selected={currentPath}
+        openTo={initialPath}
+        onSelect={handleSelect}
+        onChange={handleSelect} />
 
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (show = false)}>Cancel</Button>
