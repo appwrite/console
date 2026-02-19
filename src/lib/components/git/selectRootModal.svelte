@@ -159,8 +159,9 @@
                 providerReference: branch
             });
 
-        const fileCount = content.contents?.length ?? 0;
-        const directories = content.contents
+        const contents = content.contents ?? [];
+        const fileCount = contents.length;
+        const directories = contents
             .filter((e) => e.isDirectory)
             .map((dir) => ({ name: dir.name }));
 
@@ -272,7 +273,7 @@
     }
 
     async function loadPath(path: string) {
-        // skip loading if this directory was donee
+        // skip loading if this directory was done
         const targetDir = getDirByPath(path);
         if (!targetDir || targetDir.fileCount !== undefined) return;
 
@@ -321,11 +322,11 @@
         const pathsToExpand = ['/'];
 
         let currentDir = directories[0];
-        let currentPath = '/';
+        let walkPath = '/';
 
         for (const segment of segments) {
-            currentPath = currentPath === '/' ? `/${segment}` : `${currentPath}/${segment}`;
-            pathsToExpand.push(currentPath);
+            walkPath = walkPath === '/' ? `/${segment}` : `${walkPath}/${segment}`;
+            pathsToExpand.push(walkPath);
 
             if (!currentDir.children) {
                 currentDir.children = [];
@@ -335,7 +336,7 @@
             if (!nextDir) {
                 nextDir = {
                     title: segment,
-                    fullPath: currentPath,
+                    fullPath: walkPath,
                     fileCount: undefined,
                     thumbnailUrl: $iconPath('empty', 'grayscale'),
                     children: [],
