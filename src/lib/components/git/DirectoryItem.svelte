@@ -3,33 +3,41 @@
     import type { createTreeView } from '@melt-ui/svelte';
     import { IconChevronRight } from '@appwrite.io/pink-icons-svelte';
     import { Icon, Layout, Selector, Spinner, Typography } from '@appwrite.io/pink-svelte';
+    import DirectoryItemSelf from './DirectoryItem.svelte';
 
-    export let directories: Array<{
-        title: string;
-        fileCount?: number;
-        fullPath: string;
-        thumbnailUrl?: string;
-        thumbnailIcon?: typeof Icon;
-        thumbnailHtml?: string;
-        children?: typeof directories;
-        hasChildren?: boolean;
-        showThumbnail?: boolean;
-        loading?: boolean;
-    }>;
-    export let level = 0;
-    export let containerWidth: number | undefined;
-    export let selectedPath: string | undefined;
-    export let onSelect:
-        | ((detail: { title: string; fullPath: string; hasChildren: boolean }) => void)
-        | undefined;
+    let {
+        directories,
+        level = 0,
+        containerWidth,
+        selectedPath,
+        onSelect
+    }: {
+        directories: Array<{
+            title: string;
+            fileCount?: number;
+            fullPath: string;
+            thumbnailUrl?: string;
+            thumbnailIcon?: typeof Icon;
+            thumbnailHtml?: string;
+            children?: typeof directories;
+            hasChildren?: boolean;
+            showThumbnail?: boolean;
+            loading?: boolean;
+        }>;
+        level?: number;
+        containerWidth?: number;
+        selectedPath?: string;
+        onSelect?: (detail: { title: string; fullPath: string; hasChildren: boolean }) => void;
+    } = $props();
 
     const Radio = Selector.Radio;
 
-    let radioInputs: Array<HTMLInputElement | undefined> = [];
-    let value: string | undefined;
-    let thumbnailStates: Array<{ loading: boolean; error: boolean }> = [];
+    let radioInputs = $state<Array<HTMLInputElement | undefined>>([]);
+    let value = $state<string | undefined>(undefined);
+    let thumbnailStates = $state<Array<{ loading: boolean; error: boolean }>>([]);
 
-    $: if (directories) {
+    $effect(() => {
+        if (!directories) return;
         if (thumbnailStates.length < directories.length) {
             thumbnailStates = [
                 ...thumbnailStates,
@@ -41,7 +49,7 @@
         } else if (thumbnailStates.length > directories.length) {
             thumbnailStates = thumbnailStates.slice(0, directories.length);
         }
-    }
+    });
 
     function handleThumbnailLoad(index: number) {
         if (!thumbnailStates[index]) return;
@@ -62,40 +70,41 @@
 
     const paddingLeftStyle = `padding-left: ${32 * level + 8}px`;
 
-    $: if (selectedPath && directories?.length) {
-        const idx = directories.findIndex((d) => d.fullPath === selectedPath);
-        if (idx !== -1 && radioInputs[idx]) {
-            radioInputs[idx].checked = true;
+    $effect(() => {
+        if (selectedPath && directories?.length) {
+            const idx = directories.findIndex((d) => d.fullPath === selectedPath);
+            if (idx !== -1 && radioInputs[idx]) {
+                radioInputs[idx].checked = true;
+            }
         }
-    }
+    });
 </script>
 
 {#each directories as { title, fileCount, fullPath, thumbnailUrl, thumbnailIcon, thumbnailHtml, children, hasChildren: explicitHasChildren, showThumbnail = true, loading = false }, i}
     {@const hasChildren = explicitHasChildren ?? !!children?.length}
     {@const __MELTUI_BUILDER_1__ = $group({ id: fullPath })}
     {@const __MELTUI_BUILDER_0__ = $item({
-                id: fullPath,
-                hasChildren
-            })}
+        id: fullPath,
+        hasChildren
+    })}
 
     <div class="directory-item-container">
         <button
             class="folder"
             type="button"
             style={paddingLeftStyle}
-            on:click={() => {
+            onclick={() => {
                 if (radioInputs[i]) radioInputs[i].checked = true;
                 onSelect?.({ title, fullPath, hasChildren });
             }}
-            {...__MELTUI_BUILDER_0__} use:__MELTUI_BUILDER_0__.action
-        >
+            {...__MELTUI_BUILDER_0__}
+            use:__MELTUI_BUILDER_0__.action>
             <Layout.Stack direction="row" justifyContent="space-between">
                 <Layout.Stack
                     direction="row"
                     justifyContent="flex-start"
                     gap="xxs"
-                    alignItems="center"
-                >
+                    alignItems="center">
                     <div>
                         <Layout.Stack direction="row" gap="xxs" alignItems="center">
                             <Radio
@@ -103,18 +112,15 @@
                                 name="directory"
                                 size="s"
                                 bind:value
-                                bind:radioInput={radioInputs[i]}
-                            />
+                                bind:radioInput={radioInputs[i]} />
                             <div
                                 class:folder-open={$isExpanded(fullPath)}
                                 class:disabled={!hasChildren}
-                                class="chevron-container"
-                            >
+                                class="chevron-container">
                                 <Icon
                                     icon={IconChevronRight}
                                     size="s"
-                                    color="--fgcolor-neutral-tertiary"
-                                />
+                                    color="--fgcolor-neutral-tertiary" />
                             </div>
                         </Layout.Stack>
                     </div>
@@ -122,13 +128,11 @@
                         class="title"
                         style={containerWidth
                             ? `max-width: ${containerWidth - 100 - level * 40}px`
-                            : ''}>{title}</span
-                    >
+                            : ''}>{title}</span>
                     {#if fileCount !== undefined}
                         <div class="fileCount">
                             <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary"
-                                >({fileCount} files)</Typography.Text
-                            >
+                                >({fileCount} files)</Typography.Text>
                         </div>
                     {/if}
                 </Layout.Stack>
@@ -138,16 +142,15 @@
                     {/if}
 
                     {#if thumbnailStates[i]?.error}
-                        <div class="thumbnail-fallback" />
+                        <div class="thumbnail-fallback"></div>
                     {:else if thumbnailUrl}
                         <img
                             src={thumbnailUrl}
                             alt="Directory thumbnail"
                             class="thumbnail"
                             class:hidden={thumbnailStates[i]?.loading}
-                            on:load={() => handleThumbnailLoad(i)}
-                            on:error={() => handleThumbnailError(i)}
-                        />
+                            onload={() => handleThumbnailLoad(i)}
+                            onerror={() => handleThumbnailError(i)} />
                     {:else if thumbnailIcon}
                         <div class="thumbnail">
                             <Icon icon={thumbnailIcon} size="l" />
@@ -164,13 +167,12 @@
 
         {#if children}
             <div {...__MELTUI_BUILDER_1__} use:__MELTUI_BUILDER_1__.action>
-                <svelte:self
+                <DirectoryItemSelf
                     directories={children}
                     level={level + 1}
                     {containerWidth}
                     {selectedPath}
-                    {onSelect}
-                />
+                    {onSelect} />
             </div>
         {/if}
     </div>

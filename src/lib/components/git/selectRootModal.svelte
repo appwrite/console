@@ -44,7 +44,19 @@
         }
     ]);
     let currentPath = $state('/');
-    let expandedStore = writable<string[]>([]);
+    let expandedPaths = $state<string[]>([]);
+    const expandedStore = writable<string[]>([]);
+
+    $effect(() => {
+        expandedStore.set(expandedPaths);
+    });
+    $effect(() => {
+        const unsub = expandedStore.subscribe((v) => {
+            expandedPaths = v;
+        });
+        return unsub;
+    });
+
     let initialized = $state(false);
     let initialPath = $state('/');
     const inFlightPaths = new Set<string>();
@@ -52,6 +64,7 @@
         string,
         { fileCount: number; directories: Array<{ name: string }> }
     >();
+    const iconCache = new Map<string, string | null>();
 
     let hasChanges = $derived(currentPath !== initialPath);
 
@@ -84,6 +97,9 @@
 
     async function detectRuntimeOrFramework(path: string): Promise<string | null> {
         try {
+            if (iconCache.has(path)) {
+                return iconCache.get(path) ?? null;
+            }
             const detection = await sdk
                 .forProject(page.params.region, page.params.project)
                 .vcs.createRepositoryDetection({
@@ -98,10 +114,36 @@
                 product === 'sites'
                     ? detection.framework
                     : (detection as unknown as Models.DetectionRuntime).runtime;
-            return resolveIconUrl(iconName);
+            const resolved = resolveIconUrl(iconName);
+            iconCache.set(path, resolved);
+            return resolved;
         } catch (err) {
+            iconCache.set(path, null);
             return null;
         }
+    }
+
+    async function detectIconsForChildren(parentPath: string) {
+        const targetDir = getDirByPath(parentPath);
+        if (!targetDir?.children?.length) return;
+
+        const children = targetDir.children;
+        const concurrency = 3;
+        let index = 0;
+
+        async function worker() {
+            while (index < children.length) {
+                const current = index;
+                index += 1;
+                const child = children[current];
+                const icon = await detectRuntimeOrFramework(child.fullPath);
+                if (icon && icon !== child.thumbnailUrl) {
+                    child.thumbnailUrl = icon;
+                }
+            }
+        }
+
+        await Promise.all(Array.from({ length: Math.min(concurrency, children.length) }, worker));
     }
 
     async function fetchContents(path: string) {
@@ -208,8 +250,9 @@
                 }
 
                 isLoading = false;
-                expandedStore.update((exp) => [...new Set([...exp, '/'])]);
+                expandedPaths = [...new Set([...expandedPaths, '/'])];
                 prefetchPath(rootDir || '/');
+                detectIconsForChildren('/');
             } catch (error) {
                 console.error('Failed to load root directory:', error);
                 isLoading = false;
@@ -247,7 +290,7 @@
             if (contentDirectories.length === 0) {
                 targetDir.hasChildren = false;
                 targetDir.children = [];
-                expandedStore.update((exp) => [...new Set([...exp, path])]);
+                expandedPaths = [...new Set([...expandedPaths, path])];
                 return;
             }
 
@@ -260,8 +303,9 @@
             }
 
             ensureChildren(path, contentDirectories);
+            detectIconsForChildren(path);
 
-            expandedStore.update((exp) => [...new Set([...exp, path])]);
+            expandedPaths = [...new Set([...expandedPaths, path])];
         } catch (error) {
             console.error('Failed to load directory:', error);
         } finally {
@@ -303,7 +347,7 @@
             currentDir = nextDir;
         }
 
-        expandedStore.update((exp) => [...new Set([...exp, ...pathsToExpand])]);
+        expandedPaths = [...new Set([...expandedPaths, ...pathsToExpand])];
 
         // ensure each segment loads in order so deeper children appear
         for (const pathToLoad of pathsToExpand) {
@@ -350,7 +394,7 @@
     <DirectoryPicker
         {directories}
         {isLoading}
-        bind:expanded={expandedStore}
+        expanded={expandedStore}
         bind:selected={currentPath}
         openTo={initialPath}
         onSelect={handleSelect}

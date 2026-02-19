@@ -3,17 +3,30 @@
     import { onMount, setContext } from 'svelte';
     import { writable, type Writable } from 'svelte/store';
     import DirectoryItem from '$lib/components/git/DirectoryItem.svelte';
+    import type { DirectoryEntry } from '$lib/components/git/types';
     import { Spinner } from '@appwrite.io/pink-svelte';
 
-    export let expanded: Writable<string[]> = writable(['lib-0', 'tree-0']);
-    export let selected: string | undefined;
-    export let openTo: string | undefined;
-    export let directories: Array<Record<string, unknown>>;
-    export let isLoading = true;
-    export let onSelect:
-        | ((detail: { fullPath: string; hasChildren: boolean; title: string }) => void | Promise<void>)
-        | undefined;
-    export let onChange: ((detail: { fullPath: string }) => void | Promise<void>) | undefined;
+    let {
+        expanded = $bindable(writable(['lib-0', 'tree-0'])),
+        selected = $bindable(undefined),
+        openTo,
+        directories,
+        isLoading = true,
+        onSelect,
+        onChange
+    }: {
+        expanded?: Writable<string[]>;
+        selected?: string;
+        openTo?: string;
+        directories: DirectoryEntry[];
+        isLoading?: boolean;
+        onSelect?: (detail: {
+            fullPath: string;
+            hasChildren: boolean;
+            title: string;
+        }) => void | Promise<void>;
+        onChange?: (detail: { fullPath: string }) => void | Promise<void>;
+    } = $props();
 
     const ctx = createTreeView({ expanded });
     setContext('tree', ctx);
@@ -22,11 +35,13 @@
         elements: { tree }
     } = ctx;
 
-    let rootContainer: HTMLDivElement | undefined;
-    let containerWidth: number | undefined;
-    let internalSelected: string | undefined;
+    let rootContainer = $state<HTMLDivElement | undefined>(undefined);
+    let containerWidth = $state<number | undefined>(undefined);
+    let internalSelected = $state<string | undefined>(undefined);
 
-    $: internalSelected = selected;
+    $effect(() => {
+        internalSelected = selected;
+    });
 
     onMount(() => {
         updateWidth();
@@ -63,7 +78,9 @@
         if (onSelect) onSelect(detail);
     }
 
-    $: containerWidth = rootContainer ? rootContainer.getBoundingClientRect().width : undefined;
+    $effect(() => {
+        containerWidth = rootContainer ? rootContainer.getBoundingClientRect().width : undefined;
+    });
 </script>
 
 <svelte:window on:resize={updateWidth} />
@@ -78,8 +95,7 @@
             {directories}
             {containerWidth}
             selectedPath={internalSelected}
-            onSelect={handleSelect}
-        />
+            onSelect={handleSelect} />
     {/if}
 </div>
 
