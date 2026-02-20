@@ -63,13 +63,13 @@
     // ---------------------------------------------------------------------------
     // Context injected with every request
     // ---------------------------------------------------------------------------
-    $: context = {
+    const context = $derived({
         page: $page.url.pathname,
         projectId: ($page.params.project as string | undefined) ?? null,
         orgId: $organization?.$id ?? null,
         plan: ($organization as Record<string, unknown> | undefined)?.billingPlan ?? null,
         error: null as string | null,
-    };
+    });
 
     // ---------------------------------------------------------------------------
     // Derived
