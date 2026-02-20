@@ -14,7 +14,8 @@
         Icon,
         Layout,
         Divider,
-        Badge
+        Badge,
+        Tooltip
     } from '@appwrite.io/pink-svelte';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { formatNum } from '$lib/helpers/string';
@@ -72,6 +73,7 @@
     const baseAmount = $derived(currentAggregation?.amount ?? currentPlan?.price ?? 0);
     const creditsApplied = $derived(Math.min(baseAmount, availableCredit ?? 0));
     const totalAmount = $derived(Math.max(baseAmount - creditsApplied, 0));
+    const isUpgrading = $derived($organization?.status === 'upgrading');
 
     function formatHumanSize(bytes: number): string {
         const size = humanFileSize(bytes || 0);
@@ -588,62 +590,61 @@
 
             <!-- Actions -->
             <div class="actions-container">
-                {#if !currentPlan.requiresPaymentMethod}
-                    <Layout.Stack
-                        direction="row"
-                        alignItems="center"
-                        justifyContent="flex-end"
-                        gap="s"
-                        wrap="wrap"
-                        class="u-width-full-line actions-mobile">
-                        {#if !currentPlan?.usagePerProject}
-                            <Button text href={`${base}/organization-${$organization?.$id}/usage`}>
-                                View estimated usage
-                            </Button>
-                        {/if}
+                <Layout.Stack
+                    direction="row"
+                    alignItems="center"
+                    justifyContent="flex-end"
+                    gap="s"
+                    wrap="wrap"
+                    class="u-width-full-line actions-mobile">
+                    <Tooltip disabled={!isUpgrading}>
+                        <div>
+                            {#if !currentPlan.requiresPaymentMethod}
+                                <Button
+                                    text
+                                    disabled={$organization?.markedForDeletion || isUpgrading}
+                                    href={getChangePlanUrl($organization?.$id)}
+                                    on:click={() =>
+                                        trackEvent(Click.OrganizationClickUpgrade, {
+                                            from: 'button',
+                                            source: 'billing_tab'
+                                        })}>
+                                    Upgrade
+                                </Button>
+                            {:else if $organization?.billingPlanDowngrade !== null}
+                                <Button
+                                    text
+                                    disabled={isUpgrading}
+                                    on:click={() => (showCancel = true)}>
+                                    Cancel change
+                                </Button>
+                            {:else}
+                                <Button
+                                    text
+                                    disabled={$organization?.markedForDeletion || isUpgrading}
+                                    href={getChangePlanUrl($organization?.$id)}
+                                    on:click={() =>
+                                        trackEvent(Click.OrganizationClickUpgrade, {
+                                            from: 'button',
+                                            source: 'billing_tab'
+                                        })}>
+                                    Change plan
+                                </Button>
+                            {/if}
+                        </div>
+                        <svelte:fragment slot="tooltip">
+                            Your payment is still being processed, check with your payment provider.
+                        </svelte:fragment>
+                    </Tooltip>
+                    {#if !currentPlan?.usagePerProject}
                         <Button
-                            disabled={$organization?.markedForDeletion}
-                            href={getChangePlanUrl($organization?.$id)}
-                            on:click={() =>
-                                trackEvent(Click.OrganizationClickUpgrade, {
-                                    from: 'button',
-                                    source: 'billing_tab'
-                                })}>
-                            Upgrade
+                            text={!currentPlan.requiresPaymentMethod}
+                            secondary={currentPlan.requiresPaymentMethod}
+                            href={`${base}/organization-${$organization?.$id}/usage`}>
+                            View estimated usage
                         </Button>
-                    </Layout.Stack>
-                {:else}
-                    <Layout.Stack
-                        direction="row"
-                        alignItems="center"
-                        justifyContent="flex-end"
-                        gap="s"
-                        wrap="wrap"
-                        class="u-width-full-line actions-mobile">
-                        {#if $organization?.billingPlanDowngrade !== null}
-                            <Button text on:click={() => (showCancel = true)}>Cancel change</Button>
-                        {:else}
-                            <Button
-                                text
-                                disabled={$organization?.markedForDeletion}
-                                href={getChangePlanUrl($organization?.$id)}
-                                on:click={() =>
-                                    trackEvent(Click.OrganizationClickUpgrade, {
-                                        from: 'button',
-                                        source: 'billing_tab'
-                                    })}>
-                                Change plan
-                            </Button>
-                        {/if}
-                        {#if !currentPlan?.usagePerProject}
-                            <Button
-                                secondary
-                                href={`${base}/organization-${$organization?.$id}/usage`}>
-                                View estimated usage
-                            </Button>
-                        {/if}
-                    </Layout.Stack>
-                {/if}
+                    {/if}
+                </Layout.Stack>
             </div>
         </EstimatedCard>
     {/key}
