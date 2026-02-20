@@ -1,4 +1,5 @@
 import type { Action } from 'svelte/action';
+import type { Instance } from 'tippy.js';
 import type { Props as TippyProps } from 'tippy.js';
 import tippy from 'tippy.js';
 
@@ -7,7 +8,8 @@ type Props = TippyProps & {
 };
 
 export const tooltip: Action<HTMLElement, Partial<Props>> = (node, config) => {
-    const instance = tippy(node, config);
+    const tippyInstance = tippy(node, config);
+    const instance: Instance = Array.isArray(tippyInstance) ? tippyInstance[0] : tippyInstance;
     if (config.disabled) instance.disable();
 
     return {
