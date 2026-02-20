@@ -30,45 +30,38 @@
         args: Record<string, unknown>;
     }
 
+    type AssistantContentPart =
+        | { type: 'text'; text: string }
+        | { type: 'tool-call'; toolCallId: string; toolName: string; args: Record<string, unknown> };
+
+    type ToolResultPart = {
+        type: 'tool-result';
+        toolCallId: string;
+        toolName: string;
+        result: unknown;
+    };
+
     type CoreMessage =
         | { role: 'user'; content: string }
-        | {
-              role: 'assistant';
-              content:
-                  | string
-                  | Array<{
-                        type: 'tool-call';
-                        toolCallId: string;
-                        toolName: string;
-                        args: Record<string, unknown>;
-                    }>;
-          }
-        | {
-              role: 'tool';
-              content: Array<{
-                  type: 'tool-result';
-                  toolCallId: string;
-                  toolName: string;
-                  result: unknown;
-              }>;
-          };
+        | { role: 'assistant'; content: string | AssistantContentPart[] }
+        | { role: 'tool'; content: ToolResultPart[] };
 
     // ---------------------------------------------------------------------------
-    // State
+    // State (Svelte 5 runes)
     // ---------------------------------------------------------------------------
-    let input = '';
-    let history: CoreMessage[] = [];
-    let streamingText = '';
-    let isLoading = false;
-    let errorMsg = '';
-    let pendingToolCall: ToolCallEvent | null = null;
-    let awaitingApproval = false;
-    let feedback: 'positive' | 'negative' | null = null;
-    let traceId = '';
-    let displayedQuestion = '';
+    let input = $state('');
+    let history = $state<CoreMessage[]>([]);
+    let streamingText = $state('');
+    let isLoading = $state(false);
+    let errorMsg = $state('');
+    let pendingToolCall = $state<ToolCallEvent | null>(null);
+    let awaitingApproval = $state(false);
+    let feedback = $state<'positive' | 'negative' | null>(null);
+    let traceId = $state('');
+    let conversationEl = $state<HTMLElement | null>(null);
 
     // ---------------------------------------------------------------------------
-    // Context injected automatically with every request
+    // Context injected with every request
     // ---------------------------------------------------------------------------
     $: context = {
         page: $page.url.pathname,
@@ -77,6 +70,33 @@
         plan: ($organization as Record<string, unknown> | undefined)?.billingPlan ?? null,
         error: null as string | null,
     };
+
+    // ---------------------------------------------------------------------------
+    // Derived
+    // ---------------------------------------------------------------------------
+    const streamingParts = $derived(parseAnswer(streamingText));
+    const showContent = $derived(
+        isLoading || !!streamingText || awaitingApproval || history.length > 0,
+    );
+
+    // Auto-scroll when content changes
+    $effect(() => {
+        void streamingText;
+        void history.length;
+        conversationEl?.scrollTo({ top: conversationEl.scrollHeight });
+    });
+
+    // Auto-dispatch pending tool calls
+    $effect(() => {
+        if (pendingToolCall && !awaitingApproval && !isLoading) {
+            const def = tools[pendingToolCall.name];
+            if (def?.requiresApproval) {
+                awaitingApproval = true;
+            } else {
+                handleToolCall(true);
+            }
+        }
+    });
 
     // ---------------------------------------------------------------------------
     // Examples
@@ -146,6 +166,23 @@
         return `${first?.[0] ?? ''}${last?.[0] ?? ''}`;
     }
 
+    /** Extract plain text from an assistant message content (for history display) */
+    function assistantText(content: string | AssistantContentPart[]): string {
+        if (typeof content === 'string') return content;
+        return content
+            .filter((p): p is { type: 'text'; text: string } => p.type === 'text')
+            .map((p) => p.text)
+            .join('');
+    }
+
+    /** Return tool call label if the assistant message is a tool-call step */
+    function toolCallLabel(content: string | AssistantContentPart[]): string | null {
+        if (typeof content === 'string') return null;
+        const call = content.find((p): p is AssistantContentPart & { type: 'tool-call' } => p.type === 'tool-call');
+        if (!call) return null;
+        return tools[call.toolName]?.label ?? call.toolName;
+    }
+
     // ---------------------------------------------------------------------------
     // SSE streaming
     // ---------------------------------------------------------------------------
@@ -156,7 +193,7 @@
         errorMsg = '';
         streamingText = '';
         feedback = null;
-        traceId = crypto.randomUUID();
+        traceId = '';
 
         try {
             const res = await fetch(`${endpoint}/v1/console/assistant`, {
@@ -169,7 +206,6 @@
                 body: JSON.stringify({
                     messages: messagesToSend,
                     context,
-                    traceId,
                 }),
             });
 
@@ -209,12 +245,15 @@
                             name: evt.name as string,
                             args: evt.args as Record<string, unknown>,
                         };
-                        // Stop reading — tool execution will trigger a new request
+                        // Fix: clear isLoading so $effect can dispatch the tool
+                        isLoading = false;
                         reader.cancel();
                         break outer;
                     } else if (evt.event === 'done') {
+                        traceId = (evt.traceId as string) ?? '';
                         if (streamingText) {
                             history = [...history, { role: 'assistant', content: streamingText }];
+                            streamingText = '';
                         }
                         isLoading = false;
                     } else if (evt.event === 'error') {
@@ -277,16 +316,6 @@
         await sendMessages(history);
     }
 
-    // Auto-dispatch read tools immediately; pause for write tools (approval gate)
-    $: if (pendingToolCall && !awaitingApproval && !isLoading) {
-        const def = tools[pendingToolCall.name];
-        if (def?.requiresApproval) {
-            awaitingApproval = true;
-        } else {
-            handleToolCall(true);
-        }
-    }
-
     // ---------------------------------------------------------------------------
     // Submit
     // ---------------------------------------------------------------------------
@@ -294,19 +323,31 @@
         const prompt = input.trim();
         if (!prompt || isLoading) return;
 
-        displayedQuestion = prompt;
         input = '';
-
         const userMessage: CoreMessage = { role: 'user', content: prompt };
         history = [...history, userMessage];
-
         await sendMessages(history);
+    }
+
+    // ---------------------------------------------------------------------------
+    // New conversation
+    // ---------------------------------------------------------------------------
+    function newConversation() {
+        history = [];
+        streamingText = '';
+        isLoading = false;
+        errorMsg = '';
+        pendingToolCall = null;
+        awaitingApproval = false;
+        feedback = null;
+        traceId = '';
     }
 
     // ---------------------------------------------------------------------------
     // Feedback
     // ---------------------------------------------------------------------------
     function sendFeedback(score: 'positive' | 'negative') {
+        if (!traceId) return;
         feedback = score;
         fetch(`${endpoint}/v1/console/assistant/feedback`, {
             method: 'POST',
@@ -315,15 +356,9 @@
                 'x-appwrite-project': 'console',
             },
             credentials: 'include',
-            body: JSON.stringify({ traceId, score }),
+            body: JSON.stringify({ traceId, score: score === 'positive' ? 1 : 0 }),
         }).catch(() => {});
     }
-
-    // ---------------------------------------------------------------------------
-    // Derived display state
-    // ---------------------------------------------------------------------------
-    $: answer = parseAnswer(streamingText);
-    $: showContent = isLoading || !!streamingText || awaitingApproval;
 </script>
 
 <Template
@@ -349,8 +384,17 @@
     }}
     --min-height="40rem"
     --max-height="52.5rem">
-    <div slot="search">
+    <div slot="search" class="u-flex u-cross-center u-gap-8">
         <span class="experimental border-gradient">EXPERIMENTAL</span>
+        {#if history.length > 0}
+            <button
+                class="new-chat-btn"
+                title="New conversation"
+                on:click={newConversation}>
+                <span class="icon-pencil-alt" aria-hidden="true"></span>
+                <span class="u-sr-only">New conversation</span>
+            </button>
+        {/if}
     </div>
 
     <div slot="option" let:option class="u-flex u-cross-center u-gap-8">
@@ -370,89 +414,134 @@
     {/if}
 
     {#if showContent}
-        <div class="content">
-            <!-- User question -->
-            <div class="u-flex u-gap-8 u-cross-center">
-                <div class="avatar is-size-x-small">{getInitials($user.name || $user.email)}</div>
-                <p class="u-opacity-75">{displayedQuestion}</p>
-            </div>
-
-            <!-- Assistant answer -->
-            <div class="u-flex u-gap-8 u-margin-block-start-24">
-                <div class="logo">
-                    <SvgIcon name="sparkles" type="color" />
-                </div>
-                <div class="answer">
-                    {#if isLoading && !streamingText && !awaitingApproval}
-                        <LoadingDots />
-                    {:else if awaitingApproval && pendingToolCall}
-                        <!-- Write-tool approval gate -->
-                        <div class="approval-gate">
-                            <p class="u-bold">
-                                Confirm: {tools[pendingToolCall.name]?.label ??
-                                    pendingToolCall.name}
-                            </p>
-                            <pre class="approval-args">{JSON.stringify(
-                                    pendingToolCall.args,
-                                    null,
-                                    2,
-                                )}</pre>
-                            <div class="u-flex u-gap-8 u-margin-block-start-16">
-                                <button
-                                    class="button is-secondary is-small"
-                                    on:click={() => handleToolCall(false)}>
-                                    Cancel
-                                </button>
-                                <button
-                                    class="button is-small"
-                                    on:click={() => handleToolCall(true)}>
-                                    Confirm
-                                </button>
-                            </div>
+        <div class="conversation" bind:this={conversationEl}>
+            <!-- Rendered history turns -->
+            {#each history as msg, i (i)}
+                {#if msg.role === 'user'}
+                    <div class="turn turn-user">
+                        <div class="avatar is-size-x-small">
+                            {getInitials($user.name || $user.email)}
                         </div>
-                    {:else if answer}
-                        {#each answer as part}
-                            {#if part.type === 'text'}
-                                <p>{@html renderMarkdown(part.value.trim())}</p>
-                            {:else if part.type === 'code'}
-                                {#key part.value}
-                                    <div
-                                        class="u-margin-block-start-8"
-                                        style="margin-block-end: 1rem;">
-                                        <Code
-                                            label={part.language}
-                                            language={part.language}
-                                            code={part.value}
-                                            noMargin
-                                            noBoxPadding
-                                            withCopy />
+                        <p class="u-opacity-75">{msg.content}</p>
+                    </div>
+                {:else if msg.role === 'assistant'}
+                    {@const label = toolCallLabel(msg.content)}
+                    {@const text = assistantText(msg.content)}
+                    <div class="turn turn-assistant">
+                        <div class="logo">
+                            <SvgIcon name="sparkles" type="color" />
+                        </div>
+                        <div class="answer">
+                            {#if label}
+                                <!-- Tool-call step: show compact indicator -->
+                                <p class="tool-indicator">
+                                    <span class="icon-cog" aria-hidden="true"></span>
+                                    {label}
+                                </p>
+                            {:else if text}
+                                {#each parseAnswer(text) ?? [] as part}
+                                    {#if part.type === 'text'}
+                                        <p>{@html renderMarkdown(part.value.trim())}</p>
+                                    {:else if part.type === 'code'}
+                                        {#key part.value}
+                                            <div
+                                                class="u-margin-block-start-8"
+                                                style="margin-block-end: 1rem;">
+                                                <Code
+                                                    label={part.language}
+                                                    language={part.language}
+                                                    code={part.value}
+                                                    noMargin
+                                                    noBoxPadding
+                                                    withCopy />
+                                            </div>
+                                        {/key}
+                                    {/if}
+                                {/each}
+                                <!-- Feedback only on the last completed assistant message -->
+                                {#if i === history.length - 1 && traceId}
+                                    <div class="feedback u-flex u-gap-8 u-margin-block-start-16">
+                                        <button
+                                            class="feedback-btn"
+                                            class:is-active={feedback === 'positive'}
+                                            aria-label="Helpful"
+                                            on:click={() => sendFeedback('positive')}>
+                                            👍
+                                        </button>
+                                        <button
+                                            class="feedback-btn"
+                                            class:is-active={feedback === 'negative'}
+                                            aria-label="Not helpful"
+                                            on:click={() => sendFeedback('negative')}>
+                                            👎
+                                        </button>
                                     </div>
-                                {/key}
+                                {/if}
                             {/if}
-                        {/each}
+                        </div>
+                    </div>
+                {/if}
+                <!-- role === 'tool' is intentionally skipped -->
+            {/each}
 
-                        <!-- Feedback row (shown once streaming is complete) -->
-                        {#if !isLoading}
-                            <div class="feedback u-flex u-gap-8 u-margin-block-start-16">
-                                <button
-                                    class="feedback-btn"
-                                    class:is-active={feedback === 'positive'}
-                                    aria-label="Helpful"
-                                    on:click={() => sendFeedback('positive')}>
-                                    👍
-                                </button>
-                                <button
-                                    class="feedback-btn"
-                                    class:is-active={feedback === 'negative'}
-                                    aria-label="Not helpful"
-                                    on:click={() => sendFeedback('negative')}>
-                                    👎
-                                </button>
+            <!-- In-progress assistant turn (streaming) -->
+            {#if isLoading || streamingText || awaitingApproval}
+                <div class="turn turn-assistant">
+                    <div class="logo">
+                        <SvgIcon name="sparkles" type="color" />
+                    </div>
+                    <div class="answer">
+                        {#if awaitingApproval && pendingToolCall}
+                            <!-- Write-tool approval gate -->
+                            <div class="approval-gate">
+                                <p class="u-bold">
+                                    Confirm: {tools[pendingToolCall.name]?.label ??
+                                        pendingToolCall.name}
+                                </p>
+                                <pre class="approval-args">{JSON.stringify(
+                                        pendingToolCall.args,
+                                        null,
+                                        2,
+                                    )}</pre>
+                                <div class="u-flex u-gap-8 u-margin-block-start-16">
+                                    <button
+                                        class="button is-secondary is-small"
+                                        on:click={() => handleToolCall(false)}>
+                                        Cancel
+                                    </button>
+                                    <button
+                                        class="button is-small"
+                                        on:click={() => handleToolCall(true)}>
+                                        Confirm
+                                    </button>
+                                </div>
                             </div>
+                        {:else if isLoading && !streamingText}
+                            <LoadingDots />
+                        {:else if streamingParts}
+                            {#each streamingParts as part}
+                                {#if part.type === 'text'}
+                                    <p>{@html renderMarkdown(part.value.trim())}</p>
+                                {:else if part.type === 'code'}
+                                    {#key part.value}
+                                        <div
+                                            class="u-margin-block-start-8"
+                                            style="margin-block-end: 1rem;">
+                                            <Code
+                                                label={part.language}
+                                                language={part.language}
+                                                code={part.value}
+                                                noMargin
+                                                noBoxPadding
+                                                withCopy />
+                                        </div>
+                                    {/key}
+                                {/if}
+                            {/each}
                         {/if}
-                    {/if}
+                    </div>
                 </div>
-            </div>
+            {/if}
         </div>
     {/if}
 
@@ -513,54 +602,89 @@
 </Template>
 
 <style lang="scss">
-    :global(.theme-dark) .content {
+    :global(.theme-dark) .conversation {
         --logo-bg: #282a3b;
     }
-    :global(.theme-light) .content {
+    :global(.theme-light) .conversation {
         --logo-bg: #f2f2f8;
     }
 
-    .content {
-        overflow: auto;
+    .conversation {
+        overflow-y: auto;
         padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
 
-        .logo {
-            display: flex;
-            width: 1.5rem;
-            height: 1.5rem;
-            justify-content: center;
-            align-items: center;
-            flex-shrink: 0;
-            border-radius: 0.25rem;
-            background: var(--logo-bg);
-        }
+    .turn {
+        display: flex;
+        gap: 0.5rem;
 
-        .answer {
-            overflow: hidden;
+        &-user {
+            align-items: flex-start;
 
-            p:first-of-type {
-                white-space: pre-wrap;
+            .avatar {
+                flex-shrink: 0;
+            }
+
+            p {
+                padding-block-start: 0.125rem;
             }
         }
 
-        :global(.answer ul) {
-            padding-inline-start: 1rem;
-            list-style-type: disc;
-            display: grid;
-            gap: 1rem;
+        &-assistant {
+            align-items: flex-start;
         }
-        :global(.answer ol) {
-            padding-inline-start: 1.1rem;
-            list-style-type: decimal;
-            display: grid;
-            gap: 1rem;
+    }
+
+    .logo {
+        display: flex;
+        width: 1.5rem;
+        height: 1.5rem;
+        justify-content: center;
+        align-items: center;
+        flex-shrink: 0;
+        border-radius: 0.25rem;
+        background: var(--logo-bg);
+    }
+
+    .answer {
+        overflow: hidden;
+        flex: 1;
+        min-width: 0;
+
+        p:first-of-type {
+            white-space: pre-wrap;
         }
-        :global(.answer a) {
-            text-decoration: underline;
-        }
-        :global(.answer a:hover) {
-            opacity: 0.8;
-        }
+    }
+
+    :global(.answer ul) {
+        padding-inline-start: 1rem;
+        list-style-type: disc;
+        display: grid;
+        gap: 1rem;
+    }
+    :global(.answer ol) {
+        padding-inline-start: 1.1rem;
+        list-style-type: decimal;
+        display: grid;
+        gap: 1rem;
+    }
+    :global(.answer a) {
+        text-decoration: underline;
+    }
+    :global(.answer a:hover) {
+        opacity: 0.8;
+    }
+
+    .tool-indicator {
+        display: flex;
+        align-items: center;
+        gap: 0.375rem;
+        font-size: 0.8125rem;
+        opacity: 0.6;
+        font-style: italic;
     }
 
     .approval-gate {
@@ -591,6 +715,22 @@
             &.is-active {
                 opacity: 1;
             }
+        }
+    }
+
+    .new-chat-btn {
+        display: flex;
+        align-items: center;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0.25rem;
+        border-radius: 0.25rem;
+        opacity: 0.6;
+        transition: opacity 0.15s;
+
+        &:hover {
+            opacity: 1;
         }
     }
 
