@@ -376,10 +376,8 @@
         }
     });
 
-    async function handleSelect(detail: { fullPath: string }) {
-        const path = detail.fullPath as string;
-        currentPath = path;
-        loadPath(path);
+    function handleSelect(detail: { fullPath: string }) {
+        loadPath(detail.fullPath);
     }
 
     function handleSubmit() {
@@ -398,8 +396,7 @@
         expanded={expandedStore}
         bind:selected={currentPath}
         openTo={initialPath}
-        onSelect={handleSelect}
-        onChange={handleSelect} />
+        onSelect={handleSelect} />
 
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (show = false)}>Cancel</Button>
