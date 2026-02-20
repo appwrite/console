@@ -196,7 +196,7 @@
         traceId = '';
 
         try {
-            const res = await fetch(`${endpoint}/v1/console/assistant`, {
+            const res = await fetch(`${endpoint}/console/assistant`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -349,7 +349,7 @@
     function sendFeedback(score: 'positive' | 'negative') {
         if (!traceId) return;
         feedback = score;
-        fetch(`${endpoint}/v1/console/assistant/feedback`, {
+        fetch(`${endpoint}/console/assistant/feedback`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
