@@ -43,6 +43,12 @@
 
     const nullable = $derived(!limited ? !column.required : false);
     const columnSize = $derived('size' in column ? column.size : 0);
+    const forceTextarea = $derived(
+        column.type === 'text' ||
+            column.type === 'mediumtext' ||
+            column.type === 'longtext' ||
+            (column.type === 'varchar' && columnSize > 255)
+    );
 
     let stringValue = $state('');
 
@@ -148,7 +154,7 @@
     };
 </script>
 
-{#if columnSize >= 50 || array || isSpatialType(column)}
+{#if forceTextarea || columnSize >= 50 || array || isSpatialType(column)}
     <InputTextarea
         {id}
         {label}
