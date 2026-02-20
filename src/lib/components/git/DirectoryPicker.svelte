@@ -83,7 +83,7 @@
     });
 </script>
 
-<svelte:window on:resize={updateWidth} />
+<svelte:window onresize={updateWidth} />
 
 <div class="directory-container" class:isLoading {...$tree} bind:this={rootContainer}>
     {#if isLoading}
