@@ -204,8 +204,8 @@
                 },
                 credentials: 'include',
                 body: JSON.stringify({
-                    messages: messagesToSend,
-                    context,
+                    messages: JSON.stringify(messagesToSend),
+                    context: JSON.stringify(context),
                 }),
             });
 
