@@ -60,6 +60,12 @@
 
     let detectingRuntime = true;
 
+    let prevRootDir = rootDir;
+    $: if (rootDir !== prevRootDir) {
+        prevRootDir = rootDir;
+        detectRuntime();
+    }
+
     onMount(async () => {
         installation.set(data.installation);
         repository.set(data.repository);
