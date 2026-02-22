@@ -103,6 +103,10 @@
             return resources.includes(Resources.Bucket) && resources.includes(Resources.File);
         }
 
+        if (groupKey === 'sites') {
+            return (resources as string[]).includes('site');
+        }
+
         // Map groupKey to Resources enum
         const groupToResource: Record<string, Resources> = {
             users: Resources.User,
@@ -122,7 +126,8 @@
             users: 'user',
             databases: 'database',
             functions: 'function',
-            storage: 'bucket'
+            storage: 'bucket',
+            sites: 'site'
         };
         return map[groupKey] || groupKey;
     };

@@ -18,6 +18,11 @@ const initialFormData = {
     },
     storage: {
         root: false
+    },
+    sites: {
+        root: false,
+        env: false,
+        inactive: false
     }
 };
 
@@ -48,12 +53,18 @@ export const ResourcesFriendly = {
     table: { singular: 'Table', plural: 'Tables' },
     index: { singular: 'Index', plural: 'Indexes' },
     column: { singular: 'Column', plural: 'Columns' },
-    row: { singular: 'Row', plural: 'Rows' }
+    row: { singular: 'Row', plural: 'Rows' },
+    site: { singular: 'Site', plural: 'Sites' },
+    'site-deployment': { singular: 'Site Deployment', plural: 'Site Deployments' },
+    'site-variable': { singular: 'Site Variable', plural: 'Site Variables' }
 };
+
+// Site resources are not yet in the SDK's Resources enum; cast as Resources
+const siteResources = ['site', 'site-deployment', 'site-variable'] as Resources[];
 
 // @todo: @itznotabug - check if other resources are correct and work fine!
 export const providerResources: Record<Provider, Resources[]> = {
-    appwrite: Object.values(Resources),
+    appwrite: [...Object.values(Resources), ...siteResources],
     supabase: [
         Resources.User,
         Resources.Database,
@@ -112,6 +123,13 @@ export const migrationFormToResources = (
         addResource(Resources.Bucket);
         addResource(Resources.File);
     }
+    if (formData.sites.root) {
+        addResource('site' as Resources);
+        addResource('site-variable' as Resources);
+    }
+    if (formData.sites.inactive) {
+        addResource('site-deployment' as Resources);
+    }
 
     return resources;
 };
@@ -150,6 +168,12 @@ export const resourcesToMigrationForm = (resources: Resources[]): MigrationFormD
     }
     if (includesAll(resources, [Resources.Bucket, Resources.File] as Resources[])) {
         formData.storage.root = true;
+    }
+    if (resources.includes('site' as Resources)) {
+        formData.sites.root = true;
+    }
+    if (resources.includes('site-deployment' as Resources)) {
+        formData.sites.inactive = true;
     }
 
     return formData;
