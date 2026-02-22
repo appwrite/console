@@ -107,6 +107,10 @@
             return (resources as string[]).includes('site');
         }
 
+        if (groupKey === 'messaging') {
+            return (resources as string[]).includes('provider');
+        }
+
         // Map groupKey to Resources enum
         const groupToResource: Record<string, Resources> = {
             users: Resources.User,
@@ -127,7 +131,8 @@
             databases: 'database',
             functions: 'function',
             storage: 'bucket',
-            sites: 'site'
+            sites: 'site',
+            messaging: 'provider'
         };
         return map[groupKey] || groupKey;
     };

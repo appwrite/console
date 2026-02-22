@@ -23,6 +23,9 @@ const initialFormData = {
         root: false,
         env: false,
         inactive: false
+    },
+    messaging: {
+        root: false
     }
 };
 
@@ -56,15 +59,20 @@ export const ResourcesFriendly = {
     row: { singular: 'Row', plural: 'Rows' },
     site: { singular: 'Site', plural: 'Sites' },
     'site-deployment': { singular: 'Site Deployment', plural: 'Site Deployments' },
-    'site-variable': { singular: 'Site Variable', plural: 'Site Variables' }
+    'site-variable': { singular: 'Site Variable', plural: 'Site Variables' },
+    provider: { singular: 'Provider', plural: 'Providers' },
+    topic: { singular: 'Topic', plural: 'Topics' },
+    subscriber: { singular: 'Subscriber', plural: 'Subscribers' },
+    message: { singular: 'Message', plural: 'Messages' }
 };
 
-// Site resources are not yet in the SDK's Resources enum; cast as Resources
+// Site and messaging resources are not yet in the SDK's Resources enum; cast as Resources
 const siteResources = ['site', 'site-deployment', 'site-variable'] as Resources[];
+const messagingResources = ['provider', 'topic', 'subscriber', 'message'] as Resources[];
 
 // @todo: @itznotabug - check if other resources are correct and work fine!
 export const providerResources: Record<Provider, Resources[]> = {
-    appwrite: [...Object.values(Resources), ...siteResources],
+    appwrite: [...Object.values(Resources), ...siteResources, ...messagingResources],
     supabase: [
         Resources.User,
         Resources.Database,
@@ -130,6 +138,12 @@ export const migrationFormToResources = (
     if (formData.sites.inactive) {
         addResource('site-deployment' as Resources);
     }
+    if (formData.messaging.root) {
+        addResource('provider' as Resources);
+        addResource('topic' as Resources);
+        addResource('subscriber' as Resources);
+        addResource('message' as Resources);
+    }
 
     return resources;
 };
@@ -174,6 +188,9 @@ export const resourcesToMigrationForm = (resources: Resources[]): MigrationFormD
     }
     if (resources.includes('site-deployment' as Resources)) {
         formData.sites.inactive = true;
+    }
+    if (resources.includes('provider' as Resources)) {
+        formData.messaging.root = true;
     }
 
     return formData;

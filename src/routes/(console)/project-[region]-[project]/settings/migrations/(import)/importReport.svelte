@@ -31,7 +31,8 @@
             root: 'Sites',
             env: 'Include environment variables',
             inactive: 'Include inactive deployments'
-        }
+        },
+        messaging: { root: 'Messaging' }
     };
 
     const descriptionMap = {
@@ -52,6 +53,9 @@
             root: 'Import all sites and their active deployment',
             env: 'Import all environment variables',
             inactive: 'Import all deployments that are not currently active'
+        },
+        messaging: {
+            root: 'Import all providers, topics, subscribers and messages'
         }
     };
 
