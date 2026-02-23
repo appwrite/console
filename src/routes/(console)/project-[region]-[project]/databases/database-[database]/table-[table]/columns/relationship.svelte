@@ -229,8 +229,7 @@
             </div>
         </Box>
         {#if data.relationType}
-            {@const isManySide =
-                data.side === 'child' && ['oneToMany', 'manyToOne'].includes(data.relationType)}
+            {@const isManySide = data.side === 'child' && data.relationType === 'oneToMany'}
             <div>
                 {#if isManySide}
                     <p class="u-text-center">
