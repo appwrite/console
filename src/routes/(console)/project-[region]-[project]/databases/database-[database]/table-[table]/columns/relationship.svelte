@@ -229,23 +229,36 @@
             </div>
         </Box>
         {#if data.relationType}
+            {@const isManySide =
+                data.side === 'child' && ['oneToMany', 'manyToOne'].includes(data.relationType)}
             <div>
-                <p class="u-text-center">
-                    <b data-private>{camelize(currentTable.name)}</b> can contain {[
-                        'oneToOne',
-                        'manyToOne'
-                    ].includes(data.relationType)
-                        ? 'one'
-                        : 'many'}
-                    <b data-private>{camelize(data.key)}</b>
-                </p>
-                <p class="u-text-center">
-                    <b data-private>{camelize(data.key)}</b>
-                    can belong to {['oneToOne', 'oneToMany'].includes(data.relationType)
-                        ? 'one'
-                        : 'many'}
-                    <b data-private>{camelize(currentTable.name)}</b>
-                </p>
+                {#if isManySide}
+                    <p class="u-text-center">
+                        <b data-private>{camelize(currentTable.name)}</b> can belong to one
+                        <b data-private>{camelize(data.key)}</b>
+                    </p>
+                    <p class="u-text-center">
+                        <b data-private>{camelize(data.key)}</b> can have many
+                        <b data-private>{camelize(currentTable.name)}</b>
+                    </p>
+                {:else}
+                    <p class="u-text-center">
+                        <b data-private>{camelize(currentTable.name)}</b> can contain {[
+                            'oneToOne',
+                            'manyToOne'
+                        ].includes(data.relationType)
+                            ? 'one'
+                            : 'many'}
+                        <b data-private>{camelize(data.key)}</b>
+                    </p>
+                    <p class="u-text-center">
+                        <b data-private>{camelize(data.key)}</b>
+                        can belong to {['oneToOne', 'oneToMany'].includes(data.relationType)
+                            ? 'one'
+                            : 'many'}
+                        <b data-private>{camelize(currentTable.name)}</b>
+                    </p>
+                {/if}
             </div>
         {/if}
     </div>

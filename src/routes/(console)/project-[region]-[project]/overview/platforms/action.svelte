@@ -20,7 +20,7 @@
 
 {#if $canWritePlatforms}
     {#if isLimited}
-        <Tooltip maxWidth="200px">
+        <Tooltip>
             <div>
                 <Button disabled>
                     <Icon icon={IconPlus} slot="start" />
@@ -29,7 +29,9 @@
             </div>
 
             <svelte:fragment slot="tooltip">
-                You have reached the maximum number of platforms for your plan in a project.
+                <div style="white-space: pre-line;">
+                    You have reached the maximum number of platforms for your plan in a project.
+                </div>
             </svelte:fragment>
         </Tooltip>
     {:else}

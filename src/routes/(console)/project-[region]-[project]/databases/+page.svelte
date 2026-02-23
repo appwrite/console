@@ -72,7 +72,9 @@
                     </Button>
                 </div>
                 <svelte:fragment slot="tooltip">
-                    You have reached the maximum number of databases for your plan.
+                    <div style="white-space: pre-line;">
+                        You have reached the maximum number of databases for your plan.
+                    </div>
                 </svelte:fragment>
             </Tooltip>
         {/if}
