@@ -47,7 +47,7 @@
         column.type === 'text' ||
             column.type === 'mediumtext' ||
             column.type === 'longtext' ||
-            (column.type === 'varchar' && columnSize > 255)
+            column.type === 'varchar'
     );
 
     let stringValue = $state('');
