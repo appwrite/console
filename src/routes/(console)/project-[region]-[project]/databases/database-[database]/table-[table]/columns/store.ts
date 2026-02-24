@@ -85,6 +85,8 @@ export type Option = {
     icon: ComponentType;
 };
 
+export const STRING_COLUMN_NAME = 'String (deprecated)';
+
 export const columnOptions: Option[] = [
     {
         name: 'Text',
@@ -235,7 +237,7 @@ export const columnOptions: Option[] = [
         icon: IconRelationship
     },
     {
-        name: 'String (deprecated)',
+        name: STRING_COLUMN_NAME,
         sentenceName: 'string',
         component: String,
         type: 'string',

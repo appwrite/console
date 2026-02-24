@@ -88,6 +88,7 @@
         "vitest": "^3.2.4"
     },
     "overrides": {
-        "vite": "npm:rolldown-vite@latest"
+        "vite": "npm:rolldown-vite@latest",
+        "minimatch": "10.2.1"
     }
 }

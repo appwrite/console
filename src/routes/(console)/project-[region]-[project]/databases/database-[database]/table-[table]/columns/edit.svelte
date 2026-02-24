@@ -9,7 +9,7 @@
     import deepEqual from 'deep-equal';
     import { addNotification } from '$lib/stores/notifications';
     import { type Columns, columnsOrder, databaseColumnSheetOptions } from '../store';
-    import { columnOptions, type Option } from './store';
+    import { columnOptions, STRING_COLUMN_NAME, type Option } from './store';
     import { onMount } from 'svelte';
     import { Layout } from '@appwrite.io/pink-svelte';
     import { preferences } from '$lib/stores/preferences';
@@ -34,14 +34,21 @@
         }
     });
 
-    $: option = columnOptions.find((option) => {
-        if (selectedColumn) {
-            if ('format' in selectedColumn && selectedColumn.format) {
-                return option?.format === selectedColumn?.format;
-            } else {
-                return option?.type === selectedColumn?.type;
-            }
+    $: option = columnOptions.find((opt) => {
+        if (!selectedColumn) return false;
+
+        // format match when present
+        if ('format' in selectedColumn && selectedColumn.format) {
+            return opt?.format === selectedColumn.format;
         }
+
+        // Legacy string columns (no format)
+        if (selectedColumn.type === 'string') {
+            return opt.name === STRING_COLUMN_NAME;
+        }
+
+        // Fallback: match by type
+        return opt.type === selectedColumn.type;
     }) as Option;
 
     export async function submit() {

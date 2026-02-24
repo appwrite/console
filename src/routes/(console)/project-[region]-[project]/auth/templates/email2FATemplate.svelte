@@ -23,12 +23,12 @@
         try {
             const template = await loadEmailTemplate(
                 project.$id,
-                EmailTemplateType.Mfachallenge,
+                EmailTemplateType.MfaChallenge,
                 locale
             );
             emailTemplate.set(template);
             $baseEmailTemplate = { ...$emailTemplate };
-            trackEvent(Submit.EmailChangeLocale, { locale, type: EmailTemplateType.Mfachallenge });
+            trackEvent(Submit.EmailChangeLocale, { locale, type: EmailTemplateType.MfaChallenge });
         } catch (error) {
             trackError(error, Submit.EmailChangeLocale);
             addNotification({

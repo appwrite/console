@@ -50,6 +50,12 @@
     let domainIsValid = true;
     let isVariablesLoading = true;
 
+    let prevRootDir = rootDir;
+    $: if (rootDir !== prevRootDir) {
+        prevRootDir = rootDir;
+        detectFramework();
+    }
+
     onMount(async () => {
         installation.set(data.installation);
         repository.set(data.repository);
