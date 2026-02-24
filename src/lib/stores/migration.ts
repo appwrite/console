@@ -7,11 +7,7 @@ import {
 } from '@appwrite.io/console';
 import { includesAll } from '$lib/helpers/array';
 
-type MigrationResource =
-    | AppwriteMigrationResource
-    | FirebaseMigrationResource
-    | NHostMigrationResource
-    | SupabaseMigrationResource;
+type MigrationResource = AppwriteMigrationResource | FirebaseMigrationResource | NHostMigrationResource | SupabaseMigrationResource;
 
 const initialFormData = {
     users: {
