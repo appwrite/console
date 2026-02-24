@@ -6,9 +6,11 @@
     import { sdk } from '$lib/stores/sdk';
     import { members, organization } from '$lib/stores/organization';
     import { projects } from '../store';
-    import { invalidate } from '$app/navigation';
+    import { goto, invalidate } from '$app/navigation';
+    import { resolve } from '$app/paths';
     import { Dependencies } from '$lib/constants';
     import { onMount } from 'svelte';
+    import { page } from '$app/state';
     import Delete from './deleteOrganizationModal.svelte';
     import DownloadDPA from './downloadDPA.svelte';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
@@ -22,8 +24,38 @@
     let name: string;
     let showDelete = false;
 
-    onMount(() => {
+    onMount(async () => {
         name = $organization.name;
+
+        if (page.url.searchParams.get('type') === 'validate-addon') {
+            const addonId = page.url.searchParams.get('addonId');
+            if (addonId) {
+                try {
+                    await sdk.forConsole.organizations.validateToggleAddonPayment({
+                        organizationId: $organization.$id,
+                        addonId
+                    });
+                    await Promise.all([
+                        invalidate(Dependencies.ADDONS),
+                        invalidate(Dependencies.ORGANIZATION)
+                    ]);
+                    addNotification({
+                        message: 'BAA addon has been enabled',
+                        type: 'success'
+                    });
+                } catch (e) {
+                    addNotification({
+                        message: e.message,
+                        type: 'error'
+                    });
+                }
+                const settingsUrl = resolve(
+                    '/(console)/organization-[organization]/settings',
+                    { organization: $organization.$id }
+                );
+                await goto(settingsUrl, { replaceState: true });
+            }
+        }
     });
 
     async function updateName() {
@@ -75,7 +107,7 @@
 
         {#if isCloud}
             <DownloadDPA />
-            <Baa locale={data.locale} countryList={data.countryList} />
+            <Baa addons={data.addons} />
             <Soc2 locale={data.locale} countryList={data.countryList} />
         {/if}
 
