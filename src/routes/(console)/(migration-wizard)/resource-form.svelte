@@ -11,7 +11,7 @@
     } from '$lib/stores/migration';
     import { Button } from '$lib/elements/forms';
     import { wizard } from '$lib/stores/wizard';
-    import { Resources, type Models } from '@appwrite.io/console';
+    import { AppwriteMigrationResource, type Models } from '@appwrite.io/console';
     import type { sdk } from '$lib/stores/sdk';
     import ImportReport from '$routes/(console)/project-[region]-[project]/settings/migrations/(import)/importReport.svelte';
 
@@ -94,23 +94,24 @@
     $: resources = providerResources[$provider.provider];
 
     const shouldRenderGroup = (groupKey: string): boolean => {
-        if (groupKey === 'functions') {
-            // Functions not in SDK Resources enum, skip
-            return false;
+        if (groupKey === 'storage') {
+            return (
+                resources.includes(AppwriteMigrationResource.Bucket) &&
+                resources.includes(AppwriteMigrationResource.File)
+            );
         }
 
-        if (groupKey === 'storage') {
-            return resources.includes(Resources.Bucket) && resources.includes(Resources.File);
+        if (groupKey === 'functions') {
+            return resources.includes(AppwriteMigrationResource.Function);
         }
 
         if (groupKey === 'sites') {
-            return (resources as string[]).includes('site');
+            return resources.includes(AppwriteMigrationResource.Site);
         }
 
-        // Map groupKey to Resources enum
-        const groupToResource: Record<string, Resources> = {
-            users: Resources.User,
-            databases: Resources.Database
+        const groupToResource: Record<string, string> = {
+            users: AppwriteMigrationResource.User,
+            databases: AppwriteMigrationResource.Database
         };
         const resource = groupToResource[groupKey];
         return resource ? resources.includes(resource) : false;
