@@ -316,7 +316,7 @@
                         {/if}
 
                         <!-- show invite members -->
-                        {#if selectedOrgId && !selectedOrg?.billingPlanDetails.addons.seats.supported}
+                        {#if selectedOrgId && !(selectedOrg?.billingPlanDetails?.addons?.seats?.supported ?? true)}
                             {#if selectedOrgId === newOrgId}
                                 <InputText
                                     label="Organization name"

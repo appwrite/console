@@ -151,7 +151,7 @@
                                 </Button>
                             </div>
                             <div slot="tooltip">
-                                {!organization?.billingPlanDetails.addons.seats.supported
+                                {!(organization?.billingPlanDetails?.addons?.seats?.supported ?? true)
                                     ? 'Upgrade to add more members'
                                     : `You've reached the members limit for the ${
                                           organization?.billingPlanDetails.name

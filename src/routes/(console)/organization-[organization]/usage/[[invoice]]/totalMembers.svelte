@@ -12,14 +12,14 @@
 
     $: total = members?.total ?? 0;
     $: organizationMembersSupported =
-        !$organization?.billingPlanDetails.addons.seats.supported; /* false on free */
+        $organization?.billingPlanDetails?.addons?.seats?.supported ?? true; /* false on free */
 </script>
 
 <CardGrid>
     <svelte:fragment slot="title">Members</svelte:fragment>
     The number of members in your organization.
     <svelte:fragment slot="aside">
-        {#if !organizationMembersSupported}
+        {#if organizationMembersSupported}
             <div class="u-flex u-flex-vertical">
                 <Layout.Stack direction="row" justifyContent="space-between">
                     <Layout.Stack gap="s" direction="row" alignItems="center">
