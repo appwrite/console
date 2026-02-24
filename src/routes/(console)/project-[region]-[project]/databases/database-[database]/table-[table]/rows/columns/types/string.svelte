@@ -46,8 +46,7 @@
     const forceTextarea = $derived(
         column.type === 'text' ||
             column.type === 'mediumtext' ||
-            column.type === 'longtext' ||
-            column.type === 'varchar'
+            column.type === 'longtext'
     );
 
     let stringValue = $state('');
