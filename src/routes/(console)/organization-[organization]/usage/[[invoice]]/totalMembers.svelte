@@ -12,7 +12,8 @@
 
     $: total = members?.total ?? 0;
     $: organizationMembersSupported =
-        $organization?.billingPlanDetails?.addons?.seats?.supported ?? true; /* true on paid plans */
+        $organization?.billingPlanDetails?.addons?.seats?.supported ??
+        true; /* true on paid plans */
 </script>
 
 <CardGrid>
