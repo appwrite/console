@@ -22,9 +22,7 @@
 
     $: if (prefs) {
         const currentNormalized = normalizePrefs(prefs);
-        const originalNormalized = normalizePrefs(
-            Object.entries(($team?.prefs ?? {}) as Record<string, string>)
-        );
+        const originalNormalized = normalizePrefs(Object.entries($team?.prefs ?? {}));
 
         arePrefsDisabled = deepEqual(currentNormalized, originalNormalized);
     }
@@ -33,10 +31,12 @@
     let arePrefsDisabled = true;
 
     onMount(async () => {
-        const entries = Object.entries(($team?.prefs ?? {}) as Record<string, string>);
+        const entries = Object.entries($team?.prefs ?? {});
         prefs =
             entries.length > 0
-                ? entries.map(([key, value]) => createPrefRow(key, value))
+                ? entries.map(([key, value]) =>
+                      createPrefRow(String(key ?? ''), String(value ?? ''))
+                  )
                 : [createPrefRow()];
     });
 
