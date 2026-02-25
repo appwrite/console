@@ -6,7 +6,7 @@
         MultiSelectionTable
     } from '$lib/components';
     import type { Column } from '$lib/helpers/types';
-    import type { Models } from '@appwrite.io/console';
+    import { ExecutionStatus, type Models } from '@appwrite.io/console';
     import { Badge, Table, Typography } from '@appwrite.io/pink-svelte';
     import Sheet from './sheet.svelte';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
@@ -83,7 +83,7 @@
                                 {log.requestMethod}
                             </Typography.Code>
                         {:else if column.id === 'duration'}
-                            {#if ['processing', 'waiting'].includes(log.status)}
+                            {#if log.status === ExecutionStatus.Processing}
                                 <span use:timer={{ start: log.$createdAt }}></span>
                             {:else}
                                 {calculateTime(log.duration)}
