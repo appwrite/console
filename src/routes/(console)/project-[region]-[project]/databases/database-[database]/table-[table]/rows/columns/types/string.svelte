@@ -44,9 +44,7 @@
     const nullable = $derived(!limited ? !column.required : false);
     const columnSize = $derived('size' in column ? column.size : 0);
     const forceTextarea = $derived(
-        column.type === 'text' ||
-            column.type === 'mediumtext' ||
-            column.type === 'longtext'
+        column.type === 'text' || column.type === 'mediumtext' || column.type === 'longtext'
     );
 
     let stringValue = $state('');
