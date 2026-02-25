@@ -178,7 +178,7 @@
             limit={data.limit}
             offset={data.offset}
             total={data.domains.total} />
-    {:else if data?.query}
+    {:else if data?.query || data?.search}
         <EmptySearch hidePages bind:search={data.search} target="domains">
             <svelte:fragment slot="actions">
                 <Button
