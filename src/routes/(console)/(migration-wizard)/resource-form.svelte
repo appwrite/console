@@ -6,12 +6,13 @@
         createMigrationFormStore,
         createMigrationProviderStore,
         type MigrationFormData,
+        type MigrationResource,
         providerResources,
         resourcesToMigrationForm
     } from '$lib/stores/migration';
     import { Button } from '$lib/elements/forms';
     import { wizard } from '$lib/stores/wizard';
-    import { Resources, type Models } from '@appwrite.io/console';
+    import { AppwriteMigrationResource, type Models } from '@appwrite.io/console';
     import type { sdk } from '$lib/stores/sdk';
     import ImportReport from '$routes/(console)/project-[region]-[project]/settings/migrations/(import)/importReport.svelte';
 
@@ -100,13 +101,16 @@
         }
 
         if (groupKey === 'storage') {
-            return resources.includes(Resources.Bucket) && resources.includes(Resources.File);
+            return resources.includes(AppwriteMigrationResource.Bucket) && resources.includes(AppwriteMigrationResource.File);
         }
 
-        // Map groupKey to Resources enum
-        const groupToResource: Record<string, Resources> = {
-            users: Resources.User,
-            databases: Resources.Database
+        if (groupKey === 'messaging') {
+            return resources.includes(AppwriteMigrationResource.Provider);
+        }
+
+        const groupToResource: Record<string, MigrationResource> = {
+            users: AppwriteMigrationResource.User,
+            databases: AppwriteMigrationResource.Database
         };
         const resource = groupToResource[groupKey];
         return resource ? resources.includes(resource) : false;
@@ -122,7 +126,8 @@
             users: 'user',
             databases: 'database',
             functions: 'function',
-            storage: 'bucket'
+            storage: 'bucket',
+            messaging: 'provider'
         };
         return map[groupKey] || groupKey;
     };

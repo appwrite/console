@@ -26,7 +26,8 @@
             env: 'Include environment variables',
             inactive: 'Include inactive deployments'
         },
-        storage: { root: 'Storage' }
+        storage: { root: 'Storage' },
+        messaging: { root: 'Messaging', messages: 'Include messages' }
     };
 
     const descriptionMap = {
@@ -42,6 +43,10 @@
             root: 'Import all functions and their active deployment',
             env: 'Import all environment variables',
             inactive: 'Import all deployments that are not currently active'
+        },
+        messaging: {
+            root: 'Import all providers, topics and subscribers',
+            messages: 'Import all messages'
         }
     };
 
