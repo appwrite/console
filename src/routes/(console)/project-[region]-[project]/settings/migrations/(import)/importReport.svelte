@@ -26,7 +26,8 @@
             env: 'Include environment variables',
             inactive: 'Include inactive deployments'
         },
-        storage: { root: 'Storage' }
+        storage: { root: 'Storage' },
+        backups: { root: 'Backup Policies' }
     };
 
     const descriptionMap = {

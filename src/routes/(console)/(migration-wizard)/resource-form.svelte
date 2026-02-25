@@ -11,7 +11,7 @@
     } from '$lib/stores/migration';
     import { Button } from '$lib/elements/forms';
     import { wizard } from '$lib/stores/wizard';
-    import { Resources, type Models } from '@appwrite.io/console';
+    import { AppwriteMigrationResource, type Models } from '@appwrite.io/console';
     import type { sdk } from '$lib/stores/sdk';
     import ImportReport from '$routes/(console)/project-[region]-[project]/settings/migrations/(import)/importReport.svelte';
 
@@ -94,19 +94,24 @@
     $: resources = providerResources[$provider.provider];
 
     const shouldRenderGroup = (groupKey: string): boolean => {
-        if (groupKey === 'functions') {
-            // Functions not in SDK Resources enum, skip
-            return false;
-        }
-
         if (groupKey === 'storage') {
-            return resources.includes(Resources.Bucket) && resources.includes(Resources.File);
+            return (
+                resources.includes(AppwriteMigrationResource.Bucket) &&
+                resources.includes(AppwriteMigrationResource.File)
+            );
         }
 
-        // Map groupKey to Resources enum
-        const groupToResource: Record<string, Resources> = {
-            users: Resources.User,
-            databases: Resources.Database
+        if (groupKey === 'functions') {
+            return resources.includes(AppwriteMigrationResource.Function);
+        }
+
+        if (groupKey === 'backups') {
+            return resources.includes(AppwriteMigrationResource.Backuppolicy);
+        }
+
+        const groupToResource: Record<string, string> = {
+            users: AppwriteMigrationResource.User,
+            databases: AppwriteMigrationResource.Database
         };
         const resource = groupToResource[groupKey];
         return resource ? resources.includes(resource) : false;
@@ -122,7 +127,8 @@
             users: 'user',
             databases: 'database',
             functions: 'function',
-            storage: 'bucket'
+            storage: 'bucket',
+            backups: 'backup-policy'
         };
         return map[groupKey] || groupKey;
     };

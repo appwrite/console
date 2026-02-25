@@ -1,6 +1,13 @@
 import { writable } from 'svelte/store';
-import { Resources } from '@appwrite.io/console';
+import {
+    AppwriteMigrationResource,
+    FirebaseMigrationResource,
+    NHostMigrationResource,
+    SupabaseMigrationResource
+} from '@appwrite.io/console';
 import { includesAll } from '$lib/helpers/array';
+
+type MigrationResource = AppwriteMigrationResource | FirebaseMigrationResource | NHostMigrationResource | SupabaseMigrationResource;
 
 const initialFormData = {
     users: {
@@ -17,6 +24,9 @@ const initialFormData = {
         inactive: false
     },
     storage: {
+        root: false
+    },
+    backups: {
         root: false
     }
 };
@@ -42,75 +52,59 @@ export const ResourcesFriendly = {
     file: { singular: 'File', plural: 'Files' },
     bucket: { singular: 'Bucket', plural: 'Buckets' },
     function: { singular: 'Function', plural: 'Functions' },
-    'environment-variable': { singular: 'Environment Variable', plural: 'Environment Variables' },
+    environment_variable: { singular: 'Environment Variable', plural: 'Environment Variables' },
     deployment: { singular: 'Deployment', plural: 'Deployments' },
     database: { singular: 'Database', plural: 'Databases' },
     table: { singular: 'Table', plural: 'Tables' },
     index: { singular: 'Index', plural: 'Indexes' },
     column: { singular: 'Column', plural: 'Columns' },
-    row: { singular: 'Row', plural: 'Rows' }
+    row: { singular: 'Row', plural: 'Rows' },
+    'backup-policy': { singular: 'Backup Policy', plural: 'Backup Policies' }
 };
 
-// @todo: @itznotabug - check if other resources are correct and work fine!
-export const providerResources: Record<Provider, Resources[]> = {
-    appwrite: Object.values(Resources),
-    supabase: [
-        Resources.User,
-        Resources.Database,
-        Resources.Collection,
-        Resources.Attribute,
-        Resources.Index,
-        Resources.Document,
-        Resources.Bucket,
-        Resources.File
-    ],
-    nhost: [
-        Resources.User,
-        Resources.Database,
-        Resources.Collection,
-        Resources.Attribute,
-        Resources.Index,
-        Resources.Document,
-        Resources.Bucket,
-        Resources.File
-    ],
-    firebase: [
-        Resources.User,
-        Resources.Database,
-        Resources.Collection,
-        Resources.Attribute,
-        Resources.Document,
-        Resources.Bucket,
-        Resources.File
-    ]
+export const providerResources: Record<Provider, MigrationResource[]> = {
+    appwrite: Object.values(AppwriteMigrationResource),
+    supabase: Object.values(SupabaseMigrationResource),
+    nhost: Object.values(NHostMigrationResource),
+    firebase: Object.values(FirebaseMigrationResource)
 };
 
 export const migrationFormToResources = (
     formData: MigrationFormData,
     provider: Provider
-): Resources[] => {
-    const resources: Resources[] = [];
-    const addResource = (resource: Resources) => {
+): MigrationResource[] => {
+    const resources: MigrationResource[] = [];
+    const addResource = (resource: MigrationResource) => {
         if (providerResources[provider].includes(resource)) {
             resources.push(resource);
         }
     };
 
     if (formData.users.root) {
-        addResource(Resources.User);
+        addResource(AppwriteMigrationResource.User);
     }
     if (formData.databases.root) {
-        addResource(Resources.Database);
-        addResource(Resources.Table);
-        addResource(Resources.Column);
-        addResource(Resources.Index);
+        addResource(AppwriteMigrationResource.Database);
+        addResource(AppwriteMigrationResource.Table);
+        addResource(AppwriteMigrationResource.Column);
+        addResource(AppwriteMigrationResource.Index);
     }
     if (formData.databases.rows) {
-        addResource(Resources.Row);
+        addResource(AppwriteMigrationResource.Row);
     }
     if (formData.storage.root) {
-        addResource(Resources.Bucket);
-        addResource(Resources.File);
+        addResource(AppwriteMigrationResource.Bucket);
+        addResource(AppwriteMigrationResource.File);
+    }
+    if (formData.functions.root) {
+        addResource(AppwriteMigrationResource.Function);
+        addResource(AppwriteMigrationResource.Environmentvariable);
+    }
+    if (formData.functions.inactive) {
+        addResource(AppwriteMigrationResource.Deployment);
+    }
+    if (formData.backups.root) {
+        addResource(AppwriteMigrationResource.Backuppolicy);
     }
 
     return resources;
@@ -137,19 +131,39 @@ export const isVersionAtLeast = (version: string, atLeast: string) => {
     return compareVersions(version, atLeast) >= 0;
 };
 
-export const resourcesToMigrationForm = (resources: Resources[]): MigrationFormData => {
+export const resourcesToMigrationForm = (resources: MigrationResource[]): MigrationFormData => {
     const formData = { ...initialFormData };
-    if (resources.includes(Resources.User)) {
+    if (resources.includes(AppwriteMigrationResource.User)) {
         formData.users.root = true;
     }
-    if (resources.includes(Resources.Database)) {
+    if (resources.includes(AppwriteMigrationResource.Database)) {
         formData.databases.root = true;
     }
-    if (includesAll(resources, [Resources.Table, Resources.Column, Resources.Row] as Resources[])) {
+    if (
+        includesAll(resources, [
+            AppwriteMigrationResource.Table,
+            AppwriteMigrationResource.Column,
+            AppwriteMigrationResource.Row
+        ] as MigrationResource[])
+    ) {
         formData.databases.rows = true;
     }
-    if (includesAll(resources, [Resources.Bucket, Resources.File] as Resources[])) {
+    if (
+        includesAll(resources, [
+            AppwriteMigrationResource.Bucket,
+            AppwriteMigrationResource.File
+        ] as MigrationResource[])
+    ) {
         formData.storage.root = true;
+    }
+    if (resources.includes(AppwriteMigrationResource.Function)) {
+        formData.functions.root = true;
+    }
+    if (resources.includes(AppwriteMigrationResource.Deployment)) {
+        formData.functions.inactive = true;
+    }
+    if (resources.includes(AppwriteMigrationResource.Backuppolicy)) {
+        formData.backups.root = true;
     }
 
     return formData;
