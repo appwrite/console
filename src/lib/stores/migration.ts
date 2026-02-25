@@ -54,7 +54,7 @@ export const ResourcesFriendly = {
     file: { singular: 'File', plural: 'Files' },
     bucket: { singular: 'Bucket', plural: 'Buckets' },
     function: { singular: 'Function', plural: 'Functions' },
-    environment_variable: { singular: 'Environment Variable', plural: 'Environment Variables' },
+    'environment-variable': { singular: 'Environment Variable', plural: 'Environment Variables' },
     deployment: { singular: 'Deployment', plural: 'Deployments' },
     database: { singular: 'Database', plural: 'Databases' },
     table: { singular: 'Table', plural: 'Tables' },
@@ -62,8 +62,8 @@ export const ResourcesFriendly = {
     column: { singular: 'Column', plural: 'Columns' },
     row: { singular: 'Row', plural: 'Rows' },
     site: { singular: 'Site', plural: 'Sites' },
-    site_deployment: { singular: 'Site Deployment', plural: 'Site Deployments' },
-    site_variable: { singular: 'Site Variable', plural: 'Site Variables' }
+    'site-deployment': { singular: 'Site Deployment', plural: 'Site Deployments' },
+    'site-variable': { singular: 'Site Variable', plural: 'Site Variables' }
 };
 
 export const providerResources: Record<Provider, MigrationResource[]> = {
@@ -102,17 +102,17 @@ export const migrationFormToResources = (
     }
     if (formData.functions.root) {
         addResource(AppwriteMigrationResource.Function);
-        addResource(AppwriteMigrationResource.EnvironmentVariable);
+        addResource(AppwriteMigrationResource.Environmentvariable);
     }
     if (formData.functions.inactive) {
         addResource(AppwriteMigrationResource.Deployment);
     }
     if (formData.sites.root) {
         addResource(AppwriteMigrationResource.Site);
-        addResource(AppwriteMigrationResource.SiteVariable);
+        addResource(AppwriteMigrationResource.Sitevariable);
     }
     if (formData.sites.inactive) {
-        addResource(AppwriteMigrationResource.SiteDeployment);
+        addResource(AppwriteMigrationResource.Sitedeployment);
     }
 
     return resources;
@@ -173,7 +173,7 @@ export const resourcesToMigrationForm = (resources: MigrationResource[]): Migrat
     if (resources.includes(AppwriteMigrationResource.Site)) {
         formData.sites.root = true;
     }
-    if (resources.includes(AppwriteMigrationResource.SiteDeployment)) {
+    if (resources.includes(AppwriteMigrationResource.Sitedeployment)) {
         formData.sites.inactive = true;
     }
 
