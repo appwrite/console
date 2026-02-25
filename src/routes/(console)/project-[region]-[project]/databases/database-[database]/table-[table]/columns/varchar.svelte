@@ -16,7 +16,8 @@
             size: data.size,
             required: data.required,
             xdefault: data.default,
-            array: data.array
+            array: data.array,
+            encrypt: data.encrypt
         });
     }
     export async function updateVarchar(
@@ -45,15 +46,19 @@
     import { ProgressBar } from '$lib/components';
     import { Layout, Typography, Tooltip, Icon } from '@appwrite.io/pink-svelte';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
+    import EncryptCheckbox from './encryptCheckbox.svelte';
 
     export let data: Partial<Models.ColumnVarchar> = {
         required: false,
         size: 255,
-        array: false
+        array: false,
+        encrypt: false
     };
 
     export let editing = false;
     export let disabled = false;
+
+    if (data && (data.encrypt === undefined || data.encrypt === null)) data.encrypt = false;
 
     // Local size for reactivity
     let size = data.size ?? 255;
@@ -118,6 +123,10 @@
     $: listen(data);
 
     $: handleDefaultState($required || $array);
+
+    $: if (data.encrypt && size < 150) {
+        size = 150;
+    }
 </script>
 
 <InputNumber
@@ -127,8 +136,11 @@
     {disabled}
     placeholder="Enter size"
     bind:value={size}
-    min={1}
-    max={16383} />
+    min={data.encrypt ? 150 : 1}
+    max={16383}
+    helper={data.encrypt
+        ? 'Encrypted varchar columns require a minimum size of 150.'
+        : undefined} />
 
 {#if !editing}
     <Layout.Stack gap="xs">
@@ -173,3 +185,7 @@
     {disabled}
     bind:array={data.array}
     bind:required={data.required} />
+
+<Layout.Stack gap="xs" direction="column">
+    <EncryptCheckbox id="encrypt-varchar" bind:encrypt={data.encrypt} {editing} {disabled} />
+</Layout.Stack>
