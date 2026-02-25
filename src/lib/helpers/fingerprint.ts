@@ -4,6 +4,7 @@ const SECRET = env.PUBLIC_CONSOLE_FINGERPRINT_KEY ?? '';
 const CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour
 
 async function sha256(message: string): Promise<string> {
+    if (!crypto?.subtle) return '';
     const data = new TextEncoder().encode(message);
     const hash = await crypto.subtle.digest('SHA-256', data);
     return Array.from(new Uint8Array(hash))
@@ -12,6 +13,7 @@ async function sha256(message: string): Promise<string> {
 }
 
 async function hmacSha256(message: string, secret: string): Promise<string> {
+    if (!crypto?.subtle) return '';
     const key = await crypto.subtle.importKey(
         'raw',
         new TextEncoder().encode(secret),
@@ -204,7 +206,7 @@ export async function generateFingerprintToken(): Promise<string> {
     };
 
     const payload = JSON.stringify(signals);
-    const encoded = btoa(payload);
+    const encoded = btoa(unescape(encodeURIComponent(payload)));
 
     if (!SECRET) {
         return encoded;

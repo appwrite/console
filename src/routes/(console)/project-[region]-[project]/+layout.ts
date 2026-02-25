@@ -13,6 +13,7 @@ import { redirect } from '@sveltejs/kit';
 import { resolve } from '$app/paths';
 import { generateFingerprintToken } from '$lib/helpers/fingerprint';
 import { normalizeConsoleVariables } from '$lib/helpers/domains';
+import { browser } from '$app/environment';
 
 export const load: LayoutLoad = async ({ params, depends, parent }) => {
     const { plansInfo, organizations, preferences: prefs } = await parent();
@@ -103,35 +104,24 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
         plansInfo.set(organization.billingPlanId, organizationPlan);
     }
 
-    // Track console access for cloud only (fire-and-forget, backend has 6-day cooldown)
-    // Don't call if project is paused - user must explicitly resume via createConsoleAccess
-    if (isCloud) {
-        const projectInactivityDays = organizationPlan?.projectInactivityDays ?? 0;
-        const consoleAccessedAt = (project as { consoleAccessedAt?: string }).consoleAccessedAt;
-
-        let isPaused = false;
-        if (projectInactivityDays > 0 && consoleAccessedAt) {
-            const lastAccess = new Date(consoleAccessedAt);
-            const now = new Date();
-            const diffDays = Math.floor(
-                (now.getTime() - lastAccess.getTime()) / (1000 * 60 * 60 * 24)
-            );
-            isPaused = diffDays >= projectInactivityDays;
-        }
-
-        if (!isPaused) {
-            generateFingerprintToken()
-                .then((fingerprint) => {
-                    sdk.forConsole.client.headers['X-Appwrite-Console-Fingerprint'] = fingerprint;
-                    return sdk.forConsole.projects.updateConsoleAccess({
-                        projectId: params.project
-                    });
-                })
-                .catch(() => {})
-                .finally(() => {
-                    delete sdk.forConsole.client.headers['X-Appwrite-Console-Fingerprint'];
+    // Track console access for cloud projects (fire-and-forget, backend has 6-day cooldown).
+    // Skip if paused — user must explicitly resume via the paused project modal.
+    if (isCloud && browser && project.status !== 'paused') {
+        generateFingerprintToken()
+            .then((fingerprint) => {
+                sdk.forConsole.client.headers['X-Appwrite-Console-Fingerprint'] = fingerprint;
+                return (
+                    sdk.forConsole.projects as unknown as {
+                        updateConsoleAccess(params: { projectId: string }): Promise<unknown>;
+                    }
+                ).updateConsoleAccess({
+                    projectId: params.project
                 });
-        }
+            })
+            .catch(() => {})
+            .finally(() => {
+                delete sdk.forConsole.client.headers['X-Appwrite-Console-Fingerprint'];
+            });
     }
 
     return {

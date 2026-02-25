@@ -7,7 +7,6 @@
     import { Submit, trackError } from '$lib/actions/analytics';
     import { generateFingerprintToken } from '$lib/helpers/fingerprint';
     import { Alert, Layout, Modal, Typography } from '@appwrite.io/pink-svelte';
-    import { Status } from '@appwrite.io/console';
 
     let {
         show = $bindable(false),
@@ -29,7 +28,14 @@
             sdk.forConsole.client.headers['X-Appwrite-Console-Fingerprint'] = fingerprint;
 
             try {
-                await sdk.forConsole.projects.updateStatus({ projectId, status: Status.Active });
+                await (
+                    sdk.forConsole.projects as unknown as {
+                        updateStatus(params: {
+                            projectId: string;
+                            status: string;
+                        }): Promise<unknown>;
+                    }
+                ).updateStatus({ projectId, status: 'active' });
             } finally {
                 delete sdk.forConsole.client.headers['X-Appwrite-Console-Fingerprint'];
             }
