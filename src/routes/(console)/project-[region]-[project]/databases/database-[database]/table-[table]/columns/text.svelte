@@ -15,7 +15,8 @@
             key,
             required: data.required,
             xdefault: data.default,
-            array: data.array
+            array: data.array,
+            encrypt: data.encrypt
         });
     }
     export async function updateText(
@@ -38,16 +39,20 @@
 <script lang="ts">
     import { createConservative } from '$lib/helpers/stores';
     import RequiredArrayCheckboxes from './requiredArrayCheckboxes.svelte';
+    import EncryptCheckbox from './encryptCheckbox.svelte';
     import { InputTextarea } from '$lib/elements/forms';
     import { Layout, Typography } from '@appwrite.io/pink-svelte';
 
     export let data: Partial<Models.ColumnText> = {
         required: false,
-        array: false
+        array: false,
+        encrypt: false
     };
 
     export let editing = false;
     export let disabled = false;
+
+    if (data && (data.encrypt === undefined || data.encrypt === null)) data.encrypt = false;
 
     let savedDefault = data.default;
 
@@ -93,3 +98,7 @@
     {disabled}
     bind:array={data.array}
     bind:required={data.required} />
+
+<Layout.Stack gap="xs" direction="column">
+    <EncryptCheckbox id="encrypt-text" bind:encrypt={data.encrypt} {editing} {disabled} />
+</Layout.Stack>

@@ -15,7 +15,7 @@
         Tooltip,
         Typography
     } from '@appwrite.io/pink-svelte';
-    import { isRelationship, isSpatialType, isString } from '../rows/store';
+    import { isRelationship, isSpatialType, isTextType } from '../rows/store';
     import {
         columns,
         type Columns,
@@ -443,7 +443,7 @@
                                         {/if}
                                     </Typography.Text>
 
-                                    {#if isString(column) && column.encrypt}
+                                    {#if isTextType(column) && 'encrypt' in column && column.encrypt}
                                         <Tooltip portal>
                                             <Icon
                                                 size="s"
