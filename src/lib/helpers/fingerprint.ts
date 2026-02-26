@@ -8,6 +8,11 @@ async function sha256(message: string): Promise<string> {
         console.warn('crypto.subtle unavailable, fingerprinting disabled');
         return '';
     }
+    const msgBuffer = new TextEncoder().encode(message);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+}
 
 async function hmacSha256(message: string, secret: string): Promise<string> {
     if (!crypto?.subtle) return '';
