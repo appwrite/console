@@ -49,7 +49,7 @@
                         disabled={editing || disabled}
                         class:cursor-pointer={!editing}
                         class:cursor-not-allowed={editing || disabled}
-                        on:click={(e) => {
+                        onclick={(e) => {
                             if (!supportsEncryption) {
                                 toggle(e);
                             } else {
@@ -59,7 +59,7 @@
                         <Layout.Stack inline gap="xxs" direction="row" alignItems="center">
                             <Typography.Text variant="m-500">Encrypted</Typography.Text>
                             {#if !supportsEncryption}
-                                <Tag variant="default" size="xs" on:click={toggle}>Pro</Tag>
+                                <Tag variant="default" size="xs">Pro</Tag>
                             {/if}
                         </Layout.Stack>
                     </button>
