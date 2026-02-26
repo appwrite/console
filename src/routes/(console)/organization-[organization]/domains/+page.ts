@@ -29,7 +29,8 @@ export const load = async ({ depends, url, route, parent }) => {
                 Query.orderDesc(''),
                 Query.equal('teamId', organization.$id),
                 ...parsedQueries.values()
-            ]
+            ],
+            search: search || undefined
         })
     };
 };
