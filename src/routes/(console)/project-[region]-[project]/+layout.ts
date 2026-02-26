@@ -110,11 +110,7 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
         generateFingerprintToken()
             .then((fingerprint) => {
                 sdk.forConsole.client.headers['X-Appwrite-Console-Fingerprint'] = fingerprint;
-                return (
-                    sdk.forConsole.projects as unknown as {
-                        updateConsoleAccess(params: { projectId: string }): Promise<unknown>;
-                    }
-                ).updateConsoleAccess({
+                sdk.forConsole.projects.updateConsoleAccess({
                     projectId: params.project
                 });
             })
