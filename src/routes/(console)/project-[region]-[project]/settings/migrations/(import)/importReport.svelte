@@ -23,13 +23,11 @@
         databases: { root: 'Databases', rows: 'Include rows' },
         functions: {
             root: 'Functions',
-            env: 'Include environment variables',
             inactive: 'Include inactive deployments'
         },
         storage: { root: 'Storage' },
         sites: {
             root: 'Sites',
-            env: 'Include environment variables',
             inactive: 'Include inactive deployments'
         }
     };
@@ -45,12 +43,10 @@
         },
         functions: {
             root: 'Import all functions and their active deployment',
-            env: 'Import all environment variables',
             inactive: 'Import all deployments that are not currently active'
         },
         sites: {
             root: 'Import all sites and their active deployment',
-            env: 'Import all environment variables',
             inactive: 'Import all deployments that are not currently active'
         }
     };
