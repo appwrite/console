@@ -16,7 +16,8 @@
         buildWildcardColumnsQuery,
         isRelationship,
         isRelationshipToMany,
-        isSpatialType,          isTextType
+        isSpatialType,
+        isTextType
     } from './rows/store';
     import {
         columns,
@@ -1071,7 +1072,9 @@
                                         {@const isEmptyArray = formatted === 'Empty'}
                                         {@const isDatetimeAttribute = rowColumn.type === 'datetime'}
                                         {@const isEncryptedAttribute =
-                                            isTextType(rowColumn) && 'encrypt' in rowColumn && rowColumn.encrypt}
+                                            isTextType(rowColumn) &&
+                                            'encrypt' in rowColumn &&
+                                            rowColumn.encrypt}
                                         {#if isDatetimeAttribute}
                                             <DualTimeView time={value}>
                                                 <span slot="title">Timestamp</span>
