@@ -26,8 +26,8 @@
         id?: string;
     } = $props();
 
-    const organizationId = page.data?.organization?.$id ?? page.data?.project?.$id;
-    const supportsEncryption = isCloud ? $currentPlan?.databasesAllowEncrypt : true;
+    const organizationId = page.data?.organization?.$id ?? page.data?.project?.teamId;
+    const supportsEncryption = $derived(isCloud ? $currentPlan?.databasesAllowEncrypt : true);
 </script>
 
 <Tooltip disabled={!(editing || disabled)} maxWidth="275px" placement="bottom-start">
