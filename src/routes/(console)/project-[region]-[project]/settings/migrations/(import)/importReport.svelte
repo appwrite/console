@@ -55,15 +55,12 @@
     let parentState: boolean | 'indeterminate';
 
     $: {
-        const total = formGroupChildren.length;
-        const checked = formGroupChildren.filter((key) => formGroup[key]).length;
-
-        if (checked === 0) {
+        if (!formGroup.root) {
             parentState = false;
-        } else if (checked === total) {
-            parentState = true;
         } else {
-            parentState = 'indeterminate';
+            const total = formGroupChildren.length;
+            const checked = formGroupChildren.filter((key) => formGroup[key]).length;
+            parentState = checked === total ? true : 'indeterminate';
         }
     }
 
