@@ -120,7 +120,7 @@
 <slot />
 
 {#if isCloud && data.project?.status === 'paused'}
-    <PausedProjectModal show={true} projectId={data.project.$id} />
+    <PausedProjectModal show={true} projectId={data.project.$id} teamId={data.project.teamId} />
 {/if}
 
 <div class="layout-level-progress-bars">

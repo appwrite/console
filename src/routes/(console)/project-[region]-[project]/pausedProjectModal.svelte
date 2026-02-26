@@ -1,7 +1,8 @@
 <script lang="ts">
     import { Button } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
-    import { invalidate } from '$app/navigation';
+    import { goto, invalidate } from '$app/navigation';
+    import { resolve } from '$app/paths';
     import { Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError } from '$lib/actions/analytics';
@@ -10,10 +11,12 @@
 
     let {
         show = $bindable(false),
-        projectId
+        projectId,
+        teamId
     }: {
         show: boolean;
         projectId: string;
+        teamId: string;
     } = $props();
 
     let loading = $state(false);
@@ -78,6 +81,17 @@
 
     <svelte:fragment slot="footer">
         <Layout.Stack direction="row" justifyContent="flex-end">
+            <Button
+                text
+                disabled={loading}
+                on:click={() =>
+                    goto(
+                        resolve('/(console)/organization-[organization]', {
+                            organization: teamId
+                        })
+                    )}>
+                Cancel
+            </Button>
             <Button disabled={loading} on:click={handleResume}>
                 {#if loading}
                     Resuming...

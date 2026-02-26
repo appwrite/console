@@ -118,7 +118,7 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
                     projectId: params.project
                 });
             })
-            .catch(() => {})
+            .catch((e) => console.error('Failed to update console access:', e))
             .finally(() => {
                 delete sdk.forConsole.client.headers['X-Appwrite-Console-Fingerprint'];
             });

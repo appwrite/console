@@ -206,7 +206,12 @@ export async function generateFingerprintToken(): Promise<string> {
     };
 
     const payload = JSON.stringify(signals);
-    const encoded = btoa(unescape(encodeURIComponent(payload)));
+    const bytes = new TextEncoder().encode(payload);
+    let binary = '';
+    for (const byte of bytes) {
+        binary += String.fromCharCode(byte);
+    }
+    const encoded = btoa(binary);
 
     if (!SECRET) {
         return encoded;
