@@ -47,7 +47,7 @@
                     <button
                         type="button"
                         disabled={editing || disabled}
-                        class:cursor-pointer={!editing}
+                        class:cursor-pointer={!(editing || disabled)}
                         class:cursor-not-allowed={editing || disabled}
                         onclick={(e) => {
                             if (!supportsEncryption) {
