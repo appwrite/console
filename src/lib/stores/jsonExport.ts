@@ -129,7 +129,7 @@ function createJsonExportStore() {
                 }
 
                 allRows = [...allRows, ...batch.rows];
-                offset += PAGE_SIZE;
+                offset += batch.rows.length;
 
                 update((jobs) => {
                     const job = jobs.get(jobId);
@@ -148,9 +148,6 @@ function createJsonExportStore() {
                         filtered[col] = row[col];
                     }
                 }
-                if ('$id' in row) filtered['$id'] = row['$id'];
-                if ('$createdAt' in row) filtered['$createdAt'] = row['$createdAt'];
-                if ('$updatedAt' in row) filtered['$updatedAt'] = row['$updatedAt'];
                 return filtered;
             });
 

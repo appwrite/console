@@ -40,6 +40,13 @@
     let notifiedJobs = new Set<string>();
 
     $effect(() => {
+        // Prune stale jobs that are no longer in the store
+        for (const key of notifiedJobs) {
+            if (!$jsonExportStore.has(key)) {
+                notifiedJobs.delete(key);
+            }
+        }
+
         for (const [key, job] of $jsonExportStore.entries()) {
             if (notifiedJobs.has(key)) continue;
 
