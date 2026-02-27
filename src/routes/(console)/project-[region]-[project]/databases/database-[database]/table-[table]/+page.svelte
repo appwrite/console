@@ -8,7 +8,16 @@
     import { Container } from '$lib/layout';
     import { preferences } from '$lib/stores/preferences';
     import { canWriteTables, canWriteRows } from '$lib/stores/roles';
-    import { Icon, Layout, Divider, Tooltip, Typography, Link } from '@appwrite.io/pink-svelte';
+    import {
+        Icon,
+        Layout,
+        Divider,
+        Tooltip,
+        Typography,
+        Link,
+        Popover,
+        ActionMenu
+    } from '@appwrite.io/pink-svelte';
     import type { PageData } from './$types';
     import {
         tableColumns,
@@ -152,6 +161,20 @@
         return queryParam ? `${url}?query=${encodeURIComponent(queryParam)}` : url;
     }
 
+    function getTableJsonExportUrl() {
+        const queryParam = page.url.searchParams.get('query');
+        const url = resolve(
+            '/(console)/project-[region]-[project]/databases/database-[database]/table-[table]/export-json',
+            {
+                region: page.params.region,
+                project: page.params.project,
+                database: page.params.database,
+                table: page.params.table
+            }
+        );
+        return queryParam ? `${url}?query=${encodeURIComponent(queryParam)}` : url;
+    }
+
     onDestroy(() => ($showCreateColumnSheet.show = false));
 </script>
 
@@ -221,7 +244,7 @@
                                 <svelte:fragment slot="tooltip">Import CSV</svelte:fragment>
                             </Tooltip>
 
-                            <Tooltip placement="top">
+                            <Popover let:toggle padding="none" placement="bottom-end">
                                 <Button
                                     icon
                                     size="s"
@@ -232,15 +255,30 @@
                                         hasValidColumns &&
                                         data.rows?.total
                                     ) || disableButton}
-                                    on:click={() => {
-                                        trackEvent(Click.DatabaseExportCsv);
-                                        goto(getTableExportUrl());
-                                    }}>
+                                    on:click={toggle}>
                                     <Icon icon={IconDownload} size="s" />
                                 </Button>
-
-                                <svelte:fragment slot="tooltip">Export CSV</svelte:fragment>
-                            </Tooltip>
+                                <svelte:fragment slot="tooltip" let:hide>
+                                    <ActionMenu.Root>
+                                        <ActionMenu.Item.Button
+                                            on:click={(e) => {
+                                                hide(e);
+                                                trackEvent(Click.DatabaseExportCsv);
+                                                goto(getTableExportUrl());
+                                            }}>
+                                            Export as CSV
+                                        </ActionMenu.Item.Button>
+                                        <ActionMenu.Item.Button
+                                            on:click={(e) => {
+                                                hide(e);
+                                                trackEvent(Click.DatabaseExportJson);
+                                                goto(getTableJsonExportUrl());
+                                            }}>
+                                            Export as JSON
+                                        </ActionMenu.Item.Button>
+                                    </ActionMenu.Root>
+                                </svelte:fragment>
+                            </Popover>
 
                             <Tooltip disabled={isRefreshing || !data.rows?.total} placement="top">
                                 <Button

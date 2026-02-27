@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { BackupRestoreBox, MigrationBox, UploadBox, CsvExportBox } from '$lib/components';
+    import { BackupRestoreBox, MigrationBox, UploadBox, CsvExportBox, JsonExportBox } from '$lib/components';
     import { realtime } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { project, stats } from './store';
@@ -129,6 +129,7 @@
     <BackupRestoreBox />
     <CsvImportBox />
     <CsvExportBox />
+    <JsonExportBox />
 </div>
 
 <style>
