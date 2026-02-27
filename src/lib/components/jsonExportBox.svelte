@@ -4,7 +4,17 @@
     import { addNotification } from '$lib/stores/notifications';
 
     let isOpen = $state(true);
-    let showBox = $derived($jsonExportStore.size > 0);
+
+    // Convert store Map to a plain array for safe iteration in Svelte 5
+    let jobEntries = $state<[string, JsonExportJob][]>([]);
+    let jobCount = $state(0);
+
+    jsonExportStore.subscribe((map) => {
+        jobEntries = [...map.entries()];
+        jobCount = map.size;
+    });
+
+    let showBox = $derived(jobCount > 0);
 
     function graphSize(status: string, fetched: number, total: number): number {
         switch (status) {
@@ -35,18 +45,18 @@
         }
     }
 
-    // Track completed exports to fire analytics & notifications
+    // Track completed exports to fire notifications
     let notifiedJobs = new Set<string>();
 
     $effect(() => {
-        // Prune stale jobs that are no longer in the store
+        // Prune stale jobs
         for (const key of notifiedJobs) {
-            if (!$jsonExportStore.has(key)) {
+            if (!jobEntries.some(([k]) => k === key)) {
                 notifiedJobs.delete(key);
             }
         }
 
-        for (const [key, job] of $jsonExportStore.entries()) {
+        for (const [key, job] of jobEntries) {
             if (notifiedJobs.has(key)) continue;
 
             if (job.status === 'completed') {
@@ -74,7 +84,7 @@
             <header class="upload-box-header">
                 <h4 class="upload-box-title">
                     <Typography.Text variant="m-500">
-                        Exporting rows ({$jsonExportStore.size})
+                        Exporting rows ({jobCount})
                     </Typography.Text>
                 </h4>
                 <button
@@ -93,7 +103,7 @@
             </header>
 
             <div class="upload-box-content-list">
-                {#each [...$jsonExportStore.entries()] as [key, job] (key)}
+                {#each jobEntries as [key, job] (key)}
                     <div class="upload-box-content" class:is-open={isOpen}>
                         <ul class="upload-box-list">
                             <li class="upload-box-item">

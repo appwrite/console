@@ -47,7 +47,6 @@
     const selectedColumnCount = $derived(Object.values(selectedColumns).filter(Boolean).length);
 
     const tableUrl = $derived.by(() => {
-        const queryParam = page.url.searchParams.get('query');
         const url = resolve(
             '/(console)/project-[region]-[project]/databases/database-[database]/table-[table]',
             {
@@ -57,7 +56,7 @@
                 table: page.params.table
             }
         );
-        return queryParam ? `${url}?query=${encodeURIComponent(queryParam)}` : url;
+        return page.url.search ? `${url}${page.url.search}` : url;
     });
 
     function removeLocalFilter(tag: TagValue) {
@@ -117,9 +116,10 @@
 
             await goto(tableUrl);
         } catch (error) {
+            const message = error instanceof Error ? error.message : String(error);
             addNotification({
                 type: 'error',
-                message: error.message
+                message
             });
 
             trackError(error, Submit.DatabaseExportJson);
