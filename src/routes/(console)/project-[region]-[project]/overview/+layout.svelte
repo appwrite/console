@@ -222,23 +222,25 @@
         <Layout.Stack gap="xl">
             <Typography.Title>Integrations</Typography.Title>
             <Layout.Stack gap="xl" direction="row" justifyContent="space-between">
-                <Tabs>
-                    <Tab
-                        noscroll
-                        event="platforms"
-                        href={`${path}/platforms`}
-                        selected={isTabSelected('platforms')}>Platforms</Tab>
-                    <Tab
-                        noscroll
-                        event="api-keys"
-                        href={`${path}/api-keys`}
-                        selected={isTabSelected('api-keys')}>API keys</Tab>
-                    <Tab
-                        noscroll
-                        event="dev-keys"
-                        href={`${path}/dev-keys`}
-                        selected={isTabSelected('dev-keys')}>Dev keys</Tab>
-                </Tabs>
+                {#key page.url.pathname}
+                    <Tabs>
+                        <Tab
+                            noscroll
+                            event="platforms"
+                            href={`${path}/platforms`}
+                            selected={isTabSelected('platforms')}>Platforms</Tab>
+                        <Tab
+                            noscroll
+                            event="api-keys"
+                            href={`${path}/api-keys`}
+                            selected={isTabSelected('api-keys')}>API keys</Tab>
+                        <Tab
+                            noscroll
+                            event="dev-keys"
+                            href={`${path}/dev-keys`}
+                            selected={isTabSelected('dev-keys')}>Dev keys</Tab>
+                    </Tabs>
+                {/key}
                 {#if $action}
                     <svelte:component this={$action} />
                 {/if}
