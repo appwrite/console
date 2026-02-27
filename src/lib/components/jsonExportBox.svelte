@@ -2,7 +2,7 @@
     import { Layout, Typography } from '@appwrite.io/pink-svelte';
     import { jsonExportStore, type JsonExportJob } from '$lib/stores/jsonExport';
     import { addNotification } from '$lib/stores/notifications';
-    import { Submit, trackEvent } from '$lib/actions/analytics';
+    import { trackEvent } from '$lib/actions/analytics';
 
     let isOpen = $state(true);
     let showBox = $derived($jsonExportStore.size > 0);
@@ -50,7 +50,6 @@
                     message: `Exported ${job.fetchedRows} rows as JSON`,
                     timeout: 10000
                 });
-                trackEvent(Submit.DatabaseExportJson);
             } else if (job.status === 'failed') {
                 notifiedJobs.add(key);
                 addNotification({
