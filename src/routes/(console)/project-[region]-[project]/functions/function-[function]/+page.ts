@@ -13,32 +13,22 @@ export const load: PageLoad = async ({ params, depends, url, route, parent }) =>
     const offset = pageToOffset(page, limit);
     const query = getQuery(url);
 
-    const [deploymentList, activeDeployment, repository] = await Promise.all([
-        loadDeploymentList({
-            region: params.region,
-            project: params.project,
-            functionId: params.function,
-            limit,
-            offset,
-            query
-        }),
-        data.function.deploymentId
-            ? loadActiveDeployment({
-                  region: params.region,
-                  project: params.project,
-                  functionId: params.function,
-                  deploymentId: data.function.deploymentId
-              })
-            : Promise.resolve(null),
-        data.function.installationId && data.function.providerRepositoryId
-            ? loadRepository({
-                  region: params.region,
-                  project: params.project,
-                  installationId: data.function.installationId,
-                  providerRepositoryId: data.function.providerRepositoryId
-              })
-            : Promise.resolve(null)
-    ]);
+    const parsedQueries = queryParamToMap(query || '[]');
+    queries.set(parsedQueries);
+    let activeDeployment: Models.Deployment | null = null;
+    if (data.function.deploymentId) {
+        try {
+            activeDeployment = await sdk
+                .forProject(params.region, params.project)
+                .functions.getDeployment({
+                    functionId: params.function,
+                    deploymentId: data.function.deploymentId
+                });
+        } catch (error) {
+            // active deployment with the requested ID could not be found
+            activeDeployment = null;
+        }
+    }
 
     return {
         offset,
@@ -46,95 +36,33 @@ export const load: PageLoad = async ({ params, depends, url, route, parent }) =>
         query,
         installations: data.installations,
         activeDeployment,
-        repository,
-        deploymentList
+        deploymentList: await sdk
+            .forProject(params.region, params.project)
+            .functions.listDeployments({
+                functionId: params.function,
+                queries: [
+                    Query.limit(limit),
+                    Query.offset(offset),
+                    Query.orderDesc(''),
+                    Query.select([
+                        'buildSize',
+                        'sourceSize',
+                        'totalSize',
+                        'buildDuration',
+                        'status',
+                        'type',
+                        'resourceId',
+                        'providerRepositoryUrl',
+                        'providerRepositoryOwner',
+                        'providerRepositoryName',
+                        'providerBranchUrl',
+                        'providerBranch',
+                        'providerCommitMessage',
+                        'providerCommitHash',
+                        'providerCommitUrl'
+                    ]),
+                    ...parsedQueries.values()
+                ]
+            })
     };
 };
-
-async function loadDeploymentList({
-    region,
-    project,
-    functionId,
-    limit,
-    offset,
-    query
-}: {
-    region: string;
-    project: string;
-    functionId: string;
-    limit: number;
-    offset: number;
-    query: string;
-}): Promise<Models.DeploymentList> {
-    const parsedQueries = queryParamToMap(query || '[]');
-    queries.set(parsedQueries);
-
-    return sdk.forProject(region, project).functions.listDeployments({
-        functionId,
-        queries: [
-            Query.limit(limit),
-            Query.offset(offset),
-            Query.orderDesc(''),
-            Query.select([
-                'buildSize',
-                'sourceSize',
-                'totalSize',
-                'buildDuration',
-                'status',
-                'type',
-                'resourceId',
-                'providerRepositoryUrl',
-                'providerRepositoryOwner',
-                'providerRepositoryName',
-                'providerBranchUrl',
-                'providerBranch',
-                'providerCommitMessage',
-                'providerCommitHash',
-                'providerCommitUrl'
-            ]),
-            ...parsedQueries.values()
-        ]
-    });
-}
-
-async function loadActiveDeployment({
-    region,
-    project,
-    functionId,
-    deploymentId
-}: {
-    region: string;
-    project: string;
-    functionId: string;
-    deploymentId: string;
-}): Promise<Models.Deployment | null> {
-    try {
-        return await sdk.forProject(region, project).functions.getDeployment({
-            functionId,
-            deploymentId
-        });
-    } catch (error) {
-        return null;
-    }
-}
-
-async function loadRepository({
-    region,
-    project,
-    installationId,
-    providerRepositoryId
-}: {
-    region: string;
-    project: string;
-    installationId: string;
-    providerRepositoryId: string;
-}): Promise<Models.ProviderRepository | null> {
-    try {
-        return await sdk.forProject(region, project).vcs.getRepository({
-            installationId,
-            providerRepositoryId
-        });
-    } catch (error) {
-        return null;
-    }
-}

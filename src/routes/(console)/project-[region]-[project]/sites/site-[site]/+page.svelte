@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Container } from '$lib/layout';
-    import { Alert, Card, Divider, Empty, Layout, Tooltip } from '@appwrite.io/pink-svelte';
+    import { Card, Divider, Empty, Layout, Tooltip } from '@appwrite.io/pink-svelte';
     import SiteCard from '../(components)/siteCard.svelte';
     import DomainsOverview from './domainsOverview.svelte';
     import DeploymentsOverview from './deploymentsOverview.svelte';
@@ -15,7 +15,6 @@
     import { base } from '$app/paths';
     import type { PageProps } from './$types';
     import { regionalProtocol } from '$routes/(console)/project-[region]-[project]/store';
-    import { Link } from '$lib/elements';
 
     let { data }: PageProps = $props();
 
@@ -32,21 +31,11 @@
 
 <Container>
     <Layout.Stack gap="xxxl">
-        {#if data.repository && !data.repository.authorized}
-            <Alert.Inline status="warning">
-                Integration with your repository is not authorized to perform auto-deployments.
-                Please add the repository to the installation settings
-                <Link
-                    variant="muted"
-                    external
-                    href={`https://github.com/settings/installations/${data.repository.providerInstallationId}`}>
-                    here
-                </Link>.
-            </Alert.Inline>
-        {/if}
-
         {#if data?.deployment && data.deployment.status === 'ready'}
-            <SiteCard deployment={data.deployment} proxyRuleList={data.proxyRuleList}>
+            <SiteCard
+                site={data.site}
+                deployment={data.deployment}
+                proxyRuleList={data.proxyRuleList}>
                 {#snippet footer()}
                     {#if data.proxyRuleList.total}
                         <Button

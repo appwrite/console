@@ -58,75 +58,25 @@ export const load = async ({ params, depends, parent }) => {
         })
     ]);
 
-    const [deployment, repository] = await Promise.all([
-        deploymentList?.total && site.deploymentId
-            ? loadDeployment({
-                  region: params.region,
-                  project: params.project,
-                  siteId: params.site,
-                  deploymentId: site.deploymentId
-              })
-            : Promise.resolve(null),
-        site.installationId && site.providerRepositoryId
-            ? loadRepository({
-                  region: params.region,
-                  project: params.project,
-                  installationId: site.installationId,
-                  providerRepositoryId: site.providerRepositoryId
-              })
-            : Promise.resolve(null)
-    ]);
+    let deployment: Models.Deployment | null = null;
+    if (deploymentList?.total && site.deploymentId) {
+        try {
+            deployment = await sdk
+                .forProject(params.region, params.project)
+                .sites.getDeployment({ siteId: params.site, deploymentId: site.deploymentId });
+        } catch (error) {
+            // active deployment with the requested ID could not be found
+            deployment = null;
+        }
+    }
 
     return {
         site,
         deploymentList,
         deployment,
-        repository,
         proxyRuleList,
         prodReadyDeployments,
         hasProdReadyDeployments:
             prodReadyDeployments?.deployments?.filter((d) => d?.$id !== deployment?.$id).length > 0
     };
 };
-
-async function loadDeployment({
-    region,
-    project,
-    siteId,
-    deploymentId
-}: {
-    region: string;
-    project: string;
-    siteId: string;
-    deploymentId: string;
-}): Promise<Models.Deployment | null> {
-    try {
-        return await sdk.forProject(region, project).sites.getDeployment({
-            siteId,
-            deploymentId
-        });
-    } catch (error) {
-        return null;
-    }
-}
-
-async function loadRepository({
-    region,
-    project,
-    installationId,
-    providerRepositoryId
-}: {
-    region: string;
-    project: string;
-    installationId: string;
-    providerRepositoryId: string;
-}): Promise<Models.ProviderRepository | null> {
-    try {
-        return await sdk.forProject(region, project).vcs.getRepository({
-            installationId,
-            providerRepositoryId
-        });
-    } catch (error) {
-        return null;
-    }
-}

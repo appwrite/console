@@ -32,7 +32,6 @@
     import CreateActionMenu from './(components)/createActionMenu.svelte';
     import { Menu } from '$lib/components/menu';
     import DownloadActionMenuItem from './(components)/downloadActionMenuItem.svelte';
-    import { Link } from '$lib/elements';
 
     export let data;
 
@@ -93,19 +92,6 @@
                     on:dismiss={() => (showAlert = false)}
                     title="Some configuration changes are not live yet. Your function is redeploying — changes will be applied once the build is complete." />
             {/if}
-        {/if}
-
-        {#if data.repository && !data.repository.authorized}
-            <Alert.Inline status="warning">
-                Integration with your repository is not authorized to perform auto-deployments.
-                Please add the repository to the installation settings
-                <Link
-                    variant="muted"
-                    external
-                    href={`https://github.com/settings/installations/${data.repository.providerInstallationId}`}>
-                    here
-                </Link>.
-            </Alert.Inline>
         {/if}
         <Layout.Stack gap="xxxl">
             {#if activeDeployment}

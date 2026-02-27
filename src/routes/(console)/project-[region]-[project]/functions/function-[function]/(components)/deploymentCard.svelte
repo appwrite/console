@@ -187,7 +187,11 @@
                     {@render titleSnippet('Source')}
                     <Typography.Text variant="m-400" color="--fgcolor-neutral-primary">
                         <div>
-                            <DeploymentSource {deployment} />
+                            <DeploymentSource
+                                {deployment}
+                                resource={$func}
+                                region={page.params.region}
+                                project={page.params.project} />
                         </div>
                     </Typography.Text>
                 </Layout.Stack>
