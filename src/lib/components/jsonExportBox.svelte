@@ -22,18 +22,17 @@
     }
 
     function text(job: JsonExportJob): string {
-        const table = job.tableName ? `<b>${job.tableName}</b>` : '';
         switch (job.status) {
             case 'completed':
-                return `Exporting ${table} completed`;
+                return 'completed';
             case 'failed':
-                return `Exporting ${table} failed`;
+                return 'failed';
             case 'processing':
                 return job.totalRows > 0
-                    ? `Exporting ${table} (${job.fetchedRows}/${job.totalRows} rows)`
-                    : `Exporting ${table}`;
+                    ? `(${job.fetchedRows}/${job.totalRows} rows)`
+                    : '';
             default:
-                return 'Preparing export...';
+                return '';
         }
     }
 
@@ -97,7 +96,7 @@
                                     <div
                                         class="progress-bar-top-line u-flex u-gap-8 u-main-space-between">
                                         <Typography.Text>
-                                            {@html text(job)}
+                                            Exporting <Typography.Text variant="m-600">{job.tableName}</Typography.Text> {text(job)}
                                         </Typography.Text>
                                     </div>
                                     <div

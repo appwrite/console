@@ -10,7 +10,7 @@
     import { table } from '../store';
     import { queries, type TagValue } from '$lib/components/filters/store';
     import { TagList } from '$lib/components/filters';
-    import { Click, trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent } from '$lib/actions/analytics';
     import { toLocalDateTimeISO } from '$lib/helpers/date';
     import { writable } from 'svelte/store';
     import { isSmallViewport } from '$lib/stores/viewport';
@@ -92,7 +92,7 @@
         const filterQueries = exportWithFilters ? [...localQueries.values()] : [];
         const wildcardQueries = buildWildcardColumnsQuery($table as Entity);
 
-        trackEvent(Click.DatabaseExportJson);
+        trackEvent(Submit.DatabaseExportJson);
 
         // Dispatch to the background store — progress box will handle the rest
         jsonExportStore.startExport({

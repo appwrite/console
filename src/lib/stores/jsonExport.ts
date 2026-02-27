@@ -123,6 +123,11 @@ function createJsonExportStore() {
                         ]
                     });
 
+                // Guard against empty batches to prevent infinite loop
+                if (batch.rows.length === 0) {
+                    break;
+                }
+
                 allRows = [...allRows, ...batch.rows];
                 offset += PAGE_SIZE;
 
