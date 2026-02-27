@@ -70,6 +70,7 @@ function createJsonExportStore() {
 
     async function runExport(jobId: string, config: JsonExportConfig) {
         const PAGE_SIZE = 100;
+        const MAX_ROWS = 5000;
         let offset = 0;
         let allRows: Models.Row[] = [];
 
@@ -95,8 +96,15 @@ function createJsonExportStore() {
                     ]
                 });
 
-            allRows = [...firstBatch.rows];
             const total = firstBatch.total;
+
+            if (total > MAX_ROWS) {
+                throw new Error(
+                    `Table size (${total} rows) exceeds client-side export limit of ${MAX_ROWS}. Please apply filters to reduce the result set.`
+                );
+            }
+
+            allRows = [...firstBatch.rows];
             offset = PAGE_SIZE;
 
             update((jobs) => {

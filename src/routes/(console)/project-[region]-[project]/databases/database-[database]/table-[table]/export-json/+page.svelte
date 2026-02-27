@@ -4,9 +4,10 @@
     import { page } from '$app/state';
     import { goto } from '$app/navigation';
     import { Wizard } from '$lib/layout';
-    import { Fieldset, Layout, Divider } from '@appwrite.io/pink-svelte';
+    import { Fieldset, Layout, Divider, Icon, Typography } from '@appwrite.io/pink-svelte';
     import { Button, InputCheckbox, Form } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
+    import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { table } from '../store';
     import { queries, type TagValue } from '$lib/components/filters/store';
     import { TagList } from '$lib/components/filters';
@@ -165,6 +166,12 @@
                         description="Format the JSON output with indentation for readability"
                         bind:checked={prettyPrint} />
 
+                    <InputCheckbox
+                        id="notify"
+                        label="Notify by email"
+                        description="Send an email with the download link when the export is complete (Note: Currently only supported for CSV; JSON support coming soon)"
+                        disabled
+                        checked={false} />
 
                     <Layout.Stack gap="m">
                         <div class:disabled-checkbox={localTags.length === 0}>
@@ -191,6 +198,22 @@
                             </Layout.Stack>
                         {/if}
                     </Layout.Stack>
+
+                    <Divider />
+
+                    <Layout.Stack direction="row" gap="s" alignItems="center">
+                        <Icon icon={IconInfo} size="s" />
+                        <Typography.Text size="small" variant="m-400">
+                            System fields ($id, $createdAt, $updatedAt) are always included in the export.
+                        </Typography.Text>
+                    </Layout.Stack>
+
+                    <div class="u-margin-block-start-16">
+                        <p class="u-color-text-warning u-font-size-80 u-flex u-gap-8 u-cross-center">
+                            <span class="icon-exclamation-circle" aria-hidden="true"></span>
+                            Client-side export is limited to 5,000 rows. For larger tables, please apply filters.
+                        </p>
+                    </div>
                 </Layout.Stack>
             </Fieldset>
         </Layout.Stack>

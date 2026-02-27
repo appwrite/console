@@ -2,7 +2,6 @@
     import { Layout, Typography } from '@appwrite.io/pink-svelte';
     import { jsonExportStore, type JsonExportJob } from '$lib/stores/jsonExport';
     import { addNotification } from '$lib/stores/notifications';
-    import { trackEvent } from '$lib/actions/analytics';
 
     let isOpen = $state(true);
     let showBox = $derived($jsonExportStore.size > 0);
