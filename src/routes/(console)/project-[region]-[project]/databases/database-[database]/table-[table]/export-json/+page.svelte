@@ -4,14 +4,14 @@
     import { page } from '$app/state';
     import { goto } from '$app/navigation';
     import { Wizard } from '$lib/layout';
-    import { Fieldset, Layout, Divider, Icon, Typography } from '@appwrite.io/pink-svelte';
+    import { Fieldset, Layout, Divider, Icon, Tooltip } from '@appwrite.io/pink-svelte';
     import { Button, InputCheckbox, Form } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { table } from '../store';
     import { queries, type TagValue } from '$lib/components/filters/store';
     import { TagList } from '$lib/components/filters';
-    import { Submit, trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { toLocalDateTimeISO } from '$lib/helpers/date';
     import { writable } from 'svelte/store';
     import { isSmallViewport } from '$lib/stores/viewport';
@@ -90,31 +90,40 @@
             return;
         }
 
-        const filterQueries = exportWithFilters ? [...localQueries.values()] : [];
-        const wildcardQueries = buildWildcardColumnsQuery($table as Entity);
+        try {
+            const filterQueries = exportWithFilters ? [...localQueries.values()] : [];
+            const wildcardQueries = buildWildcardColumnsQuery($table as Entity);
 
-        trackEvent(Submit.DatabaseExportJson);
+            trackEvent(Submit.DatabaseExportJson);
 
-        // Dispatch to the background store — progress box will handle the rest
-        jsonExportStore.startExport({
-            region: page.params.region,
-            project: page.params.project,
-            databaseId: page.params.database,
-            tableId: page.params.table,
-            tableName: $table.name,
-            filename,
-            columns: selectedCols,
-            queries: filterQueries,
-            wildcardQueries,
-            prettyPrint
-        });
+            // Dispatch to the background store — progress box will handle the rest
+            jsonExportStore.startExport({
+                region: page.params.region,
+                project: page.params.project,
+                databaseId: page.params.database,
+                tableId: page.params.table,
+                tableName: $table.name,
+                filename,
+                columns: selectedCols,
+                queries: filterQueries,
+                wildcardQueries,
+                prettyPrint
+            });
 
-        addNotification({
-            type: 'success',
-            message: 'JSON export has started'
-        });
+            addNotification({
+                type: 'success',
+                message: 'JSON export has started'
+            });
 
-        await goto(tableUrl);
+            await goto(tableUrl);
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
+
+            trackError(error, Submit.DatabaseExportJson);
+        }
     }
 
     onMount(() => {
@@ -160,18 +169,21 @@
 
             <Fieldset legend="Export options">
                 <Layout.Stack gap="l">
-                    <InputCheckbox
-                        id="prettyPrint"
-                        label="Pretty print"
-                        description="Format the JSON output with indentation for readability"
-                        bind:checked={prettyPrint} />
-
-                    <InputCheckbox
-                        id="notify"
-                        label="Notify by email"
-                        description="Send an email with the download link when the export is complete (Note: Currently only supported for CSV; JSON support coming soon)"
-                        disabled
-                        checked={false} />
+                    <Layout.Stack direction="row" gap="xs" alignItems="center">
+                        <InputCheckbox
+                            id="prettyPrint"
+                            label="Pretty print"
+                            description="Format the JSON output with indentation for readability"
+                            bind:checked={prettyPrint} />
+                        <div style="margin-left: 0.5rem; margin-top: -1.25rem;">
+                            <Tooltip>
+                                <Icon size="s" icon={IconInfo} />
+                                <span slot="tooltip">
+                                    Indicate if the JSON should be formatted for readability.
+                                </span>
+                            </Tooltip>
+                        </div>
+                    </Layout.Stack>
 
                     <Layout.Stack gap="m">
                         <div class:disabled-checkbox={localTags.length === 0}>
@@ -198,22 +210,6 @@
                             </Layout.Stack>
                         {/if}
                     </Layout.Stack>
-
-                    <Divider />
-
-                    <Layout.Stack direction="row" gap="s" alignItems="center">
-                        <Icon icon={IconInfo} size="s" />
-                        <Typography.Text size="small" variant="m-400">
-                            System fields ($id, $createdAt, $updatedAt) are always included in the export.
-                        </Typography.Text>
-                    </Layout.Stack>
-
-                    <div class="u-margin-block-start-16">
-                        <p class="u-color-text-warning u-font-size-80 u-flex u-gap-8 u-cross-center">
-                            <span class="icon-exclamation-circle" aria-hidden="true"></span>
-                            Client-side export is limited to 5,000 rows. For larger tables, please apply filters.
-                        </p>
-                    </div>
                 </Layout.Stack>
             </Fieldset>
         </Layout.Stack>

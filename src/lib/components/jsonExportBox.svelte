@@ -74,7 +74,7 @@
             <header class="upload-box-header">
                 <h4 class="upload-box-title">
                     <Typography.Text variant="m-500">
-                        Exporting JSON ({$jsonExportStore.size})
+                        Exporting rows ({$jsonExportStore.size})
                     </Typography.Text>
                 </h4>
                 <button
