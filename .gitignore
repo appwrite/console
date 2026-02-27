@@ -156,3 +156,6 @@ dist
 
 # IDE specifics
 .idea
+
+# Appwrite server repo (local reference only)
+appwrite-server/
