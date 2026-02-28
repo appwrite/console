@@ -5,7 +5,7 @@
     import { goto } from '$app/navigation';
     import { Wizard } from '$lib/layout';
     import { Fieldset, Layout, Icon, Divider, Tooltip } from '@appwrite.io/pink-svelte';
-    import { Button, InputSelect, InputCheckbox, Form } from '$lib/elements/forms';
+    import { Button, InputCheckbox, Form } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
@@ -30,23 +30,10 @@
         .split('T')
         .join('_')
         .slice(0, -4);
-    
-    let exportFormat = $state<'csv' | 'json'>('csv');
-    let filename = $derived(`${$table.name}_${timestamp}.${exportFormat}`);
+    const filename = `${$table.name}_${timestamp}.json`;
 
     let selectedColumns = $state<Record<string, boolean>>({});
     let showAllColumns = $state(false);
-
-    type DelimiterOption = 'Comma' | 'Semicolon' | 'Tab' | 'Pipe';
-    const delimiterMap: Record<DelimiterOption, string> = {
-        Comma: ',',
-        Semicolon: ';',
-        Tab: '\t',
-        Pipe: '|'
-    };
-
-    let delimiter = $state<DelimiterOption>('Comma');
-    let includeHeader = $state(true);
     let exportWithFilters = $state(false);
 
     const columnLimit = $derived($isSmallViewport ? 6 : 9);
@@ -100,107 +87,69 @@
             return;
         }
 
-        if (exportFormat === 'csv') {
-            try {
-                await sdk
+        $isSubmitting = true;
+        try {
+            const activeQueries = exportWithFilters ? Array.from(localQueries.values()) : [];
+            const allRows: Record<string, unknown>[] = [];
+            const pageSize = 100;
+            let offset = 0;
+            let total = Infinity;
+
+            while (allRows.length < total) {
+                const response = await sdk
                     .forProject(page.params.region, page.params.project)
-                    .migrations.createCSVExport({
-                        resourceId: `${page.params.database}:${page.params.table}`,
-                        filename: filename,
-                        columns: selectedCols,
-                        queries: exportWithFilters ? Array.from(localQueries.values()) : [],
-                        delimiter: delimiterMap[delimiter],
-                        header: includeHeader,
-                        notify: true
+                    .tablesDB.listRows({
+                        databaseId: page.params.database,
+                        tableId: page.params.table,
+                        queries: [
+                            Query.limit(pageSize),
+                            Query.offset(offset),
+                            ...activeQueries
+                        ]
                     });
 
-                addNotification({
-                    type: 'success',
-                    message: 'CSV export has started'
-                });
+                total = response.total;
 
-                trackEvent(Submit.DatabaseExportCsv);
-                await goto(tableUrl);
-            } catch (error) {
-                addNotification({
-                    type: 'error',
-                    message: error.message
-                });
-
-                trackError(error, Submit.DatabaseExportCsv);
-            }
-        } else {
-            // JSON export logic
-            $isSubmitting = true;
-            try {
-                const activeQueries = exportWithFilters ? Array.from(localQueries.values()) : [];
-                const allRows: Record<string, unknown>[] = [];
-                const pageSize = 100;
-                let lastId: string | undefined = undefined;
-                let fetched = 0;
-                let total = Infinity;
-
-                while (fetched < total) {
-                    const pageQueries = [
-                        Query.limit(pageSize),
-                        ...activeQueries
-                    ];
-                    
-                    if (lastId) {
-                        pageQueries.push(Query.cursorAfter(lastId));
+                const filtered = response.rows.map((row) => {
+                    const obj: Record<string, unknown> = {};
+                    for (const col of selectedCols) {
+                        obj[col] = row[col];
                     }
-
-                    const response = await sdk
-                        .forProject(page.params.region, page.params.project)
-                        .tablesDB.listRows({
-                            databaseId: page.params.database,
-                            tableId: page.params.table,
-                            queries: pageQueries
-                        });
-
-                    total = response.total;
-
-                    if (response.rows.length === 0) break;
-
-                    const filtered = response.rows.map((row) => {
-                        const obj: Record<string, unknown> = {};
-                        for (const col of selectedCols) {
-                            obj[col] = row[col];
-                        }
-                        return obj;
-                    });
-
-                    allRows.push(...filtered);
-                    fetched += response.rows.length;
-                    lastId = response.rows[response.rows.length - 1].$id as string;
-                }
-
-                const json = JSON.stringify(allRows, null, 2);
-                const blob = new Blob([json], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                const anchor = document.createElement('a');
-                anchor.href = url;
-                anchor.download = filename;
-                anchor.click();
-                URL.revokeObjectURL(url);
-
-                addNotification({
-                    type: 'success',
-                    message: `JSON export complete — ${allRows.length} row${allRows.length !== 1 ? 's' : ''} downloaded`
+                    return obj;
                 });
 
-                trackEvent(Submit.DatabaseExportJson);
-                await goto(tableUrl);
-            } catch (error) {
-                addNotification({
-                    type: 'error',
-                    message: error.message
-                });
+                allRows.push(...filtered);
+                offset += response.rows.length;
 
-                trackError(error, Submit.DatabaseExportJson);
-            } finally {
-                $isSubmitting = false;
+                if (response.rows.length === 0) break;
             }
+
+            const json = JSON.stringify(allRows, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const anchor = document.createElement('a');
+            anchor.href = url;
+            anchor.download = filename;
+            anchor.click();
+            URL.revokeObjectURL(url);
+
+            addNotification({
+                type: 'success',
+                message: `JSON export complete — ${allRows.length} row${allRows.length !== 1 ? 's' : ''} downloaded`
+            });
+
+            trackEvent(Submit.DatabaseExportJson);
+
+            await goto(tableUrl);
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
+
+            trackError(error, Submit.DatabaseExportJson);
+        } finally {
+            $isSubmitting = false;
         }
     }
 
@@ -210,7 +159,7 @@
     });
 </script>
 
-<Wizard title="Export" columnSize="s" href={tableUrl} bind:showExitModal confirmExit column>
+<Wizard title="Export JSON" columnSize="s" href={tableUrl} bind:showExitModal confirmExit column>
     <Form bind:this={formComponent} bind:isSubmitting onSubmit={handleExport}>
         <Layout.Stack gap="xxl">
             <Fieldset legend="Columns">
@@ -247,43 +196,6 @@
 
             <Fieldset legend="Export options">
                 <Layout.Stack gap="l">
-                    <InputSelect
-                        id="exportFormat"
-                        label="Format"
-                        bind:value={exportFormat}
-                        options={[
-                            { value: 'csv', label: 'CSV' },
-                            { value: 'json', label: 'JSON' }
-                        ]} />
-
-                    {#if exportFormat === 'csv'}
-                        <InputSelect
-                            id="delimiter"
-                            label="Delimiter"
-                            bind:value={delimiter}
-                            options={[
-                                { value: 'Comma', label: 'Comma' },
-                                { value: 'Semicolon', label: 'Semicolon' },
-                                { value: 'Tab', label: 'Tab' },
-                                { value: 'Pipe', label: 'Pipe' }
-                            ]}>
-                            <Layout.Stack direction="row" gap="none" alignItems="center" slot="info">
-                                <Tooltip>
-                                    <Icon size="s" icon={IconInfo} />
-                                    <span slot="tooltip">
-                                        Define how to separate values in the exported file.
-                                    </span>
-                                </Tooltip>
-                            </Layout.Stack>
-                        </InputSelect>
-
-                        <InputCheckbox
-                            id="includeHeader"
-                            label="Include header row"
-                            description="Column names will be added as the first row in the CSV"
-                            bind:checked={includeHeader} />
-                    {/if}
-
                     <Layout.Stack gap="m">
                         <div class:disabled-checkbox={localTags.length === 0}>
                             <InputCheckbox

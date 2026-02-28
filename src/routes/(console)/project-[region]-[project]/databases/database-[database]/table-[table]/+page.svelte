@@ -152,6 +152,8 @@
         return queryParam ? `${url}?query=${encodeURIComponent(queryParam)}` : url;
     }
 
+
+
     onDestroy(() => ($showCreateColumnSheet.show = false));
 </script>
 
@@ -239,7 +241,7 @@
                                     <Icon icon={IconDownload} size="s" />
                                 </Button>
 
-                                <svelte:fragment slot="tooltip">Export CSV</svelte:fragment>
+                                <svelte:fragment slot="tooltip">Export</svelte:fragment>
                             </Tooltip>
 
                             <Tooltip disabled={isRefreshing || !data.rows?.total} placement="top">
