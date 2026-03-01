@@ -59,10 +59,9 @@
 
             if ('clientSecret' in result) {
                 const paymentAuth = result as unknown as Models.PaymentAuthentication;
-                const settingsUrl = resolve(
-                    '/(console)/organization-[organization]/settings',
-                    { organization: $organization.$id }
-                );
+                const settingsUrl = resolve('/(console)/organization-[organization]/settings', {
+                    organization: $organization.$id
+                });
                 await confirmPayment({
                     clientSecret: paymentAuth.clientSecret,
                     paymentMethodId: $organization.paymentMethodId,
@@ -105,8 +104,7 @@
         By clicking <b>Accept & Enable</b>, the amount of
         <b>{formatCurrency(BAA_MONTHLY_PRICE)}</b> will be added to your subscription and your
         payment method will be charged
-        <b>{formatCurrency(proratedAmount)} immediately</b> for the remaining days in your billing
-        cycle.
+        <b>{formatCurrency(proratedAmount)} immediately</b> for the remaining days in your billing cycle.
     </p>
     <p class="text u-margin-block-start-16">
         Your action confirms acceptance of Appwrite's

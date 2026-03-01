@@ -89,10 +89,9 @@
                 });
             }
 
-            const settingsUrl = resolve(
-                '/(console)/organization-[organization]/settings',
-                { organization: $organization.$id }
-            );
+            const settingsUrl = resolve('/(console)/organization-[organization]/settings', {
+                organization: $organization.$id
+            });
             await goto(settingsUrl, { replaceState: true });
         }
     });

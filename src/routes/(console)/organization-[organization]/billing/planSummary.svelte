@@ -267,8 +267,8 @@
                             ? 'Additional members'
                             : addon.resourceId === 'projects'
                               ? 'Additional projects'
-                              : billingAddonNames[addon.resourceId] ??
-                                `${addon.resourceId} overage (${formatNum(addon.value)})`,
+                              : (billingAddonNames[addon.resourceId] ??
+                                `${addon.resourceId} overage (${formatNum(addon.value)})`),
                     usage: '',
                     price: formatCurrency(addon.amount)
                 },

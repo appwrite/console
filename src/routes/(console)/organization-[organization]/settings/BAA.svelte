@@ -91,8 +91,8 @@
 
 <CardGrid>
     <svelte:fragment slot="title">BAA</svelte:fragment>
-    A Business Associate Agreement (BAA) is a HIPAA-required document ensuring outside services
-    handling patient information for a healthcare organization follow privacy rules.
+    A Business Associate Agreement (BAA) is a HIPAA-required document ensuring outside services handling
+    patient information for a healthcare organization follow privacy rules.
     <svelte:fragment slot="aside">
         <Box>
             <h6>
