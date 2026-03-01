@@ -257,7 +257,7 @@
     <Form bind:this={formComponent} bind:isSubmitting onSubmit={handleExport}>
         {#if exportFormat === 'json' && $isSubmitting}
             <div class="progress-container" style="margin-top:1rem;">
-                <div class="progress-bar" style="background:linear-gradient(to right, #4caf50 {exportProgress}%, #e0e0e0 0%); height:1rem; border-radius:0.25rem;" aria-valuenow={exportProgress} aria-valuemin="0" aria-valuemax="100"></div>
+                <div class="progress-bar" role="progressbar" style="background:linear-gradient(to right, #4caf50 {exportProgress}%, #e0e0e0 0%); height:1rem; border-radius:0.25rem;" aria-valuenow={exportProgress} aria-valuemin="0" aria-valuemax="100"></div>
                 <button type="button" class="cancel-btn" on:click={cancelExport} style="margin-left:0.5rem;">Cancel</button>
             </div>
         {/if}
