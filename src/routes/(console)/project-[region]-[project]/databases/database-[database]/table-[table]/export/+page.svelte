@@ -143,13 +143,7 @@
                 let lastId: string | undefined = undefined;
                 let fetched = 0;
                 let total = Infinity;
-
-                // Add a warning for potentially large exports
-                addNotification({
-                    type: 'info',
-                    message: 'JSON export started. This may take a while for large datasets.',
-                    timeout: 5000 // Keep it visible for a bit
-                });
+                let totalKnown = false;
 
                 while (fetched < total) {
                     // Check for abort signal
@@ -178,6 +172,22 @@
                     total = response.total;
 
                     if (response.rows.length === 0) break;
+
+                    // After first page, we know the real total — notify the user
+                    if (!totalKnown) {
+                        totalKnown = true;
+                        addNotification({
+                            type: 'info',
+                            message: `Exporting ${total.toLocaleString()} row${total !== 1 ? 's' : ''}…`,
+                            timeout: 5000
+                        });
+                        if (total > 10_000) {
+                            addNotification({
+                                type: 'warning',
+                                message: `Large export (${total.toLocaleString()} rows) — this may use significant browser memory.`
+                            });
+                        }
+                    }
 
                     const filtered = response.rows.map((row) => {
                         const obj: Record<string, unknown> = {};
