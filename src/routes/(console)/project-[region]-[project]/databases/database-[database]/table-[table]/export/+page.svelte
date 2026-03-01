@@ -218,18 +218,11 @@
                     await goto(tableUrl);
                 }
             } catch (error) {
-                if (error.name === 'AbortError') {
-                    addNotification({
-                        type: 'warning',
-                        message: 'JSON export cancelled by user.'
-                    });
-                } else {
-                    addNotification({
-                        type: 'error',
-                        message: error.message
-                    });
-                    trackError(error, Submit.DatabaseExportJson);
-                }
+                addNotification({
+                    type: 'error',
+                    message: error.message
+                });
+                trackError(error, Submit.DatabaseExportJson);
             } finally {
                 $isSubmitting = false;
                 exportProgress = 0; // Reset progress
@@ -242,7 +235,6 @@
     function cancelExport() {
         if (abortController) {
             abortController.abort();
-            addNotification({ type: 'info', message: 'JSON export cancellation requested.' });
         }
     }
 
