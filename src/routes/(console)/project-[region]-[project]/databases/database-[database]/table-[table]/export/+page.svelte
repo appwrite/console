@@ -22,7 +22,7 @@
     let formComponent: Form;
     let isSubmitting = $state(writable(false));
     let abortController: AbortController | null = null;
-    let exportProgress = 0;
+    let exportProgress = $state(0);
 
     let localQueries = $state<Map<TagValue, string>>(new Map());
     const localTags = $derived(Array.from(localQueries.keys()));
@@ -132,7 +132,6 @@
                 trackError(error, Submit.DatabaseExportCsv);
             }
         } else {
-            trackEvent(Submit.DatabaseExportJson); // Track event at the start of JSON export
             $isSubmitting = true;
             abortController = new AbortController(); // Initialize abort controller
             exportProgress = 0; // Reset progress
@@ -214,6 +213,8 @@
                         type: 'success',
                         message: `JSON export complete — ${allRows.length} row${allRows.length !== 1 ? 's' : ''} downloaded`
                     });
+
+                    trackEvent(Submit.DatabaseExportJson);
 
                     await goto(tableUrl);
                 }
@@ -380,5 +381,19 @@
 <style>
     .disabled-checkbox :global(*) {
         cursor: unset;
+    }
+
+    .cancel-btn {
+        background: none;
+        border: 1px solid currentColor;
+        border-radius: 0.25rem;
+        padding: 0.125rem 0.5rem;
+        cursor: pointer;
+        font-size: 0.75rem;
+        opacity: 0.8;
+    }
+
+    .cancel-btn:hover {
+        opacity: 1;
     }
 </style>
