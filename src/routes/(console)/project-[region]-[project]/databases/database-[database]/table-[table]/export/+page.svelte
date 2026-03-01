@@ -30,7 +30,7 @@
         .split('T')
         .join('_')
         .slice(0, -4);
-    
+
     let exportFormat = $state<'csv' | 'json'>('csv');
     let filename = $derived(`${$table.name}_${timestamp}.${exportFormat}`);
 
@@ -141,11 +141,8 @@
                 let total = Infinity;
 
                 while (fetched < total) {
-                    const pageQueries = [
-                        Query.limit(pageSize),
-                        ...activeQueries
-                    ];
-                    
+                    const pageQueries = [Query.limit(pageSize), ...activeQueries];
+
                     if (lastId) {
                         pageQueries.push(Query.cursorAfter(lastId));
                     }
@@ -267,7 +264,11 @@
                                 { value: 'Tab', label: 'Tab' },
                                 { value: 'Pipe', label: 'Pipe' }
                             ]}>
-                            <Layout.Stack direction="row" gap="none" alignItems="center" slot="info">
+                            <Layout.Stack
+                                direction="row"
+                                gap="none"
+                                alignItems="center"
+                                slot="info">
                                 <Tooltip>
                                     <Icon size="s" icon={IconInfo} />
                                     <span slot="tooltip">

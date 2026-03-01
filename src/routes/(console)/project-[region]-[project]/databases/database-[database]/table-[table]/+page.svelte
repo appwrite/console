@@ -152,8 +152,6 @@
         return queryParam ? `${url}?query=${encodeURIComponent(queryParam)}` : url;
     }
 
-
-
     onDestroy(() => ($showCreateColumnSheet.show = false));
 </script>
 
