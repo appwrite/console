@@ -21,6 +21,8 @@
     let showExitModal = $state(false);
     let formComponent: Form;
     let isSubmitting = $state(writable(false));
+    let abortController: AbortController | null = null;
+    let exportProgress = 0;
 
     let localQueries = $state<Map<TagValue, string>>(new Map());
     const localTags = $derived(Array.from(localQueries.keys()));
@@ -130,8 +132,11 @@
                 trackError(error, Submit.DatabaseExportCsv);
             }
         } else {
-            // JSON export logic
+            trackEvent(Submit.DatabaseExportJson); // Track event at the start of JSON export
             $isSubmitting = true;
+            abortController = new AbortController(); // Initialize abort controller
+            exportProgress = 0; // Reset progress
+
             try {
                 const activeQueries = exportWithFilters ? Array.from(localQueries.values()) : [];
                 const allRows: Record<string, unknown>[] = [];
@@ -140,7 +145,23 @@
                 let fetched = 0;
                 let total = Infinity;
 
+                // Add a warning for potentially large exports
+                addNotification({
+                    type: 'info',
+                    message: 'JSON export started. This may take a while for large datasets.',
+                    timeout: 5000 // Keep it visible for a bit
+                });
+
                 while (fetched < total) {
+                    // Check for abort signal
+                    if (abortController.signal.aborted) {
+                        addNotification({
+                            type: 'warning',
+                            message: 'JSON export cancelled.'
+                        });
+                        break; // Exit the loop if aborted
+                    }
+
                     const pageQueries = [Query.limit(pageSize), ...activeQueries];
 
                     if (lastId) {
@@ -152,7 +173,8 @@
                         .tablesDB.listRows({
                             databaseId: page.params.database,
                             tableId: page.params.table,
-                            queries: pageQueries
+                            queries: pageQueries,
+                            signal: abortController.signal // Pass abort signal
                         });
 
                     total = response.total;
@@ -170,40 +192,58 @@
                     allRows.push(...filtered);
                     fetched += response.rows.length;
                     lastId = response.rows[response.rows.length - 1].$id as string;
+                    exportProgress = Math.min(100, Math.floor((fetched / total) * 100)); // Update progress
                 }
 
-                const json = JSON.stringify(allRows, null, 2);
-                const blob = new Blob([json], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                const anchor = document.createElement('a');
-                anchor.href = url;
-                anchor.download = filename;
-                document.body.appendChild(anchor);
-                anchor.click();
+                if (!abortController.signal.aborted) {
+                    const json = JSON.stringify(allRows, null, 2);
+                    const blob = new Blob([json], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const anchor = document.createElement('a');
+                    anchor.href = url;
+                    anchor.download = filename;
+                    document.body.appendChild(anchor);
+                    anchor.click();
 
-                // Revoke the object URL after a short delay to ensure the browser has started the download
-                setTimeout(() => {
-                    URL.revokeObjectURL(url);
-                    document.body.removeChild(anchor);
-                }, 100);
+                    // Revoke the object URL after a short delay to ensure the browser has started the download
+                    setTimeout(() => {
+                        URL.revokeObjectURL(url);
+                        document.body.removeChild(anchor);
+                    }, 100);
 
-                addNotification({
-                    type: 'success',
-                    message: `JSON export complete — ${allRows.length} row${allRows.length !== 1 ? 's' : ''} downloaded`
-                });
+                    addNotification({
+                        type: 'success',
+                        message: `JSON export complete — ${allRows.length} row${allRows.length !== 1 ? 's' : ''} downloaded`
+                    });
 
-                trackEvent(Submit.DatabaseExportJson);
-                await goto(tableUrl);
+                    await goto(tableUrl);
+                }
             } catch (error) {
-                addNotification({
-                    type: 'error',
-                    message: error.message
-                });
-
-                trackError(error, Submit.DatabaseExportJson);
+                if (error.name === 'AbortError') {
+                    addNotification({
+                        type: 'warning',
+                        message: 'JSON export cancelled by user.'
+                    });
+                } else {
+                    addNotification({
+                        type: 'error',
+                        message: error.message
+                    });
+                    trackError(error, Submit.DatabaseExportJson);
+                }
             } finally {
                 $isSubmitting = false;
+                exportProgress = 0; // Reset progress
+                abortController = null; // Clean up controller
             }
+        }
+    }
+
+    // Cancel the JSON export operation
+    function cancelExport() {
+        if (abortController) {
+            abortController.abort();
+            addNotification({ type: 'info', message: 'JSON export cancellation requested.' });
         }
     }
 
@@ -215,6 +255,12 @@
 
 <Wizard title="Export" columnSize="s" href={tableUrl} bind:showExitModal confirmExit column>
     <Form bind:this={formComponent} bind:isSubmitting onSubmit={handleExport}>
+        {#if exportFormat === 'json' && $isSubmitting}
+            <div class="progress-container" style="margin-top:1rem;">
+                <div class="progress-bar" style="background:linear-gradient(to right, #4caf50 {exportProgress}%, #e0e0e0 0%); height:1rem; border-radius:0.25rem;" aria-valuenow={exportProgress} aria-valuemin="0" aria-valuemax="100"></div>
+                <button type="button" class="cancel-btn" on:click={cancelExport} style="margin-left:0.5rem;">Cancel</button>
+            </div>
+        {/if}
         <Layout.Stack gap="xxl">
             <Fieldset legend="Columns">
                 <Layout.Stack gap="l">
