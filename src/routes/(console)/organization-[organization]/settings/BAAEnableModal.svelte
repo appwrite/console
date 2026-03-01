@@ -104,7 +104,7 @@
     <p class="text">
         By clicking <b>Accept & Enable</b>, the amount of
         <b>{formatCurrency(BAA_MONTHLY_PRICE)}</b> will be added to your subscription and your
-        credit card will be charged
+        payment method will be charged
         <b>{formatCurrency(proratedAmount)} immediately</b> for the remaining days in your billing
         cycle.
     </p>
