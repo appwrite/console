@@ -28,7 +28,23 @@
         name = $organization.name;
 
         if (page.url.searchParams.get('type') === 'validate-addon') {
-            const addonId = page.url.searchParams.get('addonId');
+            let addonId = page.url.searchParams.get('addonId');
+
+            // Fall back to listing addons if addonId is missing or invalid
+            if (!addonId || addonId === 'undefined') {
+                try {
+                    const addons = await sdk.forConsole.organizations.listAddons({
+                        organizationId: $organization.$id
+                    });
+                    const pending = addons.addons.find(
+                        (a) => a.key === 'baa' && a.status === 'pending'
+                    );
+                    addonId = pending?.$id ?? null;
+                } catch {
+                    addonId = null;
+                }
+            }
+
             if (addonId) {
                 try {
                     await sdk.forConsole.organizations.validateToggleAddonPayment({
@@ -44,17 +60,40 @@
                         type: 'success'
                     });
                 } catch (e) {
-                    addNotification({
-                        message: e.message,
-                        type: 'error'
-                    });
+                    // If addon not found, payment webhook may have already activated it
+                    if (e?.type === 'addon_not_found' || e?.code === 404) {
+                        await Promise.all([
+                            invalidate(Dependencies.ADDONS),
+                            invalidate(Dependencies.ORGANIZATION)
+                        ]);
+                        addNotification({
+                            message: 'BAA addon has been enabled',
+                            type: 'success'
+                        });
+                    } else {
+                        addNotification({
+                            message: e.message,
+                            type: 'error'
+                        });
+                    }
                 }
-                const settingsUrl = resolve(
-                    '/(console)/organization-[organization]/settings',
-                    { organization: $organization.$id }
-                );
-                await goto(settingsUrl, { replaceState: true });
+            } else {
+                // No pending addon found — likely already activated by webhook
+                await Promise.all([
+                    invalidate(Dependencies.ADDONS),
+                    invalidate(Dependencies.ORGANIZATION)
+                ]);
+                addNotification({
+                    message: 'BAA addon has been enabled',
+                    type: 'success'
+                });
             }
+
+            const settingsUrl = resolve(
+                '/(console)/organization-[organization]/settings',
+                { organization: $organization.$id }
+            );
+            await goto(settingsUrl, { replaceState: true });
         }
     });
 
