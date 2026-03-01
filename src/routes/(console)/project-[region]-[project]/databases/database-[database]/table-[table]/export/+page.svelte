@@ -178,8 +178,14 @@
                 const anchor = document.createElement('a');
                 anchor.href = url;
                 anchor.download = filename;
+                document.body.appendChild(anchor);
                 anchor.click();
-                URL.revokeObjectURL(url);
+
+                // Revoke the object URL after a short delay to ensure the browser has started the download
+                setTimeout(() => {
+                    URL.revokeObjectURL(url);
+                    document.body.removeChild(anchor);
+                }, 100);
 
                 addNotification({
                     type: 'success',
