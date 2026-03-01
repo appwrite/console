@@ -134,6 +134,7 @@
         formData.append('subject', $supportData.subject);
         formData.append('firstName', ($user?.name || 'Unknown').slice(0, 40));
         formData.append('message', $supportData.message);
+        formData.append('tags[]', 'cloud');
         formData.append('tags[]', categoryTopicTag);
         formData.append(
             'metaFields',
