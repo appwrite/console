@@ -12,7 +12,7 @@
     import { table } from '../store';
     import { queries, type TagValue } from '$lib/components/filters/store';
     import { TagList } from '$lib/components/filters';
-    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import { Click, Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { toLocalDateTimeISO } from '$lib/helpers/date';
     import { writable } from 'svelte/store';
     import { isSmallViewport } from '$lib/stores/viewport';
@@ -173,8 +173,7 @@
                         .tablesDB.listRows({
                             databaseId: page.params.database,
                             tableId: page.params.table,
-                            queries: pageQueries,
-                            signal: abortController.signal // Pass abort signal
+                            queries: pageQueries
                         });
 
                     total = response.total;
@@ -257,7 +256,7 @@
     <Form bind:this={formComponent} bind:isSubmitting onSubmit={handleExport}>
         {#if exportFormat === 'json' && $isSubmitting}
             <div class="progress-container" style="margin-top:1rem;">
-                <div class="progress-bar" role="progressbar" aria-label="Export progress" style="background:linear-gradient(to right, #4caf50 {exportProgress}%, #e0e0e0 0%); height:1rem; border-radius:0.25rem;" aria-valuenow={exportProgress} aria-valuemin="0" aria-valuemax="100"></div>
+                <div class="progress-bar" role="progressbar" aria-label="Export progress" aria-valuenow={exportProgress} aria-valuemin="0" aria-valuemax="100" style="background:linear-gradient(to right, #4caf50 {exportProgress}%, #e0e0e0 0%); height:1rem; border-radius:0.25rem;"></div>
                 <button type="button" class="cancel-btn" on:click={cancelExport} style="margin-left:0.5rem;">Cancel</button>
             </div>
         {/if}
@@ -373,7 +372,12 @@
             </Button>
             <Button
                 fullWidthMobile
-                on:click={() => formComponent.triggerSubmit()}
+                on:click={() => {
+                    trackEvent(
+                        exportFormat === 'json' ? Click.DatabaseExportJson : Click.DatabaseExportCsv
+                    );
+                    formComponent.triggerSubmit();
+                }}
                 disabled={$isSubmitting || selectedColumnCount === 0}>
                 Export
             </Button>
