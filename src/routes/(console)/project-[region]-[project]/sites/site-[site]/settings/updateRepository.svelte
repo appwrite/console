@@ -128,6 +128,8 @@
                 const sorted = sortBranches(branchList.branches);
                 nextBranch =
                     sorted.find((branch) => branch.name === site?.providerBranch)?.name ??
+                    sorted.find((branch) => branch.name === 'main' || branch.name === 'master')
+                        ?.name ??
                     sorted[0]?.name ??
                     nextBranch;
             } catch {
