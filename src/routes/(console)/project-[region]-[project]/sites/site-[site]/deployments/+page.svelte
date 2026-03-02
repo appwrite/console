@@ -41,49 +41,45 @@
     });
 
     async function connect(selectedInstallationId: string, selectedRepository: string) {
+        let nextBranch = data.site?.providerBranch ?? 'main';
         try {
-            let nextBranch = data.site?.providerBranch ?? 'main';
-            try {
-                const branchList = await sdk
-                    .forProject(page.params.region, page.params.project)
-                    .vcs.listRepositoryBranches({
-                        installationId: selectedInstallationId,
-                        providerRepositoryId: selectedRepository
-                    });
-                const sorted = sortBranches(branchList.branches);
-                nextBranch =
-                    sorted.find((branch) => branch.name === data.site?.providerBranch)?.name ??
-                    sorted.find((branch) => branch.name === 'main' || branch.name === 'master')
-                        ?.name ??
-                    sorted[0]?.name ??
-                    nextBranch;
-            } catch {
-                // Ignore branch lookup failures; fallback to default.
-            }
-            await sdk.forProject(page.params.region, page.params.project).sites.update({
-                siteId: data.site.$id,
-                name: data.site.name,
-                framework: data.site.framework as Framework,
-                enabled: data.site.enabled,
-                logging: data.site.logging || undefined,
-                timeout: data.site.timeout,
-                installCommand: data.site.installCommand,
-                buildCommand: data.site.buildCommand,
-                outputDirectory: data.site.outputDirectory,
-                buildRuntime: data.site.buildRuntime as BuildRuntime,
-                adapter: data.site.adapter as Adapter,
-                fallbackFile: data.site.fallbackFile,
-                installationId: selectedInstallationId,
-                providerRepositoryId: selectedRepository,
-                providerBranch: nextBranch,
-                providerSilentMode: data.site?.providerSilentMode ?? undefined,
-                providerRootDirectory: data.site?.providerRootDirectory ?? undefined,
-                specification: data.site?.specification || undefined
-            });
-            invalidate(Dependencies.SITE);
-        } catch (error) {
-            throw error;
+            const branchList = await sdk
+                .forProject(page.params.region, page.params.project)
+                .vcs.listRepositoryBranches({
+                    installationId: selectedInstallationId,
+                    providerRepositoryId: selectedRepository
+                });
+            const sorted = sortBranches(branchList.branches);
+            nextBranch =
+                sorted.find((branch) => branch.name === data.site?.providerBranch)?.name ??
+                sorted.find((branch) => branch.name === 'main' || branch.name === 'master')?.name ??
+                sorted[0]?.name ??
+                nextBranch;
+        } catch {
+            // Ignore branch lookup failures; fallback to default.
         }
+
+        await sdk.forProject(page.params.region, page.params.project).sites.update({
+            siteId: data.site.$id,
+            name: data.site.name,
+            framework: data.site.framework as Framework,
+            enabled: data.site.enabled,
+            logging: data.site.logging || undefined,
+            timeout: data.site.timeout,
+            installCommand: data.site.installCommand,
+            buildCommand: data.site.buildCommand,
+            outputDirectory: data.site.outputDirectory,
+            buildRuntime: data.site.buildRuntime as BuildRuntime,
+            adapter: data.site.adapter as Adapter,
+            fallbackFile: data.site.fallbackFile,
+            installationId: selectedInstallationId,
+            providerRepositoryId: selectedRepository,
+            providerBranch: nextBranch,
+            providerSilentMode: data.site?.providerSilentMode ?? undefined,
+            providerRootDirectory: data.site?.providerRootDirectory ?? undefined,
+            specification: data.site?.specification || undefined
+        });
+        invalidate(Dependencies.SITE);
     }
 </script>
 
