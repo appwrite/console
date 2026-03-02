@@ -26,7 +26,7 @@
         project?: string;
     } = $props();
 
-    let authorized = $state(null);
+    let authorized = $state<boolean | null>(null);
 
     async function loadAuthorized() {
         if (!resource?.installationId || !resource?.providerRepositoryId || !region || !project) {
