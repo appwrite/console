@@ -53,7 +53,6 @@
     let connectingRepositoryId = $state<string | null>(null);
     let loadRepositoriesRequestId = 0;
     const limit = 5;
-    const connectTimeoutMs = 30000;
 
     onMount(() => {
         isLoadingRepositories = true;
@@ -279,18 +278,7 @@
                                             on:click={async () => {
                                                 connectingRepositoryId = repo.id;
                                                 try {
-                                                    await Promise.race([
-                                                        Promise.resolve(connect(repo)),
-                                                        new Promise((_, reject) =>
-                                                            setTimeout(() => {
-                                                                reject(
-                                                                    new Error(
-                                                                        'Connection timed out. Please try again.'
-                                                                    )
-                                                                );
-                                                            }, connectTimeoutMs)
-                                                        )
-                                                    ]);
+                                                    await Promise.resolve(connect(repo));
                                                 } catch (error) {
                                                     addNotification({
                                                         type: 'error',

@@ -149,8 +149,8 @@
                 installationId: selectedInstallationId,
                 providerRepositoryId: selectedRepository,
                 providerBranch: nextBranch,
-                providerSilentMode: site?.providerSilentMode || undefined,
-                providerRootDirectory: site?.providerRootDirectory || undefined,
+                providerSilentMode: site?.providerSilentMode ?? undefined,
+                providerRootDirectory: site?.providerRootDirectory ?? undefined,
                 specification: site?.specification || undefined
             });
 

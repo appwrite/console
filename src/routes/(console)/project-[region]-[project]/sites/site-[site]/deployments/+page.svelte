@@ -74,8 +74,8 @@
                 installationId: selectedInstallationId,
                 providerRepositoryId: selectedRepository,
                 providerBranch: nextBranch,
-                providerSilentMode: data.site?.providerSilentMode || undefined,
-                providerRootDirectory: data.site?.providerRootDirectory || undefined,
+                providerSilentMode: data.site?.providerSilentMode ?? undefined,
+                providerRootDirectory: data.site?.providerRootDirectory ?? undefined,
                 specification: data.site?.specification || undefined
             });
             invalidate(Dependencies.SITE);
