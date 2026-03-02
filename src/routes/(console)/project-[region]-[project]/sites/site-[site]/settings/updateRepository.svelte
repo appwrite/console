@@ -157,8 +157,8 @@
             });
 
             invalidate(Dependencies.SITE);
-        } catch {
-            return;
+        } catch (error) {
+            throw error;
         }
     }
 

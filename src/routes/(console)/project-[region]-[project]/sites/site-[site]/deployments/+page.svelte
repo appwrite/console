@@ -81,8 +81,8 @@
                 specification: data.site?.specification || undefined
             });
             invalidate(Dependencies.SITE);
-        } catch {
-            return;
+        } catch (error) {
+            throw error;
         }
     }
 </script>
