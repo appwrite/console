@@ -20,6 +20,7 @@
     import { Query, VCSDetectionType, type Models } from '@appwrite.io/console';
     import { getFrameworkIcon } from '$lib/stores/sites';
     import { connectGitHub } from '$lib/stores/git';
+    import { addNotification } from '$lib/stores/notifications';
     import { page } from '$app/state';
     import Card from '../card.svelte';
     import SkeletonRepoList from './skeletonRepoList.svelte';
@@ -52,6 +53,7 @@
     let connectingRepositoryId = $state<string | null>(null);
     let loadRepositoriesRequestId = 0;
     const limit = 5;
+    const connectTimeoutMs = 30000;
 
     onMount(() => {
         isLoadingRepositories = true;
@@ -274,9 +276,31 @@
                                             variant="secondary"
                                             style="flex-shrink: 0;"
                                             disabled={!!connectingRepositoryId}
-                                            on:click={() => {
+                                            on:click={async () => {
                                                 connectingRepositoryId = repo.id;
-                                                connect(repo);
+                                                try {
+                                                    await Promise.race([
+                                                        Promise.resolve(connect(repo)),
+                                                        new Promise((_, reject) =>
+                                                            setTimeout(() => {
+                                                                reject(
+                                                                    new Error(
+                                                                        'Connection timed out. Please try again.'
+                                                                    )
+                                                                );
+                                                            }, connectTimeoutMs)
+                                                        )
+                                                    ]);
+                                                } catch (error) {
+                                                    addNotification({
+                                                        type: 'error',
+                                                        message:
+                                                            error?.message ??
+                                                            'Failed to connect repository'
+                                                    });
+                                                } finally {
+                                                    connectingRepositoryId = null;
+                                                }
                                             }}>
                                             Connect
                                         </PinkButton.Button>

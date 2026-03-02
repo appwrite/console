@@ -117,6 +117,22 @@
 
     async function connect(selectedInstallationId: string, selectedRepository: string) {
         try {
+            let nextBranch = site?.providerBranch ?? 'main';
+            try {
+                const branchList = await sdk
+                    .forProject(page.params.region, page.params.project)
+                    .vcs.listRepositoryBranches({
+                        installationId: selectedInstallationId,
+                        providerRepositoryId: selectedRepository
+                    });
+                const sorted = sortBranches(branchList.branches);
+                nextBranch =
+                    sorted.find((branch) => branch.name === site?.providerBranch)?.name ??
+                    sorted[0]?.name ??
+                    nextBranch;
+            } catch {
+                // Ignore branch lookup failures; fallback to default.
+            }
             await sdk.forProject(page.params.region, page.params.project).sites.update({
                 siteId: site.$id,
                 name: site.name,
@@ -132,7 +148,9 @@
                 fallbackFile: site?.fallbackFile,
                 installationId: selectedInstallationId,
                 providerRepositoryId: selectedRepository,
-                providerBranch: 'main',
+                providerBranch: nextBranch,
+                providerSilentMode: site?.providerSilentMode || undefined,
+                providerRootDirectory: site?.providerRootDirectory || undefined,
                 specification: site?.specification || undefined
             });
 

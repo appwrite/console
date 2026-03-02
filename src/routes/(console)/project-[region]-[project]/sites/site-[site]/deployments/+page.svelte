@@ -14,6 +14,7 @@
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { onMount } from 'svelte';
     import { realtime, sdk } from '$lib/stores/sdk';
+    import { sortBranches } from '$lib/stores/vcs';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import CreateCliModal from './createCliModal.svelte';
@@ -41,6 +42,22 @@
 
     async function connect(selectedInstallationId: string, selectedRepository: string) {
         try {
+            let nextBranch = data.site?.providerBranch ?? 'main';
+            try {
+                const branchList = await sdk
+                    .forProject(page.params.region, page.params.project)
+                    .vcs.listRepositoryBranches({
+                        installationId: selectedInstallationId,
+                        providerRepositoryId: selectedRepository
+                    });
+                const sorted = sortBranches(branchList.branches);
+                nextBranch =
+                    sorted.find((branch) => branch.name === data.site?.providerBranch)?.name ??
+                    sorted[0]?.name ??
+                    nextBranch;
+            } catch {
+                // Ignore branch lookup failures; fallback to default.
+            }
             await sdk.forProject(page.params.region, page.params.project).sites.update({
                 siteId: data.site.$id,
                 name: data.site.name,
@@ -56,7 +73,10 @@
                 fallbackFile: data.site.fallbackFile,
                 installationId: selectedInstallationId,
                 providerRepositoryId: selectedRepository,
-                providerBranch: 'main'
+                providerBranch: nextBranch,
+                providerSilentMode: data.site?.providerSilentMode || undefined,
+                providerRootDirectory: data.site?.providerRootDirectory || undefined,
+                specification: data.site?.specification || undefined
             });
             invalidate(Dependencies.SITE);
         } catch {
