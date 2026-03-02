@@ -89,6 +89,6 @@
     },
     "overrides": {
         "vite": "npm:rolldown-vite@latest",
-        "minimatch": "10.2.1"
+        "minimatch": "10.2.3"
     }
 }
