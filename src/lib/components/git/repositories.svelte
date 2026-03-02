@@ -20,6 +20,7 @@
     import { Query, VCSDetectionType, type Models } from '@appwrite.io/console';
     import { getFrameworkIcon } from '$lib/stores/sites';
     import { connectGitHub } from '$lib/stores/git';
+    import { addNotification } from '$lib/stores/notifications';
     import { page } from '$app/state';
     import Card from '../card.svelte';
     import SkeletonRepoList from './skeletonRepoList.svelte';
@@ -274,9 +275,20 @@
                                             variant="secondary"
                                             style="flex-shrink: 0;"
                                             disabled={!!connectingRepositoryId}
-                                            on:click={() => {
+                                            on:click={async () => {
                                                 connectingRepositoryId = repo.id;
-                                                connect(repo);
+                                                try {
+                                                    await Promise.resolve(connect(repo));
+                                                } catch (error) {
+                                                    addNotification({
+                                                        type: 'error',
+                                                        message:
+                                                            error?.message ??
+                                                            'Failed to connect repository'
+                                                    });
+                                                } finally {
+                                                    connectingRepositoryId = null;
+                                                }
                                             }}>
                                             Connect
                                         </PinkButton.Button>
