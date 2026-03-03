@@ -29,7 +29,7 @@ export const load: PageLoad = async ({ params, url, route, depends, parent }) =>
         ? [Query.or([Query.search('search', search), Query.contains('labels', search)])]
         : [];
     const activeQueries = isCloud
-        ? [Query.or([Query.equal('status', 'active'), Query.isNull('status')])]
+        ? [Query.or([Query.equal('status', ['active', 'paused']), Query.isNull('status')])]
         : [];
 
     const activeProjects = await sdk.forConsole.projects.list({

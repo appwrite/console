@@ -1,12 +1,19 @@
 export type PrefRow = { key: string; value: string };
 
-export function normalizePrefs(entries: [string, string][] | PrefRow[]): [string, string][] {
+function stringTrim(s: unknown): string {
+    return String(s ?? '').trim();
+}
+
+export function normalizePrefs(
+    entries: [string, unknown][] | PrefRow[] | { key: unknown; value: unknown }[]
+): [string, string][] {
     return entries
         .map((item): [string, string] =>
-            Array.isArray(item) ? [item[0], item[1]] : [item.key, item.value]
+            Array.isArray(item)
+                ? [String(item[0] ?? ''), String(item[1] ?? '')]
+                : [String(item.key ?? ''), String(item.value ?? '')]
         )
-
-        .filter(([k, v]) => k.trim() && v.trim())
+        .filter(([k, v]) => stringTrim(k).length > 0 && stringTrim(v).length > 0)
         .sort(([a], [b]) => a.localeCompare(b));
 }
 
@@ -23,5 +30,5 @@ export function isAddDisabled(prefs: PrefRow[] | null): boolean {
 }
 
 export function sanitizePrefs(prefs: PrefRow[]) {
-    return prefs.filter((p) => p.key.trim() && p.value.trim());
+    return prefs.filter((p) => stringTrim(p.key).length > 0 && stringTrim(p.value).length > 0);
 }

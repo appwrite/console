@@ -53,5 +53,5 @@
         The deployment for pull request #{data.providerPullRequestId}
         is awaiting approval. When authorized, deployments will be started.
     </Typography.Title>
-    <Button on:click={approveDeployment} secondary>Approve Deployment</Button>
+    <Button on:click={approveDeployment} secondary disabled={loading}>Approve Deployment</Button>
 </Layout.Stack>
