@@ -113,12 +113,16 @@ export const migrationFormToResources = <P extends Provider>(
     if (formData.functions.root) {
         addResource(AppwriteMigrationResource.Function);
         addResource(AppwriteMigrationResource.Environmentvariable);
-        addResource(AppwriteMigrationResource.Deployment);
+        if (formData.functions.inactive) {
+            addResource(AppwriteMigrationResource.Deployment);
+        }
     }
     if (formData.sites.root) {
         addResource(AppwriteMigrationResource.Site);
         addResource(AppwriteMigrationResource.Sitevariable);
-        addResource(AppwriteMigrationResource.Sitedeployment);
+        if (formData.sites.inactive) {
+            addResource(AppwriteMigrationResource.Sitedeployment);
+        }
     }
 
     return resources as ProviderResourceMap[P];

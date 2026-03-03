@@ -55,24 +55,20 @@
 
     let parentState: boolean | 'indeterminate';
 
-    $: {
-        const total = formGroupChildren.length;
-        const checked = formGroupChildren.filter((key) => formGroup[key]).length;
-
-        if (checked === 0) {
-            parentState = false;
-        } else if (checked === total) {
-            parentState = true;
-        } else {
-            parentState = 'indeterminate';
-        }
-    }
+    $: parentState = formGroup.root;
 
     function onParentChange(event: CustomEvent<boolean | 'indeterminate'>) {
         if (event.detail === 'indeterminate') return;
         const updated = { ...formGroup };
-        for (const key of Object.keys(formGroup)) {
-            updated[key] = event.detail;
+        updated.root = event.detail;
+        if (event.detail) {
+            for (const key of formGroupChildren) {
+                updated[key] = true;
+            }
+        } else {
+            for (const key of formGroupChildren) {
+                updated[key] = false;
+            }
         }
 
         dispatch('updateFormGroup', updated);
