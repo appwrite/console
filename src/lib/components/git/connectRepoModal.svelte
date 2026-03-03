@@ -52,6 +52,12 @@
         }
     });
 
+    $effect(() => {
+        if ($installation?.$id) {
+            selectedInstallationId = $installation.$id;
+        }
+    });
+
     async function connectRepo() {
         try {
             if (repositoryBehaviour === 'new') {
@@ -105,13 +111,29 @@
                     {product}
                     action="button"
                     {callbackState}
-                    connect={(e) => {
+                    connect={async (e) => {
                         trackEvent(Click.ConnectRepositoryClick, {
                             from: product
                         });
                         repository.set(e);
                         repositoryName = e.name;
                         selectedRepository = e.id;
+                        if (!selectedInstallationId && $installation?.$id) {
+                            selectedInstallationId = $installation.$id;
+                        }
+                        try {
+                            await connect(selectedInstallationId, e.id);
+                            show = false;
+                            addNotification({
+                                type: 'success',
+                                message: 'Repository connected successfully'
+                            });
+                        } catch (error) {
+                            addNotification({
+                                type: 'error',
+                                message: error?.message ?? 'Failed to connect repository'
+                            });
+                        }
                     }} />
             {/if}
         </Layout.Stack>
