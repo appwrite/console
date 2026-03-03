@@ -1,5 +1,5 @@
 import { writable } from 'svelte/store';
-import { Resources } from '@appwrite.io/console';
+import { AppwriteMigrationResource as Resources } from '@appwrite.io/console';
 import { includesAll } from '$lib/helpers/array';
 
 const initialFormData = {

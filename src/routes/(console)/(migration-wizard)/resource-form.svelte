@@ -11,7 +11,7 @@
     } from '$lib/stores/migration';
     import { Button } from '$lib/elements/forms';
     import { wizard } from '$lib/stores/wizard';
-    import { Resources, type Models } from '@appwrite.io/console';
+    import { AppwriteMigrationResource as Resources, type Models } from '@appwrite.io/console';
     import type { sdk } from '$lib/stores/sdk';
     import ImportReport from '$routes/(console)/project-[region]-[project]/settings/migrations/(import)/importReport.svelte';
 
