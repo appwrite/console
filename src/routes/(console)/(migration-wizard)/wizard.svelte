@@ -110,7 +110,7 @@
         if ($provider.provider !== 'appwrite') return;
 
         migrationStarted = true;
-        const resources = migrationFormToResources($formData, $provider.provider);
+        const resources = migrationFormToResources($formData, 'appwrite');
 
         try {
             await projectSdkInstance.migrations.createAppwriteMigration({

@@ -7,7 +7,18 @@ import {
 } from '@appwrite.io/console';
 import { includesAll } from '$lib/helpers/array';
 
-type MigrationResource = AppwriteMigrationResource | FirebaseMigrationResource | NHostMigrationResource | SupabaseMigrationResource;
+export type MigrationResource =
+    | AppwriteMigrationResource
+    | FirebaseMigrationResource
+    | NHostMigrationResource
+    | SupabaseMigrationResource;
+
+type ProviderResourceMap = {
+    appwrite: AppwriteMigrationResource[];
+    supabase: SupabaseMigrationResource[];
+    nhost: NHostMigrationResource[];
+    firebase: FirebaseMigrationResource[];
+};
 
 const initialFormData = {
     users: {
@@ -64,20 +75,21 @@ export const ResourcesFriendly = {
     'site-variable': { singular: 'Site Variable', plural: 'Site Variables' }
 };
 
-export const providerResources: Record<Provider, MigrationResource[]> = {
+export const providerResources: ProviderResourceMap = {
     appwrite: Object.values(AppwriteMigrationResource),
     supabase: Object.values(SupabaseMigrationResource),
     nhost: Object.values(NHostMigrationResource),
     firebase: Object.values(FirebaseMigrationResource)
 };
 
-export const migrationFormToResources = (
+export const migrationFormToResources = <P extends Provider>(
     formData: MigrationFormData,
-    provider: Provider
-): MigrationResource[] => {
+    provider: P
+): ProviderResourceMap[P] => {
     const resources: MigrationResource[] = [];
+    const providerValues = providerResources[provider] as MigrationResource[];
     const addResource = (resource: MigrationResource) => {
-        if (providerResources[provider].includes(resource)) {
+        if (providerValues.includes(resource)) {
             resources.push(resource);
         }
     };
@@ -109,7 +121,7 @@ export const migrationFormToResources = (
         addResource(AppwriteMigrationResource.Sitedeployment);
     }
 
-    return resources;
+    return resources as ProviderResourceMap[P];
 };
 
 const compareVersions = (a: string, b: string) => {

@@ -6,6 +6,7 @@
         createMigrationFormStore,
         createMigrationProviderStore,
         type MigrationFormData,
+        type MigrationResource,
         providerResources,
         resourcesToMigrationForm
     } from '$lib/stores/migration';
@@ -91,7 +92,7 @@
 
     $: errorInResources = error;
     $: wizard.setNextDisabled(!report);
-    $: resources = providerResources[$provider.provider];
+    $: resources = providerResources[$provider.provider] as MigrationResource[];
 
     const shouldRenderGroup = (groupKey: string): boolean => {
         if (groupKey === 'storage') {
@@ -109,7 +110,7 @@
             return resources.includes(AppwriteMigrationResource.Site);
         }
 
-        const groupToResource: Record<string, string> = {
+        const groupToResource: Record<string, MigrationResource> = {
             users: AppwriteMigrationResource.User,
             databases: AppwriteMigrationResource.Database
         };
