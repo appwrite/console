@@ -96,6 +96,10 @@ export const migrationFormToResources = <P extends Provider>(
 
     if (formData.users.root) {
         addResource(AppwriteMigrationResource.User);
+        if (formData.users.teams) {
+            addResource(AppwriteMigrationResource.Team);
+            addResource(AppwriteMigrationResource.Membership);
+        }
     }
     if (formData.databases.root) {
         addResource(AppwriteMigrationResource.Database);
@@ -153,6 +157,14 @@ export const resourcesToMigrationForm = (resources: MigrationResource[]): Migrat
     const formData = { ...initialFormData };
     if (resources.includes(AppwriteMigrationResource.User)) {
         formData.users.root = true;
+    }
+    if (
+        includesAll(resources, [
+            AppwriteMigrationResource.Team,
+            AppwriteMigrationResource.Membership
+        ] as MigrationResource[])
+    ) {
+        formData.users.teams = true;
     }
     if (resources.includes(AppwriteMigrationResource.Database)) {
         formData.databases.root = true;

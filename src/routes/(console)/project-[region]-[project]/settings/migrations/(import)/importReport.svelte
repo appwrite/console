@@ -61,11 +61,7 @@
         if (event.detail === 'indeterminate') return;
         const updated = { ...formGroup };
         updated.root = event.detail;
-        if (event.detail) {
-            for (const key of formGroupChildren) {
-                updated[key] = true;
-            }
-        } else {
+        if (!event.detail) {
             for (const key of formGroupChildren) {
                 updated[key] = false;
             }
@@ -116,7 +112,11 @@
                     <Selector.Checkbox
                         size="s"
                         id={key}
-                        bind:checked={formGroup[key]}
+                        checked={formGroup[key]}
+                        on:change={(event) => {
+                            const updated = { ...formGroup, [key]: event.detail };
+                            dispatch('updateFormGroup', updated);
+                        }}
                         label={labelMap[groupKey]?.[key] ?? key}
                         description={descriptionMap[groupKey]?.[key]} />
                 </div>
