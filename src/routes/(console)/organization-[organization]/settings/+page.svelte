@@ -47,7 +47,7 @@
 
             if (addonId) {
                 try {
-                    await sdk.forConsole.organizations.validateToggleAddonPayment({
+                    await sdk.forConsole.organizations.validateAddonPayment({
                         organizationId: $organization.$id,
                         addonId
                     });

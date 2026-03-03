@@ -18,7 +18,7 @@
         submitting = true;
         error = null;
         try {
-            await sdk.forConsole.organizations.deleteToggleAddon({
+            await sdk.forConsole.organizations.deleteAddon({
                 organizationId: $organization.$id,
                 addonId
             });

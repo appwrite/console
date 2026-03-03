@@ -45,7 +45,7 @@
     async function handleCancelAndRetry() {
         cancelling = true;
         try {
-            await sdk.forConsole.organizations.deleteToggleAddon({
+            await sdk.forConsole.organizations.deleteAddon({
                 organizationId: $organization.$id,
                 addonId: baaAddon.$id
             });
@@ -64,7 +64,7 @@
     async function handleReEnable() {
         reEnabling = true;
         try {
-            await sdk.forConsole.organizations.createToggleAddon({
+            await sdk.forConsole.organizations.createBaaAddon({
                 organizationId: $organization.$id,
                 key: 'baa'
             });

@@ -52,7 +52,7 @@
         error = null;
         try {
             const result: Models.Addon | Models.PaymentAuthentication =
-                await sdk.forConsole.organizations.createToggleAddon({
+                await sdk.forConsole.organizations.createBaaAddon({
                     organizationId: $organization.$id,
                     key: 'baa'
                 });
