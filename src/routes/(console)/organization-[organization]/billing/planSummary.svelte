@@ -248,7 +248,7 @@
 
         // addons (additional members, projects, etc.)
         const billingAddonNames: Record<string, string> = {
-            addon_baa: 'HIPPA BAA'
+            addon_baa: 'HIPAA BAA'
         };
 
         const addons = (currentAggregation?.resources || [])

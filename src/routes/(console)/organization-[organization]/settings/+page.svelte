@@ -77,16 +77,6 @@
                         });
                     }
                 }
-            } else {
-                // No pending addon found — likely already activated by webhook
-                await Promise.all([
-                    invalidate(Dependencies.ADDONS),
-                    invalidate(Dependencies.ORGANIZATION)
-                ]);
-                addNotification({
-                    message: 'BAA addon has been enabled',
-                    type: 'success'
-                });
             }
 
             const settingsUrl = resolve('/(console)/organization-[organization]/settings', {

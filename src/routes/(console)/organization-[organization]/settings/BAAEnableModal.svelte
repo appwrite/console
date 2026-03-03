@@ -17,7 +17,7 @@
     const BAA_MONTHLY_PRICE = 350;
     const BAA_AGREEMENT_URL = 'https://appwrite.io/legal/baa';
 
-    let error: string = null;
+    let error: string | null = null;
     let submitting = false;
 
     $: proratedAmount = calculateProratedAmount(
