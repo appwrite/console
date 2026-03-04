@@ -23,12 +23,12 @@
         databases: { root: 'Databases', rows: 'Include rows' },
         functions: {
             root: 'Functions',
-            inactive: 'Include inactive deployments'
+            deploymentInactive: 'Include inactive deployments'
         },
         storage: { root: 'Storage' },
         sites: {
             root: 'Sites',
-            inactive: 'Include inactive deployments'
+            deploymentInactive: 'Include inactive deployments'
         }
     };
 
@@ -43,11 +43,11 @@
         },
         functions: {
             root: 'Import all functions and their active deployment',
-            inactive: 'Import all deployments that are not currently active'
+            deploymentInactive: 'Import all deployments that are not currently active'
         },
         sites: {
             root: 'Import all sites and their active deployment',
-            inactive: 'Import all deployments that are not currently active'
+            deploymentInactive: 'Import all deployments that are not currently active'
         }
     };
 

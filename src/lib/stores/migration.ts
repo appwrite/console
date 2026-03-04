@@ -15,7 +15,7 @@ export type MigrationResource =
 
 // Appwrite enum is the superset of all provider resources — used as a
 // provider-agnostic reference. The addResource guard filters by provider.
-const ResourceType = AppwriteMigrationResource;
+export const ResourceType = AppwriteMigrationResource;
 
 type ProviderResourceMap = {
     appwrite: AppwriteMigrationResource[];
@@ -35,14 +35,14 @@ const initialFormData = {
     },
     functions: {
         root: false,
-        inactive: false
+        deploymentInactive: false
     },
     storage: {
         root: false
     },
     sites: {
         root: false,
-        inactive: false
+        deploymentInactive: false
     }
 };
 
@@ -121,14 +121,14 @@ export const migrationFormToResources = <P extends Provider>(
     if (formData.functions.root) {
         addResource(ResourceType.Function);
         addResource(ResourceType.Environmentvariable);
-        if (formData.functions.inactive) {
+        if (formData.functions.deploymentInactive) {
             addResource(ResourceType.Deployment);
         }
     }
     if (formData.sites.root) {
         addResource(ResourceType.Site);
         addResource(ResourceType.Sitevariable);
-        if (formData.sites.inactive) {
+        if (formData.sites.deploymentInactive) {
             addResource(ResourceType.Sitedeployment);
         }
     }
@@ -186,13 +186,13 @@ export const resourcesToMigrationForm = (resources: MigrationResource[]): Migrat
         formData.functions.root = true;
     }
     if (resources.includes(ResourceType.Deployment)) {
-        formData.functions.inactive = true;
+        formData.functions.deploymentInactive = true;
     }
     if (resources.includes(ResourceType.Site)) {
         formData.sites.root = true;
     }
     if (resources.includes(ResourceType.Sitedeployment)) {
-        formData.sites.inactive = true;
+        formData.sites.deploymentInactive = true;
     }
 
     return formData;

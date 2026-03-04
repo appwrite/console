@@ -14,7 +14,7 @@ export async function load({ depends, params }) {
                     Query.equal('destination', ['Appwrite', 'Firebase', 'NHost', 'Supabase']),
                     Query.isNull('destination')
                 ]),
-                Query.orderDesc('$createdAt')
+                Query.orderDesc('')
             ]
         });
 

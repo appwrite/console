@@ -8,11 +8,12 @@
         type MigrationFormData,
         type MigrationResource,
         providerResources,
-        resourcesToMigrationForm
+        resourcesToMigrationForm,
+        ResourceType
     } from '$lib/stores/migration';
     import { Button } from '$lib/elements/forms';
     import { wizard } from '$lib/stores/wizard';
-    import { AppwriteMigrationResource, type Models } from '@appwrite.io/console';
+    import { type Models } from '@appwrite.io/console';
     import type { sdk } from '$lib/stores/sdk';
     import ImportReport from '$routes/(console)/project-[region]-[project]/settings/migrations/(import)/importReport.svelte';
 
@@ -97,22 +98,22 @@
     const shouldRenderGroup = (groupKey: string): boolean => {
         if (groupKey === 'storage') {
             return (
-                resources.includes(AppwriteMigrationResource.Bucket) &&
-                resources.includes(AppwriteMigrationResource.File)
+                resources.includes(ResourceType.Bucket) &&
+                resources.includes(ResourceType.File)
             );
         }
 
         if (groupKey === 'functions') {
-            return resources.includes(AppwriteMigrationResource.Function);
+            return resources.includes(ResourceType.Function);
         }
 
         if (groupKey === 'sites') {
-            return resources.includes(AppwriteMigrationResource.Site);
+            return resources.includes(ResourceType.Site);
         }
 
         const groupToResource: Record<string, MigrationResource> = {
-            users: AppwriteMigrationResource.User,
-            databases: AppwriteMigrationResource.Database
+            users: ResourceType.User,
+            databases: ResourceType.Database
         };
         const resource = groupToResource[groupKey];
         return resource ? resources.includes(resource) : false;
