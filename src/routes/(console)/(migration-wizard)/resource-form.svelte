@@ -97,10 +97,7 @@
 
     const shouldRenderGroup = (groupKey: string): boolean => {
         if (groupKey === 'storage') {
-            return (
-                resources.includes(ResourceType.Bucket) &&
-                resources.includes(ResourceType.File)
-            );
+            return resources.includes(ResourceType.Bucket) && resources.includes(ResourceType.File);
         }
 
         if (groupKey === 'functions') {
