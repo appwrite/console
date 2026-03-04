@@ -117,7 +117,7 @@
                                 </span>
                             </Tooltip>
                         {:else if column.id === 'duration'}
-                            {#if ['processing', 'waiting'].includes(log.status)}
+                            {#if log.status === ExecutionStatus.Processing}
                                 <span use:timer={{ start: log.$createdAt }}></span>
                             {:else}
                                 {calculateTime(log.duration)}
