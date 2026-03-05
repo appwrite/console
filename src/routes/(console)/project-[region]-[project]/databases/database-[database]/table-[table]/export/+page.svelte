@@ -132,9 +132,12 @@
                 trackError(error, Submit.DatabaseExportCsv);
             }
         } else {
+            // Capture filename at export start — prevents mid-export format changes from
+            // causing a .csv file name on a JSON download (format selector stays visible).
+            const capturedFilename = filename;
             $isSubmitting = true;
-            abortController = new AbortController(); // Initialize abort controller
-            exportProgress = 0; // Reset progress
+            abortController = new AbortController();
+            exportProgress = 0;
 
             try {
                 const activeQueries = exportWithFilters ? Array.from(localQueries.values()) : [];
@@ -202,7 +205,7 @@
                     const url = URL.createObjectURL(blob);
                     const anchor = document.createElement('a');
                     anchor.href = url;
-                    anchor.download = filename;
+                    anchor.download = capturedFilename;
                     document.body.appendChild(anchor);
                     anchor.click();
 
@@ -258,14 +261,15 @@
 <Wizard title="Export" columnSize="s" href={tableUrl} bind:showExitModal confirmExit column>
     <Form bind:this={formComponent} bind:isSubmitting onSubmit={handleExport}>
         {#if exportFormat === 'json' && $isSubmitting}
-            <div class="progress-container" style="margin-top:1rem; display:flex; align-items:center; gap:0.5rem;">
+            <div class="progress-container">
                 <div
                     role="progressbar"
                     aria-label="Export progress"
                     aria-valuenow={exportProgress}
                     aria-valuemin="0"
                     aria-valuemax="100"
-                    style="flex:1; background:linear-gradient(to right, #4caf50 {exportProgress}%, #e0e0e0 0%); height:0.5rem; border-radius:0.25rem;">
+                    class="export-progress-bar"
+                    style="--progress: {exportProgress}%;">
                 </div>
                 <Button secondary compact on:click={cancelExport}>Cancel</Button>
             </div>
@@ -309,6 +313,7 @@
                         id="exportFormat"
                         label="Format"
                         bind:value={exportFormat}
+                        disabled={$isSubmitting}
                         options={[
                             { value: 'csv', label: 'CSV' },
                             { value: 'json', label: 'JSON' }
@@ -400,5 +405,21 @@
         cursor: unset;
     }
 
+    .progress-container {
+        margin-top: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
 
+    .export-progress-bar {
+        flex: 1;
+        height: 0.5rem;
+        border-radius: 0.25rem;
+        background: linear-gradient(
+            to right,
+            var(--color-success, #4caf50) var(--progress),
+            var(--color-neutral-80, #e0e0e0) 0%
+        );
+    }
 </style>
