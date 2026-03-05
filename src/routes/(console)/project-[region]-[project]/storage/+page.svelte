@@ -44,7 +44,7 @@
         view={data.view}
         searchPlaceholder="Search by name or ID">
         {#if $canWriteBuckets}
-            <Tooltip disabled={!isLimited} maxWidth="200px">
+            <Tooltip disabled={!isLimited}>
                 <div>
                     <Button
                         size="s"
@@ -56,7 +56,9 @@
                     </Button>
                 </div>
                 <svelte:fragment slot="tooltip">
-                    You have reached the maximum number of buckets for your plan.
+                    <div style="white-space: pre-line;">
+                        You have reached the maximum number of buckets for your plan.
+                    </div>
                 </svelte:fragment>
             </Tooltip>
         {/if}

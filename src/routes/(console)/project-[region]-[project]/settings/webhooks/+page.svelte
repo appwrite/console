@@ -39,7 +39,7 @@
     <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
         <ViewSelector ui="new" {columns} view={View.Table} hideView />
         {#if $canWriteWebhooks}
-            <Tooltip disabled={!isLimited} maxWidth="200px">
+            <Tooltip disabled={!isLimited}>
                 <div>
                     <Button disabled={isLimited} event="create_webhook" href={webhooksCreateUrl}>
                         <Icon icon={IconPlus} slot="start" size="s" />
@@ -47,7 +47,9 @@
                     </Button>
                 </div>
                 <svelte:fragment slot="tooltip">
-                    You have reached the maximum number of webhooks for your plan.
+                    <div style="white-space: pre-line;">
+                        You have reached the maximum number of webhooks for your plan.
+                    </div>
                 </svelte:fragment>
             </Tooltip>
         {/if}

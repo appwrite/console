@@ -15,7 +15,7 @@
         Tooltip,
         Typography
     } from '@appwrite.io/pink-svelte';
-    import { isRelationship, isSpatialType, isString } from '../rows/store';
+    import { isRelationship, isSpatialType, isTextType } from '../rows/store';
     import {
         columns,
         type ColumnsWidth,
@@ -392,7 +392,12 @@
 
             {#each updatedColumnsForSheet as column, index (column.key)}
                 {@const isId = column.key === '$id'}
-                {@const option = columnOptions.find((option) => option.type === column.type)}
+                {@const option = columnOptions.find(
+                    (option) =>
+                        option.type === column.type &&
+                        option.format ===
+                            ('format' in column && column.format ? column.format : undefined)
+                )}
                 {@const isSelectable =
                     column['system'] || column.type === 'relationship' ? 'disabled' : true}
                 <Spreadsheet.Row.Base {root} select={isSelectable} id={column.key}>
@@ -420,7 +425,7 @@
                                 {:else if column.key === '$id'}
                                     <Icon icon={IconFingerPrint} size="s" />
                                 {:else}
-                                    <Icon icon={option.icon} size="s" />
+                                    <Icon icon={option?.icon ?? IconViewList} size="s" />
                                 {/if}
 
                                 <Layout.Stack
@@ -437,7 +442,7 @@
                                         {/if}
                                     </Typography.Text>
 
-                                    {#if isString(column) && column.encrypt}
+                                    {#if isTextType(column) && 'encrypt' in column && column.encrypt}
                                         <Tooltip portal>
                                             <Icon
                                                 size="s"

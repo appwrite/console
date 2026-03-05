@@ -34,7 +34,9 @@
         const entries = Object.entries($user?.prefs ?? {});
         prefs =
             entries.length > 0
-                ? entries.map(([key, value]) => createPrefRow(key, value))
+                ? entries.map(([key, value]) =>
+                      createPrefRow(String(key ?? ''), String(value ?? ''))
+                  )
                 : [createPrefRow()];
     });
 

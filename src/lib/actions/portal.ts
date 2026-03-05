@@ -3,7 +3,7 @@ import type { Action } from 'svelte/action';
 
 export type PortalConfig = string | HTMLElement | undefined;
 
-export const portal: Action<HTMLElement, PortalConfig> = (el, target = 'body') => {
+export const portal: Action<HTMLElement, PortalConfig> = (el, target: PortalConfig = 'body') => {
     let targetEl;
 
     async function update(newTarget: PortalConfig) {
@@ -17,7 +17,7 @@ export const portal: Action<HTMLElement, PortalConfig> = (el, target = 'body') =
             if (targetEl === null) {
                 throw new Error(`No element found matching css selector: "${target}"`);
             }
-        } else if (target instanceof HTMLElement) {
+        } else if (typeof target === 'object' && target instanceof HTMLElement) {
             targetEl = target;
         } else {
             throw new TypeError(

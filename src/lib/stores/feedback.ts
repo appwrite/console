@@ -105,8 +105,6 @@ function createFeedbackStore() {
                 return feedback;
             });
         },
-        // TODO: update growth server to accept `billingPlan`.
-        // TODO: update growth server to accept `source` key to know the feedback source area.
         submitFeedback: async (
             subject: string,
             message: string,
@@ -122,18 +120,6 @@ function createFeedbackStore() {
             if (!VARS.GROWTH_ENDPOINT) return;
             trackEvent(Submit.FeedbackSubmit);
 
-            const customFields: Array<{ id: string; value: string | number }> = [
-                { id: '47364', value: currentPage }
-            ];
-
-            if (value) {
-                customFields.push({ id: '40655', value });
-            }
-
-            if (billingPlan) {
-                customFields.push({ id: '56109', value: billingPlan });
-            }
-
             const response = await fetch(`${VARS.GROWTH_ENDPOINT}/feedback`, {
                 method: 'POST',
                 headers: {
@@ -143,9 +129,11 @@ function createFeedbackStore() {
                     subject,
                     message,
                     email,
-                    customFields,
                     firstname: (name || 'Unknown').slice(0, 40),
                     metaFields: {
+                        currentPage,
+                        npsScore: value,
+                        billingPlan,
                         source: get(feedback).source,
                         orgId,
                         projectId,
