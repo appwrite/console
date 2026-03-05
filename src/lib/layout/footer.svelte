@@ -17,7 +17,13 @@
     const currentYear = new Date().getFullYear();
 
     const hideFooter = $derived.by(() => {
-        const endings = ['table-[table]', 'table-[table]/columns', 'table-[table]/indexes'];
+        const endings = [
+            'collection-[collection]',
+            'collection-[collection]/indexes',
+            'table-[table]',
+            'table-[table]/columns',
+            'table-[table]/indexes'
+        ];
         return endings.some((end) => page.route.id?.endsWith(end));
     });
 </script>

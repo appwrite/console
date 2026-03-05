@@ -1,6 +1,6 @@
 <script lang="ts" context="module">
     import { writable } from 'svelte/store';
-    import type { Option } from './columns/store';
+    import type { Option } from '$database/table-[table]/columns/store';
 
     const createColumnArgs = writable({
         showCreate: false,
@@ -26,22 +26,16 @@
         columnsOrder,
         databaseColumnSheetOptions,
         databaseRowSheetOptions,
-        randomDataModalState,
         showCreateColumnSheet,
         showCreateIndexSheet,
-        spreadsheetLoading,
         rowActivitySheet,
-        spreadsheetRenderKey,
-        expandTabs,
         databaseRelatedRowSheetOptions,
         rowPermissionSheet,
-        type Columns,
-        isWaterfallFromFaker
-    } from './store';
+        showRowCreateSheet
+    } from '$database/table-[table]/store';
     import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
-    import CreateColumn from './createColumn.svelte';
+    import CreateColumn from '$database/table-[table]/createColumn.svelte';
     import { CreateColumnPanel } from '$lib/commandCenter/panels';
-    import { showCreateEntity } from '../store';
     import { page } from '$app/state';
     import { canWriteTables } from '$lib/stores/roles';
     import {
@@ -52,37 +46,49 @@
         IconPlus,
         IconPuzzle
     } from '@appwrite.io/pink-icons-svelte';
-    import { type Field, SideSheet, useTerminology } from '$database/(entity)';
-    import EditRow from './rows/edit.svelte';
-    import EditRelatedRow from './rows/editRelated.svelte';
-    import EditColumn from './columns/edit.svelte';
-    import RowActivity from './rows/activity.svelte';
-    import EditRowPermissions from './rows/editPermissions.svelte';
-    import { Dialog, Layout, Typography, Selector, Icon } from '@appwrite.io/pink-svelte';
+    import {
+        CreateIndex,
+        EditRecordPermissions,
+        RecordActivity,
+        SideSheet,
+        type Field,
+        useTerminology
+    } from '$database/(entity)';
+    import EditRow from '$database/table-[table]/rows/edit.svelte';
+    import EditRelatedRow from '$database/table-[table]/rows/editRelated.svelte';
+    import EditColumn from '$database/table-[table]/columns/edit.svelte';
+    import { Dialog, Layout, Selector, Typography, Icon } from '@appwrite.io/pink-svelte';
     import { Button, Seekbar } from '$lib/elements/forms';
     import { generateFakeRecords, generateFields } from '$lib/helpers/faker';
     import { addNotification } from '$lib/stores/notifications';
     import { hash } from '$lib/helpers/string';
     import { preferences } from '$lib/stores/preferences';
-    import { buildRowUrl, isRelationship } from './rows/store';
+    import { buildFieldUrl } from '$database/(entity)/helpers/navigation';
+    import { isRelationship } from '$database/table-[table]/rows/store';
     import { chunks } from '$lib/helpers/array';
     import { Submit, trackEvent } from '$lib/actions/analytics';
+    import {
+        expandTabs,
+        spreadsheetLoading,
+        randomDataModalState,
+        spreadsheetRenderKey,
+        isWaterfallFromFaker,
+        resetSampleFieldsConfig
+    } from '$database/store';
 
     import type { LayoutData } from './$types';
-
-    import { CreateIndex } from '$database/(entity)';
     import { resolveRoute, withPath } from '$lib/stores/navigation';
     import { isTabletViewport } from '$lib/stores/viewport';
-    import { showColumnsSuggestionsModal } from '../(suggestions)';
-    import IndexesSuggestions from '../(suggestions)/indexes.svelte';
-    import ColumnsSuggestions from '../(suggestions)/columns.svelte';
-    import { setupColumnObserver } from '../(observer)/columnObserver';
+    import { showColumnsSuggestionsModal } from '$database/(suggestions)';
+    import IndexesSuggestions from '$database/(suggestions)/indexes.svelte';
+    import ColumnsSuggestions from '$database/(suggestions)/columns.svelte';
+    import { setupColumnObserver } from '$database/(observer)/columnObserver';
 
     export let data: LayoutData;
 
     let editRow: EditRow;
     let editRelatedRow: EditRelatedRow;
-    let editRowPermissions: EditRowPermissions;
+    let editRecordPermissions: EditRecordPermissions;
 
     let editRowDisabled = true;
     let editRelatedRowDisabled = true;
@@ -132,7 +138,10 @@
     );
 
     onMount(() => {
-        expandTabs.set(preferences.getKey('tableHeaderExpanded', true));
+        expandTabs.set(preferences.getKey('entityHeaderExpanded', true));
+
+        // set faker method.
+        $randomDataModalState.onSubmit = async () => await createFakeData();
 
         return realtime.forProject(page.params.region, ['project', 'console'], (response) => {
             if (
@@ -150,8 +159,12 @@
     $: $registerCommands([
         {
             label: 'Create row',
-            keys: page.url.pathname.endsWith(table?.$id) ? ['t'] : ['t', 'd'],
-            callback: () => ($showCreateEntity = true),
+            keys: page.url.pathname.endsWith(table?.$id) ? ['r'] : ['r', 'd'],
+            callback: () => {
+                if (table.fields) {
+                    $showRowCreateSheet.show = true;
+                }
+            },
             icon: IconPlus,
             group: 'rows'
         },
@@ -283,11 +296,9 @@
         let columns: Field[] = [];
         const currentFields = table.fields;
         const hasAnyRelationships = currentFields.some((field: Field) => isRelationship(field));
-        const filteredColumns = currentFields.filter(
-            (field: Field) => field.type !== 'relationship'
-        );
+        columns = currentFields.filter((field: Field) => field.type !== 'relationship');
 
-        if (!filteredColumns.length) {
+        if (!columns.length) {
             try {
                 const {
                     startWaiting,
@@ -313,7 +324,6 @@
                 await waitPromise;
 
                 await invalidate(Dependencies.TABLE);
-                columns = page.data.table.columns as Columns[];
 
                 trackEvent(Submit.ColumnCreate, { type: 'faker' });
             } catch (e) {
@@ -327,12 +337,12 @@
                 columnCreationHandler = null;
             }
         } else {
-            columns = currentFields as Columns[];
+            columns = currentFields;
         }
 
         let rowIds = [];
         try {
-            const { rows, ids } = generateFakeRecords(columns, $randomDataModalState.value);
+            const { rows, ids } = generateFakeRecords($randomDataModalState.value, columns);
 
             rowIds = ids;
             const tablesSDK = sdk.forProject(page.params.region, page.params.project).tablesDB;
@@ -374,8 +384,7 @@
                 message: e.message
             });
         } finally {
-            // reset value to 25 default!
-            $randomDataModalState.value = 25;
+            resetSampleFieldsConfig();
         }
 
         $spreadsheetLoading = false;
@@ -456,7 +465,7 @@
         mode: 'copy-tag',
         text: 'Row URL',
         show: !!currentRowId,
-        value: buildRowUrl(currentRowId)
+        value: buildFieldUrl('row', currentRowId)
     }}>
     {#snippet topEndActions()}
         {@const rows = $databaseRowSheetOptions.rows ?? []}
@@ -573,17 +582,17 @@
     submit={{
         text: 'Update',
         disabled: editRowPermissionsDisabled,
-        onClick: async () => editRowPermissions?.updatePermissions()
+        onClick: async () => editRecordPermissions?.updatePermissions()
     }}>
-    <EditRowPermissions
-        {table}
-        bind:this={editRowPermissions}
-        bind:row={$rowPermissionSheet.row}
+    <EditRecordPermissions
+        entity={table}
+        bind:this={editRecordPermissions}
+        bind:record={$rowPermissionSheet.row}
         bind:arePermsDisabled={editRowPermissionsDisabled} />
 </SideSheet>
 
 <SideSheet title="Row activity" bind:show={$rowActivitySheet.show} closeOnBlur>
-    <RowActivity />
+    <RecordActivity record={$rowActivitySheet.row} />
 </SideSheet>
 
 <Dialog title="Generate sample data" bind:open={$randomDataModalState.show}>

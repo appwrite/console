@@ -3,14 +3,14 @@
     import { ActionMenu, Icon, Popover } from '@appwrite.io/pink-svelte';
     import { columnOptions, type Option } from './store';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
-    import { isCsvImportInProgress } from '../store';
+    import { isTablesCsvImportInProgress } from '../store';
     import { CsvDisabled } from '$database/(entity)';
 
     export let showCreate = false;
     export let selectedOption: Option['name'] = null;
 </script>
 
-{#if $isCsvImportInProgress}
+{#if $isTablesCsvImportInProgress}
     <CsvDisabled>
         <Button size="s" disabled>
             <Icon icon={IconPlus} slot="start" size="s" />

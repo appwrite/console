@@ -53,7 +53,7 @@
         onCreateIndex: (index: CreateIndexesCallbackType) => Promise<void>;
         onDeleteIndexes: (indexKeys: string[]) => Promise<void>;
         emptyIndexesSheetView: Snippet<[() => void]>;
-        emptyEntitiesSheetView?: Snippet;
+        emptyEntitiesSheetView?: Snippet<[() => void]>;
     } = $props();
 
     let showCreateIndex = $state(false);
@@ -119,9 +119,13 @@
         // example: documentsdb.*.collections.indexes.*
         // this is needed because `documentsdb` doesn't use `database` prefix don't exist
         const derivedEventsForIndex = `${terminology.type}.*.${terminology.entity.lower.plural}.*.indexes.*`;
+        const indexEvents =
+            terminology.type === 'documentsdb'
+                ? [derivedEventsForIndex]
+                : ['databases.*.tables.*.indexes.*', derivedEventsForIndex];
 
         return realtime.forProject(page.params.region, ['project', 'console'], (response) => {
-            if (response.events.includes(derivedEventsForIndex)) {
+            if (indexEvents.some((event) => response.events.includes(event))) {
                 invalidate(dependencies.entity.singular);
             }
         });
@@ -200,7 +204,7 @@
 </Container>
 
 <div class="databases-spreadsheet">
-    {#if entity.fields?.length}
+    {#if !terminology.schema || entity.fields?.length}
         {#if entity.indexes.length}
             <SpreadsheetContainer>
                 <Spreadsheet.Root
@@ -310,7 +314,7 @@
             {@render emptyIndexesSheetView(() => (showCreateIndex = true))}
         {/if}
     {:else}
-        {@render emptyEntitiesSheetView?.()}
+        {@render emptyEntitiesSheetView?.(() => (showCreateIndex = true))}
     {/if}
 
     {#if selectedIndexes.length > 0}

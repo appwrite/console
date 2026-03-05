@@ -36,7 +36,7 @@ export default ts.config(
             // TODO: @itznotabug, this requires a big refactor!
             'svelte/no-navigation-without-resolve': 'warn',
             'svelte/prefer-svelte-reactivity': 'warn',
-            'svelte/prefer-writable-derived': 'warn'
+            'svelte/prefer-writable-derived': 'off'
         }
     },
     {

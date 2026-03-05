@@ -23,9 +23,10 @@ import {
     Tokens,
     TablesDB,
     Domains,
-    /*DocumentsDB,*/
+    DocumentsDB,
     Realtime,
-    Organizations
+    Organizations,
+    VectorDB,
 } from '@appwrite.io/console';
 import { Sources } from '$lib/sdk/sources';
 import {
@@ -136,7 +137,8 @@ const sdkForProject = {
     migrations: new Migrations(clientProject),
     sites: new Sites(clientProject),
     tablesDB: new TablesDB(clientProject),
-    /*documentsDB: new DocumentsDB(clientProject),*/
+    documentsDB: new DocumentsDB(clientProject),
+    vectorDB: new VectorDB(clientProject),
     console: new Console(clientProject) // for suggestions API
 };
 

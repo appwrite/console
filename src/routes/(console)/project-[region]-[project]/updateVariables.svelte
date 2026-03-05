@@ -276,9 +276,7 @@
         Set the environment variables or secret keys that will be passed to your {product}. Global
         variables can be found in <Link
             href={withPath(
-                resolveRoute('/(console)/project-[region]-[project]/settings', {
-                    ...page.params
-                }),
+                resolveRoute('/(console)/project-[region]-[project]/settings', page.params),
                 '#variables'
             )}>
             project settings</Link
@@ -332,9 +330,7 @@
                             <a
                                 href={resolveRoute(
                                     '/(console)/project-[region]-[project]/settings',
-                                    {
-                                        ...page.params
-                                    }
+                                    page.params
                                 )}
                                 title="Project settings"
                                 class="link">
