@@ -126,7 +126,7 @@
             } catch (error) {
                 addNotification({
                     type: 'error',
-                    message: error.message
+                    message: error?.message || String(error)
                 });
 
                 trackError(error, Submit.DatabaseExportCsv);
@@ -146,14 +146,6 @@
                 let totalKnown = false;
 
                 while (fetched < total) {
-                    // Check for abort signal
-                    if (abortController.signal.aborted) {
-                        addNotification({
-                            type: 'warning',
-                            message: 'JSON export cancelled.'
-                        });
-                        break; // Exit the loop if aborted
-                    }
 
                     const pageQueries = [Query.limit(pageSize), ...activeQueries];
 
@@ -166,7 +158,8 @@
                         .tablesDB.listRows({
                             databaseId: page.params.database,
                             tableId: page.params.table,
-                            queries: pageQueries
+                            queries: pageQueries,
+                            signal: abortController.signal
                         });
 
                     total = response.total;
@@ -229,11 +222,18 @@
                     await goto(tableUrl);
                 }
             } catch (error) {
-                addNotification({
-                    type: 'error',
-                    message: error.message
-                });
-                trackError(error, Submit.DatabaseExportJson);
+                if (error?.name === 'AbortError') {
+                    addNotification({
+                        type: 'warning',
+                        message: 'JSON export cancelled.'
+                    });
+                } else {
+                    addNotification({
+                        type: 'error',
+                        message: error?.message || String(error)
+                    });
+                    trackError(error, Submit.DatabaseExportJson);
+                }
             } finally {
                 $isSubmitting = false;
                 exportProgress = 0; // Reset progress
@@ -258,9 +258,16 @@
 <Wizard title="Export" columnSize="s" href={tableUrl} bind:showExitModal confirmExit column>
     <Form bind:this={formComponent} bind:isSubmitting onSubmit={handleExport}>
         {#if exportFormat === 'json' && $isSubmitting}
-            <div class="progress-container" style="margin-top:1rem;">
-                <div class="progress-bar" role="progressbar" aria-label="Export progress" aria-valuenow={exportProgress} aria-valuemin="0" aria-valuemax="100" style="background:linear-gradient(to right, #4caf50 {exportProgress}%, #e0e0e0 0%); height:1rem; border-radius:0.25rem;"></div>
-                <button type="button" class="cancel-btn" on:click={cancelExport} style="margin-left:0.5rem;">Cancel</button>
+            <div class="progress-container" style="margin-top:1rem; display:flex; align-items:center; gap:0.5rem;">
+                <div
+                    role="progressbar"
+                    aria-label="Export progress"
+                    aria-valuenow={exportProgress}
+                    aria-valuemin="0"
+                    aria-valuemax="100"
+                    style="flex:1; background:linear-gradient(to right, #4caf50 {exportProgress}%, #e0e0e0 0%); height:0.5rem; border-radius:0.25rem;">
+                </div>
+                <Button secondary compact on:click={cancelExport}>Cancel</Button>
             </div>
         {/if}
         <Layout.Stack gap="xxl">
@@ -393,17 +400,5 @@
         cursor: unset;
     }
 
-    .cancel-btn {
-        background: none;
-        border: 1px solid currentColor;
-        border-radius: 0.25rem;
-        padding: 0.125rem 0.5rem;
-        cursor: pointer;
-        font-size: 0.75rem;
-        opacity: 0.8;
-    }
 
-    .cancel-btn:hover {
-        opacity: 1;
-    }
 </style>
