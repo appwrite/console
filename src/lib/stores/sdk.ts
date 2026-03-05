@@ -26,7 +26,7 @@ import {
     DocumentsDB,
     Realtime,
     Organizations,
-    VectorDB,
+    VectorDB
 } from '@appwrite.io/console';
 import { Sources } from '$lib/sdk/sources';
 import {
