@@ -52,8 +52,8 @@
         return usage.load(dates.start, dates.end, dates.period);
     }
 
-    function isTabSelected(key: string) {
-        return page.url.pathname.split('/').includes(key);
+    function isTabSelected(key: string, pathname: string) {
+        return pathname.split('/').includes(key);
     }
 
     $: $registerCommands([
@@ -227,17 +227,17 @@
                         noscroll
                         event="platforms"
                         href={`${path}/platforms`}
-                        selected={isTabSelected('platforms')}>Platforms</Tab>
+                        selected={isTabSelected('platforms', page.url.pathname)}>Platforms</Tab>
                     <Tab
                         noscroll
                         event="api-keys"
                         href={`${path}/api-keys`}
-                        selected={isTabSelected('api-keys')}>API keys</Tab>
+                        selected={isTabSelected('api-keys', page.url.pathname)}>API keys</Tab>
                     <Tab
                         noscroll
                         event="dev-keys"
                         href={`${path}/dev-keys`}
-                        selected={isTabSelected('dev-keys')}>Dev keys</Tab>
+                        selected={isTabSelected('dev-keys', page.url.pathname)}>Dev keys</Tab>
                 </Tabs>
                 {#if $action}
                     <svelte:component this={$action} />
