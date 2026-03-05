@@ -52,10 +52,6 @@
         return usage.load(dates.start, dates.end, dates.period);
     }
 
-    function isTabSelected(key: string) {
-        return page.url.pathname.endsWith(`/${key}`);
-    }
-
     $: $registerCommands([
         {
             label: 'Add platform',
@@ -81,7 +77,7 @@
             label: 'Create Dev Key',
             icon: IconPlus,
             callback() {
-                goto(`${path}/dev-keys/create`);
+                goto(`${path}/dev-keys`);
             },
             keys: ['c', 'd', 'k'],
             group: 'integrations',
@@ -223,21 +219,22 @@
             <Typography.Title>Integrations</Typography.Title>
             <Layout.Stack gap="xl" direction="row" justifyContent="space-between">
                 <Tabs>
+                    {@const pathParts = page.url.pathname.split('/')}
                     <Tab
                         noscroll
                         event="platforms"
                         href={`${path}/platforms`}
-                        selected={isTabSelected('platforms')}>Platforms</Tab>
+                        selected={pathParts.includes('platforms')}>Platforms</Tab>
                     <Tab
                         noscroll
                         event="api-keys"
                         href={`${path}/api-keys`}
-                        selected={isTabSelected('api-keys')}>API keys</Tab>
+                        selected={pathParts.includes('api-keys')}>API keys</Tab>
                     <Tab
                         noscroll
                         event="dev-keys"
                         href={`${path}/dev-keys`}
-                        selected={isTabSelected('dev-keys')}>Dev keys</Tab>
+                        selected={pathParts.includes('dev-keys')}>Dev keys</Tab>
                 </Tabs>
                 {#if $action}
                     <svelte:component this={$action} />
