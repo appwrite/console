@@ -116,30 +116,46 @@
     }
 
     async function connect(selectedInstallationId: string, selectedRepository: string) {
+        let nextBranch = site?.providerBranch ?? 'main';
         try {
-            await sdk.forProject(page.params.region, page.params.project).sites.update({
-                siteId: site.$id,
-                name: site.name,
-                framework: site.framework as Framework,
-                enabled: site?.enabled,
-                logging: site?.logging || undefined,
-                timeout: site?.timeout,
-                installCommand: site?.installCommand,
-                buildCommand: site?.buildCommand,
-                outputDirectory: site?.outputDirectory,
-                buildRuntime: site?.buildRuntime as BuildRuntime,
-                adapter: site.adapter as Adapter,
-                fallbackFile: site?.fallbackFile,
-                installationId: selectedInstallationId,
-                providerRepositoryId: selectedRepository,
-                providerBranch: 'main',
-                specification: site?.specification || undefined
-            });
-
-            invalidate(Dependencies.SITE);
+            const branchList = await sdk
+                .forProject(page.params.region, page.params.project)
+                .vcs.listRepositoryBranches({
+                    installationId: selectedInstallationId,
+                    providerRepositoryId: selectedRepository
+                });
+            const sorted = sortBranches(branchList.branches);
+            nextBranch =
+                sorted.find((branch) => branch.name === site?.providerBranch)?.name ??
+                sorted.find((branch) => branch.name === 'main' || branch.name === 'master')?.name ??
+                sorted[0]?.name ??
+                nextBranch;
         } catch {
-            return;
+            // Ignore branch lookup failures; fallback to default.
         }
+
+        await sdk.forProject(page.params.region, page.params.project).sites.update({
+            siteId: site.$id,
+            name: site.name,
+            framework: site.framework as Framework,
+            enabled: site?.enabled,
+            logging: site?.logging || undefined,
+            timeout: site?.timeout,
+            installCommand: site?.installCommand,
+            buildCommand: site?.buildCommand,
+            outputDirectory: site?.outputDirectory,
+            buildRuntime: site?.buildRuntime as BuildRuntime,
+            adapter: site.adapter as Adapter,
+            fallbackFile: site?.fallbackFile,
+            installationId: selectedInstallationId,
+            providerRepositoryId: selectedRepository,
+            providerBranch: nextBranch,
+            providerSilentMode: site?.providerSilentMode ?? undefined,
+            providerRootDirectory: site?.providerRootDirectory ?? undefined,
+            specification: site?.specification || undefined
+        });
+
+        invalidate(Dependencies.SITE);
     }
 
     $: if (site?.installationId && site?.providerRepositoryId) {
