@@ -149,8 +149,24 @@
                 let totalKnown = false;
 
                 while (fetched < total) {
+                    // Explicit guard in case the SDK doesn't throw an AbortError
+                    if (abortController?.signal.aborted) break;
 
-                    const pageQueries = [Query.limit(pageSize), ...activeQueries];
+                    // Strip any pagination-control queries the user may have added
+                    // (limit, offset, cursorAfter, cursorBefore) to avoid conflicts
+                    // with the paginator's own directives.
+                    const sanitizedQueries = activeQueries.filter((q) => {
+                        try {
+                            const parsed = JSON.parse(q);
+                            return !['limit', 'offset', 'cursorAfter', 'cursorBefore'].includes(
+                                parsed?.method
+                            );
+                        } catch {
+                            return true; // keep unparseable queries as-is
+                        }
+                    });
+
+                    const pageQueries = [Query.limit(pageSize), ...sanitizedQueries];
 
                     if (lastId) {
                         pageQueries.push(Query.cursorAfter(lastId));
