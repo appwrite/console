@@ -7,19 +7,27 @@
     export let series: LineSeriesOption[];
     export let options: EChartsOption = null;
     export let formatted: 'days' | 'hours' = 'days';
+    export let applyStyles: boolean = true;
+    export let setOptionConfig: {
+        notMerge?: boolean;
+        lazyUpdate?: boolean;
+        replaceMerge?: string[];
+    } = undefined;
 </script>
 
 <Base
     {options}
     {formatted}
+    {setOptionConfig}
     series={series.map((s) => {
         s.type = 'line';
         s.stack = 'total';
         s.lineStyle = {
-            shadowBlur: 38,
-            shadowColor: Colors.Primary,
-            shadowOffsetY: 15,
-            shadowOffsetX: 0
+            shadowBlur: applyStyles ? 38 : undefined,
+            shadowColor: applyStyles ? Colors.Primary : undefined,
+            shadowOffsetY: applyStyles ? 15 : undefined,
+            shadowOffsetX: 0,
+            width: applyStyles ? undefined : 2
         };
         s.showSymbol = false;
 
