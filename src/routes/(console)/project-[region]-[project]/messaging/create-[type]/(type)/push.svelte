@@ -36,7 +36,7 @@
     let scheduledAt: string;
 
     async function create() {
-        if (!title?.trim() || !body?.trim()) {
+        if (!draft && (!title?.trim() || !body?.trim())) {
             addNotification({
                 type: 'error',
                  message: 'Title and message body cannot be empty.'
