@@ -130,8 +130,8 @@
                             <div>
                                 <span class="u-capitalize"
                                     >{total(Object.values(entityCounter)) > 1
-                                        ? ResourcesFriendly[entity].plural
-                                        : ResourcesFriendly[entity].singular}</span>
+                                        ? (ResourcesFriendly[entity]?.plural ?? entity)
+                                        : (ResourcesFriendly[entity]?.singular ?? entity)}</span>
 
                                 <Tag size="xs" selected>{totalItems(entityCounter)}</Tag>
                             </div>

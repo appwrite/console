@@ -13,7 +13,8 @@ export async function load({ depends, params }) {
                 Query.or([
                     Query.equal('destination', ['Appwrite', 'Firebase', 'NHost', 'Supabase']),
                     Query.isNull('destination')
-                ])
+                ]),
+                Query.orderDesc('')
             ]
         });
 

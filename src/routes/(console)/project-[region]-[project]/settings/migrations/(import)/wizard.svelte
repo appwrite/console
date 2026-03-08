@@ -7,6 +7,12 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { migrationFormToResources, type Provider } from '$lib/stores/migration';
+    import {
+        AppwriteMigrationResource,
+        FirebaseMigrationResource,
+        NHostMigrationResource,
+        SupabaseMigrationResource
+    } from '@appwrite.io/console';
     import { started } from '../stores';
     import { showMigrationBox } from '$lib/components/migrationBox.svelte';
     import { addNotification } from '$lib/stores/notifications';
@@ -45,7 +51,7 @@
                     await sdk
                         .forProject(page.params.region, page.params.project)
                         .migrations.createAppwriteMigration({
-                            resources,
+                            resources: resources as AppwriteMigrationResource[],
                             endpoint: $provider.endpoint,
                             projectId: $provider.projectID,
                             apiKey: $provider.apiKey
@@ -58,7 +64,7 @@
                     await sdk
                         .forProject(page.params.region, page.params.project)
                         .migrations.createSupabaseMigration({
-                            resources,
+                            resources: resources as SupabaseMigrationResource[],
                             endpoint: $provider.endpoint,
                             apiKey: $provider.apiKey,
                             databaseHost: $provider.host,
@@ -73,7 +79,7 @@
                     await sdk
                         .forProject(page.params.region, page.params.project)
                         .migrations.createFirebaseMigration({
-                            resources,
+                            resources: resources as FirebaseMigrationResource[],
                             serviceAccount: $provider.serviceAccount
                         });
                     await invalidate(Dependencies.MIGRATIONS);
@@ -83,7 +89,7 @@
                     await sdk
                         .forProject(page.params.region, page.params.project)
                         .migrations.createNHostMigration({
-                            resources,
+                            resources: resources as NHostMigrationResource[],
                             subdomain: $provider.subdomain,
                             region: $provider.region,
                             adminSecret: $provider.adminSecret,

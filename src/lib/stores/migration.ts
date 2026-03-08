@@ -1,6 +1,28 @@
 import { writable } from 'svelte/store';
-import { AppwriteMigrationResource as Resources } from '@appwrite.io/console';
+import {
+    AppwriteMigrationResource,
+    FirebaseMigrationResource,
+    NHostMigrationResource,
+    SupabaseMigrationResource
+} from '@appwrite.io/console';
 import { includesAll } from '$lib/helpers/array';
+
+export type MigrationResource =
+    | AppwriteMigrationResource
+    | FirebaseMigrationResource
+    | NHostMigrationResource
+    | SupabaseMigrationResource;
+
+// Appwrite enum is the superset of all provider resources — used as a
+// provider-agnostic reference. The addResource guard filters by provider.
+export const ResourceType = AppwriteMigrationResource;
+
+type ProviderResourceMap = {
+    appwrite: AppwriteMigrationResource[];
+    supabase: SupabaseMigrationResource[];
+    nhost: NHostMigrationResource[];
+    firebase: FirebaseMigrationResource[];
+};
 
 const initialFormData = {
     users: {
@@ -13,11 +35,14 @@ const initialFormData = {
     },
     functions: {
         root: false,
-        env: false,
-        inactive: false
+        deploymentInactive: false
     },
     storage: {
         root: false
+    },
+    sites: {
+        root: false,
+        deploymentInactive: false
     }
 };
 
@@ -48,72 +73,67 @@ export const ResourcesFriendly = {
     table: { singular: 'Table', plural: 'Tables' },
     index: { singular: 'Index', plural: 'Indexes' },
     column: { singular: 'Column', plural: 'Columns' },
-    row: { singular: 'Row', plural: 'Rows' }
+    row: { singular: 'Row', plural: 'Rows' },
+    site: { singular: 'Site', plural: 'Sites' },
+    'site-deployment': { singular: 'Site Deployment', plural: 'Site Deployments' },
+    'site-variable': { singular: 'Site Variable', plural: 'Site Variables' }
 };
 
-// @todo: @itznotabug - check if other resources are correct and work fine!
-export const providerResources: Record<Provider, Resources[]> = {
-    appwrite: Object.values(Resources),
-    supabase: [
-        Resources.User,
-        Resources.Database,
-        Resources.Collection,
-        Resources.Attribute,
-        Resources.Index,
-        Resources.Document,
-        Resources.Bucket,
-        Resources.File
-    ],
-    nhost: [
-        Resources.User,
-        Resources.Database,
-        Resources.Collection,
-        Resources.Attribute,
-        Resources.Index,
-        Resources.Document,
-        Resources.Bucket,
-        Resources.File
-    ],
-    firebase: [
-        Resources.User,
-        Resources.Database,
-        Resources.Collection,
-        Resources.Attribute,
-        Resources.Document,
-        Resources.Bucket,
-        Resources.File
-    ]
+export const providerResources: ProviderResourceMap = {
+    appwrite: Object.values(AppwriteMigrationResource),
+    supabase: Object.values(SupabaseMigrationResource),
+    nhost: Object.values(NHostMigrationResource),
+    firebase: Object.values(FirebaseMigrationResource)
 };
 
-export const migrationFormToResources = (
+export const migrationFormToResources = <P extends Provider>(
     formData: MigrationFormData,
-    provider: Provider
-): Resources[] => {
-    const resources: Resources[] = [];
-    const addResource = (resource: Resources) => {
-        if (providerResources[provider].includes(resource)) {
+    provider: P
+): ProviderResourceMap[P] => {
+    const resources: MigrationResource[] = [];
+    const providerValues = providerResources[provider] as MigrationResource[];
+    const addResource = (resource: MigrationResource) => {
+        if (providerValues.includes(resource)) {
             resources.push(resource);
         }
     };
 
     if (formData.users.root) {
-        addResource(Resources.User);
+        addResource(ResourceType.User);
+        if (formData.users.teams) {
+            addResource(ResourceType.Team);
+            addResource(ResourceType.Membership);
+        }
     }
     if (formData.databases.root) {
-        addResource(Resources.Database);
-        addResource(Resources.Table);
-        addResource(Resources.Column);
-        addResource(Resources.Index);
+        addResource(ResourceType.Database);
+        addResource(ResourceType.Table);
+        addResource(ResourceType.Column);
+        addResource(ResourceType.Index);
     }
     if (formData.databases.rows) {
-        addResource(Resources.Row);
+        addResource(ResourceType.Row);
     }
     if (formData.storage.root) {
-        addResource(Resources.Bucket);
-        addResource(Resources.File);
+        addResource(ResourceType.Bucket);
+        addResource(ResourceType.File);
+    }
+    if (formData.functions.root) {
+        addResource(ResourceType.Function);
+        addResource(ResourceType.Environmentvariable);
+        if (formData.functions.deploymentInactive) {
+            addResource(ResourceType.Deployment);
+        }
+    }
+    if (formData.sites.root) {
+        addResource(ResourceType.Site);
+        addResource(ResourceType.Sitevariable);
+        if (formData.sites.deploymentInactive) {
+            addResource(ResourceType.Sitedeployment);
+        }
     }
 
-    return resources;
+    return resources as ProviderResourceMap[P];
 };
 
 const compareVersions = (a: string, b: string) => {
@@ -137,19 +157,42 @@ export const isVersionAtLeast = (version: string, atLeast: string) => {
     return compareVersions(version, atLeast) >= 0;
 };
 
-export const resourcesToMigrationForm = (resources: Resources[]): MigrationFormData => {
+export const resourcesToMigrationForm = (resources: MigrationResource[]): MigrationFormData => {
     const formData = { ...initialFormData };
-    if (resources.includes(Resources.User)) {
+    if (resources.includes(ResourceType.User)) {
         formData.users.root = true;
     }
-    if (resources.includes(Resources.Database)) {
+    if (
+        includesAll(resources, [ResourceType.Team, ResourceType.Membership] as MigrationResource[])
+    ) {
+        formData.users.teams = true;
+    }
+    if (resources.includes(ResourceType.Database)) {
         formData.databases.root = true;
     }
-    if (includesAll(resources, [Resources.Table, Resources.Column, Resources.Row] as Resources[])) {
+    if (
+        includesAll(resources, [
+            ResourceType.Table,
+            ResourceType.Column,
+            ResourceType.Row
+        ] as MigrationResource[])
+    ) {
         formData.databases.rows = true;
     }
-    if (includesAll(resources, [Resources.Bucket, Resources.File] as Resources[])) {
+    if (includesAll(resources, [ResourceType.Bucket, ResourceType.File] as MigrationResource[])) {
         formData.storage.root = true;
+    }
+    if (resources.includes(ResourceType.Function)) {
+        formData.functions.root = true;
+    }
+    if (resources.includes(ResourceType.Deployment)) {
+        formData.functions.deploymentInactive = true;
+    }
+    if (resources.includes(ResourceType.Site)) {
+        formData.sites.root = true;
+    }
+    if (resources.includes(ResourceType.Sitedeployment)) {
+        formData.sites.deploymentInactive = true;
     }
 
     return formData;
