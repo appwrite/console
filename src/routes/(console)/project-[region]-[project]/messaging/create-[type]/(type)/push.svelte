@@ -36,6 +36,13 @@
     let scheduledAt: string;
 
     async function create() {
+        if (!title?.trim() || !body?.trim()) {
+            addNotification({
+                type: 'error',
+                 message: 'Title and message body cannot be empty.'
+         });
+         return;
+        }
         try {
             const messageId = id || ID.unique();
             const fileCompoundId = file ? `${file.bucketId}:${file.$id}` : undefined;
