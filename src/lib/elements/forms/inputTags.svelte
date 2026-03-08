@@ -35,7 +35,7 @@
 <Input.Tags
     {label}
     {id}
-    {placeholder}
+    placeholder={tags.length ? '' : placeholder}
     {disabled}
     {pattern}
     {required}
