@@ -50,8 +50,8 @@
             return;
         }
 
-        title = trimmedTitle;
-        body = trimmedBody;
+        if (title !== undefined) title = trimmedTitle;
+        if (body !== undefined) body = trimmedBody;
 
         try {
             const messageId = id || ID.unique();
