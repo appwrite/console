@@ -90,6 +90,6 @@
     "overrides": {
         "vite": "npm:rolldown-vite@latest",
         "minimatch": "10.2.3",
-        "immutable": ">=5.1.5"
+        "immutable": "^5.1.5"
     }
 }
