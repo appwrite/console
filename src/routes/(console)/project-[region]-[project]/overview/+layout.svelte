@@ -75,7 +75,7 @@
     ]);
 
     $effect(() => {
-        $registerCommands([
+        const unregister = $registerCommands([
             {
                 label: 'Add platform',
                 keys: ['a', 'p'],
@@ -110,6 +110,7 @@
         $updateCommandGroupRanks({
             integrations: 10
         });
+        return unregister;
     });
 </script>
 
