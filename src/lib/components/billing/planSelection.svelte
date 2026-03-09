@@ -26,11 +26,21 @@
 
     function shouldShowTooltip(plan: Models.BillingPlan) {
         if (plan.group !== BillingPlanGroup.Starter) return true;
-        else return !anyOrgFree;
+        if (!anyOrgFree) return true;
+        // Hide only when upgrading from Free (current org on Free, user selected Pro)
+        if ($organization?.billingPlanId === plan.$id && selectedPlan !== plan.$id) return true;
+        return false;
     }
 
     function shouldDisable(plan: Models.BillingPlan) {
         return plan.group === BillingPlanGroup.Starter && anyOrgFree;
+    }
+
+    function shouldForceShowTooltip(plan: Models.BillingPlan) {
+        if (!shouldDisable(plan)) return false;
+        // Don't force-show when upgrading from Free (current org on Free, user selected Pro)
+        if ($organization?.billingPlanId === plan.$id && selectedPlan !== plan.$id) return false;
+        return true;
     }
 
     $effect(() => {
@@ -45,7 +55,7 @@
                 name="plan"
                 bind:group={selectedPlan}
                 disabled={!selfService || shouldDisable(plan)}
-                tooltipShow={shouldDisable(plan)}
+                tooltipShow={shouldForceShowTooltip(plan)}
                 value={plan.$id}
                 title={plan.name}>
                 <svelte:fragment slot="action">

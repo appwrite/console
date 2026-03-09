@@ -486,7 +486,7 @@
                 bind:couponData={selectedCoupon}
                 bind:billingBudget
                 organizationId={data.organization.$id} />
-        {:else if !data.organization.billingPlanDetails.selfService}
+        {:else}
             <PlanComparisonBox downgrade={data.hasFreeOrgs ? false : isDowngrade} />
         {/if}
     </svelte:fragment>
