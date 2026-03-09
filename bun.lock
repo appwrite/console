@@ -76,7 +76,7 @@
     },
   },
   "overrides": {
-    "immutable": ">=5.1.5",
+    "immutable": "^5.1.5",
     "minimatch": "10.2.3",
     "vite": "npm:rolldown-vite@latest",
   },
