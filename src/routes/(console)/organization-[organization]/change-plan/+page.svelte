@@ -478,7 +478,7 @@
         {@const isStarter = selectedPlan.group === BillingPlanGroup.Starter}
         {@const isSelfService = data.organization.billingPlanDetails.selfService}
         {@const isSameGroup = data.organization.billingPlanDetails.group === selectedPlan.group}
-        {#if !isStarter && !isSameGroup && !isSelfService}
+        {#if !isStarter && !isSameGroup && isSelfService}
             <EstimatedTotalBox
                 {collaborators}
                 {isDowngrade}
