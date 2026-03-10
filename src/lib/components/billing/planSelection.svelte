@@ -36,13 +36,6 @@
         return plan.group === BillingPlanGroup.Starter && anyOrgFree;
     }
 
-    function shouldForceShowTooltip(plan: Models.BillingPlan) {
-        if (!shouldDisable(plan)) return false;
-        // Don't force-show when upgrading from Free (current org on Free, user selected Pro)
-        if ($organization?.billingPlanId === plan.$id && selectedPlan !== plan.$id) return false;
-        return true;
-    }
-
     $effect(() => {
         selectedBillingPlan = billingIdToPlan(selectedPlan);
     });
@@ -55,7 +48,6 @@
                 name="plan"
                 bind:group={selectedPlan}
                 disabled={!selfService || shouldDisable(plan)}
-                tooltipShow={shouldForceShowTooltip(plan)}
                 value={plan.$id}
                 title={plan.name}>
                 <svelte:fragment slot="action">
