@@ -11,8 +11,7 @@
         IconGithub,
         IconTerminal
     } from '@appwrite.io/pink-icons-svelte';
-    import { ActionMenu, Layout, Popover, Icon, Tooltip } from '@appwrite.io/pink-svelte';
-    import { onMount } from 'svelte';
+    import { ActionMenu, Layout, Popover, Icon, Tooltip, Skeleton } from '@appwrite.io/pink-svelte';
 
     let {
         deployment,
@@ -43,35 +42,37 @@
             console.warn(err);
         }
     }
-
-    onMount(() => {
-        loadAuthorized();
-    });
 </script>
 
 {#if deployment.type === 'vcs'}
     <Popover padding="none" let:toggle>
         <div>
-            <Layout.Stack direction="row" gap="xs" alignItems="center">
-                <Link
-                    on:click={(e) => {
-                        e.preventDefault();
-                        toggle(e);
-                    }}>
-                    <Layout.Stack direction="row" gap="xs" alignItems="center">
-                        <Icon icon={IconGithub} size="s" /> GitHub
-                    </Layout.Stack>
-                </Link>
-                {#if authorized === false}
-                    <Tooltip>
-                        <Icon icon={IconExclamation} size="s" color="--bgcolor-warning" />
-                        <span slot="tooltip">
-                            Integration not authorized for auto deployments.<br />
-                            To enable, add the repository to the installation settings.
-                        </span>
-                    </Tooltip>
-                {/if}
-            </Layout.Stack>
+            {#await loadAuthorized()}
+                <Layout.Stack direction="row" gap="xs" alignItems="center">
+                    <Skeleton variant="line" width={100} height={20} />
+                </Layout.Stack>
+            {:then}
+                <Layout.Stack direction="row" gap="xs" alignItems="center">
+                    <Link
+                        on:click={(e) => {
+                            e.preventDefault();
+                            toggle(e);
+                        }}>
+                        <Layout.Stack direction="row" gap="xs" alignItems="center">
+                            <Icon icon={IconGithub} size="s" /> GitHub
+                        </Layout.Stack>
+                    </Link>
+                    {#if authorized === false}
+                        <Tooltip>
+                            <Icon icon={IconExclamation} size="s" color="--bgcolor-warning" />
+                            <span slot="tooltip">
+                                Integration not authorized for auto deployments.<br />
+                                To enable, add the repository to the installation settings on GitHub.
+                            </span>
+                        </Tooltip>
+                    {/if}
+                </Layout.Stack>
+            {/await}
         </div>
         <svelte:fragment slot="tooltip">
             <ActionMenu.Root>

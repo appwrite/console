@@ -36,7 +36,7 @@
         variant = 'primary',
         footer
     }: {
-        site: Models.Site;
+        site?: Models.Site;
         deployment: Models.Deployment;
         proxyRuleList: Models.ProxyRuleList;
         hideQRCode?: boolean;
