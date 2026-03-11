@@ -13,6 +13,7 @@
     export let readonly = false;
     export let autofocus = false;
     export let autocomplete = false;
+    export let helper: string = undefined;
     export let leadingIcon: ComponentType | undefined = undefined;
 
     let error: string;
@@ -49,7 +50,7 @@
     on:input
     on:invalid={handleInvalid}
     type="email"
-    helper={error}
+    helper={error || helper}
     state={error ? 'error' : 'default'}
     autofocus={autofocus || undefined}
     autocomplete={autocomplete ? 'on' : 'off'}
