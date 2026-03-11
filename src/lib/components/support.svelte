@@ -30,7 +30,7 @@
 
     $: upgradeURL = `${base}/organization-${freeOrganization?.$id}/change-plan`;
 
-    $: supportTimings = `${utcHourToLocaleHour('16:00')} - ${utcHourToLocaleHour('00:00')} ${localeShortTimezoneName()}`;
+    $: supportTimings = `${utcHourToLocaleHour('04:00')} - ${utcHourToLocaleHour('17:00')} ${localeShortTimezoneName()}`;
 
     type SupportOption = {
         cta?: string;
