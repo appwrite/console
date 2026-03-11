@@ -22,15 +22,15 @@ export function isSupportOnline() {
     const currentDate = new Date();
     const day = currentDate.getUTCDay();
     const hour = currentDate.getUTCHours();
+    const minute = currentDate.getUTCMinutes();
 
     // Support is offline on weekends (Sunday = 0, Saturday = 6)
     if (day === 0 || day === 6) {
         return false;
     }
 
-    // Support hours are 16:00 UTC to 23:59 UTC on weekdays
-    // This roughly covers 09:00 PT to 17:00 PT (depending on PST/PDT)
-    if (hour >= 16) {
+    // Support hours start at 03:30 UTC on weekdays; support is offline from 00:00–03:29 UTC
+    if (hour > 3 || (hour === 3 && minute >= 30)) {
         return true;
     }
 

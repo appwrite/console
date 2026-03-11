@@ -7,17 +7,18 @@ describe('isSupportOnline', () => {
     });
 
     // Helper function to create a mock date
-    const mockDate = (hour: number, day: number) => {
+    const mockDate = (hour: number, day: number, minute: number = 0) => {
         const mockDate = new Date();
         vi.spyOn(mockDate, 'getUTCDay').mockReturnValue(day);
         vi.spyOn(mockDate, 'getUTCHours').mockReturnValue(hour);
+        vi.spyOn(mockDate, 'getUTCMinutes').mockReturnValue(minute);
         vi.spyOn(global, 'Date').mockImplementation(() => mockDate);
         return mockDate;
     };
 
     describe('weekday support hours (Monday-Friday)', () => {
-        it('should be online at 16:00 UTC (Monday)', () => {
-            mockDate(16, 1); // Monday, 16:00 UTC
+        it('should be online at 03:30 UTC (Monday)', () => {
+            mockDate(3, 1, 30); // Monday, 03:30 UTC
             expect(isSupportOnline()).toBe(true);
         });
 
@@ -43,8 +44,8 @@ describe('isSupportOnline', () => {
     });
 
     describe('outside support hours on weekdays', () => {
-        it('should be offline at 15:59 UTC (Monday)', () => {
-            mockDate(15, 1); // Monday, 15:59 UTC
+        it('should be offline at 03:29 UTC (Monday)', () => {
+            mockDate(3, 1, 29); // Monday, 03:29 UTC
             expect(isSupportOnline()).toBe(false);
         });
 
@@ -53,20 +54,20 @@ describe('isSupportOnline', () => {
             expect(isSupportOnline()).toBe(false);
         });
 
-        it('should be offline at 10:00 UTC (Wednesday)', () => {
-            mockDate(10, 3); // Wednesday, 10:00 UTC
+        it('should be offline at 02:00 UTC (Wednesday)', () => {
+            mockDate(2, 3); // Wednesday, 02:00 UTC
             expect(isSupportOnline()).toBe(false);
         });
 
-        it('should be offline at 14:00 UTC (Friday)', () => {
-            mockDate(14, 5); // Friday, 14:00 UTC
+        it('should be offline at 03:00 UTC (Friday)', () => {
+            mockDate(3, 5); // Friday, 03:00 UTC
             expect(isSupportOnline()).toBe(false);
         });
     });
 
     describe('weekends', () => {
         it('should be offline on Saturday regardless of hour', () => {
-            mockDate(18, 6); // Saturday, 18:00 UTC (in support hours for weekdays)
+            mockDate(10, 6); // Saturday, 10:00 UTC (in support hours for weekdays)
             expect(isSupportOnline()).toBe(false);
         });
 
@@ -80,20 +81,20 @@ describe('isSupportOnline', () => {
             expect(isSupportOnline()).toBe(false);
         });
 
-        it('should be offline on Sunday at 16:00', () => {
-            mockDate(16, 0); // Sunday, 16:00 UTC
+        it('should be offline on Sunday at 10:00', () => {
+            mockDate(10, 0); // Sunday, 10:00 UTC
             expect(isSupportOnline()).toBe(false);
         });
     });
 
     describe('edge cases', () => {
-        it('should handle boundary at 15:59 (just before support hours)', () => {
-            mockDate(15, 1); // Monday, 15:59 UTC
+        it('should handle boundary at 03:29 (just before support hours)', () => {
+            mockDate(3, 1, 29); // Monday, 03:29 UTC
             expect(isSupportOnline()).toBe(false);
         });
 
-        it('should handle boundary at 16:00 (start of support hours)', () => {
-            mockDate(16, 1); // Monday, 16:00 UTC
+        it('should handle boundary at 03:30 (start of support hours)', () => {
+            mockDate(3, 1, 30); // Monday, 03:30 UTC
             expect(isSupportOnline()).toBe(true);
         });
 

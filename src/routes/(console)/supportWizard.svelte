@@ -195,7 +195,7 @@
     }
 
     const workTimings = {
-        start: '16:00',
+        start: '03:30',
         end: '00:00',
         startDay: 'Monday' as WeekDay,
         endDay: 'Friday' as WeekDay
