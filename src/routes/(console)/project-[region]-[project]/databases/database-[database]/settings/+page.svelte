@@ -13,16 +13,48 @@
     import Delete from '../delete.svelte';
     import { Query } from '@appwrite.io/console';
     import { Layout, Skeleton } from '@appwrite.io/pink-svelte';
-    import type { PageProps } from './$types';
+    import type { DedicatedDatabase } from '$lib/sdk/dedicatedDatabases';
     import { getTerminologies } from '$database/(entity)';
+    import UpdateName from './updateName.svelte';
+    import UpdateTier from './updateTier.svelte';
+    import UpdateStorage from './updateStorage.svelte';
+    import UpdateNetwork from './updateNetwork.svelte';
+    import UpdateMaintenance from './updateMaintenance.svelte';
+    import UpdateBackups from './updateBackups.svelte';
+    import UpdateAutoscaling from './updateAutoscaling.svelte';
+    import UpdatePooler from './updatePooler.svelte';
+    import UpdateExtensions from './updateExtensions.svelte';
+    import UpdateConnections from './updateConnections.svelte';
+    import RotateCredentials from './rotateCredentials.svelte';
+    import UpgradeVersion from './upgradeVersion.svelte';
+    import UpdateReadReplicas from './updateReadReplicas.svelte';
+    import UpdateCrossRegion from './updateCrossRegion.svelte';
+    import UpdateHAStatus from './updateHAStatus.svelte';
+    import UpdateBackupStorage from './updateBackupStorage.svelte';
+    import UpdateSecurity from './updateSecurity.svelte';
+    import UpdateSqlApi from './updateSqlApi.svelte';
+    import DangerZone from './dangerZone.svelte';
 
-    const { data }: PageProps = $props();
+    const data = page.data;
 
     const database = $derived(data.database);
+    const dedicatedDatabase = $derived(data.dedicatedDatabase as DedicatedDatabase | null);
 
+    const isDedicatedType = $derived(
+        dedicatedDatabase !== null &&
+            (database.type === 'prisma' ||
+                database.type === 'dedicated' ||
+                database.type === 'shared')
+    );
+
+    const isDedicated = $derived(dedicatedDatabase?.type === 'dedicated');
+    const isShared = $derived(dedicatedDatabase?.type === 'shared');
+    const isPrisma = $derived(dedicatedDatabase?.backend === 'prisma');
+    const isPostgres = $derived(dedicatedDatabase?.engine === 'postgres');
+
+    // Legacy database fallback state
     let showDelete = $state(false);
     let databaseName: string | null = $state(null);
-
     let errorMessage: string = $state('Something went wrong');
     let errorType: 'error' | 'warning' | 'success' = $state('error');
     let showError: false | 'name' | 'email' | 'password' = $state(false);
@@ -70,7 +102,108 @@
     }
 </script>
 
-{#if database}
+{#if isDedicatedType && dedicatedDatabase}
+    <!-- Dedicated / Shared / Prisma database settings -->
+    <Container>
+        <CardGrid>
+            <svelte:fragment slot="title">{dedicatedDatabase.name}</svelte:fragment>
+            <svelte:fragment slot="aside">
+                <div class="grid-1-2-col-2">
+                    <p>Created: {toLocaleDateTime(dedicatedDatabase.$createdAt)}</p>
+                    <p>Last updated: {toLocaleDateTime(dedicatedDatabase.$updatedAt)}</p>
+                </div>
+            </svelte:fragment>
+        </CardGrid>
+
+        <!-- 1. Rename Database - all types -->
+        <UpdateName database={dedicatedDatabase} />
+
+        <!-- 2. Resource Scaling - dedicated only -->
+        {#if isDedicated}
+            <UpdateTier database={dedicatedDatabase} />
+        {/if}
+
+        <!-- 3. Storage Resize - dedicated and shared -->
+        {#if isDedicated || isShared}
+            <UpdateStorage database={dedicatedDatabase} />
+        {/if}
+
+        <!-- 4. Network Settings - not for Prisma -->
+        {#if !isPrisma}
+            <UpdateNetwork database={dedicatedDatabase} />
+        {/if}
+
+        <!-- 5. Maintenance Window - dedicated and shared -->
+        {#if isDedicated || isShared}
+            <UpdateMaintenance database={dedicatedDatabase} />
+        {/if}
+
+        <!-- 6. Backup Settings - all types -->
+        <UpdateBackups database={dedicatedDatabase} />
+
+        <!-- 7. Storage Autoscaling - dedicated and shared -->
+        {#if isDedicated || isShared}
+            <UpdateAutoscaling database={dedicatedDatabase} />
+        {/if}
+
+        <!-- 8. Connection Pooler - PostgreSQL only, not Prisma -->
+        {#if isPostgres && !isPrisma}
+            <UpdatePooler database={dedicatedDatabase} />
+        {/if}
+
+        <!-- 9. Extensions - PostgreSQL only, not Prisma -->
+        {#if isPostgres && !isPrisma}
+            <UpdateExtensions database={dedicatedDatabase} />
+        {/if}
+
+        <!-- 10. Database Users - not for Prisma -->
+        {#if !isPrisma}
+            <UpdateConnections database={dedicatedDatabase} />
+        {/if}
+
+        <!-- 11. Credential Rotation - not for Prisma -->
+        {#if !isPrisma}
+            <RotateCredentials database={dedicatedDatabase} />
+        {/if}
+
+        <!-- 12. Version Upgrade - dedicated and shared -->
+        {#if isDedicated || isShared}
+            <UpgradeVersion database={dedicatedDatabase} />
+        {/if}
+
+        <!-- 13. Read Replicas - dedicated only -->
+        {#if isDedicated}
+            <UpdateReadReplicas database={dedicatedDatabase} />
+        {/if}
+
+        <!-- 14. Cross-Region Failover - dedicated only -->
+        {#if isDedicated}
+            <UpdateCrossRegion database={dedicatedDatabase} />
+        {/if}
+
+        <!-- 15. High Availability - not for Prisma -->
+        {#if !isPrisma}
+            <UpdateHAStatus database={dedicatedDatabase} />
+        {/if}
+
+        <!-- 16. Backup Storage - dedicated only -->
+        {#if isDedicated}
+            <UpdateBackupStorage database={dedicatedDatabase} />
+        {/if}
+
+        <!-- 17. Security - all types -->
+        <UpdateSecurity database={dedicatedDatabase} />
+
+        <!-- 18. SQL API - not for Prisma -->
+        {#if !isPrisma}
+            <UpdateSqlApi database={dedicatedDatabase} />
+        {/if}
+
+        <!-- 19. Delete Database - all types -->
+        <DangerZone database={dedicatedDatabase} />
+    </Container>
+{:else if database}
+    <!-- Legacy / tablesdb / documentsdb settings -->
     <Container databasesMainScreen>
         <CardGrid>
             <svelte:fragment slot="title">{database.name}</svelte:fragment>
