@@ -12,14 +12,17 @@
     import { table } from '../store';
     import { queries, type TagValue } from '$lib/components/filters/store';
     import { TagList } from '$lib/components/filters';
-    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import { Click, Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { toLocalDateTimeISO } from '$lib/helpers/date';
     import { writable } from 'svelte/store';
     import { isSmallViewport } from '$lib/stores/viewport';
+    import { Query } from '@appwrite.io/console';
 
     let showExitModal = $state(false);
     let formComponent: Form;
     let isSubmitting = $state(writable(false));
+    let abortController: AbortController | null = null;
+    let exportProgress = $state(0);
 
     let localQueries = $state<Map<TagValue, string>>(new Map());
     const localTags = $derived(Array.from(localQueries.keys()));
@@ -29,7 +32,9 @@
         .split('T')
         .join('_')
         .slice(0, -4);
-    const filename = `${$table.name}_${timestamp}.csv`;
+
+    let exportFormat = $state<'csv' | 'json'>('csv');
+    let filename = $derived(`${$table.name}_${timestamp}.${exportFormat}`);
 
     let selectedColumns = $state<Record<string, boolean>>({});
     let showAllColumns = $state(false);
@@ -97,34 +102,169 @@
             return;
         }
 
-        try {
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .migrations.createCSVExport({
-                    resourceId: `${page.params.database}:${page.params.table}`,
-                    filename: filename,
-                    columns: selectedCols,
-                    queries: exportWithFilters ? Array.from(localQueries.values()) : [],
-                    delimiter: delimiterMap[delimiter],
-                    header: includeHeader,
-                    notify: true
+        if (exportFormat === 'csv') {
+            try {
+                await sdk
+                    .forProject(page.params.region, page.params.project)
+                    .migrations.createCSVExport({
+                        resourceId: `${page.params.database}:${page.params.table}`,
+                        filename: filename,
+                        columns: selectedCols,
+                        queries: exportWithFilters ? Array.from(localQueries.values()) : [],
+                        delimiter: delimiterMap[delimiter],
+                        header: includeHeader,
+                        notify: true
+                    });
+
+                addNotification({
+                    type: 'success',
+                    message: 'CSV export has started'
                 });
 
-            addNotification({
-                type: 'success',
-                message: 'CSV export has started'
-            });
+                trackEvent(Submit.DatabaseExportCsv);
+                await goto(tableUrl);
+            } catch (error) {
+                addNotification({
+                    type: 'error',
+                    message: error?.message || String(error)
+                });
 
-            trackEvent(Submit.DatabaseExportCsv);
+                trackError(error, Submit.DatabaseExportCsv);
+            }
+        } else {
+            // Capture filename at export start — prevents mid-export format changes from
+            // causing a .csv file name on a JSON download (format selector stays visible).
+            const capturedFilename = filename;
+            $isSubmitting = true;
+            abortController = new AbortController();
+            exportProgress = 0;
 
-            await goto(tableUrl);
-        } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
+            try {
+                const activeQueries = exportWithFilters ? Array.from(localQueries.values()) : [];
+                const allRows: Record<string, unknown>[] = [];
+                const pageSize = 100;
+                let lastId: string | undefined = undefined;
+                let fetched = 0;
+                let total = Infinity;
+                let totalKnown = false;
 
-            trackError(error, Submit.DatabaseExportCsv);
+                while (fetched < total) {
+                    // Explicit guard in case the SDK doesn't throw an AbortError
+                    if (abortController?.signal.aborted) break;
+
+                    // Strip any pagination-control queries the user may have added
+                    // (limit, offset, cursorAfter, cursorBefore) to avoid conflicts
+                    // with the paginator's own directives.
+                    const sanitizedQueries = activeQueries.filter((q) => {
+                        try {
+                            const parsed = JSON.parse(q);
+                            return !['limit', 'offset', 'cursorAfter', 'cursorBefore'].includes(
+                                parsed?.method
+                            );
+                        } catch {
+                            return true; // keep unparseable queries as-is
+                        }
+                    });
+
+                    const pageQueries = [Query.limit(pageSize), ...sanitizedQueries];
+
+                    if (lastId) {
+                        pageQueries.push(Query.cursorAfter(lastId));
+                    }
+
+                    const response = await sdk
+                        .forProject(page.params.region, page.params.project)
+                        .tablesDB.listRows({
+                            databaseId: page.params.database,
+                            tableId: page.params.table,
+                            queries: pageQueries,
+                            signal: abortController.signal
+                        });
+
+                    total = response.total;
+
+                    if (response.rows.length === 0) break;
+
+                    // After first page, we know the real total — notify the user
+                    if (!totalKnown) {
+                        totalKnown = true;
+                        addNotification({
+                            type: 'info',
+                            message: `Exporting ${total.toLocaleString()} row${total !== 1 ? 's' : ''}…`,
+                            timeout: 5000
+                        });
+                        if (total > 10_000) {
+                            addNotification({
+                                type: 'warning',
+                                message: `Large export (${total.toLocaleString()} rows) — this may use significant browser memory.`
+                            });
+                        }
+                    }
+
+                    const filtered = response.rows.map((row) => {
+                        const obj: Record<string, unknown> = {};
+                        for (const col of selectedCols) {
+                            obj[col] = row[col];
+                        }
+                        return obj;
+                    });
+
+                    allRows.push(...filtered);
+                    fetched += response.rows.length;
+                    lastId = response.rows[response.rows.length - 1].$id as string;
+                    exportProgress = Math.min(100, Math.floor((fetched / total) * 100)); // Update progress
+                }
+
+                if (!abortController.signal.aborted) {
+                    const json = JSON.stringify(allRows, null, 2);
+                    const blob = new Blob([json], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const anchor = document.createElement('a');
+                    anchor.href = url;
+                    anchor.download = capturedFilename;
+                    document.body.appendChild(anchor);
+                    anchor.click();
+
+                    // Revoke the object URL after a short delay to ensure the browser has started the download
+                    setTimeout(() => {
+                        URL.revokeObjectURL(url);
+                        document.body.removeChild(anchor);
+                    }, 100);
+
+                    addNotification({
+                        type: 'success',
+                        message: `JSON export complete — ${allRows.length} row${allRows.length !== 1 ? 's' : ''} downloaded`
+                    });
+
+                    trackEvent(Submit.DatabaseExportJson);
+
+                    await goto(tableUrl);
+                }
+            } catch (error) {
+                if (error?.name === 'AbortError') {
+                    addNotification({
+                        type: 'warning',
+                        message: 'JSON export cancelled.'
+                    });
+                } else {
+                    addNotification({
+                        type: 'error',
+                        message: error?.message || String(error)
+                    });
+                    trackError(error, Submit.DatabaseExportJson);
+                }
+            } finally {
+                $isSubmitting = false;
+                exportProgress = 0; // Reset progress
+                abortController = null; // Clean up controller
+            }
+        }
+    }
+
+    // Cancel the JSON export operation
+    function cancelExport() {
+        if (abortController) {
+            abortController.abort();
         }
     }
 
@@ -134,8 +274,22 @@
     });
 </script>
 
-<Wizard title="Export CSV" columnSize="s" href={tableUrl} bind:showExitModal confirmExit column>
+<Wizard title="Export" columnSize="s" href={tableUrl} bind:showExitModal confirmExit column>
     <Form bind:this={formComponent} bind:isSubmitting onSubmit={handleExport}>
+        {#if exportFormat === 'json' && $isSubmitting}
+            <div class="progress-container">
+                <div
+                    role="progressbar"
+                    aria-label="Export progress"
+                    aria-valuenow={exportProgress}
+                    aria-valuemin="0"
+                    aria-valuemax="100"
+                    class="export-progress-bar"
+                    style="--progress: {exportProgress}%;">
+                </div>
+                <Button secondary compact on:click={cancelExport}>Cancel</Button>
+            </div>
+        {/if}
         <Layout.Stack gap="xxl">
             <Fieldset legend="Columns">
                 <Layout.Stack gap="l">
@@ -172,30 +326,46 @@
             <Fieldset legend="Export options">
                 <Layout.Stack gap="l">
                     <InputSelect
-                        id="delimiter"
-                        label="Delimiter"
-                        bind:value={delimiter}
+                        id="exportFormat"
+                        label="Format"
+                        bind:value={exportFormat}
+                        disabled={$isSubmitting}
                         options={[
-                            { value: 'Comma', label: 'Comma' },
-                            { value: 'Semicolon', label: 'Semicolon' },
-                            { value: 'Tab', label: 'Tab' },
-                            { value: 'Pipe', label: 'Pipe' }
-                        ]}>
-                        <Layout.Stack direction="row" gap="none" alignItems="center" slot="info">
-                            <Tooltip>
-                                <Icon size="s" icon={IconInfo} />
-                                <span slot="tooltip">
-                                    Define how to separate values in the exported file.
-                                </span>
-                            </Tooltip>
-                        </Layout.Stack>
-                    </InputSelect>
+                            { value: 'csv', label: 'CSV' },
+                            { value: 'json', label: 'JSON' }
+                        ]} />
 
-                    <InputCheckbox
-                        id="includeHeader"
-                        label="Include header row"
-                        description="Column names will be added as the first row in the CSV"
-                        bind:checked={includeHeader} />
+                    {#if exportFormat === 'csv'}
+                        <InputSelect
+                            id="delimiter"
+                            label="Delimiter"
+                            bind:value={delimiter}
+                            options={[
+                                { value: 'Comma', label: 'Comma' },
+                                { value: 'Semicolon', label: 'Semicolon' },
+                                { value: 'Tab', label: 'Tab' },
+                                { value: 'Pipe', label: 'Pipe' }
+                            ]}>
+                            <Layout.Stack
+                                direction="row"
+                                gap="none"
+                                alignItems="center"
+                                slot="info">
+                                <Tooltip>
+                                    <Icon size="s" icon={IconInfo} />
+                                    <span slot="tooltip">
+                                        Define how to separate values in the exported file.
+                                    </span>
+                                </Tooltip>
+                            </Layout.Stack>
+                        </InputSelect>
+
+                        <InputCheckbox
+                            id="includeHeader"
+                            label="Include header row"
+                            description="Column names will be added as the first row in the CSV"
+                            bind:checked={includeHeader} />
+                    {/if}
 
                     <Layout.Stack gap="m">
                         <div class:disabled-checkbox={localTags.length === 0}>
@@ -233,7 +403,12 @@
             </Button>
             <Button
                 fullWidthMobile
-                on:click={() => formComponent.triggerSubmit()}
+                on:click={() => {
+                    trackEvent(
+                        exportFormat === 'json' ? Click.DatabaseExportJson : Click.DatabaseExportCsv
+                    );
+                    formComponent.triggerSubmit();
+                }}
                 disabled={$isSubmitting || selectedColumnCount === 0}>
                 Export
             </Button>
@@ -244,5 +419,23 @@
 <style>
     .disabled-checkbox :global(*) {
         cursor: unset;
+    }
+
+    .progress-container {
+        margin-top: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .export-progress-bar {
+        flex: 1;
+        height: 0.5rem;
+        border-radius: 0.25rem;
+        background: linear-gradient(
+            to right,
+            var(--color-success, #4caf50) var(--progress),
+            var(--color-neutral-80, #e0e0e0) 0%
+        );
     }
 </style>
