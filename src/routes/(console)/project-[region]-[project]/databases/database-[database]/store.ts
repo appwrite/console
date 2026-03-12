@@ -1,6 +1,11 @@
 import { writable } from 'svelte/store';
 import type { Column } from '$lib/helpers/types';
-import { IconChartBar, IconCloudUpload, IconCog } from '@appwrite.io/pink-icons-svelte';
+import {
+    IconChartBar,
+    IconChartSquareBar,
+    IconCloudUpload,
+    IconCog
+} from '@appwrite.io/pink-icons-svelte';
 import { resolveRoute, withPath } from '$lib/stores/navigation';
 import type { Page } from '@sveltejs/kit';
 import { type Models, Query } from '@appwrite.io/console';
@@ -86,6 +91,13 @@ export const customRetainingOptions = [
 
 export const databaseSubNavigationItems = [
     { title: 'Backups', href: 'backups', icon: IconCloudUpload },
+    { title: 'Usage', href: 'usage', icon: IconChartBar },
+    { title: 'Settings', href: 'settings', icon: IconCog }
+];
+
+export const dedicatedDatabaseSubNavigationItems = [
+    { title: 'Backups', href: 'backups', icon: IconCloudUpload },
+    { title: 'Monitoring', href: 'monitoring', icon: IconChartSquareBar },
     { title: 'Usage', href: 'usage', icon: IconChartBar },
     { title: 'Settings', href: 'settings', icon: IconCog }
 ];

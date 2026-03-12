@@ -52,6 +52,14 @@
     const isDark = $derived($app.themeInUse === 'dark');
     const backupsImg = $derived(isDark ? EmptyDarkMobile : EmptyLightMobile);
 
+    // Free tier limits for shared databases
+    const sharedTierLimits = {
+        storage: '1 GB',
+        maxConnections: 10,
+        queryTimeout: '15s',
+        idleTimeout: '15 min'
+    };
+
     const databaseTypes: Array<{
         type: DatabaseType;
         title: string;
@@ -78,6 +86,12 @@
                 'Managed PostgreSQL with direct connections. Best for high-performance SQL workloads.'
         },
         {
+            type: 'shared',
+            title: 'Shared (Free)',
+            subtitle:
+                'Free serverless PostgreSQL that scales to zero when idle. Great for prototyping and small projects.'
+        },
+        {
             type: 'dedicated',
             title: 'DedicatedDB',
             subtitle:
@@ -95,16 +109,33 @@
     const regionOptions = $derived(filterRegions($regionsStore.regions || []));
 
     const tierOptions = [
-        { value: 'starter', label: 'Starter - 0.5 CPU, 512MB RAM, 10GB Storage' },
-        { value: 'standard', label: 'Standard - 1 CPU, 2GB RAM, 50GB Storage' },
-        { value: 'professional', label: 'Professional - 2 CPU, 4GB RAM, 100GB Storage' },
-        { value: 'enterprise', label: 'Enterprise - 4 CPU, 8GB RAM, 250GB Storage' }
+        { value: 's-1vcpu-1gb', label: 'Starter - 1 vCPU, 1GB RAM - $15/mo' },
+        { value: 's-2vcpu-2gb', label: 'Standard - 2 vCPU, 2GB RAM - $30/mo' },
+        { value: 's-2vcpu-4gb', label: 'Standard Plus - 2 vCPU, 4GB RAM - $60/mo' },
+        { value: 's-4vcpu-8gb', label: 'Professional - 4 vCPU, 8GB RAM - $100/mo' },
+        { value: 's-4vcpu-16gb', label: 'Business - 4 vCPU, 16GB RAM - $190/mo' },
+        { value: 's-4vcpu-32gb', label: 'Business Plus - 4 vCPU, 32GB RAM - $370/mo' },
+        { value: 's-8vcpu-32gb', label: 'Enterprise - 8 vCPU, 32GB RAM - $620/mo' },
+        { value: 's-8vcpu-64gb', label: 'Enterprise Plus - 8 vCPU, 64GB RAM - $860/mo' }
     ];
+
+    const tierConnectionLimits: Record<string, number> = {
+        's-1vcpu-1gb': 100,
+        's-2vcpu-2gb': 200,
+        's-2vcpu-4gb': 500,
+        's-4vcpu-8gb': 1000,
+        's-4vcpu-16gb': 2000,
+        's-4vcpu-32gb': 4000,
+        's-8vcpu-32gb': 5000,
+        's-8vcpu-64gb': 10000
+    };
+
+    const maxConnectionsForTier = $derived(tierConnectionLimits[selectedTier] ?? 100);
 
     // State for dedicated/prisma options
     let selectedEngine = $state('postgres');
     let selectedRegion = $state<string | null>(null);
-    let selectedTier = $state('starter');
+    let selectedTier = $state('s-1vcpu-1gb');
 
     // Set default region when regions load
     $effect(() => {
@@ -116,9 +147,10 @@
     let highAvailability = $state(false);
 
     // Helper to check database type capabilities
-    const showRegionSelect = $derived(type === 'prisma' || type === 'dedicated');
+    const showRegionSelect = $derived(type === 'prisma' || type === 'dedicated' || type === 'shared');
     const showTierSelect = $derived(type === 'dedicated');
     const showEngineSelect = $derived(type === 'dedicated');
+    const isSharedType = $derived(type === 'shared');
 
     // Backup system varies by database type
     const backupSystem = $derived.by(() => {
@@ -128,6 +160,8 @@
                 return 'appwrite';
             case 'prisma':
                 return 'prisma';
+            case 'shared':
+                return 'shared';
             case 'dedicated':
                 return 'dedicated';
             default:
@@ -161,6 +195,7 @@
     let selectedBackupPolicy = $state<string>('daily');
     let backupRetentionDays = $state(7);
     let backupPitr = $state(false);
+    let pitrRetentionDays = $state(7);
 
     // Derive backup settings from selected policy
     const backupEnabled = $derived(selectedBackupPolicy !== 'none');
@@ -243,6 +278,12 @@
                     region: selectedRegion,
                     tier: selectedTier
                 } as DedicatedDatabaseParams);
+            } else if (type === 'shared') {
+                database = await databaseSdk.create(type, {
+                    databaseId,
+                    name: databaseName,
+                    region: selectedRegion
+                } as DedicatedDatabaseParams);
             } else if (type === 'dedicated') {
                 database = await databaseSdk.create(type, {
                     databaseId,
@@ -254,7 +295,8 @@
                     backupEnabled,
                     backupSchedule: backupEnabled ? selectedBackupSchedule : undefined,
                     backupRetentionDays: backupEnabled ? backupRetentionDays : undefined,
-                    backupPitr: backupEnabled ? backupPitr : undefined
+                    backupPitr: backupEnabled ? backupPitr : undefined,
+                    pitrRetentionDays: backupEnabled && backupPitr ? pitrRetentionDays : undefined
                 } as DedicatedDatabaseParams);
             } else {
                 database = await databaseSdk.create(type, {
@@ -362,6 +404,49 @@
                 </Fieldset>
             {/if}
 
+            {#if isSharedType}
+                <Fieldset legend="Free tier limits">
+                    <Alert.Inline status="info" title="Shared database limits">
+                        Shared databases are free and scale to zero when idle. The following
+                        limits apply:
+                    </Alert.Inline>
+                    <Layout.Grid columns={2} columnsS={1} gap="l">
+                        <Layout.Stack gap="xxs">
+                            <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                                Storage
+                            </Typography.Caption>
+                            <Typography.Text variant="m-500">
+                                {sharedTierLimits.storage}
+                            </Typography.Text>
+                        </Layout.Stack>
+                        <Layout.Stack gap="xxs">
+                            <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                                Max Connections
+                            </Typography.Caption>
+                            <Typography.Text variant="m-500">
+                                {sharedTierLimits.maxConnections}
+                            </Typography.Text>
+                        </Layout.Stack>
+                        <Layout.Stack gap="xxs">
+                            <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                                Query Timeout
+                            </Typography.Caption>
+                            <Typography.Text variant="m-500">
+                                {sharedTierLimits.queryTimeout}
+                            </Typography.Text>
+                        </Layout.Stack>
+                        <Layout.Stack gap="xxs">
+                            <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                                Idle Timeout
+                            </Typography.Caption>
+                            <Typography.Text variant="m-500">
+                                {sharedTierLimits.idleTimeout} (scales to zero)
+                            </Typography.Text>
+                        </Layout.Stack>
+                    </Layout.Grid>
+                </Fieldset>
+            {/if}
+
             <Fieldset legend="Backups">
                 {#if backupSystem === 'appwrite'}
                     {#if isCloud}
@@ -371,6 +456,8 @@
                     {/if}
                 {:else if backupSystem === 'prisma'}
                     {@render prismaBackupOptions()}
+                {:else if backupSystem === 'shared'}
+                    {@render sharedBackupOptions()}
                 {:else if backupSystem === 'dedicated'}
                     {@render dedicatedBackupOptions()}
                 {/if}
@@ -454,6 +541,15 @@
     </Layout.Stack>
 {/snippet}
 
+{#snippet sharedBackupOptions()}
+    <Layout.Stack gap="l">
+        <Alert.Inline status="info" title="No backups on free tier">
+            Shared databases on the free tier do not include automatic backups. Upgrade to a
+            dedicated database for configurable backup and point-in-time recovery options.
+        </Alert.Inline>
+    </Layout.Stack>
+{/snippet}
+
 {#snippet dedicatedBackupOptions()}
     <Layout.Stack gap="l">
         <PolicyPresets
@@ -475,10 +571,24 @@
                 description="Restore your database to any point within the retention window" />
 
             {#if backupPitr}
+                <InputSelect
+                    id="pitrRetention"
+                    label="PITR retention window"
+                    bind:value={pitrRetentionDays}
+                    options={[
+                        { value: 1, label: '1 day' },
+                        { value: 3, label: '3 days' },
+                        { value: 7, label: '7 days' },
+                        { value: 14, label: '14 days' },
+                        { value: 21, label: '21 days' },
+                        { value: 28, label: '28 days' },
+                        { value: 35, label: '35 days (max)' }
+                    ]} />
+
                 <Alert.Inline status="info" title="Point-in-Time Recovery">
-                    PITR allows you to restore your database to any point within the retention
-                    window using WAL archiving. This provides more granular recovery options but
-                    increases storage usage.
+                    PITR allows you to restore your database to any point within the {pitrRetentionDays}-day
+                    retention window using WAL archiving. This provides more granular recovery
+                    options but increases storage usage.
                 </Alert.Inline>
             {/if}
         {/if}

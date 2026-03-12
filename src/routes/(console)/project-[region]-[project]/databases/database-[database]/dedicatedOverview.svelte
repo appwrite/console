@@ -9,7 +9,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { Dependencies } from '$lib/constants';
     import { trackEvent } from '$lib/actions/analytics';
-    import type { DedicatedDatabase } from '$lib/sdk/dedicatedDatabases';
+    import type { DedicatedDatabase, MaintenanceDay, UpgradePolicy, KeyManagement, DataResidency } from '$lib/sdk/dedicatedDatabases';
     import {
         Badge,
         Layout,
@@ -32,10 +32,20 @@
 
     let isRefreshing = $state(false);
     let isColdStarting = $state(false);
+    let isPausing = $state(false);
+    let isResuming = $state(false);
+    let isSpinningDown = $state(false);
     let connectionTab = $state<'direct' | 'string'>('direct');
 
     // Check if this is a Prisma database
     const isPrisma = $derived(database.backend === 'prisma');
+    const isDedicated = $derived(database.type === 'dedicated');
+    const isShared = $derived(database.type === 'shared');
+    const isActive = $derived(database.status === 'ready' || database.status === 'active');
+    const isPaused = $derived(database.status === 'paused');
+    const containerIsRunning = $derived(
+        database.containerStatus === 'running' || database.containerStatus === 'active'
+    );
 
     // Map database status to Status component status
     const statusComponentStatus = $derived.by((): 'ready' | 'processing' | 'failed' | 'pending' => {
@@ -63,6 +73,8 @@
             case 'active':
                 return 'ready';
             case 'starting':
+            case 'spinning_down':
+            case 'freezing':
                 return 'processing';
             case 'inactive':
             default:
@@ -88,6 +100,19 @@
         }
         return `${gb} GB`;
     }
+
+    const tierConnectionLimits: Record<string, number> = {
+        's-1vcpu-1gb': 100,
+        's-2vcpu-2gb': 200,
+        's-2vcpu-4gb': 500,
+        's-4vcpu-8gb': 1000,
+        's-4vcpu-16gb': 2000,
+        's-4vcpu-32gb': 4000,
+        's-8vcpu-32gb': 5000,
+        's-8vcpu-64gb': 10000
+    };
+
+    const tierMaxConnections = $derived(tierConnectionLimits[database.tier] ?? null);
 
     function getEngineDisplayName(engine: string): string {
         switch (engine) {
@@ -129,7 +154,7 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .dedicatedDatabases.coldStart(database.$id);
+                .dedicatedDatabases.updateActivity(database.$id);
 
             addNotification({
                 type: 'success',
@@ -150,6 +175,75 @@
         }
     }
 
+    async function pauseDatabase() {
+        isPausing = true;
+        try {
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .dedicatedDatabases.update(database.$id, { status: 'paused' });
+
+            addNotification({
+                type: 'success',
+                message: 'Database is pausing'
+            });
+            trackEvent('click_database_pause');
+            setTimeout(() => invalidate(Dependencies.DATABASE), 2000);
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
+        } finally {
+            isPausing = false;
+        }
+    }
+
+    async function resumeDatabase() {
+        isResuming = true;
+        try {
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .dedicatedDatabases.update(database.$id, { status: 'active' });
+
+            addNotification({
+                type: 'success',
+                message: 'Database is resuming'
+            });
+            trackEvent('click_database_resume');
+            setTimeout(() => invalidate(Dependencies.DATABASE), 2000);
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
+        } finally {
+            isResuming = false;
+        }
+    }
+
+    async function spinDownDatabase() {
+        isSpinningDown = true;
+        try {
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .dedicatedDatabases.update(database.$id, { status: 'inactive' });
+
+            addNotification({
+                type: 'success',
+                message: 'Database container is spinning down'
+            });
+            trackEvent('click_database_spin_down');
+            setTimeout(() => invalidate(Dependencies.DATABASE), 2000);
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
+        } finally {
+            isSpinningDown = false;
+        }
+    }
+
     // Check if connection details are available
     const hasConnectionDetails = $derived(
         database.hostname && database.connectionUser && database.connectionPassword
@@ -167,6 +261,91 @@
                 return `mysql -h ${database.hostname} -P ${database.connectionPort} -u ${database.connectionUser} -p${database.connectionPassword} postgres`;
             default:
                 return database.connectionString;
+        }
+    }
+
+    function formatMaintenanceDay(day: MaintenanceDay): string {
+        const days: Record<MaintenanceDay, string> = {
+            sun: 'Sunday',
+            mon: 'Monday',
+            tue: 'Tuesday',
+            wed: 'Wednesday',
+            thu: 'Thursday',
+            fri: 'Friday',
+            sat: 'Saturday'
+        };
+        return days[day] ?? day;
+    }
+
+    function formatHourUtc(hour: number): string {
+        const h = hour % 24;
+        const suffix = h >= 12 ? 'PM' : 'AM';
+        const display = h === 0 ? 12 : h > 12 ? h - 12 : h;
+        return `${display}:00 ${suffix} UTC`;
+    }
+
+    function formatUpgradePolicy(policy: UpgradePolicy): string {
+        switch (policy) {
+            case 'autoMinor':
+                return 'Auto (minor versions)';
+            case 'manual':
+                return 'Manual';
+            case 'scheduled':
+                return 'Scheduled';
+            default:
+                return policy;
+        }
+    }
+
+    function formatBytes(bytes: number): string {
+        if (bytes >= 1_073_741_824) {
+            return `${(bytes / 1_073_741_824).toFixed(1)} GB`;
+        }
+        if (bytes >= 1_048_576) {
+            return `${(bytes / 1_048_576).toFixed(1)} MB`;
+        }
+        if (bytes >= 1024) {
+            return `${(bytes / 1024).toFixed(1)} KB`;
+        }
+        return `${bytes} B`;
+    }
+
+    function formatKeyManagement(km: KeyManagement): string {
+        switch (km) {
+            case 'appwriteKms':
+                return 'Appwrite KMS';
+            case 'customerManaged':
+                return 'Customer Managed';
+            default:
+                return km;
+        }
+    }
+
+    function formatDataResidency(dr: DataResidency): string {
+        switch (dr) {
+            case 'eu':
+                return 'EU';
+            case 'us':
+                return 'US';
+            case 'apac':
+                return 'APAC';
+            case 'global':
+                return 'Global';
+            default:
+                return dr;
+        }
+    }
+
+    function formatStorageClass(sc: string): string {
+        switch (sc) {
+            case 'ssd':
+                return 'SSD';
+            case 'nvme':
+                return 'NVMe';
+            case 'hdd':
+                return 'HDD';
+            default:
+                return sc.toUpperCase();
         }
     }
 </script>
@@ -213,6 +392,21 @@
             {#if database.containerStatus === 'inactive' && !isPrisma}
                 <Button secondary disabled={isColdStarting} on:click={triggerColdStart}>
                     {isColdStarting ? 'Starting...' : 'Start Database'}
+                </Button>
+            {/if}
+            {#if isDedicated && isActive && !isPrisma}
+                <Button secondary disabled={isPausing} on:click={pauseDatabase}>
+                    {isPausing ? 'Pausing...' : 'Pause'}
+                </Button>
+            {/if}
+            {#if isPaused}
+                <Button secondary disabled={isResuming} on:click={resumeDatabase}>
+                    {isResuming ? 'Resuming...' : 'Resume'}
+                </Button>
+            {/if}
+            {#if isShared && isActive && containerIsRunning && !isPrisma}
+                <Button secondary disabled={isSpinningDown} on:click={spinDownDatabase}>
+                    {isSpinningDown ? 'Spinning down...' : 'Spin Down'}
                 </Button>
             {/if}
             <Button secondary disabled={isRefreshing} on:click={refreshStatus}>
@@ -265,6 +459,16 @@
                             </div>
                         </Layout.Grid>
                         <CopyInput label="Database" value="postgres" />
+                        {#if database.externalIP || database.internalIP}
+                            <Layout.Grid columns={2} columnsS={1} gap="m">
+                                {#if database.externalIP}
+                                    <CopyInput label="External IP" value={database.externalIP} />
+                                {/if}
+                                {#if database.internalIP}
+                                    <CopyInput label="Internal IP" value={database.internalIP} />
+                                {/if}
+                            </Layout.Grid>
+                        {/if}
                     {:else}
                         <Layout.Stack gap="m">
                             <CopyInput
@@ -298,6 +502,48 @@
                         <Skeleton variant="line" width="100%" height={40} />
                     </Layout.Stack>
                 </Layout.Stack>
+            </svelte:fragment>
+        </CardGrid>
+    {/if}
+
+    <!-- Free Tier Limits (shared databases only) -->
+    {#if database.type === 'shared'}
+        <CardGrid>
+            <svelte:fragment slot="title">Free Tier Limits</svelte:fragment>
+            Your shared database runs within the free tier. Resources are constrained to the
+            limits below. Upgrade to a dedicated database for higher limits.
+            <svelte:fragment slot="aside">
+                <Layout.Grid columns={2} columnsS={1} gap="l">
+                    <Layout.Stack gap="xxs">
+                        <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                            Storage
+                        </Typography.Caption>
+                        <Typography.Text variant="m-500">1 GB</Typography.Text>
+                    </Layout.Stack>
+                    <Layout.Stack gap="xxs">
+                        <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                            Max Connections
+                        </Typography.Caption>
+                        <Typography.Text variant="m-500">10</Typography.Text>
+                    </Layout.Stack>
+                    <Layout.Stack gap="xxs">
+                        <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                            Query Timeout
+                        </Typography.Caption>
+                        <Typography.Text variant="m-500">15s</Typography.Text>
+                    </Layout.Stack>
+                    <Layout.Stack gap="xxs">
+                        <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                            Idle Timeout
+                        </Typography.Caption>
+                        <Typography.Text variant="m-500">
+                            15 min
+                            <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                                (scales to zero)
+                            </Typography.Caption>
+                        </Typography.Text>
+                    </Layout.Stack>
+                </Layout.Grid>
             </svelte:fragment>
         </CardGrid>
     {/if}
@@ -350,6 +596,16 @@
                     </Typography.Caption>
                     <Typography.Text variant="m-500">{storageDisplay}</Typography.Text>
                 </Layout.Stack>
+                {#if database.storageClass}
+                    <Layout.Stack gap="xxs">
+                        <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                            Storage Class
+                        </Typography.Caption>
+                        <Typography.Text variant="m-500">
+                            {formatStorageClass(database.storageClass)}
+                        </Typography.Text>
+                    </Layout.Stack>
+                {/if}
             </Layout.Grid>
         </svelte:fragment>
     </CardGrid>
@@ -411,7 +667,11 @@
                                 Max Connections
                             </Typography.Caption>
                             <Typography.Text variant="m-500">
-                                {database.networkMaxConnections}
+                                {database.networkMaxConnections}{#if tierMaxConnections}
+                                    <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                                        / {tierMaxConnections.toLocaleString()} (tier limit)
+                                    </Typography.Caption>
+                                {/if}
                             </Typography.Text>
                         </Layout.Stack>
                         <Layout.Stack gap="xxs">
@@ -474,11 +734,18 @@
                         <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
                             Point-in-Time Recovery
                         </Typography.Caption>
-                        <Badge
-                            type={database.backupPitr ? 'success' : undefined}
-                            variant="secondary"
-                            size="s"
-                            content={database.backupPitr ? 'Enabled' : 'Disabled'} />
+                        <Layout.Stack direction="row" gap="xs" alignItems="center">
+                            <Badge
+                                type={database.backupPitr ? 'success' : undefined}
+                                variant="secondary"
+                                size="s"
+                                content={database.backupPitr ? 'Enabled' : 'Disabled'} />
+                            {#if database.backupPitr && database.pitrRetentionDays}
+                                <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                                    ({database.pitrRetentionDays} day window)
+                                </Typography.Caption>
+                            {/if}
+                        </Layout.Stack>
                     </Layout.Stack>
                     <Layout.Stack gap="xxs">
                         <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
@@ -498,6 +765,239 @@
             </Layout.Grid>
         </svelte:fragment>
     </CardGrid>
+
+    <!-- Storage Autoscaling -->
+    <CardGrid>
+        <svelte:fragment slot="title">Storage Autoscaling</svelte:fragment>
+        Automatically expand storage when usage reaches the configured threshold.
+        <svelte:fragment slot="aside">
+            <Layout.Grid columns={3} columnsM={2} columnsS={1} gap="l">
+                <Layout.Stack gap="xxs">
+                    <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                        Status
+                    </Typography.Caption>
+                    <Badge
+                        type={database.storageAutoscaling ? 'success' : undefined}
+                        variant="secondary"
+                        size="s"
+                        content={database.storageAutoscaling ? 'Enabled' : 'Disabled'} />
+                </Layout.Stack>
+                {#if database.storageAutoscaling}
+                    <Layout.Stack gap="xxs">
+                        <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                            Threshold
+                        </Typography.Caption>
+                        <Typography.Text variant="m-500">
+                            {database.storageAutoscalingThresholdPercent}%
+                        </Typography.Text>
+                    </Layout.Stack>
+                    <Layout.Stack gap="xxs">
+                        <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                            Max Storage
+                        </Typography.Caption>
+                        <Typography.Text variant="m-500">
+                            {formatStorage(database.storageAutoscalingMaxGb)}
+                        </Typography.Text>
+                    </Layout.Stack>
+                {/if}
+            </Layout.Grid>
+        </svelte:fragment>
+    </CardGrid>
+
+    <!-- Security -->
+    <CardGrid>
+        <svelte:fragment slot="title">Security</svelte:fragment>
+        Encryption, key management, and audit logging configuration.
+        <svelte:fragment slot="aside">
+            <Layout.Grid columns={3} columnsM={2} columnsS={1} gap="l">
+                <Layout.Stack gap="xxs">
+                    <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                        Encryption at Rest
+                    </Typography.Caption>
+                    <Badge
+                        type={database.securityEncryptionAtRest ? 'success' : undefined}
+                        variant="secondary"
+                        size="s"
+                        content={database.securityEncryptionAtRest ? 'Enabled' : 'Disabled'} />
+                </Layout.Stack>
+                <Layout.Stack gap="xxs">
+                    <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                        Key Management
+                    </Typography.Caption>
+                    <Typography.Text variant="m-500">
+                        {formatKeyManagement(database.securityKeyManagement)}
+                    </Typography.Text>
+                </Layout.Stack>
+                <Layout.Stack gap="xxs">
+                    <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                        Key Rotation
+                    </Typography.Caption>
+                    <Typography.Text variant="m-500">
+                        {database.securityKeyRotationDays} days
+                    </Typography.Text>
+                </Layout.Stack>
+                <Layout.Stack gap="xxs">
+                    <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                        Audit Log
+                    </Typography.Caption>
+                    <Badge
+                        type={database.securityAuditLogEnabled ? 'success' : undefined}
+                        variant="secondary"
+                        size="s"
+                        content={database.securityAuditLogEnabled ? 'Enabled' : 'Disabled'} />
+                </Layout.Stack>
+                {#if database.securityAuditLogEnabled}
+                    <Layout.Stack gap="xxs">
+                        <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                            Log Retention
+                        </Typography.Caption>
+                        <Typography.Text variant="m-500">
+                            {database.securityLogRetentionDays} days
+                        </Typography.Text>
+                    </Layout.Stack>
+                {/if}
+                <Layout.Stack gap="xxs">
+                    <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                        Data Residency
+                    </Typography.Caption>
+                    <Typography.Text variant="m-500">
+                        {formatDataResidency(database.securityDataResidency)}
+                    </Typography.Text>
+                </Layout.Stack>
+            </Layout.Grid>
+        </svelte:fragment>
+    </CardGrid>
+
+    <!-- Maintenance Window -->
+    <CardGrid>
+        <svelte:fragment slot="title">Maintenance Window</svelte:fragment>
+        Scheduled maintenance window and upgrade policy for your database.
+        <svelte:fragment slot="aside">
+            <Layout.Grid columns={2} columnsS={1} gap="l">
+                <Layout.Stack gap="xxs">
+                    <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                        Day
+                    </Typography.Caption>
+                    <Typography.Text variant="m-500">
+                        {formatMaintenanceDay(database.maintenanceWindowDay)}
+                    </Typography.Text>
+                </Layout.Stack>
+                <Layout.Stack gap="xxs">
+                    <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                        Time
+                    </Typography.Caption>
+                    <Typography.Text variant="m-500">
+                        {formatHourUtc(database.maintenanceWindowHourUtc)}
+                    </Typography.Text>
+                </Layout.Stack>
+                <Layout.Stack gap="xxs">
+                    <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                        Duration
+                    </Typography.Caption>
+                    <Typography.Text variant="m-500">
+                        {database.maintenanceWindowDurationMinutes} minutes
+                    </Typography.Text>
+                </Layout.Stack>
+                <Layout.Stack gap="xxs">
+                    <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                        Upgrade Policy
+                    </Typography.Caption>
+                    <Typography.Text variant="m-500">
+                        {formatUpgradePolicy(database.maintenanceUpgradePolicy)}
+                    </Typography.Text>
+                </Layout.Stack>
+            </Layout.Grid>
+        </svelte:fragment>
+    </CardGrid>
+
+    <!-- SQL API -->
+    <CardGrid>
+        <svelte:fragment slot="title">SQL API</svelte:fragment>
+        Execute SQL statements directly through the Appwrite API.
+        <svelte:fragment slot="aside">
+            <Layout.Stack gap="l">
+                <Layout.Grid columns={2} columnsS={1} gap="l">
+                    <Layout.Stack gap="xxs">
+                        <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                            Status
+                        </Typography.Caption>
+                        <Badge
+                            type={database.sqlApiEnabled ? 'success' : undefined}
+                            variant="secondary"
+                            size="s"
+                            content={database.sqlApiEnabled ? 'Enabled' : 'Disabled'} />
+                    </Layout.Stack>
+                    {#if database.sqlApiEnabled}
+                        <Layout.Stack gap="xxs">
+                            <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                                Max Response Size
+                            </Typography.Caption>
+                            <Typography.Text variant="m-500">
+                                {formatBytes(database.sqlApiMaxBytes)}
+                            </Typography.Text>
+                        </Layout.Stack>
+                        <Layout.Stack gap="xxs">
+                            <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                                Max Rows
+                            </Typography.Caption>
+                            <Typography.Text variant="m-500">
+                                {database.sqlApiMaxRows.toLocaleString()}
+                            </Typography.Text>
+                        </Layout.Stack>
+                        <Layout.Stack gap="xxs">
+                            <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                                Timeout
+                            </Typography.Caption>
+                            <Typography.Text variant="m-500">
+                                {database.sqlApiTimeoutSeconds}s
+                            </Typography.Text>
+                        </Layout.Stack>
+                    {/if}
+                </Layout.Grid>
+
+                {#if database.sqlApiEnabled && database.sqlApiAllowedStatements?.length > 0}
+                    <Layout.Stack gap="xs">
+                        <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                            Allowed Statements
+                        </Typography.Caption>
+                        <Layout.Stack direction="row" gap="xs" wrap>
+                            {#each database.sqlApiAllowedStatements as statement}
+                                <Badge variant="secondary" size="s" content={statement.toUpperCase()} />
+                            {/each}
+                        </Layout.Stack>
+                    </Layout.Stack>
+                {/if}
+            </Layout.Stack>
+        </svelte:fragment>
+    </CardGrid>
+
+    <!-- Monitoring -->
+    {#if database.metricsEnabled}
+        <CardGrid>
+            <svelte:fragment slot="title">Monitoring</svelte:fragment>
+            Performance monitoring and slow query detection settings.
+            <svelte:fragment slot="aside">
+                <Layout.Grid columns={2} columnsS={1} gap="l">
+                    <Layout.Stack gap="xxs">
+                        <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                            Slow Query Threshold
+                        </Typography.Caption>
+                        <Typography.Text variant="m-500">
+                            {database.metricsSlowQueryLogThresholdMs.toLocaleString()} ms
+                        </Typography.Text>
+                    </Layout.Stack>
+                    <Layout.Stack gap="xxs">
+                        <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                            Trace Sample Rate
+                        </Typography.Caption>
+                        <Typography.Text variant="m-500">
+                            {(database.metricsTraceSampleRate * 100).toFixed(0)}%
+                        </Typography.Text>
+                    </Layout.Stack>
+                </Layout.Grid>
+            </svelte:fragment>
+        </CardGrid>
+    {/if}
 </Container>
 
 <style lang="scss">

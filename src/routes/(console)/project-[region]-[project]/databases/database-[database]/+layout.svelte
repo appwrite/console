@@ -32,7 +32,7 @@
 
     // Check if this is a dedicated database type
     $: isDedicatedType =
-        terminology.type === 'prisma' || terminology.type === 'dedicated';
+        terminology.type === 'prisma' || terminology.type === 'dedicated' || terminology.type === 'shared';
 
     $: $registerCommands([
         {
@@ -117,6 +117,20 @@
             disabled:
                 page.url.pathname.includes('/backups') || page.url.pathname.includes('table-'),
             keys: ['g', 'b'],
+            group: 'databases'
+        },
+        {
+            label: 'Go to monitoring',
+            callback() {
+                goto(
+                    `${base}/project-${page.params.region}-${project}/databases/database-${databaseId}/monitoring`
+                );
+            },
+            disabled:
+                page.url.pathname.includes('/monitoring') ||
+                page.url.pathname.includes('table-') ||
+                !isDedicatedType,
+            keys: ['g', 'm'],
             group: 'databases'
         },
         {

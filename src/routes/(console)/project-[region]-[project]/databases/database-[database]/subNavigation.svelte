@@ -3,7 +3,12 @@
     import type { PageData } from './$types';
     import { showSubNavigation } from '$lib/stores/layout';
     import { bannerSpacing } from '$lib/layout/headerAlert.svelte';
-    import { showCreateEntity, databaseSubNavigationItems, buildEntityRoute } from './store';
+    import {
+        showCreateEntity,
+        databaseSubNavigationItems,
+        dedicatedDatabaseSubNavigationItems,
+        buildEntityRoute
+    } from './store';
 
     import {
         Icon,
@@ -44,7 +49,7 @@
 
     // Check if this is a dedicated database type
     const isDedicatedType = $derived(
-        terminology.type === 'prisma' || terminology.type === 'dedicated'
+        terminology.type === 'prisma' || terminology.type === 'dedicated' || terminology.type === 'shared'
     );
 
     const entityTypePlural = terminology.entity.lower.plural;
@@ -213,7 +218,7 @@
                 <ul
                     style="margin-inline-start: -1.25rem"
                     class="drop-list bottom-nav u-margin-block-start-4">
-                    {#each databaseSubNavigationItems as action}
+                    {#each (isDedicatedType ? dedicatedDatabaseSubNavigationItems : databaseSubNavigationItems) as action}
                         {@const href = withPath(databaseBaseRoute, `/${action.href}`)}
 
                         <Layout.Stack gap="s" direction="row" alignItems="center">

@@ -14,6 +14,7 @@ export type DatabaseType =
     | 'documentsdb'
     | 'vectordb'
     | 'prisma'
+    | 'shared'
     | 'dedicated';
 
 export type RecordType = ImplementedDBTypes[keyof ImplementedDBTypes]['record'];
@@ -68,6 +69,11 @@ export const baseTerminology = {
     },
     vectordb: {},
     prisma: {
+        entity: 'table',
+        field: 'column',
+        record: 'row'
+    },
+    shared: {
         entity: 'table',
         field: 'column',
         record: 'row'

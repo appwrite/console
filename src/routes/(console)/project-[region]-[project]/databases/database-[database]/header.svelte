@@ -23,7 +23,8 @@
     // Check if this is a dedicated database type
     const isDedicatedType = $derived(
         (database?.type as DatabaseType) === 'prisma' ||
-            (database?.type as DatabaseType) === 'dedicated'
+            (database?.type as DatabaseType) === 'dedicated' ||
+            (database?.type as DatabaseType) === 'shared'
     );
 
     const tabs = $derived(
@@ -46,6 +47,12 @@
                 title: 'Usage',
                 event: 'usage',
                 hasChildren: true
+            },
+            {
+                href: withPath(baseDatabasePath, '/monitoring'),
+                title: 'Monitoring',
+                event: 'monitoring',
+                disabled: !isDedicatedType
             },
             {
                 href: withPath(baseDatabasePath, '/settings'),
