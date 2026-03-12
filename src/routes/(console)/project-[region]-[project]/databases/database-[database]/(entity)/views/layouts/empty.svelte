@@ -265,7 +265,7 @@
                                 icon
                                 variant="extra-compact"
                                 onclick={() => {
-                                    if (mode === 'rows') {
+                                    if (mode !== 'indexes') {
                                         onOpenCreateColumn?.();
                                     }
                                 }}>
