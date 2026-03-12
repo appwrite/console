@@ -18,9 +18,9 @@
     export let func: Models.Function;
     export let specs: Models.SpecificationList;
 
-    let specification = func.specification;
-    let originalSpecification = func.specification;
-    $: originalSpecification = func.specification;
+    let specification = func.buildSpecification;
+    let originalSpecification = func.buildSpecification;
+    $: originalSpecification = func.buildSpecification;
 
     async function updateLogging() {
         try {
@@ -45,7 +45,7 @@
                 providerBranch: func.providerBranch || undefined,
                 providerSilentMode: func.providerSilentMode || undefined,
                 providerRootDirectory: func.providerRootDirectory || undefined,
-                specification: specification || undefined
+                buildSpecification: specification || undefined
             });
 
             await invalidate(Dependencies.FUNCTION);
