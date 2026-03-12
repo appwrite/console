@@ -5,6 +5,7 @@
     import BackupPolicy from './policy.svelte';
     import LockedCard from './locked.svelte';
     import Table from './table.svelte';
+    import DedicatedBackups from './dedicatedBackups.svelte';
     import type { PageProps } from './$types';
     import CreatePolicy from './createPolicy.svelte';
     import { Button } from '$lib/elements/forms';
@@ -24,8 +25,15 @@
     import { Layout, Typography } from '@appwrite.io/pink-svelte';
     import { page } from '$app/state';
     import IconQuestionMarkCircle from './components/questionIcon.svelte';
+    import type { DedicatedDatabase } from '$lib/sdk/dedicatedDatabases';
 
     const { data }: PageProps = $props();
+
+    const isDedicatedType = $derived(
+        data.database?.type === 'prisma' ||
+            data.database?.type === 'dedicated' ||
+            data.database?.type === 'shared'
+    );
 
     let policyCreateError: string | null = $state(null);
     let totalPolicies: UserBackupPolicy[] = $state([]);
@@ -170,6 +178,9 @@
     });
 </script>
 
+{#if isDedicatedType && data.dedicatedDatabase}
+    <DedicatedBackups database={data.dedicatedDatabase as DedicatedDatabase} />
+{:else}
 <Container size="xxl" databasesMainScreen>
     <div class="backups-page u-flex u-gap-32 u-flex-vertical-mobile">
         {#if !isDisabled}
@@ -234,6 +245,7 @@
         {/if}
     </div>
 </Container>
+{/if}
 
 <Modal
     title="Create backup policy"
