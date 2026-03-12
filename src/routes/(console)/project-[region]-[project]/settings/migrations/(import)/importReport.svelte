@@ -29,6 +29,10 @@
         sites: {
             root: 'Sites',
             deploymentInactive: 'Include inactive deployments'
+        },
+        messaging: {
+            root: 'Messaging',
+            messages: 'Include messages'
         }
     };
 
@@ -48,6 +52,10 @@
         sites: {
             root: 'Import all sites and their active deployment',
             deploymentInactive: 'Import all deployments that are not currently active'
+        },
+        messaging: {
+            root: 'Import all messaging providers, topics and subscribers',
+            messages: 'Import all messages'
         }
     };
 

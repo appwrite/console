@@ -106,6 +106,11 @@
                 Scopes.BucketsRead,
                 Scopes.FunctionsRead,
                 Scopes.ExecutionRead,
+                Scopes.SitesRead,
+                Scopes.ProvidersRead,
+                Scopes.TopicsRead,
+                Scopes.SubscribersRead,
+                Scopes.MessagesRead,
                 Scopes.LocaleRead,
                 Scopes.AvatarsRead,
                 Scopes.HealthRead

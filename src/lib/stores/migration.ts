@@ -43,6 +43,10 @@ const initialFormData = {
     sites: {
         root: false,
         deploymentInactive: false
+    },
+    messaging: {
+        root: false,
+        messages: false
     }
 };
 
@@ -76,7 +80,11 @@ export const ResourcesFriendly = {
     row: { singular: 'Row', plural: 'Rows' },
     site: { singular: 'Site', plural: 'Sites' },
     'site-deployment': { singular: 'Site Deployment', plural: 'Site Deployments' },
-    'site-variable': { singular: 'Site Variable', plural: 'Site Variables' }
+    'site-variable': { singular: 'Site Variable', plural: 'Site Variables' },
+    provider: { singular: 'Provider', plural: 'Providers' },
+    topic: { singular: 'Topic', plural: 'Topics' },
+    subscriber: { singular: 'Subscriber', plural: 'Subscribers' },
+    message: { singular: 'Message', plural: 'Messages' }
 };
 
 export const providerResources: ProviderResourceMap = {
@@ -131,6 +139,14 @@ export const migrationFormToResources = <P extends Provider>(
         if (formData.sites.deploymentInactive) {
             addResource(ResourceType.Sitedeployment);
         }
+    }
+    if (formData.messaging.root) {
+        addResource(ResourceType.Provider);
+        addResource(ResourceType.Topic);
+        addResource(ResourceType.Subscriber);
+    }
+    if (formData.messaging.messages) {
+        addResource(ResourceType.Message);
     }
 
     return resources as ProviderResourceMap[P];
@@ -193,6 +209,12 @@ export const resourcesToMigrationForm = (resources: MigrationResource[]): Migrat
     }
     if (resources.includes(ResourceType.Sitedeployment)) {
         formData.sites.deploymentInactive = true;
+    }
+    if (resources.includes(ResourceType.Provider)) {
+        formData.messaging.root = true;
+    }
+    if (resources.includes(ResourceType.Message)) {
+        formData.messaging.messages = true;
     }
 
     return formData;

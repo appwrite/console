@@ -108,6 +108,10 @@
             return resources.includes(ResourceType.Site);
         }
 
+        if (groupKey === 'messaging') {
+            return resources.includes(ResourceType.Provider);
+        }
+
         const groupToResource: Record<string, MigrationResource> = {
             users: ResourceType.User,
             databases: ResourceType.Database
@@ -127,7 +131,8 @@
             databases: 'database',
             functions: 'function',
             storage: 'bucket',
-            sites: 'site'
+            sites: 'site',
+            messaging: 'provider'
         };
         return map[groupKey] || groupKey;
     };
