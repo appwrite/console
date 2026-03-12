@@ -21,10 +21,11 @@ export async function loadAvailableRegions(orgId: string, force: boolean = false
             return;
         }
 
-        // TODO: @itznotabug, @torstendittmann we need a better way for this!
-        const availableRegions = await sdk.forConsole.billing.listRegions(orgId);
-        regions.set(availableRegions);
+        const availableRegions = await sdk.forConsole.organizations.listRegions({
+            organizationId: orgId
+        });
 
+        regions.set(availableRegions);
         lastLoadedOrganization = orgId;
     } catch (error) {
         console.error(`Failed to load regions for teamId: ${orgId}`, error);

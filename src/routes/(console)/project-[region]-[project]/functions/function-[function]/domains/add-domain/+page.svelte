@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Button, Form, InputDomain, InputSelect, InputURL } from '$lib/elements/forms';
     import { Wizard } from '$lib/layout';
@@ -11,17 +10,21 @@
     import { sortBranches } from '$lib/stores/vcs';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { LabelCard } from '$lib/components';
-    import { type Models, ProxyResourceType, Runtime, StatusCode } from '@appwrite.io/console';
+    import {
+        type Models,
+        ProxyResourceType,
+        Runtime,
+        StatusCode,
+        type Scopes
+    } from '@appwrite.io/console';
     import { statusCodeOptions } from '$lib/stores/domains';
     import { writable } from 'svelte/store';
     import { onMount } from 'svelte';
     import { ConnectRepoModal } from '$lib/components/git/index.js';
     import { isValueOfStringEnum } from '$lib/helpers/types.js';
     import { isCloud } from '$lib/system';
-    import { project } from '$routes/(console)/project-[region]-[project]/store';
     import { getApexDomain } from '$lib/helpers/tlds';
-
-    const routeBase = `${base}/project-${page.params.region}-${page.params.project}/functions/function-${page.params.function}/domains`;
+    import { resolveRoute } from '$lib/stores/navigation';
 
     let { data } = $props();
 
@@ -33,6 +36,13 @@
     let redirect: string = $state(null);
     let branch: string = $state(null);
     let statusCode = $state(StatusCode.TemporaryRedirect307);
+
+    const routeBase = resolveRoute(
+        '/(console)/project-[region]-[project]/functions/function-[function]/domains',
+        {
+            ...page.params
+        }
+    );
 
     onMount(() => {
         if (
@@ -53,8 +63,8 @@
         if (apexDomain && !domain && isCloud) {
             try {
                 await sdk.forConsole.domains.create({
-                    teamId: $project.teamId,
-                    domain: apexDomain
+                    domain: apexDomain,
+                    teamId: data.project.teamId
                 });
             } catch (error) {
                 // apex might already be added on organization level, skip.
@@ -136,7 +146,7 @@
                 logging: data.func.logging || undefined,
                 entrypoint: data.func.entrypoint,
                 commands: data.func.commands || undefined,
-                scopes: data.func.scopes || undefined,
+                scopes: (data.func.scopes as Scopes[]) || undefined,
                 installationId: selectedInstallationId,
                 providerRepositoryId: selectedRepository,
                 providerBranch: 'main'

@@ -21,24 +21,23 @@
         show = $bindable(),
         topicsById = $bindable(),
         title = 'Select topics'
-    } = $props<{
+    }: {
         providerType: MessagingProviderType;
         show: boolean;
         topicsById: Record<string, Models.Topic>;
         title?: string;
-    }>();
+    } = $props();
 
     const dispatch = createEventDispatcher();
 
-    let search = $state('');
     let offset = $state(0);
+    let search = $state('');
     let totalResults = $state(0);
-    let topicResultsById = $state<Record<string, Models.Topic>>({});
-    let selected = $state<Record<string, Models.Topic>>({});
     let emptyTopicsExists = $state(false);
-
-    let previousSearch = $state('');
+    let selected = $state<Record<string, Models.Topic>>({});
+    let topicResultsById = $state<Record<string, Models.Topic>>({});
     let wasOpen = $state(false);
+    let previousSearch = $state('');
 
     function getTopicTotal(topic: Models.Topic): number {
         switch (providerType) {
@@ -96,44 +95,52 @@
     }
 
     function onTopicSelection(event: CustomEvent<boolean>, topic: Models.Topic) {
+        const updatedSelected = { ...selected };
+
         if (event.detail) {
-            selected = {
-                ...selected,
-                [topic.$id]: topic
-            };
+            updatedSelected[topic.$id] = topic;
         } else {
-            const { [topic.$id]: _, ...rest } = selected;
-            selected = rest;
+            delete updatedSelected[topic.$id];
         }
+
+        selected = updatedSelected;
     }
 
+    const selectedSize = $derived(Object.keys(selected).length);
+    const hasSelection = $derived(selectedSize > 0);
+
+    const topicsWithState = $derived(
+        Object.entries(topicResultsById).map(([topicId, topic]) => ({
+            topicId,
+            topic,
+            checked: !!selected[topicId],
+            disabled: !!topicsById[topicId]
+        }))
+    );
+
     $effect(() => {
-        if (search !== previousSearch) {
+        const searchChanged = search !== previousSearch;
+        if (searchChanged) {
             previousSearch = search;
             offset = 0;
         }
     });
 
     $effect(() => {
-        if (!show) return;
-        offset ?? null;
-        search ?? null;
-        request();
+        const hasValidData = offset !== null || search !== null;
+        const shouldFetch = show && hasValidData;
+        if (shouldFetch) {
+            request();
+        }
     });
 
     $effect(() => {
-        if (show && !wasOpen) {
+        const isOpening = show && !wasOpen;
+        if (isOpening) {
             selected = topicsById;
         }
         wasOpen = show;
     });
-
-    let selectedSize = $derived(Object.keys(selected).length);
-    let hasSelection = $derived(selectedSize > 0);
-
-    let topicSelectionStates = $derived(
-        Object.fromEntries(Object.keys(topicResultsById).map((id) => [id, !!selected[id]]))
-    );
 </script>
 
 <Modal {title} bind:show onSubmit={submit} on:close={reset}>
@@ -149,17 +156,17 @@
             disabled={totalResults === 0 && !search}
             placeholder="Search for topics"
             bind:value={search} />
-        {#if Object.keys(topicResultsById).length > 0 && !emptyTopicsExists}
+        {#if topicsWithState.length > 0 && !emptyTopicsExists}
             <Table.Root columns={1} let:root>
-                {#each Object.entries(topicResultsById) as [topicId, topic]}
+                {#each topicsWithState as { topicId, topic, checked, disabled } (topicId)}
                     <Table.Row.Base {root}>
                         <Table.Cell {root}>
                             <Layout.Stack direction="row" alignItems="center" gap="s">
                                 <Selector.Checkbox
                                     id={topicId}
                                     label={topic.name}
-                                    disabled={!!topicsById[topicId]}
-                                    checked={topicSelectionStates[topicId] || false}
+                                    {checked}
+                                    {disabled}
                                     on:change={(event) => onTopicSelection(event, topic)}>
                                 </Selector.Checkbox>
                                 <span>
@@ -185,7 +192,7 @@
                 <Empty
                     type="secondary"
                     title={`You have no topics${
-                        emptyTopicsExists ? ` with ${providerType.toUpperCase()} targets` : ''
+                        emptyTopicsExists ? ` with ${providerType.toLowerCase()} targets` : ''
                     }`}
                     description={`Create a topic to see them here.`}>
                     <Button

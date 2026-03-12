@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { BackupRestoreBox, MigrationBox, UploadBox } from '$lib/components';
+    import { BackupRestoreBox, MigrationBox, UploadBox, CsvExportBox } from '$lib/components';
     import { realtime } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { project, stats } from './store';
@@ -25,6 +25,11 @@
         canWriteSites
     } from '$lib/stores/roles';
     import CsvImportBox from '$lib/components/csvImportBox.svelte';
+    import { isCloud } from '$lib/system';
+    import PausedProjectModal from './pausedProjectModal.svelte';
+    import type { LayoutData } from './$types';
+
+    export let data: LayoutData;
 
     onMount(() => {
         return realtime.forProject(page.params.region, ['project', 'console'], (response) => {
@@ -114,11 +119,16 @@
 
 <slot />
 
+{#if isCloud && data.project?.status === 'paused'}
+    <PausedProjectModal show={true} projectId={data.project.$id} teamId={data.project.teamId} />
+{/if}
+
 <div class="layout-level-progress-bars">
     <UploadBox />
     <MigrationBox />
     <BackupRestoreBox />
     <CsvImportBox />
+    <CsvExportBox />
 </div>
 
 <style>

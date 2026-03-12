@@ -4,15 +4,13 @@
     import { CustomId } from '$lib/components/index.js';
     import { getFlagUrl } from '$lib/helpers/flag';
     import { isCloud } from '$lib/system.js';
-    import { currentPlan, organization } from '$lib/stores/organization';
     import { Button } from '$lib/elements/forms';
-    import { base } from '$app/paths';
     import { page } from '$app/state';
     import type { Models } from '@appwrite.io/console';
     import { filterRegions } from '$lib/helpers/regions';
     import type { Snippet } from 'svelte';
-    import { BillingPlan } from '$lib/constants';
     import { formatCurrency } from '$lib/helpers/numbers';
+    import { resolve } from '$app/paths';
 
     let {
         projectName = $bindable(),
@@ -20,7 +18,7 @@
         regions = [],
         region = $bindable(),
         showTitle = true,
-        billingPlan = undefined,
+        currentPlan = undefined,
         projects = undefined,
         submit
     }: {
@@ -29,21 +27,24 @@
         regions: Array<Models.ConsoleRegion>;
         region: string;
         showTitle: boolean;
-        billingPlan?: BillingPlan;
+        currentPlan?: Models.BillingPlan;
         projects?: number;
         submit?: Snippet;
     } = $props();
 
     let showCustomId = $state(false);
-    let isProPlan = $derived((billingPlan ?? $organization?.billingPlan) === BillingPlan.PRO);
-    let projectsLimited = $derived(
-        $currentPlan?.projects > 0 && projects && projects >= $currentPlan?.projects
-    );
-    let isAddonProject = $derived(
-        $currentPlan?.addons?.projects?.supported &&
+
+    const projectsLimited = $derived.by(() => {
+        return currentPlan?.projects > 0 && projects && projects >= currentPlan?.projects;
+    });
+
+    const isAddonProject = $derived.by(() => {
+        return (
+            currentPlan?.addons?.projects?.supported &&
             projects &&
-            projects >= $currentPlan?.addons?.projects?.planIncluded
-    );
+            projects >= currentPlan?.addons?.projects?.planIncluded
+        );
+    });
 </script>
 
 <svelte:head>
@@ -61,7 +62,7 @@
         <Layout.Stack direction="column" gap="xxl">
             <Layout.Stack direction="column" gap="s">
                 <Input.Text
-                    disabled={!isProPlan && projectsLimited}
+                    disabled={projectsLimited}
                     label="Name"
                     placeholder="Project name"
                     required
@@ -82,7 +83,7 @@
             {#if isCloud && regions.length > 0}
                 <Layout.Stack gap="xs">
                     <Input.Select
-                        disabled={!isProPlan && projectsLimited}
+                        disabled={projectsLimited}
                         required
                         bind:value={region}
                         placeholder="Select a region"
@@ -91,25 +92,29 @@
                     <Typography.Text>Region cannot be changed after creation</Typography.Text>
                 </Layout.Stack>
             {/if}
+
             {#if isAddonProject}
                 <Alert.Inline
                     status="info"
                     title="Expand for {formatCurrency(
-                        $currentPlan?.addons?.projects?.price || 15
+                        currentPlan?.addons?.projects?.price || 15
                     )}/project per month">
                     Each added project comes with its own dedicated pool of resources.
                 </Alert.Inline>
             {/if}
+
             {#if projectsLimited}
                 <Alert.Inline
                     status="warning"
-                    title={`You've reached your limit of ${$currentPlan?.projects} projects`}>
+                    title={`You've reached your limit of ${currentPlan?.projects} projects`}>
                     Extra projects are available on paid plans for an additional fee
                     <svelte:fragment slot="actions">
                         <Button
                             compact
                             size="s"
-                            href={`${base}/organization-${page.params.organization}/billing`}
+                            href={resolve('/(console)/organization-[organization]/billing', {
+                                organization: page.params.organization
+                            })}
                             external>Upgrade</Button>
                     </svelte:fragment>
                 </Alert.Inline>

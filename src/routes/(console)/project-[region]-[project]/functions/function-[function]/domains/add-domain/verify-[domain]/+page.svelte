@@ -29,8 +29,8 @@
     const ruleId = page.url.searchParams.get('rule');
 
     const showCNAMETab = $derived(
-        Boolean($regionalConsoleVariables._APP_DOMAIN_FUNCTIONS) &&
-            $regionalConsoleVariables._APP_DOMAIN_FUNCTIONS !== 'localhost'
+        Boolean($regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME) &&
+            $regionalConsoleVariables._APP_DOMAIN_TARGET_CNAME !== 'localhost'
     );
     const showATab = $derived(
         !isCloud &&

@@ -6,4 +6,3 @@ export { default as PlanComparisonBox } from './planComparisonBox.svelte';
 export { default as EmptyCardCloud } from './emptyCardCloud.svelte';
 export { default as CreditsApplied } from './creditsApplied.svelte';
 export { default as PlanSelection } from './planSelection.svelte';
-export { default as SelectPlan } from './selectPlan.svelte';

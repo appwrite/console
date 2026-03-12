@@ -11,6 +11,7 @@
     export let show = false;
     export let selectedVar: Partial<Models.Variable>;
     export let variables: Partial<Models.Variable>[];
+    export let productLabel = 'site';
 
     let pair = {
         $id: selectedVar?.$id,
@@ -40,7 +41,8 @@
 
 <Modal bind:show onSubmit={handleVariable} title="Update variable">
     <span slot="description">
-        Update the environment variable for your site. Global variables can be set in <Link
+        Update the environment variable for your {productLabel}. Global variables can be set in
+        <Link
             variant="muted"
             href={`${base}/project-${page.params.region}-${page.params.project}/settings`}
             >project settings</Link

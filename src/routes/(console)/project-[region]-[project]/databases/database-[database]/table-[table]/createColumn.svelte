@@ -24,7 +24,7 @@
         columns = $bindable(null),
         columnId = $bindable(null),
         columnsOrder = $bindable(null),
-        selectedOption = $bindable('String'),
+        selectedOption = $bindable('Text'),
         createMore = $bindable(false),
         onColumnsReorder = null
     }: {
@@ -48,8 +48,9 @@
         required: column?.required ?? false,
         array: column?.array ?? false,
         default: column?.default ?? null,
+        encrypt: (column as { encrypt?: boolean })?.encrypt ?? false,
         ...column
-    });
+    } as Partial<Columns>);
 
     let ColumnComponent = $derived(
         columnOptions.find((option) => option.name === selectedOption).component
@@ -61,11 +62,12 @@
         data = {
             required: false,
             array: false,
-            default: null
+            default: null,
+            encrypt: false
         };
 
-        /* default to string */
-        selectedOption = 'String';
+        /* default to text */
+        selectedOption = 'Text';
         $option = columnOptions[0];
     }
 

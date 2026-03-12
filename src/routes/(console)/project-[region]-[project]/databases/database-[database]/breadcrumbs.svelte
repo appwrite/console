@@ -1,8 +1,8 @@
 <script lang="ts">
     import { page } from '$app/state';
     import { Breadcrumbs } from '$lib/layout';
+    import type { Models } from '@appwrite.io/console';
     import { resolveRoute } from '$lib/stores/navigation';
-    import { type Organization } from '$lib/stores/organization';
 
     const breadcrumbs = $derived.by(() => {
         const params = page.params;

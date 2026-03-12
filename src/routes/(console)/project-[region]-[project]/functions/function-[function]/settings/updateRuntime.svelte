@@ -10,7 +10,7 @@
     import { func } from '../store';
     import InputSelect from '$lib/elements/forms/inputSelect.svelte';
     import { isValueOfStringEnum } from '$lib/helpers/types';
-    import { Runtime, type Models } from '@appwrite.io/console';
+    import { Runtime, type Models, type Scopes } from '@appwrite.io/console';
     import { Layout, Typography } from '@appwrite.io/pink-svelte';
     import Link from '$lib/elements/link.svelte';
 
@@ -40,7 +40,7 @@
                 logging: $func.logging || undefined,
                 entrypoint: entrypoint || undefined,
                 commands: $func.commands || undefined,
-                scopes: $func.scopes || undefined,
+                scopes: ($func.scopes as Scopes[]) || undefined,
                 installationId: $func.installationId || undefined,
                 providerRepositoryId: $func.providerRepositoryId || undefined,
                 providerBranch: $func.providerBranch || undefined,

@@ -1,33 +1,44 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
-    import { base } from '$app/paths';
     import { page } from '$app/state';
-    import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import { DatabasesPanel } from '$lib/commandCenter/panels';
-    import { project } from '../store';
+    import { resolveRoute, withPath } from '$lib/stores/navigation';
+    import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
 
-    $: $registerCommands([
-        {
-            label: 'Go to usage',
-            callback: () => {
-                goto(`${base}/project-${$project.region}-${$project.$id}/databases/usage`);
-            },
-            keys: ['g', 'u'],
-            disabled:
-                page.url.pathname.includes('usage') || page.url.pathname.includes('database-'),
-            group: 'databases'
-        },
-        {
-            label: 'Find databases',
-            callback: () => {
-                addSubPanel(DatabasesPanel);
-            },
-            group: 'databases',
-            rank: -1
-        }
-    ]);
+    let { children } = $props();
 
-    $: $updateCommandGroupRanks({ databases: 200, navigation: 100 });
+    const databasesProjectRoute = $derived.by(() => {
+        return resolveRoute('/(console)/project-[region]-[project]/databases', {
+            ...page.params
+        });
+    });
+
+    $effect(() => {
+        $registerCommands([
+            {
+                label: 'Go to usage',
+                callback: () => {
+                    goto(withPath(databasesProjectRoute, 'usage'));
+                },
+                keys: ['g', 'u'],
+                disabled:
+                    page.url.pathname.includes('usage') || page.url.pathname.includes('database-'),
+                group: 'databases'
+            },
+            {
+                label: 'Find databases',
+                callback: () => {
+                    addSubPanel(DatabasesPanel);
+                },
+                group: 'databases',
+                rank: -1
+            }
+        ]);
+    });
+
+    $effect(() => {
+        $updateCommandGroupRanks({ databases: 200, navigation: 100 });
+    });
 </script>
 
 <svelte:head>
@@ -37,4 +48,4 @@
     {/key}
 </svelte:head>
 
-<slot />
+{@render children()}

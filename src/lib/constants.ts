@@ -612,17 +612,6 @@ export const eventServices: Array<EventService> = [
     }
 ];
 
-export enum BillingPlan {
-    FREE = 'tier-0',
-    PRO = 'tier-1',
-    SCALE = 'tier-2',
-    GITHUB_EDUCATION = 'auto-1',
-    CUSTOM = 'cont-1',
-    ENTERPRISE = 'ent-1'
-}
-
-export const BASE_BILLING_PLANS: string[] = [BillingPlan.FREE, BillingPlan.PRO, BillingPlan.SCALE];
-
 export const feedbackDowngradeOptions = [
     {
         value: 'availableFeatures',

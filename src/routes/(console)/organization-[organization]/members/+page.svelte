@@ -6,7 +6,7 @@
     import { base } from '$app/paths';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import Upgrade from '$lib/components/roles/upgrade.svelte';
-    import { getRoleLabel } from '$lib/stores/billing';
+    import { getServiceLimit, readOnly, getRoleLabel } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { currentPlan, newMemberModal, organization } from '$lib/stores/organization';
     import { isOwner } from '$lib/stores/roles';
@@ -14,7 +14,7 @@
     import type { Models } from '@appwrite.io/console';
     import Delete from '../deleteMember.svelte';
     import Edit from './edit.svelte';
-    import { isCloud } from '$lib/system';
+    import { isCloud, GRACE_PERIOD_OVERRIDE } from '$lib/system';
     import {
         IconDotsHorizontal,
         IconInfo,
@@ -34,8 +34,6 @@
         ActionMenu,
         Tooltip
     } from '@appwrite.io/pink-svelte';
-    import { BillingPlan } from '$lib/constants';
-    import { tierToPlan } from '$lib/stores/billing';
 
     export let data;
 
@@ -46,8 +44,11 @@
 
     // Calculate if button should be disabled and tooltip should show
     $: memberCount = data.organizationMembers?.total ?? 0;
-    $: isFreeWithMembers = $organization?.billingPlan === BillingPlan.FREE && memberCount >= 1;
-    $: isButtonDisabled = isCloud ? isFreeWithMembers : false;
+    $: supportsMembers = $organization?.billingPlanDetails?.addons?.seats;
+    $: limit = getServiceLimit('members', null, $currentPlan) || Infinity;
+    $: isLimited = limit !== 0 && limit < Infinity;
+    $: isButtonDisabled =
+        isCloud && (($readOnly && !GRACE_PERIOD_OVERRIDE) || (isLimited && memberCount >= limit));
 
     const resend = async (member: Models.Membership) => {
         try {
@@ -89,11 +90,9 @@
                 </ConsoleButton>
             </div>
             <div slot="tooltip">
-                {$organization?.billingPlan === BillingPlan.FREE
+                {!supportsMembers
                     ? 'Upgrade to add more members'
-                    : `You've reached the members limit for the ${
-                          tierToPlan($organization?.billingPlan)?.name
-                      } plan`}
+                    : `You've reached the members limit for the ${$organization?.billingPlanDetails.name} plan`}
             </div>
         </Tooltip>
     </Layout.Stack>

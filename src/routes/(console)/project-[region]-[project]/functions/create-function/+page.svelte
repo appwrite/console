@@ -1,11 +1,11 @@
 <script lang="ts">
-    import { base } from '$app/paths';
     import { SvgIcon } from '$lib/components';
     import { page } from '$app/state';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import type { Models } from '@appwrite.io/console';
     import { isSelfHosted } from '$lib/system';
-    import { afterNavigate, goto } from '$app/navigation';
+    import { goto } from '$app/navigation';
+    import { resolveRoute } from '$lib/stores/navigation';
     import { installation, repository } from '$lib/stores/vcs';
     import { Repositories } from '$lib/components/git';
     import {
@@ -26,11 +26,7 @@
     export let data;
 
     const isVcsEnabled = $regionalConsoleVariables?._APP_VCS_ENABLED === true;
-    const wizardBase = `${base}/project-${page.params.region}-${page.params.project}/functions`;
-    let previousPage: string = wizardBase;
-    afterNavigate(({ from }) => {
-        previousPage = from?.url?.pathname || previousPage;
-    });
+    const wizardBase = resolveRoute('/(console)/project-[region]-[project]/functions', page.params);
 
     let selectedRepository: string;
 
@@ -56,11 +52,19 @@
     function connect(e: Models.ProviderRepository) {
         trackEvent(Click.ConnectRepositoryClick, { from: 'cover' });
         repository.set(e);
-        goto(`${wizardBase}/create-function/repository-${e.id}?installation=${$installation.$id}`);
+        goto(
+            resolveRoute(
+                '/(console)/project-[region]-[project]/functions/create-function/repository-[repository]',
+                {
+                    ...page.params,
+                    repository: e.id
+                }
+            ) + `?installation=${$installation.$id}`
+        );
     }
 </script>
 
-<Wizard title="Create function" href={previousPage} column columnSize="l" hideFooter>
+<Wizard title="Create function" href={wizardBase} column columnSize="l" hideFooter>
     <Layout.Stack gap="l">
         <Layout.GridFraction start={4} end={6} gap="l" rowSize="auto">
             <Card.Base>
@@ -105,10 +109,13 @@
                                 }}
                                 {connect} />
                         </Layout.Stack>
-                        {#if data.installations.total}
+                        {#if $installation}
                             <Layout.Stack gap="l">
                                 <Divider />
-                                <Link variant="quiet" href="#/">
+                                <Link
+                                    variant="quiet"
+                                    external
+                                    href={`https://github.com/settings/installations/${$installation.providerInstallationId}`}>
                                     <Layout.Stack direction="row" gap="xs">
                                         Missing a repository? check your permissions <Icon
                                             icon={IconArrowSmRight} />
@@ -140,7 +147,13 @@
                                         runtime: template.name
                                     });
                                 }}
-                                href={`${wizardBase}/create-function/template-${starterTemplate.id}?runtime=${runtimeDetail.$id}`}>
+                                href={resolveRoute(
+                                    '/(console)/project-[region]-[project]/functions/create-function/template-[template]',
+                                    {
+                                        ...page.params,
+                                        template: starterTemplate.id
+                                    }
+                                ) + `?runtime=${runtimeDetail.$id}`}>
                                 <Layout.Stack direction="row" gap="s" alignItems="center">
                                     <Avatar size="xs" alt={template.name} empty={!template.name}>
                                         <SvgIcon name={iconName} iconSize="small" />
@@ -168,7 +181,13 @@
                             <Card.Link
                                 radius="s"
                                 padding="xs"
-                                href={`${wizardBase}/create-function/template-${template.id}`}
+                                href={resolveRoute(
+                                    '/(console)/project-[region]-[project]/functions/create-function/template-[template]',
+                                    {
+                                        ...page.params,
+                                        template: template.id
+                                    }
+                                )}
                                 on:click={() => {
                                     trackEvent('click_connect_template', {
                                         from: 'cover',
@@ -198,7 +217,12 @@
                         {/each}
                     </Layout.Grid>
 
-                    <Link variant="quiet" href={`${wizardBase}/templates`}>
+                    <Link
+                        variant="quiet"
+                        href={resolveRoute(
+                            '/(console)/project-[region]-[project]/functions/templates',
+                            page.params
+                        )}>
                         <Layout.Stack direction="row" gap="xs">
                             Browse all templates <Icon icon={IconArrowSmRight} />
                         </Layout.Stack>
@@ -212,7 +236,10 @@
                 on:click={() => {
                     trackEvent('click_create_function_manual', { from: 'cover' });
                 }}
-                href={`${wizardBase}/create-function/manual`}>manually</Link>
+                href={resolveRoute(
+                    '/(console)/project-[region]-[project]/functions/create-function/manual',
+                    page.params
+                )}>manually</Link>
             or using the CLI.
             <Link href="https://appwrite.io/docs/products/functions/deployment" external
                 >Learn more</Link

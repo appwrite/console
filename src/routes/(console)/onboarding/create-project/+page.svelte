@@ -8,12 +8,13 @@
     import { Dependencies } from '$lib/constants';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { goto, invalidate } from '$app/navigation';
-    import { base } from '$app/paths';
+    import { base, resolve } from '$app/paths';
     import { addNotification } from '$lib/stores/notifications';
     import CreateProject from '$lib/layout/createProject.svelte';
     import { loadAvailableRegions } from '$routes/(console)/regions';
     import { regions as regionsStore } from '$lib/stores/organization';
     import { user } from '$lib/stores/user';
+    import { showOnboardingAnimation } from '$lib/stores/layout';
 
     let isLoading = false;
     let startAnimation = false;
@@ -57,10 +58,17 @@
             });
 
             startAnimation = true;
+            showOnboardingAnimation.set(true);
 
             setTimeout(async () => {
                 await invalidate(Dependencies.ACCOUNT);
-                goto(`${base}/project-${project.region ?? 'default'}-${project.$id}`);
+                await goto(
+                    resolve('/(console)/project-[region]-[project]', {
+                        region: project.region ?? 'default',
+                        project: project.$id
+                    })
+                );
+                showOnboardingAnimation.set(false);
             }, 3000);
         } catch (e) {
             trackError(e, Submit.ProjectCreate);

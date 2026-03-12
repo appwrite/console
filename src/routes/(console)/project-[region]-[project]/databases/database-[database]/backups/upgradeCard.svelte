@@ -1,6 +1,6 @@
-<script>
-    import { Button } from '$lib/elements/forms';
+<script lang="ts">
     import { app } from '$lib/stores/app';
+    import { Button } from '$lib/elements/forms';
 
     import EmptyDark from '$lib/images/backups/upgrade/backups-dark.png';
     import EmptyLight from '$lib/images/backups/upgrade/backups-light.png';
@@ -11,9 +11,12 @@
     import EmptyDarkTablet from '$lib/images/backups/upgrade/backups-tablet-dark.png';
     import EmptyLightTablet from '$lib/images/backups/upgrade/backups-tablet-light.png';
 
-    import { upgradeURL } from '$lib/stores/billing';
     import { isCloud } from '$lib/system';
+    import { getChangePlanUrl } from '$lib/stores/billing';
     import { Card, Layout, Typography } from '@appwrite.io/pink-svelte';
+    import type { Models } from '@appwrite.io/console';
+
+    export let project: Models.Project;
 
     const title = isCloud
         ? 'Backups are available on paid plans'
@@ -77,7 +80,9 @@
                 <span class="is-only-mobile-button">
                     <Button
                         external={!isCloud}
-                        href={isCloud ? $upgradeURL : 'https://cloud.appwrite.io/register'}>
+                        href={isCloud
+                            ? getChangePlanUrl(project.teamId)
+                            : 'https://cloud.appwrite.io/register'}>
                         {isCloud ? 'Upgrade plan' : 'Sign up'}
                     </Button>
                 </span>
@@ -85,7 +90,9 @@
             <div class="is-not-mobile">
                 <Button
                     external={!isCloud}
-                    href={isCloud ? $upgradeURL : 'https://cloud.appwrite.io/register'}>
+                    href={isCloud
+                        ? getChangePlanUrl(project.teamId)
+                        : 'https://cloud.appwrite.io/register'}>
                     {isCloud ? 'Upgrade plan' : 'Sign up'}
                 </Button>
             </div>

@@ -1,17 +1,17 @@
 <script lang="ts">
-    import { BillingPlan } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
-    import { tierToPlan } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { Tooltip } from '@appwrite.io/pink-svelte';
+    import { BillingPlanGroup } from '@appwrite.io/console';
 
     export let title: string;
     export let tooltipContent =
-        $organization?.billingPlan === BillingPlan.FREE
+        $organization?.billingPlanDetails.group === BillingPlanGroup.Starter
             ? `Upgrade to add more ${title.toLocaleLowerCase()}`
             : `You've reached the ${title.toLocaleLowerCase()} limit for the ${
-                  tierToPlan($organization?.billingPlan)?.name
+                  $organization?.billingPlanDetails.name
               } plan`;
+
     export let disabled: boolean;
     export let buttonText: string;
     export let buttonMethod: () => void | Promise<void> = () => {};

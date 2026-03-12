@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite';
+import { defineConfig } from 'vitest/config';
 import { sveltekit } from '@sveltejs/kit/vite';
 import { sentrySvelteKit } from '@sentry/sveltekit';
 import { svelteTesting } from '@testing-library/svelte/vite';
@@ -15,7 +15,7 @@ export default defineConfig({
         sveltekit()
     ],
     optimizeDeps: {
-        include: ['echarts', 'prismjs']
+        include: ['echarts']
     },
     css: {
         preprocessorOptions: {
@@ -25,14 +25,7 @@ export default defineConfig({
         }
     },
     ssr: {
-        noExternal: [
-            '@analytics/google-analytics',
-            'analytics',
-            'dayjs',
-            'echarts',
-            'prismjs',
-            'zrender'
-        ]
+        noExternal: ['@analytics/google-analytics', 'analytics', 'dayjs', 'echarts', 'zrender']
     },
     server: {
         port: 3000

@@ -15,7 +15,7 @@
         Tooltip,
         Typography
     } from '@appwrite.io/pink-svelte';
-    import { isRelationship, isSpatialType, isString } from '../rows/store';
+    import { isRelationship, isSpatialType, isTextType } from '../rows/store';
     import {
         columns,
         type ColumnsWidth,
@@ -51,6 +51,11 @@
     import { preferences } from '$lib/stores/preferences';
     import { page } from '$app/state';
     import { debounce } from '$lib/helpers/debounce';
+    import {
+        LARGE_NUMBER_THRESHOLD,
+        LARGE_NUMBER_THRESHOLD_NUM,
+        toExponential
+    } from '$lib/helpers/numbers';
     import type { PageData } from './$types';
     import { realtime } from '$lib/stores/sdk';
     import { invalidate } from '$app/navigation';
@@ -166,24 +171,77 @@
         }
     }
 
-    function getMinMaxSizeForColumn(column: Columns): string | undefined {
-        if (column.type === 'string' && !column['format'] && column.key !== '$id') {
+    function formatLargeNumber(num: number | bigint): string {
+        // type-safe abs comparison
+        if (typeof num === 'bigint') {
+            const absNum = num < 0n ? -num : num;
+            if (absNum < LARGE_NUMBER_THRESHOLD) {
+                return num.toString();
+            }
+        } else {
+            const absNum = Math.abs(num);
+            if (absNum < LARGE_NUMBER_THRESHOLD_NUM) {
+                return num.toString();
+            }
+        }
+
+        return toExponential(num);
+    }
+
+    function getMinMaxSizeForColumn(
+        column: Columns
+    ): { display: string; tooltip?: string } | undefined {
+        if (
+            (column.type === 'string' || column.type === 'varchar') &&
+            !column['format'] &&
+            column.key !== '$id'
+        ) {
             const stringColumn = column as Models.ColumnString;
-            return `Size: ${stringColumn.size}`;
+            return { display: `Size: ${stringColumn.size}` };
         } else if (column.type === 'integer' || column.type === 'double') {
             const numbersColumn = column as Models.ColumnInteger | Models.ColumnFloat;
             const { min, max } = numbersColumn;
 
-            const hasValidMin = min > Number.MIN_SAFE_INTEGER;
-            const hasValidMax = max < Number.MAX_SAFE_INTEGER;
+            const isMinBigInt = typeof min === 'bigint';
+            const isMaxBigInt = typeof max === 'bigint';
+
+            const hasValidMin = isMinBigInt || min > Number.MIN_SAFE_INTEGER;
+            const hasValidMax = isMaxBigInt || max < Number.MAX_SAFE_INTEGER;
+
+            let display: string | undefined;
+            let tooltip: string | undefined;
 
             if (hasValidMin && hasValidMax) {
-                return `Min: ${min}, Max: ${max}`;
+                display = `Min: ${formatLargeNumber(min)}, Max: ${formatLargeNumber(max)}`;
+                const shouldShowTooltip =
+                    (isMinBigInt
+                        ? (min < 0n ? -min : min) >= LARGE_NUMBER_THRESHOLD
+                        : Math.abs(min) >= LARGE_NUMBER_THRESHOLD_NUM) ||
+                    (isMaxBigInt
+                        ? (max < 0n ? -max : max) >= LARGE_NUMBER_THRESHOLD
+                        : Math.abs(max) >= LARGE_NUMBER_THRESHOLD_NUM);
+                if (shouldShowTooltip) {
+                    tooltip = `Min: ${min.toLocaleString()}\nMax: ${max.toLocaleString()}`;
+                }
             } else if (hasValidMin) {
-                return `Min: ${min}`;
+                display = `Min: ${formatLargeNumber(min)}`;
+                const shouldShowTooltip = isMinBigInt
+                    ? (min < 0n ? -min : min) >= LARGE_NUMBER_THRESHOLD
+                    : Math.abs(min) >= LARGE_NUMBER_THRESHOLD_NUM;
+                if (shouldShowTooltip) {
+                    tooltip = `Min: ${min.toLocaleString()}`;
+                }
             } else if (hasValidMax) {
-                return `Max: ${max}`;
+                display = `Max: ${formatLargeNumber(max)}`;
+                const shouldShowTooltip = isMaxBigInt
+                    ? (max < 0n ? -max : max) >= LARGE_NUMBER_THRESHOLD
+                    : Math.abs(max) >= LARGE_NUMBER_THRESHOLD_NUM;
+                if (shouldShowTooltip) {
+                    tooltip = `Max: ${max.toLocaleString()}`;
+                }
             }
+
+            return display ? { display, tooltip } : undefined;
         } else {
             return undefined;
         }
@@ -256,8 +314,8 @@
     const spreadsheetColumns = $derived([
         {
             id: 'key',
-            width: getColumnWidth('key', 300),
-            minimumWidth: 300,
+            width: getColumnWidth('key', 380),
+            minimumWidth: 380,
             resizable: true
         },
         {
@@ -335,7 +393,12 @@
 
             {#each updatedColumnsForSheet as column, index (column.key)}
                 {@const isId = column.key === '$id'}
-                {@const option = columnOptions.find((option) => option.type === column.type)}
+                {@const option = columnOptions.find(
+                    (option) =>
+                        option.type === column.type &&
+                        option.format ===
+                            ('format' in column && column.format ? column.format : undefined)
+                )}
                 {@const isSelectable =
                     column['system'] || column.type === 'relationship' ? 'disabled' : true}
                 <Spreadsheet.Row.Base {root} select={isSelectable} id={column.key}>
@@ -363,7 +426,7 @@
                                 {:else if column.key === '$id'}
                                     <Icon icon={IconFingerPrint} size="s" />
                                 {:else}
-                                    <Icon icon={option.icon} size="s" />
+                                    <Icon icon={option?.icon ?? IconViewList} size="s" />
                                 {/if}
 
                                 <Layout.Stack
@@ -380,7 +443,7 @@
                                         {/if}
                                     </Typography.Text>
 
-                                    {#if isString(column) && column.encrypt}
+                                    {#if isTextType(column) && 'encrypt' in column && column.encrypt}
                                         <Tooltip portal>
                                             <Icon
                                                 size="s"
@@ -413,11 +476,24 @@
                             {@const minMaxSize = getMinMaxSizeForColumn(column)}
                             {@const relationType = getRelationshipTypeForColumn(column)}
                             {#if minMaxSize}
-                                <Typography.Caption
-                                    variant="400"
-                                    color="--fgcolor-neutral-tertiary">
-                                    {minMaxSize}
-                                </Typography.Caption>
+                                {#if minMaxSize.tooltip}
+                                    <Tooltip portal maxWidth="fit-content" placement="top">
+                                        <Typography.Caption
+                                            variant="400"
+                                            color="--fgcolor-neutral-tertiary">
+                                            {minMaxSize.display}
+                                        </Typography.Caption>
+                                        <div slot="tooltip" style="white-space: pre-line;">
+                                            {minMaxSize.tooltip}
+                                        </div>
+                                    </Tooltip>
+                                {:else}
+                                    <Typography.Caption
+                                        variant="400"
+                                        color="--fgcolor-neutral-tertiary">
+                                        {minMaxSize.display}
+                                    </Typography.Caption>
+                                {/if}
                             {:else if relationType}
                                 <Typography.Caption
                                     variant="400"

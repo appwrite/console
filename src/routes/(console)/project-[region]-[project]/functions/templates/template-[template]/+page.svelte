@@ -26,7 +26,7 @@
     import { IconExternalLink } from '@appwrite.io/pink-icons-svelte';
 
     $: buttonDisabled =
-        isCloud && isServiceLimited('functions', $organization?.billingPlan, $functionsList?.total);
+        isCloud && isServiceLimited('functions', $organization, $functionsList?.total);
 </script>
 
 <Container>

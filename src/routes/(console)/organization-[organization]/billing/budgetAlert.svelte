@@ -2,21 +2,20 @@
     import { invalidate } from '$app/navigation';
     import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid } from '$lib/components';
-    import { BillingPlan, Dependencies } from '$lib/constants';
-    import { tierToPlan, upgradeURL } from '$lib/stores/billing';
+    import { Dependencies } from '$lib/constants';
+    import { getChangePlanUrl } from '$lib/stores/billing';
     import { Button, Form } from '$lib/elements/forms';
     import { symmetricDifference } from '$lib/helpers/array';
     import { addNotification } from '$lib/stores/notifications';
-    import { type Organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import { Alert, Icon, Table } from '@appwrite.io/pink-svelte';
     import { IconTrash } from '@appwrite.io/pink-icons-svelte';
     import InputSelect from '$lib/elements/forms/inputSelect.svelte';
-    import type { Plan } from '$lib/sdk/billing';
+    import type { Models } from '@appwrite.io/console';
 
-    export let organization: Organization;
-    export let currentPlan: Plan;
     export let alertsEnabled = false;
+    export let currentPlan: Models.BillingPlan;
+    export let organization: Models.Organization;
 
     let search: string;
     let selectedAlert: number;
@@ -47,19 +46,20 @@
 
     async function updateBudget() {
         try {
-            await sdk.forConsole.billing.updateBudget(
-                organization.$id,
-                organization.billingBudget,
+            await sdk.forConsole.organizations.updateBudget({
+                organizationId: organization.$id,
+                budget: organization.billingBudget,
                 alerts
-            );
+            });
 
-            invalidate(Dependencies.ORGANIZATION);
+            await invalidate(Dependencies.ORGANIZATION);
 
             addNotification({
                 type: 'success',
                 isHtml: true,
                 message: `<span> ${alerts.length === 0 ? 'Budget alerts removed from' : alerts.length > 1 ? `Budget alerts added to` : 'A budget alert has been added to'} <b>${organization.name}</b> </span>`
             });
+
             trackEvent(Submit.BudgetAlertsUpdate, {
                 alerts
             });
@@ -80,8 +80,8 @@
     <svelte:fragment slot="title">Billing alerts</svelte:fragment>
     {#if !currentPlan.budgeting}
         Get notified by email when your organization meets a percentage of your budget cap. <b
-            >{tierToPlan(organization.billingPlan).name} organizations will receive one notification
-            at 75% resource usage.</b>
+            >{organization.billingPlanDetails.name} organizations will receive one notification at 75%
+            resource usage.</b>
     {:else}
         Get notified by email when your organization meets or exceeds a percentage of your specified
         billing alert(s).
@@ -148,10 +148,10 @@
 
     <svelte:fragment slot="actions">
         <Form onSubmit={updateBudget}>
-            {#if organization?.billingPlan === BillingPlan.FREE || organization?.billingPlan === BillingPlan.GITHUB_EDUCATION}
+            {#if !currentPlan.budgeting}
                 <Button
                     secondary
-                    href={$upgradeURL}
+                    href={getChangePlanUrl(organization.$id)}
                     on:click={() => {
                         trackEvent(Click.OrganizationClickUpgrade, {
                             from: 'button',

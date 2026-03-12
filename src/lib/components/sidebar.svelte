@@ -101,11 +101,7 @@
     style:--overlay-on-neutral={$app.themeInUse === 'dark'
         ? 'var(--neutral-750)'
         : 'var(--neutral-100)'}>
-    <Sidebar.Base
-        {...$$props}
-        bind:state
-        on:resize={(event) => updateSidebarState(event.detail)}
-        resizable>
+    <Sidebar.Base bind:state resizable on:resize={(event) => updateSidebarState(event.detail)}>
         <div slot="top">
             <div class="only-mobile-tablet top">
                 <div class="icons search-icon">

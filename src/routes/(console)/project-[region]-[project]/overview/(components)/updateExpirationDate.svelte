@@ -9,7 +9,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { Alert } from '@appwrite.io/pink-svelte';
     import { ExpirationInput } from '$lib/components';
-    import type { Models } from '@appwrite.io/console';
+    import type { Models, Scopes } from '@appwrite.io/console';
     import { page } from '$app/state';
 
     export let keyType: 'api' | 'dev' = 'api';
@@ -32,7 +32,7 @@
                     projectId,
                     keyId: key.$id,
                     name: key.name,
-                    scopes: (key as Models.Key).scopes,
+                    scopes: (key as Models.Key).scopes as Scopes[],
                     expire: expiration
                 });
             } else {

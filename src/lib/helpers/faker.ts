@@ -2,16 +2,19 @@ import { sdk } from '$lib/stores/sdk';
 import { faker } from '@faker-js/faker';
 import type { NestedNumberArray } from './types';
 import { ID, type Models } from '@appwrite.io/console';
-import { isWithinSafeRange } from '$lib/helpers/numbers';
 import type { DatabaseType, Field } from '$database/(entity)';
+import { coerceToNumber, isWithinSafeRange } from '$lib/helpers/numbers';
 
 export async function generateFields(
-    project: Models.Project,
+    project: {
+        id: string;
+        region: string;
+    },
     databaseId: string,
     tableId: string,
     databaseType: DatabaseType
 ): Promise<Field[]> {
-    const client = sdk.forProject(project.region, project.$id);
+    const client = sdk.forProject(project.region, project.id);
 
     switch (databaseType) {
         case 'legacy':
@@ -194,7 +197,8 @@ function generateValueForField(
 
 function generateSingleValue(field: Field): string | number | boolean | NestedNumberArray | null {
     switch (field.type) {
-        case 'string': {
+        case 'string':
+        case 'varchar': {
             if ('format' in field && field.format) {
                 switch (field.format) {
                     case 'email': {
@@ -225,12 +229,30 @@ function generateSingleValue(field: Field): string | number | boolean | NestedNu
             }
         }
 
+        case 'text': {
+            // TEXT type max size is 16,383 characters (utf8mb4)
+            return generateStringValue(field.key, 1000);
+        }
+
+        case 'mediumtext': {
+            // MEDIUMTEXT type max size is 4,194,303 characters (utf8mb4)
+            return generateStringValue(field.key, 1000);
+        }
+
+        case 'longtext': {
+            // LONGTEXT type max size is 1,073,741,823 characters (utf8mb4)
+            return generateStringValue(field.key, 1000);
+        }
+
         case 'integer': {
             const intAttr = field as Models.ColumnInteger;
-            const min = isWithinSafeRange(intAttr.min) ? intAttr.min : 0;
+            const minCompat = coerceToNumber(intAttr.min);
+            const maxCompat = coerceToNumber(intAttr.max);
+
+            const min = isWithinSafeRange(minCompat) ? minCompat : 0;
             const fallbackMax = Math.max(min + 100, 100);
-            const max = isWithinSafeRange(intAttr.max)
-                ? intAttr.max
+            const max = isWithinSafeRange(maxCompat)
+                ? maxCompat
                 : Math.min(fallbackMax, Number.MAX_SAFE_INTEGER);
             return faker.number.int({ min, max });
         }

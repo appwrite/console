@@ -4,6 +4,27 @@ import { Query } from '@appwrite.io/console';
 import { getApexDomain } from './tlds';
 import { isCloud } from '$lib/system';
 
+/**
+ * Normalizes console variables by extracting the first domain from comma-separated domain lists.
+ * This handles the backend sending `_APP_DOMAIN_SITES` (and similar fields) as comma-separated values.
+ */
+export function normalizeConsoleVariables(
+    variables: Models.ConsoleVariables
+): Models.ConsoleVariables {
+    return {
+        ...variables,
+        _APP_DOMAIN_SITES: getFirstDomain(variables._APP_DOMAIN_SITES)
+    };
+}
+
+/**
+ * Extracts the first domain from a potentially comma-separated list of domains.
+ */
+function getFirstDomain(domainList: string | undefined): string {
+    if (!domainList) return '';
+    return domainList.split(',')[0].trim();
+}
+
 export async function createRecord(record: Partial<Models.DnsRecord>, domainId: string) {
     switch (record.type) {
         case 'A':

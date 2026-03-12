@@ -13,19 +13,19 @@
     import { addNotification } from '$lib/stores/notifications';
     import { page } from '$app/state';
     import { Spinner } from '@appwrite.io/pink-svelte';
-    import type { PaymentMethod } from '@stripe/stripe-js';
+    import type { PaymentMethod as StripePaymentMethod } from '@stripe/stripe-js';
     import StatePicker from './statePicker.svelte';
-    import type { PaymentMethodData } from '$lib/sdk/billing';
+    import type { Models } from '@appwrite.io/console';
 
     export let show = false;
-    export let onCardSubmit: ((card: PaymentMethodData) => void) | null = null;
+    export let onCardSubmit: ((card: Models.PaymentMethod) => void) | null = null;
 
     let modal: FakeModal;
     let name: string;
     let state: string = '';
     let error: string = null;
     let showState: boolean = false;
-    let paymentMethod: PaymentMethod | null = null;
+    let paymentMethod: StripePaymentMethod | null = null;
 
     async function handleSubmit() {
         try {
@@ -47,15 +47,15 @@
 
             const card = await submitStripeCard(name, page?.params?.organization ?? null);
             if (card && Object.hasOwn(card, 'id')) {
-                if ((card as PaymentMethod).card?.country === 'US') {
-                    paymentMethod = card as PaymentMethod;
+                if ((card as StripePaymentMethod).card?.country === 'US') {
+                    paymentMethod = card as StripePaymentMethod;
                     showState = true;
                     return;
                 }
             }
             modal.closeModal();
             await invalidate(Dependencies.PAYMENT_METHODS);
-            onCardSubmit?.(card as PaymentMethodData);
+            onCardSubmit?.(card as Models.PaymentMethod);
             addNotification({
                 type: 'success',
                 message: 'A new payment method has been added to your account'

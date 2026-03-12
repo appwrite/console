@@ -14,7 +14,10 @@
 
     async function removeAddress() {
         try {
-            await sdk.forConsole.billing.removeBillingAddress($organization.$id);
+            await sdk.forConsole.organizations.deleteBillingAddress({
+                organizationId: $organization.$id
+            });
+
             addNotification({
                 type: 'success',
                 message: `The billing address has been removed from ${$organization.name}`

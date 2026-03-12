@@ -8,11 +8,11 @@
     import { isSmallViewport } from '$lib/stores/viewport';
     import { getServiceLimit, type PlanServices } from '$lib/stores/billing';
 
-    export let disableEmpty = true;
-    export let offset = 0;
     export let total = 0;
-    export let event: string = null;
+    export let offset = 0;
     export let service = '';
+    export let disableEmpty = true;
+    export let event: string = null;
     export let serviceId: PlanServices = service as PlanServices;
 
     $: planLimit = getServiceLimit(serviceId) || Infinity;

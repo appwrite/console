@@ -1,4 +1,4 @@
-<script context="module" lang="ts">
+<script module lang="ts">
     import {
         EmailTemplateLocale,
         EmailTemplateType,
@@ -58,12 +58,13 @@
     import { isCloud } from '$lib/system';
     import { Accordion, Alert, Badge, Layout, Link, Typography } from '@appwrite.io/pink-svelte';
     import { page } from '$app/state';
+    import type { PageProps } from './$types';
 
-    export let data;
+    let { data }: PageProps = $props();
 
-    let templateType = null;
-    let isTemplateLoading = false;
-    let openStates = Object.fromEntries(templates.map(({ key }) => [key, false]));
+    let templateType = $state(null);
+    let isTemplateLoading = $state(false);
+    let openStates = $state(Object.fromEntries(templates.map(({ key }) => [key, false])));
 
     loadTemplateFor(EmailTemplateType.Verification);
 
@@ -128,9 +129,11 @@
                         on:toggle={(event) => event.detail && toggleAccordion(section.key)}>
                         <Layout.Stack>
                             <Typography.Text>{section.description}</Typography.Text>
-                            <svelte:component
-                                this={section.component}
-                                loading={isTemplateLoading} />
+                            {@const SectionComponent = section.component}
+                            <SectionComponent
+                                loading={isTemplateLoading}
+                                project={data.project}
+                                localeCodes={data.localeCodes} />
                         </Layout.Stack>
                     </Accordion>
                 {/each}
@@ -144,7 +147,8 @@
             </Button>
         </svelte:fragment>
     </CardGrid>
+
     {#if isCloud && $currentPlan.emailBranding}
-        <EmailSignature />
+        <EmailSignature project={data.project} />
     {/if}
 </Container>

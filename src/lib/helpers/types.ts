@@ -28,6 +28,10 @@ export function isHTMLInputElement(el: unknown): el is HTMLInputElement {
 
 const columnTypes = [
     'string',
+    'varchar',
+    'text',
+    'mediumtext',
+    'longtext',
     'integer',
     'double',
     'boolean',

@@ -3,11 +3,10 @@
     import { EstimatedCard, Pagination as PaginationComponent } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
-    import { upgradeURL } from '$lib/stores/billing';
+    import { getChangePlanUrl } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
-    import type { AggregationTeam, InvoiceUsage, Plan } from '$lib/sdk/billing';
     import { formatCurrency } from '$lib/helpers/numbers';
-    import { BillingPlan, DEFAULT_BILLING_PROJECTS_LIMIT } from '$lib/constants';
+    import { DEFAULT_BILLING_PROJECTS_LIMIT } from '$lib/constants';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import {
         Typography,
@@ -15,7 +14,8 @@
         Icon,
         Layout,
         Divider,
-        Badge
+        Badge,
+        Tooltip
     } from '@appwrite.io/pink-svelte';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { formatNum } from '$lib/helpers/string';
@@ -25,6 +25,7 @@
     import { IconTag } from '@appwrite.io/pink-icons-svelte';
     import { page } from '$app/state';
     import type { RowFactoryOptions } from '$routes/(console)/organization-[organization]/billing/store';
+    import type { Models } from '@appwrite.io/console';
 
     let {
         currentPlan,
@@ -34,10 +35,10 @@
         limit = undefined,
         offset = undefined
     }: {
-        currentPlan: Plan;
-        nextPlan?: Plan | null;
+        currentPlan: Models.BillingPlan;
+        nextPlan?: Models.BillingPlan | null;
         availableCredit?: number | undefined;
-        currentAggregation?: AggregationTeam | undefined;
+        currentAggregation?: Models.AggregationTeam | undefined;
         limit?: number | undefined;
         offset?: number | undefined;
     } = $props();
@@ -72,6 +73,7 @@
     const baseAmount = $derived(currentAggregation?.amount ?? currentPlan?.price ?? 0);
     const creditsApplied = $derived(Math.min(baseAmount, availableCredit ?? 0));
     const totalAmount = $derived(Math.max(baseAmount - creditsApplied, 0));
+    const isUpgrading = $derived($organization?.status === 'upgrading');
 
     function formatHumanSize(bytes: number): string {
         const size = humanFileSize(bytes || 0);
@@ -146,8 +148,8 @@
         ];
     }
 
-    function getResource(resources: InvoiceUsage[] | undefined, resourceId: string) {
-        return resources?.find((r) => r.resourceId === resourceId);
+    function getResource(resources: Array<Models.UsageResources> | undefined, resourceId: string) {
+        return resources?.find((resource) => resource.resourceId === resourceId);
     }
 
     function createRow({
@@ -221,7 +223,7 @@
     function createResourceRow(
         id: string,
         label: string,
-        resource: InvoiceUsage | undefined,
+        resource: Models.UsageResources | undefined,
         planLimit: number | null | undefined,
         formatValue = formatNum
     ) {
@@ -229,8 +231,8 @@
     }
 
     function getBillingData(
-        currentPlan: Plan,
-        currentAggregation: AggregationTeam | undefined,
+        currentPlan: Models.BillingPlan,
+        currentAggregation: Models.AggregationTeam | undefined,
         isSmallViewport: boolean
     ) {
         // base plan row
@@ -588,62 +590,61 @@
 
             <!-- Actions -->
             <div class="actions-container">
-                {#if $organization?.billingPlan === BillingPlan.FREE || $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION}
-                    <Layout.Stack
-                        direction="row"
-                        alignItems="center"
-                        justifyContent="flex-end"
-                        gap="s"
-                        wrap="wrap"
-                        class="u-width-full-line actions-mobile">
-                        {#if !currentPlan?.usagePerProject}
-                            <Button text href={`${base}/organization-${$organization?.$id}/usage`}>
-                                View estimated usage
-                            </Button>
-                        {/if}
+                <Layout.Stack
+                    direction="row"
+                    alignItems="center"
+                    justifyContent="flex-end"
+                    gap="s"
+                    wrap="wrap"
+                    class="u-width-full-line actions-mobile">
+                    <Tooltip disabled={!isUpgrading}>
+                        <div>
+                            {#if !currentPlan.requiresPaymentMethod}
+                                <Button
+                                    text
+                                    disabled={$organization?.markedForDeletion || isUpgrading}
+                                    href={getChangePlanUrl($organization?.$id)}
+                                    on:click={() =>
+                                        trackEvent(Click.OrganizationClickUpgrade, {
+                                            from: 'button',
+                                            source: 'billing_tab'
+                                        })}>
+                                    Upgrade
+                                </Button>
+                            {:else if $organization?.billingPlanDowngrade !== null}
+                                <Button
+                                    text
+                                    disabled={isUpgrading}
+                                    on:click={() => (showCancel = true)}>
+                                    Cancel change
+                                </Button>
+                            {:else}
+                                <Button
+                                    text
+                                    disabled={$organization?.markedForDeletion || isUpgrading}
+                                    href={getChangePlanUrl($organization?.$id)}
+                                    on:click={() =>
+                                        trackEvent(Click.OrganizationClickUpgrade, {
+                                            from: 'button',
+                                            source: 'billing_tab'
+                                        })}>
+                                    Change plan
+                                </Button>
+                            {/if}
+                        </div>
+                        <svelte:fragment slot="tooltip">
+                            Your payment is still being processed, check with your payment provider.
+                        </svelte:fragment>
+                    </Tooltip>
+                    {#if !currentPlan?.usagePerProject}
                         <Button
-                            disabled={$organization?.markedForDeletion}
-                            href={$upgradeURL}
-                            on:click={() =>
-                                trackEvent(Click.OrganizationClickUpgrade, {
-                                    from: 'button',
-                                    source: 'billing_tab'
-                                })}>
-                            Upgrade
+                            text={!currentPlan.requiresPaymentMethod}
+                            secondary={currentPlan.requiresPaymentMethod}
+                            href={`${base}/organization-${$organization?.$id}/usage`}>
+                            View estimated usage
                         </Button>
-                    </Layout.Stack>
-                {:else}
-                    <Layout.Stack
-                        direction="row"
-                        alignItems="center"
-                        justifyContent="flex-end"
-                        gap="s"
-                        wrap="wrap"
-                        class="u-width-full-line actions-mobile">
-                        {#if $organization?.billingPlanDowngrade !== null}
-                            <Button text on:click={() => (showCancel = true)}>Cancel change</Button>
-                        {:else}
-                            <Button
-                                text
-                                disabled={$organization?.markedForDeletion}
-                                href={$upgradeURL}
-                                on:click={() =>
-                                    trackEvent(Click.OrganizationClickUpgrade, {
-                                        from: 'button',
-                                        source: 'billing_tab'
-                                    })}>
-                                Change plan
-                            </Button>
-                        {/if}
-                        {#if !currentPlan?.usagePerProject}
-                            <Button
-                                secondary
-                                href={`${base}/organization-${$organization?.$id}/usage`}>
-                                View estimated usage
-                            </Button>
-                        {/if}
-                    </Layout.Stack>
-                {/if}
+                    {/if}
+                </Layout.Stack>
             </div>
         </EstimatedCard>
     {/key}

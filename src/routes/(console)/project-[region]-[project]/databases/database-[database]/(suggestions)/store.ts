@@ -1,5 +1,5 @@
 import { writable } from 'svelte/store';
-import { IndexType } from '@appwrite.io/console';
+import { IndexType, OrderBy } from '@appwrite.io/console';
 import { columnOptions } from '../table-[table]/columns/store';
 
 export type EntityColumnSuggestions = {
@@ -30,11 +30,7 @@ export type SuggestedColumnSchema = {
     isPlaceholder?: boolean;
 };
 
-export enum IndexOrder {
-    ASC = 'ASC',
-    DESC = 'DESC',
-    NONE = null
-}
+export type IndexOrder = OrderBy | null;
 
 export type SuggestedIndexSchema = {
     key: string;
@@ -146,7 +142,7 @@ export function mapSuggestedColumns<T extends ColumnInput>(columns: T[]): Sugges
         required: col.required ?? false,
         array: false,
         default: col.default ?? null,
-        size: col.type === 'string' ? (col.size ?? undefined) : undefined,
+        size: col.type === 'string' || col.type === 'varchar' ? (col.size ?? undefined) : undefined,
         min:
             col.type === 'integer' || col.type === 'double'
                 ? (col.min ?? col.formatOptions?.min ?? undefined)

@@ -15,7 +15,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { invalidate } from '$app/navigation';
     import { calculateSize } from '$lib/helpers/sizeConvertion';
-    import { ID, type Models } from '@appwrite.io/console';
+    import { BackupServices, ID, type Models } from '@appwrite.io/console';
     import { columns } from './store';
     import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { copy } from '$lib/helpers/copy';
@@ -157,7 +157,7 @@
                 .forProject(page.params.region, page.params.project)
                 .backups.createRestoration({
                     archiveId: selectedBackup.$id,
-                    services: ['databases'],
+                    services: [BackupServices.Databases],
                     newResourceId: newDatabaseInfo.id ?? ID.unique(),
                     newResourceName: newDatabaseInfo.name
                 });

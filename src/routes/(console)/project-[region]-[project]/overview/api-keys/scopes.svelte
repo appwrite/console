@@ -32,8 +32,9 @@
     import { symmetricDifference } from '$lib/helpers/array';
     import { scopes as allScopes, cloudOnlyBackupScopes } from '$lib/constants';
     import { Accordion, Divider, Layout, Selector } from '@appwrite.io/pink-svelte';
+    import type { Scopes } from '@appwrite.io/console';
 
-    export let scopes: string[];
+    export let scopes: Scopes[];
 
     const baseFilteredScopes = allScopes.filter((scope) => {
         const val = scope.scope;
@@ -159,7 +160,7 @@
         });
     }
 
-    function generateSyncedScopes(activeScopesObj: Record<string, boolean>): string[] {
+    function generateSyncedScopes(activeScopesObj: Record<string, boolean>): Scopes[] {
         const result = new Set<string>();
 
         Object.entries(activeScopesObj).forEach(([scope, isActive]) => {
@@ -173,7 +174,7 @@
             }
         });
 
-        return Array.from(result);
+        return Array.from(result) as Scopes[];
     }
 
     $: {

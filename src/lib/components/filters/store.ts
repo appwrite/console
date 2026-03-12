@@ -156,6 +156,10 @@ export enum ValidOperators {
 
 export enum ValidTypes {
     String = 'string',
+    Varchar = 'varchar',
+    Text = 'text',
+    Mediumtext = 'mediumtext',
+    Longtext = 'longtext',
     Integer = 'integer',
     Double = 'double',
     Boolean = 'boolean',
@@ -175,8 +179,32 @@ const operatorsDefault = new Map<
         hideInput?: boolean;
     }
 >([
-    [ValidOperators.StartsWith, { query: Query.startsWith, types: [ValidTypes.String] }],
-    [ValidOperators.EndsWith, { query: Query.endsWith, types: [ValidTypes.String] }],
+    [
+        ValidOperators.StartsWith,
+        {
+            query: Query.startsWith,
+            types: [
+                ValidTypes.String,
+                ValidTypes.Varchar,
+                ValidTypes.Text,
+                ValidTypes.Mediumtext,
+                ValidTypes.Longtext
+            ]
+        }
+    ],
+    [
+        ValidOperators.EndsWith,
+        {
+            query: Query.endsWith,
+            types: [
+                ValidTypes.String,
+                ValidTypes.Varchar,
+                ValidTypes.Text,
+                ValidTypes.Mediumtext,
+                ValidTypes.Longtext
+            ]
+        }
+    ],
     [
         ValidOperators.GreaterThan,
         {
@@ -211,6 +239,10 @@ const operatorsDefault = new Map<
             query: Query.equal,
             types: [
                 ValidTypes.String,
+                ValidTypes.Varchar,
+                ValidTypes.Text,
+                ValidTypes.Mediumtext,
+                ValidTypes.Longtext,
                 ValidTypes.Integer,
                 ValidTypes.Double,
                 ValidTypes.Boolean,
@@ -227,6 +259,10 @@ const operatorsDefault = new Map<
             query: Query.notEqual,
             types: [
                 ValidTypes.String,
+                ValidTypes.Varchar,
+                ValidTypes.Text,
+                ValidTypes.Mediumtext,
+                ValidTypes.Longtext,
                 ValidTypes.Integer,
                 ValidTypes.Double,
                 ValidTypes.Boolean,
@@ -242,6 +278,10 @@ const operatorsDefault = new Map<
             query: Query.isNotNull,
             types: [
                 ValidTypes.String,
+                ValidTypes.Varchar,
+                ValidTypes.Text,
+                ValidTypes.Mediumtext,
+                ValidTypes.Longtext,
                 ValidTypes.Integer,
                 ValidTypes.Double,
                 ValidTypes.Boolean,
@@ -260,6 +300,10 @@ const operatorsDefault = new Map<
             query: Query.isNull,
             types: [
                 ValidTypes.String,
+                ValidTypes.Varchar,
+                ValidTypes.Text,
+                ValidTypes.Mediumtext,
+                ValidTypes.Longtext,
                 ValidTypes.Integer,
                 ValidTypes.Double,
                 ValidTypes.Boolean,
@@ -278,6 +322,10 @@ const operatorsDefault = new Map<
             query: Query.contains,
             types: [
                 ValidTypes.String,
+                ValidTypes.Varchar,
+                ValidTypes.Text,
+                ValidTypes.Mediumtext,
+                ValidTypes.Longtext,
                 ValidTypes.Integer,
                 ValidTypes.Double,
                 ValidTypes.Boolean,

@@ -6,7 +6,7 @@
     import { organization } from '$lib/stores/organization';
     import { Dependencies } from '$lib/constants';
     import { invalidate } from '$app/navigation';
-    import { tierToPlan } from '$lib/stores/billing';
+    import { billingIdToPlan } from '$lib/stores/billing';
     import { toLocaleDate } from '$lib/helpers/date';
 
     export let showCancel = false;
@@ -15,7 +15,10 @@
 
     async function cancelDowngrade() {
         try {
-            await sdk.forConsole.billing.cancelDowngrade($organization.$id);
+            await sdk.forConsole.organizations.cancelDowngrade({
+                organizationId: $organization.$id
+            });
+
             await invalidate(Dependencies.ORGANIZATION);
             showCancel = false;
             addNotification({
@@ -36,7 +39,7 @@
     size="s">
     <p>
         Your organization is set to change to <strong>
-            {tierToPlan($organization?.billingPlanDowngrade).name}</strong>
+            {billingIdToPlan($organization?.billingPlanDowngrade).name}</strong>
         plan on <strong> {toLocaleDate($organization.billingNextInvoiceDate)}</strong>. Are you sure
         you want to cancel this change and keep your current plan?
     </p>

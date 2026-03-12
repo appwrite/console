@@ -40,7 +40,7 @@
 
 <script lang="ts">
     import { isCloud } from '$lib/system';
-    import { upgradeURL } from '$lib/stores/billing';
+    import { getChangePlanUrl } from '$lib/stores/billing';
     import { currentPlan } from '$lib/stores/organization';
     import { createConservative } from '$lib/helpers/stores';
     import { ActionMenu, Selector } from '@appwrite.io/pink-svelte';
@@ -58,6 +58,8 @@
     export let editing = false;
     export let disabled = false;
     export let autoIncreaseSize = false;
+
+    const organizationId = page.data?.organization?.$id ?? page.data?.project?.$id;
 
     let savedDefault = data.default;
 
@@ -160,7 +162,8 @@
 
                 <ActionMenu.Root width="180px" slot="tooltip">
                     <Typography.Text variant="m-500">
-                        Available on Pro plan. <Link.Anchor href={$upgradeURL}>Upgrade</Link.Anchor>
+                        Available on Pro plan. <Link.Anchor href={getChangePlanUrl(organizationId)}
+                            >Upgrade</Link.Anchor>
                         to enable encrypted columns.
                     </Typography.Text>
                 </ActionMenu.Root>

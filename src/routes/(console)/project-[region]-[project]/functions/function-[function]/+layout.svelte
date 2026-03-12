@@ -6,7 +6,6 @@
     import { invalidate, goto } from '$app/navigation';
     import { registerCommands } from '$lib/commandCenter';
     import { func, showCreateDeployment } from './store';
-    import { project } from '../../store';
     import type { Models } from '@appwrite.io/console';
     import { base } from '$app/paths';
     import { canWriteFunctions } from '$lib/stores/roles';
@@ -52,7 +51,7 @@
             async callback() {
                 if (!page.url.pathname.endsWith($func.$id)) {
                     await goto(
-                        `${base}/project-${$project.region}-${$project.$id}/functions/function-${$func.$id}`
+                        `${base}/project-${page.params.region}-${page.params.project}/functions/function-${$func.$id}`
                     );
                 }
                 showCreateDeployment.set(true);
@@ -66,7 +65,7 @@
             label: 'Permissions',
             async callback() {
                 await goto(
-                    `${base}/project-${$project.region}-${$project.$id}/functions/function-${$func.$id}/settings#permissions`
+                    `${base}/project-${page.params.region}-${page.params.project}/functions/function-${$func.$id}/settings#permissions`
                 );
                 scrollBy({ top: -100 });
             },
@@ -78,7 +77,7 @@
             label: 'Events',
             async callback() {
                 await goto(
-                    `${base}/project-${$project.region}-${$project.$id}/functions/function-${$func.$id}/settings#events`
+                    `${base}/project-${page.params.region}-${page.params.project}/functions/function-${$func.$id}/settings#events`
                 );
                 scrollBy({ top: -100 });
             },
@@ -90,7 +89,7 @@
             label: 'Variables',
             async callback() {
                 await goto(
-                    `${base}/project-${$project.region}-${$project.$id}/functions/function-${$func.$id}/settings#variables`
+                    `${base}/project-${page.params.region}-${page.params.project}/functions/function-${$func.$id}/settings#variables`
                 );
             },
             icon: IconList,
@@ -101,7 +100,7 @@
             label: 'Timeout',
             callback() {
                 goto(
-                    `${base}/project-${$project.region}-${$project.$id}/functions/function-${$func.$id}/settings#timeout`
+                    `${base}/project-${page.params.region}-${page.params.project}/functions/function-${$func.$id}/settings#timeout`
                 );
             },
             icon: IconXCircle,
@@ -112,7 +111,7 @@
             label: 'Schedule',
             async callback() {
                 await goto(
-                    `${base}/project-${$project.region}-${$project.$id}/functions/function-${$func.$id}/settings#schedule`
+                    `${base}/project-${page.params.region}-${page.params.project}/functions/function-${$func.$id}/settings#schedule`
                 );
                 scrollBy({ top: -100 });
             },
@@ -124,7 +123,7 @@
             label: 'Go to deployments',
             callback() {
                 goto(
-                    `${base}/project-${$project.region}-${$project.$id}/functions/function-${$func.$id}`
+                    `${base}/project-${page.params.region}-${page.params.project}/functions/function-${$func.$id}`
                 );
             },
             keys: ['g', 'd'],
@@ -136,7 +135,7 @@
             label: 'Go to usage',
             callback() {
                 goto(
-                    `${base}/project-${$project.region}-${$project.$id}/functions/function-${$func.$id}/usage`
+                    `${base}/project-${page.params.region}-${page.params.project}/functions/function-${$func.$id}/usage`
                 );
             },
             keys: ['g', 'u'],
@@ -148,7 +147,7 @@
             label: 'Go to executions',
             callback() {
                 goto(
-                    `${base}/project-${$project.region}-${$project.$id}/functions/function-${$func.$id}/executions`
+                    `${base}/project-${page.params.region}-${page.params.project}/functions/function-${$func.$id}/executions`
                 );
             },
             keys: ['g', 'e'],
@@ -160,7 +159,7 @@
             label: 'Go to settings',
             callback() {
                 goto(
-                    `${base}/project-${$project.region}-${$project.$id}/functions/function-${$func.$id}/settings`
+                    `${base}/project-${page.params.region}-${page.params.project}/functions/function-${$func.$id}/settings`
                 );
             },
             keys: ['g', 's'],

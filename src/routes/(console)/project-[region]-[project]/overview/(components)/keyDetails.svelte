@@ -12,7 +12,7 @@
     import { project } from '../../store';
     import Delete from './delete.svelte';
     import UpdateExpirationDate from './updateExpirationDate.svelte';
-    import type { Models } from '@appwrite.io/console';
+    import type { Models, Scopes as ScopesType } from '@appwrite.io/console';
     import { symmetricDifference } from '$lib/helpers/array';
     import Scopes from '../api-keys/scopes.svelte';
     import { InteractiveText, Layout, Typography } from '@appwrite.io/pink-svelte';
@@ -22,7 +22,7 @@
     export let keyType: 'api' | 'dev' = 'api';
 
     let name: string = null;
-    let scopes: string[] = null;
+    let scopes: ScopesType[] = null;
 
     let showDelete = false;
     const isApiKey = keyType === 'api';
@@ -33,7 +33,7 @@
     onMount(() => {
         name ??= key.name;
         if (isApiKey) {
-            scopes ??= (key as Models.Key).scopes;
+            scopes ??= (key as Models.Key).scopes as ScopesType[];
         }
     });
 

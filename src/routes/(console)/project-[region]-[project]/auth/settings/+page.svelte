@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid } from '$lib/components';
     import { InputSwitch } from '$lib/elements/forms';
@@ -10,21 +9,22 @@
     import { oAuthProviders } from '$lib/stores/oauth-providers';
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
-    import { project } from '../../store';
     import { base } from '$app/paths';
     import { Avatar, Badge, Card, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
+    import type { PageProps } from './$types';
 
-    const projectId = page.params.project;
-    let showProvider = false;
+    let { data }: PageProps = $props();
+    const { project } = data;
 
-    let selectedProvider: Models.AuthProvider | null = null;
+    let showProvider = $state(false);
+    let selectedProvider: Models.AuthProvider | null = $state(null);
 
     async function authUpdate(box: AuthMethod) {
         try {
             await sdk.forConsole.projects.updateAuthStatus({
-                projectId,
+                projectId: project.$id,
                 method: box.method,
                 status: box.value
             });
@@ -36,7 +36,7 @@
                 method: box.method,
                 value: box.value
             });
-            invalidate(Dependencies.PROJECT);
+            await invalidate(Dependencies.PROJECT);
         } catch (error) {
             box.value = !box.value;
             addNotification({
@@ -47,10 +47,12 @@
         }
     }
 
-    $: authMethods.load($project);
+    $effect(() => {
+        authMethods.load(project);
+    });
 </script>
 
-{#if $authMethods && $project}
+{#if $authMethods && project}
     <Container>
         <Layout.Stack gap="xxl">
             <CardGrid>
@@ -73,7 +75,7 @@
             <Layout.Stack>
                 <Typography.Title size="s">OAuth2 Providers</Typography.Title>
                 <ul class="grid-box" style:--grid-gap="1rem" style:--grid-item-size="15rem">
-                    {#each $project.oAuthProviders
+                    {#each project.oAuthProviders
                         .filter((p) => p.name !== 'Mock')
                         .sort( (a, b) => (a.enabled === b.enabled ? 0 : a.enabled ? -1 : 1) ) as provider}
                         {@const oAuthProvider = oAuthProviders[provider.key]}
@@ -116,9 +118,9 @@
 {/if}
 
 {#if selectedProvider && showProvider}
-    {@const oAuthProvider = oAuthProviders[selectedProvider.key]}
-    <svelte:component
-        this={oAuthProvider.component}
+    {@const OAuthProvider = oAuthProviders[selectedProvider.key].component}
+
+    <OAuthProvider
         bind:provider={selectedProvider}
         bind:show={showProvider}
         onclose={() => {

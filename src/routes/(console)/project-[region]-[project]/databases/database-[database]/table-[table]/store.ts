@@ -4,8 +4,48 @@ import type { Models } from '@appwrite.io/console';
 import { derived, writable } from 'svelte/store';
 import { SPREADSHEET_PAGE_LIMIT } from '$lib/constants';
 import { createSparsePagedDataStore } from '@appwrite.io/pink-svelte';
-import type { Columns, SortState } from '$database/store';
 
+export type Columns =
+    | Models.ColumnBoolean
+    | Models.ColumnEmail
+    | Models.ColumnEnum
+    | Models.ColumnFloat
+    | Models.ColumnInteger
+    | Models.ColumnIp
+    | Models.ColumnString
+    | Models.ColumnText
+    | Models.ColumnMediumtext
+    | Models.ColumnLongtext
+    | Models.ColumnVarchar
+    | Models.ColumnUrl
+    | Models.ColumnPoint
+    | Models.ColumnLine
+    | Models.ColumnPolygon
+    | (Models.ColumnRelationship & { default?: never });
+
+export type Attributes =
+    | Models.AttributeBoolean
+    | Models.AttributeEmail
+    | Models.AttributeEnum
+    | Models.AttributeFloat
+    | Models.AttributeInteger
+    | Models.AttributeIp
+    | Models.AttributeString
+    | Models.AttributeUrl
+    | Models.AttributePoint
+    | Models.AttributeLine
+    | Models.AttributePolygon
+    | (Models.AttributeRelationship & { default?: never });
+
+export type Collection = Omit<Models.Collection, 'attributes'> & {
+    attributes: Array<Attributes>;
+};
+
+export type Table = Omit<Models.Table, 'columns'> & {
+    columns: Array<Columns>;
+};
+
+export const table = derived(page, ($page) => $page.data.table as Table);
 export const columns = derived(page, ($page) => $page.data.table.columns as Columns[]);
 export const indexes = derived(page, ($page) => $page.data.table.indexes as Models.ColumnIndex[]);
 

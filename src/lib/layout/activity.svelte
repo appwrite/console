@@ -49,7 +49,7 @@
     expanded={databasesScreen && !insideSideSheet}
     slotSpacing={databasesScreen && !insideSideSheet}>
     {#if logs.total}
-        <Table.Root {columns} let:root>
+        <Table.Root class="responsive-table" {columns} let:root>
             <svelte:fragment slot="header" let:root>
                 <Table.Header.Cell column="user" {root}>User</Table.Header.Cell>
                 <Table.Header.Cell column="event" {root}>Event</Table.Header.Cell>

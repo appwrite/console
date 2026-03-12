@@ -37,6 +37,7 @@
     import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import CreateColumn from '$database/table-[table]/createColumn.svelte';
     import { CreateColumnPanel } from '$lib/commandCenter/panels';
+    import { showCreateEntity } from '../store';
     import { project } from '../../../store';
     import { page } from '$app/state';
     import { canWriteTables } from '$lib/stores/roles';
@@ -96,7 +97,7 @@
 
     let createIndex: CreateIndex;
     let createColumn: CreateColumn;
-    let selectedOption: Option['name'] = 'String';
+    let selectedOption: Option['name'] = 'Text';
     let createMoreColumns = false;
 
     /* terminology */
@@ -314,8 +315,13 @@
 
                 columnCreationHandler = handler;
 
+                const project = {
+                    id: page.params.project,
+                    region: page.params.region
+                };
+
                 columns = await generateFields(
-                    $project,
+                    project,
                     page.params.database,
                     page.params.table,
                     databaseType

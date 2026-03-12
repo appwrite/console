@@ -15,8 +15,8 @@
         isRelationship,
         isRelationshipToMany,
         isSpatialType,
-        isString
-    } from '$database/table-[table]/rows/store';
+        isTextType
+    } from './rows/store';
     import {
         columns,
         tableColumns,
@@ -1081,7 +1081,9 @@
                                         {@const isEmptyArray = formatted === 'Empty'}
                                         {@const isDatetimeAttribute = rowColumn.type === 'datetime'}
                                         {@const isEncryptedAttribute =
-                                            isString(rowColumn) && rowColumn.encrypt}
+                                            isTextType(rowColumn) &&
+                                            'encrypt' in rowColumn &&
+                                            rowColumn.encrypt}
                                         {#if isDatetimeAttribute}
                                             <DualTimeView time={value}>
                                                 <span slot="title">Timestamp</span>

@@ -5,9 +5,9 @@
     import { Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import type { PaymentMethodData } from '$lib/sdk/billing';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Alert } from '@appwrite.io/pink-svelte';
+    import type { Models } from '@appwrite.io/console';
 
     let {
         show = $bindable(false),
@@ -16,7 +16,7 @@
     }: {
         show: boolean;
         isLinked?: boolean;
-        selectedPaymentMethod: PaymentMethodData;
+        selectedPaymentMethod: Models.PaymentMethod;
     } = $props();
 
     let year: number | null = $state(null);
@@ -24,6 +24,7 @@
     let error: string | null = $state(null);
 
     const currentYear = new Date().getFullYear();
+
     const months = Array.from({ length: 12 }, (_, i) => {
         const value = String(i + 1).padStart(2, '0');
         return { value, label: value };
@@ -33,11 +34,14 @@
 
     async function handleSubmit() {
         try {
-            await sdk.forConsole.billing.updatePaymentMethod(
-                selectedPaymentMethod.$id,
-                month,
-                year?.toString()
-            );
+            await sdk.forConsole.account.updatePaymentMethod({
+                paymentMethodId: selectedPaymentMethod.$id,
+                expiryMonth: parseInt(month),
+                expiryYear: year
+            });
+
+            trackEvent(Submit.PaymentMethodUpdate);
+            invalidate(Dependencies.PAYMENT_METHODS);
             show = false;
             trackEvent(Submit.PaymentMethodUpdate);
             await invalidate(Dependencies.PAYMENT_METHODS);

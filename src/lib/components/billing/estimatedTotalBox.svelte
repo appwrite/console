@@ -1,24 +1,22 @@
 <script lang="ts">
     import { InputChoice, InputNumber } from '$lib/elements/forms';
     import { formatCurrency } from '$lib/helpers/numbers';
-    import type { Coupon, Estimation } from '$lib/sdk/billing';
-    import { type Tier } from '$lib/stores/billing';
     import { Card, Divider, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { CreditsApplied } from '.';
     import { sdk } from '$lib/stores/sdk';
-    import { AppwriteException } from '@appwrite.io/console';
+    import { AppwriteException, type Models } from '@appwrite.io/console';
     import DiscountsApplied from './discountsApplied.svelte';
 
-    export let billingPlan: Tier;
+    export let billingPlan: Models.BillingPlan;
     export let collaborators: string[];
-    export let couponData: Partial<Coupon>;
+    export let couponData: Partial<Models.Coupon>;
     export let billingBudget: number;
     export let fixedCoupon = false; // If true, the coupon cannot be removed
     export let isDowngrade = false;
     export let organizationId: string | undefined = undefined;
 
     let budgetEnabled = false;
-    let estimation: Estimation;
+    let estimation: Models.Estimation;
 
     async function getEstimate(
         billingPlan: string,
@@ -26,11 +24,11 @@
         couponId: string | undefined
     ) {
         try {
-            estimation = await sdk.forConsole.billing.estimationCreateOrganization(
+            estimation = await sdk.forConsole.organizations.estimationCreateOrganization({
                 billingPlan,
-                couponId === '' ? null : couponId,
-                collaborators ?? []
-            );
+                invites: collaborators ?? [],
+                couponId: couponId === '' ? null : couponId
+            });
         } catch (e) {
             if (e instanceof AppwriteException) {
                 if (
@@ -56,12 +54,12 @@
         couponId: string | undefined
     ) {
         try {
-            estimation = await sdk.forConsole.billing.estimationUpdatePlan(
+            estimation = await sdk.forConsole.organizations.estimationUpdatePlan({
                 organizationId,
-                billingPlan,
-                couponId && couponId.length > 0 ? couponId : null,
-                collaborators ?? []
-            );
+                billingPlan: billingPlan,
+                invites: collaborators ?? [],
+                couponId: couponId && couponId.length > 0 ? couponId : null
+            });
         } catch (e) {
             if (e instanceof AppwriteException) {
                 if (
@@ -81,8 +79,8 @@
     }
 
     $: organizationId
-        ? getUpdatePlanEstimate(organizationId, billingPlan, collaborators, couponData?.code)
-        : getEstimate(billingPlan, collaborators, couponData?.code);
+        ? getUpdatePlanEstimate(organizationId, billingPlan.$id, collaborators, couponData?.code)
+        : getEstimate(billingPlan.$id, collaborators, couponData?.code);
 </script>
 
 {#if estimation}
@@ -105,6 +103,7 @@
             {#if couponData?.status === 'active'}
                 <CreditsApplied bind:couponData {fixedCoupon} />
             {/if}
+
             <Divider />
             <Layout.Stack direction="row" justifyContent="space-between">
                 <Typography.Text>Total due</Typography.Text>

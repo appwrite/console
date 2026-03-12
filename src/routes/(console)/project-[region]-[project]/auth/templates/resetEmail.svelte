@@ -3,26 +3,31 @@
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import type { EmailTemplateLocale, EmailTemplateType } from '@appwrite.io/console';
-    import { project } from '../../store';
+    import type { EmailTemplateLocale, EmailTemplateType, Models } from '@appwrite.io/console';
     import { loadEmailTemplate } from './+page.svelte';
     import { baseEmailTemplate, emailTemplate } from './store';
     import { Dialog, Layout, Alert } from '@appwrite.io/pink-svelte';
 
-    export let show = false;
+    let {
+        show = $bindable(false),
+        project
+    }: {
+        show: boolean;
+        project: Models.Project;
+    } = $props();
 
-    let error: string;
+    let error: string = $state(null);
 
     async function reset() {
         try {
             // TODO: fix TemplateType and TemplateLocale typing once SDK is updated
             await sdk.forConsole.projects.deleteEmailTemplate({
-                projectId: $project.$id,
+                projectId: project.$id,
                 type: $emailTemplate.type as EmailTemplateType,
                 locale: $emailTemplate.locale as EmailTemplateLocale
             });
             $emailTemplate = await loadEmailTemplate(
-                $project.$id,
+                project.$id,
                 $emailTemplate.type as EmailTemplateType,
                 $emailTemplate.locale as EmailTemplateLocale
             );

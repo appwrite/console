@@ -1,11 +1,10 @@
 import { sdk } from '$lib/stores/sdk';
 import type { PageLoad } from './$types';
-import type { UsageProjectInfo } from '../../store';
 import { type Models, Query } from '@appwrite.io/console';
-import type { Invoice, OrganizationUsage } from '$lib/sdk/billing';
+import type { UsageProjectInfo } from '../../store';
 
 export const load: PageLoad = async ({ params, parent }) => {
-    const { invoice } = params;
+    const { invoice: invoiceId } = params;
     const { organization: org, currentPlan: plan } = await parent();
 
     /**
@@ -43,16 +42,24 @@ export const load: PageLoad = async ({ params, parent }) => {
 
     let startDate: string = org.billingCurrentInvoiceDate;
     let endDate: string = org.billingNextInvoiceDate;
-    let currentInvoice: Invoice = undefined;
+    let currentInvoice: Models.Invoice = undefined;
 
-    if (invoice) {
-        currentInvoice = await sdk.forConsole.billing.getInvoice(org.$id, invoice);
+    if (invoiceId) {
+        currentInvoice = await sdk.forConsole.organizations.getInvoice({
+            organizationId: org.$id,
+            invoiceId
+        });
         startDate = currentInvoice.from;
         endDate = currentInvoice.to;
     }
 
     const [usage, organizationMembers] = await Promise.all([
-        sdk.forConsole.billing.listUsage(org.$id, startDate, endDate),
+        sdk.forConsole.organizations.getUsage({
+            organizationId: org.$id,
+            startDate,
+            endDate
+        }),
+
         // this section is cloud only,
         // so it is fine to use this check and fetch memberships conditionally!
         !plan?.addons?.seats?.supported
@@ -70,7 +77,7 @@ export const load: PageLoad = async ({ params, parent }) => {
 };
 
 // all this to get the project's name and region!
-function getUsageProjects(usage: OrganizationUsage) {
+function getUsageProjects(usage: Models.UsageOrganization) {
     return (async () => {
         const limit = 100;
         const requests: Array<Promise<Models.ProjectList>> = [];

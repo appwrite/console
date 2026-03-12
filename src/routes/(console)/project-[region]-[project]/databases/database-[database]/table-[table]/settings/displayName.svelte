@@ -8,6 +8,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import type { Models } from '@appwrite.io/console';
     import { columns } from '../store';
+    import { isTextType } from '../rows/store';
     import { preferences } from '$lib/stores/preferences';
     import { page } from '$app/state';
     import { Icon, Layout } from '@appwrite.io/pink-svelte';
@@ -47,7 +48,7 @@
 
     function getValidColumns() {
         return ($columns as Models.ColumnString[]).filter(
-            (attr) => attr.type === 'string' && !attr?.array
+            (attr) => isTextType(attr) && !attr?.array
         );
     }
 

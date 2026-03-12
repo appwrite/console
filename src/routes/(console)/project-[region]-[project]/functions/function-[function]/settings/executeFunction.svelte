@@ -1,12 +1,21 @@
 <script lang="ts">
-    import { base } from '$app/paths';
     import { CardGrid, SvgIcon } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDateTime } from '$lib/helpers/date';
-    import { project } from '$routes/(console)/project-[region]-[project]/store';
     import { Layout, Typography } from '@appwrite.io/pink-svelte';
     import { func } from '../store';
     import { capitalize } from '$lib/helpers/string';
+    import { resolveRoute } from '$lib/stores/navigation';
+    import { page } from '$app/state';
+
+    const executionUrl = $derived.by(() => {
+        return resolveRoute(
+            '/(console)/project-[region]-[project]/functions/function-[function]/executions/execute-function',
+            {
+                ...page.params
+            }
+        );
+    });
 </script>
 
 <CardGrid>
@@ -39,10 +48,6 @@
     </svelte:fragment>
 
     <svelte:fragment slot="actions">
-        <Button
-            secondary
-            href={`${base}/project-${$project.region}-${$project.$id}/functions/function-${$func.$id}/executions/execute-function`}>
-            Execute
-        </Button>
+        <Button secondary href={executionUrl}>Execute</Button>
     </svelte:fragment>
 </CardGrid>

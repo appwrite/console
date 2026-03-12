@@ -13,6 +13,8 @@
 
     export let showEditor = false;
     export let variables: Partial<Models.Variable>[];
+    export let docsLink =
+        'https://appwrite.io/docs/products/sites/develop#accessing-environment-variables';
 
     const editableVariables = variables.filter((variable) => !variable.secret);
     const secretVariables = variables.filter((variable) => variable.secret);
@@ -122,11 +124,7 @@
         {#if secretVariables?.length > 0}
             <Alert.Inline status="info">
                 {secretVariables.length} secret variables are hidden from the editor. Their values will
-                remain unchanged. <Link
-                    href="https://appwrite.io/docs/products/sites/develop#accessing-environment-variables"
-                    external
-                    variant="muted">Learn more</Link
-                >.
+                remain unchanged. <Link href={docsLink} external variant="muted">Learn more</Link>.
             </Alert.Inline>
         {/if}
         <Layout.Stack gap="s">

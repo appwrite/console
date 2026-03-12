@@ -94,8 +94,9 @@
                 {sdkCreateVariable}
                 {sdkUpdateVariable}
                 {sdkDeleteVariable}
-                isGlobal={true}
+                isGlobal
                 variableList={data.variables}
+                project={data.project}
                 analyticsSource="project_settings" />
             <ChangeOrganization />
             <DeleteProject />

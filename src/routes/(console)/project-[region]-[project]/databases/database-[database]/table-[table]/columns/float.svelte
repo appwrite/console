@@ -32,9 +32,9 @@
             tableId,
             key: originalKey,
             required: data.required,
-            xdefault: data.default,
             min: data.min,
             max: data.max,
+            xdefault: data.default,
             newKey: data.key !== originalKey ? data.key : undefined
         });
     }

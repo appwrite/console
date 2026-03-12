@@ -1,20 +1,23 @@
-import { BillingPlan, DEFAULT_BILLING_PROJECTS_LIMIT, Dependencies } from '$lib/constants';
-import type { Address, PaymentList } from '$lib/sdk/billing';
-import { type Organization } from '$lib/stores/organization';
+import { resolve } from '$app/paths';
+import { isCloud } from '$lib/system';
 import { sdk } from '$lib/stores/sdk';
 import { redirect } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
-import { isCloud } from '$lib/system';
-import { base } from '$app/paths';
-import { type PaymentMethodData } from '$lib/sdk/billing';
+import { DEFAULT_BILLING_PROJECTS_LIMIT, Dependencies } from '$lib/constants';
 
+import type { Models } from '@appwrite.io/console';
 import { getLimit, getPage, pageToOffset } from '$lib/helpers/load';
 
 export const load: PageLoad = async ({ parent, depends, url, route }) => {
     const { organization, scopes, currentPlan, countryList, locale } = await parent();
 
     if (!scopes.includes('billing.read')) {
-        return redirect(301, `${base}/organization-${organization.$id}`);
+        return redirect(
+            302,
+            resolve('/(console)/organization-[organization]', {
+                organization: organization.$id
+            })
+        );
     }
 
     depends(Dependencies.PAYMENT_METHODS);
@@ -25,10 +28,13 @@ export const load: PageLoad = async ({ parent, depends, url, route }) => {
     // aggregation reloads on page param changes
     depends(Dependencies.BILLING_AGGREGATION);
 
-    const billingAddressId = (organization as Organization)?.billingAddressId;
-    const billingAddressPromise: Promise<Address> = billingAddressId
-        ? sdk.forConsole.billing
-              .getOrganizationBillingAddress(organization.$id, billingAddressId)
+    const billingAddressId = (organization as Models.Organization)?.billingAddressId;
+    const billingAddressPromise: Promise<Models.BillingAddress> = billingAddressId
+        ? sdk.forConsole.organizations
+              .getBillingAddress({
+                  organizationId: organization.$id,
+                  billingAddressId
+              })
               .catch(() => null)
         : null;
 
@@ -37,47 +43,47 @@ export const load: PageLoad = async ({ parent, depends, url, route }) => {
      * initially created, these might return 404
      * - can be removed later once that is fixed in back-end
      */
-    let billingAggregation = null;
+    let billingAggregation: Models.AggregationTeam | null = null;
     try {
         const currentPage = getPage(url) || 1;
         const limit = getLimit(url, route, DEFAULT_BILLING_PROJECTS_LIMIT);
         const offset = pageToOffset(currentPage, limit);
-        billingAggregation = await sdk.forConsole.billing.getAggregation(
-            organization.$id,
-            (organization as Organization)?.billingAggregationId,
+        billingAggregation = await sdk.forConsole.organizations.getAggregation({
+            organizationId: organization.$id,
+            aggregationId: (organization as Models.Organization)?.billingAggregationId,
             limit,
             offset
-        );
+        });
     } catch (e) {
         // ignore error
     }
 
     let billingInvoice = null;
     try {
-        billingInvoice = await sdk.forConsole.billing.getInvoice(
-            organization.$id,
-            (organization as Organization)?.billingInvoiceId
-        );
+        billingInvoice = await sdk.forConsole.organizations.getInvoice({
+            organizationId: organization.$id,
+            invoiceId: (organization as Models.Organization)?.billingInvoiceId
+        });
     } catch (e) {
         // ignore error
     }
 
-    const areCreditsSupported = isCloud
-        ? (currentPlan?.supportsCredits ??
-          (organization.billingPlan !== BillingPlan.FREE &&
-              organization?.billingPlan !== BillingPlan.GITHUB_EDUCATION))
-        : false;
+    const areCreditsSupported = isCloud ? currentPlan?.supportsCredits : false;
 
     const [paymentMethods, addressList, billingAddress, availableCredit, billingPlanDowngrade] =
         await Promise.all([
-            sdk.forConsole.billing.listPaymentMethods(),
-            sdk.forConsole.billing.listAddresses(),
+            sdk.forConsole.account.listPaymentMethods(),
+            sdk.forConsole.account.listBillingAddresses(),
             billingAddressPromise,
             areCreditsSupported
-                ? sdk.forConsole.billing.getAvailableCredit(organization.$id)
+                ? sdk.forConsole.organizations.getAvailableCredits({
+                      organizationId: organization.$id
+                  })
                 : null,
             organization.billingPlanDowngrade
-                ? sdk.forConsole.billing.getPlan(organization.billingPlanDowngrade)
+                ? sdk.forConsole.console.getPlan({
+                      planId: organization.billingPlanDowngrade
+                  })
                 : null
         ]);
 
@@ -108,14 +114,14 @@ export const load: PageLoad = async ({ parent, depends, url, route }) => {
 };
 
 function getOrganizationPaymentMethods(
-    organization: Organization,
-    paymentMethods: PaymentList
+    organization: Models.Organization,
+    paymentMethods: Models.PaymentMethodList
 ): {
-    backup: PaymentMethodData | null;
-    primary: PaymentMethodData | null;
+    backup: Models.PaymentMethod | null;
+    primary: Models.PaymentMethod | null;
 } {
-    let backup: PaymentMethodData | null = null;
-    let primary: PaymentMethodData | null = null;
+    let backup: Models.PaymentMethod | null = null;
+    let primary: Models.PaymentMethod | null = null;
 
     for (const paymentMethod of paymentMethods.paymentMethods) {
         if (paymentMethod.$id === organization.paymentMethodId) {

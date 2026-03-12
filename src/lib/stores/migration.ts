@@ -1,5 +1,5 @@
 import { writable } from 'svelte/store';
-
+import { Resources } from '@appwrite.io/console';
 import { includesAll } from '$lib/helpers/array';
 
 const initialFormData = {
@@ -51,66 +51,66 @@ export const ResourcesFriendly = {
     row: { singular: 'Row', plural: 'Rows' }
 };
 
-const resources = Object.keys(ResourcesFriendly);
-
-type Resource = (typeof resources)[number];
-
 // @todo: @itznotabug - check if other resources are correct and work fine!
-export const providerResources: Record<Provider, Resource[]> = {
-    appwrite: [...resources], // new terminology, others are ok?
+export const providerResources: Record<Provider, Resources[]> = {
+    appwrite: Object.values(Resources),
     supabase: [
-        'user',
-        'database',
-        'collection',
-        'attribute',
-        'index',
-        'document',
-        'bucket',
-        'file'
+        Resources.User,
+        Resources.Database,
+        Resources.Collection,
+        Resources.Attribute,
+        Resources.Index,
+        Resources.Document,
+        Resources.Bucket,
+        Resources.File
     ],
-    nhost: ['user', 'database', 'collection', 'attribute', 'index', 'document', 'bucket', 'file'],
-    firebase: ['user', 'database', 'collection', 'attribute', 'document', 'bucket', 'file']
+    nhost: [
+        Resources.User,
+        Resources.Database,
+        Resources.Collection,
+        Resources.Attribute,
+        Resources.Index,
+        Resources.Document,
+        Resources.Bucket,
+        Resources.File
+    ],
+    firebase: [
+        Resources.User,
+        Resources.Database,
+        Resources.Collection,
+        Resources.Attribute,
+        Resources.Document,
+        Resources.Bucket,
+        Resources.File
+    ]
 };
 
 export const migrationFormToResources = (
     formData: MigrationFormData,
     provider: Provider
-): Resource[] => {
-    const resources: Resource[] = [];
-    const addResource = (resource: Resource) => {
+): Resources[] => {
+    const resources: Resources[] = [];
+    const addResource = (resource: Resources) => {
         if (providerResources[provider].includes(resource)) {
             resources.push(resource);
         }
     };
 
     if (formData.users.root) {
-        addResource('user');
-    }
-    if (formData.users.teams) {
-        addResource('team');
-        addResource('membership');
+        addResource(Resources.User);
     }
     if (formData.databases.root) {
-        addResource('database');
-        addResource('table');
-        addResource('column');
-        addResource('columnIndex');
+        addResource(Resources.Database);
+        addResource(Resources.Table);
+        addResource(Resources.Column);
+        addResource(Resources.Index);
     }
     if (formData.databases.rows) {
-        addResource('row');
-    }
-    if (formData.functions.root) {
-        addResource('function');
-    }
-    if (formData.functions.env) {
-        addResource('environment-variable');
-    }
-    if (formData.functions.inactive) {
-        addResource('deployment');
+        addResource(Resources.Row);
     }
     if (formData.storage.root) {
-        addResource('bucket');
-        addResource('file');
+        addResource(Resources.Bucket);
+        addResource(Resources.File);
     }
 
     return resources;
@@ -137,33 +137,18 @@ export const isVersionAtLeast = (version: string, atLeast: string) => {
     return compareVersions(version, atLeast) >= 0;
 };
 
-export const resourcesToMigrationForm = (
-    resources: Resource[],
-    version = '0.0.0'
-): MigrationFormData => {
+export const resourcesToMigrationForm = (resources: Resources[]): MigrationFormData => {
     const formData = { ...initialFormData };
-    if (resources.includes('user')) {
+    if (resources.includes(Resources.User)) {
         formData.users.root = true;
     }
-    if (includesAll(resources, ['team', 'membership'])) {
-        formData.users.teams = true;
-    }
-    if (resources.includes('database')) {
+    if (resources.includes(Resources.Database)) {
         formData.databases.root = true;
     }
-    if (includesAll(resources, ['table', 'column', 'row'])) {
+    if (includesAll(resources, [Resources.Table, Resources.Column, Resources.Row] as Resources[])) {
         formData.databases.rows = true;
     }
-    if (resources.includes('function') && isVersionAtLeast(version, '1.4.0')) {
-        formData.functions.root = true;
-    }
-    if (resources.includes('environment-variable') && isVersionAtLeast(version, '1.4.0')) {
-        formData.functions.env = true;
-    }
-    if (resources.includes('deployment') && isVersionAtLeast(version, '1.4.0')) {
-        formData.functions.inactive = true;
-    }
-    if (includesAll(resources, ['bucket', 'file'])) {
+    if (includesAll(resources, [Resources.Bucket, Resources.File] as Resources[])) {
         formData.storage.root = true;
     }
 

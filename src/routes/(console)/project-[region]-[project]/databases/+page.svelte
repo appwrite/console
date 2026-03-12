@@ -22,9 +22,9 @@
 
     const { data }: PageProps = $props();
 
-    const isLimited = $derived(
-        isServiceLimited('databases', $organization?.billingPlan, data.databases.total)
-    );
+    let showCreate = $state(false);
+
+    const isLimited = $derived(isServiceLimited('databases', $organization, data.databases.total));
 
     async function goToCreateDatabaseWizard() {
         await goto(
@@ -50,6 +50,31 @@
 </script>
 
 <Container>
+    <ResponsiveContainerHeader
+        hasSearch
+        {columns}
+        view={data.view}
+        searchPlaceholder="Search by name or ID">
+        {#if $canWriteDatabases}
+            <Tooltip disabled={!isLimited}>
+                <div>
+                    <Button
+                        disabled={isLimited}
+                        event="create_database"
+                        on:click={() => (showCreate = true)}>
+                        <Icon icon={IconPlus} slot="start" size="s" />
+                        Create database
+                    </Button>
+                </div>
+                <svelte:fragment slot="tooltip">
+                    <div style="white-space: pre-line;">
+                        You have reached the maximum number of databases for your plan.
+                    </div>
+                </svelte:fragment>
+            </Tooltip>
+        {/if}
+    </ResponsiveContainerHeader>
+
     {#if data.databases.total}
         {@render containerHeader()}
 
@@ -92,17 +117,4 @@
     {/if}
 </Container>
 
-{#snippet containerHeader()}
-    <ResponsiveContainerHeader
-        hasSearch
-        {columns}
-        bind:view={data.view}
-        searchPlaceholder="Search by name or ID">
-        {#if $canWriteDatabases}
-            <Button event="create_database" on:click={goToCreateDatabaseWizard}>
-                <Icon icon={IconPlus} slot="start" size="s" />
-                Create database
-            </Button>
-        {/if}
-    </ResponsiveContainerHeader>
-{/snippet}
+<Create bind:showCreate on:created={handleCreate} project={data.project} />

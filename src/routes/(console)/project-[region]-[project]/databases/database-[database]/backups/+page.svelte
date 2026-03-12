@@ -17,7 +17,7 @@
     import { onMount } from 'svelte';
     import { feedback } from '$lib/stores/feedback';
     import { cronExpression, type UserBackupPolicy } from '$lib/helpers/backups';
-    import { ID } from '@appwrite.io/console';
+    import { BackupServices, ID } from '@appwrite.io/console';
     import { showCreateBackup, showCreatePolicy } from './store';
     import { getProjectId } from '$lib/helpers/project';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
@@ -68,7 +68,7 @@
     const createManualBackup = async () => {
         try {
             await sdk.forProject(page.params.region, page.params.project).backups.createArchive({
-                services: ['databases'],
+                services: [BackupServices.Databases],
                 resourceId: data.database.$id
             });
             await invalidate(Dependencies.BACKUPS);
@@ -123,7 +123,7 @@
 
             return sdk.forProject(page.params.region, page.params.project).backups.createPolicy({
                 policyId: ID.unique(),
-                services: ['databases'],
+                services: [BackupServices.Databases],
                 retention: policy.retained,
                 schedule: policy.schedule,
                 name: policy.label,
@@ -179,6 +179,7 @@
                     buttonText="Create policy"
                     buttonEvent="create_backup"
                     buttonType="secondary"
+                    project={data.project}
                     buttonDisabled={isDisabled}
                     policiesCreated={data.policies.total}
                     maxPolicies={$currentPlan.backupPolicies}
@@ -199,6 +200,7 @@
                     buttonText="Manual backup"
                     buttonEvent="create_backup"
                     buttonType="secondary"
+                    project={data.project}
                     buttonDisabled={isDisabled}
                     buttonMethod={() => {
                         $showCreateBackup = true;
@@ -227,7 +229,7 @@
             </div>
         {:else}
             <div class="u-flex-vertical u-gap-32">
-                <LockedCard />
+                <LockedCard project={data.project} />
             </div>
         {/if}
     </div>
@@ -238,7 +240,11 @@
     onSubmit={createPolicies}
     bind:show={$showCreatePolicy}
     bind:error={policyCreateError}>
-    <CreatePolicy bind:totalPolicies isShowing={$showCreatePolicy} isFromBackupsTab />
+    <CreatePolicy
+        bind:totalPolicies
+        isShowing={$showCreatePolicy}
+        isFromBackupsTab
+        project={data.project} />
 
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => ($showCreatePolicy = false)}>Cancel</Button>

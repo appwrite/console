@@ -3,15 +3,21 @@ import { get, writable } from 'svelte/store';
 import { type FilterData } from './quickFilters';
 import { tags, type TagValue } from './store';
 
-export const parsedTags = writable<TagValue[]>([]);
+export type ParsedTag = TagValue & {
+    title: string;
+};
+
+export const parsedTags = writable<ParsedTag[]>([]);
 
 export function setFilters(localTags: TagValue[], filterCols: FilterData[], $columns: Column[]) {
     if (!localTags?.length) {
+        parsedTags.set([]);
         filterCols.forEach((filter) => {
             resetOptions(filter);
             cleanOldTags(filter?.title);
         });
     } else {
+        parsedTags.set([]);
         filterCols.forEach((filter) => {
             const id = filter?.id?.toLowerCase();
             if (id?.includes('duration')) {
@@ -47,9 +53,10 @@ export function setFilterData(filter: FilterData) {
             });
         }
         cleanOldTags(filter?.title);
-        const newTag = {
+        const newTag: ParsedTag = {
             tag: tagData.tag.replace(',', ' or '),
-            value: tagData.value
+            value: tagData.value,
+            title: filter.title
         };
 
         parsedTags.update((tags) => {
@@ -69,9 +76,10 @@ export function setTimeFilter(filter: FilterData, columns: Column[]) {
         const ranges = col.elements as { value: string; label: string }[];
         const timeRange = ranges.find((range) => range.value === timeTag.value);
         if (timeRange) {
-            const newTag = {
+            const newTag: ParsedTag = {
                 tag: `**${filter.title}** is **${timeRange.label}**`,
-                value: timeRange.value
+                value: timeRange.value,
+                title: filter.title
             };
 
             cleanOldTags(filter?.title);
@@ -102,9 +110,10 @@ export function setSizeFilter(filter: FilterData, columns: Column[]) {
         if (sizeRange) {
             cleanOldTags(filter?.title);
 
-            const newTag = {
+            const newTag: ParsedTag = {
                 tag: `**${filter.title}** is **${sizeRange.label}**`,
-                value: sizeTag.value
+                value: sizeTag.value,
+                title: filter.title
             };
             parsedTags.update((tags) => {
                 tags.push(newTag);
@@ -126,9 +135,10 @@ export function setStatusCodeFilter(filter: FilterData, columns: Column[]) {
         const codeRange = ranges.find((c) => c?.value && c.value === statusCodeTag.value);
         if (codeRange) {
             cleanOldTags(filter?.title);
-            const newTag = {
+            const newTag: ParsedTag = {
                 tag: `**${filter.title}** is **${codeRange.label}**`,
-                value: statusCodeTag.value
+                value: statusCodeTag.value,
+                title: filter.title
             };
             parsedTags.update((tags) => {
                 tags.push(newTag);
@@ -156,9 +166,10 @@ export function setDateFilter(filter: FilterData, columns: Column[]) {
         });
         if (dateRange) {
             cleanOldTags(filter?.title);
-            const newTag = {
+            const newTag: ParsedTag = {
                 tag: `**${filter.title}** is **${dateRange.label}**`,
-                value: dateTag.value
+                value: dateTag.value,
+                title: filter.title
             };
             parsedTags.update((tags) => {
                 tags.push(newTag);

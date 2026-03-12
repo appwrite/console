@@ -27,3 +27,4 @@ export function updateLayout(args: updateLayoutArguments) {
 }
 
 export const showSubNavigation = writable(false);
+export const showOnboardingAnimation = writable(false);
