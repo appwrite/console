@@ -1,35 +1,78 @@
 <script lang="ts">
     import { Trim } from '$lib/components';
     import { Link } from '$lib/elements';
+    import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
     import {
         IconCode,
+        IconExclamation,
         IconGitBranch,
         IconGitCommit,
         IconGithub,
         IconTerminal
     } from '@appwrite.io/pink-icons-svelte';
-    import { ActionMenu, Layout, Popover, Icon } from '@appwrite.io/pink-svelte';
+    import { ActionMenu, Layout, Popover, Icon, Tooltip, Skeleton } from '@appwrite.io/pink-svelte';
 
     let {
-        deployment
+        deployment,
+        resource,
+        region,
+        project
     }: {
         deployment: Models.Deployment;
+        resource?: Models.Site | Models.Function;
+        region?: string;
+        project?: string;
     } = $props();
+
+    let authorized = $state<boolean | null>(null);
+
+    async function loadAuthorized() {
+        if (!resource?.installationId || !resource?.providerRepositoryId || !region || !project) {
+            return;
+        }
+
+        try {
+            const repository = await sdk.forProject(region, project).vcs.getRepository({
+                installationId: resource.installationId,
+                providerRepositoryId: resource.providerRepositoryId
+            });
+            authorized = repository.authorized;
+        } catch (err) {
+            console.warn(err);
+        }
+    }
 </script>
 
 {#if deployment.type === 'vcs'}
     <Popover padding="none" let:toggle>
         <div>
-            <Link
-                on:click={(e) => {
-                    e.preventDefault();
-                    toggle(e);
-                }}>
+            {#await loadAuthorized()}
                 <Layout.Stack direction="row" gap="xs" alignItems="center">
-                    <Icon icon={IconGithub} size="s" /> GitHub
+                    <Skeleton variant="line" width={100} height={20} />
                 </Layout.Stack>
-            </Link>
+            {:then}
+                <Layout.Stack direction="row" gap="xs" alignItems="center">
+                    <Link
+                        on:click={(e) => {
+                            e.preventDefault();
+                            toggle(e);
+                        }}>
+                        <Layout.Stack direction="row" gap="xs" alignItems="center">
+                            <Icon icon={IconGithub} size="s" /> GitHub
+                        </Layout.Stack>
+                    </Link>
+                    {#if authorized === false}
+                        <Tooltip>
+                            <Icon icon={IconExclamation} size="s" color="--bgcolor-warning" />
+                            <span slot="tooltip">
+                                Integration not authorized for auto deployments.<br />
+                                To enable, add the repository to the installation settings on GitHub.
+                            </span>
+                        </Tooltip>
+                    {/if}
+                </Layout.Stack>
+            {/await}
         </div>
         <svelte:fragment slot="tooltip">
             <ActionMenu.Root>
