@@ -1,4 +1,9 @@
-<!-- TODO: remove inline styling -->
-<ul class="list" style:gap="0.25rem">
+<ul class="list">
     <slot />
 </ul>
+
+<style>
+.list {
+    gap: 0.25rem;
+}
+</style>
