@@ -91,20 +91,22 @@
     </Layout.Stack>
 
     <svelte:fragment slot="footer">
-        <Layout.Stack direction="row" justifyContent="flex-end">
+        <Layout.Stack direction="row" justifyContent="space-between">
             <Button text disabled={loading} on:click={handleBackToOrganization}>
                 Back to organization
             </Button>
-            <Button secondary disabled={loading} on:click={handleResume}>
-                {#if loading}
-                    Restoring...
-                {:else}
-                    Restore project
-                {/if}
-            </Button>
-            <Button disabled={loading} on:click={handleUpgrade}>
-                Upgrade
-            </Button>
+            <Layout.Stack direction="row" justifyContent="flex-end">
+                <Button secondary disabled={loading} on:click={handleResume}>
+                    {#if loading}
+                        Restoring...
+                    {:else}
+                        Restore project
+                    {/if}
+                </Button>
+                <Button disabled={loading} on:click={handleUpgrade}>
+                    Upgrade
+                </Button>
+            </Layout.Stack>
         </Layout.Stack>
     </svelte:fragment>
 </Modal>
