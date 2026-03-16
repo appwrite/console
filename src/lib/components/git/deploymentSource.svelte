@@ -2,7 +2,7 @@
     import { Trim } from '$lib/components';
     import { Link } from '$lib/elements';
     import { sdk } from '$lib/stores/sdk';
-    import type { Models } from '@appwrite.io/console';
+    import { type Models } from '@appwrite.io/console';
     import {
         IconCode,
         IconExclamation,
@@ -11,7 +11,15 @@
         IconGithub,
         IconTerminal
     } from '@appwrite.io/pink-icons-svelte';
-    import { ActionMenu, Layout, Popover, Icon, Tooltip, Skeleton } from '@appwrite.io/pink-svelte';
+    import {
+        ActionMenu,
+        Layout,
+        Popover,
+        Icon,
+        Skeleton,
+        Typography
+    } from '@appwrite.io/pink-svelte';
+    import Button from '$lib/elements/forms/button.svelte';
 
     let {
         deployment,
@@ -25,19 +33,18 @@
         project?: string;
     } = $props();
 
-    let authorized = $state<boolean | null>(null);
+    let repository = $state<Models.ProviderRepository | null>(null);
 
-    async function loadAuthorized() {
+    async function loadRepository() {
         if (!resource?.installationId || !resource?.providerRepositoryId || !region || !project) {
             return;
         }
 
         try {
-            const repository = await sdk.forProject(region, project).vcs.getRepository({
+            repository = await sdk.forProject(region, project).vcs.getRepository({
                 installationId: resource.installationId,
                 providerRepositoryId: resource.providerRepositoryId
             });
-            authorized = repository.authorized;
         } catch (err) {
             console.warn(err);
         }
@@ -47,7 +54,7 @@
 {#if deployment.type === 'vcs'}
     <Popover padding="none" let:toggle>
         <div>
-            {#await loadAuthorized()}
+            {#await loadRepository()}
                 <Layout.Stack direction="row" gap="xs" alignItems="center">
                     <Skeleton variant="line" width={100} height={20} />
                 </Layout.Stack>
@@ -62,14 +69,25 @@
                             <Icon icon={IconGithub} size="s" /> GitHub
                         </Layout.Stack>
                     </Link>
-                    {#if authorized === false}
-                        <Tooltip>
-                            <Icon icon={IconExclamation} size="s" color="--bgcolor-warning" />
-                            <span slot="tooltip">
-                                Integration not authorized for auto deployments.<br />
-                                To enable, add the repository to the installation settings on GitHub.
-                            </span>
-                        </Tooltip>
+                    {#if repository?.authorized === false}
+                        <Popover let:toggle placement="bottom-start">
+                            <Button extraCompact on:click={toggle}>
+                                <Icon icon={IconExclamation} size="s" color="--bgcolor-warning" />
+                            </Button>
+                            <svelte:fragment slot="tooltip">
+                                <Typography.Text
+                                    variant="m-400"
+                                    color="--fgcolor-neutral-secondary">
+                                    Integration not authorized for auto deployments.<br />
+                                    To enable, add the repository to the installation settings on <Link
+                                        variant="muted"
+                                        external
+                                        href={`https://github.com/settings/installations/${repository.providerInstallationId}`}>
+                                        GitHub
+                                    </Link>.
+                                </Typography.Text>
+                            </svelte:fragment>
+                        </Popover>
                     {/if}
                 </Layout.Stack>
             {/await}
