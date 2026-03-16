@@ -75,7 +75,7 @@ export type DatabaseSdkResult = {
     deleteRecord: (params: {
         databaseId: string;
         entityId: string;
-        recordId?: string;
+        recordId: string;
         databaseType?: DatabaseType;
     }) => Promise<Record>;
     deleteRecords: (params: {

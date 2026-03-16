@@ -48,6 +48,7 @@
         required: column?.required ?? false,
         array: column?.array ?? false,
         default: column?.default ?? null,
+        encrypt: (column as { encrypt?: boolean })?.encrypt ?? false,
         ...column
     } as Partial<Columns>);
 
@@ -61,7 +62,8 @@
         data = {
             required: false,
             array: false,
-            default: null
+            default: null,
+            encrypt: false
         };
 
         /* default to text */

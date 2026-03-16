@@ -1,7 +1,7 @@
 <script lang="ts">
     import { page } from '$app/state';
     import { Button } from '$lib/elements/forms';
-    import { organization } from '$lib/stores/organization';
+    import { currentPlan, organization } from '$lib/stores/organization';
     import { HeaderAlert } from '$lib/layout';
     import { isCloud } from '$lib/system';
     import { getChangePlanUrl } from '$lib/stores/billing';
@@ -17,7 +17,7 @@
 </script>
 
 {#if $showPolicyAlert && isCloud && $organization?.$id && page.url.pathname.match(/\/databases\/database-[^/]+$/)}
-    {@const areBackupsAvailable = $organization?.billingPlanDetails.backupsEnabled}
+    {@const areBackupsAvailable = $currentPlan?.backupsEnabled}
 
     {@const subtitle = !areBackupsAvailable
         ? 'Upgrade your plan to ensure your data stays safe and backed up'

@@ -20,7 +20,7 @@
     },
     "dependencies": {
         "@ai-sdk/svelte": "^1.1.24",
-        "@appwrite.io/console": "https://pkg.vc/-/@appwrite/@appwrite.io/console@d6a457f",
+        "@appwrite.io/console": "github:appwrite/sdk-for-console#b8d2d50",
         "@appwrite.io/pink-icons": "0.25.0",
         "@appwrite.io/pink-icons-svelte": "https://pkg.vc/-/@appwrite/@appwrite.io/pink-icons-svelte@df765cc",
         "@appwrite.io/pink-legacy": "^1.0.3",
@@ -101,6 +101,8 @@
         "vitest": "^3.2.4"
     },
     "overrides": {
-        "vite": "npm:rolldown-vite@latest"
+        "vite": "npm:rolldown-vite@latest",
+        "minimatch": "10.2.3",
+        "immutable": "^5.1.5"
     }
 }

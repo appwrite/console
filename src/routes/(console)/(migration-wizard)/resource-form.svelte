@@ -7,11 +7,18 @@
         createMigrationProviderStore,
         type MigrationFormData,
         providerResources,
-        resourcesToMigrationForm
+        resourcesToMigrationForm,
+        MigrationResources
     } from '$lib/stores/migration';
     import { Button } from '$lib/elements/forms';
     import { wizard } from '$lib/stores/wizard';
-    import { Resources, type Models } from '@appwrite.io/console';
+    import {
+        type Models,
+        AppwriteMigrationResource,
+        FirebaseMigrationResource,
+        NHostMigrationResource,
+        SupabaseMigrationResource
+    } from '@appwrite.io/console';
     import type { sdk } from '$lib/stores/sdk';
     import ImportReport from '$routes/(console)/project-[region]-[project]/settings/migrations/(import)/importReport.svelte';
 
@@ -46,7 +53,7 @@
             switch ($provider.provider) {
                 case 'appwrite':
                     report = await projectSdk.migrations.getAppwriteReport({
-                        resources: providerResources.appwrite,
+                        resources: providerResources.appwrite as AppwriteMigrationResource[],
                         endpoint: $provider.endpoint,
                         projectID: $provider.projectID,
                         key: $provider.apiKey
@@ -54,7 +61,7 @@
                     break;
                 case 'supabase':
                     report = await projectSdk.migrations.getSupabaseReport({
-                        resources: providerResources.supabase,
+                        resources: providerResources.supabase as SupabaseMigrationResource[],
                         endpoint: $provider.endpoint,
                         apiKey: $provider.apiKey,
                         databaseHost: $provider.host,
@@ -65,13 +72,13 @@
                     break;
                 case 'firebase':
                     report = await projectSdk.migrations.getFirebaseReport({
-                        resources: providerResources.firebase,
+                        resources: providerResources.firebase as FirebaseMigrationResource[],
                         serviceAccount: $provider.serviceAccount
                     });
                     break;
                 case 'nhost':
                     report = await projectSdk.migrations.getNHostReport({
-                        resources: providerResources.nhost,
+                        resources: providerResources.nhost as NHostMigrationResource[],
                         subdomain: $provider.subdomain,
                         region: $provider.region,
                         adminSecret: $provider.adminSecret,
@@ -100,13 +107,19 @@
         }
 
         if (groupKey === 'storage') {
-            return resources.includes(Resources.Bucket) && resources.includes(Resources.File);
+            return (
+                resources.includes(MigrationResources.Bucket) &&
+                resources.includes(MigrationResources.File)
+            );
         }
 
-        // Map groupKey to Resources enum
-        const groupToResource: Record<string, Resources> = {
-            users: Resources.User,
-            databases: Resources.Database
+        // Map groupKey to MigrationResources enum
+        const groupToResource: Record<
+            string,
+            (typeof MigrationResources)[keyof typeof MigrationResources]
+        > = {
+            users: MigrationResources.User,
+            databases: MigrationResources.Database
         };
         const resource = groupToResource[groupKey];
         return resource ? resources.includes(resource) : false;

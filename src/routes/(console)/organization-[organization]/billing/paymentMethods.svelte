@@ -54,6 +54,7 @@
     let showUpdateState = $state(false);
     let isSelectedBackup = $state(false);
     let paymentMethodNeedingState: Models.PaymentMethod | null = $state(null);
+    let dismissedPaymentMethodIds = $state<string[]>([]);
 
     const hasPaymentError = $derived.by(() => {
         return (
@@ -117,7 +118,8 @@
                 (method: Models.PaymentMethod) =>
                     method?.country?.toLowerCase() === 'us' &&
                     (!method.state || method.state.trim() === '') &&
-                    !!method.last4
+                    !!method.last4 &&
+                    !dismissedPaymentMethodIds.includes(method.$id)
             );
 
             if (usMethodWithoutState) {
@@ -129,6 +131,10 @@
 
     $effect(() => {
         if (!showUpdateState && paymentMethodNeedingState) {
+            dismissedPaymentMethodIds = [
+                ...dismissedPaymentMethodIds,
+                paymentMethodNeedingState.$id
+            ];
             paymentMethodNeedingState = null;
         }
     });

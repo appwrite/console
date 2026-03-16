@@ -138,7 +138,22 @@
     }
 
     function handleInvalid(e: CustomEvent) {
-        const reason = e.detail?.reason ?? '';
+        let reason = e.detail?.reason ?? '';
+
+        if (!reason) {
+            const nativeEvent = e.detail as Event | undefined;
+            const input = (nativeEvent?.currentTarget ?? nativeEvent?.target) as
+                | HTMLInputElement
+                | undefined;
+            const pickedFiles = Array.from(input?.files ?? []);
+
+            if (pickedFiles.some((file) => file.size > maxSize)) {
+                reason = InvalidFileType.SIZE;
+            } else if (pickedFiles.some((file) => !file.name.toLowerCase().endsWith('.tar.gz'))) {
+                reason = InvalidFileType.EXTENSION;
+            }
+        }
+
         if (reason === InvalidFileType.EXTENSION) {
             addNotification({
                 type: 'error',
@@ -147,7 +162,7 @@
         } else if (reason === InvalidFileType.SIZE) {
             addNotification({
                 type: 'error',
-                message: 'File size exceeds 10MB'
+                message: `File size exceeds ${readableMaxSize.value}${readableMaxSize.unit}`
             });
         } else {
             addNotification({

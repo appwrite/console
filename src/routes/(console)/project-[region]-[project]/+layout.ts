@@ -11,13 +11,25 @@ import { loadAvailableRegions } from '$routes/(console)/regions';
 import { type Models, Platform } from '@appwrite.io/console';
 import { redirect } from '@sveltejs/kit';
 import { resolve } from '$app/paths';
+import { generateFingerprintToken } from '$lib/helpers/fingerprint';
 import { normalizeConsoleVariables } from '$lib/helpers/domains';
+import { browser } from '$app/environment';
 
 export const load: LayoutLoad = async ({ params, depends, parent }) => {
     const { plansInfo, organizations, preferences: prefs } = await parent();
     depends(Dependencies.PROJECT);
 
     const project = await sdk.forConsole.projects.get({ projectId: params.project });
+    if (project.status !== 'active' && project.status !== 'paused') {
+        // project isn't active, redirect back to organizations page
+        redirect(
+            303,
+            resolve('/(console)/organization-[organization]', {
+                organization: project.teamId
+            })
+        );
+    }
+
     project.region ??= 'default';
 
     // fast path without a network call!
@@ -90,6 +102,22 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
     if (!includedInBasePlans) {
         // save the custom plan to `plansInfo` cache.
         plansInfo.set(organization.billingPlanId, organizationPlan);
+    }
+
+    // Track console access for cloud projects (fire-and-forget, backend has 6-day cooldown).
+    // Skip if paused — user must explicitly resume via the paused project modal.
+    if (isCloud && browser && project.status !== 'paused') {
+        generateFingerprintToken()
+            .then((fingerprint) => {
+                sdk.forConsole.client.headers['X-Appwrite-Console-Fingerprint'] = fingerprint;
+                return sdk.forConsole.projects.updateConsoleAccess({
+                    projectId: params.project
+                });
+            })
+            .catch((e) => console.error('Failed to update console access:', e))
+            .finally(() => {
+                delete sdk.forConsole.client.headers['X-Appwrite-Console-Fingerprint'];
+            });
     }
 
     return {
