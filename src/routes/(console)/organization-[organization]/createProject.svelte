@@ -36,7 +36,11 @@
             });
             show = false;
             dispatch('created', project);
-            await invalidate(Dependencies.ORGANIZATION);
+            try {
+                await invalidate(Dependencies.ORGANIZATION);
+            } catch (invalidateError) {
+                trackError(invalidateError, Submit.ProjectCreate);
+            }
             trackEvent(Submit.ProjectCreate, {
                 customId: !!id,
                 teamId
