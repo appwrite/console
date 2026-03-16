@@ -6,7 +6,7 @@
     import { Modal } from '$lib/components';
     import { type Entity, SideSheet } from '$database/(entity)';
     import { isSmallViewport } from '$lib/stores/viewport';
-    import { IndexType, OrderBy } from '@appwrite.io/console';
+    import { DatabasesIndexType, OrderBy } from '@appwrite.io/console';
     import { capitalize } from '$lib/helpers/string';
     import type { Columns } from '$database/store';
     import { isRelationship } from '../table-[table]/rows/store';
@@ -67,7 +67,7 @@
 
             indexes = mockSuggestions.columns.slice(0, 3).map((column, index) => ({
                 key: column.name,
-                type: IndexType.Key,
+                type: DatabasesIndexType.Key,
                 fields: [column.name],
                 orders: index === 2 ? OrderBy.Desc : OrderBy.Asc,
                 lengths: []
@@ -84,7 +84,7 @@
                 indexes = suggestions.indexes.map((index) => {
                     return {
                         key: index.columns[0],
-                        type: index.type as IndexType,
+                        type: index.type as DatabasesIndexType,
                         orders: (index.orders?.[0] as OrderBy) || OrderBy.Asc,
                         fields: index.columns,
                         lengths: index.lengths ?? []
@@ -112,7 +112,7 @@
         if (indexes.length < MAX_INDEXES) {
             indexes.push({
                 key: '',
-                type: IndexType.Key,
+                type: DatabasesIndexType.Key,
                 orders: OrderBy.Asc,
                 fields: [],
                 lengths: null
@@ -133,9 +133,9 @@
         }
     }
 
-    function getOrderOptions(selectedType: IndexType) {
+    function getOrderOptions(selectedType: DatabasesIndexType) {
         const base = [OrderBy.Asc, OrderBy.Desc];
-        const values = selectedType === IndexType.Spatial ? [...base, null] : base;
+        const values = selectedType === DatabasesIndexType.Spatial ? [...base, null] : base;
 
         return values.map((order) => ({
             label: order ? capitalize(String(order)) : 'None',
@@ -165,7 +165,7 @@
 
         // prepare lengths array
         let lengths: (number | null)[];
-        if (index.type === IndexType.Key) {
+        if (index.type === DatabasesIndexType.Key) {
             // only validate if it's a key index
             lengths = index.fields.map((columnKey, i) => {
                 const maxSize = columnMap.get(columnKey);
@@ -291,7 +291,7 @@
         return false; // close the sheet!
     }
 
-    const typeOptions = Object.values(IndexType).map((type) => ({
+    const typeOptions = Object.values(DatabasesIndexType).map((type) => ({
         label: capitalize(type),
         value: type
     }));

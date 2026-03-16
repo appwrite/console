@@ -31,7 +31,7 @@ export function getDatabaseTypeTitle(database: Models.Database) {
             return 'TablesDB';
         case 'documentsdb':
             return 'DocumentsDB';
-        case 'vectordb':
-            return 'VectorDB';
+        case 'vectorsdb':
+            return 'VectorsDB';
     }
 }

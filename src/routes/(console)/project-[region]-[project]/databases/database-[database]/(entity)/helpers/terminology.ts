@@ -1,15 +1,15 @@
 import type { Page } from '@sveltejs/kit';
 
 import { capitalize, plural } from '$lib/helpers/string';
-import { AppwriteException, type IndexType, type Models } from '@appwrite.io/console';
+import { AppwriteException, type DatabasesIndexType, type Models } from '@appwrite.io/console';
 import type { Attributes, Collection, Columns, Table } from '$database/store';
 import type { Term, TerminologyResult, TerminologyShape } from '$database/(entity)/helpers/types';
 
 type BaseTerminology = typeof baseTerminology;
 type ImplementedDBTypes = Omit<BaseTerminology, 'legacy'>;
 
-/* manual type for the time being because vectordb is pending */
-export type DatabaseType = 'legacy' | 'tablesdb' | 'documentsdb' | 'vectordb';
+/* manual type for the time being because vectorsdb is pending */
+export type DatabaseType = 'legacy' | 'tablesdb' | 'documentsdb' | 'vectorsdb';
 
 export type RecordType = ImplementedDBTypes[keyof ImplementedDBTypes]['record'];
 
@@ -28,7 +28,7 @@ export type Record = Partial<Models.Document | Models.Row> & {
 
 export type Index = Partial<Models.Index | Models.ColumnIndex> & {
     fields: Models.Index['attributes'] | Models.ColumnIndex['columns'];
-    type: IndexType;
+    type: DatabasesIndexType;
 };
 
 export type EntityList = {
@@ -62,7 +62,7 @@ export const baseTerminology = {
         field: 'attribute',
         record: 'document'
     },
-    vectordb: {
+    vectorsdb: {
         entity: 'table',
         field: 'column',
         record: 'row'
@@ -99,7 +99,7 @@ const terminologyData = Object.fromEntries(
 export function toSupportiveIndex(index: Models.Index | Models.ColumnIndex): Index {
     return {
         ...index,
-        type: index.type as IndexType,
+        type: index.type as DatabasesIndexType,
         fields: (index as Models.Index).attributes ?? (index as Models.ColumnIndex).columns ?? []
     };
 }

@@ -13,7 +13,7 @@ import {
     toSupportiveIndex
 } from './terminology';
 
-import type { IndexType, Models, OrderBy } from '@appwrite.io/console';
+import type { Models, OrderBy, TablesDBIndexType, DocumentsDBIndexType, VectorsDBIndexType } from '@appwrite.io/console';
 
 export type DatabaseSdkResult = {
     create: (
@@ -30,7 +30,7 @@ export type DatabaseSdkResult = {
         entityId: string;
         name: string;
         databaseType?: DatabaseType;
-        dimension?: number /* vectorDB specific */;
+        dimension?: number /* vectorsDB specific */;
     }) => Promise<Entity>;
     getEntity: (params: {
         databaseId: string;
@@ -88,7 +88,7 @@ export type DatabaseSdkResult = {
         databaseId: string;
         entityId: string;
         key: string;
-        type: IndexType;
+        type: string;
         attributes: string[];
         lengths?: number[];
         orders?: OrderBy[];
@@ -127,8 +127,8 @@ export function useDatabaseSdk(
                 case 'documentsdb': {
                     return await baseSdk.documentsDB.create(params);
                 }
-                case 'vectordb': {
-                    return await baseSdk.vectorDB.create(params);
+                case 'vectorsdb': {
+                    return await baseSdk.vectorsDB.create(params);
                 }
                 default:
                     throw new Error('Unknown database type');
@@ -139,7 +139,7 @@ export function useDatabaseSdk(
             const results = await Promise.all([
                 baseSdk.tablesDB.list(params),
                 baseSdk.documentsDB.list(params),
-                baseSdk.vectorDB.list(params)
+                baseSdk.vectorsDB.list(params)
             ]);
 
             return results.reduce(
@@ -169,8 +169,8 @@ export function useDatabaseSdk(
 
                     return toSupportiveEntity(table);
                 }
-                case 'vectordb': {
-                    const collection = await baseSdk.vectorDB.createCollection({
+                case 'vectorsdb': {
+                    const collection = await baseSdk.vectorsDB.createCollection({
                         ...params,
                         dimension: params.dimension,
                         collectionId: params.entityId
@@ -195,8 +195,8 @@ export function useDatabaseSdk(
                         await baseSdk.documentsDB.listCollections(params);
                     return { total, entities: collections.map(toSupportiveEntity) };
                 }
-                case 'vectordb': {
-                    const { total, collections } = await baseSdk.vectorDB.listCollections(params);
+                case 'vectorsdb': {
+                    const { total, collections } = await baseSdk.vectorsDB.listCollections(params);
                     return { total, entities: collections.map(toSupportiveEntity) };
                 }
                 default:
@@ -222,8 +222,8 @@ export function useDatabaseSdk(
 
                     return toSupportiveEntity(collection);
                 }
-                case 'vectordb': {
-                    const collection = await baseSdk.vectorDB.getCollection({
+                case 'vectorsdb': {
+                    const collection = await baseSdk.vectorsDB.getCollection({
                         databaseId: params.databaseId,
                         collectionId: params.entityId
                     });
@@ -242,8 +242,8 @@ export function useDatabaseSdk(
                     return await baseSdk.tablesDB.delete(params);
                 case 'documentsdb':
                     return await baseSdk.documentsDB.delete(params);
-                case 'vectordb':
-                    return await baseSdk.vectorDB.delete(params);
+                case 'vectorsdb':
+                    return await baseSdk.vectorsDB.delete(params);
                 default:
                     throw new Error(`Unknown database type`);
             }
@@ -262,8 +262,8 @@ export function useDatabaseSdk(
                         databaseId: params.databaseId,
                         collectionId: params.entityId
                     });
-                case 'vectordb':
-                    return await baseSdk.vectorDB.deleteCollection({
+                case 'vectorsdb':
+                    return await baseSdk.vectorsDB.deleteCollection({
                         databaseId: params.databaseId,
                         collectionId: params.entityId
                     });
@@ -291,8 +291,8 @@ export function useDatabaseSdk(
                         data: params.data,
                         permissions: params.permissions
                     });
-                case 'vectordb': {
-                    return await baseSdk.vectorDB.createDocument({
+                case 'vectorsdb': {
+                    return await baseSdk.vectorsDB.createDocument({
                         databaseId: params.databaseId,
                         collectionId: params.entityId,
                         documentId: params.recordId,
@@ -324,8 +324,8 @@ export function useDatabaseSdk(
                         data: params.data,
                         permissions: params.permissions
                     });
-                case 'vectordb': {
-                    const { documents } = await baseSdk.vectorDB.upsertDocument({
+                case 'vectorsdb': {
+                    const { documents } = await baseSdk.vectorsDB.upsertDocument({
                         databaseId: params.databaseId,
                         collectionId: params.entityId,
                         documentId: params.recordId,
@@ -357,8 +357,8 @@ export function useDatabaseSdk(
                         documentId: params.recordId,
                         permissions: params.permissions
                     });
-                case 'vectordb': {
-                    const { documents } = await baseSdk.vectorDB.upsertDocument({
+                case 'vectorsdb': {
+                    const { documents } = await baseSdk.vectorsDB.upsertDocument({
                         databaseId: params.databaseId,
                         collectionId: params.entityId,
                         documentId: params.recordId,
@@ -391,12 +391,12 @@ export function useDatabaseSdk(
                     });
                     return toSupportiveRecord(document);
                 }
-                case 'vectordb': {
+                case 'vectorsdb': {
                     if (!params.recordId) {
-                        throw new Error('Record ID is required to delete a VectorDB document');
+                        throw new Error('Record ID is required to delete a VectorsDB document');
                     }
 
-                    const document = await baseSdk.vectorDB.deleteDocument({
+                    const document = await baseSdk.vectorsDB.deleteDocument({
                         databaseId: params.databaseId,
                         collectionId: params.entityId,
                         documentId: params.recordId
@@ -428,8 +428,8 @@ export function useDatabaseSdk(
                     });
                     return { total, records: documents.map(toSupportiveRecord) };
                 }
-                case 'vectordb': {
-                    const { total, documents } = await baseSdk.vectorDB.deleteDocuments({
+                case 'vectorsdb': {
+                    const { total, documents } = await baseSdk.vectorsDB.deleteDocuments({
                         databaseId: params.databaseId,
                         collectionId: params.entityId,
                         queries: params.queries
@@ -450,7 +450,7 @@ export function useDatabaseSdk(
                         databaseId: params.databaseId,
                         tableId: params.entityId,
                         key: params.key,
-                        type: params.type,
+                        type: params.type as TablesDBIndexType,
                         columns: params.attributes,
                         lengths: params.lengths,
                         orders: params.orders
@@ -462,19 +462,19 @@ export function useDatabaseSdk(
                         databaseId: params.databaseId,
                         collectionId: params.entityId,
                         key: params.key,
-                        type: params.type,
+                        type: params.type as DocumentsDBIndexType,
                         attributes: params.attributes,
                         lengths: params.lengths,
                         orders: params.orders
                     });
                     return toSupportiveIndex(index);
                 }
-                case 'vectordb': {
-                    const index = await baseSdk.vectorDB.createIndex({
+                case 'vectorsdb': {
+                    const index = await baseSdk.vectorsDB.createIndex({
                         databaseId: params.databaseId,
                         collectionId: params.entityId,
                         key: params.key,
-                        type: params.type,
+                        type: params.type as VectorsDBIndexType,
                         attributes: params.attributes,
                         lengths: params.lengths,
                         orders: params.orders
