@@ -2,7 +2,7 @@
     import { Button } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
     import { goto, invalidate } from '$app/navigation';
-    import { base, resolve } from '$app/paths';
+    import { resolve } from '$app/paths';
     import { Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError } from '$lib/actions/analytics';
@@ -75,12 +75,12 @@
     }
 </script>
 
-<Modal title="Project paused" bind:open={show} size="big" dismissible={false}>
+<Modal title="Project paused" bind:open={show} size="l" dismissible={false}>
     <Layout.Stack gap="m">
         <Typography.Text>This project has been paused due to inactivity.</Typography.Text>
         <Typography.Text>
-            Your data is safe and will remain intact. Upgrade your plan to keep your projects active,
-            or restore the project to continue using it.
+            Your data is safe and will remain intact. Upgrade your plan to keep your projects
+            active, or restore the project to continue using it.
         </Typography.Text>
 
         {#if error}
@@ -103,9 +103,7 @@
                         Restore project
                     {/if}
                 </Button>
-                <Button disabled={loading} on:click={handleUpgrade}>
-                    Upgrade
-                </Button>
+                <Button disabled={loading} on:click={handleUpgrade}>Upgrade</Button>
             </Layout.Stack>
         </Layout.Stack>
     </svelte:fragment>
