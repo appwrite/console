@@ -74,7 +74,7 @@
     const spreadsheetColumns = $derived([
         {
             id: 'key',
-            width: getColumnWidth('key', $isSmallViewport ? 250: 280),
+            width: getColumnWidth('key', $isSmallViewport ? 250 : 280),
             minimumWidth: $isSmallViewport ? 250 : 280,
             resizable: true
         },
