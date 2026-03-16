@@ -2,7 +2,7 @@
     import { Button } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
     import { goto, invalidate } from '$app/navigation';
-    import { resolve } from '$app/paths';
+    import { base, resolve } from '$app/paths';
     import { Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError } from '$lib/actions/analytics';
@@ -57,13 +57,30 @@
             loading = false;
         }
     }
+
+    function handleUpgrade() {
+        goto(
+            resolve('/(console)/organization-[organization]/change-plan', {
+                organization: teamId
+            })
+        );
+    }
+
+    function handleBackToOrganization() {
+        goto(
+            resolve('/(console)/organization-[organization]', {
+                organization: teamId
+            })
+        );
+    }
 </script>
 
-<Modal title="Project paused" bind:open={show} size="s" dismissible={false}>
+<Modal title="Project paused" bind:open={show} size="big" dismissible={false}>
     <Layout.Stack gap="m">
         <Typography.Text>This project has been paused due to inactivity.</Typography.Text>
         <Typography.Text>
-            Your data is safe and will remain intact. Resume the project to continue using it.
+            Your data is safe and will remain intact. Upgrade your plan to keep your projects active,
+            or restore the project to continue using it.
         </Typography.Text>
 
         {#if error}
@@ -74,25 +91,22 @@
     </Layout.Stack>
 
     <svelte:fragment slot="footer">
-        <Layout.Stack direction="row" justifyContent="flex-end">
-            <Button
-                text
-                disabled={loading}
-                on:click={() =>
-                    goto(
-                        resolve('/(console)/organization-[organization]', {
-                            organization: teamId
-                        })
-                    )}>
-                Cancel
+        <Layout.Stack direction="row" justifyContent="space-between">
+            <Button text disabled={loading} on:click={handleBackToOrganization}>
+                Back to organization
             </Button>
-            <Button disabled={loading} on:click={handleResume}>
-                {#if loading}
-                    Resuming...
-                {:else}
-                    Resume project
-                {/if}
-            </Button>
+            <Layout.Stack direction="row" justifyContent="flex-end">
+                <Button secondary disabled={loading} on:click={handleResume}>
+                    {#if loading}
+                        Restoring...
+                    {:else}
+                        Restore project
+                    {/if}
+                </Button>
+                <Button disabled={loading} on:click={handleUpgrade}>
+                    Upgrade
+                </Button>
+            </Layout.Stack>
         </Layout.Stack>
     </svelte:fragment>
 </Modal>

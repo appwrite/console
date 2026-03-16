@@ -23,10 +23,13 @@
         databases: { root: 'Databases', rows: 'Include rows' },
         functions: {
             root: 'Functions',
-            env: 'Include environment variables',
-            inactive: 'Include inactive deployments'
+            deploymentInactive: 'Include inactive deployments'
         },
-        storage: { root: 'Storage' }
+        storage: { root: 'Storage' },
+        sites: {
+            root: 'Sites',
+            deploymentInactive: 'Include inactive deployments'
+        }
     };
 
     const descriptionMap = {
@@ -40,8 +43,11 @@
         },
         functions: {
             root: 'Import all functions and their active deployment',
-            env: 'Import all environment variables',
-            inactive: 'Import all deployments that are not currently active'
+            deploymentInactive: 'Import all deployments that are not currently active'
+        },
+        sites: {
+            root: 'Import all sites and their active deployment',
+            deploymentInactive: 'Import all deployments that are not currently active'
         }
     };
 
@@ -49,24 +55,16 @@
 
     let parentState: boolean | 'indeterminate';
 
-    $: {
-        const total = formGroupChildren.length;
-        const checked = formGroupChildren.filter((key) => formGroup[key]).length;
-
-        if (checked === 0) {
-            parentState = false;
-        } else if (checked === total) {
-            parentState = true;
-        } else {
-            parentState = 'indeterminate';
-        }
-    }
+    $: parentState = formGroup.root;
 
     function onParentChange(event: CustomEvent<boolean | 'indeterminate'>) {
         if (event.detail === 'indeterminate') return;
         const updated = { ...formGroup };
-        for (const key of Object.keys(formGroup)) {
-            updated[key] = event.detail;
+        updated.root = event.detail;
+        if (!event.detail) {
+            for (const key of formGroupChildren) {
+                updated[key] = false;
+            }
         }
 
         dispatch('updateFormGroup', updated);
@@ -114,7 +112,11 @@
                     <Selector.Checkbox
                         size="s"
                         id={key}
-                        bind:checked={formGroup[key]}
+                        checked={formGroup[key]}
+                        on:change={(event) => {
+                            const updated = { ...formGroup, [key]: event.detail };
+                            dispatch('updateFormGroup', updated);
+                        }}
                         label={labelMap[groupKey]?.[key] ?? key}
                         description={descriptionMap[groupKey]?.[key]} />
                 </div>
