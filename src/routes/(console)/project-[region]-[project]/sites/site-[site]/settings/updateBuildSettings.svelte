@@ -184,8 +184,8 @@
 <Form onSubmit={update}>
     <CardGrid>
         <svelte:fragment slot="title">Build settings</svelte:fragment>
-        Default build settings are configured based on your framework, ensuring optimal performance.
-        Adjust the settings here if needed.
+        Default build settings are configured based on your framework, ensuring optimal performance. Adjust
+        the settings here if needed.
         <svelte:fragment slot="aside">
             {@const adapterData = adapterDataList.find(
                 (adapterData) => adapterData.framework === frameworkKey.toLowerCase()
