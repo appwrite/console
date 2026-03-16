@@ -51,8 +51,7 @@ export const load: LayoutLoad = async ({ depends, parent }) => {
                 await sdk.forConsole.projects.list({
                     queries: [
                         Query.equal('teamId', currentOrgId),
-                        Query.limit(1),
-                        Query.select(['$id'])
+                        Query.limit(1)
                     ]
                 })
             ).total;
