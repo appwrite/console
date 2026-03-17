@@ -73,7 +73,7 @@
                 enabled: true,
                 entrypoint,
                 commands: buildCommand,
-                specification: specification || undefined
+                buildSpecification: specification || undefined
             });
 
             // Add domain

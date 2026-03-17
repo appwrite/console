@@ -17,8 +17,8 @@
     export let site: Models.Site;
     export let specs: Models.SpecificationList;
 
-    let specification = site.specification;
-    let originalSpecification = site.specification;
+    let specification = site.buildSpecification;
+    let originalSpecification = site.buildSpecification;
 
     async function updateLogging() {
         try {
@@ -40,7 +40,7 @@
                 providerBranch: site?.providerBranch || undefined,
                 providerSilentMode: site?.providerSilentMode || undefined,
                 providerRootDirectory: site?.providerRootDirectory || undefined,
-                specification: specification || undefined
+                buildSpecification: specification || undefined
             });
             await invalidate(Dependencies.SITE);
             originalSpecification = specification;

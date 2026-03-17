@@ -112,8 +112,8 @@
                 site.adapter = adapter;
             }
             if (specs && specs.specifications?.length) {
-                if (!specs.specifications.some((s) => s.slug === site.specification)) {
-                    site.specification = specs.specifications[0].slug;
+                if (!specs.specifications.some((s) => s.slug === site.buildSpecification)) {
+                    site.buildSpecification = specs.specifications[0].slug;
                 }
             }
         }
@@ -128,10 +128,10 @@
         }
         // only allow enabled specsification for it
         const enabledSpecs = specs?.specifications?.filter((s) => s.enabled) ?? [];
-        let specToSend = enabledSpecs.some((s) => s.slug === site.specification)
-            ? site.specification
+        let specToSend = enabledSpecs.some((s) => s.slug === site.buildSpecification)
+            ? site.buildSpecification
             : enabledSpecs[0]?.slug;
-        site.specification = specToSend;
+        site.buildSpecification = specToSend;
         try {
             await sdk.forProject(page.params.region, page.params.project).sites.update({
                 siteId: site.$id,
@@ -151,7 +151,7 @@
                 providerBranch: site.providerBranch || undefined,
                 providerSilentMode: site.providerSilentMode || undefined,
                 providerRootDirectory: site.providerRootDirectory || undefined,
-                specification: specToSend || undefined
+                buildSpecification: specToSend || undefined
             });
             await invalidate(Dependencies.SITE);
             addNotification({

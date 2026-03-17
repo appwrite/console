@@ -36,7 +36,7 @@
                 providerBranch: site?.providerBranch || undefined,
                 providerSilentMode: site?.providerSilentMode || undefined,
                 providerRootDirectory: site?.providerRootDirectory || undefined,
-                specification: site?.specification || undefined
+                buildSpecification: site?.buildSpecification || undefined
             });
             await invalidate(Dependencies.SITE);
             addNotification({
