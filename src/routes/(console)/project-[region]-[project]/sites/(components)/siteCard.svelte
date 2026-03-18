@@ -29,12 +29,14 @@
     import type { Snippet } from 'svelte';
 
     let {
+        site,
         deployment,
         proxyRuleList,
         hideQRCode = false,
         variant = 'primary',
         footer
     }: {
+        site?: Models.Site;
         deployment: Models.Deployment;
         proxyRuleList: Models.ProxyRuleList;
         hideQRCode?: boolean;
@@ -208,7 +210,11 @@
                         Source
                     </Typography.Text>
                     <Typography.Text variant="m-400" color="--fgcolor-neutral-primary">
-                        <DeploymentSource {deployment} />
+                        <DeploymentSource
+                            {deployment}
+                            resource={site}
+                            region={page.params.region}
+                            project={page.params.project} />
                     </Typography.Text>
                 </Layout.Stack>
             </Layout.Stack>

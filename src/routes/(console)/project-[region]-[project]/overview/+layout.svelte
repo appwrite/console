@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
     import { total } from '$lib/helpers/array';
     import { clampMin } from '$lib/helpers/numbers';
     import type { Metric } from '$lib/sdk/usage';
@@ -16,6 +16,7 @@
     import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import { PlatformsPanel } from '$lib/commandCenter/panels';
     import { Tab, Tabs } from '$lib/components';
+    import { isTabSelected } from '$lib/helpers/load';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { Container, type UsagePeriods } from '$lib/layout';
     import { onMount, setContext, type Component } from 'svelte';
@@ -30,8 +31,8 @@
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
 
-    let period: UsagePeriods = '30d';
-    $: path = `${base}/project-${page.params.region}-${page.params.project}/overview`;
+    let period: UsagePeriods = $state('30d');
+    const path = $derived(`${base}/project-${page.params.region}-${page.params.project}/overview`);
 
     onMount(handle);
     afterNavigate(handle);
@@ -52,45 +53,64 @@
         return usage.load(dates.start, dates.end, dates.period);
     }
 
-    function isTabSelected(key: string) {
-        return page.url.pathname.endsWith(`/${key}`);
-    }
-
-    $: $registerCommands([
+    const integrationTabs = $derived([
         {
-            label: 'Add platform',
-            keys: ['a', 'p'],
-            callback() {
-                addSubPanel(PlatformsPanel);
-            },
-            icon: IconPlus,
-            group: 'integrations',
-            disabled: !$canWriteProjects
+            href: `${path}/platforms`,
+            title: 'Platforms',
+            event: 'platforms',
+            hasChildren: true
         },
         {
-            label: 'Create API Key',
-            icon: IconPlus,
-            callback() {
-                goto(`${path}/api-keys/create`);
-            },
-            keys: ['c', 'k'],
-            group: 'integrations',
-            disabled: !$canWriteProjects
+            href: `${path}/api-keys`,
+            title: 'API keys',
+            event: 'api-keys',
+            hasChildren: true
         },
         {
-            label: 'Create Dev Key',
-            icon: IconPlus,
-            callback() {
-                goto(`${path}/dev-keys/create`);
-            },
-            keys: ['c', 'd', 'k'],
-            group: 'integrations',
-            disabled: !$canWriteProjects
+            href: `${path}/dev-keys`,
+            title: 'Dev keys',
+            event: 'dev-keys',
+            hasChildren: true
         }
     ]);
 
-    $: $updateCommandGroupRanks({
-        integrations: 10
+    $effect(() => {
+        const unregister = $registerCommands([
+            {
+                label: 'Add platform',
+                keys: ['a', 'p'],
+                callback() {
+                    addSubPanel(PlatformsPanel);
+                },
+                icon: IconPlus,
+                group: 'integrations',
+                disabled: !$canWriteProjects
+            },
+            {
+                label: 'Create API Key',
+                icon: IconPlus,
+                callback() {
+                    goto(`${path}/api-keys/create`);
+                },
+                keys: ['c', 'k'],
+                group: 'integrations',
+                disabled: !$canWriteProjects
+            },
+            {
+                label: 'Create Dev Key',
+                icon: IconPlus,
+                callback() {
+                    goto(`${path}/dev-keys/create`);
+                },
+                keys: ['c', 'd', 'k'],
+                group: 'integrations',
+                disabled: !$canWriteProjects
+            }
+        ]);
+        $updateCommandGroupRanks({
+            integrations: 10
+        });
+        return unregister;
     });
 </script>
 
@@ -223,21 +243,14 @@
             <Typography.Title>Integrations</Typography.Title>
             <Layout.Stack gap="xl" direction="row" justifyContent="space-between">
                 <Tabs>
-                    <Tab
-                        noscroll
-                        event="platforms"
-                        href={`${path}/platforms`}
-                        selected={isTabSelected('platforms')}>Platforms</Tab>
-                    <Tab
-                        noscroll
-                        event="api-keys"
-                        href={`${path}/api-keys`}
-                        selected={isTabSelected('api-keys')}>API keys</Tab>
-                    <Tab
-                        noscroll
-                        event="dev-keys"
-                        href={`${path}/dev-keys`}
-                        selected={isTabSelected('dev-keys')}>Dev keys</Tab>
+                    {#each integrationTabs as tab}
+                        <Tab
+                            noscroll
+                            href={tab.href}
+                            event={tab.event}
+                            selected={isTabSelected(tab, page.url.pathname, path, integrationTabs)}
+                            >{tab.title}</Tab>
+                    {/each}
                 </Tabs>
                 {#if $action}
                     <svelte:component this={$action} />

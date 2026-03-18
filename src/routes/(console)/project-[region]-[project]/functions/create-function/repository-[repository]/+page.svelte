@@ -119,7 +119,7 @@
                     providerBranch: branch,
                     providerSilentMode: silentMode,
                     providerRootDirectory: rootDir,
-                    specification: specification || undefined
+                    buildSpecification: specification || undefined
                 });
 
             // Add domain
