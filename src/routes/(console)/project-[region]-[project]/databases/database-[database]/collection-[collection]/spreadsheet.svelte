@@ -60,6 +60,7 @@
         type JsonValue,
         NoSqlEditor
     } from '$database/collection-[collection]/(components)/editor';
+    import EmbeddingModal from '$database/collection-[collection]/(components)/editor/embeddingModal.svelte';
     import { buildFieldUrl } from '$database/(entity)/helpers/navigation';
     import {
         SpreadsheetOptions,
@@ -75,19 +76,40 @@
     $: if ($documents) {
         paginatedDocuments.clear();
 
+        const docs = $documents.documents;
+
         // If we have a new document, add it at the start
         if ($noSqlDocument.isDirty && $noSqlDocument.isNew) {
             const tempDoc = $noSqlDocument.document as Models.DefaultDocument;
-            const docsWithTemp = [tempDoc, ...$documents.documents];
+            const docsWithTemp = [tempDoc, ...docs];
             paginatedDocuments.setPage(1, docsWithTemp);
         } else {
-            paginatedDocuments.setPage(1, $documents.documents);
+            paginatedDocuments.setPage(1, docs);
         }
     }
 
     const databaseId = page.params.database;
     const collectionId = page.params.collection;
     const databaseSdk = useDatabaseSdk(page.params.region, page.params.project, data.database.type);
+
+    const isVectorsDb = data.database.type === 'vectorsdb';
+    let showEmbeddingModal = false;
+    let editorRef: { replaceData: (data: JsonValue) => void } | undefined;
+
+    const projectSdk = sdk.forProject(page.params.region, page.params.project);
+    const listDocumentsFn = isVectorsDb
+        ? projectSdk.vectorsDB.listDocuments.bind(projectSdk.vectorsDB)
+        : projectSdk.documentsDB.listDocuments.bind(projectSdk.documentsDB);
+    const getDocumentFn = isVectorsDb
+        ? projectSdk.vectorsDB.getDocument.bind(projectSdk.vectorsDB)
+        : projectSdk.documentsDB.getDocument.bind(projectSdk.documentsDB);
+
+    function handleEmbeddingGenerated(embeddings: number[]) {
+        if ($noSqlDocument.document && typeof $noSqlDocument.document === 'object') {
+            const updated = { ...$noSqlDocument.document, embeddings };
+            editorRef?.replaceData(updated);
+        }
+    }
 
     const emptyCellsLimit = $spreadsheetLoading
         ? 30
@@ -115,13 +137,11 @@
             const documentId = $noSqlDocument.documentId;
             noSqlDocument.update({ documentId: null }); // reset for later!
 
-            const loadedDocument = await sdk
-                .forProject(page.params.region, page.params.project)
-                .documentsDB.getDocument({
-                    databaseId: page.params.database,
-                    collectionId: page.params.collection,
-                    documentId
-                });
+            const loadedDocument = await getDocumentFn({
+                databaseId: page.params.database,
+                collectionId: page.params.collection,
+                documentId
+            });
 
             if (loadedDocument) {
                 noSqlDocument.edit(loadedDocument);
@@ -462,7 +482,9 @@
             spreadsheetRenderKey.set(hash(Date.now().toString()));
             const firstDocument = $documents?.documents?.[0];
             if (firstDocument) {
-                noSqlDocument.update({ document: firstDocument });
+                noSqlDocument.update({
+                    document: firstDocument
+                });
             }
         } catch (error) {
             addNotification({
@@ -492,19 +514,17 @@
         const filterQueries = parsedQueries.size ? data.parsedQueries.values() : [];
 
         $paginatedDocumentsLoading = true;
-        const loadedRows = await sdk
-            .forProject(page.params.region, page.params.project)
-            .documentsDB.listDocuments({
-                databaseId,
-                collectionId,
-                queries: [
-                    getCorrectOrderQuery(),
-                    Query.limit(SPREADSHEET_PAGE_LIMIT),
-                    Query.offset(pageToOffset(pageNumber, SPREADSHEET_PAGE_LIMIT)),
-                    ...filterQueries /* filter queries */,
-                    ...buildWildcardEntitiesQuery(collection)
-                ]
-            });
+        const loadedRows = await listDocumentsFn({
+            databaseId,
+            collectionId,
+            queries: [
+                getCorrectOrderQuery(),
+                Query.limit(SPREADSHEET_PAGE_LIMIT),
+                Query.offset(pageToOffset(pageNumber, SPREADSHEET_PAGE_LIMIT)),
+                ...filterQueries /* filter queries */,
+                ...buildWildcardEntitiesQuery(collection)
+            ]
+        });
 
         paginatedDocuments.setPage(pageNumber, loadedRows.documents);
         $paginatedDocumentsLoading = false;
@@ -520,18 +540,16 @@
             paginatedDocuments.setMaxPage(targetPageNum);
             $paginatedDocumentsLoading = true;
 
-            const loadedRows = await sdk
-                .forProject(page.params.region, page.params.project)
-                .documentsDB.listDocuments({
-                    databaseId,
-                    collectionId,
-                    queries: [
-                        getCorrectOrderQuery(),
-                        Query.limit(SPREADSHEET_PAGE_LIMIT),
-                        Query.offset(pageToOffset(targetPageNum, SPREADSHEET_PAGE_LIMIT)),
-                        ...buildWildcardEntitiesQuery(collection)
-                    ]
-                });
+            const loadedRows = await listDocumentsFn({
+                databaseId,
+                collectionId,
+                queries: [
+                    getCorrectOrderQuery(),
+                    Query.limit(SPREADSHEET_PAGE_LIMIT),
+                    Query.offset(pageToOffset(targetPageNum, SPREADSHEET_PAGE_LIMIT)),
+                    ...buildWildcardEntitiesQuery(collection)
+                ]
+            });
 
             paginatedDocuments.setPage(targetPageNum, loadedRows.documents);
             $paginatedDocumentsLoading = false;
@@ -556,11 +574,29 @@
         $noSqlDocument.isNew &&
         ($documents?.documents?.length ?? 0) < MIN_DOCS_FOR_FUZZY_SUGGESTIONS;
 
+    $: metadataKeys = isVectorsDb && $documents?.documents
+        ? fuzzySearchKeys(
+              $documents.documents.map((d) => d.metadata ?? {}),
+              { minOccurrences: 2 }
+          ) ?? []
+        : [];
+
+    $: vectorsDbMetadataDefaults = isVectorsDb
+        ? Object.fromEntries(
+              (metadataKeys.length
+                  ? metadataKeys
+                  : mockSuggestions.columns.map((c) => c.name)
+              ).map((key) => [key, ''])
+          )
+        : {};
+
     $: suggestedAttributes =
         $noSqlDocument.isNew && $documents?.documents
-            ? useMockSuggestions
-                ? mockSuggestions.columns.map((column) => column.name)
-                : (fuzzySearchKeys($documents.documents, { minOccurrences: 2 }) ?? [])
+            ? isVectorsDb
+                ? ['metadata', 'embeddings']
+                : useMockSuggestions
+                    ? mockSuggestions.columns.map((column) => column.name)
+                    : (fuzzySearchKeys($documents.documents, { minOccurrences: 2 }) ?? [])
             : [];
 
     $: showSuggestions = $noSqlDocument.isNew && suggestedAttributes.length > 0;
@@ -863,6 +899,7 @@
 
     {#snippet noSqlEditor()}
         <NoSqlEditor
+            bind:this={editorRef}
             ctrlSave
             isNew={$noSqlDocument.isNew}
             loading={$noSqlDocument.loading}
@@ -872,6 +909,10 @@
             {showSuggestions}
             {suggestedAttributes}
             showMockSuggestions={useMockSuggestions}
+            suggestedDefaults={isVectorsDb ? {
+                metadata: vectorsDbMetadataDefaults,
+                embeddings: []
+            } : undefined}
             onDiscard={() => {
                 const firstDocument = $documents?.documents?.[0];
                 if (firstDocument) {
@@ -881,7 +922,8 @@
                 }
             }}
             onSave={async (document) => await createOrUpdateDocument(document)}
-            onChange={(_, hasDataChanged) => noSqlDocument.update({ hasDataChanged })} />
+            onChange={(_, hasDataChanged) => noSqlDocument.update({ hasDataChanged })}
+            onGenerateEmbedding={isVectorsDb ? () => (showEmbeddingModal = true) : undefined} />
     {/snippet}
 
     {#snippet sideSheetHeaderAction()}
@@ -979,6 +1021,10 @@
 
         <p>You have changes that haven't been saved.</p>
     </Confirm>
+{/if}
+
+{#if isVectorsDb}
+    <EmbeddingModal bind:show={showEmbeddingModal} onGenerate={handleEmbeddingGenerated} />
 {/if}
 
 <style lang="scss">

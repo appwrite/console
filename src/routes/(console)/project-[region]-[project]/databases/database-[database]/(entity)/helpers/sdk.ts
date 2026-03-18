@@ -49,6 +49,15 @@ export type DatabaseSdkResult = {
         entityId: string;
         databaseType?: DatabaseType;
     }) => Promise<{}>;
+    updateEntity: (params: {
+        databaseId: string;
+        entityId: string;
+        name?: string;
+        permissions?: string[];
+        documentSecurity?: boolean;
+        enabled?: boolean;
+        databaseType?: DatabaseType;
+    }) => Promise<Entity>;
     createRecord: (params: {
         databaseId: string;
         entityId: string;
@@ -94,6 +103,12 @@ export type DatabaseSdkResult = {
         orders?: OrderBy[];
         databaseType?: DatabaseType;
     }) => Promise<Index>;
+    deleteIndex: (params: {
+        databaseId: string;
+        entityId: string;
+        key: string;
+        databaseType?: DatabaseType;
+    }) => Promise<{}>;
 };
 
 export function useDatabaseSdk(
@@ -272,6 +287,47 @@ export function useDatabaseSdk(
             }
         },
 
+        async updateEntity(params) {
+            switch (type ?? params.databaseType) {
+                case 'legacy': /* databases api */
+                case 'tablesdb':
+                    return toSupportiveEntity(
+                        await baseSdk.tablesDB.updateTable({
+                            databaseId: params.databaseId,
+                            tableId: params.entityId,
+                            name: params.name,
+                            permissions: params.permissions,
+                            rowSecurity: params.documentSecurity,
+                            enabled: params.enabled
+                        })
+                    );
+                case 'documentsdb':
+                    return toSupportiveEntity(
+                        await baseSdk.documentsDB.updateCollection({
+                            databaseId: params.databaseId,
+                            collectionId: params.entityId,
+                            name: params.name,
+                            permissions: params.permissions,
+                            documentSecurity: params.documentSecurity,
+                            enabled: params.enabled
+                        })
+                    );
+                case 'vectorsdb':
+                    return toSupportiveEntity(
+                        await baseSdk.vectorsDB.updateCollection({
+                            databaseId: params.databaseId,
+                            collectionId: params.entityId,
+                            name: params.name,
+                            permissions: params.permissions,
+                            documentSecurity: params.documentSecurity,
+                            enabled: params.enabled
+                        })
+                    );
+                default:
+                    throw new Error(`Unknown database type`);
+            }
+        },
+
         async createRecord(params) {
             switch (type ?? params.databaseType) {
                 case 'legacy': /* databases api */
@@ -325,15 +381,13 @@ export function useDatabaseSdk(
                         permissions: params.permissions
                     });
                 case 'vectorsdb': {
-                    const { documents } = await baseSdk.vectorsDB.upsertDocument({
+                    return await baseSdk.vectorsDB.upsertDocument({
                         databaseId: params.databaseId,
                         collectionId: params.entityId,
                         documentId: params.recordId,
                         data: params.data,
                         permissions: params.permissions
                     });
-
-                    return toSupportiveRecord(documents[0]);
                 }
                 default:
                     throw new Error(`Unknown database type`);
@@ -358,14 +412,12 @@ export function useDatabaseSdk(
                         permissions: params.permissions
                     });
                 case 'vectorsdb': {
-                    const { documents } = await baseSdk.vectorsDB.upsertDocument({
+                    return await baseSdk.vectorsDB.upsertDocument({
                         databaseId: params.databaseId,
                         collectionId: params.entityId,
                         documentId: params.recordId,
                         permissions: params.permissions
                     });
-
-                    return toSupportiveRecord(documents[0]);
                 }
                 default:
                     throw new Error(`Unknown database type`);
@@ -482,6 +534,32 @@ export function useDatabaseSdk(
 
                     return toSupportiveIndex(index);
                 }
+                default:
+                    throw new Error(`Unknown database type`);
+            }
+        },
+
+        async deleteIndex(params) {
+            switch (type ?? params.databaseType) {
+                case 'legacy': /* databases api */
+                case 'tablesdb':
+                    return await baseSdk.tablesDB.deleteIndex({
+                        databaseId: params.databaseId,
+                        tableId: params.entityId,
+                        key: params.key
+                    });
+                case 'documentsdb':
+                    return await baseSdk.documentsDB.deleteIndex({
+                        databaseId: params.databaseId,
+                        collectionId: params.entityId,
+                        key: params.key
+                    });
+                case 'vectorsdb':
+                    return await baseSdk.vectorsDB.deleteIndex({
+                        databaseId: params.databaseId,
+                        collectionId: params.entityId,
+                        key: params.key
+                    });
                 default:
                     throw new Error(`Unknown database type`);
             }

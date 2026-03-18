@@ -1,13 +1,13 @@
 <script lang="ts">
     import { page } from '$app/state';
-    import { sdk } from '$lib/stores/sdk';
     import { Container } from '$lib/layout';
     import {
         DangerZone,
         UpdateName,
         UpdatePermissions,
         UpdateSecurity,
-        UpdateStatus
+        UpdateStatus,
+        useDatabaseSdk
     } from '$database/(entity)';
     import type { PageProps } from './$types';
     import DisplayName from './displayName.svelte';
@@ -17,18 +17,15 @@
 
     const collection = $derived(data.collection);
 
-    const params = $derived.by(() => {
-        return {
-            name: collection.name,
-            collectionId: page.params.collection,
-            databaseId: page.params.database
-        };
+    const databaseSdk = useDatabaseSdk(page.params.region, page.params.project, data.database.type);
+
+    const entityParams = $derived({
+        databaseId: page.params.database,
+        entityId: page.params.collection
     });
 
     async function deleteCollection() {
-        await sdk
-            .forProject(page.params.region, page.params.project)
-            .documentsDB.deleteCollection({ ...params });
+        await databaseSdk.deleteEntity(entityParams);
     }
 
     async function updateCollection(
@@ -39,9 +36,11 @@
             documentSecurity: boolean;
         }>
     ) {
-        await sdk
-            .forProject(page.params.region, page.params.project)
-            .documentsDB.updateCollection({ ...params, ...updates });
+        await databaseSdk.updateEntity({
+            ...entityParams,
+            name: collection.name,
+            ...updates
+        });
     }
 </script>
 

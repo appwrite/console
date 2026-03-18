@@ -44,7 +44,7 @@
     import type { Text as CmText } from '@codemirror/state';
     import { onMount, onDestroy } from 'svelte';
     import Id, { truncateId } from '$lib/components/id.svelte';
-    import { Icon, Layout, Skeleton, Tooltip } from '@appwrite.io/pink-svelte';
+    import { Badge, Icon, Layout, Skeleton, Tooltip, Typography } from '@appwrite.io/pink-svelte';
     import { IconDuplicate } from '@appwrite.io/pink-icons-svelte';
     import { Button } from '$lib/elements/forms';
     import { copy } from '$lib/helpers/copy';
@@ -100,6 +100,8 @@
         showSuggestions?: boolean;
         suggestedAttributes?: string[];
         showMockSuggestions?: boolean;
+        suggestedDefaults?: Record<string, unknown>;
+        onGenerateEmbedding?: () => void;
     }
 
     let {
@@ -117,7 +119,9 @@
         showHeaderActions = true,
         showSuggestions = false,
         suggestedAttributes = [],
-        showMockSuggestions = false
+        showMockSuggestions = false,
+        suggestedDefaults,
+        onGenerateEmbedding
     }: Props = $props();
 
     let editorContainer: HTMLDivElement = $state(null);
@@ -276,6 +280,22 @@
         lastSerializedData = value;
         lastSerializedText = serialized;
         return serialized;
+    }
+
+    export function replaceData(newData: JsonValue) {
+        if (!editorView) return;
+        data = newData;
+        const content = dataToString(newData);
+        lastExpectedContent = content;
+        lastSerializedData = null;
+        isUpdatingFromEditor = true;
+        const currentContent = editorView.state.doc.toString();
+        editorView.dispatch({
+            changes: { from: 0, to: currentContent.length, insert: content },
+            annotations: [Transaction.addToHistory.of(false)]
+        });
+        foldEmbeddings(editorView);
+        queueMicrotask(() => (isUpdatingFromEditor = false));
     }
 
     function findNewDocCursorPos(state: EditorState): number | null {
@@ -940,10 +960,10 @@
             return;
         }
 
-        // Create an object with suggested attributes as empty strings
-        const suggestedObject: Record<string, string> = {};
+        // Create an object with suggested attributes
+        const suggestedObject: Record<string, unknown> = {};
         for (const attr of suggestedAttributes) {
-            suggestedObject[attr] = '';
+            suggestedObject[attr] = suggestedDefaults?.[attr] ?? '';
         }
 
         // Merge with existing data (keeping system fields)
@@ -1003,6 +1023,43 @@
     function handleUndo() {
         if (!editorView) return;
         undo(editorView);
+    }
+
+    /**
+     * Fold the embeddings array so it doesn't dominate the editor.
+     * Uses manual bracket matching — no syntax tree dependency.
+     */
+    function foldEmbeddings(view: EditorView) {
+        const doc = view.state.doc;
+        const effects: ReturnType<typeof foldEffect.of>[] = [];
+
+        for (let ln = 1; ln <= doc.lines; ln++) {
+            const line = doc.line(ln);
+            const match = line.text.match(/^(\s*embeddings:\s*)\[/);
+            if (!match) continue;
+
+            const bracketPos = line.from + match[1].length;
+            let depth = 0;
+            let closePos = -1;
+            for (let i = bracketPos; i < doc.length; i++) {
+                const ch = doc.sliceString(i, i + 1);
+                if (ch === '[') depth++;
+                else if (ch === ']') {
+                    depth--;
+                    if (depth === 0) {
+                        closePos = i;
+                        break;
+                    }
+                }
+            }
+            if (closePos > bracketPos + 1) {
+                effects.push(foldEffect.of({ from: bracketPos + 1, to: closePos }));
+            }
+        }
+
+        if (effects.length) {
+            view.dispatch({ effects, annotations: [Transaction.addToHistory.of(false)] });
+        }
     }
 
     onMount(() => {
@@ -1072,6 +1129,17 @@
                     run: () => {
                         if (showSuggestions && hasStartedEditing) {
                             applySuggestedAttributes();
+                            return true;
+                        }
+                        return false;
+                    }
+                },
+                {
+                    key: 'Mod-g',
+                    preventDefault: true,
+                    run: () => {
+                        if (onGenerateEmbedding) {
+                            onGenerateEmbedding();
                             return true;
                         }
                         return false;
@@ -1193,6 +1261,10 @@
             state: startState,
             parent: editorContainer
         });
+
+        setTimeout(() => {
+            if (editorView) foldEmbeddings(editorView);
+        }, 0);
     });
 
     onDestroy(() => {
@@ -1259,6 +1331,7 @@
                 extensions: baseExtensions
             });
             editorView.setState(newState);
+            foldEmbeddings(editorView);
 
             if (isNew && !readonly) {
                 const pos = findNewDocCursorPos(editorView.state);
@@ -1294,6 +1367,7 @@
                 changes: { from: 0, to: currentContent.length, insert: expectedContent },
                 annotations: [Transaction.addToHistory.of(false)]
             });
+            foldEmbeddings(editorView);
             queueMicrotask(() => (isUpdatingFromEditor = false));
         }
     });
@@ -1423,6 +1497,30 @@
                 showSuggestions = false;
                 applySuggestedAttributes();
             }} />
+    {/if}
+
+    {#if onGenerateEmbedding && !$isSmallViewport}
+        <div class="embedding-hint">
+            <div class="popover-content">
+                <Layout.Stack inline gap="xs" direction="row" alignItems="center">
+                    <Typography.Caption variant="400" color="--fgcolor-neutral-secondary">
+                        Press
+                    </Typography.Caption>
+                    <Layout.Stack
+                        direction="row"
+                        inline
+                        gap="xxxs"
+                        alignItems="center"
+                        style="height: fit-content">
+                        <Badge content="⌘" variant="secondary" size="xs" />
+                        <Badge content="G" variant="secondary" size="xs" />
+                    </Layout.Stack>
+                    <Typography.Caption variant="400" color="--fgcolor-neutral-secondary">
+                        to generate embeddings
+                    </Typography.Caption>
+                </Layout.Stack>
+            </div>
+        </div>
     {/if}
 </div>
 
@@ -1714,6 +1812,30 @@
             border: unset;
             padding: 0 4px;
             background: var(--bgcolor-neutral-secondary);
+        }
+    }
+
+    .embedding-hint {
+        bottom: 12px;
+        right: 12px;
+        z-index: 50;
+        position: absolute;
+        pointer-events: none;
+
+        .popover-content {
+            height: 44px;
+            width: max-content;
+            gap: var(--gap-xxs);
+            align-items: center;
+            display: inline-flex;
+            justify-content: center;
+            padding: var(--space-5);
+            border-radius: var(--border-radius-m);
+            background: var(--bgcolor-neutral-primary);
+            border: var(--border-width-s) solid var(--border-neutral);
+            box-shadow:
+                0 1px 3px 0 rgba(0, 0, 0, 0.03),
+                0 4px 4px 0 rgba(0, 0, 0, 0.04);
         }
     }
 </style>

@@ -98,7 +98,10 @@
         }
 
         return realtime.forProject(page.params.region, ['project', 'console'], (response) => {
-            if (response.events.includes('documentsdb.*.collections.*.indexes.*')) {
+            if (
+                response.events.includes('documentsdb.*.collections.*.indexes.*') ||
+                response.events.includes('vectorsdb.*.collections.*.indexes.*')
+            ) {
                 if (!isWaterfallFromFaker && !$entityColumnSuggestions.entity) {
                     invalidate(Dependencies.COLLECTION);
                 }
@@ -241,7 +244,8 @@
                         databaseId: page.params.database,
                         tableId: page.params.collection,
                         context: $entityColumnSuggestions.context ?? undefined,
-                        min: 6
+                        min: 6,
+                        databaseType: data.database?.type
                     })) as unknown as {
                     total: number;
                     columns: ColumnInput[];
@@ -271,13 +275,33 @@
             const { rows, ids } = generateFakeRecords($randomDataModalState.value, fields);
             documentIds = ids;
 
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .documentsDB.createDocuments({
+            const dbType = data.database?.type;
+            const isVectorsDb = dbType === 'vectorsdb';
+            const dimension = collection?.dimension ?? 768;
+
+            // For vectorsdb, wrap fields in metadata and add empty embeddings
+            const documents = isVectorsDb
+                ? rows.map((row) => {
+                    const { $id, ...rest } = row;
+                    return { $id, metadata: rest, embeddings: new Array(dimension).fill(0) };
+                })
+                : rows;
+
+            const projectSdk = sdk.forProject(page.params.region, page.params.project);
+
+            if (isVectorsDb) {
+                await projectSdk.vectorsDB.createDocuments({
                     databaseId: page.params.database,
                     collectionId: page.params.collection,
-                    documents: rows
+                    documents
                 });
+            } else {
+                await projectSdk.documentsDB.createDocuments({
+                    databaseId: page.params.database,
+                    collectionId: page.params.collection,
+                    documents
+                });
+            }
 
             await invalidate(Dependencies.DOCUMENTS);
         } catch (e) {
