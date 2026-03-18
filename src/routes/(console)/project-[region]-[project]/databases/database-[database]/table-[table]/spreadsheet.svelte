@@ -129,7 +129,6 @@
             : 24;
 
     let selectedRows = [];
-    let showExpandIconForId: number | null = null;
     let spreadsheetContainer: SpreadsheetContainer;
     let previouslyFocusedElement: Element | null = null;
 
@@ -207,6 +206,7 @@
                 width: getColumnWidth('$id', 250),
                 minimumWidth: 250,
                 draggable: false,
+                sticky: $isSmallViewport ? undefined : { side: 'left', offset: 40 },
                 type: 'string',
                 icon: IconFingerPrint,
                 isEditable: false,
@@ -775,7 +775,7 @@
 
     $: canShowDatetimePopover = true;
 
-    $: if (table.fields) {
+    $: if (table.fields && typeof $isSmallViewport === 'boolean') {
         makeTableColumns();
     }
 
@@ -789,6 +789,24 @@
             previouslyFocusedElement = null;
         });
     }
+
+    function getSpreadsheetCellProps(
+        rowId: string | undefined,
+        columnId: string | undefined,
+        state
+    ) {
+        if (columnId !== '$id' || !rowId || state?.isHeader || state?.isEmptyRow) {
+            return undefined;
+        }
+
+        return {
+            style: `
+                --row-expand-opacity: ${state?.hovered ? '1' : '0'};
+                --row-expand-pointer-events: ${state?.hovered ? 'auto' : 'none'};
+                --row-expand-transform: ${state?.hovered ? 'translateX(0)' : 'translateX(4px)'};
+            `
+        };
+    }
 </script>
 
 <SpreadsheetContainer bind:this={spreadsheetContainer}>
@@ -798,9 +816,11 @@
             allowSelection
             useVirtualizer
             keyboardNavigation
+            showScrollbars
             bind:selectedRows
             selection={rowSelection}
             bind:columns={$tableColumns}
+            getCellProps={getSpreadsheetCellProps}
             loading={$spreadsheetLoading}
             emptyCells={emptyCellsCount}
             rowCount={$paginatedRows.virtualLength}
@@ -920,79 +940,70 @@
                         {#each $tableColumns as { id: columnId, isEditable, hide } (columnId)}
                             {@const rowColumn = $columns.find((col) => col.key === columnId)}
                             {#if columnId === '$id' && !hide}
-                                <button
-                                    on:mouseenter={() => {
-                                        showExpandIconForId = index;
-                                    }}
-                                    on:mouseleave={() => {
-                                        showExpandIconForId = null;
-                                    }}>
-                                    <Spreadsheet.Cell {root} {isEditable} column={columnId}>
-                                        <Layout.Stack
-                                            gap="none"
-                                            direction="row"
-                                            alignItems="center"
-                                            alignContent="center"
-                                            justifyContent="space-between">
-                                            <Id value={row.$id} tooltipPortal tooltipDelay={200}
-                                                >{row.$id}</Id>
+                                <Spreadsheet.Cell {root} {isEditable} column={columnId}>
+                                    <Layout.Stack
+                                        class="row-id-cell-content"
+                                        gap="none"
+                                        direction="row"
+                                        alignItems="center"
+                                        alignContent="center"
+                                        justifyContent="space-between">
+                                        <Id value={row.$id} tooltipPortal tooltipDelay={200}>
+                                            {row.$id}
+                                        </Id>
 
-                                            <Popover let:show let:hide portal padding="none">
-                                                {@const opacityValue =
-                                                    showExpandIconForId === index ? '1' : '0'}
-                                                <button
-                                                    on:mouseenter={show}
-                                                    on:mouseleave={hide}
-                                                    style:opacity={opacityValue}
-                                                    style:transition="opacity 225ms ease-in-out">
-                                                    <Button.Button
-                                                        size="xs"
-                                                        icon
-                                                        variant="secondary"
-                                                        on:click={() => {
-                                                            hide();
-                                                            previouslyFocusedElement =
-                                                                document.activeElement;
-                                                            $databaseRowSheetOptions.autoFocus = false;
-                                                            onSelectSheetOption(
-                                                                'update',
-                                                                null,
-                                                                'row',
-                                                                row
-                                                            );
-                                                        }}>
-                                                        <Icon icon={IconArrowExpand} size="s" />
-                                                    </Button.Button>
-                                                </button>
+                                        <Popover let:show let:hide portal padding="none">
+                                            <div
+                                                class="row-expand-trigger"
+                                                on:mouseenter={show}
+                                                on:mouseleave={hide}>
+                                                <Button.Button
+                                                    size="xs"
+                                                    icon
+                                                    variant="secondary"
+                                                    on:click={() => {
+                                                        hide();
+                                                        previouslyFocusedElement =
+                                                            document.activeElement;
+                                                        $databaseRowSheetOptions.autoFocus = false;
+                                                        onSelectSheetOption(
+                                                            'update',
+                                                            null,
+                                                            'row',
+                                                            row
+                                                        );
+                                                    }}>
+                                                    <Icon icon={IconArrowExpand} size="s" />
+                                                </Button.Button>
+                                            </div>
 
-                                                <svelte:fragment slot="tooltip">
+                                            <svelte:fragment slot="tooltip">
+                                                <Layout.Stack
+                                                    inline
+                                                    gap="xxs"
+                                                    direction="row"
+                                                    alignItems="center"
+                                                    alignContent="center"
+                                                    style="padding: var(--gap-XS, 6px) var(--gap-S, 8px);">
+                                                    Expand row
+
                                                     <Layout.Stack
                                                         inline
-                                                        gap="xxs"
+                                                        gap="xxxs"
                                                         direction="row"
                                                         alignItems="center"
-                                                        alignContent="center"
-                                                        style="padding: var(--gap-XS, 6px) var(--gap-S, 8px);">
-                                                        Expand row
-
-                                                        <Layout.Stack
-                                                            inline
-                                                            gap="xxxs"
-                                                            direction="row"
-                                                            alignItems="center"
-                                                            alignContent="center">
-                                                            <Keyboard size="s" key="⌘" />
-                                                            <Keyboard
-                                                                key={'Enter'}
-                                                                autoWidth
-                                                                size="s" />
-                                                        </Layout.Stack>
+                                                        alignContent="center">
+                                                        <Keyboard size="s" key="⌘" />
+                                                        <Keyboard
+                                                            key={'Enter'}
+                                                            autoWidth
+                                                            size="s" />
                                                     </Layout.Stack>
-                                                </svelte:fragment>
-                                            </Popover>
-                                        </Layout.Stack>
-                                    </Spreadsheet.Cell>
-                                </button>
+                                                </Layout.Stack>
+                                            </svelte:fragment>
+                                        </Popover>
+                                    </Layout.Stack>
+                                </Spreadsheet.Cell>
                             {:else}
                                 <Spreadsheet.Cell {root} {isEditable} column={columnId}>
                                     {#if columnId === '$createdAt' || columnId === '$updatedAt'}
@@ -1376,5 +1387,20 @@
         & :global(.input:focus-within) {
             top: 0 !important;
         }
+    }
+
+    .row-id-cell-content {
+        min-width: 0;
+    }
+
+    .row-expand-trigger {
+        display: flex;
+        flex: 0 0 auto;
+        opacity: var(--row-expand-opacity, 0);
+        pointer-events: var(--row-expand-pointer-events, none);
+        transition:
+            opacity 225ms ease-in-out,
+            transform 225ms ease-in-out;
+        transform: var(--row-expand-transform, translateX(4px));
     }
 </style>
