@@ -571,6 +571,7 @@
     const MIN_DOCS_FOR_FUZZY_SUGGESTIONS = 5;
 
     $: useMockSuggestions =
+        !isVectorsDb &&
         $noSqlDocument.isNew &&
         ($documents?.documents?.length ?? 0) < MIN_DOCS_FOR_FUZZY_SUGGESTIONS;
 

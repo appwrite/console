@@ -1039,15 +1039,15 @@
             if (!match) continue;
 
             const bracketPos = line.from + match[1].length;
+            const tail = doc.sliceString(bracketPos, doc.length);
             let depth = 0;
             let closePos = -1;
-            for (let i = bracketPos; i < doc.length; i++) {
-                const ch = doc.sliceString(i, i + 1);
-                if (ch === '[') depth++;
-                else if (ch === ']') {
+            for (let i = 0; i < tail.length; i++) {
+                if (tail[i] === '[') depth++;
+                else if (tail[i] === ']') {
                     depth--;
                     if (depth === 0) {
-                        closePos = i;
+                        closePos = bracketPos + i;
                         break;
                     }
                 }
