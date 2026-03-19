@@ -55,7 +55,8 @@
 
     let availableOptions = $derived(getSupportedColumns(databaseType));
     let ColumnComponent = $derived(
-        availableOptions.find((option) => option.name === selectedOption).component
+        (availableOptions.find((option) => option.name === selectedOption) ?? availableOptions[0])
+            .component
     );
 
     function init() {
