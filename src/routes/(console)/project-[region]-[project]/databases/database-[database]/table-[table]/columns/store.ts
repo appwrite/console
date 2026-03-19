@@ -17,6 +17,7 @@ import Point, { submitPoint, updatePoint } from './point.svelte';
 import Line, { submitLine, updateLine } from './line.svelte';
 import Polygon, { submitPolygon, updatePolygon } from './polygon.svelte';
 import type { Columns } from '../store';
+import type { DatabaseType } from '$database/(entity)/helpers/terminology';
 import Relationship, { submitRelationship, updateRelationship } from './relationship.svelte';
 import {
     IconCalendar,
@@ -248,3 +249,13 @@ export const columnOptions: Option[] = [
 ];
 
 export const option = writable<Option>();
+
+const unsupportedTypes: Partial<Record<DatabaseType, Set<Option['type']>>> = {
+    documentsdb: new Set(['relationship', 'point', 'linestring', 'polygon'])
+};
+
+export function getSupportedColumns(databaseType: DatabaseType): Option[] {
+    const excluded = unsupportedTypes[databaseType];
+    if (!excluded) return columnOptions;
+    return columnOptions.filter((col) => !excluded.has(col.type));
+}

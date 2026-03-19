@@ -1,13 +1,17 @@
 <script lang="ts">
+    import { page } from '$app/state';
     import { Button } from '$lib/elements/forms';
     import { ActionMenu, Icon, Popover } from '@appwrite.io/pink-svelte';
-    import { columnOptions, type Option } from './store';
+    import { getSupportedColumns, type Option } from './store';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { isCsvImportInProgress } from '../store';
     import { CsvDisabled } from '$database/(entity)';
+    import type { DatabaseType } from '$database/(entity)/helpers/terminology';
 
     export let showCreate = false;
     export let selectedOption: Option['name'] = null;
+
+    $: options = getSupportedColumns(page.data.database?.type as DatabaseType);
 </script>
 
 {#if $isCsvImportInProgress}
@@ -26,7 +30,7 @@
             </Button>
         </slot>
         <ActionMenu.Root slot="tooltip">
-            {#each columnOptions as column}
+            {#each options as column}
                 <ActionMenu.Item.Button
                     leadingIcon={column.icon}
                     on:click={() => {

@@ -6,8 +6,9 @@
     import { InputSelect, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { option, columnOptions, type Option } from './columns/store';
+    import { option, getSupportedColumns, type Option } from './columns/store';
     import type { Column } from '$lib/helpers/types';
+    import type { DatabaseType } from '$database/(entity)/helpers/terminology';
     import { preferences } from '$lib/stores/preferences';
     import { onMount } from 'svelte';
 
@@ -39,6 +40,7 @@
 
     const tableId = page.params.table;
     const databaseId = page.params.database;
+    const databaseType = page.data.database?.type as DatabaseType;
 
     let showSuggestionsAlert = $state(true);
 
@@ -51,8 +53,9 @@
         ...column
     } as Partial<Columns>);
 
+    let availableOptions = $derived(getSupportedColumns(databaseType));
     let ColumnComponent = $derived(
-        columnOptions.find((option) => option.name === selectedOption).component
+        availableOptions.find((option) => option.name === selectedOption).component
     );
 
     function init() {
@@ -67,7 +70,7 @@
 
         /* default to text */
         selectedOption = 'Text';
-        $option = columnOptions[0];
+        $option = availableOptions[0];
     }
 
     function insertColumnInOrder() {
@@ -183,7 +186,7 @@
 
         // correct view
         if (selectedOption) {
-            $option = columnOptions.find((option) => option.name === selectedOption);
+            $option = availableOptions.find((option) => option.name === selectedOption);
         }
     });
 </script>
@@ -220,7 +223,7 @@
             id="type"
             label="Type"
             bind:value={selectedOption}
-            options={columnOptions.map((attr) => {
+            options={availableOptions.map((attr) => {
                 return {
                     label: attr.name,
                     value: attr.name,
