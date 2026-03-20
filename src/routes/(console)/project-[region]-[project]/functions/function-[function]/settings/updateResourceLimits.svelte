@@ -9,7 +9,8 @@
     import { isValueOfStringEnum } from '$lib/helpers/types';
     import { Runtime, type Models, type Scopes } from '@appwrite.io/console';
     import Link from '$lib/elements/link.svelte';
-    import { Alert } from '@appwrite.io/pink-svelte';
+    import { Alert, Icon, Tooltip } from '@appwrite.io/pink-svelte';
+    import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { isStarterPlan, getChangePlanUrl } from '$lib/stores/billing';
     import { isCloud } from '$lib/system';
     import { organization } from '$lib/stores/organization';
@@ -18,11 +19,19 @@
     export let func: Models.Function;
     export let specs: Models.SpecificationList;
 
-    let specification = func.buildSpecification;
-    let originalSpecification = func.buildSpecification;
-    $: originalSpecification = func.buildSpecification;
+    let buildSpecification = func.buildSpecification;
+    let runtimeSpecification = func.runtimeSpecification;
+    let originalBuild = func.buildSpecification;
+    let originalRuntime = func.runtimeSpecification;
 
-    async function updateLogging() {
+    $: {
+        buildSpecification = func.buildSpecification;
+        runtimeSpecification = func.runtimeSpecification;
+        originalBuild = func.buildSpecification;
+        originalRuntime = func.runtimeSpecification;
+    }
+
+    async function updateResourceLimits() {
         try {
             if (!isValueOfStringEnum(Runtime, func.runtime)) {
                 throw new Error(`Invalid runtime: ${func.runtime}`);
@@ -45,12 +54,11 @@
                 providerBranch: func.providerBranch || undefined,
                 providerSilentMode: func.providerSilentMode || undefined,
                 providerRootDirectory: func.providerRootDirectory || undefined,
-                buildSpecification: specification || undefined
+                buildSpecification: buildSpecification || undefined,
+                runtimeSpecification: runtimeSpecification || undefined
             });
 
             await invalidate(Dependencies.FUNCTION);
-
-            originalSpecification = specification;
 
             addNotification({
                 type: 'success',
@@ -73,7 +81,7 @@
     }));
 </script>
 
-<Form onSubmit={updateLogging}>
+<Form onSubmit={updateResourceLimits}>
     <CardGrid>
         <svelte:fragment slot="title">Resource limits</svelte:fragment>
         Define your function's compute specifications, including CPU and memory, to optimize performance
@@ -84,12 +92,33 @@
         </Link>.
         <svelte:fragment slot="aside">
             <InputSelect
-                label="CPU and memory"
-                id="resources"
+                label="Build specification"
+                id="build-specification"
                 required
                 disabled={options.length < 1}
-                bind:value={specification}
-                {options} />
+                bind:value={buildSpecification}
+                {options}>
+                <Tooltip slot="info">
+                    <Icon icon={IconInfo} size="s" />
+                    <span slot="tooltip">
+                        CPU and memory used when building and packaging your function deployment.
+                    </span>
+                </Tooltip>
+            </InputSelect>
+            <InputSelect
+                label="Runtime specification"
+                id="runtime-specification"
+                required
+                disabled={options.length < 1}
+                bind:value={runtimeSpecification}
+                {options}>
+                <Tooltip slot="info">
+                    <Icon icon={IconInfo} size="s" />
+                    <span slot="tooltip">
+                        CPU and memory available to each function execution at runtime.
+                    </span>
+                </Tooltip>
+            </InputSelect>
 
             <!-- always show upgrade on starters -->
             {@const isStarter = isStarterPlan($organization.billingPlanId)}
@@ -104,7 +133,10 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={originalSpecification === specification} submit>Update</Button>
+            <Button
+                disabled={originalBuild === buildSpecification &&
+                    originalRuntime === runtimeSpecification}
+                submit>Update</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>

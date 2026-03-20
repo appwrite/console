@@ -115,6 +115,9 @@
                 if (!specs.specifications.some((s) => s.slug === site.buildSpecification)) {
                     site.buildSpecification = specs.specifications[0].slug;
                 }
+                if (!specs.specifications.some((s) => s.slug === site.runtimeSpecification)) {
+                    site.runtimeSpecification = specs.specifications[0].slug;
+                }
             }
         }
     });
@@ -132,6 +135,10 @@
             ? site.buildSpecification
             : enabledSpecs[0]?.slug;
         site.buildSpecification = specToSend;
+        let runtimeSpecToSend = enabledSpecs.some((s) => s.slug === site.runtimeSpecification)
+            ? site.runtimeSpecification
+            : enabledSpecs[0]?.slug;
+        site.runtimeSpecification = runtimeSpecToSend;
         try {
             await sdk.forProject(page.params.region, page.params.project).sites.update({
                 siteId: site.$id,
@@ -151,7 +158,8 @@
                 providerBranch: site.providerBranch || undefined,
                 providerSilentMode: site.providerSilentMode || undefined,
                 providerRootDirectory: site.providerRootDirectory || undefined,
-                buildSpecification: specToSend || undefined
+                buildSpecification: specToSend || undefined,
+                runtimeSpecification: runtimeSpecToSend || undefined
             });
             await invalidate(Dependencies.SITE);
             addNotification({

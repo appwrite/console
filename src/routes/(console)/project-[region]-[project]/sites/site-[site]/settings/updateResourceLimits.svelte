@@ -8,7 +8,8 @@
     import { sdk } from '$lib/stores/sdk';
     import { Adapter, BuildRuntime, Framework, type Models } from '@appwrite.io/console';
     import Link from '$lib/elements/link.svelte';
-    import { Alert } from '@appwrite.io/pink-svelte';
+    import { Alert, Icon, Tooltip } from '@appwrite.io/pink-svelte';
+    import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { getChangePlanUrl, isStarterPlan } from '$lib/stores/billing';
     import { isCloud } from '$lib/system';
     import { organization } from '$lib/stores/organization';
@@ -17,10 +18,19 @@
     export let site: Models.Site;
     export let specs: Models.SpecificationList;
 
-    let specification = site.buildSpecification;
-    let originalSpecification = site.buildSpecification;
+    let buildSpecification = site.buildSpecification;
+    let runtimeSpecification = site.runtimeSpecification;
+    let originalBuild = site.buildSpecification;
+    let originalRuntime = site.runtimeSpecification;
 
-    async function updateLogging() {
+    $: {
+        buildSpecification = site.buildSpecification;
+        runtimeSpecification = site.runtimeSpecification;
+        originalBuild = site.buildSpecification;
+        originalRuntime = site.runtimeSpecification;
+    }
+
+    async function updateResourceLimits() {
         try {
             await sdk.forProject(page.params.region, page.params.project).sites.update({
                 siteId: site.$id,
@@ -40,10 +50,10 @@
                 providerBranch: site?.providerBranch || undefined,
                 providerSilentMode: site?.providerSilentMode || undefined,
                 providerRootDirectory: site?.providerRootDirectory || undefined,
-                buildSpecification: specification || undefined
+                buildSpecification: buildSpecification || undefined,
+                runtimeSpecification: runtimeSpecification || undefined
             });
             await invalidate(Dependencies.SITE);
-            originalSpecification = specification;
 
             addNotification({
                 type: 'success',
@@ -66,23 +76,44 @@
     }));
 </script>
 
-<Form onSubmit={updateLogging}>
+<Form onSubmit={updateResourceLimits}>
     <CardGrid>
         <svelte:fragment slot="title">Resource limits</svelte:fragment>
-        Define your sites's compute specifications, including CPU and memory, to optimize performance
-        for your workloads. <Link
-            href="https://appwrite.io/docs/advanced/platform/compute"
-            external>
+        Define your site's compute specifications, including CPU and memory, to optimize performance for
+        your workloads. <Link href="https://appwrite.io/docs/advanced/platform/compute" external>
             Learn more
         </Link>.
         <svelte:fragment slot="aside">
             <InputSelect
-                label="CPU and memory"
-                id="resources"
+                label="Build specification"
+                id="build-specification"
                 required
                 disabled={options.length < 1}
-                bind:value={specification}
-                {options} />
+                bind:value={buildSpecification}
+                {options}>
+                <Tooltip slot="info">
+                    <Icon icon={IconInfo} size="s" />
+                    <span slot="tooltip">
+                        CPU and memory used when installing dependencies and building your site for
+                        deployment.
+                    </span>
+                </Tooltip>
+            </InputSelect>
+            <InputSelect
+                label="Runtime specification"
+                id="runtime-specification"
+                required
+                disabled={options.length < 1}
+                bind:value={runtimeSpecification}
+                {options}>
+                <Tooltip slot="info">
+                    <Icon icon={IconInfo} size="s" />
+                    <span slot="tooltip">
+                        CPU and memory used when your site serves traffic, including server-side
+                        rendering (SSR).
+                    </span>
+                </Tooltip>
+            </InputSelect>
 
             <!-- always show upgrade on starters -->
             {@const isStarter = isStarterPlan($organization.billingPlanId)}
@@ -97,7 +128,10 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={originalSpecification === specification} submit>Update</Button>
+            <Button
+                disabled={originalBuild === buildSpecification &&
+                    originalRuntime === runtimeSpecification}
+                submit>Update</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>
