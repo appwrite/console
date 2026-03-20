@@ -5,7 +5,15 @@ export const load = async ({ params, depends, parent }) => {
     depends(Dependencies.VARIABLES);
     depends(Dependencies.FUNCTION);
 
-    const { runtimesList, specificationsList } = await parent();
+    const { runtimesList, specificationsList, function: fn } = await parent();
+
+    const enabledSpecs = specificationsList?.specifications?.filter((s) => s.enabled) ?? [];
+    if (!enabledSpecs.some((s) => s.slug === fn.buildSpecification)) {
+        fn.buildSpecification = enabledSpecs[0]?.slug;
+    }
+    if (!enabledSpecs.some((s) => s.slug === fn.runtimeSpecification)) {
+        fn.runtimeSpecification = enabledSpecs[0]?.slug;
+    }
 
     const [globalVariables, variables] = await Promise.all([
         sdk.forProject(params.region, params.project).projectApi.listVariables(),
@@ -36,6 +44,7 @@ export const load = async ({ params, depends, parent }) => {
         variables,
         globalVariables,
         runtimesList,
-        specificationsList
+        specificationsList,
+        function: fn
     };
 };
