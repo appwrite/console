@@ -14,8 +14,7 @@
     let error: string;
     async function handleDelete() {
         try {
-            await sdk.forConsole.projects.deleteWebhook({
-                projectId: $project.$id,
+            await sdk.forProject($project.region, $project.$id).webhooks.delete({
                 webhookId: $webhook.$id
             });
             await invalidate(Dependencies.WEBHOOKS);
