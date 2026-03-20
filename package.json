@@ -91,6 +91,6 @@
         "vite": "npm:rolldown-vite@latest",
         "minimatch": "10.2.3",
         "immutable": "^5.1.5",
-        "flatted": "^3.4.0"
+        "flatted": "^3.4.1"
     }
 }

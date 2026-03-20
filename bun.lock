@@ -76,7 +76,7 @@
     },
   },
   "overrides": {
-    "flatted": "^3.4.0",
+    "flatted": "^3.4.1",
     "immutable": "^5.1.5",
     "minimatch": "10.2.3",
     "vite": "npm:rolldown-vite@latest",
