@@ -24,9 +24,15 @@
     let originalBuild = func.buildSpecification;
     let originalRuntime = func.runtimeSpecification;
 
+    let functionId: string | undefined = undefined;
+    $: if (func.$id !== functionId) {
+        functionId = func.$id;
+        buildSpecification = func.buildSpecification;
+        runtimeSpecification = func.runtimeSpecification;
+    }
     $: {
-        originalBuild = func.buildSpecification ?? buildSpecification;
-        originalRuntime = func.runtimeSpecification ?? runtimeSpecification;
+        originalBuild = func.buildSpecification;
+        originalRuntime = func.runtimeSpecification;
     }
 
     async function updateResourceLimits() {
@@ -62,13 +68,13 @@
                 type: 'success',
                 message: 'Resource limits have been updated'
             });
-            trackEvent(Submit.FunctionUpdateLogging);
+            trackEvent(Submit.FunctionUpdateResourceLimits);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
-            trackError(error, Submit.FunctionUpdateLogging);
+            trackError(error, Submit.FunctionUpdateResourceLimits);
         }
     }
 

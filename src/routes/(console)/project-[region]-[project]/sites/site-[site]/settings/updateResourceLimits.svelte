@@ -23,9 +23,15 @@
     let originalBuild = site.buildSpecification;
     let originalRuntime = site.runtimeSpecification;
 
+    let siteId: string | undefined = undefined;
+    $: if (site.$id !== siteId) {
+        siteId = site.$id;
+        buildSpecification = site.buildSpecification;
+        runtimeSpecification = site.runtimeSpecification;
+    }
     $: {
-        originalBuild = site.buildSpecification ?? buildSpecification;
-        originalRuntime = site.runtimeSpecification ?? runtimeSpecification;
+        originalBuild = site.buildSpecification;
+        originalRuntime = site.runtimeSpecification;
     }
 
     async function updateResourceLimits() {
@@ -57,13 +63,13 @@
                 type: 'success',
                 message: 'Resource limits have been updated'
             });
-            trackEvent(Submit.FunctionUpdateLogging);
+            trackEvent(Submit.SiteUpdateResourceLimits);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
-            trackError(error, Submit.FunctionUpdateLogging);
+            trackError(error, Submit.SiteUpdateResourceLimits);
         }
     }
 

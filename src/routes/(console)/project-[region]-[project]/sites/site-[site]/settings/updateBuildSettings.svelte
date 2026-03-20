@@ -112,9 +112,8 @@
                 site.adapter = adapter;
             }
             if (specs && specs.specifications?.length) {
-                const fallbackSlug =
-                    specs.specifications.find((s) => s.enabled)?.slug ??
-                    specs.specifications[0].slug;
+                const enabledSpecs = specs.specifications.filter((s) => s.enabled);
+                const fallbackSlug = enabledSpecs[0]?.slug ?? specs.specifications[0]?.slug;
                 if (!specs.specifications.some((s) => s.slug === site.buildSpecification)) {
                     site.buildSpecification = fallbackSlug;
                 }
