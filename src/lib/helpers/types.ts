@@ -62,6 +62,7 @@ export type Column = PinkColumn & {
     draggable?: boolean;
     resizedWidth?: number;
     isAction?: boolean;
+    sticky?: { side: 'left' | 'right'; offset?: number };
 };
 
 export function isValueOfStringEnum<T extends Record<string, string>>(

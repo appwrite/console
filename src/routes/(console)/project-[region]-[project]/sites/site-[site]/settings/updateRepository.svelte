@@ -86,7 +86,7 @@
                 providerBranch: selectedBranch || undefined,
                 providerSilentMode: silentMode || undefined,
                 providerRootDirectory: selectedDir || undefined,
-                specification: site?.specification || undefined
+                buildSpecification: site?.buildSpecification || undefined
             });
             await invalidate(Dependencies.SITE);
             addNotification({
@@ -152,7 +152,7 @@
             providerBranch: nextBranch,
             providerSilentMode: site?.providerSilentMode ?? undefined,
             providerRootDirectory: site?.providerRootDirectory ?? undefined,
-            specification: site?.specification || undefined
+            buildSpecification: site?.buildSpecification || undefined
         });
 
         invalidate(Dependencies.SITE);

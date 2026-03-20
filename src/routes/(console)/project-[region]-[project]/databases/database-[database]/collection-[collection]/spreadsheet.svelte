@@ -575,19 +575,19 @@
         $noSqlDocument.isNew &&
         ($documents?.documents?.length ?? 0) < MIN_DOCS_FOR_FUZZY_SUGGESTIONS;
 
-    $: metadataKeys = isVectorsDb && $documents?.documents
-        ? fuzzySearchKeys(
-              $documents.documents.map((d) => d.metadata ?? {}),
-              { minOccurrences: 2 }
-          ) ?? []
-        : [];
+    $: metadataKeys =
+        isVectorsDb && $documents?.documents
+            ? (fuzzySearchKeys(
+                  $documents.documents.map((d) => d.metadata ?? {}),
+                  { minOccurrences: 2 }
+              ) ?? [])
+            : [];
 
     $: vectorsDbMetadataDefaults = isVectorsDb
         ? Object.fromEntries(
-              (metadataKeys.length
-                  ? metadataKeys
-                  : mockSuggestions.columns.map((c) => c.name)
-              ).map((key) => [key, ''])
+              (metadataKeys.length ? metadataKeys : mockSuggestions.columns.map((c) => c.name)).map(
+                  (key) => [key, '']
+              )
           )
         : {};
 
@@ -596,8 +596,8 @@
             ? isVectorsDb
                 ? ['metadata', 'embeddings']
                 : useMockSuggestions
-                    ? mockSuggestions.columns.map((column) => column.name)
-                    : (fuzzySearchKeys($documents.documents, { minOccurrences: 2 }) ?? [])
+                  ? mockSuggestions.columns.map((column) => column.name)
+                  : (fuzzySearchKeys($documents.documents, { minOccurrences: 2 }) ?? [])
             : [];
 
     $: showSuggestions = $noSqlDocument.isNew && suggestedAttributes.length > 0;
@@ -910,10 +910,12 @@
             {showSuggestions}
             {suggestedAttributes}
             showMockSuggestions={useMockSuggestions}
-            suggestedDefaults={isVectorsDb ? {
-                metadata: vectorsDbMetadataDefaults,
-                embeddings: []
-            } : undefined}
+            suggestedDefaults={isVectorsDb
+                ? {
+                      metadata: vectorsDbMetadataDefaults,
+                      embeddings: []
+                  }
+                : undefined}
             onDiscard={() => {
                 const firstDocument = $documents?.documents?.[0];
                 if (firstDocument) {

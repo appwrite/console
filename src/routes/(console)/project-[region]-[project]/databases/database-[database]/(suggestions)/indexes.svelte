@@ -6,7 +6,7 @@
     import { Modal } from '$lib/components';
     import { type Entity, SideSheet } from '$database/(entity)';
     import { isSmallViewport } from '$lib/stores/viewport';
-    import { DatabasesIndexType, OrderBy } from '@appwrite.io/console';
+    import { DatabasesIndexType, OrderBy, TablesDBIndexType } from '@appwrite.io/console';
     import { capitalize } from '$lib/helpers/string';
     import type { Columns } from '$database/store';
     import { isRelationship } from '../table-[table]/rows/store';
@@ -239,7 +239,7 @@
                     databaseId: table.databaseId,
                     tableId: table.$id,
                     key: uniqueIndexKey,
-                    type: index.type,
+                    type: index.type as TablesDBIndexType,
                     columns: index.fields,
                     lengths,
                     ...(orders.length ? { orders } : {})

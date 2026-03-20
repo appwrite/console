@@ -411,7 +411,8 @@
                     </Layout.Stack>
 
                     {#if showActions && actions}
-                        {@const isOnlyIndexes = mode === 'indexes' && (type === 'documentsdb' || type === 'vectorsdb')}
+                        {@const isOnlyIndexes =
+                            mode === 'indexes' && (type === 'documentsdb' || type === 'vectorsdb')}
                         {@const inline = mode === 'records-filtered' || isOnlyIndexes}
                         <div class="controlled-width" class:single-mode={isOnlyIndexes}>
                             <Layout.Stack

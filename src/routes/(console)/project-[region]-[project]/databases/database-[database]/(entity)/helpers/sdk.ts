@@ -2,7 +2,6 @@ import { sdk } from '$lib/stores/sdk';
 import type { Page } from '@sveltejs/kit';
 import type { TerminologyResult } from './types';
 import {
-    type CollectionDatabaseType,
     type DatabaseType,
     type Entity,
     type EntityList,
@@ -14,7 +13,13 @@ import {
     toSupportiveIndex
 } from './terminology';
 
-import type { Models, OrderBy, TablesDBIndexType, DocumentsDBIndexType, VectorsDBIndexType } from '@appwrite.io/console';
+import type {
+    Models,
+    OrderBy,
+    TablesDBIndexType,
+    DocumentsDBIndexType,
+    VectorsDBIndexType
+} from '@appwrite.io/console';
 
 export type DatabaseSdkResult = {
     create: (
@@ -116,7 +121,7 @@ export type DatabaseSdkResult = {
  * Returns the raw DocumentsDB or VectorsDB SDK service for a given database type.
  * Use in load functions (.ts) where Svelte runes aren't available.
  */
-export function getCollectionService(region: string, project: string, type: CollectionDatabaseType) {
+export function getCollectionService(region: string, project: string, type: DatabaseType) {
     const projectSdk = sdk.forProject(region, project);
     switch (type) {
         case 'documentsdb':

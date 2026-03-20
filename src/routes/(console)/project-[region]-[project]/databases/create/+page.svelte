@@ -58,6 +58,12 @@
             title: 'DocumentsDB',
             subtitle:
                 'Store flexible data without a fixed schema. Best for unstructured data and simple querying.'
+        },
+        {
+            type: 'vectorsdb',
+            title: 'VectorsDB',
+            subtitle:
+                'Store data as vectors to find similar results. Best for semantic search and recommendations.'
         }
     ];
 
@@ -276,7 +282,7 @@
 {/snippet}
 
 {#snippet selectDatabaseType(disabled = false)}
-    <Layout.Grid columns={2} columnsS={1}>
+    <Layout.Grid columns={3} columnsS={1}>
         {#each databaseTypes as databaseType}
             <div class="card-selector">
                 <Card.Selector

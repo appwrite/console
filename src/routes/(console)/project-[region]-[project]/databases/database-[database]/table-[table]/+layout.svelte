@@ -21,6 +21,7 @@
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { type RealtimeResponse, realtime, sdk } from '$lib/stores/sdk';
+    import type { TablesDBIndexType } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import {
         columnsOrder,
@@ -565,7 +566,7 @@
                 databaseId: page.params.database,
                 tableId: page.params.table,
                 key: index.key,
-                type: index.type,
+                type: index.type as TablesDBIndexType,
                 columns: index.fields,
                 lengths: index.lengths,
                 orders: index.orders

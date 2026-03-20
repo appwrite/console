@@ -42,11 +42,12 @@
 
     $registerSearchers(tablesSearcher);
 
-    async function createEntity(entityId: string, name: string) {
+    async function createEntity(entityId: string, name: string, dimension?: number) {
         const entity = await databaseSdk.createEntity({
             databaseId,
             entityId,
-            name
+            name,
+            dimension
         });
 
         await invalidate(Dependencies.DATABASE);

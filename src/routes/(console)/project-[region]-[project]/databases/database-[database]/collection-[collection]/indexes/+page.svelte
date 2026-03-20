@@ -1,5 +1,6 @@
 <script lang="ts">
     import { page } from '$app/state';
+    import type { DocumentsDBIndexType } from '@appwrite.io/console';
     import type { PageProps } from './$types';
     import {
         type CreateIndexesCallbackType,
@@ -19,7 +20,7 @@
             databaseId: page.params.database,
             entityId: page.params.collection,
             key: index.key,
-            type: index.type,
+            type: index.type as DocumentsDBIndexType,
             attributes: index.fields,
             lengths: index.lengths,
             orders: index.orders

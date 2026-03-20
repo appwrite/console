@@ -283,9 +283,9 @@
             // For vectorsdb, wrap fields in metadata and add empty embeddings
             const documents = isVectorsDb
                 ? rows.map((row) => {
-                    const { $id, ...rest } = row;
-                    return { $id, metadata: rest, embeddings: new Array(dimension).fill(0) };
-                })
+                      const { $id, ...rest } = row;
+                      return { $id, metadata: rest, embeddings: new Array(dimension).fill(0) };
+                  })
                 : rows;
 
             const projectSdk = sdk.forProject(page.params.region, page.params.project);

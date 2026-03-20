@@ -7,6 +7,23 @@ import {
 } from '@appwrite.io/console';
 import { includesAll } from '$lib/helpers/array';
 
+export type MigrationResource =
+    | AppwriteMigrationResource
+    | FirebaseMigrationResource
+    | NHostMigrationResource
+    | SupabaseMigrationResource;
+
+// Appwrite enum is the superset of all provider resources — used as a
+// provider-agnostic reference. The addResource guard filters by provider.
+export const MigrationResources = AppwriteMigrationResource;
+
+type ProviderResourceMap = {
+    appwrite: AppwriteMigrationResource[];
+    supabase: SupabaseMigrationResource[];
+    nhost: NHostMigrationResource[];
+    firebase: FirebaseMigrationResource[];
+};
+
 const initialFormData = {
     users: {
         root: false,
@@ -18,11 +35,18 @@ const initialFormData = {
     },
     functions: {
         root: false,
-        env: false,
-        inactive: false
+        deploymentInactive: false
     },
     storage: {
         root: false
+    },
+    sites: {
+        root: false,
+        deploymentInactive: false
+    },
+    messaging: {
+        root: false,
+        messages: false
     }
 };
 
@@ -53,37 +77,41 @@ export const ResourcesFriendly = {
     table: { singular: 'Table', plural: 'Tables' },
     index: { singular: 'Index', plural: 'Indexes' },
     column: { singular: 'Column', plural: 'Columns' },
-    row: { singular: 'Row', plural: 'Rows' }
+    row: { singular: 'Row', plural: 'Rows' },
+    site: { singular: 'Site', plural: 'Sites' },
+    'site-deployment': { singular: 'Site Deployment', plural: 'Site Deployments' },
+    'site-variable': { singular: 'Site Variable', plural: 'Site Variables' },
+    provider: { singular: 'Provider', plural: 'Providers' },
+    topic: { singular: 'Topic', plural: 'Topics' },
+    subscriber: { singular: 'Subscriber', plural: 'Subscribers' },
+    message: { singular: 'Message', plural: 'Messages' }
 };
 
-export const MigrationResources = AppwriteMigrationResource;
-
-export type MigrationResource =
-    | AppwriteMigrationResource
-    | FirebaseMigrationResource
-    | SupabaseMigrationResource
-    | NHostMigrationResource;
-
-export const providerResources: Record<Provider, MigrationResource[]> = {
+export const providerResources: ProviderResourceMap = {
     appwrite: Object.values(AppwriteMigrationResource),
     supabase: Object.values(SupabaseMigrationResource),
     nhost: Object.values(NHostMigrationResource),
     firebase: Object.values(FirebaseMigrationResource)
 };
 
-export const migrationFormToResources = (
+export const migrationFormToResources = <P extends Provider>(
     formData: MigrationFormData,
-    provider: Provider
-): MigrationResource[] => {
+    provider: P
+): ProviderResourceMap[P] => {
     const resources: MigrationResource[] = [];
+    const providerValues = providerResources[provider] as MigrationResource[];
     const addResource = (resource: MigrationResource) => {
-        if (providerResources[provider].includes(resource)) {
+        if (providerValues.includes(resource)) {
             resources.push(resource);
         }
     };
 
     if (formData.users.root) {
         addResource(MigrationResources.User);
+        if (formData.users.teams) {
+            addResource(MigrationResources.Team);
+            addResource(MigrationResources.Membership);
+        }
     }
     if (formData.databases.root) {
         addResource(MigrationResources.Database);
@@ -98,8 +126,30 @@ export const migrationFormToResources = (
         addResource(MigrationResources.Bucket);
         addResource(MigrationResources.File);
     }
+    if (formData.functions.root) {
+        addResource(MigrationResources.Function);
+        addResource(MigrationResources.Environmentvariable);
+        if (formData.functions.deploymentInactive) {
+            addResource(MigrationResources.Deployment);
+        }
+    }
+    if (formData.sites.root) {
+        addResource(MigrationResources.Site);
+        addResource(MigrationResources.Sitevariable);
+        if (formData.sites.deploymentInactive) {
+            addResource(MigrationResources.Sitedeployment);
+        }
+    }
+    if (formData.messaging.root) {
+        addResource(MigrationResources.Provider);
+        addResource(MigrationResources.Topic);
+        addResource(MigrationResources.Subscriber);
+    }
+    if (formData.messaging.messages) {
+        addResource(MigrationResources.Message);
+    }
 
-    return resources;
+    return resources as ProviderResourceMap[P];
 };
 
 const compareVersions = (a: string, b: string) => {
@@ -128,6 +178,14 @@ export const resourcesToMigrationForm = (resources: MigrationResource[]): Migrat
     if (resources.includes(MigrationResources.User)) {
         formData.users.root = true;
     }
+    if (
+        includesAll(resources, [
+            MigrationResources.Team,
+            MigrationResources.Membership
+        ] as MigrationResource[])
+    ) {
+        formData.users.teams = true;
+    }
     if (resources.includes(MigrationResources.Database)) {
         formData.databases.root = true;
     }
@@ -147,6 +205,24 @@ export const resourcesToMigrationForm = (resources: MigrationResource[]): Migrat
         ] as MigrationResource[])
     ) {
         formData.storage.root = true;
+    }
+    if (resources.includes(MigrationResources.Function)) {
+        formData.functions.root = true;
+    }
+    if (resources.includes(MigrationResources.Deployment)) {
+        formData.functions.deploymentInactive = true;
+    }
+    if (resources.includes(MigrationResources.Site)) {
+        formData.sites.root = true;
+    }
+    if (resources.includes(MigrationResources.Sitedeployment)) {
+        formData.sites.deploymentInactive = true;
+    }
+    if (resources.includes(MigrationResources.Provider)) {
+        formData.messaging.root = true;
+    }
+    if (resources.includes(MigrationResources.Message)) {
+        formData.messaging.messages = true;
     }
 
     return formData;

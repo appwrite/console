@@ -21,6 +21,7 @@ export type Entity = Partial<Collection | Table> & {
     indexes?: Index[];
     fields?: (Attributes | Columns)[];
     recordSecurity?: Models.Collection['documentSecurity'] | Models.Table['rowSecurity'];
+    dimension?: number;
 };
 
 export type Field = Partial<Attributes> | Partial<Columns>;
@@ -31,7 +32,7 @@ export type Record = Partial<Models.Document | Models.Row> & {
 
 export type Index = Partial<Models.Index | Models.ColumnIndex> & {
     fields: Models.Index['attributes'] | Models.ColumnIndex['columns'];
-    type: DatabasesIndexType;
+    type: string;
 };
 
 export type EntityList = {

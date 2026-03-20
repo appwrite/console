@@ -28,9 +28,8 @@ export function isSupportOnline() {
         return false;
     }
 
-    // Support hours are 16:00 UTC to 23:59 UTC on weekdays
-    // This roughly covers 09:00 PT to 17:00 PT (depending on PST/PDT)
-    if (hour >= 16) {
+    // Support hours are 04:00 UTC to 17:00 UTC on weekdays
+    if (hour >= 4 && hour < 17) {
         return true;
     }
 

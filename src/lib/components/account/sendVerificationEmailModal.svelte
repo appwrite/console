@@ -1,7 +1,8 @@
 <script lang="ts">
     import { invalidate, goto } from '$app/navigation';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
-    import { Button } from '$lib/elements/forms';
+    import { Button, InputEmail, InputPassword } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
     import { user } from '$lib/stores/user';
     import { get } from 'svelte/store';
@@ -27,6 +28,17 @@
     let emailSent = $state(false);
     let resendTimer = $state(0);
     let timerInterval: ReturnType<typeof setInterval> | null = null;
+
+    let showUpdateEmail = $state(false);
+    let newEmail = $state('');
+    let newPassword = $state('');
+    let updating = $state(false);
+
+    $effect(() => {
+        if (showUpdateEmail) {
+            newEmail = email || get(user)?.email || '';
+        }
+    });
 
     async function logout() {
         error = null;
@@ -114,6 +126,32 @@
         }
     }
 
+    async function updateEmail() {
+        error = null;
+        updating = true;
+        try {
+            await sdk.forConsole.account.updateEmail({
+                email: newEmail,
+                password: newPassword
+            });
+            await invalidate(Dependencies.ACCOUNT);
+            trackEvent(Submit.AccountUpdateEmail);
+            resetUpdateEmailForm();
+        } catch (err) {
+            error = err.message;
+            trackError(err, Submit.AccountUpdateEmail);
+        } finally {
+            updating = false;
+        }
+    }
+
+    function resetUpdateEmailForm() {
+        showUpdateEmail = false;
+        newEmail = '';
+        newPassword = '';
+        error = null;
+    }
+
     onMount(restoreTimerState);
 
     onDestroy(() => {
@@ -129,48 +167,87 @@
 </script>
 
 <div class="email-verification-scrim">
-    <Modal
-        bind:show
-        bind:error
-        title="Verify your email address"
-        {onSubmit}
-        dismissible={false}
-        autoClose={false}
-        backdrop={false}>
-        <Card.Base variant="secondary" padding="s">
-            <Layout.Stack gap="xxs">
-                <Typography.Text gap="m">
-                    To continue using Appwrite Cloud, please verify your email address. An email
-                    will be sent to <Typography.Text
-                        variant="m-600"
-                        color="neutral-secondary"
-                        style="display: inline;">{email || get(user)?.email}</Typography.Text>
-                </Typography.Text>
-
-                <Link variant="default" on:click={() => logout()}>Switch account</Link>
-
-                {#if emailSent && resendTimer > 0}
-                    <div transition:slide={{ duration: 150 }}>
-                        <Typography.Text
+    {#if !showUpdateEmail}
+        <Modal
+            bind:show
+            bind:error
+            title="Verify your email address"
+            {onSubmit}
+            dismissible={false}
+            autoClose={false}
+            backdrop={false}>
+            <Card.Base variant="secondary" padding="s">
+                <Layout.Stack gap="xxs">
+                    <Typography.Text gap="m">
+                        To continue using Appwrite Cloud, please verify your email address. An email
+                        will be sent to <Typography.Text
+                            variant="m-600"
                             color="neutral-secondary"
-                            style="margin-block-start: var(--gap-L, 16px);">
-                            Didn't get the email? Try again in {resendTimer}s
-                        </Typography.Text>
-                    </div>
-                {/if}
-            </Layout.Stack>
-        </Card.Base>
+                            style="display: inline;">{email || get(user)?.email}</Typography.Text>
+                    </Typography.Text>
 
-        <svelte:fragment slot="footer">
-            <Button
-                submit
-                submissionLoader
-                forceShowLoader={creating}
-                disabled={creating || resendTimer > 0}>
-                {emailSent ? 'Resend email' : 'Send email'}
-            </Button>
-        </svelte:fragment>
-    </Modal>
+                    <Typography.Text>
+                        Wrong email? <Link
+                            variant="default"
+                            on:click={() => {
+                                showUpdateEmail = true;
+                                error = null;
+                            }}>Update email address</Link> or <Link
+                            variant="default"
+                            on:click={() => logout()}>Switch account</Link>
+                    </Typography.Text>
+
+                    {#if emailSent && resendTimer > 0}
+                        <div transition:slide={{ duration: 150 }}>
+                            <Typography.Text
+                                color="neutral-secondary"
+                                style="margin-block-start: var(--gap-L, 16px);">
+                                Didn't get the email? Try again in {resendTimer}s
+                            </Typography.Text>
+                        </div>
+                    {/if}
+                </Layout.Stack>
+            </Card.Base>
+
+            <svelte:fragment slot="footer">
+                <Button
+                    submit
+                    submissionLoader
+                    forceShowLoader={creating}
+                    disabled={creating || resendTimer > 0}>
+                    {emailSent ? 'Resend email' : 'Send email'}
+                </Button>
+            </svelte:fragment>
+        </Modal>
+    {:else}
+        <Modal
+            bind:show={showUpdateEmail}
+            bind:error
+            title="Update email address"
+            onSubmit={updateEmail}
+            autoClose={false}
+            backdrop={false}>
+            <InputEmail
+                id="new-email"
+                label="Email"
+                placeholder="Enter email"
+                bind:value={newEmail}
+                required
+                helper="You'll need access to this email to verify your account" />
+            <InputPassword
+                id="update-password"
+                label="Password"
+                placeholder="Enter password"
+                required
+                bind:value={newPassword} />
+
+            <svelte:fragment slot="footer">
+                <Button text on:click={resetUpdateEmailForm}>Cancel</Button>
+                <Button submit submissionLoader forceShowLoader={updating} disabled={updating}
+                    >Update</Button>
+            </svelte:fragment>
+        </Modal>
+    {/if}
 </div>
 
 <style>
