@@ -1,12 +1,12 @@
 import { Dependencies, SPREADSHEET_PAGE_LIMIT } from '$lib/constants';
 import { getLimit, getPage, getQuery, getView, pageToOffset, View } from '$lib/helpers/load';
-import { sdk } from '$lib/stores/sdk';
 import type { PageLoad } from './$types';
 import { queries, queryParamToMap } from '$lib/components/filters';
 import { buildGridQueries, extractSortFromQueries } from '$database/store';
+import { getCollectionService } from '$database/(entity)';
 
 export const load: PageLoad = async ({ params, depends, url, route, parent }) => {
-    const { collection } = await parent();
+    const { collection, database } = await parent();
     depends(Dependencies.DOCUMENTS);
 
     const page = getPage(url);
@@ -20,6 +20,7 @@ export const load: PageLoad = async ({ params, depends, url, route, parent }) =>
     queries.set(parsedQueries);
 
     const currentSort = extractSortFromQueries(parsedQueries);
+    const collectionSdk = getCollectionService(params.region, params.project, database.type);
 
     return {
         offset,
@@ -28,7 +29,7 @@ export const load: PageLoad = async ({ params, depends, url, route, parent }) =>
         query,
         currentSort,
         parsedQueries,
-        documents: await sdk.forProject(params.region, params.project).documentsDB.listDocuments({
+        documents: await collectionSdk.listDocuments({
             databaseId: params.database,
             collectionId: params.collection,
             queries: buildGridQueries(limit, offset, parsedQueries, collection)

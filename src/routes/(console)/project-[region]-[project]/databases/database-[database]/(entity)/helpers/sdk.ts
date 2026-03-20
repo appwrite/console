@@ -2,6 +2,7 @@ import { sdk } from '$lib/stores/sdk';
 import type { Page } from '@sveltejs/kit';
 import type { TerminologyResult } from './types';
 import {
+    type CollectionDatabaseType,
     type DatabaseType,
     type Entity,
     type EntityList,
@@ -110,6 +111,22 @@ export type DatabaseSdkResult = {
         databaseType?: DatabaseType;
     }) => Promise<{}>;
 };
+
+/**
+ * Returns the raw DocumentsDB or VectorsDB SDK service for a given database type.
+ * Use in load functions (.ts) where Svelte runes aren't available.
+ */
+export function getCollectionService(region: string, project: string, type: CollectionDatabaseType) {
+    const projectSdk = sdk.forProject(region, project);
+    switch (type) {
+        case 'documentsdb':
+            return projectSdk.documentsDB;
+        case 'vectorsdb':
+            return projectSdk.vectorsDB;
+        default:
+            throw new Error(`Unsupported collection database type: ${type}`);
+    }
+}
 
 export function useDatabaseSdk(
     regionOrPage: string | Page,

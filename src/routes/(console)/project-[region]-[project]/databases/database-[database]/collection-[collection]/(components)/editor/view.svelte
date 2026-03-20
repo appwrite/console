@@ -49,6 +49,7 @@
     import { Button } from '$lib/elements/forms';
     import { copy } from '$lib/helpers/copy';
     import { isSmallViewport } from '$lib/stores/viewport';
+    import { isMac } from '$lib/helpers/platform';
 
     import { makeErrorMessage } from './helpers/errorMessages';
     import { customTheme, customSyntaxHighlighting } from './helpers/theme';
@@ -1512,7 +1513,7 @@
                         gap="xxxs"
                         alignItems="center"
                         style="height: fit-content">
-                        <Badge content="⌘" variant="secondary" size="xs" />
+                        <Badge content={isMac() ? '⌘' : 'Ctrl'} variant="secondary" size="xs" />
                         <Badge content="G" variant="secondary" size="xs" />
                     </Layout.Stack>
                     <Typography.Caption variant="400" color="--fgcolor-neutral-secondary">

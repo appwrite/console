@@ -10,6 +10,9 @@ type ImplementedDBTypes = Omit<BaseTerminology, 'legacy'>;
 
 /* manual type for the time being because vectorsdb is pending */
 export type DatabaseType = 'legacy' | 'tablesdb' | 'documentsdb' | 'vectorsdb';
+export type CollectionDatabaseType = Extract<DatabaseType, 'documentsdb' | 'vectorsdb'>;
+
+export const DEFAULT_VECTOR_DIMENSION = 768;
 
 export type RecordType = ImplementedDBTypes[keyof ImplementedDBTypes]['record'];
 
@@ -63,9 +66,9 @@ export const baseTerminology = {
         record: 'document'
     },
     vectorsdb: {
-        entity: 'table',
-        field: 'column',
-        record: 'row'
+        entity: 'collection',
+        field: 'attribute',
+        record: 'document'
     }
 } as const;
 

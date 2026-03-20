@@ -292,7 +292,7 @@
 
     const spreadsheetColumns = $derived.by(() => {
         return isRecordMode
-            ? type !== 'documentsdb'
+            ? type === 'tablesdb' || type === 'legacy'
                 ? getRowColumns()
                 : getDocumentsDbColumns()
             : getIndexesColumns();
@@ -382,7 +382,7 @@
 
         {#snippet noSqlEditor()}
             {#if showNoSqlEditor}
-                {#if type === 'documentsdb' && mode === 'records'}
+                {#if (type === 'documentsdb' || type === 'vectorsdb') && mode === 'records'}
                     <NoSqlEditor loading />
                 {/if}
             {/if}
@@ -411,7 +411,7 @@
                     </Layout.Stack>
 
                     {#if showActions && actions}
-                        {@const isOnlyIndexes = mode === 'indexes' && type === 'documentsdb'}
+                        {@const isOnlyIndexes = mode === 'indexes' && (type === 'documentsdb' || type === 'vectorsdb')}
                         {@const inline = mode === 'records-filtered' || isOnlyIndexes}
                         <div class="controlled-width" class:single-mode={isOnlyIndexes}>
                             <Layout.Stack
@@ -504,7 +504,8 @@
             }
         }
 
-        &[data-mode='records'][data-type='documentsdb'] {
+        &[data-mode='records'][data-type='documentsdb'],
+        &[data-mode='records'][data-type='vectorsdb'] {
             position: unset;
             // disable animation when not loading!
             &[data-loading='false'] :global(.skeleton) {

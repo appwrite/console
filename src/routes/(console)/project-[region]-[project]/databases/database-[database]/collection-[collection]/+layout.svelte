@@ -53,6 +53,7 @@
         RecordActivity,
         CreateIndex,
         useDatabaseSdk,
+        DEFAULT_VECTOR_DIMENSION,
         type Field,
         type Index
     } from '$database/(entity)';
@@ -277,7 +278,7 @@
 
             const dbType = data.database?.type;
             const isVectorsDb = dbType === 'vectorsdb';
-            const dimension = collection?.dimension ?? 768;
+            const dimension = collection?.dimension ?? DEFAULT_VECTOR_DIMENSION;
 
             // For vectorsdb, wrap fields in metadata and add empty embeddings
             const documents = isVectorsDb

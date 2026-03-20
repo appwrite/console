@@ -260,7 +260,7 @@
                 {/snippet}
             </EmptySheet>
         {:else}
-            <EmptySheet mode="records" type="documentsdb" showActions={$canWriteRows}>
+            <EmptySheet mode="records" type={data.database.type} showActions={$canWriteRows}>
                 {#snippet actions()}
                     <EmptySheetCards
                         icon={IconViewBoards}
