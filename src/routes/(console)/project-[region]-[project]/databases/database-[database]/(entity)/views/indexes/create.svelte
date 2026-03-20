@@ -1,8 +1,8 @@
 <script module lang="ts">
-    import { IndexType, OrderBy } from '@appwrite.io/console';
+    import { DatabasesIndexType, OrderBy } from '@appwrite.io/console';
     export type CreateIndexesCallbackType = {
         key: string;
-        type: IndexType;
+        type: string;
         fields: string[];
         lengths: (number | null)[];
         orders: OrderBy[];
@@ -39,14 +39,14 @@
 
     let key = $state('');
     let initializedForOpen = $state(false);
-    let selectedType = $state<IndexType>(IndexType.Key);
+    let selectedType = $state<DatabasesIndexType>(DatabasesIndexType.Key);
 
     const { dependencies, terminology } = getTerminologies();
 
     const fieldOptions = $derived(
         entity.fields
             .filter((field) => {
-                if (selectedType === IndexType.Spatial) {
+                if (selectedType === DatabasesIndexType.Spatial) {
                     // keep only spatial
                     return isSpatialType(field);
                 }
@@ -67,15 +67,15 @@
     }> = $state([{ value: '', order: null, length: null }]);
 
     const types = [
-        { value: IndexType.Key, label: 'Key' },
-        { value: IndexType.Unique, label: 'Unique' },
-        { value: IndexType.Fulltext, label: 'Fulltext' },
-        { value: IndexType.Spatial, label: 'Spatial' }
+        { value: DatabasesIndexType.Key, label: 'Key' },
+        { value: DatabasesIndexType.Unique, label: 'Unique' },
+        { value: DatabasesIndexType.Fulltext, label: 'Fulltext' },
+        { value: DatabasesIndexType.Spatial, label: 'Spatial' }
     ];
 
     // order options derived from selected type
     let orderOptions = $derived.by(() =>
-        selectedType === IndexType.Spatial
+        selectedType === DatabasesIndexType.Spatial
             ? [
                   { value: OrderBy.Asc, label: 'ASC' },
                   { value: OrderBy.Desc, label: 'DESC' },
@@ -91,7 +91,7 @@
     // and the field already is not spatial type
     $effect(() => {
         const firstField = entity.fields.find((field) => field.key === fieldList.at(0)?.value);
-        if (selectedType === IndexType.Spatial && firstField && !isSpatialType(firstField)) {
+        if (selectedType === DatabasesIndexType.Spatial && firstField && !isSpatialType(firstField)) {
             fieldList = [{ value: '', order: null, length: null }];
         }
     });
@@ -112,7 +112,7 @@
         const isSpatial = field.length && isSpatialType(field[0]);
         const order = isSpatial ? null : OrderBy.Asc;
 
-        selectedType = isSpatial ? IndexType.Spatial : IndexType.Key;
+        selectedType = isSpatial ? DatabasesIndexType.Spatial : DatabasesIndexType.Key;
 
         fieldList = externalFieldKey
             ? [{ value: externalFieldKey, order, length: null }]
@@ -122,7 +122,7 @@
     }
 
     const addFieldDisabled = $derived(
-        selectedType === IndexType.Spatial ||
+        selectedType === DatabasesIndexType.Spatial ||
             !fieldList.at(-1)?.value ||
             (!fieldList.at(-1)?.order && fieldList.at(-1)?.order !== null)
     );
@@ -153,7 +153,7 @@
     export async function create() {
         const fieldType = terminology.field.lower.singular;
 
-        if (!key || !selectedType || (selectedType !== IndexType.Spatial && addFieldDisabled)) {
+        if (!key || !selectedType || (selectedType !== DatabasesIndexType.Spatial && addFieldDisabled)) {
             addNotification({
                 type: 'error',
                 message: `Selected ${fieldType} key or type invalid`
@@ -232,7 +232,7 @@
                 required
                 options={[
                     // allow system fields only for non-spatial index types
-                    ...(selectedType === IndexType.Spatial
+                    ...(selectedType === DatabasesIndexType.Spatial
                         ? []
                         : [
                               { value: '$id', label: '$id', leadingIcon: IconFingerPrint },
@@ -262,7 +262,7 @@
                 bind:value={field.order}
                 placeholder="Select order" />
 
-            {#if selectedType === IndexType.Key}
+            {#if selectedType === DatabasesIndexType.Key}
                 <InputNumber
                     id={`length-${index}`}
                     label={index === 0 ? 'Length' : undefined}

@@ -984,13 +984,9 @@
                                         </Id>
 
                                             <Popover let:show let:hide portal padding="none">
-                                                {@const opacityValue =
-                                                    showExpandIconForId === index ? '1' : '0'}
                                                 <button
                                                     on:mouseenter={show}
-                                                    on:mouseleave={hide}
-                                                    style:opacity={opacityValue}
-                                                    style:transition="opacity 225ms ease-in-out">
+                                                    on:mouseleave={hide}>
                                                     <Button.Button
                                                         size="xs"
                                                         icon
@@ -1036,7 +1032,6 @@
                                             </Popover>
                                         </Layout.Stack>
                                     </Spreadsheet.Cell>
-                                </button>
                             {:else}
                                 <Spreadsheet.Cell {root} {isEditable} column={columnId}>
                                     {#if columnId === '$createdAt' || columnId === '$updatedAt'}
