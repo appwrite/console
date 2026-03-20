@@ -24,10 +24,8 @@
     let originalRuntime = site.runtimeSpecification;
 
     $: {
-        buildSpecification = site.buildSpecification;
-        runtimeSpecification = site.runtimeSpecification;
-        originalBuild = site.buildSpecification;
-        originalRuntime = site.runtimeSpecification;
+        originalBuild = site.buildSpecification ?? buildSpecification;
+        originalRuntime = site.runtimeSpecification ?? runtimeSpecification;
     }
 
     async function updateResourceLimits() {

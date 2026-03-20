@@ -25,10 +25,8 @@
     let originalRuntime = func.runtimeSpecification;
 
     $: {
-        buildSpecification = func.buildSpecification;
-        runtimeSpecification = func.runtimeSpecification;
-        originalBuild = func.buildSpecification;
-        originalRuntime = func.runtimeSpecification;
+        originalBuild = func.buildSpecification ?? buildSpecification;
+        originalRuntime = func.runtimeSpecification ?? runtimeSpecification;
     }
 
     async function updateResourceLimits() {

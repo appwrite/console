@@ -112,11 +112,14 @@
                 site.adapter = adapter;
             }
             if (specs && specs.specifications?.length) {
+                const fallbackSlug =
+                    specs.specifications.find((s) => s.enabled)?.slug ??
+                    specs.specifications[0].slug;
                 if (!specs.specifications.some((s) => s.slug === site.buildSpecification)) {
-                    site.buildSpecification = specs.specifications[0].slug;
+                    site.buildSpecification = fallbackSlug;
                 }
                 if (!specs.specifications.some((s) => s.slug === site.runtimeSpecification)) {
-                    site.runtimeSpecification = specs.specifications[0].slug;
+                    site.runtimeSpecification = fallbackSlug;
                 }
             }
         }
