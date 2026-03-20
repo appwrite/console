@@ -32,7 +32,10 @@
 <Container>
     <Layout.Stack gap="xxxl">
         {#if data?.deployment && data.deployment.status === 'ready'}
-            <SiteCard deployment={data.deployment} proxyRuleList={data.proxyRuleList}>
+            <SiteCard
+                site={data.site}
+                deployment={data.deployment}
+                proxyRuleList={data.proxyRuleList}>
                 {#snippet footer()}
                     {#if data.proxyRuleList.total}
                         <Button

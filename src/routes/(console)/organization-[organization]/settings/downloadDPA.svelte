@@ -16,8 +16,8 @@
 
 <CardGrid>
     <svelte:fragment slot="title">DPA</svelte:fragment>
-    After downloading, have the DPA signed by your organization's compliance authority, such as your
-    CEO or Compliance Manager, and submit it to
+    After downloading, have the DPA signed by your organization's compliance authority, such as your CEO
+    or Compliance Manager, and submit it to
     <a class="link" href="mailto:privacy@appwrite.io">privacy@appwrite.io</a>.
     <svelte:fragment slot="aside">
         <Box>

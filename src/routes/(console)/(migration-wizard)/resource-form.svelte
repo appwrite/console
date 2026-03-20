@@ -6,19 +6,14 @@
         createMigrationFormStore,
         createMigrationProviderStore,
         type MigrationFormData,
+        type MigrationResource,
         providerResources,
         resourcesToMigrationForm,
         MigrationResources
     } from '$lib/stores/migration';
     import { Button } from '$lib/elements/forms';
     import { wizard } from '$lib/stores/wizard';
-    import {
-        type Models,
-        AppwriteMigrationResource,
-        FirebaseMigrationResource,
-        NHostMigrationResource,
-        SupabaseMigrationResource
-    } from '@appwrite.io/console';
+    import { type Models } from '@appwrite.io/console';
     import type { sdk } from '$lib/stores/sdk';
     import ImportReport from '$routes/(console)/project-[region]-[project]/settings/migrations/(import)/importReport.svelte';
 
@@ -53,7 +48,7 @@
             switch ($provider.provider) {
                 case 'appwrite':
                     report = await projectSdk.migrations.getAppwriteReport({
-                        resources: providerResources.appwrite as AppwriteMigrationResource[],
+                        resources: providerResources.appwrite,
                         endpoint: $provider.endpoint,
                         projectID: $provider.projectID,
                         key: $provider.apiKey
@@ -61,7 +56,7 @@
                     break;
                 case 'supabase':
                     report = await projectSdk.migrations.getSupabaseReport({
-                        resources: providerResources.supabase as SupabaseMigrationResource[],
+                        resources: providerResources.supabase,
                         endpoint: $provider.endpoint,
                         apiKey: $provider.apiKey,
                         databaseHost: $provider.host,
@@ -72,13 +67,13 @@
                     break;
                 case 'firebase':
                     report = await projectSdk.migrations.getFirebaseReport({
-                        resources: providerResources.firebase as FirebaseMigrationResource[],
+                        resources: providerResources.firebase,
                         serviceAccount: $provider.serviceAccount
                     });
                     break;
                 case 'nhost':
                     report = await projectSdk.migrations.getNHostReport({
-                        resources: providerResources.nhost as NHostMigrationResource[],
+                        resources: providerResources.nhost,
                         subdomain: $provider.subdomain,
                         region: $provider.region,
                         adminSecret: $provider.adminSecret,
@@ -98,26 +93,26 @@
 
     $: errorInResources = error;
     $: wizard.setNextDisabled(!report);
-    $: resources = providerResources[$provider.provider];
+    $: resources = providerResources[$provider.provider] as MigrationResource[];
 
     const shouldRenderGroup = (groupKey: string): boolean => {
-        if (groupKey === 'functions') {
-            // Functions not in SDK Resources enum, skip
-            return false;
-        }
-
         if (groupKey === 'storage') {
-            return (
-                resources.includes(MigrationResources.Bucket) &&
-                resources.includes(MigrationResources.File)
-            );
+            return resources.includes(MigrationResources.Bucket) && resources.includes(MigrationResources.File);
         }
 
-        // Map groupKey to MigrationResources enum
-        const groupToResource: Record<
-            string,
-            (typeof MigrationResources)[keyof typeof MigrationResources]
-        > = {
+        if (groupKey === 'functions') {
+            return resources.includes(MigrationResources.Function);
+        }
+
+        if (groupKey === 'sites') {
+            return resources.includes(MigrationResources.Site);
+        }
+
+        if (groupKey === 'messaging') {
+            return resources.includes(MigrationResources.Provider);
+        }
+
+        const groupToResource: Record<string, MigrationResource> = {
             users: MigrationResources.User,
             databases: MigrationResources.Database
         };
@@ -135,7 +130,9 @@
             users: 'user',
             databases: 'database',
             functions: 'function',
-            storage: 'bucket'
+            storage: 'bucket',
+            sites: 'site',
+            messaging: 'provider'
         };
         return map[groupKey] || groupKey;
     };
@@ -143,7 +140,7 @@
 
 <Layout.Stack gap="l">
     {#if error}
-        <Alert.Inline status="error" title="Couldn’t load resources">
+        <Alert.Inline status="error" title="Couldn't load resources">
             {#if migrationType === 'provider'}
                 Please double-check your credentials from the previous step and try again.
             {:else}

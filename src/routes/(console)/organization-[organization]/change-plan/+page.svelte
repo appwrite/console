@@ -482,7 +482,7 @@
         {@const isStarter = selectedPlan.group === BillingPlanGroup.Starter}
         {@const isSelfService = data.organization.billingPlanDetails.selfService}
         {@const isSameGroup = data.organization.billingPlanDetails.group === selectedPlan.group}
-        {#if !isStarter && !isSameGroup && !isSelfService}
+        {#if !isStarter && !isSameGroup && isSelfService}
             <EstimatedTotalBox
                 {collaborators}
                 {isDowngrade}
@@ -490,7 +490,7 @@
                 bind:couponData={selectedCoupon}
                 bind:billingBudget
                 organizationId={data.organization.$id} />
-        {:else if !data.organization.billingPlanDetails.selfService}
+        {:else if isSelfService}
             <PlanComparisonBox downgrade={data.hasFreeOrgs ? false : isDowngrade} />
         {/if}
     </svelte:fragment>
