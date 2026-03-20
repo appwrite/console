@@ -38,6 +38,7 @@
         "dayjs": "^1.11.13",
         "deep-equal": "^2.2.3",
         "echarts": "^5.6.0",
+        "flatted": "^3.4.2",
         "ignore": "^6.0.2",
         "nanoid": "^5.1.5",
         "nanotar": "^0.1.1",
@@ -90,7 +91,6 @@
     "overrides": {
         "vite": "npm:rolldown-vite@latest",
         "minimatch": "10.2.3",
-        "immutable": "^5.1.5",
-        "flatted": "^3.4.1"
+        "immutable": "^5.1.5"
     }
 }
