@@ -114,10 +114,10 @@
             if (specs && specs.specifications?.length) {
                 const enabledSpecs = specs.specifications.filter((s) => s.enabled);
                 const fallbackSlug = enabledSpecs[0]?.slug ?? specs.specifications[0]?.slug;
-                if (!specs.specifications.some((s) => s.slug === site.buildSpecification)) {
+                if (!enabledSpecs.some((s) => s.slug === site.buildSpecification)) {
                     site.buildSpecification = fallbackSlug;
                 }
-                if (!specs.specifications.some((s) => s.slug === site.runtimeSpecification)) {
+                if (!enabledSpecs.some((s) => s.slug === site.runtimeSpecification)) {
                     site.runtimeSpecification = fallbackSlug;
                 }
             }
@@ -133,14 +133,12 @@
         }
         // only allow enabled specsification for it
         const enabledSpecs = specs?.specifications?.filter((s) => s.enabled) ?? [];
-        let specToSend = enabledSpecs.some((s) => s.slug === site.buildSpecification)
+        const specToSend = enabledSpecs.some((s) => s.slug === site.buildSpecification)
             ? site.buildSpecification
             : enabledSpecs[0]?.slug;
-        site.buildSpecification = specToSend;
-        let runtimeSpecToSend = enabledSpecs.some((s) => s.slug === site.runtimeSpecification)
+        const runtimeSpecToSend = enabledSpecs.some((s) => s.slug === site.runtimeSpecification)
             ? site.runtimeSpecification
             : enabledSpecs[0]?.slug;
-        site.runtimeSpecification = runtimeSpecToSend;
         try {
             await sdk.forProject(page.params.region, page.params.project).sites.update({
                 siteId: site.$id,
@@ -163,6 +161,8 @@
                 buildSpecification: specToSend || undefined,
                 runtimeSpecification: runtimeSpecToSend || undefined
             });
+            site.buildSpecification = specToSend;
+            site.runtimeSpecification = runtimeSpecToSend;
             await invalidate(Dependencies.SITE);
             addNotification({
                 message: 'Build settings have been updated',

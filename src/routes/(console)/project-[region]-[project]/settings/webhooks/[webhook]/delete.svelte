@@ -1,5 +1,6 @@
 <script lang="ts">
     import { goto, invalidate } from '$app/navigation';
+    import { page } from '$app/state';
     import { base } from '$app/paths';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import Confirm from '$lib/components/confirm.svelte';
@@ -14,7 +15,7 @@
     let error: string;
     async function handleDelete() {
         try {
-            await sdk.forProject($project.region, $project.$id).webhooks.delete({
+            await sdk.forProject(page.params.region, $project.$id).webhooks.delete({
                 webhookId: $webhook.$id
             });
             await invalidate(Dependencies.WEBHOOKS);
@@ -24,7 +25,7 @@
                 message: `${$webhook.name} has been deleted`
             });
             trackEvent(Submit.WebhookDelete);
-            await goto(`${base}/project-${$project.region}-${$project.$id}/settings/webhooks`);
+            await goto(`${base}/project-${page.params.region}-${$project.$id}/settings/webhooks`);
         } catch (e) {
             error = e.message;
             trackError(e, Submit.WebhookDelete);
