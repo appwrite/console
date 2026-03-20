@@ -983,30 +983,28 @@
                                             {row.$id}
                                         </Id>
 
-                                            <Popover let:show let:hide portal padding="none">
-                                                <button
-                                                    on:mouseenter={show}
-                                                    on:mouseleave={hide}>
-                                                    <Button.Button
-                                                        size="xs"
-                                                        icon
-                                                        variant="secondary"
-                                                        on:click={() => {
-                                                            hide();
-                                                            previouslyFocusedElement =
-                                                                document.activeElement;
-                                                            $databaseRowSheetOptions.autoFocus = false;
-                                                            onSelectSheetOption(
-                                                                'update',
-                                                                null,
-                                                                null,
-                                                                'row',
-                                                                row
-                                                            );
-                                                        }}>
-                                                        <Icon icon={IconArrowExpand} size="s" />
-                                                    </Button.Button>
-                                                </button>
+                                        <Popover let:show let:hide portal padding="none">
+                                            <button on:mouseenter={show} on:mouseleave={hide}>
+                                                <Button.Button
+                                                    size="xs"
+                                                    icon
+                                                    variant="secondary"
+                                                    on:click={() => {
+                                                        hide();
+                                                        previouslyFocusedElement =
+                                                            document.activeElement;
+                                                        $databaseRowSheetOptions.autoFocus = false;
+                                                        onSelectSheetOption(
+                                                            'update',
+                                                            null,
+                                                            null,
+                                                            'row',
+                                                            row
+                                                        );
+                                                    }}>
+                                                    <Icon icon={IconArrowExpand} size="s" />
+                                                </Button.Button>
+                                            </button>
 
                                             <svelte:fragment slot="tooltip">
                                                 <Layout.Stack
@@ -1018,20 +1016,20 @@
                                                     style="padding: var(--gap-XS, 6px) var(--gap-S, 8px);">
                                                     Expand row
 
-                                                        <Layout.Stack
-                                                            inline
-                                                            gap="xxxs"
-                                                            direction="row"
-                                                            alignItems="center"
-                                                            alignContent="center">
-                                                            <Keyboard key="⌘" />
-                                                            <Keyboard key={'Enter'} autoWidth />
-                                                        </Layout.Stack>
+                                                    <Layout.Stack
+                                                        inline
+                                                        gap="xxxs"
+                                                        direction="row"
+                                                        alignItems="center"
+                                                        alignContent="center">
+                                                        <Keyboard key="⌘" />
+                                                        <Keyboard key={'Enter'} autoWidth />
                                                     </Layout.Stack>
-                                                </svelte:fragment>
-                                            </Popover>
-                                        </Layout.Stack>
-                                    </Spreadsheet.Cell>
+                                                </Layout.Stack>
+                                            </svelte:fragment>
+                                        </Popover>
+                                    </Layout.Stack>
+                                </Spreadsheet.Cell>
                             {:else}
                                 <Spreadsheet.Cell {root} {isEditable} column={columnId}>
                                     {#if columnId === '$createdAt' || columnId === '$updatedAt'}

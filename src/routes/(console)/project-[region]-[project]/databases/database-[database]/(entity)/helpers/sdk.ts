@@ -13,7 +13,12 @@ import {
     toSupportiveIndex
 } from './terminology';
 
-import type { Models, OrderBy, TablesDBIndexType, DocumentsDBIndexType } from '@appwrite.io/console';
+import type {
+    Models,
+    OrderBy,
+    TablesDBIndexType,
+    DocumentsDBIndexType
+} from '@appwrite.io/console';
 
 export type DatabaseSdkResult = {
     create: (

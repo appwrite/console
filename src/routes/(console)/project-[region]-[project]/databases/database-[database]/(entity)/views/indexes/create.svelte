@@ -91,7 +91,11 @@
     // and the field already is not spatial type
     $effect(() => {
         const firstField = entity.fields.find((field) => field.key === fieldList.at(0)?.value);
-        if (selectedType === DatabasesIndexType.Spatial && firstField && !isSpatialType(firstField)) {
+        if (
+            selectedType === DatabasesIndexType.Spatial &&
+            firstField &&
+            !isSpatialType(firstField)
+        ) {
             fieldList = [{ value: '', order: null, length: null }];
         }
     });
@@ -153,7 +157,11 @@
     export async function create() {
         const fieldType = terminology.field.lower.singular;
 
-        if (!key || !selectedType || (selectedType !== DatabasesIndexType.Spatial && addFieldDisabled)) {
+        if (
+            !key ||
+            !selectedType ||
+            (selectedType !== DatabasesIndexType.Spatial && addFieldDisabled)
+        ) {
             addNotification({
                 type: 'error',
                 message: `Selected ${fieldType} key or type invalid`

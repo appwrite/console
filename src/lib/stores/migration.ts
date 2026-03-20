@@ -179,7 +179,10 @@ export const resourcesToMigrationForm = (resources: MigrationResource[]): Migrat
         formData.users.root = true;
     }
     if (
-        includesAll(resources, [MigrationResources.Team, MigrationResources.Membership] as MigrationResource[])
+        includesAll(resources, [
+            MigrationResources.Team,
+            MigrationResources.Membership
+        ] as MigrationResource[])
     ) {
         formData.users.teams = true;
     }
@@ -195,7 +198,12 @@ export const resourcesToMigrationForm = (resources: MigrationResource[]): Migrat
     ) {
         formData.databases.rows = true;
     }
-    if (includesAll(resources, [MigrationResources.Bucket, MigrationResources.File] as MigrationResource[])) {
+    if (
+        includesAll(resources, [
+            MigrationResources.Bucket,
+            MigrationResources.File
+        ] as MigrationResource[])
+    ) {
         formData.storage.root = true;
     }
     if (resources.includes(MigrationResources.Function)) {
