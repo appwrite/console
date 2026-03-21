@@ -249,8 +249,7 @@
                         databaseId: page.params.database,
                         tableId: page.params.collection,
                         context: $entityColumnSuggestions.context ?? undefined,
-                        min: 6,
-                        databaseType: data.database?.type
+                        min: 6
                     })) as unknown as {
                     total: number;
                     columns: ColumnInput[];
