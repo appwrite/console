@@ -25,14 +25,9 @@
 
         generating = true;
         try {
-            const client = sdk.forProject(page.params.region, page.params.project).client;
-            const uri = new URL(client.config.endpoint + '/vectorsdb/embeddings/text');
-            const response = await client.call(
-                'post',
-                uri,
-                { 'content-type': 'application/json' },
-                { texts: [content.trim()] }
-            );
+            const response = await sdk
+                .forProject(page.params.region, page.params.project)
+                .vectorsDB.createTextEmbeddings({ texts: [content.trim()] });
 
             const embedding = response?.embeddings?.[0]?.embedding;
             if (embedding?.length) {

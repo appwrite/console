@@ -129,6 +129,7 @@
             label="Vector dimension"
             bind:value={dimension}
             min={1}
+            max={4096}
             required />
     {/if}
 

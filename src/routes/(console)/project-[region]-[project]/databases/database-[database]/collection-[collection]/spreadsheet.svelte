@@ -584,11 +584,7 @@
             : [];
 
     $: vectorsDbMetadataDefaults = isVectorsDb
-        ? Object.fromEntries(
-              (metadataKeys.length ? metadataKeys : mockSuggestions.columns.map((c) => c.name)).map(
-                  (key) => [key, '']
-              )
-          )
+        ? Object.fromEntries(metadataKeys.map((key) => [key, '']))
         : {};
 
     $: suggestedAttributes =

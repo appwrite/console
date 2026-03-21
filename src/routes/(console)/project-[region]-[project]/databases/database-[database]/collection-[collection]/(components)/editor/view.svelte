@@ -1032,7 +1032,6 @@
      */
     function foldEmbeddings(view: EditorView) {
         const doc = view.state.doc;
-        const effects: ReturnType<typeof foldEffect.of>[] = [];
 
         for (let ln = 1; ln <= doc.lines; ln++) {
             const line = doc.line(ln);
@@ -1040,26 +1039,36 @@
             if (!match) continue;
 
             const bracketPos = line.from + match[1].length;
-            const tail = doc.sliceString(bracketPos, doc.length);
             let depth = 0;
             let closePos = -1;
-            for (let i = 0; i < tail.length; i++) {
-                if (tail[i] === '[') depth++;
-                else if (tail[i] === ']') {
+            let commaCount = 0;
+            let foldFrom = -1;
+            const PREVIEW_COUNT = 2;
+
+            for (let pos = bracketPos; pos < doc.length; pos++) {
+                const ch = doc.sliceString(pos, pos + 1);
+                if (ch === '[') depth++;
+                else if (ch === ']') {
                     depth--;
                     if (depth === 0) {
-                        closePos = bracketPos + i;
+                        closePos = pos;
                         break;
+                    }
+                } else if (ch === ',' && depth === 1) {
+                    commaCount++;
+                    if (commaCount === PREVIEW_COUNT && foldFrom === -1) {
+                        foldFrom = pos + 1;
                     }
                 }
             }
-            if (closePos > bracketPos + 1) {
-                effects.push(foldEffect.of({ from: bracketPos + 1, to: closePos }));
-            }
-        }
 
-        if (effects.length) {
-            view.dispatch({ effects, annotations: [Transaction.addToHistory.of(false)] });
+            if (closePos > bracketPos + 1 && foldFrom > -1) {
+                view.dispatch({
+                    effects: [foldEffect.of({ from: foldFrom, to: closePos })],
+                    annotations: [Transaction.addToHistory.of(false)]
+                });
+            }
+            break;
         }
     }
 

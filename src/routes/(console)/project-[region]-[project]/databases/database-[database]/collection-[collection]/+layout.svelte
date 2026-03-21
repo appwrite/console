@@ -209,7 +209,11 @@
     });
 
     async function handleCreateIndex(index: Index) {
-        const databaseSdk = useDatabaseSdk(page.params.region, page.params.project);
+        const databaseSdk = useDatabaseSdk(
+            page.params.region,
+            page.params.project,
+            data.database.type
+        );
 
         await databaseSdk.createIndex({
             databaseId: page.params.database,
