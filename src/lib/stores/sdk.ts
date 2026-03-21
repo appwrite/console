@@ -26,7 +26,8 @@ import {
     DocumentsDB,
     Realtime,
     Organizations,
-    VectorsDB
+    VectorsDB,
+    Webhooks
 } from '@appwrite.io/console';
 import { Sources } from '$lib/sdk/sources';
 import {
@@ -139,6 +140,7 @@ const sdkForProject = {
     tablesDB: new TablesDB(clientProject),
     documentsDB: new DocumentsDB(clientProject),
     vectorsDB: new VectorsDB(clientProject),
+    webhooks: new Webhooks(clientProject),
     console: new Console(clientProject) // for suggestions API
 };
 
