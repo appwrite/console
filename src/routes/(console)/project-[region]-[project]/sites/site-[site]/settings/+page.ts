@@ -42,6 +42,9 @@ export const load = async ({ params, depends, parent }) => {
     if (!enabledSpecs.some((s) => s.slug === site.buildSpecification)) {
         site.buildSpecification = enabledSpecs[0]?.slug;
     }
+    if (!enabledSpecs.some((s) => s.slug === site.runtimeSpecification)) {
+        site.runtimeSpecification = enabledSpecs[0]?.slug;
+    }
 
     return {
         site,

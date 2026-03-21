@@ -24,10 +24,10 @@ import {
     TablesDB,
     Domains,
     DocumentsDB,
+    Webhooks,
     Realtime,
     Organizations,
-    VectorsDB,
-    Webhooks
+    VectorsDB
 } from '@appwrite.io/console';
 import { Sources } from '$lib/sdk/sources';
 import {
