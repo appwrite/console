@@ -15,6 +15,7 @@
 <script lang="ts">
     import {
         EditorView,
+        ViewPlugin,
         keymap,
         lineNumbers,
         highlightActiveLine,
@@ -1030,6 +1031,9 @@
      * Fold the embeddings array so it doesn't dominate the editor.
      * Uses manual bracket matching — no syntax tree dependency.
      */
+    const EMBEDDING_PREVIEW_COUNT = 2;
+    let embeddingPreviewText = $state<string | null>(null);
+
     function foldEmbeddings(view: EditorView) {
         const doc = view.state.doc;
 
@@ -1039,11 +1043,22 @@
             if (!match) continue;
 
             const bracketPos = line.from + match[1].length;
+
+            // Extract preview values before folding
+            const values: string[] = [];
+            for (
+                let nextLn = ln + 1;
+                nextLn <= doc.lines && values.length < EMBEDDING_PREVIEW_COUNT;
+                nextLn++
+            ) {
+                const text = doc.line(nextLn).text.trim().replace(/,$/, '');
+                if (text === ']' || text === '') break;
+                if (/^-?[\d.]+(?:e[+-]?\d+)?$/i.test(text)) values.push(text);
+            }
+            embeddingPreviewText = values.length ? values.join(', ') + ', …' : null;
+
             let depth = 0;
             let closePos = -1;
-            let commaCount = 0;
-            let foldFrom = -1;
-            const PREVIEW_COUNT = 2;
 
             for (let pos = bracketPos; pos < doc.length; pos++) {
                 const ch = doc.sliceString(pos, pos + 1);
@@ -1054,17 +1069,12 @@
                         closePos = pos;
                         break;
                     }
-                } else if (ch === ',' && depth === 1) {
-                    commaCount++;
-                    if (commaCount === PREVIEW_COUNT && foldFrom === -1) {
-                        foldFrom = pos + 1;
-                    }
                 }
             }
 
-            if (closePos > bracketPos + 1 && foldFrom > -1) {
+            if (closePos > bracketPos + 1) {
                 view.dispatch({
-                    effects: [foldEffect.of({ from: foldFrom, to: closePos })],
+                    effects: [foldEffect.of({ from: bracketPos + 1, to: closePos })],
                     annotations: [Transaction.addToHistory.of(false)]
                 });
             }
@@ -1082,6 +1092,26 @@
             lineNumbers(),
             highlightActiveLine(),
             highlightActiveLineGutter(),
+            // Update embedding fold placeholder with preview values
+            ViewPlugin.fromClass(
+                class {
+                    update(update: ViewUpdate) {
+                        if (
+                            !update.transactions.some((tr) =>
+                                tr.effects.some((e) => e.is(foldEffect))
+                            )
+                        )
+                            return;
+                        setTimeout(() => {
+                            const placeholder =
+                                update.view.dom.querySelector('.cm-foldPlaceholder');
+                            if (placeholder && embeddingPreviewText) {
+                                placeholder.textContent = embeddingPreviewText;
+                            }
+                        }, 10);
+                    }
+                }
+            ),
             // Use fold gutter, hide default glyphs (we style via CSS)
             foldGutter({ openText: ' ', closedText: ' ' }),
             indentUnit.of('  '), // Use 2 spaces for indentation
