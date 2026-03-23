@@ -8,50 +8,52 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Alert, Layout, Link, Selector, Typography } from '@appwrite.io/pink-svelte';
-    import type { Models } from '@appwrite.io/console';
     import { user } from './store';
 
-    type UserWithImpersonation = Models.User<Record<string, string>> & {
-        impersonation?: boolean;
-    };
-
-    type UsersWithImpersonationApi = {
-        updateImpersonation(params: {
-            userId: string;
-            impersonation: boolean;
-        }): Promise<UserWithImpersonation>;
-    };
-
-    let impersonation = false;
+    let impersonator = false;
     let lastLoadedUserId: string = null;
 
-    // TODO: Remove this cast once the installed console SDK exposes impersonation types.
-    $: currentImpersonation = Boolean(($user as UserWithImpersonation)?.impersonation);
+    $: currentImpersonator = Boolean($user?.impersonator);
 
     $: if ($user?.$id && $user.$id !== lastLoadedUserId) {
-        impersonation = currentImpersonation;
+        impersonator = currentImpersonator;
         lastLoadedUserId = $user.$id;
     }
 
-    async function updateImpersonation() {
+    async function updateImpersonator() {
         try {
-            await (
-                sdk.forProject(page.params.region, page.params.project)
-                    .users as unknown as UsersWithImpersonationApi
-            ).updateImpersonation({
-                userId: $user.$id,
-                impersonation
-            });
+            const projectSdk = sdk.forProject(page.params.region, page.params.project);
+
+            if (typeof projectSdk.users.updateImpersonator === 'function') {
+                await projectSdk.users.updateImpersonator({
+                    userId: $user.$id,
+                    impersonator
+                });
+            } else {
+                const apiPath = `/users/${$user.$id}/impersonator`;
+                const uri = new URL(projectSdk.client.config.endpoint + apiPath);
+
+                await projectSdk.client.call(
+                    'patch',
+                    uri,
+                    {
+                        'content-type': 'application/json'
+                    },
+                    {
+                        impersonator
+                    }
+                );
+            }
 
             await invalidate(Dependencies.USER);
 
             addNotification({
-                message: `Impersonation capability has been ${impersonation ? 'enabled' : 'disabled'}`,
+                message: `Impersonation capability has been ${impersonator ? 'enabled' : 'disabled'}`,
                 type: 'success'
             });
             trackEvent(Submit.UserUpdateImpersonation);
         } catch (error) {
-            impersonation = currentImpersonation;
+            impersonator = currentImpersonator;
 
             addNotification({
                 message: error.message,
@@ -62,14 +64,14 @@
     }
 </script>
 
-<Form onSubmit={updateImpersonation}>
+<Form onSubmit={updateImpersonator}>
     <CardGrid>
         <svelte:fragment slot="title">User impersonation</svelte:fragment>
         <svelte:fragment slot="aside">
             <Layout.Stack gap="m">
                 <Selector.Switch
                     id="user-impersonation"
-                    bind:checked={impersonation}
+                    bind:checked={impersonator}
                     label="User impersonation">
                     <svelte:fragment slot="description">
                         <div class="u-margin-block-start-8">
@@ -95,7 +97,7 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={impersonation === currentImpersonation} submit>Update</Button>
+            <Button disabled={impersonator === currentImpersonator} submit>Update</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>
