@@ -8,17 +8,16 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Alert, Layout, Link, Selector, Typography } from '@appwrite.io/pink-svelte';
+    import { onMount } from 'svelte';
     import { user } from './store';
 
     let impersonator = false;
-    let lastLoadedUserId: string = null;
 
     $: currentImpersonator = Boolean($user?.impersonator);
 
-    $: if ($user?.$id && $user.$id !== lastLoadedUserId) {
+    onMount(() => {
         impersonator = currentImpersonator;
-        lastLoadedUserId = $user.$id;
-    }
+    });
 
     async function updateImpersonator() {
         try {
