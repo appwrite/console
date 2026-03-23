@@ -22,28 +22,10 @@
 
     async function updateImpersonator() {
         try {
-            const projectSdk = sdk.forProject(page.params.region, page.params.project);
-
-            if (typeof projectSdk.users.updateImpersonator === 'function') {
-                await projectSdk.users.updateImpersonator({
-                    userId: $user.$id,
-                    impersonator
-                });
-            } else {
-                const apiPath = `/users/${$user.$id}/impersonator`;
-                const uri = new URL(projectSdk.client.config.endpoint + apiPath);
-
-                await projectSdk.client.call(
-                    'patch',
-                    uri,
-                    {
-                        'content-type': 'application/json'
-                    },
-                    {
-                        impersonator
-                    }
-                );
-            }
+            await sdk.forProject(page.params.region, page.params.project).users.updateImpersonator({
+                userId: $user.$id,
+                impersonator
+            });
 
             await invalidate(Dependencies.USER);
 
