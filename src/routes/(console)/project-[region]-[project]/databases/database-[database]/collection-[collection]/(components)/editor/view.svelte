@@ -203,7 +203,7 @@
 
             if (filteredEntries.length === 0) return '{}';
 
-            // Sort entries: $id first, user fields in middle, timestamps last
+            // Sort entries: $id first, metadata before embeddings, timestamps last
             const sortedEntries = filteredEntries.sort(([keyA], [keyB]) => {
                 // $id always comes first
                 if (keyA === '$id') return -1;
@@ -215,6 +215,10 @@
 
                 if (isKeyATimestamp && !isKeyBTimestamp) return 1;
                 if (!isKeyATimestamp && isKeyBTimestamp) return -1;
+
+                // metadata before embeddings
+                if (keyA === 'metadata' && keyB === 'embeddings') return -1;
+                if (keyA === 'embeddings' && keyB === 'metadata') return 1;
 
                 return 0;
             });
