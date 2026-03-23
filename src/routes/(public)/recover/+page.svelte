@@ -38,14 +38,15 @@
                     type: 'error',
                     message: error.message
                 });
+                trackError(error, Submit.AccountRecover);
             }
-            trackError(error, Submit.AccountRecover);
         }
 
         if (showGenericSuccessNotification) {
             addNotification({
                 type: 'success',
-                message: 'If an account exists for this email, you will receive a password reset link shortly'
+                message:
+                    'If an account exists for this email, you will receive a password reset link shortly'
             });
         }
     }
