@@ -23,22 +23,30 @@
     });
 
     async function recover() {
+        let showGenericSuccessNotification = true;
         try {
             await sdk.forConsole.account.createRecovery({
                 email,
                 url: window.location.toString()
             });
-            addNotification({
-                type: 'success',
-                message: 'We have sent you an email with a password reset link'
-            });
             trackEvent(Submit.AccountRecover);
         } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
+            // Do not show error for 403 Forbidden or 404 Not Found to prevent email enumeration
+            if (error.code !== 403 && error.code !== 404) {
+                showGenericSuccessNotification = false;
+                addNotification({
+                    type: 'error',
+                    message: error.message
+                });
+            }
             trackError(error, Submit.AccountRecover);
+        }
+
+        if (showGenericSuccessNotification) {
+            addNotification({
+                type: 'success',
+                message: 'If an account exists for this email, you will receive a password reset link shortly'
+            });
         }
     }
 
