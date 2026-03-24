@@ -24,6 +24,7 @@
     import { type Entity, getTerminologies } from '$database/(entity)';
     import { resolveRoute, withPath } from '$lib/stores/navigation';
     import { columnOptions as baseColumnOptions } from '$database/table-[table]/columns/store';
+    import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
 
     let {
         entity,
@@ -66,12 +67,18 @@
         length: number | null;
     }> = $state([{ value: '', order: null, length: null }]);
 
-    const types = [
-        { value: IndexType.Key, label: 'Key' },
-        { value: IndexType.Unique, label: 'Unique' },
-        { value: IndexType.Fulltext, label: 'Fulltext' },
-        { value: IndexType.Spatial, label: 'Spatial' }
-    ];
+    const types = $derived(
+        [
+            { value: IndexType.Key, label: 'Key' },
+            { value: IndexType.Unique, label: 'Unique' },
+            { value: IndexType.Fulltext, label: 'Fulltext' },
+            { value: IndexType.Spatial, label: 'Spatial' }
+        ].filter((type) => {
+            if (type.value === IndexType.Spatial && !$regionalConsoleVariables?.supportForSpatials)
+                return false;
+            return true;
+        })
+    );
 
     // order options derived from selected type
     let orderOptions = $derived.by(() =>
