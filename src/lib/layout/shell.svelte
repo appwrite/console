@@ -180,7 +180,7 @@
     $: shouldRenderSidebar =
         !$isNewWizardStatusOpen && showSideNavigation && !$showOnboardingAnimation;
     $: hasSidebarSpace = shouldRenderSidebar && !$isTabletViewport && !!selectedProject;
-
+    $: isProjectBlocked = selectedProject?.status !== 'paused' && !!selectedProject?.blocks?.length;
     $: {
         if ($isSidebarOpen) {
             yOnMenuOpen = window.scrollY;
@@ -211,20 +211,22 @@
         <Navbar {...navbarProps} bind:sideBarIsOpen={$isSidebarOpen} bind:showAccountMenu />
     {/if}
 
-    {#if shouldRenderSidebar}
-        <Sidebar
-            project={selectedProject}
-            progressCard={getProgressCard()}
-            avatar={navbarProps.avatar}
-            bind:subNavigation
-            bind:sideBarIsOpen={$isSidebarOpen}
-            bind:showAccountMenu
-            bind:state />
-    {/if}
+    <div class="shell-sidebar-area" class:is-blocked={isProjectBlocked}>
+        {#if shouldRenderSidebar}
+            <Sidebar
+                project={selectedProject}
+                progressCard={getProgressCard()}
+                avatar={navbarProps.avatar}
+                bind:subNavigation
+                bind:sideBarIsOpen={$isSidebarOpen}
+                bind:showAccountMenu
+                bind:state />
+        {/if}
 
-    {#if !$showOnboardingAnimation}
-        <SideNavigation bind:subNavigation />
-    {/if}
+        {#if !$showOnboardingAnimation}
+            <SideNavigation bind:subNavigation />
+        {/if}
+    </div>
 
     <div
         class="content"
@@ -255,6 +257,13 @@
 </main>
 
 <style lang="scss">
+    .shell-sidebar-area.is-blocked {
+        filter: blur(3px);
+        opacity: 0.18;
+        pointer-events: none;
+        user-select: none;
+    }
+
     .content {
         width: 100%;
 
