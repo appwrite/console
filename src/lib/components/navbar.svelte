@@ -108,6 +108,7 @@
     }
 
     $: currentOrg = organizations.find((org) => org.isSelected);
+    $: isProjectBlocked = currentProject?.status !== 'paused' && !!currentProject?.blocks?.length;
 
     beforeNavigate(() => (showAccountMenu = false));
 </script>
@@ -137,7 +138,7 @@
                     size="xs"
                     variant="secondary"
                     href={`${base}/project-${currentProject.region}-${currentProject.$id}/get-started`}
-                    >Connect</Button.Anchor>
+                    disabled={isProjectBlocked}>Connect</Button.Anchor>
             </div>
         {/if}
     </div>

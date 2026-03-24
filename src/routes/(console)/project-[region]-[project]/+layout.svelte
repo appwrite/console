@@ -169,8 +169,23 @@
         min-height: 100%;
     }
 
+    .project-layout.is-blocked {
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        flex: 1;
+        min-height: 0;
+        overflow: hidden;
+    }
+
     .project-layout__content {
         min-height: 100%;
+    }
+
+    .project-layout.is-blocked .project-layout__content {
+        flex: 1;
+        min-height: 0;
+        overflow: hidden;
     }
 
     .project-layout.is-blocked .project-layout__content {
@@ -183,7 +198,7 @@
     .project-layout__overlay {
         position: absolute;
         inset: 0;
-        z-index: 200;
+        z-index: 5;
         display: flex;
         align-items: center;
         justify-content: center;
