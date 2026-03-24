@@ -257,11 +257,14 @@
 </main>
 
 <style lang="scss">
-    .shell-sidebar-area.is-blocked {
-        filter: blur(3px);
-        opacity: 0.18;
-        pointer-events: none;
-        user-select: none;
+    .shell-sidebar-area {
+        position: relative;
+        z-index: 2;
+
+        &.is-blocked {
+            pointer-events: none;
+            user-select: none;
+        }
     }
 
     .content {
