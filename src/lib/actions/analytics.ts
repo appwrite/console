@@ -236,6 +236,7 @@ export enum Submit {
     UserUpdatePassword = 'submit_user_update_password',
     UserUpdatePhone = 'submit_user_update_phone',
     UserUpdateMfa = 'submit_user_update_mfa',
+    UserUpdateImpersonation = 'submit_user_update_impersonation',
     UserUpdatePreferences = 'submit_user_update_preferences',
     UserUpdateStatus = 'submit_user_update_status',
     UserUpdateVerificationEmail = 'submit_user_update_verification_email',
