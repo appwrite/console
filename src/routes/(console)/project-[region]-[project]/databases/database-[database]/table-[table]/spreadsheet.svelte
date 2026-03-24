@@ -104,6 +104,8 @@
     };
 
     $: table = data.table;
+    /** Keep sort in sync after client navigations (e.g. filters); onMount alone misses SPA loads. */
+    $: sortState.set(data.currentSort as SortState);
     $: rows = writable(data.rows);
     $: if ($rows) {
         paginatedRows.clear();
@@ -114,7 +116,9 @@
     }
 
     // create index map for O(1) row lookups, reactive!
-    $: rowIndexMap = new Map($paginatedRows.items.map((row, index) => [row.$id, index]));
+    $: rowIndexMap = new Map(
+        $paginatedRows.items.flatMap((r, index) => (r ? [[r.$id, index]] : []))
+    );
 
     const tableId = page.params.table;
     const databaseId = page.params.database;
@@ -130,7 +134,6 @@
             : 24;
 
     let selectedRows = [];
-    let showExpandIconForId: number | null = null;
     let spreadsheetContainer: SpreadsheetContainer;
     let previouslyFocusedElement: Element | null = null;
 
@@ -208,6 +211,7 @@
                 width: getColumnWidth('$id', 250),
                 minimumWidth: 250,
                 draggable: false,
+                sticky: $isSmallViewport ? undefined : { side: 'left', offset: 40 },
                 type: 'string',
                 icon: IconFingerPrint,
                 isEditable: false,
@@ -776,7 +780,7 @@
 
     $: canShowDatetimePopover = true;
 
-    $: if (table.fields) {
+    $: if (table.fields && typeof $isSmallViewport === 'boolean') {
         makeTableColumns();
     }
 
@@ -790,6 +794,24 @@
             previouslyFocusedElement = null;
         });
     }
+
+    function getSpreadsheetCellProps(
+        rowId: string | undefined,
+        columnId: string | undefined,
+        state
+    ) {
+        if (columnId !== '$id' || !rowId || state?.isHeader || state?.isEmptyRow) {
+            return undefined;
+        }
+
+        return {
+            style: `
+                --row-expand-opacity: ${state?.hovered ? '1' : '0'};
+                --row-expand-pointer-events: ${state?.hovered ? 'auto' : 'none'};
+                --row-expand-transform: ${state?.hovered ? 'translateX(0)' : 'translateX(4px)'};
+            `
+        };
+    }
 </script>
 
 <SpreadsheetContainer bind:this={spreadsheetContainer}>
@@ -799,9 +821,11 @@
             allowSelection
             useVirtualizer
             keyboardNavigation
+            showScrollbars
             bind:selectedRows
             selection={rowSelection}
             bind:columns={$tableColumns}
+            getCellProps={getSpreadsheetCellProps}
             loading={$spreadsheetLoading}
             emptyCells={emptyCellsCount}
             rowCount={$paginatedRows.virtualLength}
@@ -893,7 +917,8 @@
 
             <svelte:fragment slot="rows" let:root let:item let:index>
                 {@const row = $paginatedRows.getItemAtVirtualIndex(index)}
-                {#if row === null}
+                <!-- !row: virtualizer can briefly yield null/undefined while row data reloads (e.g. after filters). -->
+                {#if !row}
                     <Spreadsheet.Row.Base
                         {root}
                         {index}
@@ -917,89 +942,80 @@
                         select={rowSelection}
                         hoverEffect
                         showSelectOnHover
-                        valueWithoutHover={$regionalConsoleVariables?.supportForIntegerIds ? row.$sequence : undefined}>
+                        valueWithoutHover={$regionalConsoleVariables?.supportForIntegerIds ? row?.$sequence : undefined}>
                         {#each $tableColumns as { id: columnId, isEditable, hide } (columnId)}
                             {@const rowColumn = $columns.find((col) => col.key === columnId)}
                             {#if columnId === '$id' && !hide}
-                                <button
-                                    on:mouseenter={() => {
-                                        showExpandIconForId = index;
-                                    }}
-                                    on:mouseleave={() => {
-                                        showExpandIconForId = null;
-                                    }}>
-                                    <Spreadsheet.Cell {root} {isEditable} column={columnId}>
-                                        <Layout.Stack
-                                            gap="none"
-                                            direction="row"
-                                            alignItems="center"
-                                            alignContent="center"
-                                            justifyContent="space-between">
-                                            <Id value={row.$id} tooltipPortal tooltipDelay={200}
-                                                >{row.$id}</Id>
+                                <Spreadsheet.Cell {root} {isEditable} column={columnId}>
+                                    <Layout.Stack
+                                        class="row-id-cell-content"
+                                        gap="none"
+                                        direction="row"
+                                        alignItems="center"
+                                        alignContent="center"
+                                        justifyContent="space-between">
+                                        <Id value={row?.$id} tooltipPortal tooltipDelay={200}>
+                                            {row?.$id}
+                                        </Id>
 
-                                            <Popover let:show let:hide portal padding="none">
-                                                {@const opacityValue =
-                                                    showExpandIconForId === index ? '1' : '0'}
-                                                <button
-                                                    on:mouseenter={show}
-                                                    on:mouseleave={hide}
-                                                    style:opacity={opacityValue}
-                                                    style:transition="opacity 225ms ease-in-out">
-                                                    <Button.Button
-                                                        size="xs"
-                                                        icon
-                                                        variant="secondary"
-                                                        on:click={() => {
-                                                            hide();
-                                                            previouslyFocusedElement =
-                                                                document.activeElement;
-                                                            $databaseRowSheetOptions.autoFocus = false;
-                                                            onSelectSheetOption(
-                                                                'update',
-                                                                null,
-                                                                'row',
-                                                                row
-                                                            );
-                                                        }}>
-                                                        <Icon icon={IconArrowExpand} size="s" />
-                                                    </Button.Button>
-                                                </button>
+                                        <Popover let:show let:hide portal padding="none">
+                                            <div
+                                                class="row-expand-trigger"
+                                                on:mouseenter={show}
+                                                on:mouseleave={hide}>
+                                                <Button.Button
+                                                    size="xs"
+                                                    icon
+                                                    variant="secondary"
+                                                    on:click={() => {
+                                                        hide();
+                                                        previouslyFocusedElement =
+                                                            document.activeElement;
+                                                        $databaseRowSheetOptions.autoFocus = false;
+                                                        onSelectSheetOption(
+                                                            'update',
+                                                            null,
+                                                            'row',
+                                                            row
+                                                        );
+                                                    }}>
+                                                    <Icon icon={IconArrowExpand} size="s" />
+                                                </Button.Button>
+                                            </div>
 
-                                                <svelte:fragment slot="tooltip">
+                                            <svelte:fragment slot="tooltip">
+                                                <Layout.Stack
+                                                    inline
+                                                    gap="xxs"
+                                                    direction="row"
+                                                    alignItems="center"
+                                                    alignContent="center"
+                                                    style="padding: var(--gap-XS, 6px) var(--gap-S, 8px);">
+                                                    Expand row
+
                                                     <Layout.Stack
                                                         inline
-                                                        gap="xxs"
+                                                        gap="xxxs"
                                                         direction="row"
                                                         alignItems="center"
-                                                        alignContent="center"
-                                                        style="padding: var(--gap-XS, 6px) var(--gap-S, 8px);">
-                                                        Expand row
-
-                                                        <Layout.Stack
-                                                            inline
-                                                            gap="xxxs"
-                                                            direction="row"
-                                                            alignItems="center"
-                                                            alignContent="center">
-                                                            <Keyboard size="s" key="⌘" />
-                                                            <Keyboard
-                                                                key={'Enter'}
-                                                                autoWidth
-                                                                size="s" />
-                                                        </Layout.Stack>
+                                                        alignContent="center">
+                                                        <Keyboard size="s" key="⌘" />
+                                                        <Keyboard
+                                                            key={'Enter'}
+                                                            autoWidth
+                                                            size="s" />
                                                     </Layout.Stack>
-                                                </svelte:fragment>
-                                            </Popover>
-                                        </Layout.Stack>
-                                    </Spreadsheet.Cell>
-                                </button>
+                                                </Layout.Stack>
+                                            </svelte:fragment>
+                                        </Popover>
+                                    </Layout.Stack>
+                                </Spreadsheet.Cell>
                             {:else}
                                 <Spreadsheet.Cell {root} {isEditable} column={columnId}>
                                     {#if columnId === '$createdAt' || columnId === '$updatedAt'}
                                         <DualTimeView
                                             showDatetime
-                                            time={row[columnId]}
+                                            time={row?.[columnId]}
                                             canShowPopover={canShowDatetimePopover} />
                                     {:else if columnId === 'actions'}
                                         <SheetOptions
@@ -1023,12 +1039,12 @@
                                                 </Button.Button>
                                             {/snippet}
                                         </SheetOptions>
-                                    {:else if isRelationship(rowColumn)}
-                                        {@const args = getDisplayNamesForTable(row[columnId])}
+                                    {:else if rowColumn && isRelationship(rowColumn)}
+                                        {@const args = getDisplayNamesForTable(row?.[columnId])}
                                         {#if !isRelationshipToMany(rowColumn)}
-                                            {#if row[columnId]}
+                                            {#if row?.[columnId]}
                                                 {@const displayValue = args
-                                                    .map((arg) => row[columnId]?.[arg])
+                                                    .map((arg) => row?.[columnId]?.[arg])
                                                     .filter(Boolean)
                                                     .join(' | ')}
 
@@ -1037,9 +1053,9 @@
                                                         variant="muted"
                                                         on:click={() => {
                                                             $databaseRelatedRowSheetOptions.tableId =
-                                                                row[columnId]?.['$tableId'];
+                                                                row?.[columnId]?.['$tableId'];
                                                             $databaseRelatedRowSheetOptions.rows =
-                                                                row[columnId]?.['$id'];
+                                                                row?.[columnId]?.['$id'];
                                                             $databaseRelatedRowSheetOptions.show = true;
                                                         }}>
                                                         {displayValue}
@@ -1057,19 +1073,23 @@
                                                     size="xs" />
                                             {/if}
                                         {:else}
-                                            {@const itemsNum = row[columnId]?.length}
+                                            {@const itemsNum = row?.[columnId]?.length}
                                             Items <Badge
                                                 content={itemsNum}
                                                 variant="secondary"
                                                 size="s" />
                                         {/if}
-                                    {:else if isSpatialType(rowColumn) && row[columnId] !== null}
+                                    {:else if rowColumn && isSpatialType(rowColumn) && row?.[columnId] !== null}
                                         <Typography.Text truncate>
-                                            {JSON.stringify(row[columnId])}
+                                            {JSON.stringify(row?.[columnId])}
+                                        </Typography.Text>
+                                    {:else if !rowColumn}
+                                        <Typography.Text truncate>
+                                            {formatColumn(row?.[columnId])}
                                         </Typography.Text>
                                     {:else}
-                                        {@const value = row[columnId]}
-                                        {@const formatted = formatColumn(row[columnId])}
+                                        {@const value = row?.[columnId]}
+                                        {@const formatted = formatColumn(row?.[columnId])}
                                         {@const isEmptyArray = formatted === 'Empty'}
                                         {@const isDatetimeAttribute = rowColumn.type === 'datetime'}
                                         {@const isEncryptedAttribute =
@@ -1116,38 +1136,46 @@
                                     {/if}
 
                                     <svelte:fragment slot="cell-editor" let:close>
-                                        {@const isRelatedToMany = isRelationshipToMany(rowColumn)}
-                                        {@const hasItems = isRelatedToMany
-                                            ? row[columnId]?.length
-                                            : false}
+                                        {#if rowColumn}
+                                            {@const isRelatedToMany =
+                                                isRelationshipToMany(rowColumn)}
+                                            {@const hasItems = isRelatedToMany
+                                                ? row?.[columnId]?.length
+                                                : false}
 
-                                        <EditRowCell
-                                            {row}
-                                            column={rowColumn}
-                                            onRowStructureUpdate={async (row) => {
-                                                const success = await updateRowContents(row);
-                                                if (success) {
-                                                    // database update succeeded!
-                                                    paginatedRows.update(index, row);
-                                                }
-                                                return success;
-                                            }}
-                                            noInlineEdit={isRelatedToMany && hasItems}
-                                            onChange={(row) => paginatedRows.update(index, row)}
-                                            onRevert={(row) => paginatedRows.update(index, row)}
-                                            openSideSheet={() => {
-                                                close(); /* closes the editor */
+                                            <EditRowCell
+                                                {row}
+                                                column={rowColumn}
+                                                onRowStructureUpdate={async (row) => {
+                                                    const success = await updateRowContents(row);
+                                                    if (success) {
+                                                        // database update succeeded!
+                                                        paginatedRows.update(index, row);
+                                                    }
+                                                    return success;
+                                                }}
+                                                noInlineEdit={isRelatedToMany && hasItems}
+                                                onChange={(row) => paginatedRows.update(index, row)}
+                                                onRevert={(row) => paginatedRows.update(index, row)}
+                                                openSideSheet={() => {
+                                                    close(); /* closes the editor */
 
-                                                if (isRelationshipToMany(rowColumn)) {
-                                                    openSideSheetForRelationsToMany(
-                                                        row[columnId],
-                                                        rowColumn
-                                                    );
-                                                } else {
-                                                    $databaseRowSheetOptions.autoFocus = true;
-                                                    onSelectSheetOption('update', null, 'row', row);
-                                                }
-                                            }} />
+                                                    if (isRelationshipToMany(rowColumn)) {
+                                                        openSideSheetForRelationsToMany(
+                                                            row?.[columnId],
+                                                            rowColumn
+                                                        );
+                                                    } else {
+                                                        $databaseRowSheetOptions.autoFocus = true;
+                                                        onSelectSheetOption(
+                                                            'update',
+                                                            null,
+                                                            'row',
+                                                            row
+                                                        );
+                                                    }
+                                                }} />
+                                        {/if}
                                     </svelte:fragment>
                                 </Spreadsheet.Cell>
                             {/if}
@@ -1377,5 +1405,20 @@
         & :global(.input:focus-within) {
             top: 0 !important;
         }
+    }
+
+    .row-id-cell-content {
+        min-width: 0;
+    }
+
+    .row-expand-trigger {
+        display: flex;
+        flex: 0 0 auto;
+        opacity: var(--row-expand-opacity, 0);
+        pointer-events: var(--row-expand-pointer-events, none);
+        transition:
+            opacity 225ms ease-in-out,
+            transform 225ms ease-in-out;
+        transform: var(--row-expand-transform, translateX(4px));
     }
 </style>
