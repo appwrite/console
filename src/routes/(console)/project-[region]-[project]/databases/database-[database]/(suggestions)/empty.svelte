@@ -56,9 +56,7 @@
     } = $props();
 
     const tableId = page.params.table;
-    const supportedColumns = $derived(
-        getSupportedColumns($regionalConsoleVariables)
-    );
+    const supportedColumns = $derived(getSupportedColumns($regionalConsoleVariables));
     const minimumUserColumnWidth = 168;
 
     function getUserColumnWidth(

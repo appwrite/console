@@ -942,7 +942,9 @@
                         select={rowSelection}
                         hoverEffect
                         showSelectOnHover
-                        valueWithoutHover={$regionalConsoleVariables?.supportForIntegerIds ? row?.$sequence : undefined}>
+                        valueWithoutHover={$regionalConsoleVariables?.supportForIntegerIds
+                            ? row?.$sequence
+                            : undefined}>
                         {#each $tableColumns as { id: columnId, isEditable, hide } (columnId)}
                             {@const rowColumn = $columns.find((col) => col.key === columnId)}
                             {#if columnId === '$id' && !hide}
