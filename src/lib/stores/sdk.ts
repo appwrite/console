@@ -23,7 +23,6 @@ import {
     Tokens,
     TablesDB,
     Domains,
-    Webhooks,
     /*DocumentsDB,*/
     Realtime,
     Organizations
@@ -138,8 +137,7 @@ const sdkForProject = {
     sites: new Sites(clientProject),
     tablesDB: new TablesDB(clientProject),
     /*documentsDB: new DocumentsDB(clientProject),*/
-    console: new Console(clientProject), // for suggestions API
-    webhooks: new Webhooks(clientProject)
+    console: new Console(clientProject) // for suggestions API
 };
 
 export const realtime = {

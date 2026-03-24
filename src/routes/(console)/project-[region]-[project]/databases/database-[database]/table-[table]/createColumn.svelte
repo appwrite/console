@@ -8,7 +8,7 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { option, getSupportedColumns, type Option } from './columns/store';
     import type { Column } from '$lib/helpers/types';
-    import type { DatabaseType } from '$database/(entity)/helpers/terminology';
+    import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
     import { preferences } from '$lib/stores/preferences';
     import { onMount } from 'svelte';
 
@@ -40,7 +40,6 @@
 
     const tableId = page.params.table;
     const databaseId = page.params.database;
-    const databaseType = page.data.database?.type as DatabaseType;
 
     let showSuggestionsAlert = $state(true);
 
@@ -53,7 +52,7 @@
         ...column
     } as Partial<Columns>);
 
-    let availableOptions = $derived(getSupportedColumns(databaseType));
+    let availableOptions = $derived(getSupportedColumns($regionalConsoleVariables));
     let ColumnComponent = $derived(
         (availableOptions.find((option) => option.name === selectedOption) ?? availableOptions[0])
             .component

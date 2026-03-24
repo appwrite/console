@@ -1,17 +1,16 @@
 <script lang="ts">
-    import { page } from '$app/state';
     import { Button } from '$lib/elements/forms';
     import { ActionMenu, Icon, Popover } from '@appwrite.io/pink-svelte';
     import { getSupportedColumns, type Option } from './store';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { isCsvImportInProgress } from '../store';
     import { CsvDisabled } from '$database/(entity)';
-    import type { DatabaseType } from '$database/(entity)/helpers/terminology';
+    import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
 
     export let showCreate = false;
     export let selectedOption: Option['name'] = null;
 
-    $: options = getSupportedColumns(page.data.database?.type as DatabaseType);
+    $: options = getSupportedColumns($regionalConsoleVariables);
 </script>
 
 {#if $isCsvImportInProgress}

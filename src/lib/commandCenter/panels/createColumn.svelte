@@ -1,13 +1,12 @@
 <script lang="ts">
-    import { page } from '$app/stores';
     import { initCreateColumn } from '$routes/(console)/project-[region]-[project]/databases/database-[database]/table-[table]/+layout.svelte';
     import { getSupportedColumns } from '$routes/(console)/project-[region]-[project]/databases/database-[database]/table-[table]/columns/store';
-    import type { DatabaseType } from '$routes/(console)/project-[region]-[project]/databases/database-[database]/(entity)/helpers/terminology';
+    import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
     import Template from './template.svelte';
 
     let search = '';
 
-    $: options = getSupportedColumns($page.data.database?.type as DatabaseType).map((option) => {
+    $: options = getSupportedColumns($regionalConsoleVariables).map((option) => {
         return {
             label: option.name,
             icon: option.icon,

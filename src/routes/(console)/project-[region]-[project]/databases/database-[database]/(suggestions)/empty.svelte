@@ -45,7 +45,7 @@
 
     import IconAINotification from './icon/aiNotification.svelte';
     import type { Models } from '@appwrite.io/console';
-    import type { DatabaseType } from '$database/(entity)/helpers/terminology';
+    import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
 
     let {
         userColumns = [],
@@ -57,7 +57,7 @@
 
     const tableId = page.params.table;
     const supportedColumns = $derived(
-        getSupportedColumns(page.data.database?.type as DatabaseType)
+        getSupportedColumns($regionalConsoleVariables)
     );
     const minimumUserColumnWidth = 168;
 
