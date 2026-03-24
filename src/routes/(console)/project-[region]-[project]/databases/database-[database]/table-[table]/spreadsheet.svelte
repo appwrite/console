@@ -8,6 +8,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { preferences } from '$lib/stores/preferences';
     import { sdk } from '$lib/stores/sdk';
+    import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
     import { type Models, Query } from '@appwrite.io/console';
     import { type ComponentType, onDestroy, onMount } from 'svelte';
     import type { PageData } from './$types';
@@ -941,7 +942,9 @@
                         select={rowSelection}
                         hoverEffect
                         showSelectOnHover
-                        valueWithoutHover={row?.$sequence}>
+                        valueWithoutHover={$regionalConsoleVariables?.supportForIntegerIds
+                            ? row?.$sequence
+                            : undefined}>
                         {#each $tableColumns as { id: columnId, isEditable, hide } (columnId)}
                             {@const rowColumn = $columns.find((col) => col.key === columnId)}
                             {#if columnId === '$id' && !hide}
