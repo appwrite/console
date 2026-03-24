@@ -1,5 +1,6 @@
 <script lang="ts">
     import { sdk } from '$lib/stores/sdk';
+    import { ID } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { project } from '../store';
@@ -59,7 +60,7 @@
     async function sdkCreateVariable(key: string, value: string, secret: boolean) {
         await sdk
             .forProject(page.params.region, page.params.project)
-            .projectApi.createVariable({ key, value, secret });
+            .projectApi.createVariable({ variableId: ID.unique(), key, value, secret });
         await invalidate(Dependencies.PROJECT_VARIABLES);
     }
 

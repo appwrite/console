@@ -1,6 +1,6 @@
 <script lang="ts">
     import { sdk } from '$lib/stores/sdk';
-    import type { Models } from '@appwrite.io/console';
+    import { ID, type Models } from '@appwrite.io/console';
     import { Button } from '$lib/elements/forms';
     import { CardGrid, Empty, Output, PaginationInline } from '$lib/components';
     import UploadVariables from './uploadVariablesModal.svelte';
@@ -172,6 +172,7 @@
                 await sdk
                     .forProject(page.params.region, page.params.project)
                     .projectApi.createVariable({
+                        variableId: ID.unique(),
                         key: variable.key,
                         value: variable.value,
                         secret: variable.secret
@@ -195,6 +196,7 @@
                 await sdk
                     .forProject(page.params.region, page.params.project)
                     .projectApi.createVariable({
+                        variableId: ID.unique(),
                         key: variable.key,
                         value: variable.value,
                         secret: variable.secret
