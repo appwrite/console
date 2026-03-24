@@ -20,7 +20,7 @@
                     id="installCommand"
                     label="Install command"
                     bind:value={buildCommand}
-                    placeholder="npm install" />
+                    placeholder="npm ci" />
             </Layout.Stack>
         </Accordion>
         <Accordion title="Execute access" badge="Optional" hideDivider>

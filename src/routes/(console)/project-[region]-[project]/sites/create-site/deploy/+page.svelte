@@ -266,7 +266,7 @@
                 <Layout.Stack gap="m">
                     <Input.Text
                         label="Install command"
-                        placeholder={installCommand || 'npm install'}
+                        placeholder={installCommand || 'npm ci'}
                         bind:value={installCommand} />
                     <Input.Text
                         label="Build command"

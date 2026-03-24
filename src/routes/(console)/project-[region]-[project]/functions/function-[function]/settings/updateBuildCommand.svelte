@@ -63,7 +63,7 @@
             <InputText
                 label="Build command"
                 id="buildCommand"
-                placeholder="npm install"
+                placeholder="npm ci"
                 bind:value={buildCommand} />
         </svelte:fragment>
 
