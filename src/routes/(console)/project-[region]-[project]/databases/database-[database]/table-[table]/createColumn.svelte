@@ -186,7 +186,15 @@
 
         // correct view
         if (selectedOption) {
-            $option = availableOptions.find((option) => option.name === selectedOption);
+            const resolved =
+                availableOptions.find((option) => option.name === selectedOption) ??
+                availableOptions[0];
+
+            $option = resolved;
+
+            if (resolved && resolved.name !== selectedOption) {
+                selectedOption = resolved.name;
+            }
         }
     });
 </script>
