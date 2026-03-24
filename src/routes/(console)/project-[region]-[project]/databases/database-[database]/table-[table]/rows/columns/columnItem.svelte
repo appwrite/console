@@ -23,7 +23,7 @@
         onUpdateFormValues?: (formValues: object) => void;
     } = $props();
 
-    let formStore = writable(formValues);
+    let formStore = writable(formValues ?? {});
 
     function removeArrayItem(key: string, index: number) {
         const currentArray = Array.isArray($formStore[key]) ? $formStore[key] : [];
