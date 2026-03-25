@@ -10,6 +10,7 @@
     import { capitalize } from '$lib/helpers/string';
     import type { Columns } from '$database/store';
     import { isRelationship } from '../table-[table]/rows/store';
+    import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
     import { VARS } from '$lib/system';
     import { sleep } from '$lib/helpers/promises';
     import { sdk } from '$lib/stores/sdk';
@@ -291,10 +292,21 @@
         return false; // close the sheet!
     }
 
-    const typeOptions = Object.values(DatabasesIndexType).map((type) => ({
-        label: capitalize(type),
-        value: type
-    }));
+    const typeOptions = $derived(
+        Object.values(DatabasesIndexType)
+            .filter((type) => {
+                if (
+                    type === DatabasesIndexType.Spatial &&
+                    !$regionalConsoleVariables?.supportForSpatials
+                )
+                    return false;
+                return true;
+            })
+            .map((type) => ({
+                label: capitalize(type),
+                value: type
+            }))
+    );
 
     onMount(() => showIndexesSuggestions.set(false));
 

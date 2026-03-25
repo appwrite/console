@@ -17,6 +17,7 @@ import Point, { submitPoint, updatePoint } from './point.svelte';
 import Line, { submitLine, updateLine } from './line.svelte';
 import Polygon, { submitPolygon, updatePolygon } from './polygon.svelte';
 import type { Columns } from '$database/store';
+import type { Models } from '@appwrite.io/console';
 import Relationship, { submitRelationship, updateRelationship } from './relationship.svelte';
 import {
     IconCalendar,
@@ -248,3 +249,12 @@ export const columnOptions: Option[] = [
 ];
 
 export const option = writable<Option>();
+
+export function getSupportedColumns(consoleVariables: Models.ConsoleVariables): Option[] {
+    const spatialTypes: Set<Option['type']> = new Set(['point', 'linestring', 'polygon']);
+    return columnOptions.filter((col) => {
+        if (col.type === 'relationship' && !consoleVariables?.supportForRelationships) return false;
+        if (spatialTypes.has(col.type) && !consoleVariables?.supportForSpatials) return false;
+        return true;
+    });
+}
