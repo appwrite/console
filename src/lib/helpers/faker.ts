@@ -77,7 +77,7 @@ export async function generateFields(
         }
 
         case 'documentsdb': /* doesn't need any fields */
-        case 'vectordb': /* vector embeddings + metadata defined at collection creation */ {
+        case 'vectorsdb': /* vector embeddings + metadata defined at collection creation */ {
             /* no individual field creation needed */
             return [];
         }
