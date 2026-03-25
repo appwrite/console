@@ -215,7 +215,12 @@
                                     $expandTabs = !$expandTabs;
                                     preferences.setKey('entityHeaderExpanded', $expandTabs);
                                 }}>
-                                <Icon
+                                <Icon icon={$expandTabs ? IconChevronUp : IconChevronDown} size="s" />
+                            </Button>
+
+                            <Tooltip placement="top">
+                                <Button
+                                    icon
                                     size="s"
                                     secondary
                                     class="small-button-dimensions"
@@ -223,7 +228,6 @@
                                     on:click={() => (showImportCSV = true)}>
                                     <Icon icon={IconUpload} size="s" />
                                 </Button>
-
                                 <svelte:fragment slot="tooltip">Import CSV</svelte:fragment>
                             </Tooltip>
 

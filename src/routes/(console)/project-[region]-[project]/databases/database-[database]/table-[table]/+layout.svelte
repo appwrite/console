@@ -37,8 +37,6 @@
     import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import CreateColumn from '$database/table-[table]/createColumn.svelte';
     import { CreateColumnPanel } from '$lib/commandCenter/panels';
-    import { showCreateEntity } from '../store';
-    import { project } from '../../../store';
     import { page } from '$app/state';
     import { canWriteTables } from '$lib/stores/roles';
     import {

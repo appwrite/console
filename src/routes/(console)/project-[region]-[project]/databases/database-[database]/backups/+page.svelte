@@ -30,8 +30,7 @@
     const { data }: PageProps = $props();
 
     const isDedicatedType = $derived(
-        data.database?.type === 'prisma' ||
-            data.database?.type === 'dedicated' ||
+        data.database?.type === 'dedicated' ||
             data.database?.type === 'shared'
     );
 

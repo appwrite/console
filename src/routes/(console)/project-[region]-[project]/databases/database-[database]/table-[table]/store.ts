@@ -122,6 +122,11 @@ export const showRowCreateSheet = writable({
     row: null
 });
 
+export type SortState = {
+    column?: string;
+    direction: 'asc' | 'desc' | 'default';
+};
+
 export const sortState = writable<SortState>({
     column: null,
     direction: 'default'

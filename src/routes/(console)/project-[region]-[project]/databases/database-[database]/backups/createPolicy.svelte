@@ -26,7 +26,6 @@
     import { isSmallViewport } from '$lib/stores/viewport';
     import { goto } from '$app/navigation';
     import { getChangePlanUrl } from '$lib/stores/billing';
-    import { upgradeURL } from '$lib/stores/billing';
     import { onMount } from 'svelte';
 
     export let isShowing: boolean;
