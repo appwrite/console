@@ -66,7 +66,7 @@ export function useDatabaseSdk(
                     const { total, tables } = await baseSdk.tablesDB.listTables(params);
                     return { total, entities: tables.map(toSupportiveEntity) };
                 }
-                case 'vectordb':
+                case 'vectorsdb':
                 case 'documentsdb':
                     throw new Error(`Database type not supported yet`);
                 default:
@@ -85,7 +85,7 @@ export function useDatabaseSdk(
                     return toSupportiveEntity(table);
                 }
                 case 'documentsdb':
-                case 'vectordb':
+                case 'vectorsdb':
                     throw new Error(`Database type not supported yet`);
                 default:
                     throw new Error(`Unknown database type`);
@@ -98,7 +98,7 @@ export function useDatabaseSdk(
                 case 'tablesdb':
                     return await baseSdk.tablesDB.delete(params);
                 case 'documentsdb':
-                case 'vectordb':
+                case 'vectorsdb':
                     throw new Error(`Database type not supported yet`);
                 default:
                     throw new Error(`Unknown database type`);
