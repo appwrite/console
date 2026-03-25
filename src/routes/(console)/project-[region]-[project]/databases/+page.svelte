@@ -9,7 +9,7 @@
     import { columns } from './store';
     import Table from './table.svelte';
     import type { PageProps } from './$types';
-    import { Icon } from '@appwrite.io/pink-svelte';
+    import { Icon, Tooltip } from '@appwrite.io/pink-svelte';
     import { registerCommands } from '$lib/commandCenter';
     import { canWriteDatabases } from '$lib/stores/roles';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
@@ -21,8 +21,6 @@
     import EmptyDatabaseCloud from './empty.svelte';
 
     const { data }: PageProps = $props();
-
-    let showCreate = $state(false);
 
     const isLimited = $derived(isServiceLimited('databases', $organization, data.databases.total));
 
@@ -61,7 +59,7 @@
                     <Button
                         disabled={isLimited}
                         event="create_database"
-                        on:click={() => (showCreate = true)}>
+                        on:click={goToCreateDatabaseWizard}>
                         <Icon icon={IconPlus} slot="start" size="s" />
                         Create database
                     </Button>
@@ -76,8 +74,6 @@
     </ResponsiveContainerHeader>
 
     {#if data.databases.total}
-        {@render containerHeader()}
-
         {#if data.view === 'grid'}
             <Grid {data} onCreateDatabaseClick={goToCreateDatabaseWizard} />
         {:else}
@@ -116,5 +112,3 @@
             }} />
     {/if}
 </Container>
-
-<Create bind:showCreate on:created={handleCreate} project={data.project} />

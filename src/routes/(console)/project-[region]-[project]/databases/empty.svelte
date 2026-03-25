@@ -14,9 +14,6 @@
     import DocumentsDB from './(assets)/documents-db.svg';
     import DocumentsDBDark from './(assets)/dark/documents-db.svg';
 
-    import PrismaPostgres from './(assets)/prisma-postgres.svg';
-    import PrismaPostgresDark from './(assets)/dark/prisma-postgres.svg';
-
     import DedicatedDB from './(assets)/dedicated-db.svg';
     import DedicatedDBDark from './(assets)/dark/dedicated-db.svg';
 
@@ -35,7 +32,6 @@
     const mongoDbImage = $derived(isDark ? MongoDBDark : MongoDB);
     const tablesDbImage = $derived(isDark ? TablesDBDark : TablesDB);
     const documentsDbImage = $derived(isDark ? DocumentsDBDark : DocumentsDB);
-    const prismaPostgresImage = $derived(isDark ? PrismaPostgresDark : PrismaPostgres);
     const dedicatedDbImage = $derived(isDark ? DedicatedDBDark : DedicatedDB);
 </script>
 
@@ -75,16 +71,6 @@
                 'Store flexible data without a fixed schema. Best for unstructured data and simple querying.',
             image: documentsDbImage,
             footerType: 'mongodb'
-        })}
-
-        <!-- Prisma Postgres -->
-        {@render databaseTypeCard({
-            type: 'prisma',
-            title: 'Prisma Postgres',
-            subtitle:
-                'Managed PostgreSQL with direct connections. Best for high-performance SQL workloads.',
-            image: prismaPostgresImage,
-            footerType: 'prisma'
         })}
 
         <!-- Dedicated Database -->
@@ -146,14 +132,6 @@
                             width="auto"
                             src={mongoDbImage}
                             alt="mongo-db artwork"
-                            style:padding-block-end="2px" />
-                    {:else if footerType === 'prisma'}
-                        <Typography.Text>Powered by</Typography.Text>
-                        <img
-                            height="20px"
-                            width="auto"
-                            src={prismaPostgresImage}
-                            alt="prisma artwork"
                             style:padding-block-end="2px" />
                     {:else if footerType === 'appwrite'}
                         <Typography.Text>Powered by Appwrite</Typography.Text>

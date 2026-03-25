@@ -4,7 +4,7 @@ import type { Client } from '@appwrite.io/console';
 
 export type DatabaseEngine = 'postgres' | 'mysql' | 'mariadb' | 'mongodb';
 export type DatabaseTypeValue = 'shared' | 'dedicated';
-export type DatabaseBackend = 'prisma' | 'appwrite' | 'edge';
+export type DatabaseBackend = 'appwrite' | 'edge';
 export type DatabaseStatusValue =
     | 'provisioning'
     | 'ready'
