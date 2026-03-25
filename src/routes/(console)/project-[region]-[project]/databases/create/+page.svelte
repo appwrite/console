@@ -2,7 +2,16 @@
     import { Wizard } from '$lib/layout';
     import { writable } from 'svelte/store';
     import { Form, InputText, InputSelect, InputCheckbox, Button } from '$lib/elements/forms';
-    import { Alert, Card, Fieldset, Icon, Layout, Tag, Typography } from '@appwrite.io/pink-svelte';
+    import {
+        Alert,
+        Card,
+        Divider,
+        Fieldset,
+        Icon,
+        Layout,
+        Tag,
+        Typography
+    } from '@appwrite.io/pink-svelte';
     import { resolveRoute } from '$lib/stores/navigation';
     import { afterNavigate, goto } from '$app/navigation';
     import { CustomId } from '$lib/components';
@@ -16,7 +25,8 @@
         useDatabaseSdk
     } from '$database/(entity)';
     import { isCloud } from '$lib/system';
-    import { upgradeURL } from '$lib/stores/billing';
+    import { getChangePlanUrl } from '$lib/stores/billing';
+    import { formatCurrency } from '$lib/helpers/numbers';
     import { currentPlan } from '$lib/stores/organization';
     import EmptyDarkMobile from '$lib/images/backups/upgrade/backups-mobile-dark.png';
     import EmptyLightMobile from '$lib/images/backups/upgrade/backups-mobile-light.png';
@@ -80,12 +90,6 @@
             icon: Mongo
         },
         {
-            type: 'prisma',
-            title: 'Prisma Postgres',
-            subtitle:
-                'Managed PostgreSQL with direct connections. Best for high-performance SQL workloads.'
-        },
-        {
             type: 'shared',
             title: 'Shared (Free)',
             subtitle:
@@ -103,36 +107,29 @@
     const engineOptions = [
         { value: 'postgres', label: 'PostgreSQL' },
         { value: 'mysql', label: 'MySQL' },
-        { value: 'mariadb', label: 'MariaDB' }
+        { value: 'mariadb', label: 'MariaDB' },
+        { value: 'mongodb', label: 'MongoDB' }
     ];
 
     const regionOptions = $derived(filterRegions($regionsStore.regions || []));
 
-    const tierOptions = [
-        { value: 's-1vcpu-1gb', label: 'Starter - 1 vCPU, 1GB RAM - $15/mo' },
-        { value: 's-2vcpu-2gb', label: 'Standard - 2 vCPU, 2GB RAM - $30/mo' },
-        { value: 's-2vcpu-4gb', label: 'Standard Plus - 2 vCPU, 4GB RAM - $60/mo' },
-        { value: 's-4vcpu-8gb', label: 'Professional - 4 vCPU, 8GB RAM - $100/mo' },
-        { value: 's-4vcpu-16gb', label: 'Business - 4 vCPU, 16GB RAM - $190/mo' },
-        { value: 's-4vcpu-32gb', label: 'Business Plus - 4 vCPU, 32GB RAM - $370/mo' },
-        { value: 's-8vcpu-32gb', label: 'Enterprise - 8 vCPU, 32GB RAM - $620/mo' },
-        { value: 's-8vcpu-64gb', label: 'Enterprise Plus - 8 vCPU, 64GB RAM - $860/mo' }
-    ];
-
-    const tierConnectionLimits: Record<string, number> = {
-        's-1vcpu-1gb': 100,
-        's-2vcpu-2gb': 200,
-        's-2vcpu-4gb': 500,
-        's-4vcpu-8gb': 1000,
-        's-4vcpu-16gb': 2000,
-        's-4vcpu-32gb': 4000,
-        's-8vcpu-32gb': 5000,
-        's-8vcpu-64gb': 10000
+    const tiers: Record<string, { label: string; price: number }> = {
+        's-1vcpu-1gb': { label: 'Starter - 1 vCPU, 1GB RAM', price: 15 },
+        's-2vcpu-2gb': { label: 'Standard - 2 vCPU, 2GB RAM', price: 30 },
+        's-2vcpu-4gb': { label: 'Standard Plus - 2 vCPU, 4GB RAM', price: 60 },
+        's-4vcpu-8gb': { label: 'Professional - 4 vCPU, 8GB RAM', price: 100 },
+        's-4vcpu-16gb': { label: 'Business - 4 vCPU, 16GB RAM', price: 190 },
+        's-4vcpu-32gb': { label: 'Business Plus - 4 vCPU, 32GB RAM', price: 370 },
+        's-8vcpu-32gb': { label: 'Enterprise - 8 vCPU, 32GB RAM', price: 620 },
+        's-8vcpu-64gb': { label: 'Enterprise Plus - 8 vCPU, 64GB RAM', price: 860 }
     };
 
-    const maxConnectionsForTier = $derived(tierConnectionLimits[selectedTier] ?? 100);
+    const tierOptions = Object.entries(tiers).map(([value, { label, price }]) => ({
+        value,
+        label: `${label} - $${price}/mo`
+    }));
 
-    // State for dedicated/prisma options
+    // State for dedicated options
     let selectedEngine = $state('postgres');
     let selectedRegion = $state<string | null>(null);
     let selectedTier = $state('s-1vcpu-1gb');
@@ -147,10 +144,13 @@
     let highAvailability = $state(false);
 
     // Helper to check database type capabilities
-    const showRegionSelect = $derived(type === 'prisma' || type === 'dedicated' || type === 'shared');
+    const showRegionSelect = $derived(type === 'dedicated' || type === 'shared');
     const showTierSelect = $derived(type === 'dedicated');
     const showEngineSelect = $derived(type === 'dedicated');
     const isSharedType = $derived(type === 'shared');
+
+    const tierPrice = $derived(tiers[selectedTier]?.price ?? 0);
+    const estimatedMonthly = $derived(tierPrice * (highAvailability ? 2 : 1));
 
     // Backup system varies by database type
     const backupSystem = $derived.by(() => {
@@ -158,8 +158,6 @@
             case 'tablesdb':
             case 'documentsdb':
                 return 'appwrite';
-            case 'prisma':
-                return 'prisma';
             case 'shared':
                 return 'shared';
             case 'dedicated':
@@ -271,14 +269,7 @@
             let database: Models.Database;
             const databaseSdk = useDatabaseSdk(page.params.region, page.params.project);
 
-            if (type === 'prisma') {
-                database = await databaseSdk.create(type, {
-                    databaseId,
-                    name: databaseName,
-                    region: selectedRegion,
-                    tier: selectedTier
-                } as DedicatedDatabaseParams);
-            } else if (type === 'shared') {
+            if (type === 'shared') {
                 database = await databaseSdk.create(type, {
                     databaseId,
                     name: databaseName,
@@ -398,9 +389,47 @@
                                 id="ha"
                                 label="Enable High Availability"
                                 bind:checked={highAvailability}
-                                description="Deploy a standby replica for automatic failover" />
+                                description="Deploy a standby replica for automatic failover (doubles cost)" />
                         {/if}
                     </Layout.Stack>
+                </Fieldset>
+
+                <Fieldset legend="Estimated cost">
+                    <Card.Base padding="s">
+                        <Layout.Stack>
+                            <Layout.Stack direction="row" justifyContent="space-between">
+                                <Typography.Text variant="m-400">
+                                    {tiers[selectedTier]?.label ?? 'Database'}
+                                </Typography.Text>
+                                <Typography.Text variant="m-400">
+                                    {formatCurrency(tierPrice)}/mo
+                                </Typography.Text>
+                            </Layout.Stack>
+                            {#if highAvailability}
+                                <Layout.Stack direction="row" justifyContent="space-between">
+                                    <Typography.Text variant="m-400">
+                                        High availability replica
+                                    </Typography.Text>
+                                    <Typography.Text variant="m-400">
+                                        {formatCurrency(tierPrice)}/mo
+                                    </Typography.Text>
+                                </Layout.Stack>
+                            {/if}
+
+                            <Divider />
+                            <Layout.Stack direction="row" justifyContent="space-between">
+                                <Typography.Text>Estimated total</Typography.Text>
+                                <Typography.Text>
+                                    {formatCurrency(estimatedMonthly)}/mo
+                                </Typography.Text>
+                            </Layout.Stack>
+
+                            <Typography.Text>
+                                You'll be charged <b>{formatCurrency(estimatedMonthly)}</b> every
+                                30 days. Costs may vary with storage and network usage.
+                            </Typography.Text>
+                        </Layout.Stack>
+                    </Card.Base>
                 </Fieldset>
             {/if}
 
@@ -454,8 +483,6 @@
                     {:else}
                         {@render selfHostedBackupOptions()}
                     {/if}
-                {:else if backupSystem === 'prisma'}
-                    {@render prismaBackupOptions()}
                 {:else if backupSystem === 'shared'}
                     {@render sharedBackupOptions()}
                 {:else if backupSystem === 'dedicated'}
@@ -476,8 +503,8 @@
         <Button
             fullWidthMobile
             disabled={$isSubmitting}
-            on:click={() => formComponent.triggerSubmit()}
-            >Create
+            on:click={() => formComponent.triggerSubmit()}>
+            {type === 'dedicated' ? `Create - ${formatCurrency(estimatedMonthly)}/mo` : 'Create'}
         </Button>
     </svelte:fragment>
 </Wizard>
@@ -489,13 +516,14 @@
                 bind:totalPolicies
                 title="Backup policies"
                 bind:isShowing={showCreatePolicies}
-                subtitle="Protect your data and ensure quick recovery by adding backup policies." />
+                subtitle="Protect your data and ensure quick recovery by adding backup policies."
+                project={page.data.project} />
         </div>
     {:else}
         <Alert.Inline title="This database won't be backed up" status="warning">
             Upgrade your plan to ensure your data stays safe and backed up.
             <svelte:fragment slot="actions">
-                <Button compact href={$upgradeURL}>Upgrade plan</Button>
+                <Button compact href={getChangePlanUrl()}>Upgrade plan</Button>
             </svelte:fragment>
         </Alert.Inline>
     {/if}
@@ -529,15 +557,6 @@
                 </Layout.Stack>
             </Layout.Stack>
         </Layout.Stack>
-    </Layout.Stack>
-{/snippet}
-
-{#snippet prismaBackupOptions()}
-    <Layout.Stack gap="l">
-        <Alert.Inline status="info" title="Automatic backups included">
-            Prisma Postgres automatically creates daily snapshots with 30-day retention. Backups are
-            managed by Prisma and cannot be customized.
-        </Alert.Inline>
     </Layout.Stack>
 {/snippet}
 

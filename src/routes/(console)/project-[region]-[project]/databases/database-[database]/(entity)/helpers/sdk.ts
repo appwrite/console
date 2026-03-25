@@ -16,7 +16,7 @@ export type DedicatedDatabaseParams = {
     databaseId: string;
     name: string;
     enabled?: boolean;
-    engine?: 'postgres' | 'mysql' | 'mariadb';
+    engine?: 'postgres' | 'mysql' | 'mariadb' | 'mongodb';
     region?: string;
     tier?: string;
     highAvailability?: boolean;
@@ -130,39 +130,24 @@ export function useDatabaseSdk(
                 case 'documentsdb': {
                     return await baseSdk.documentsDB.create(params);
                 }
-                case 'prisma': {
-                    // Prisma databases are created via the compute/databases endpoint
-                    // with backend: 'prisma'
-                    const prismaParams = params as DedicatedDatabaseParams;
-                    return (await baseSdk.dedicatedDatabases.create({
-                        databaseId: prismaParams.databaseId,
-                        name: prismaParams.name,
-                        backend: 'prisma',
-                        engine: 'postgres',
-                        region: prismaParams.region,
-                        tier: prismaParams.tier
-                    })) as unknown as Models.Database;
-                }
                 case 'shared': {
                     // Shared (free tier) databases via compute/databases with type: 'shared'
                     const sharedParams = params as DedicatedDatabaseParams;
                     return (await baseSdk.dedicatedDatabases.create({
                         databaseId: sharedParams.databaseId,
                         name: sharedParams.name,
-                        backend: 'appwrite',
+                        backend: 'edge',
                         engine: 'postgres',
                         region: sharedParams.region,
                         type: 'shared'
                     })) as unknown as Models.Database;
                 }
                 case 'dedicated': {
-                    // Dedicated databases are created via the compute/databases endpoint
-                    // with backend: 'appwrite'
                     const dedicatedParams = params as DedicatedDatabaseParams;
                     return (await baseSdk.dedicatedDatabases.create({
                         databaseId: dedicatedParams.databaseId,
                         name: dedicatedParams.name,
-                        backend: 'appwrite',
+                        backend: 'edge',
                         engine: dedicatedParams.engine,
                         region: dedicatedParams.region,
                         tier: dedicatedParams.tier,
@@ -208,7 +193,6 @@ export function useDatabaseSdk(
                     });
                     return toSupportiveEntity(table);
                 }
-                case 'prisma':
                 case 'shared':
                 case 'dedicated':
                     throw new Error('External databases do not support entity creation via Appwrite');
@@ -234,7 +218,6 @@ export function useDatabaseSdk(
                     const { total, tables } = await baseSdk.tablesDB.listTables(params);
                     return { total, entities: tables.map(toSupportiveEntity) };
                 }
-                case 'prisma':
                 case 'shared':
                 case 'dedicated': {
                     // External databases don't have entities managed by Appwrite
@@ -262,7 +245,6 @@ export function useDatabaseSdk(
                     });
                     return toSupportiveEntity(table);
                 }
-                case 'prisma':
                 case 'shared':
                 case 'dedicated':
                     throw new Error('External databases do not support entity retrieval via Appwrite');
@@ -287,7 +269,6 @@ export function useDatabaseSdk(
                     return await baseSdk.tablesDB.delete(params);
                 case 'documentsdb':
                     return await baseSdk.documentsDB.delete(params);
-                case 'prisma':
                 case 'shared':
                 case 'dedicated':
                     await baseSdk.dedicatedDatabases.delete(params);
@@ -307,7 +288,6 @@ export function useDatabaseSdk(
                         databaseId: params.databaseId,
                         tableId: params.entityId
                     });
-                case 'prisma':
                 case 'shared':
                 case 'dedicated':
                     throw new Error('External databases do not support entity deletion via Appwrite');
@@ -334,7 +314,6 @@ export function useDatabaseSdk(
                         data: params.data,
                         permissions: params.permissions
                     });
-                case 'prisma':
                 case 'shared':
                 case 'dedicated':
                     throw new Error('External databases do not support record creation via Appwrite');
@@ -364,7 +343,6 @@ export function useDatabaseSdk(
                         data: params.data,
                         permissions: params.permissions
                     });
-                case 'prisma':
                 case 'shared':
                 case 'dedicated':
                     throw new Error('External databases do not support record updates via Appwrite');
@@ -393,7 +371,6 @@ export function useDatabaseSdk(
                         rowId: params.recordId,
                         permissions: params.permissions
                     });
-                case 'prisma':
                 case 'shared':
                 case 'dedicated':
                     throw new Error('External databases do not support permission updates via Appwrite');
@@ -422,7 +399,6 @@ export function useDatabaseSdk(
                     });
                     return toSupportiveRecord(row);
                 }
-                case 'prisma':
                 case 'shared':
                 case 'dedicated':
                     throw new Error('External databases do not support record deletion via Appwrite');
@@ -452,7 +428,6 @@ export function useDatabaseSdk(
                     });
                     return { total, records: rows.map(toSupportiveRecord) };
                 }
-                case 'prisma':
                 case 'shared':
                 case 'dedicated':
                     throw new Error('External databases do not support bulk record deletion via Appwrite');
