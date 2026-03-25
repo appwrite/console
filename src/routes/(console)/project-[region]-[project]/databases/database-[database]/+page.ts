@@ -11,7 +11,7 @@ export const load: PageLoad = async ({ params, url, route, depends, parent }) =>
     const databaseType = database.type as DatabaseType;
 
     // For dedicated databases, we don't fetch entities (tables/collections)
-    const isDedicatedType = databaseType === 'prisma' || databaseType === 'dedicated';
+    const isDedicatedType = databaseType === 'dedicated';
 
     if (isDedicatedType) {
         return {

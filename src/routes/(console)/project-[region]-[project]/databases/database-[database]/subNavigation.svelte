@@ -49,7 +49,7 @@
 
     // Check if this is a dedicated database type
     const isDedicatedType = $derived(
-        terminology.type === 'prisma' || terminology.type === 'dedicated' || terminology.type === 'shared'
+        terminology.type === 'dedicated' || terminology.type === 'shared'
     );
 
     const entityTypePlural = terminology.entity.lower.plural;

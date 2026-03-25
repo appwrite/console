@@ -8,7 +8,7 @@
         const params = page.params;
         const project = page.data.project;
         const database = page.data.database;
-        const organization = page.data.organization as Organization;
+        const organization = page.data.organization as Models.Organization;
 
         return [
             {

@@ -17,7 +17,7 @@
     import { SortButton } from '$lib/components';
     import { columnsOrder, columnsWidth, reorderItems } from '../table-[table]/store';
     import { preferences } from '$lib/stores/preferences';
-    import { expandTabs, type Columns } from '../store';
+    import { expandTabs } from '../store';
     import { SpreadsheetContainer } from '$database/(entity)';
     import { onDestroy, onMount, tick } from 'svelte';
     import { sdk, realtime, type RealtimeResponse } from '$lib/stores/sdk';
@@ -28,7 +28,6 @@
         mapSuggestedColumns,
         type SuggestedColumnSchema,
         entityColumnSuggestions,
-        basicColumnOptions,
         mockSuggestions,
         showIndexesSuggestions
     } from './store';

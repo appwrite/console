@@ -19,8 +19,7 @@
         Input,
         Skeleton,
         Tabs,
-        Divider,
-        Card
+        Divider
     } from '@appwrite.io/pink-svelte';
     import { IconDuplicate, IconRefresh } from '@appwrite.io/pink-icons-svelte';
 
@@ -37,8 +36,6 @@
     let isSpinningDown = $state(false);
     let connectionTab = $state<'direct' | 'string'>('direct');
 
-    // Check if this is a Prisma database
-    const isPrisma = $derived(database.backend === 'prisma');
     const isDedicated = $derived(database.type === 'dedicated');
     const isShared = $derived(database.type === 'shared');
     const isActive = $derived(database.status === 'ready' || database.status === 'active');
@@ -356,12 +353,12 @@
         <svelte:fragment slot="title">Status</svelte:fragment>
         <svelte:fragment slot="aside">
             <Layout.Stack gap="l">
-                <Layout.Stack direction="row" gap="xl" alignItems="center" wrap>
+                <Layout.Stack direction="row" gap="xl" alignItems="center" wrap="wrap">
                     <Status status={statusComponentStatus}>
                         {capitalizeFirst(database.status)}
                     </Status>
 
-                    {#if database.containerStatus && !isPrisma}
+                    {#if database.containerStatus}
                         <Status status={containerComponentStatus}>
                             Container: {capitalizeFirst(database.containerStatus)}
                         </Status>
@@ -378,7 +375,7 @@
                     </Alert.Inline>
                 {/if}
 
-                <Layout.Stack direction="row" gap="xl" wrap>
+                <Layout.Stack direction="row" gap="xl" wrap="wrap">
                     <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
                         Created {toLocaleDateTime(database.$createdAt)}
                     </Typography.Caption>
@@ -389,12 +386,12 @@
             </Layout.Stack>
         </svelte:fragment>
         <svelte:fragment slot="actions">
-            {#if database.containerStatus === 'inactive' && !isPrisma}
+            {#if database.containerStatus === 'inactive'}
                 <Button secondary disabled={isColdStarting} on:click={triggerColdStart}>
                     {isColdStarting ? 'Starting...' : 'Start Database'}
                 </Button>
             {/if}
-            {#if isDedicated && isActive && !isPrisma}
+            {#if isDedicated && isActive}
                 <Button secondary disabled={isPausing} on:click={pauseDatabase}>
                     {isPausing ? 'Pausing...' : 'Pause'}
                 </Button>
@@ -404,7 +401,7 @@
                     {isResuming ? 'Resuming...' : 'Resume'}
                 </Button>
             {/if}
-            {#if isShared && isActive && containerIsRunning && !isPrisma}
+            {#if isShared && isActive && containerIsRunning}
                 <Button secondary disabled={isSpinningDown} on:click={spinDownDatabase}>
                     {isSpinningDown ? 'Spinning down...' : 'Spin Down'}
                 </Button>
@@ -480,7 +477,7 @@
                                     color="--fgcolor-neutral-tertiary">
                                     Terminal Command
                                 </Typography.Caption>
-                                <Code language="bash" code={getConnectionCommand()} withCopy />
+                                <Code language="sh" code={getConnectionCommand()} withCopy />
                             </Layout.Stack>
                         </Layout.Stack>
                     {/if}
@@ -553,7 +550,7 @@
         <svelte:fragment slot="title">Resources</svelte:fragment>
         Your database configuration and allocated resources.
         <svelte:fragment slot="aside">
-            <Layout.Grid columns={3} columnsM={2} columnsS={1} gap="l">
+            <Layout.Grid columns={3} columnsL={2} columnsS={1} gap="l">
                 <Layout.Stack gap="xxs">
                     <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
                         Engine
@@ -610,13 +607,11 @@
         </svelte:fragment>
     </CardGrid>
 
-    <!-- High Availability - Only show for non-Prisma databases -->
-    {#if !isPrisma}
-        <CardGrid>
+    <CardGrid>
             <svelte:fragment slot="title">High Availability</svelte:fragment>
             Configure replicas and failover settings for your database.
             <svelte:fragment slot="aside">
-                <Layout.Grid columns={3} columnsM={2} columnsS={1} gap="l">
+                <Layout.Grid columns={3} columnsL={2} columnsS={1} gap="l">
                     <Layout.Stack gap="xxs">
                         <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
                             Status
@@ -652,16 +647,13 @@
                 </Layout.Grid>
             </svelte:fragment>
         </CardGrid>
-    {/if}
 
-    <!-- Network - Only show for non-Prisma databases -->
-    {#if !isPrisma}
-        <CardGrid>
+    <CardGrid>
             <svelte:fragment slot="title">Network</svelte:fragment>
             Connection limits and network configuration.
             <svelte:fragment slot="aside">
                 <Layout.Stack gap="l">
-                    <Layout.Grid columns={3} columnsM={2} columnsS={1} gap="l">
+                    <Layout.Grid columns={3} columnsL={2} columnsS={1} gap="l">
                         <Layout.Stack gap="xxs">
                             <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
                                 Max Connections
@@ -701,7 +693,7 @@
                             <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
                                 IP Allowlist
                             </Typography.Caption>
-                            <Layout.Stack direction="row" gap="xs" wrap>
+                            <Layout.Stack direction="row" gap="xs" wrap="wrap">
                                 {#each database.networkIPAllowlist as ip}
                                     <Badge variant="secondary" size="s" content={ip} />
                                 {/each}
@@ -711,7 +703,6 @@
                 </Layout.Stack>
             </svelte:fragment>
         </CardGrid>
-    {/if}
 
     <!-- Backups -->
     <CardGrid>
@@ -771,7 +762,7 @@
         <svelte:fragment slot="title">Storage Autoscaling</svelte:fragment>
         Automatically expand storage when usage reaches the configured threshold.
         <svelte:fragment slot="aside">
-            <Layout.Grid columns={3} columnsM={2} columnsS={1} gap="l">
+            <Layout.Grid columns={3} columnsL={2} columnsS={1} gap="l">
                 <Layout.Stack gap="xxs">
                     <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
                         Status
@@ -809,7 +800,7 @@
         <svelte:fragment slot="title">Security</svelte:fragment>
         Encryption, key management, and audit logging configuration.
         <svelte:fragment slot="aside">
-            <Layout.Grid columns={3} columnsM={2} columnsS={1} gap="l">
+            <Layout.Grid columns={3} columnsL={2} columnsS={1} gap="l">
                 <Layout.Stack gap="xxs">
                     <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
                         Encryption at Rest
@@ -960,7 +951,7 @@
                         <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
                             Allowed Statements
                         </Typography.Caption>
-                        <Layout.Stack direction="row" gap="xs" wrap>
+                        <Layout.Stack direction="row" gap="xs" wrap="wrap">
                             {#each database.sqlApiAllowedStatements as statement}
                                 <Badge variant="secondary" size="s" content={statement.toUpperCase()} />
                             {/each}

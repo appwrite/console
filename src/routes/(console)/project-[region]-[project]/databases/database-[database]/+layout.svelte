@@ -32,7 +32,7 @@
 
     // Check if this is a dedicated database type
     $: isDedicatedType =
-        terminology.type === 'prisma' || terminology.type === 'dedicated' || terminology.type === 'shared';
+        terminology.type === 'dedicated' || terminology.type === 'shared';
 
     $: $registerCommands([
         {
