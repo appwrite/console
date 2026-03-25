@@ -150,6 +150,9 @@
 
     let tooltipMessage = $state('Copy document');
 
+    // Cache embeddings values for the fold placeholder (survives fold state changes)
+    let cachedEmbeddingsPreview = '';
+
     // Store the original data to preserve system values
     let originalData = $state<JsonValue>(data);
 
@@ -239,6 +242,11 @@
             const items = value as JsonArray;
             if (items.length === 0) return '[]';
 
+            // Render embeddings as 3 lines: [ / values / ] — enables native fold gutter
+            if (key === 'embeddings' && items.length > 0 && typeof items[0] === 'number') {
+                return `[\n${items.join(',')}\n${indentStr}]`;
+            }
+
             const elements = items.map((item, index) => {
                 const isLast = index === items.length - 1;
                 const formattedValue = dataToString(item, indent + 1);
@@ -301,7 +309,12 @@
             changes: { from: 0, to: currentContent.length, insert: content },
             annotations: [Transaction.addToHistory.of(false)]
         });
-        foldEmbeddings(editorView);
+        editorView.requestMeasure({
+            read() {},
+            write(_measure, view) {
+                foldEmbeddings(view);
+            }
+        });
         queueMicrotask(() => (isUpdatingFromEditor = false));
     }
 
@@ -1033,57 +1046,36 @@
     }
 
     /**
-     * Fold the embeddings array so it doesn't dominate the editor.
-     * Uses manual bracket matching — no syntax tree dependency.
+     * Auto-fold the embeddings array. Uses multi-line format so the
+     * native fold gutter handles expand/collapse with the same chevron as metadata.
      */
-    const EMBEDDING_PREVIEW_COUNT = 2;
-    let embeddingPreviewText = $state<string | null>(null);
-
     function foldEmbeddings(view: EditorView) {
         const doc = view.state.doc;
-
         for (let ln = 1; ln <= doc.lines; ln++) {
             const line = doc.line(ln);
-            const match = line.text.match(/^(\s*embeddings:\s*)\[/);
+            const match = line.text.match(/^(\s*embeddings:\s*\[)/);
             if (!match) continue;
-
-            const bracketPos = line.from + match[1].length;
-
-            // Extract preview values before folding
-            const values: string[] = [];
-            for (
-                let nextLn = ln + 1;
-                nextLn <= doc.lines && values.length < EMBEDDING_PREVIEW_COUNT;
-                nextLn++
-            ) {
-                const text = doc.line(nextLn).text.trim().replace(/,$/, '');
-                if (text === ']' || text === '') break;
-                if (/^-?[\d.]+(?:e[+-]?\d+)?$/i.test(text)) values.push(text);
-            }
-            embeddingPreviewText = values.length ? values.join(', ') + ', …' : null;
-
-            let depth = 0;
-            let closePos = -1;
-
-            for (let pos = bracketPos; pos < doc.length; pos++) {
-                const ch = doc.sliceString(pos, pos + 1);
-                if (ch === '[') depth++;
-                else if (ch === ']') {
-                    depth--;
-                    if (depth === 0) {
-                        closePos = pos;
-                        break;
+            // Find closing ] line and cache values for fold placeholder
+            for (let endLn = ln + 1; endLn <= doc.lines; endLn++) {
+                const endLine = doc.line(endLn);
+                if (endLine.text.trim().startsWith(']')) {
+                    // Cache the values line before folding hides it
+                    const valuesLn = ln + 1;
+                    if (valuesLn <= doc.lines && valuesLn < endLn) {
+                        cachedEmbeddingsPreview = doc.line(valuesLn).text.trim();
                     }
+                    const from = line.from + match[1].length; // after [
+                    const to = endLine.from + endLine.text.indexOf(']'); // before ]
+                    if (to > from) {
+                        view.dispatch({
+                            effects: [foldEffect.of({ from, to })],
+                            annotations: [Transaction.addToHistory.of(false)]
+                        });
+                    }
+                    break;
                 }
             }
-
-            if (closePos > bracketPos + 1) {
-                view.dispatch({
-                    effects: [foldEffect.of({ from: bracketPos + 1, to: closePos })],
-                    annotations: [Transaction.addToHistory.of(false)]
-                });
-            }
-            break;
+            return;
         }
     }
 
@@ -1097,26 +1089,76 @@
             lineNumbers(),
             highlightActiveLine(),
             highlightActiveLineGutter(),
-            // Update embedding fold placeholder with preview values
-            ViewPlugin.fromClass(
-                class {
-                    update(update: ViewUpdate) {
-                        if (
-                            !update.transactions.some((tr) =>
-                                tr.effects.some((e) => e.is(foldEffect))
-                            )
-                        )
-                            return;
-                        setTimeout(() => {
-                            const placeholder =
-                                update.view.dom.querySelector('.cm-foldPlaceholder');
-                            if (placeholder && embeddingPreviewText) {
-                                placeholder.textContent = embeddingPreviewText;
-                            }
-                        }, 10);
+            // Replace embeddings fold placeholder with truncated value preview
+            ViewPlugin.define((view) => {
+                function updatePlaceholder() {
+                    if (!cachedEmbeddingsPreview) return;
+
+                    // Get char width and styles from a number element, or fall back to cm-content
+                    const numberEl = view.dom.querySelector('.cm-number');
+                    const refEl = numberEl || view.dom.querySelector('.cm-content');
+                    if (!refEl) return;
+
+                    const charWidth = numberEl
+                        ? numberEl.getBoundingClientRect().width /
+                          (numberEl.textContent?.length || 1)
+                        : 7.8;
+                    const numberStyles = getComputedStyle(refEl);
+
+                    for (const p of view.dom.querySelectorAll('.cm-foldPlaceholder')) {
+                        const lineEl = p.closest('.cm-line');
+                        if (!lineEl?.textContent?.match(/embeddings:\s*\[/)) continue;
+
+                        const pos = view.posAtDOM(lineEl);
+                        const line = view.state.doc.lineAt(pos);
+                        const match = line.text.match(/^(\s*embeddings:\s*\[)/);
+                        if (!match) continue;
+
+                        const contentWidth =
+                            view.dom.querySelector('.cm-content')?.clientWidth ?? 600;
+                        const available =
+                            Math.floor(contentWidth / charWidth) - match[1].length - 8;
+                        if (available <= 10) continue;
+
+                        const truncated = cachedEmbeddingsPreview.slice(0, available - 3);
+                        const lastComma = truncated.lastIndexOf(',');
+                        const el = p as HTMLElement;
+                        el.textContent =
+                            (lastComma > 0 ? truncated.slice(0, lastComma) : truncated) + '...';
+                        el.classList.add('cm-embeddings-fold');
+
+                        Object.assign(el.style, {
+                            fontFamily: numberStyles.fontFamily,
+                            fontSize: numberStyles.fontSize,
+                            fontWeight: numberStyles.fontWeight,
+                            lineHeight: numberStyles.lineHeight,
+                            letterSpacing: numberStyles.letterSpacing
+                        });
                     }
                 }
-            ),
+
+                function scheduleUpdate() {
+                    requestAnimationFrame(() => updatePlaceholder());
+                }
+
+                const observer = new ResizeObserver(scheduleUpdate);
+                observer.observe(view.dom);
+
+                return {
+                    update(update: ViewUpdate) {
+                        if (
+                            update.transactions.some((tr) =>
+                                tr.effects.some((e) => e.is(foldEffect))
+                            )
+                        ) {
+                            scheduleUpdate();
+                        }
+                    },
+                    destroy() {
+                        observer.disconnect();
+                    }
+                };
+            }),
             // Use fold gutter, hide default glyphs (we style via CSS)
             foldGutter({ openText: ' ', closedText: ' ' }),
             indentUnit.of('  '), // Use 2 spaces for indentation
@@ -1307,12 +1349,7 @@
             parent: editorContainer
         });
 
-        editorView.requestMeasure({
-            read() {},
-            write(_measure, view) {
-                foldEmbeddings(view);
-            }
-        });
+        foldEmbeddings(editorView);
     });
 
     onDestroy(() => {
@@ -1860,6 +1897,11 @@
             border: unset;
             padding: 0 4px;
             background: var(--bgcolor-neutral-secondary);
+        }
+
+        :global(.cm-foldPlaceholder.cm-embeddings-fold) {
+            color: var(--brand-mint-600);
+            background: transparent;
         }
     }
 
