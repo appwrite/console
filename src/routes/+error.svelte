@@ -9,7 +9,7 @@
     <Layout.Stack gap="l" alignItems="center">
         <Badge variant="secondary" content="404 Page not found" />
         <Typography.Title size="l" align="center">
-            The page you're looking for doesn't exist.
+            The domain you are trying to access is not configured in Appwrite. Please verify the URL or contact the administrator.
         </Typography.Title>
         <Button href={base}>Back to console</Button>
     </Layout.Stack>
