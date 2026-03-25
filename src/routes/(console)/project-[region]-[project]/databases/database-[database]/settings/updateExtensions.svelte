@@ -124,15 +124,11 @@
                     {#if extensions.installed.length > 0}
                         <li class="u-margin-block-end-16">
                             <label class="label u-margin-block-end-8">Installed extensions</label>
-                            <Layout.Stack direction="row" gap="xs" wrap>
+                            <Layout.Stack direction="row" gap="xs" wrap="wrap">
                                 {#each extensions.installed as ext}
                                     <Badge
                                         variant="secondary"
-                                        content={ext}
-                                        onClear={() => {
-                                            extensionToUninstall = ext;
-                                            showUninstallConfirm = true;
-                                        }} />
+                                        content={ext} />
                                 {/each}
                             </Layout.Stack>
                         </li>

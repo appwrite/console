@@ -161,7 +161,7 @@
                                             </Layout.Stack>
                                             <Button
                                                 text
-                                                round
+                                                icon
                                                 ariaLabel="Delete user {connection.username}"
                                                 on:click={() => {
                                                     connectionToDelete = connection;

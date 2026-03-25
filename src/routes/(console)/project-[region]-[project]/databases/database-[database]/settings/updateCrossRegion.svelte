@@ -47,20 +47,18 @@
         regionOptions.filter((r) => r.value !== database.region)
     );
 
-    function getStandbyStatusVariant(
+    function getStandbyStatusType(
         status: string
-    ): 'primary' | 'secondary' | 'success' | 'warning' | 'error' {
+    ): 'success' | 'warning' | 'error' | undefined {
         switch (status) {
             case 'healthy':
                 return 'success';
-            case 'provisioning':
-                return 'primary';
             case 'degraded':
                 return 'warning';
             case 'unhealthy':
                 return 'error';
             default:
-                return 'secondary';
+                return undefined;
         }
     }
 
@@ -183,7 +181,8 @@
                                     <Layout.Stack direction="row" gap="xs" alignItems="center">
                                         <span class="u-bold">Standby status</span>
                                         <Badge
-                                            variant={getStandbyStatusVariant(crossRegionStatus.standbyStatus)}
+                                            variant="secondary"
+                                            type={getStandbyStatusType(crossRegionStatus.standbyStatus)}
                                             content={crossRegionStatus.standbyStatus} />
                                     </Layout.Stack>
                                     <span class="text u-x-small">

@@ -53,9 +53,9 @@
             syncMode !== initialSyncMode
     );
 
-    function getHealthVariant(
+    function getHealthType(
         status: string
-    ): 'primary' | 'secondary' | 'success' | 'warning' | 'error' {
+    ): 'success' | 'warning' | 'error' | undefined {
         switch (status) {
             case 'healthy':
                 return 'success';
@@ -64,7 +64,7 @@
             case 'unhealthy':
                 return 'error';
             default:
-                return 'secondary';
+                return undefined;
         }
     }
 
@@ -197,7 +197,8 @@
                                                 variant={replica.role === 'primary' ? 'primary' : 'secondary'}
                                                 content={replica.role} />
                                             <Badge
-                                                variant={getHealthVariant(replica.status)}
+                                                variant="secondary"
+                                                type={getHealthType(replica.status)}
                                                 content={replica.status} />
                                             <span class="text u-x-small">
                                                 Lag: {replica.lagSeconds}s

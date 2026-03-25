@@ -61,22 +61,19 @@
         }
     });
 
-    function getStatusVariant(
+    function getStatusType(
         status: string
-    ): 'primary' | 'secondary' | 'success' | 'warning' | 'error' {
+    ): 'success' | 'warning' | 'error' | undefined {
         switch (status) {
             case 'active':
                 return 'success';
-            case 'provisioning':
-                return 'primary';
             case 'degraded':
+            case 'deleting':
                 return 'warning';
             case 'failed':
                 return 'error';
-            case 'deleting':
-                return 'warning';
             default:
-                return 'secondary';
+                return undefined;
         }
     }
 
@@ -170,7 +167,8 @@
                                                 <Layout.Stack direction="row" gap="xs" alignItems="center">
                                                     <span class="u-bold">{replica.$id}</span>
                                                     <Badge
-                                                        variant={getStatusVariant(replica.status)}
+                                                        variant="secondary"
+                                                        type={getStatusType(replica.status)}
                                                         content={replica.status} />
                                                 </Layout.Stack>
                                                 <span class="text u-x-small">

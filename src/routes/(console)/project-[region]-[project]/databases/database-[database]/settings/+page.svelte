@@ -42,14 +42,12 @@
 
     const isDedicatedType = $derived(
         dedicatedDatabase !== null &&
-            (database.type === 'prisma' ||
-                database.type === 'dedicated' ||
+            (database.type === 'dedicated' ||
                 database.type === 'shared')
     );
 
     const isDedicated = $derived(dedicatedDatabase?.type === 'dedicated');
     const isShared = $derived(dedicatedDatabase?.type === 'shared');
-    const isPrisma = $derived(dedicatedDatabase?.backend === 'prisma');
     const isPostgres = $derived(dedicatedDatabase?.engine === 'postgres');
 
     // Legacy database fallback state
@@ -103,7 +101,7 @@
 </script>
 
 {#if isDedicatedType && dedicatedDatabase}
-    <!-- Dedicated / Shared / Prisma database settings -->
+    <!-- Dedicated / Shared database settings -->
     <Container>
         <CardGrid>
             <svelte:fragment slot="title">{dedicatedDatabase.name}</svelte:fragment>
@@ -128,10 +126,8 @@
             <UpdateStorage database={dedicatedDatabase} />
         {/if}
 
-        <!-- 4. Network Settings - not for Prisma -->
-        {#if !isPrisma}
-            <UpdateNetwork database={dedicatedDatabase} />
-        {/if}
+        <!-- 4. Network Settings -->
+        <UpdateNetwork database={dedicatedDatabase} />
 
         <!-- 5. Maintenance Window - dedicated and shared -->
         {#if isDedicated || isShared}
@@ -146,25 +142,21 @@
             <UpdateAutoscaling database={dedicatedDatabase} />
         {/if}
 
-        <!-- 8. Connection Pooler - PostgreSQL only, not Prisma -->
-        {#if isPostgres && !isPrisma}
+        <!-- 8. Connection Pooler - PostgreSQL only -->
+        {#if isPostgres}
             <UpdatePooler database={dedicatedDatabase} />
         {/if}
 
-        <!-- 9. Extensions - PostgreSQL only, not Prisma -->
-        {#if isPostgres && !isPrisma}
+        <!-- 9. Extensions - PostgreSQL only -->
+        {#if isPostgres}
             <UpdateExtensions database={dedicatedDatabase} />
         {/if}
 
-        <!-- 10. Database Users - not for Prisma -->
-        {#if !isPrisma}
-            <UpdateConnections database={dedicatedDatabase} />
-        {/if}
+        <!-- 10. Database Users -->
+        <UpdateConnections database={dedicatedDatabase} />
 
-        <!-- 11. Credential Rotation - not for Prisma -->
-        {#if !isPrisma}
-            <RotateCredentials database={dedicatedDatabase} />
-        {/if}
+        <!-- 11. Credential Rotation -->
+        <RotateCredentials database={dedicatedDatabase} />
 
         <!-- 12. Version Upgrade - dedicated and shared -->
         {#if isDedicated || isShared}
@@ -181,10 +173,8 @@
             <UpdateCrossRegion database={dedicatedDatabase} />
         {/if}
 
-        <!-- 15. High Availability - not for Prisma -->
-        {#if !isPrisma}
-            <UpdateHAStatus database={dedicatedDatabase} />
-        {/if}
+        <!-- 15. High Availability -->
+        <UpdateHAStatus database={dedicatedDatabase} />
 
         <!-- 16. Backup Storage - dedicated only -->
         {#if isDedicated}
@@ -194,10 +184,8 @@
         <!-- 17. Security - all types -->
         <UpdateSecurity database={dedicatedDatabase} />
 
-        <!-- 18. SQL API - not for Prisma -->
-        {#if !isPrisma}
-            <UpdateSqlApi database={dedicatedDatabase} />
-        {/if}
+        <!-- 18. SQL API -->
+        <UpdateSqlApi database={dedicatedDatabase} />
 
         <!-- 19. Delete Database - all types -->
         <DangerZone database={dedicatedDatabase} />
