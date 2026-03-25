@@ -24,7 +24,7 @@ import {
     TablesDB,
     Domains,
     Webhooks,
-    DocumentsDB,
+    /*DocumentsDB,*/
     Realtime,
     Organizations
 } from '@appwrite.io/console';
@@ -138,7 +138,7 @@ const sdkForProject = {
     migrations: new Migrations(clientProject),
     sites: new Sites(clientProject),
     tablesDB: new TablesDB(clientProject),
-    documentsDB: new DocumentsDB(clientProject),
+    /*documentsDB: new DocumentsDB(clientProject),*/
     dedicatedDatabases: new DedicatedDatabases(clientProject),
     console: new Console(clientProject), // for suggestions API
     webhooks: new Webhooks(clientProject)
