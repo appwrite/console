@@ -13,6 +13,7 @@
 <Container>
     <Usage
         path={`${base}/project-${page.params.region}-${page.params.project}/storage/bucket-${page.params.bucket}/usage`}
+        showAggregateTotal={false}
         total={filesTotal}
         count={files}
         countMetadata={{
@@ -22,6 +23,7 @@
 
     <Usage
         path={`${base}/project-${page.params.region}-${page.params.project}/storage/bucket-${page.params.bucket}/usage`}
+        showAggregateTotal={false}
         total={transformationsTotal}
         count={transformations}
         countMetadata={{

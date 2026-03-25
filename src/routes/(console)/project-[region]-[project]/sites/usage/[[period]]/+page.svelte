@@ -11,6 +11,7 @@
 <Container>
     <Usage
         path={`${base}/project-${page.params.region}-${page.params.project}/sites/usage`}
+        showAggregateTotal={false}
         countMetadata={{
             legend: 'Sites',
             title: 'Total sites'

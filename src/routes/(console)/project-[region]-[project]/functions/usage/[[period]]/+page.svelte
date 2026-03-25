@@ -11,6 +11,7 @@
 <Container>
     <Usage
         path={`${base}/project-${page.params.region}-${page.params.project}/functions/usage`}
+        showAggregateTotal={false}
         countMetadata={{
             legend: 'Functions',
             title: 'Total functions'

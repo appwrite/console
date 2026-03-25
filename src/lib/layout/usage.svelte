@@ -89,6 +89,7 @@
     export let path: string = null;
     export let hidePeriodSelect = false;
     export let isCumulative: boolean = false;
+    export let showAggregateTotal: boolean = true;
 </script>
 
 <Layout.Stack gap="s">
@@ -118,10 +119,12 @@
     {/if}
     <Card>
         {#if count}
-            <Layout.Stack gap="xs">
-                <Typography.Title>{formatNumberWithCommas(total)}</Typography.Title>
-                <Typography.Text>{countMetadata.title}</Typography.Text>
-            </Layout.Stack>
+            {#if showAggregateTotal}
+                <Layout.Stack gap="xs">
+                    <Typography.Title>{formatNumberWithCommas(total)}</Typography.Title>
+                    <Typography.Text>{countMetadata.title}</Typography.Text>
+                </Layout.Stack>
+            {/if}
             <div class="chart-container">
                 <BarChart
                     formatted={page.params.period === '24h' ? 'hours' : 'days'}

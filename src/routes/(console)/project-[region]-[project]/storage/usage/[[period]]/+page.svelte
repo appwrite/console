@@ -11,6 +11,7 @@
 <Container>
     <Usage
         path={`${base}/project-${page.params.region}-${page.params.project}/storage/usage`}
+        showAggregateTotal={false}
         {total}
         {count}
         countMetadata={{

@@ -22,6 +22,7 @@
         {#if count}
             <Usage
                 path={`${base}/project-${page.params.region}-${page.params.project}/functions/function-${page.params.function}/usage`}
+                showAggregateTotal={false}
                 countMetadata={{
                     legend: 'Executions',
                     title: 'Total executions'
@@ -33,6 +34,7 @@
         {#if mbSecondsCount}
             <Usage
                 hidePeriodSelect
+                showAggregateTotal={false}
                 path={`${base}/project-${page.params.region}-${page.params.project}/functions/function-${page.params.function}/usage`}
                 countMetadata={{
                     legend: 'GB hours',

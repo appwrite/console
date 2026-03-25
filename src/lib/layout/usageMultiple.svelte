@@ -13,6 +13,7 @@
     export let count: Models.Metric[][];
     export let legendData: LegendData[];
     export let showHeader: boolean = true;
+    export let showAggregateTotal: boolean = true;
     export let legendNumberFormat: 'comma' | 'abbreviate' = 'comma';
 </script>
 
@@ -41,12 +42,13 @@
 
     <Card>
         {#if count}
-            {@const totalCount = clampMin(total.reduce((a, b) => a + b, 0))}
-
-            <Layout.Stack gap="xs">
-                <Typography.Title>{formatNumberWithCommas(totalCount)}</Typography.Title>
-                <Typography.Text>Total {title.toLocaleLowerCase()}</Typography.Text>
-            </Layout.Stack>
+            {#if showAggregateTotal}
+                {@const totalCount = clampMin(total.reduce((a, b) => a + b, 0))}
+                <Layout.Stack gap="xs">
+                    <Typography.Title>{formatNumberWithCommas(totalCount)}</Typography.Title>
+                    <Typography.Text>Total {title.toLocaleLowerCase()}</Typography.Text>
+                </Layout.Stack>
+            {/if}
             <div class="multiple-chart-container u-flex-vertical u-gap-16">
                 <BarChart
                     formatted={page.params.period === '24h' ? 'hours' : 'days'}

@@ -14,6 +14,7 @@
     <UsageMultiple
         title="Reads and writes"
         showHeader={false}
+        showAggregateTotal={false}
         total={[readsTotal, writesTotal]}
         count={[reads, writes]}
         legendNumberFormat="abbreviate"

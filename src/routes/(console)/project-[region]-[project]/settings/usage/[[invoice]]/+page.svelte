@@ -12,7 +12,6 @@
     import { bytesToSize, humanFileSize, mbSecondsToGBHours } from '$lib/helpers/sizeConvertion';
     import { BarChart, Legend } from '$lib/charts';
     import { formatNum } from '$lib/helpers/string';
-    import { total } from '$lib/layout/usage.svelte';
     import { base } from '$app/paths';
     import { formatCurrency, formatNumberWithCommas, clampMin } from '$lib/helpers/numbers';
     import { getCountryName } from '$lib/helpers/diallingCodes.js';
@@ -26,17 +25,13 @@
     $: baseRoute = `${base}/project-${page.params.region}-${page.params.project}`;
     $: network = data.usage.network;
     $: users = data.usage.users;
-    $: usersTotal = data.usage.usersTotal;
     $: executions = data.usage.executions;
-    $: executionsTotal = data.usage.executionsTotal;
     $: storage =
         data.usage.filesStorageTotal +
         data.usage.deploymentsStorageTotal +
         data.usage.buildsStorageTotal;
     $: imageTransformations = data.usage.imageTransformations;
-    $: imageTransformationsTotal = data.usage.imageTransformationsTotal;
     $: screenshotsGenerated = data.usage.screenshotsGenerated;
-    $: screenshotsGeneratedTotal = data.usage.screenshotsGeneratedTotal;
     $: dbReads = data.usage.databasesReads;
     $: dbWrites = data.usage.databasesWrites;
 
@@ -97,13 +92,6 @@
         Calculated for all bandwidth used across your project. Resets at the start of each billing cycle.
         <svelte:fragment slot="aside">
             {#if network}
-                {@const humanized = humanFileSize(total(network))}
-                <Layout.Stack gap="s" direction="row" alignItems="baseline">
-                    <Typography.Title>
-                        {humanized.value}
-                    </Typography.Title>
-                    <Typography.Text>{humanized.unit}</Typography.Text>
-                </Layout.Stack>
                 <BarChart
                     options={{
                         yAxis: {
@@ -139,16 +127,9 @@
     </CardGrid>
     <CardGrid>
         <svelte:fragment slot="title">Users</svelte:fragment>
-        Total user in your project.
+        Users in your project.
         <svelte:fragment slot="aside">
             {#if users}
-                {@const current = formatNum(usersTotal)}
-                <Layout.Stack gap="s" direction="row" alignItems="baseline">
-                    <Typography.Title>
-                        {current}
-                    </Typography.Title>
-                    <Typography.Text>Users</Typography.Text>
-                </Layout.Stack>
                 <BarChart
                     options={{
                         yAxis: {
@@ -175,7 +156,7 @@
     </CardGrid>
     <CardGrid>
         <svelte:fragment slot="title">Database reads and writes</svelte:fragment>
-        Total database reads and writes in your project.
+        Read and write activity over time. Legend entries are separate totals for reads and writes.
         <svelte:fragment slot="aside">
             {#if dbReads || dbWrites}
                 <div style:margin-top="-1.5em" style:margin-bottom="-1em">
@@ -215,18 +196,9 @@
     </CardGrid>
     <CardGrid>
         <svelte:fragment slot="title">Image transformations</svelte:fragment>
-        Total unique image transformations in your project.
+        Unique image transformations in your project.
         <svelte:fragment slot="aside">
             {#if imageTransformations}
-                {@const current = formatNum(imageTransformationsTotal)}
-                <div class="u-flex u-flex-vertical">
-                    <div class="u-flex u-main-space-between">
-                        <p>
-                            <span class="heading-level-4">{current}</span>
-                            <span class="body-text-1 u-bold">Transformations</span>
-                        </p>
-                    </div>
-                </div>
                 <BarChart
                     options={{
                         yAxis: {
@@ -253,18 +225,9 @@
     </CardGrid>
     <CardGrid>
         <svelte:fragment slot="title">Screenshots generated</svelte:fragment>
-        Total unique screenshots generated in your project.
+        Unique screenshots generated in your project.
         <svelte:fragment slot="aside">
             {#if screenshotsGenerated}
-                {@const current = formatNum(screenshotsGeneratedTotal)}
-                <div class="u-flex u-flex-vertical">
-                    <div class="u-flex u-main-space-between">
-                        <p>
-                            <span class="heading-level-4">{current}</span>
-                            <span class="body-text-1 u-bold">Screenshots generated</span>
-                        </p>
-                    </div>
-                </div>
                 <BarChart
                     options={{
                         yAxis: {
@@ -294,13 +257,6 @@
         Calculated for all functions that are executed in this project.
         <svelte:fragment slot="aside">
             {#if executions}
-                {@const current = formatNum(executionsTotal)}
-                <Layout.Stack gap="s" direction="row" alignItems="baseline">
-                    <Typography.Title>
-                        {current}
-                    </Typography.Title>
-                    <Typography.Text>Executions</Typography.Text>
-                </Layout.Stack>
                 <BarChart
                     options={{
                         yAxis: {
@@ -350,7 +306,6 @@
         Calculated for all your files, deployments, builds, databases and backups.
         <svelte:fragment slot="aside">
             {#if storage}
-                {@const humanized = humanFileSize(storage)}
                 {@const progressBarStorageDate = [
                     {
                         size: bytesToSize(data.usage.filesStorageTotal, 'MB'),
@@ -377,12 +332,6 @@
                         }
                     }
                 ]}
-                <Layout.Stack gap="s" direction="row" alignItems="baseline">
-                    <Typography.Title>
-                        {humanized.value}
-                    </Typography.Title>
-                    <Typography.Text>{humanized.unit}</Typography.Text>
-                </Layout.Stack>
                 <ProgressBarBig
                     progressValue={bytesToSize(storage, 'MB')}
                     progressMax={bytesToSize(storage, 'MB')}
@@ -400,7 +349,7 @@
     <CardGrid>
         <svelte:fragment slot="title">GB hours</svelte:fragment>
         GB hours represent the memory usage (in gigabytes) of your function executions and builds, multiplied
-        by the total execution time (in hours).
+        by execution time (in hours).
         <svelte:fragment slot="aside">
             {#if data.usage.executionsMbSecondsTotal}
                 {@const totalGbHours = mbSecondsToGBHours(
@@ -424,12 +373,6 @@
                         }
                     }
                 ]}
-                <Layout.Stack gap="s" direction="row" alignItems="baseline">
-                    <Typography.Title>
-                        {(Math.ceil(totalGbHours * 100) / 100).toLocaleString('en-US')}
-                    </Typography.Title>
-                    <Typography.Text>GB hours</Typography.Text>
-                </Layout.Stack>
                 <ProgressBarBig
                     progressMax={totalGbHours}
                     progressValue={totalGbHours}
@@ -450,13 +393,7 @@
         You will not be charged for Phone OTPs before February 10th.
         <svelte:fragment slot="aside">
             {#if data.usage.authPhoneTotal}
-                <div class="u-flex u-main-space-between">
-                    <Layout.Stack gap="s" direction="row" alignItems="baseline">
-                        <Typography.Title>
-                            {formatNumberWithCommas(data.usage.authPhoneTotal)}
-                        </Typography.Title>
-                        <Typography.Text>OTPs</Typography.Text>
-                    </Layout.Stack>
+                <div class="u-flex u-main-end">
                     <p class="u-flex u-gap-8 u-cross-center">
                         <span class="u-color-text-offline">Estimated cost</span>
                         <span class="body-text-2">
