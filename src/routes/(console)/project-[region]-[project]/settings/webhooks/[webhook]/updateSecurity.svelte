@@ -24,8 +24,7 @@
 
     async function updateSecurity() {
         try {
-            await sdk.forConsole.projects.updateWebhook({
-                projectId,
+            await sdk.forProject(page.params.region, projectId).webhooks.update({
                 webhookId: $webhook.$id,
                 name: $webhook.name,
                 events: $webhook.events,

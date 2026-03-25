@@ -23,7 +23,8 @@ import {
     Tokens,
     TablesDB,
     Domains,
-    /*DocumentsDB,*/
+    Webhooks,
+    DocumentsDB,
     Realtime,
     Organizations
 } from '@appwrite.io/console';
@@ -139,7 +140,8 @@ const sdkForProject = {
     tablesDB: new TablesDB(clientProject),
     documentsDB: new DocumentsDB(clientProject),
     dedicatedDatabases: new DedicatedDatabases(clientProject),
-    console: new Console(clientProject) // for suggestions API
+    console: new Console(clientProject), // for suggestions API
+    webhooks: new Webhooks(clientProject)
 };
 
 export const realtime = {

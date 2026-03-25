@@ -7,6 +7,7 @@
     import UpdateName from './updateName.svelte';
     import UpdatePassword from './updatePassword.svelte';
     import UpdatePhone from './updatePhone.svelte';
+    import UpdateImpersonation from './updateImpersonation.svelte';
     import UpdatePrefs from './updatePrefs.svelte';
     import UpdateStatus from './updateStatus.svelte';
     import type { PageData } from './$types';
@@ -22,6 +23,7 @@
     <UpdatePassword />
     <UpdateLabels />
     <UpdatePrefs />
+    <UpdateImpersonation />
     <UpdateMfa />
     <DangerZone project={data.project} />
 </Container>

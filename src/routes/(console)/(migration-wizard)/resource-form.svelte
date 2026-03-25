@@ -6,12 +6,14 @@
         createMigrationFormStore,
         createMigrationProviderStore,
         type MigrationFormData,
+        type MigrationResource,
         providerResources,
-        resourcesToMigrationForm
+        resourcesToMigrationForm,
+        ResourceType
     } from '$lib/stores/migration';
     import { Button } from '$lib/elements/forms';
     import { wizard } from '$lib/stores/wizard';
-    import { Resources, type Models } from '@appwrite.io/console';
+    import { type Models } from '@appwrite.io/console';
     import type { sdk } from '$lib/stores/sdk';
     import ImportReport from '$routes/(console)/project-[region]-[project]/settings/migrations/(import)/importReport.svelte';
 
@@ -91,22 +93,28 @@
 
     $: errorInResources = error;
     $: wizard.setNextDisabled(!report);
-    $: resources = providerResources[$provider.provider];
+    $: resources = providerResources[$provider.provider] as MigrationResource[];
 
     const shouldRenderGroup = (groupKey: string): boolean => {
-        if (groupKey === 'functions') {
-            // Functions not in SDK Resources enum, skip
-            return false;
-        }
-
         if (groupKey === 'storage') {
-            return resources.includes(Resources.Bucket) && resources.includes(Resources.File);
+            return resources.includes(ResourceType.Bucket) && resources.includes(ResourceType.File);
         }
 
-        // Map groupKey to Resources enum
-        const groupToResource: Record<string, Resources> = {
-            users: Resources.User,
-            databases: Resources.Database
+        if (groupKey === 'functions') {
+            return resources.includes(ResourceType.Function);
+        }
+
+        if (groupKey === 'sites') {
+            return resources.includes(ResourceType.Site);
+        }
+
+        if (groupKey === 'messaging') {
+            return resources.includes(ResourceType.Provider);
+        }
+
+        const groupToResource: Record<string, MigrationResource> = {
+            users: ResourceType.User,
+            databases: ResourceType.Database
         };
         const resource = groupToResource[groupKey];
         return resource ? resources.includes(resource) : false;
@@ -122,7 +130,9 @@
             users: 'user',
             databases: 'database',
             functions: 'function',
-            storage: 'bucket'
+            storage: 'bucket',
+            sites: 'site',
+            messaging: 'provider'
         };
         return map[groupKey] || groupKey;
     };

@@ -43,7 +43,7 @@
                 providerBranch: site?.providerBranch || undefined,
                 providerSilentMode: site?.providerSilentMode || undefined,
                 providerRootDirectory: site?.providerRootDirectory || undefined,
-                specification: site?.specification || undefined
+                buildSpecification: site?.buildSpecification || undefined
             });
             await invalidate(Dependencies.SITE);
             addNotification({
@@ -64,8 +64,8 @@
 <Form onSubmit={updateRuntime}>
     <CardGrid>
         <svelte:fragment slot="title">Runtime settings</svelte:fragment>
-        Select the runtime for building and serving your site. Version changes apply on redeploy and
-        can be updated here.
+        Select the runtime for building and serving your site. Version changes apply on redeploy and can
+        be updated here.
         <svelte:fragment slot="aside">
             <InputSelect
                 label="Build runtime"

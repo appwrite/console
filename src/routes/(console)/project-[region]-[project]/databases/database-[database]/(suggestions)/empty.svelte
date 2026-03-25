@@ -38,7 +38,8 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { isWithinSafeRange } from '$lib/helpers/numbers';
-    import { columnOptions } from '../table-[table]/columns/store';
+    import type { Columns } from '../table-[table]/store';
+    import { columnOptions, getSupportedColumns } from '../table-[table]/columns/store';
     import Options from './options.svelte';
     import { InputSelect, InputText } from '$lib/elements/forms';
     import { isCloud, VARS } from '$lib/system';
@@ -46,6 +47,7 @@
 
     import IconAINotification from './icon/aiNotification.svelte';
     import type { Models } from '@appwrite.io/console';
+    import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
 
     let {
         userColumns = [],
@@ -56,6 +58,7 @@
     } = $props();
 
     const tableId = page.params.table;
+    const supportedColumns = $derived(getSupportedColumns($regionalConsoleVariables));
     const minimumUserColumnWidth = 168;
 
     function getUserColumnWidth(
@@ -1359,7 +1362,7 @@
                         </Spreadsheet.Header.Cell>
                     {:else}
                         {@const columnObj = getColumn(column.id)}
-                        {@const columnIcon = basicColumnOptions.find(
+                        {@const columnIcon = columnOptions.find(
                             (col) => col.type === columnObj?.type
                         )?.icon}
                         {@const columnIconColor = !columnObj?.type
@@ -1516,7 +1519,7 @@
                                                             });
                                                         }
                                                     }}
-                                                    options={basicColumnOptions.map((col) => {
+                                                    options={supportedColumns.map((col) => {
                                                         return {
                                                             label: col.name,
                                                             value: col.name,
@@ -1835,7 +1838,7 @@
                     gap="none"
                     direction="column"
                     class="filter-modal-actions-menu variant">
-                    {#each basicColumnOptions as option}
+                    {#each supportedColumns as option}
                         <ActionMenu.Item.Button
                             on:click={() => {
                                 toggle();

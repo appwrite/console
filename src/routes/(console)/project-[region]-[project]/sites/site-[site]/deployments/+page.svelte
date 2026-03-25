@@ -77,7 +77,7 @@
             providerBranch: nextBranch,
             providerSilentMode: data.site?.providerSilentMode ?? undefined,
             providerRootDirectory: data.site?.providerRootDirectory ?? undefined,
-            specification: data.site?.specification || undefined
+            buildSpecification: data.site?.buildSpecification || undefined
         });
         invalidate(Dependencies.SITE);
     }
