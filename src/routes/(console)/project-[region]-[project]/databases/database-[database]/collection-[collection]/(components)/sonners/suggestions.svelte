@@ -1,6 +1,7 @@
 <script lang="ts">
     import { Badge, FloatingActionBar, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
+    import HintBadge from '../hintBadge.svelte';
 
     let {
         show = true,
@@ -29,7 +30,7 @@
         </button>
     {:else}
         <div class="suggestions-wrapper" style:transform={`translateX(${translateX})`}>
-            <div class="popover-content">
+            <HintBadge>
                 <Layout.Stack inline gap="xs" direction="row" alignItems="center">
                     <Typography.Caption variant="400" color="--fgcolor-neutral-secondary">
                         Press
@@ -49,7 +50,7 @@
                         {suffix}
                     </Typography.Caption>
                 </Layout.Stack>
-            </div>
+            </HintBadge>
         </div>
     {/if}
 {/if}
@@ -60,22 +61,6 @@
         z-index: 50;
         position: absolute;
         pointer-events: none;
-    }
-
-    .popover-content {
-        height: 44px;
-        width: max-content;
-        gap: var(--gap-xxs);
-        align-items: center;
-        display: inline-flex;
-        justify-content: center;
-        padding: var(--space-5);
-        border-radius: var(--border-radius-m);
-        background: var(--bgcolor-neutral-primary);
-        border: var(--border-width-s) solid var(--border-neutral);
-        box-shadow:
-            0 1px 3px 0 rgba(0, 0, 0, 0.03),
-            0 4px 4px 0 rgba(0, 0, 0, 0.04);
     }
 
     .floating-action-bar {

@@ -83,6 +83,7 @@
     import { sleep } from '$lib/helpers/promises';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { Suggestions, Error as ErrorSonner, Save as SavingSonner } from '../sonners';
+    import HintBadge from '../hintBadge.svelte';
     import { json5, json5ParseCache, json5ParseLinter } from 'codemirror-json5';
     import { SvelteMap } from 'svelte/reactivity';
 
@@ -1306,9 +1307,12 @@
             parent: editorContainer
         });
 
-        setTimeout(() => {
-            if (editorView) foldEmbeddings(editorView);
-        }, 0);
+        editorView.requestMeasure({
+            read() {},
+            write(_measure, view) {
+                foldEmbeddings(view);
+            }
+        });
     });
 
     onDestroy(() => {
@@ -1545,7 +1549,7 @@
 
     {#if onGenerateEmbedding && !$isSmallViewport}
         <div class="embedding-hint">
-            <div class="popover-content">
+            <HintBadge>
                 <Layout.Stack inline gap="xs" direction="row" alignItems="center">
                     <Typography.Caption variant="400" color="--fgcolor-neutral-secondary">
                         Press
@@ -1563,7 +1567,7 @@
                         to generate embeddings
                     </Typography.Caption>
                 </Layout.Stack>
-            </div>
+            </HintBadge>
         </div>
     {/if}
 </div>
@@ -1865,21 +1869,5 @@
         z-index: 50;
         position: absolute;
         pointer-events: none;
-
-        .popover-content {
-            height: 44px;
-            width: max-content;
-            gap: var(--gap-xxs);
-            align-items: center;
-            display: inline-flex;
-            justify-content: center;
-            padding: var(--space-5);
-            border-radius: var(--border-radius-m);
-            background: var(--bgcolor-neutral-primary);
-            border: var(--border-width-s) solid var(--border-neutral);
-            box-shadow:
-                0 1px 3px 0 rgba(0, 0, 0, 0.03),
-                0 4px 4px 0 rgba(0, 0, 0, 0.04);
-        }
     }
 </style>

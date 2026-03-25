@@ -197,11 +197,4 @@
 </Popover>
 
 <style>
-    .action-menu-root {
-        margin-inline-start: calc(var(--space-2) * -1);
-
-        & :global(:first-child) {
-            overflow: visible;
-        }
-    }
 </style>
