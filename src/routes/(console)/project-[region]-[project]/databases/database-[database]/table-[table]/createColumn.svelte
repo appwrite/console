@@ -6,8 +6,13 @@
     import { InputSelect, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { option, columnOptions, type Option } from '$database/table-[table]/columns/store';
+    import {
+        option,
+        getSupportedColumns,
+        type Option
+    } from '$database/table-[table]/columns/store';
     import type { Column } from '$lib/helpers/types';
+    import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
     import { preferences } from '$lib/stores/preferences';
     import { onMount } from 'svelte';
 
@@ -52,8 +57,10 @@
         ...column
     } as Partial<Columns>);
 
+    let availableOptions = $derived(getSupportedColumns($regionalConsoleVariables));
     let ColumnComponent = $derived(
-        columnOptions.find((option) => option.name === selectedOption).component
+        (availableOptions.find((option) => option.name === selectedOption) ?? availableOptions[0])
+            .component
     );
 
     function init() {
@@ -68,7 +75,7 @@
 
         /* default to text */
         selectedOption = 'Text';
-        $option = columnOptions[0];
+        $option = availableOptions[0];
     }
 
     function insertColumnInOrder() {
@@ -184,7 +191,15 @@
 
         // correct view
         if (selectedOption) {
-            $option = columnOptions.find((option) => option.name === selectedOption);
+            const resolved =
+                availableOptions.find((option) => option.name === selectedOption) ??
+                availableOptions[0];
+
+            $option = resolved;
+
+            if (resolved && resolved.name !== selectedOption) {
+                selectedOption = resolved.name;
+            }
         }
     });
 </script>
@@ -221,7 +236,7 @@
             id="type"
             label="Type"
             bind:value={selectedOption}
-            options={columnOptions.map((attr) => {
+            options={availableOptions.map((attr) => {
                 return {
                     label: attr.name,
                     value: attr.name,
