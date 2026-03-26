@@ -233,10 +233,7 @@
         class:has-transition={showContentTransition}
         class:icons-content={state === 'icons' && selectedProject}
         class:no-sidebar={!hasSidebarSpace}>
-        <section
-            class="main-content"
-            class:is-project-blocked={isProjectBlocked}
-            data-test={showSideNavigation}>
+        <section class="main-content" data-test={showSideNavigation}>
             {#if $page.data?.header}
                 <div class="layout-header">
                     <svelte:component this={$page.data.header} />
@@ -244,9 +241,7 @@
             {/if}
             <slot />
             {#if showFooter}
-                <div class="main-footer-slot" class:is-project-blocked={isProjectBlocked}>
-                    <slot name="footer" />
-                </div>
+                <slot name="footer" />
             {/if}
         </section>
     </div>
@@ -299,22 +294,6 @@
 
     .main-content {
         min-height: calc(100vh - 48px);
-
-        &.is-project-blocked {
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-    }
-
-    .main-footer-slot {
-        &.is-project-blocked {
-            margin-top: auto;
-            position: sticky;
-            inset-block-end: 0;
-            z-index: 1;
-            background: var(--bgcolor-neutral-primary, #1d1d21);
-        }
     }
 
     .no-header {
