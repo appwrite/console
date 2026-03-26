@@ -29,13 +29,20 @@
     import PausedProjectModal from './pausedProjectModal.svelte';
     import type { LayoutData } from './$types';
     import { Button } from '$lib/elements/forms';
+    import { currentPlan, organizationList } from '$lib/stores/organization';
     import { wizard } from '$lib/stores/wizard';
     import SupportWizard from '$routes/(console)/supportWizard.svelte';
     import BlockedLock from './blocked-lock.svg';
     import { isProjectBlocked as getIsProjectBlocked } from '$lib/helpers/project';
+    import { Layout, Typography } from '@appwrite.io/pink-svelte';
+    import type { Models } from '@appwrite.io/console';
 
     export let data: LayoutData;
     $: isProjectBlocked = getIsProjectBlocked(data.project);
+    $: allOrgsHavePremiumSupport = $organizationList.teams.every(
+        (team) => (team as Models.Organization).billingPlanDetails.premiumSupport
+    );
+    $: hasPremiumSupport = $currentPlan?.premiumSupport ?? allOrgsHavePremiumSupport ?? false;
 
     function contactSupport() {
         wizard.start(SupportWizard);
@@ -145,12 +152,22 @@
                     class="project-layout__lock-icon" />
             </div>
 
-            <div class="project-layout__dialog">
-                <h2>Project is currently blocked</h2>
-                <p>Access to this project is restricted. Contact support if the issue persists.</p>
+            <Layout.Stack gap="xs" alignItems="center" class="project-layout__dialog">
+                <Layout.Stack gap="xs" alignItems="center">
+                    <Typography.Title size="l" align="center">
+                        Project is currently blocked
+                    </Typography.Title>
+                    <Typography.Text align="center">
+                        Access to this project is restricted. Contact support if the issue persists.
+                    </Typography.Text>
+                </Layout.Stack>
 
-                <Button secondary on:click={contactSupport}>Contact support</Button>
-            </div>
+                {#if hasPremiumSupport}
+                    <Button secondary on:click={contactSupport}>Contact support</Button>
+                {:else}
+                    <Button secondary href="mailto:support@appwrite.io">Contact support</Button>
+                {/if}
+            </Layout.Stack>
         </div>
     {/if}
 </div>
@@ -192,13 +209,9 @@
         align-items: center;
         justify-content: center;
         flex-direction: column;
-        gap: 1rem;
+        gap: 0.5rem;
         padding: 2rem;
         text-align: center;
-        pointer-events: none;
-    }
-
-    .project-layout__overlay > * {
         pointer-events: auto;
     }
 
@@ -209,15 +222,15 @@
     }
 
     .project-layout__lock {
-        width: 3.5rem;
-        height: 3.5rem;
+        width: 2.75rem;
+        height: 2.75rem;
         display: flex;
         align-items: center;
         justify-content: center;
-        background: color-mix(in srgb, var(--bgcolor-neutral-primary, #ffffff) 92%, transparent);
-        border: 1px solid color-mix(in srgb, var(--border-neutral, #d7d7db) 70%, transparent);
-        border-radius: 1rem;
-        box-shadow: 0 12px 32px rgba(17, 24, 39, 0.08);
+        background: color-mix(in srgb, var(--bgcolor-neutral-primary, #ffffff) 96%, transparent);
+        border: 1px solid color-mix(in srgb, #fb4f7c 22%, var(--border-neutral, #d7d7db));
+        border-radius: 0.875rem;
+        box-shadow: 0 8px 24px rgba(17, 24, 39, 0.06);
     }
 
     .project-layout__lock-icon {
@@ -226,31 +239,6 @@
         flex-shrink: 0;
         aspect-ratio: 1 / 1;
         display: block;
-    }
-
-    .project-layout__dialog {
-        max-width: 30rem;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 0.75rem;
-    }
-
-    .project-layout__dialog h2 {
-        margin: 0;
-        color: var(--fgcolor-neutral-primary, #2d2d31);
-        font-size: 2rem;
-        line-height: 1.05;
-        letter-spacing: -0.02em;
-        font-weight: 500;
-    }
-
-    .project-layout__dialog p {
-        margin: 0;
-        max-width: 24rem;
-        color: var(--fgcolor-neutral-secondary, #56565c);
-        font-size: 1rem;
-        line-height: 1.4;
     }
 
     :global(.project-layout__dialog .button) {
@@ -284,14 +272,6 @@
     @media (max-width: 768px) {
         .project-layout__overlay {
             padding: 1.5rem;
-        }
-
-        .project-layout__dialog h2 {
-            font-size: 1.5rem;
-        }
-
-        .project-layout__dialog p {
-            font-size: 0.95rem;
         }
 
         .project-layout__lock {
