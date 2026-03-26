@@ -1,5 +1,5 @@
 import { writable } from 'svelte/store';
-import { IndexType, OrderBy } from '@appwrite.io/console';
+import { TablesDBIndexType, OrderBy } from '@appwrite.io/console';
 import { columnOptions } from '../table-[table]/columns/store';
 
 export type TableColumnSuggestions = {
@@ -34,7 +34,7 @@ export type IndexOrder = OrderBy | null;
 
 export type SuggestedIndexSchema = {
     key: string;
-    type: IndexType;
+    type: TablesDBIndexType;
     orders: IndexOrder;
     fields: string[];
     lengths?: number[] | undefined;

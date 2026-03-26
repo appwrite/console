@@ -5,7 +5,7 @@ import { AppwriteException, type Models } from '@appwrite.io/console';
 import type { Attributes, Columns, Table } from '$database/table-[table]/store';
 import type { Term, TerminologyResult, TerminologyShape } from '$database/(entity)/helpers/types';
 
-export type DatabaseType = 'legacy' | 'tablesdb' | 'documentsdb' | 'vectordb';
+export type DatabaseType = Models.Database['type'];
 
 export type Entity = Partial<Models.Collection | Table> & {
     indexes?: Index[];
@@ -45,7 +45,7 @@ export const baseTerminology = {
         field: 'attribute',
         record: 'document'
     },
-    vectordb: {}
+    vectorsdb: {}
 } as const;
 
 const createTerm = (singular: string, pluralForm: string): Term => {
