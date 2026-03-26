@@ -10,13 +10,13 @@ import {
     toSupportiveEntity,
     toSupportiveRecord
 } from './terminology';
-import type { Models } from '@appwrite.io/console';
+import { Backend, Engine, type Models } from '@appwrite.io/console';
 
 export type DedicatedDatabaseParams = {
     databaseId: string;
     name: string;
     enabled?: boolean;
-    engine?: 'postgres' | 'mysql' | 'mariadb' | 'mongodb';
+    engine?: Engine;
     region?: string;
     tier?: string;
     highAvailability?: boolean;
@@ -131,29 +131,28 @@ export function useDatabaseSdk(
                     return await baseSdk.documentsDB.create(params);
                 }
                 case 'shared': {
-                    // Shared (free tier) databases via compute/databases with type: 'shared'
                     const sharedParams = params as DedicatedDatabaseParams;
-                    return (await baseSdk.dedicatedDatabases.create({
+                    return (await baseSdk.compute.createDatabase({
                         databaseId: sharedParams.databaseId,
                         name: sharedParams.name,
-                        backend: 'edge',
-                        engine: 'postgres',
-                        region: sharedParams.region,
-                        type: 'shared'
+                        backend: Backend.Edge,
+                        engine: Engine.Postgres,
+                        region: sharedParams.region as any,
+                        type: 'shared' as any
                     })) as unknown as Models.Database;
                 }
                 case 'dedicated': {
                     const dedicatedParams = params as DedicatedDatabaseParams;
-                    return (await baseSdk.dedicatedDatabases.create({
+                    return (await baseSdk.compute.createDatabase({
                         databaseId: dedicatedParams.databaseId,
                         name: dedicatedParams.name,
-                        backend: 'edge',
+                        backend: Backend.Edge,
                         engine: dedicatedParams.engine,
-                        region: dedicatedParams.region,
+                        region: dedicatedParams.region as any,
                         tier: dedicatedParams.tier,
                         highAvailability: dedicatedParams.highAvailability,
                         backupEnabled: dedicatedParams.backupEnabled,
-                        backupSchedule: dedicatedParams.backupSchedule,
+                        backupCron: dedicatedParams.backupSchedule,
                         backupRetentionDays: dedicatedParams.backupRetentionDays,
                         backupPitr: dedicatedParams.backupPitr,
                         pitrRetentionDays: dedicatedParams.pitrRetentionDays
@@ -167,20 +166,29 @@ export function useDatabaseSdk(
         },
 
         async list(params): Promise<Models.DatabaseList> {
-            const results = await Promise.all([
-                baseSdk.tablesDB.list(params)
-
-                // not available just yet!
-                // baseSdk.documentsDB.list(params),
+            const [tablesResult, dedicatedResult] = await Promise.all([
+                baseSdk.tablesDB.list(params),
+                baseSdk.compute.listDatabases({ queries: params.queries, search: params.search })
             ]);
 
-            return results.reduce(
-                (acc, curr) => ({
-                    total: acc.total + curr.total,
-                    databases: [...acc.databases, ...curr.databases]
-                }),
-                { total: 0, databases: [] as Models.Database[] }
+            const dedicatedAsDatabases = (dedicatedResult.databases ?? []).map(
+                (db) =>
+                    ({
+                        $id: db.$id,
+                        $createdAt: db.$createdAt,
+                        $updatedAt: db.$updatedAt,
+                        name: db.name,
+                        enabled: true,
+                        type: db.type,
+                        policies: [],
+                        archives: []
+                    }) as unknown as Models.Database
             );
+
+            return {
+                total: tablesResult.total + (dedicatedResult.total ?? 0),
+                databases: [...tablesResult.databases, ...dedicatedAsDatabases]
+            };
         },
 
         async createEntity(params) {
@@ -271,7 +279,7 @@ export function useDatabaseSdk(
                     return await baseSdk.documentsDB.delete(params);
                 case 'shared':
                 case 'dedicated':
-                    await baseSdk.dedicatedDatabases.delete(params);
+                    await baseSdk.compute.deleteDatabase(params);
                     return {};
                 case 'vectordb':
                     throw new Error('Database type not supported yet');

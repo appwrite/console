@@ -24,12 +24,12 @@ import {
     TablesDB,
     Domains,
     Webhooks,
-    /*DocumentsDB,*/
+    DocumentsDB,
+    Compute,
     Realtime,
     Organizations
 } from '@appwrite.io/console';
 import { Sources } from '$lib/sdk/sources';
-import { DedicatedDatabases } from '$lib/sdk/dedicatedDatabases';
 import {
     REGION_FRA,
     REGION_NYC,
@@ -138,8 +138,8 @@ const sdkForProject = {
     migrations: new Migrations(clientProject),
     sites: new Sites(clientProject),
     tablesDB: new TablesDB(clientProject),
-    /*documentsDB: new DocumentsDB(clientProject),*/
-    dedicatedDatabases: new DedicatedDatabases(clientProject),
+    documentsDB: new DocumentsDB(clientProject),
+    compute: new Compute(clientProject),
     console: new Console(clientProject), // for suggestions API
     webhooks: new Webhooks(clientProject)
 };

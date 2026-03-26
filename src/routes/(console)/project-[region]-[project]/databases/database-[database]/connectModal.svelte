@@ -5,7 +5,7 @@
     import { IconDuplicate } from '@appwrite.io/pink-icons-svelte';
     import { copy } from '$lib/helpers/copy';
     import { addNotification } from '$lib/stores/notifications';
-    import type { DedicatedDatabase } from '$lib/sdk/dedicatedDatabases';
+    import type { Models } from '@appwrite.io/console';
 
     let {
         show = $bindable(false),
@@ -13,7 +13,7 @@
         connectionCommand
     }: {
         show: boolean;
-        database: DedicatedDatabase;
+        database: Models.DedicatedDatabase;
         connectionCommand: string;
     } = $props();
 
