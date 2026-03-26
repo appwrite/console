@@ -174,7 +174,7 @@
                         </li>
                     {:else}
                         <li class="u-margin-block-end-16">
-                            <p class="text">No database users created.</p>
+                            <p class="text">No additional database users created.</p>
                         </li>
                     {/if}
 
