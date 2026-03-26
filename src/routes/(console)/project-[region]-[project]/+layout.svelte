@@ -152,7 +152,7 @@
                     class="project-layout__lock-icon" />
             </div>
 
-            <Layout.Stack gap="xs" alignItems="center" class="project-layout__dialog">
+            <Layout.Stack gap="s" alignItems="center">
                 <Layout.Stack gap="xs" alignItems="center">
                     <Typography.Title size="l" align="center">
                         Project is currently blocked
@@ -162,11 +162,13 @@
                     </Typography.Text>
                 </Layout.Stack>
 
-                {#if hasPremiumSupport}
-                    <Button secondary on:click={contactSupport}>Contact support</Button>
-                {:else}
-                    <Button secondary href="mailto:support@appwrite.io">Contact support</Button>
-                {/if}
+                <div class="u-margin-block-start-12">
+                    {#if hasPremiumSupport}
+                        <Button secondary on:click={contactSupport}>Contact support</Button>
+                    {:else}
+                        <Button secondary href="mailto:support@appwrite.io">Contact support</Button>
+                    {/if}
+                </div>
             </Layout.Stack>
         </div>
     {/if}
@@ -239,22 +241,6 @@
         flex-shrink: 0;
         aspect-ratio: 1 / 1;
         display: block;
-    }
-
-    :global(.project-layout__dialog .button) {
-        min-width: 10rem;
-        min-height: 2.75rem;
-        padding-inline: 1rem;
-        border-radius: 0.9rem;
-        background: color-mix(in srgb, var(--bgcolor-neutral-primary, #ffffff) 92%, transparent);
-        border: 1px solid color-mix(in srgb, var(--border-neutral, #d7d7db) 75%, transparent);
-        box-shadow: 0 2px 8px rgba(17, 24, 39, 0.04);
-    }
-
-    :global(.project-layout__dialog .button .text) {
-        color: var(--fgcolor-neutral-secondary, #56565c);
-        font-size: 1rem;
-        font-weight: 500;
     }
 
     .layout-level-progress-bars {
