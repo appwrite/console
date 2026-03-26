@@ -22,6 +22,9 @@
     import { resolveRoute, withPath } from '$lib/stores/navigation';
     import { Dialog, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { Button, Seekbar } from '$lib/elements/forms';
+    import { realtime } from '$lib/stores/sdk';
+    import { onMount } from 'svelte';
+    import { getProjectId } from '$lib/helpers/project';
 
     setTerminologies(page);
 
@@ -33,6 +36,17 @@
     // Check if this is a dedicated database type
     $: isDedicatedType =
         terminology.type === 'dedicated' || terminology.type === 'shared';
+
+    // Auto-reload dedicated database on realtime events (status changes, credentials ready, etc.)
+    onMount(() => {
+        if (!isDedicatedType) return;
+        return realtime.forProject(page.params.region, ['project', 'console'], (response) => {
+            if (!response.channels.includes(`projects.${getProjectId()}`)) return;
+            if (response.events.some((e: string) => e.includes('databases'))) {
+                invalidate(Dependencies.DATABASE);
+            }
+        });
+    });
 
     $: $registerCommands([
         {

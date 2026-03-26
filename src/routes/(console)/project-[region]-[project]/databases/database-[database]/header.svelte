@@ -30,7 +30,6 @@
         [
             {
                 href: baseDatabasePath,
-                // For dedicated DBs, show "Overview" instead of Tables/Collections
                 title: isDedicatedType ? 'Overview' : terminology.entity.title.plural,
                 event: isDedicatedType ? 'overview' : terminology.entity.lower.plural,
                 hasChildren: !isDedicatedType
@@ -42,16 +41,22 @@
                 hasChildren: true
             },
             {
-                href: withPath(baseDatabasePath, '/usage'),
-                title: 'Usage',
-                event: 'usage',
-                hasChildren: true
+                href: withPath(baseDatabasePath, '/auth'),
+                title: 'Auth',
+                event: 'auth',
+                disabled: !isDedicatedType
             },
             {
                 href: withPath(baseDatabasePath, '/monitoring'),
                 title: 'Monitoring',
                 event: 'monitoring',
                 disabled: !isDedicatedType
+            },
+            {
+                href: withPath(baseDatabasePath, '/usage'),
+                title: 'Usage',
+                event: 'usage',
+                hasChildren: true
             },
             {
                 href: withPath(baseDatabasePath, '/settings'),

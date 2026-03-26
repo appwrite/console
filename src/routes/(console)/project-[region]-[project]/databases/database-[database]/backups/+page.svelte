@@ -25,7 +25,7 @@
     import { Layout, Typography } from '@appwrite.io/pink-svelte';
     import { page } from '$app/state';
     import IconQuestionMarkCircle from './components/questionIcon.svelte';
-    import type { DedicatedDatabase } from '$lib/sdk/dedicatedDatabases';
+    import type { Models } from '@appwrite.io/console';
 
     const { data }: PageProps = $props();
 
@@ -178,7 +178,7 @@
 </script>
 
 {#if isDedicatedType && data.dedicatedDatabase}
-    <DedicatedBackups database={data.dedicatedDatabase as DedicatedDatabase} />
+    <DedicatedBackups database={data.dedicatedDatabase as Models.DedicatedDatabase} />
 {:else}
 <Container size="xxl" databasesMainScreen>
     <div class="backups-page u-flex u-gap-32 u-flex-vertical-mobile">

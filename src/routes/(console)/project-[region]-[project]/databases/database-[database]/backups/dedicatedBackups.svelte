@@ -9,13 +9,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import type {
-        DedicatedDatabase,
-        Backup,
-        BackupList,
-        RestorationList,
-        PITRWindows
-    } from '$lib/sdk/dedicatedDatabases';
+    import type { Models } from '@appwrite.io/console';
     import {
         ActionMenu,
         Alert,
@@ -36,12 +30,12 @@
     const {
         database
     }: {
-        database: DedicatedDatabase;
+        database: Models.DedicatedDatabase;
     } = $props();
 
-    let backups = $state<BackupList>({ total: 0, backups: [] });
-    let restorations = $state<RestorationList>({ total: 0, restorations: [] });
-    let pitrWindows = $state<PITRWindows | null>(null);
+    let backups = $state<Models.DedicatedDatabaseBackupList>({ total: 0, backups: [] });
+    let restorations = $state<Models.DedicatedDatabaseRestorationList>({ total: 0, restorations: [] });
+    let pitrWindows = $state<Models.DedicatedDatabasePITRWindows | null>(null);
 
     let isLoadingBackups = $state(true);
     let isLoadingRestorations = $state(true);
@@ -49,18 +43,18 @@
     let isCreatingBackup = $state(false);
 
     let showDeleteConfirm = $state(false);
-    let selectedBackup = $state<Backup | null>(null);
+    let selectedBackup = $state<Models.DedicatedDatabaseBackup | null>(null);
 
     let showRestoreConfirm = $state(false);
-    let restoreBackup = $state<Backup | null>(null);
+    let restoreBackup = $state<Models.DedicatedDatabaseBackup | null>(null);
 
     let showPitrRestore = $state(false);
     let pitrTargetDateTime = $state('');
 
     let activeTab = $state<'backups' | 'restorations'>('backups');
 
-    const dedicatedSdk = $derived(
-        sdk.forProject(page.params.region, page.params.project).dedicatedDatabases
+    const computeSdk = $derived(
+        sdk.forProject(page.params.region, page.params.project).compute
     );
 
     function mapBackupStatus(
@@ -117,7 +111,7 @@
     async function loadBackups() {
         isLoadingBackups = true;
         try {
-            backups = await dedicatedSdk.listBackups(database.$id);
+            backups = await computeSdk.listDatabaseBackups({ databaseId: database.$id });
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -131,7 +125,7 @@
     async function loadRestorations() {
         isLoadingRestorations = true;
         try {
-            restorations = await dedicatedSdk.listRestorations(database.$id);
+            restorations = await computeSdk.listDatabaseRestorations({ databaseId: database.$id });
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -149,7 +143,7 @@
         }
         isLoadingPitr = true;
         try {
-            pitrWindows = await dedicatedSdk.getPITRWindows(database.$id);
+            pitrWindows = await computeSdk.getDatabasePITRWindows({ databaseId: database.$id });
         } catch (error) {
             // PITR may not be available yet
             pitrWindows = null;
@@ -161,7 +155,7 @@
     async function handleCreateBackup() {
         isCreatingBackup = true;
         try {
-            await dedicatedSdk.createBackup(database.$id);
+            await computeSdk.createDatabaseBackup({ databaseId: database.$id });
             addNotification({
                 type: 'success',
                 message: 'Backup creation started'
@@ -182,7 +176,7 @@
     async function handleDeleteBackup() {
         if (!selectedBackup) return;
         try {
-            await dedicatedSdk.deleteBackup(database.$id, selectedBackup.$id);
+            await computeSdk.deleteDatabaseBackup({ databaseId: database.$id, backupId: selectedBackup.$id });
             addNotification({
                 type: 'success',
                 message: 'Backup deleted'
@@ -203,7 +197,7 @@
     async function handleRestoreBackup() {
         if (!restoreBackup) return;
         try {
-            await dedicatedSdk.createRestoration(database.$id, restoreBackup.$id);
+            await computeSdk.createDatabaseRestoration({ databaseId: database.$id, type: 'backup' as any, backupId: restoreBackup.$id });
             addNotification({
                 type: 'success',
                 message: 'Restoration started from backup'
@@ -225,7 +219,7 @@
         if (!pitrTargetDateTime) return;
         try {
             const targetTime = Math.floor(new Date(pitrTargetDateTime).getTime() / 1000);
-            await dedicatedSdk.createPITRRestoration(database.$id, targetTime);
+            await computeSdk.createDatabaseRestoration({ databaseId: database.$id, type: 'pitr' as any, targetTime });
             addNotification({
                 type: 'success',
                 message: 'Point-in-time restoration started'

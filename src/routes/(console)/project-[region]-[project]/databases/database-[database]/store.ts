@@ -4,7 +4,8 @@ import {
     IconChartBar,
     IconChartSquareBar,
     IconCloudUpload,
-    IconCog
+    IconCog,
+    IconKey
 } from '@appwrite.io/pink-icons-svelte';
 import { resolveRoute, withPath } from '$lib/stores/navigation';
 import type { Page } from '@sveltejs/kit';
@@ -97,6 +98,7 @@ export const databaseSubNavigationItems = [
 
 export const dedicatedDatabaseSubNavigationItems = [
     { title: 'Backups', href: 'backups', icon: IconCloudUpload },
+    { title: 'Auth', href: 'auth', icon: IconKey },
     { title: 'Monitoring', href: 'monitoring', icon: IconChartSquareBar },
     { title: 'Usage', href: 'usage', icon: IconChartBar },
     { title: 'Settings', href: 'settings', icon: IconCog }

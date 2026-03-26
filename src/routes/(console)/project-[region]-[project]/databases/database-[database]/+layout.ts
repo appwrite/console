@@ -4,7 +4,6 @@ import type { LayoutLoad } from './$types';
 import { Dependencies } from '$lib/constants';
 import Breadcrumbs from './breadcrumbs.svelte';
 import SubNavigation from './subNavigation.svelte';
-import type { DedicatedDatabase } from '$lib/sdk/dedicatedDatabases';
 import type { Models } from '@appwrite.io/console';
 
 type DatabaseWithType = Models.Database & {
@@ -20,25 +19,22 @@ export const load: LayoutLoad = async ({ params, depends }) => {
 
     const projectSdk = sdk.forProject(params.region, params.project);
 
-    // Try to get from tablesDB first (handles legacy, tablesdb, documentsdb)
-    let database: DatabaseWithType | DedicatedDatabase;
-    let dedicatedDatabase: DedicatedDatabase | null = null;
+    let database: DatabaseWithType | Models.DedicatedDatabase;
+    let dedicatedDatabase: Models.DedicatedDatabase | null = null;
 
     try {
         database = await projectSdk.tablesDB.get({
             databaseId: params.database
         });
     } catch {
-        // If not found in tablesDB, try dedicated databases
-        database = await projectSdk.dedicatedDatabases.get(params.database);
-        dedicatedDatabase = database as DedicatedDatabase;
+        database = await projectSdk.compute.getDatabase({ databaseId: params.database });
+        dedicatedDatabase = database as Models.DedicatedDatabase;
     }
 
-    // If it's a dedicated database type, fetch additional details
     const dbType = database.type as string | undefined;
     if (isDedicatedDatabaseType(dbType) && !dedicatedDatabase) {
         try {
-            dedicatedDatabase = await projectSdk.dedicatedDatabases.get(params.database);
+            dedicatedDatabase = await projectSdk.compute.getDatabase({ databaseId: params.database });
         } catch {
             // Fallback - dedicated details not available
         }

@@ -45,8 +45,8 @@
 
     let formComponent: Form;
 
-    let databaseId = $state(null);
-    let databaseName = $state(null);
+    let databaseId = $state(params.get('id') ?? null);
+    let databaseName = $state(params.get('name') ?? null);
 
     let showCreatePolicies = $state(false);
     let totalPolicies: UserBackupPolicy[] = $state([]);
@@ -56,7 +56,8 @@
     let isSubmitting = $state(writable(false));
     let previousPage: string = $state(resolveRoute('/'));
 
-    const typeFromParams = page.url.searchParams.get('type') ?? (null as DatabaseType);
+    const params = page.url.searchParams;
+    const typeFromParams = params.get('type') ?? (null as DatabaseType);
     let type = $state(typeFromParams ?? 'tablesdb') as DatabaseType;
 
     const isDark = $derived($app.themeInUse === 'dark');
@@ -64,6 +65,8 @@
 
     // Free tier limits for shared databases
     const sharedTierLimits = {
+        ram: '128 MB',
+        cpu: '0.125 vCPU',
         storage: '1 GB',
         maxConnections: 10,
         queryTimeout: '15s',
@@ -114,6 +117,7 @@
     const regionOptions = $derived(filterRegions($regionsStore.regions || []));
 
     const tiers: Record<string, { label: string; price: number }> = {
+        'free': { label: 'Free - 0.125 vCPU, 128MB RAM', price: 0 },
         's-1vcpu-1gb': { label: 'Starter - 1 vCPU, 1GB RAM', price: 15 },
         's-2vcpu-2gb': { label: 'Standard - 2 vCPU, 2GB RAM', price: 30 },
         's-2vcpu-4gb': { label: 'Standard Plus - 2 vCPU, 4GB RAM', price: 60 },
@@ -129,10 +133,10 @@
         label: `${label} - $${price}/mo`
     }));
 
-    // State for dedicated options
-    let selectedEngine = $state('postgres');
-    let selectedRegion = $state<string | null>(null);
-    let selectedTier = $state('s-1vcpu-1gb');
+    // State for dedicated options (pre-populated from URL params)
+    let selectedEngine = $state(params.get('engine') ?? 'postgres');
+    let selectedRegion = $state<string | null>(params.get('region') ?? null);
+    let selectedTier = $state(params.get('tier') ?? 'free');
 
     // Set default region when regions load
     $effect(() => {
@@ -141,13 +145,23 @@
             selectedRegion = firstEnabled?.value ?? regionOptions[0].value;
         }
     });
-    let highAvailability = $state(false);
+    let highAvailability = $state(params.get('ha') === 'true');
 
     // Helper to check database type capabilities
     const showRegionSelect = $derived(type === 'dedicated' || type === 'shared');
     const showTierSelect = $derived(type === 'dedicated');
     const showEngineSelect = $derived(type === 'dedicated');
     const isSharedType = $derived(type === 'shared');
+    const isFreeTier = $derived(selectedTier === 'free');
+
+    // Free tier disables HA, backups, and PITR
+    $effect(() => {
+        if (isFreeTier) {
+            highAvailability = false;
+            selectedBackupPolicy = 'none';
+            backupPitr = false;
+        }
+    });
 
     const tierPrice = $derived(tiers[selectedTier]?.price ?? 0);
     const estimatedMonthly = $derived(tierPrice * (highAvailability ? 2 : 1));
@@ -190,9 +204,9 @@
         }
     ];
 
-    let selectedBackupPolicy = $state<string>('daily');
-    let backupRetentionDays = $state(7);
-    let backupPitr = $state(false);
+    let selectedBackupPolicy = $state<string>(params.get('backup') ?? 'daily');
+    let backupRetentionDays = $state(Number(params.get('retention')) || 7);
+    let backupPitr = $state(params.get('pitr') === 'true');
     let pitrRetentionDays = $state(7);
 
     // Derive backup settings from selected policy
@@ -389,7 +403,10 @@
                                 id="ha"
                                 label="Enable High Availability"
                                 bind:checked={highAvailability}
-                                description="Deploy a standby replica for automatic failover (doubles cost)" />
+                                disabled={isFreeTier}
+                                description={isFreeTier
+                                    ? 'Upgrade to a paid tier to enable high availability'
+                                    : 'Deploy a standby replica for automatic failover (doubles cost)'} />
                         {/if}
                     </Layout.Stack>
                 </Fieldset>
@@ -440,6 +457,22 @@
                         limits apply:
                     </Alert.Inline>
                     <Layout.Grid columns={2} columnsS={1} gap="l">
+                        <Layout.Stack gap="xxs">
+                            <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                                RAM
+                            </Typography.Caption>
+                            <Typography.Text variant="m-500">
+                                {sharedTierLimits.ram}
+                            </Typography.Text>
+                        </Layout.Stack>
+                        <Layout.Stack gap="xxs">
+                            <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                                CPU
+                            </Typography.Caption>
+                            <Typography.Text variant="m-500">
+                                {sharedTierLimits.cpu}
+                            </Typography.Text>
+                        </Layout.Stack>
                         <Layout.Stack gap="xxs">
                             <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
                                 Storage
@@ -571,44 +604,50 @@
 
 {#snippet dedicatedBackupOptions()}
     <Layout.Stack gap="l">
-        <PolicyPresets
-            policies={dedicatedBackupPresets}
-            bind:selected={selectedBackupPolicy}
-            columns={3} />
+        {#if isFreeTier}
+            <Alert.Inline status="info" title="Backups unavailable on free tier">
+                Upgrade to a paid tier to enable automatic backups and point-in-time recovery.
+            </Alert.Inline>
+        {:else}
+            <PolicyPresets
+                policies={dedicatedBackupPresets}
+                bind:selected={selectedBackupPolicy}
+                columns={3} />
 
-        {#if backupEnabled}
-            <InputSelect
-                id="backupRetention"
-                label="Retention period"
-                bind:value={backupRetentionDays}
-                options={dedicatedRetentionOptions} />
-
-            <InputCheckbox
-                id="backupPitr"
-                label="Enable Point-in-Time Recovery (PITR)"
-                bind:checked={backupPitr}
-                description="Restore your database to any point within the retention window" />
-
-            {#if backupPitr}
+            {#if backupEnabled}
                 <InputSelect
-                    id="pitrRetention"
-                    label="PITR retention window"
-                    bind:value={pitrRetentionDays}
-                    options={[
-                        { value: 1, label: '1 day' },
-                        { value: 3, label: '3 days' },
-                        { value: 7, label: '7 days' },
-                        { value: 14, label: '14 days' },
-                        { value: 21, label: '21 days' },
-                        { value: 28, label: '28 days' },
-                        { value: 35, label: '35 days (max)' }
-                    ]} />
+                    id="backupRetention"
+                    label="Retention period"
+                    bind:value={backupRetentionDays}
+                    options={dedicatedRetentionOptions} />
 
-                <Alert.Inline status="info" title="Point-in-Time Recovery">
-                    PITR allows you to restore your database to any point within the {pitrRetentionDays}-day
-                    retention window using WAL archiving. This provides more granular recovery
-                    options but increases storage usage.
-                </Alert.Inline>
+                <InputCheckbox
+                    id="backupPitr"
+                    label="Enable Point-in-Time Recovery (PITR)"
+                    bind:checked={backupPitr}
+                    description="Restore your database to any point within the retention window" />
+
+                {#if backupPitr}
+                    <InputSelect
+                        id="pitrRetention"
+                        label="PITR retention window"
+                        bind:value={pitrRetentionDays}
+                        options={[
+                            { value: 1, label: '1 day' },
+                            { value: 3, label: '3 days' },
+                            { value: 7, label: '7 days' },
+                            { value: 14, label: '14 days' },
+                            { value: 21, label: '21 days' },
+                            { value: 28, label: '28 days' },
+                            { value: 35, label: '35 days (max)' }
+                        ]} />
+
+                    <Alert.Inline status="info" title="Point-in-Time Recovery">
+                        PITR allows you to restore your database to any point within the {pitrRetentionDays}-day
+                        retention window using WAL archiving. This provides more granular recovery
+                        options but increases storage usage.
+                    </Alert.Inline>
+                {/if}
             {/if}
         {/if}
     </Layout.Stack>
