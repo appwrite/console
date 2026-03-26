@@ -6,7 +6,7 @@ import type { Attributes, Collection, Columns, Table } from '$database/store';
 import type { Term, TerminologyResult, TerminologyShape } from '$database/(entity)/helpers/types';
 
 type BaseTerminology = typeof baseTerminology;
-type ImplementedDBTypes = Omit<BaseTerminology, 'vectordb' | 'legacy'>;
+type ImplementedDBTypes = Omit<BaseTerminology, 'vectorsdb' | 'legacy'>;
 
 /* manual type for the time being because vectorsdb is pending */
 export type DatabaseType = 'legacy' | 'tablesdb' | 'documentsdb' | 'vectorsdb';
@@ -62,7 +62,7 @@ export const baseTerminology = {
         field: 'attribute',
         record: 'document'
     },
-    vectordb: {}
+    vectorsdb: {}
 } as const;
 
 const createTerm = (singular: string, pluralForm: string): Term => {
