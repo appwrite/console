@@ -1,68 +1,41 @@
 <script lang="ts">
-    import { BarChart, Legend, type LegendData } from '$lib/charts';
-    import { accumulateFromEndingTotal } from '$lib/layout/usage.svelte';
-    import { Card, SecondaryTabs, SecondaryTabsItem } from '$lib/components';
+    import { BarChart, Legend } from '$lib/charts';
+    import { Card } from '$lib/components';
     import { page } from '$app/state';
     import { type Models } from '@appwrite.io/console';
-    import { formatNumberWithCommas, clampMin } from '$lib/helpers/numbers';
     import { Layout, Typography } from '@appwrite.io/pink-svelte';
 
     export let title: string;
-    export let total: number[];
-    export let path: string = null;
+    export let description: string = '';
     export let count: Models.Metric[][];
-    export let legendData: LegendData[];
+    export let seriesNames: string[];
     export let showHeader: boolean = true;
-    export let showAggregateTotal: boolean = true;
-    export let legendNumberFormat: 'comma' | 'abbreviate' = 'comma';
 </script>
 
 <div>
     {#if showHeader}
         <div class="u-flex u-main-space-between common-section">
             <Typography.Title>{title}</Typography.Title>
-
-            {#if path}
-                <SecondaryTabs>
-                    <SecondaryTabsItem href={`${path}/24h`} disabled={page.params.period === '24h'}>
-                        24h
-                    </SecondaryTabsItem>
-                    <SecondaryTabsItem
-                        href={`${path}/30d`}
-                        disabled={!page.params.period || page.params.period === '30d'}>
-                        30d
-                    </SecondaryTabsItem>
-                    <SecondaryTabsItem href={`${path}/90d`} disabled={page.params.period === '90d'}>
-                        90d
-                    </SecondaryTabsItem>
-                </SecondaryTabs>
-            {/if}
         </div>
     {/if}
 
     <Card>
         {#if count}
-            {#if showAggregateTotal}
-                {@const totalCount = clampMin(total.reduce((a, b) => a + b, 0))}
+            {#if description}
                 <Layout.Stack gap="xs">
-                    <Typography.Title>{formatNumberWithCommas(totalCount)}</Typography.Title>
-                    <Typography.Text>Total {title.toLocaleLowerCase()}</Typography.Text>
+                    <Typography.Text>{description}</Typography.Text>
                 </Layout.Stack>
             {/if}
             <div class="multiple-chart-container u-flex-vertical u-gap-16">
                 <BarChart
                     formatted={page.params.period === '24h' ? 'hours' : 'days'}
                     series={count.map((c, index) => ({
-                        name: legendData[index].name,
-                        data: accumulateFromEndingTotal(c, total[index])
+                        name: seriesNames[index],
+                        data: c.map((metric) => [metric.date, metric.value])
                     }))} />
-
-                {#if legendData}
-                    <Legend
-                        {legendData}
-                        decimalsForAbbreviate={2}
-                        numberFormat={legendNumberFormat} />
-                {/if}
+                <Legend
+                    showValues={false}
+                    legendData={seriesNames.map((name) => ({ name, value: '' }))} />
             </div>
         {/if}
     </Card>

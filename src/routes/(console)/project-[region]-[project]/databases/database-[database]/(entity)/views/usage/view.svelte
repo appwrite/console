@@ -7,16 +7,15 @@
     import { getTerminologies } from '$database/(entity)';
 
     let {
-        total,
         count
     }: {
-        total: number;
         count: Metric[];
     } = $props();
 
     const { terminology } = getTerminologies();
 
     const records = terminology.record.lower.plural;
+    const recordsTitle = terminology.record.title.plural;
     const entity = terminology.entity.lower.singular;
 
     const usagePath = $derived(
@@ -36,12 +35,13 @@
 <div class="wide-screen-wrapper databases-spreadsheet">
     <Container expanded slotSpacing paddingInlineEnd databasesScreen>
         <Usage
-            {total}
             {count}
+            showAggregateTotal={false}
+            isCumulative
             path={usagePath}
             countMetadata={{
-                legend: records,
-                title: `Total ${records}`
+                legend: `${records} created`,
+                title: `${recordsTitle} created per day`
             }} />
     </Container>
 </div>

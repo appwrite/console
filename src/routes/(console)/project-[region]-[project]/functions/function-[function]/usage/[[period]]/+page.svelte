@@ -23,9 +23,10 @@
             <Usage
                 path={`${base}/project-${page.params.region}-${page.params.project}/functions/function-${page.params.function}/usage`}
                 showAggregateTotal={false}
+                isCumulative
                 countMetadata={{
                     legend: 'Executions',
-                    title: 'Total executions'
+                    title: 'Executions per day'
                 }}
                 {total}
                 {count} />
@@ -38,10 +39,11 @@
                 path={`${base}/project-${page.params.region}-${page.params.project}/functions/function-${page.params.function}/usage`}
                 countMetadata={{
                     legend: 'GB hours',
-                    title: 'Total GB hours'
+                    title: 'GB hours per day'
                 }}
                 total={gbHoursTotal}
-                count={gbHoursCount} />
+                count={gbHoursCount}
+                isCumulative />
         {/if}
     </Layout.Stack>
 </Container>

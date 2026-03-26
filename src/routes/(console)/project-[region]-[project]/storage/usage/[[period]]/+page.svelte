@@ -12,10 +12,11 @@
     <Usage
         path={`${base}/project-${page.params.region}-${page.params.project}/storage/usage`}
         showAggregateTotal={false}
+        isCumulative
         {total}
         {count}
         countMetadata={{
-            legend: 'Buckets',
-            title: 'Total buckets'
+            legend: 'Buckets created',
+            title: 'Buckets created per day'
         }} />
 </Container>

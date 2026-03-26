@@ -83,7 +83,7 @@
         legend: string;
     };
 
-    export let total: number;
+    export let total: number = 0;
     export let count: Models.Metric[];
     export let countMetadata: MetricMetadata;
     export let path: string = null;
@@ -119,12 +119,12 @@
     {/if}
     <Card>
         {#if count}
-            {#if showAggregateTotal}
-                <Layout.Stack gap="xs">
+            <Layout.Stack gap="xs">
+                {#if showAggregateTotal}
                     <Typography.Title>{formatNumberWithCommas(total)}</Typography.Title>
-                    <Typography.Text>{countMetadata.title}</Typography.Text>
-                </Layout.Stack>
-            {/if}
+                {/if}
+                <Typography.Text>{countMetadata.title}</Typography.Text>
+            </Layout.Stack>
             <div class="chart-container">
                 <BarChart
                     formatted={page.params.period === '24h' ? 'hours' : 'days'}
