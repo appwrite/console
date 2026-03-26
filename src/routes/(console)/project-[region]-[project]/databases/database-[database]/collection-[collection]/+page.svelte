@@ -17,9 +17,15 @@
         IconChevronUp,
         IconPlus,
         IconViewBoards,
-        IconRefresh
+        IconRefresh,
+        IconUpload,
+        IconDownload
     } from '@appwrite.io/pink-icons-svelte';
     import { type Models } from '@appwrite.io/console';
+    import { sdk } from '$lib/stores/sdk';
+    import { goto } from '$app/navigation';
+    import { resolve } from '$app/paths';
+    import { Click } from '$lib/actions/analytics';
     import { expandTabs, randomDataModalState, spreadsheetRenderKey } from '$database/store';
     import { invalidate } from '$app/navigation';
     import { hash } from '$lib/helpers/string';
@@ -66,20 +72,32 @@
         spreadsheetRenderKey.set(hash(Date.now().toString()));
     }
 
+    function getExportUrl() {
+        const queryParam = page.url.searchParams.get('query');
+        const url = resolve(
+            '/(console)/project-[region]-[project]/databases/database-[database]/collection-[collection]/export',
+            {
+                region: page.params.region,
+                project: page.params.project,
+                database: page.params.database,
+                collection: page.params.collection
+            }
+        );
+        return queryParam ? `${url}?query=${encodeURIComponent(queryParam)}` : url;
+    }
+
     async function onSelect(file: Models.File, localFile = false) {
         $isCollectionsJsonImportInProgress = true;
 
-        console.log(file, localFile);
-
         try {
-            /*await sdk
+            await sdk
                 .forProject(page.params.region, page.params.project)
                 .migrations.createJSONImport({
                     bucketId: file.bucketId,
                     fileId: file.$id,
                     resourceId: `${page.params.database}:${page.params.collection}`,
                     internalFile: localFile
-                });*/
+                });
 
             addNotification({
                 type: 'success',
@@ -147,14 +165,34 @@
                         direction="row"
                         alignItems="center"
                         justifyContent="flex-end">
-                        <!--<Button
-                            secondary
-                            disabled
-                            event={Click.DatabaseImportJson}
-                            on:click={() => (showImportJson = true)}>
-                            Import JSON
-                        </Button>-->
                         {#if !$isSmallViewport}
+                            <Tooltip placement="top">
+                                <Button
+                                    icon
+                                    size="s"
+                                    secondary
+                                    class="small-button-dimensions"
+                                    on:click={() => (showImportJson = true)}>
+                                    <Icon icon={IconUpload} size="s" />
+                                </Button>
+                                <svelte:fragment slot="tooltip">Import JSON</svelte:fragment>
+                            </Tooltip>
+
+                            <Tooltip placement="top">
+                                <Button
+                                    icon
+                                    size="s"
+                                    secondary
+                                    class="small-button-dimensions"
+                                    disabled={!data.documents.total}
+                                    on:click={() => {
+                                        trackEvent(Click.DatabaseExportCsv);
+                                        goto(getExportUrl());
+                                    }}>
+                                    <Icon icon={IconDownload} size="s" />
+                                </Button>
+                                <svelte:fragment slot="tooltip">Export JSON</svelte:fragment>
+                            </Tooltip>
                             <Tooltip
                                 maxWidth="210px"
                                 placement="bottom"
