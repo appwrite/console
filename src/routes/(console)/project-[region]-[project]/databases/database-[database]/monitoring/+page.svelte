@@ -7,14 +7,7 @@
     import { calculateSize } from '$lib/helpers/sizeConvertion';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { trackEvent } from '$lib/actions/analytics';
-    import type {
-        DedicatedDatabase,
-        DatabaseMetrics,
-        ActiveConnectionList,
-        SlowQueryList,
-        PerformanceInsights,
-        AuditLogList
-    } from '$lib/sdk/dedicatedDatabases';
+    import type { Models } from '@appwrite.io/console';
     import {
         Alert,
         Badge,
@@ -31,19 +24,22 @@
 
     const { data }: PageProps = $props();
 
-    const database = $derived(data.dedicatedDatabase as DedicatedDatabase);
+    type ExtendedDedicatedDatabase = Models.DedicatedDatabase & {
+        metricsSlowQueryLogThresholdMs?: number;
+    };
 
-    const dedicatedSdk = $derived(
-        sdk.forProject(page.params.region, page.params.project).dedicatedDatabases
+    const database = $derived(data.dedicatedDatabase as ExtendedDedicatedDatabase);
+
+    const computeSdk = $derived(
+        sdk.forProject(page.params.region, page.params.project).compute
     );
 
-    // -- State --
     let metricsPeriod = $state<'1h' | '24h' | '7d' | '30d'>('24h');
-    let metrics = $state<DatabaseMetrics | null>(null);
-    let activeConnections = $state<ActiveConnectionList>({ total: 0, activeConnections: [] });
-    let slowQueries = $state<SlowQueryList>({ total: 0, slowQueries: [] });
-    let performanceInsights = $state<PerformanceInsights | null>(null);
-    let auditLogs = $state<AuditLogList>({ total: 0, auditLogs: [] });
+    let metrics = $state<Models.DedicatedDatabaseMetrics | null>(null);
+    let activeConnections = $state<{ total: number; activeConnections: unknown[] }>({ total: 0, activeConnections: [] });
+    let slowQueries = $state<Models.DedicatedDatabaseSlowQueryList>({ total: 0, slowQueries: [] });
+    let performanceInsights = $state<Models.DedicatedDatabasePerformanceInsights | null>(null);
+    let auditLogs = $state<Models.DedicatedDatabaseAuditLogList>({ total: 0, auditLogs: [] });
 
     let isLoadingMetrics = $state(true);
     let isLoadingConnections = $state(true);
@@ -103,7 +99,7 @@
         if (!database) return;
         isLoadingMetrics = true;
         try {
-            metrics = await dedicatedSdk.getMetrics(database.$id, metricsPeriod);
+            metrics = await computeSdk.getDatabaseMetrics({ databaseId: database.$id, period: metricsPeriod as any });
         } catch (error) {
             metrics = null;
             addNotification({
@@ -119,7 +115,8 @@
         if (!database) return;
         isLoadingConnections = true;
         try {
-            activeConnections = await dedicatedSdk.getActiveConnections(database.$id);
+            // Active connections endpoint is not available in the Compute SDK
+            activeConnections = { total: 0, activeConnections: [] };
         } catch (error) {
             activeConnections = { total: 0, activeConnections: [] };
         } finally {
@@ -131,7 +128,7 @@
         if (!database) return;
         isLoadingSlowQueries = true;
         try {
-            slowQueries = await dedicatedSdk.getSlowQueries(database.$id);
+            slowQueries = await computeSdk.listDatabaseQueries({ databaseId: database.$id });
         } catch (error) {
             slowQueries = { total: 0, slowQueries: [] };
         } finally {
@@ -143,7 +140,7 @@
         if (!database) return;
         isLoadingInsights = true;
         try {
-            performanceInsights = await dedicatedSdk.getPerformanceInsights(database.$id);
+            performanceInsights = await computeSdk.getDatabaseInsights({ databaseId: database.$id });
         } catch (error) {
             performanceInsights = null;
         } finally {
@@ -155,7 +152,7 @@
         if (!database) return;
         isLoadingAuditLogs = true;
         try {
-            auditLogs = await dedicatedSdk.getAuditLogs(database.$id);
+            auditLogs = await computeSdk.listDatabaseLogs({ databaseId: database.$id });
         } catch (error) {
             auditLogs = { total: 0, auditLogs: [] };
         } finally {
@@ -682,12 +679,7 @@
                         Database audit log entries.
                     </Typography.Text>
 
-                    {#if !database.securityAuditLogEnabled}
-                        <Alert.Inline status="info" title="Audit logging disabled">
-                            Audit logging is not enabled for this database. Enable it in the
-                            database settings to start recording audit events.
-                        </Alert.Inline>
-                    {:else if isLoadingAuditLogs}
+                    {#if isLoadingAuditLogs}
                         <Layout.Stack gap="s">
                             {#each Array(3) as _}
                                 <Skeleton variant="line" width="100%" height={40} />

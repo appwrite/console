@@ -9,7 +9,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { Dependencies } from '$lib/constants';
     import { trackEvent } from '$lib/actions/analytics';
-    import type { DedicatedDatabase, MaintenanceDay, UpgradePolicy, KeyManagement, DataResidency } from '$lib/sdk/dedicatedDatabases';
+    import type { Models } from '@appwrite.io/console';
     import {
         Badge,
         Layout,
@@ -23,11 +23,44 @@
     } from '@appwrite.io/pink-svelte';
     import { IconDuplicate, IconRefresh } from '@appwrite.io/pink-icons-svelte';
 
+    type ExtendedDedicatedDatabase = Models.DedicatedDatabase & {
+        metricsSlowQueryLogThresholdMs?: number;
+        metricsTraceSampleRate?: number;
+        sqlApiEnabled?: boolean;
+        sqlApiMaxBytes?: number;
+        sqlApiMaxRows?: number;
+        sqlApiTimeoutSeconds?: number;
+        sqlApiAllowedStatements?: string[];
+        maintenanceUpgradePolicy?: string;
+        networkPublicTcp?: boolean;
+        internalIP?: string;
+    };
+
     const {
-        database
+        database: raw
     }: {
-        database: DedicatedDatabase;
+        database: ExtendedDedicatedDatabase;
     } = $props();
+
+    const defaults: Partial<ExtendedDedicatedDatabase> = {
+        metricsSlowQueryLogThresholdMs: 0,
+        metricsTraceSampleRate: 0,
+        sqlApiEnabled: false,
+        sqlApiMaxBytes: 0,
+        sqlApiMaxRows: 0,
+        sqlApiTimeoutSeconds: 0,
+        sqlApiAllowedStatements: [],
+        maintenanceUpgradePolicy: 'manual',
+        networkPublicTcp: false,
+        internalIP: '',
+        pitrRetentionDays: 0,
+        storageAutoscaling: false,
+        storageAutoscalingThresholdPercent: 0,
+        storageAutoscalingMaxGb: 0,
+        lastMetricsPollAt: 0
+    };
+
+    const database: ExtendedDedicatedDatabase = $derived({ ...defaults, ...raw });
 
     let isRefreshing = $state(false);
     let isColdStarting = $state(false);
@@ -151,7 +184,7 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .dedicatedDatabases.updateActivity(database.$id);
+                .compute.updateDatabaseActivity({ databaseId: database.$id });
 
             addNotification({
                 type: 'success',
@@ -177,7 +210,7 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .dedicatedDatabases.update(database.$id, { status: 'paused' });
+                .compute.updateDatabase({ databaseId: database.$id, status: 'paused' as any });
 
             addNotification({
                 type: 'success',
@@ -200,7 +233,7 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .dedicatedDatabases.update(database.$id, { status: 'active' });
+                .compute.updateDatabase({ databaseId: database.$id, status: 'active' as any });
 
             addNotification({
                 type: 'success',
@@ -223,7 +256,7 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .dedicatedDatabases.update(database.$id, { status: 'inactive' });
+                .compute.updateDatabase({ databaseId: database.$id, status: 'inactive' as any });
 
             addNotification({
                 type: 'success',
@@ -243,26 +276,37 @@
 
     // Check if connection details are available
     const hasConnectionDetails = $derived(
-        database.hostname && database.connectionUser && database.connectionPassword
+        !!database.hostname || !!database.connectionString
     );
+
+    const hasCredentials = $derived(
+        !!database.connectionUser && !!database.connectionPassword
+    );
+
+    // Build a connection string from parts when one is not provided by the API
+    const resolvedConnectionString = $derived.by(() => {
+        if (database.connectionString) return database.connectionString;
+        if (!database.hostname || !hasCredentials) return '';
+        return `${database.engine}://${database.connectionUser}:${database.connectionPassword}@${database.hostname}:${database.connectionPort}/postgres`;
+    });
 
     // Generate connection command based on engine
     function getConnectionCommand(): string {
-        if (!hasConnectionDetails) return '';
+        if (!resolvedConnectionString) return '';
 
         switch (database.engine) {
             case 'postgres':
-                return `psql "${database.connectionString}"`;
+                return `psql "${resolvedConnectionString}"`;
             case 'mysql':
             case 'mariadb':
                 return `mysql -h ${database.hostname} -P ${database.connectionPort} -u ${database.connectionUser} -p${database.connectionPassword} postgres`;
             default:
-                return database.connectionString;
+                return resolvedConnectionString;
         }
     }
 
-    function formatMaintenanceDay(day: MaintenanceDay): string {
-        const days: Record<MaintenanceDay, string> = {
+    function formatMaintenanceDay(day: string): string {
+        const days: Record<string, string> = {
             sun: 'Sunday',
             mon: 'Monday',
             tue: 'Tuesday',
@@ -281,7 +325,7 @@
         return `${display}:00 ${suffix} UTC`;
     }
 
-    function formatUpgradePolicy(policy: UpgradePolicy): string {
+    function formatUpgradePolicy(policy: string): string {
         switch (policy) {
             case 'autoMinor':
                 return 'Auto (minor versions)';
@@ -305,32 +349,6 @@
             return `${(bytes / 1024).toFixed(1)} KB`;
         }
         return `${bytes} B`;
-    }
-
-    function formatKeyManagement(km: KeyManagement): string {
-        switch (km) {
-            case 'appwriteKms':
-                return 'Appwrite KMS';
-            case 'customerManaged':
-                return 'Customer Managed';
-            default:
-                return km;
-        }
-    }
-
-    function formatDataResidency(dr: DataResidency): string {
-        switch (dr) {
-            case 'eu':
-                return 'EU';
-            case 'us':
-                return 'US';
-            case 'apac':
-                return 'APAC';
-            case 'global':
-                return 'Global';
-            default:
-                return dr;
-        }
     }
 
     function formatStorageClass(sc: string): string {
@@ -414,7 +432,7 @@
     </CardGrid>
 
     <!-- Connection Settings -->
-    {#if database.status === 'ready' && hasConnectionDetails}
+    {#if database.status === 'ready' && hasConnectionDetails && hasCredentials}
         <CardGrid>
             <svelte:fragment slot="title">Connection</svelte:fragment>
             Use these credentials to connect to your database.
@@ -470,7 +488,7 @@
                         <Layout.Stack gap="m">
                             <CopyInput
                                 label="Connection String"
-                                value={database.connectionString} />
+                                value={resolvedConnectionString} />
                             <Layout.Stack gap="xs">
                                 <Typography.Caption
                                     variant="400"
@@ -481,6 +499,22 @@
                             </Layout.Stack>
                         </Layout.Stack>
                     {/if}
+                </Layout.Stack>
+            </svelte:fragment>
+        </CardGrid>
+    {:else if database.status === 'ready' && hasConnectionDetails && !hasCredentials}
+        <CardGrid>
+            <svelte:fragment slot="title">Connection</svelte:fragment>
+            <svelte:fragment slot="aside">
+                <Layout.Stack gap="l">
+                    <Alert.Inline status="info" title="Credentials provisioning">
+                        Your database is available but credentials are still being provisioned.
+                        Connection credentials will appear here shortly.
+                    </Alert.Inline>
+                    <Layout.Grid columns={2} columnsS={1} gap="m">
+                        <CopyInput label="Host" value={database.hostname} />
+                        <CopyInput label="Port" value={String(database.connectionPort)} />
+                    </Layout.Grid>
                 </Layout.Stack>
             </svelte:fragment>
         </CardGrid>
@@ -668,7 +702,7 @@
                         </Layout.Stack>
                         <Layout.Stack gap="xxs">
                             <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
-                                Idle Timeout
+                                Connection Timeout
                             </Typography.Caption>
                             <Typography.Text variant="m-500">
                                 {database.networkIdleTimeoutSeconds}s
@@ -679,7 +713,7 @@
                                 <Typography.Caption
                                     variant="400"
                                     color="--fgcolor-neutral-tertiary">
-                                    Sleep After Idle
+                                    Scale-to-Zero After
                                 </Typography.Caption>
                                 <Typography.Text variant="m-500">
                                     {database.idleTimeoutMinutes} min
@@ -791,70 +825,6 @@
                         </Typography.Text>
                     </Layout.Stack>
                 {/if}
-            </Layout.Grid>
-        </svelte:fragment>
-    </CardGrid>
-
-    <!-- Security -->
-    <CardGrid>
-        <svelte:fragment slot="title">Security</svelte:fragment>
-        Encryption, key management, and audit logging configuration.
-        <svelte:fragment slot="aside">
-            <Layout.Grid columns={3} columnsL={2} columnsS={1} gap="l">
-                <Layout.Stack gap="xxs">
-                    <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
-                        Encryption at Rest
-                    </Typography.Caption>
-                    <Badge
-                        type={database.securityEncryptionAtRest ? 'success' : undefined}
-                        variant="secondary"
-                        size="s"
-                        content={database.securityEncryptionAtRest ? 'Enabled' : 'Disabled'} />
-                </Layout.Stack>
-                <Layout.Stack gap="xxs">
-                    <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
-                        Key Management
-                    </Typography.Caption>
-                    <Typography.Text variant="m-500">
-                        {formatKeyManagement(database.securityKeyManagement)}
-                    </Typography.Text>
-                </Layout.Stack>
-                <Layout.Stack gap="xxs">
-                    <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
-                        Key Rotation
-                    </Typography.Caption>
-                    <Typography.Text variant="m-500">
-                        {database.securityKeyRotationDays} days
-                    </Typography.Text>
-                </Layout.Stack>
-                <Layout.Stack gap="xxs">
-                    <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
-                        Audit Log
-                    </Typography.Caption>
-                    <Badge
-                        type={database.securityAuditLogEnabled ? 'success' : undefined}
-                        variant="secondary"
-                        size="s"
-                        content={database.securityAuditLogEnabled ? 'Enabled' : 'Disabled'} />
-                </Layout.Stack>
-                {#if database.securityAuditLogEnabled}
-                    <Layout.Stack gap="xxs">
-                        <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
-                            Log Retention
-                        </Typography.Caption>
-                        <Typography.Text variant="m-500">
-                            {database.securityLogRetentionDays} days
-                        </Typography.Text>
-                    </Layout.Stack>
-                {/if}
-                <Layout.Stack gap="xxs">
-                    <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
-                        Data Residency
-                    </Typography.Caption>
-                    <Typography.Text variant="m-500">
-                        {formatDataResidency(database.securityDataResidency)}
-                    </Typography.Text>
-                </Layout.Stack>
             </Layout.Grid>
         </svelte:fragment>
     </CardGrid>
