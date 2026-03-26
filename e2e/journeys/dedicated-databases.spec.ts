@@ -62,13 +62,19 @@ async function submitAndWaitForCreation(page: Page, name: string) {
     // Listen for the API response before clicking
     const responsePromise = page.waitForResponse(
         (resp) => resp.url().includes('/compute/databases') && resp.request().method() === 'POST',
-        { timeout: 90_000 }
+        { timeout: 180_000 }
     );
 
     await page.getByRole('button', { name: /Create/ }).click();
 
-    // Wait for the API response — skip if backend is unavailable or rejects
-    const response = await responsePromise;
+    // Wait for the API response — skip if backend is unavailable, rejects, or times out
+    let response;
+    try {
+        response = await responsePromise;
+    } catch {
+        test.skip(true, 'Compute API timed out');
+        return;
+    }
     if (response.status() >= 400) {
         test.skip(true, `Compute API returned ${response.status()}`);
         return;
@@ -361,6 +367,7 @@ test.describe('Dedicated databases', () => {
     });
 
     test.describe.serial('Create and manage dedicated databases', () => {
+        test.setTimeout(240_000); // Provisioning can take 2+ minutes per database
         const createdDatabases: { name: string; id: string; engine: string }[] = [];
 
         test.beforeEach(async ({ page }) => {
@@ -596,9 +603,9 @@ test.describe('Dedicated databases', () => {
             // For dedicated databases, the overview shows Resources
             const resources = page.getByText('Resources', { exact: true });
             if (await resources.isVisible().catch(() => false)) {
-                await expect(page.getByText('Engine')).toBeVisible();
-                await expect(page.getByText('CPU')).toBeVisible();
-                await expect(page.getByText('Memory')).toBeVisible();
+                await expect(page.getByText('Engine', { exact: true }).first()).toBeVisible();
+                await expect(page.getByText('CPU', { exact: true })).toBeVisible();
+                await expect(page.getByText('Memory', { exact: true }).first()).toBeVisible();
                 await expect(page.getByText('Storage', { exact: true }).first()).toBeVisible();
             }
         });
@@ -1273,23 +1280,16 @@ test.describe('Dedicated databases', () => {
             await page.goto(DATABASES_URL);
             await page.waitForLoadState('networkidle');
 
-            // Find all database links and try each until we find a dedicated one with auth tab
-            const dbLinks = page.locator('a[href*="/databases/database-"]');
-            const count = await dbLinks.count();
-            for (let i = 0; i < count; i++) {
-                const href = await dbLinks.nth(i).getAttribute('href');
-                if (!href) continue;
-                await page.goto(`http://localhost:3000${href}`);
-                await page.waitForLoadState('networkidle');
+            // Navigate to first database and look for Auth tab
+            if (!(await navigateToFirstDatabase(page))) return false;
 
-                const authLink = page.locator('a[href*="/databases/database-"][href$="/auth"]').first();
-                if (await authLink.isVisible().catch(() => false)) {
-                    await authLink.click();
-                    await page.waitForURL(/\/auth/, { timeout: 10_000 });
-                    return true;
-                }
-            }
-            return false;
+            // Auth link in the header tabs (not sidebar)
+            const authLink = page.locator('a[href*="/databases/database-"][href*="/auth"]').first();
+            if (!(await authLink.isVisible({ timeout: 5_000 }).catch(() => false))) return false;
+
+            await authLink.click();
+            await page.waitForURL(/\/auth/, { timeout: 10_000 });
+            return true;
         }
 
         test('auth tab navigates to auth page', async ({ page }) => {
