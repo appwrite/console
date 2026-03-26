@@ -5,7 +5,7 @@
     import { project, stats } from './store';
 
     import { goto } from '$app/navigation';
-    import { registerCommands, registerSearchers } from '$lib/commandCenter';
+    import { disableCommands, registerCommands, registerSearchers } from '$lib/commandCenter';
 
     import {
         bucketSearcher,
@@ -39,6 +39,7 @@
 
     export let data: LayoutData;
     $: isProjectBlocked = getIsProjectBlocked(data.project);
+    $: $disableCommands(isProjectBlocked);
     $: allOrgsHavePremiumSupport = $organizationList.teams.every(
         (team) => (team as Models.Organization).billingPlanDetails.premiumSupport
     );

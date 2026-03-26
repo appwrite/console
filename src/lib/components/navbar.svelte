@@ -203,6 +203,7 @@
                     <Button.Button
                         variant="text"
                         aria-label="Toggle Command Center"
+                        disabled={isProjectBlocked}
                         on:click={toggleCommandCenter}
                         icon>
                         <Icon icon={IconSearch} />
