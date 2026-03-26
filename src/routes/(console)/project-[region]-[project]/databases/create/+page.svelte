@@ -45,6 +45,9 @@
 
     let formComponent: Form;
 
+    const params = page.url.searchParams;
+    const typeFromParams = params.get('type') ?? (null as DatabaseType);
+
     let databaseId = $state(params.get('id') ?? null);
     let databaseName = $state(params.get('name') ?? null);
 
@@ -55,9 +58,6 @@
     let showExitModal = $state(false);
     let isSubmitting = $state(writable(false));
     let previousPage: string = $state(resolveRoute('/'));
-
-    const params = page.url.searchParams;
-    const typeFromParams = params.get('type') ?? (null as DatabaseType);
     let type = $state(typeFromParams ?? 'tablesdb') as DatabaseType;
 
     const isDark = $derived($app.themeInUse === 'dark');
@@ -154,15 +154,6 @@
     const isSharedType = $derived(type === 'shared');
     const isFreeTier = $derived(selectedTier === 'free');
 
-    // Free tier disables HA, backups, and PITR
-    $effect(() => {
-        if (isFreeTier) {
-            highAvailability = false;
-            selectedBackupPolicy = 'none';
-            backupPitr = false;
-        }
-    });
-
     const tierPrice = $derived(tiers[selectedTier]?.price ?? 0);
     const estimatedMonthly = $derived(tierPrice * (highAvailability ? 2 : 1));
 
@@ -207,6 +198,15 @@
     let selectedBackupPolicy = $state<string>(params.get('backup') ?? 'daily');
     let backupRetentionDays = $state(Number(params.get('retention')) || 7);
     let backupPitr = $state(params.get('pitr') === 'true');
+
+    // Free tier disables HA, backups, and PITR
+    $effect(() => {
+        if (isFreeTier) {
+            highAvailability = false;
+            selectedBackupPolicy = 'none';
+            backupPitr = false;
+        }
+    });
     let pitrRetentionDays = $state(7);
 
     // Derive backup settings from selected policy
