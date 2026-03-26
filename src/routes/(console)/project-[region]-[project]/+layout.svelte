@@ -32,9 +32,10 @@
     import { wizard } from '$lib/stores/wizard';
     import SupportWizard from '$routes/(console)/supportWizard.svelte';
     import BlockedLock from './blocked-lock.svg';
+    import { isProjectBlocked as getIsProjectBlocked } from '$lib/helpers/project';
 
     export let data: LayoutData;
-    $: isProjectBlocked = data.project?.status !== 'paused' && !!data.project?.blocks?.length;
+    $: isProjectBlocked = getIsProjectBlocked(data.project);
 
     function contactSupport() {
         wizard.start(SupportWizard);
@@ -127,7 +128,10 @@
 </script>
 
 <div class="project-layout" class:is-blocked={isProjectBlocked}>
-    <div class="project-layout__content" aria-hidden={isProjectBlocked}>
+    <div
+        class="project-layout__content"
+        aria-hidden={isProjectBlocked}
+        inert={isProjectBlocked || undefined}>
         <slot />
     </div>
 
@@ -181,8 +185,8 @@
     }
 
     .project-layout__overlay {
-        position: absolute;
-        inset: 0;
+        position: fixed;
+        inset: 48px 0 0 0;
         z-index: 5;
         display: flex;
         align-items: center;
@@ -191,6 +195,17 @@
         gap: 1rem;
         padding: 2rem;
         text-align: center;
+        pointer-events: none;
+    }
+
+    .project-layout__overlay > * {
+        pointer-events: auto;
+    }
+
+    @media (min-width: 1024px) {
+        .project-layout__overlay {
+            padding-left: calc(190px + 2rem);
+        }
     }
 
     .project-layout__lock {

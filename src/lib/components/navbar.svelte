@@ -49,6 +49,7 @@
     import { beforeNavigate } from '$app/navigation';
     import { page } from '$app/state';
     import type { Models } from '@appwrite.io/console';
+    import { isProjectBlocked as getIsProjectBlocked } from '$lib/helpers/project';
 
     let showSupport = false;
 
@@ -108,7 +109,7 @@
     }
 
     $: currentOrg = organizations.find((org) => org.isSelected);
-    $: isProjectBlocked = currentProject?.status !== 'paused' && !!currentProject?.blocks?.length;
+    $: isProjectBlocked = getIsProjectBlocked(currentProject);
 
     beforeNavigate(() => (showAccountMenu = false));
 </script>

@@ -18,6 +18,7 @@
     import { BillingPlanGroup, type Models } from '@appwrite.io/console';
     import { getSidebarState, isInDatabasesRoute, updateSidebarState } from '$lib/helpers/sidebar';
     import { isTabletViewport } from '$lib/stores/viewport';
+    import { isProjectBlocked as getIsProjectBlocked } from '$lib/helpers/project';
 
     export let showHeader = true;
     export let showFooter = true;
@@ -180,7 +181,7 @@
     $: shouldRenderSidebar =
         !$isNewWizardStatusOpen && showSideNavigation && !$showOnboardingAnimation;
     $: hasSidebarSpace = shouldRenderSidebar && !$isTabletViewport && !!selectedProject;
-    $: isProjectBlocked = selectedProject?.status !== 'paused' && !!selectedProject?.blocks?.length;
+    $: isProjectBlocked = getIsProjectBlocked(selectedProject);
     $: {
         if ($isSidebarOpen) {
             yOnMenuOpen = window.scrollY;
@@ -211,7 +212,7 @@
         <Navbar {...navbarProps} bind:sideBarIsOpen={$isSidebarOpen} bind:showAccountMenu />
     {/if}
 
-    <div class="shell-sidebar-area" class:is-blocked={isProjectBlocked}>
+    <div class="shell-sidebar-area" inert={isProjectBlocked || undefined}>
         {#if shouldRenderSidebar}
             <Sidebar
                 project={selectedProject}
@@ -260,11 +261,6 @@
     .shell-sidebar-area {
         position: relative;
         z-index: 2;
-
-        &.is-blocked {
-            pointer-events: none;
-            user-select: none;
-        }
     }
 
     .content {

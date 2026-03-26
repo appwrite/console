@@ -2,6 +2,7 @@ import { page } from '$app/state';
 import { get } from 'svelte/store';
 import { sdk } from '$lib/stores/sdk';
 import { projectRegion } from '$routes/(console)/project-[region]-[project]/store';
+import type { Models } from '@appwrite.io/console';
 
 /**
  * Returns the current project ID.
@@ -41,4 +42,8 @@ export function getProjectEndpoint(): string {
     const { protocol, hostname, href } = new URL(sdk.forConsole.client.config.endpoint);
 
     return currentProjectRegion ? `${protocol}//${currentProjectRegion.$id}.${hostname}/v1` : href;
+}
+
+export function isProjectBlocked(project: Models.Project | null | undefined): boolean {
+    return project?.status !== 'paused' && !!project?.blocks?.length;
 }
