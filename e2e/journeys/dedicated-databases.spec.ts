@@ -1,12 +1,12 @@
 import { test, expect, type Page } from '@playwright/test';
 
 const BASE = 'http://localhost:3000/console';
-const PROJECT_ID = '69c4e0a473393885e5fd';
+const PROJECT_ID = '69c5061ee68ebce1a541';
 const REGION = 'fra';
 
 const SESSION_COOKIE = {
     name: 'a_session_console_legacy',
-    value: 'eyJpZCI6IjY5YzRlMDk0ZGEwZmNiODQ2NzM0Iiwic2VjcmV0IjoiNGQ2NmY0ZGM5MTc1ZGZjMjFjZDk4ODE0NzliNzM0NWZjZDE5ZTM4NjZjNTkwYjU5MGEzYTllNDY0MTc3NTZlZWM2NWU2NmE3NWE3MzA3ZGEyNDlkMDg1YThkZWUzNmQzYjY3NTZhNmZmMWE0ZWZlOWEwZDY4YmExNjE3YTFmMzVmMWQ5MTEyM2U1NmU4OGM3N2U4YjUzY2M2OTI2NDc0MGIyMmExOTJlZWRhNzQ4ZWQ4NzVhNTMxZGM2NDQ0MmE4MGUxNjc3N2MyN2FlMGZhMGRkYmZhNWQxMTlmODUyYWYxNzRlNmMyMDk2ZWJiMDEwNWY3OWQ2OGVlN2ZkNDE5NSJ9',
+    value: 'eyJpZCI6IjY5YzUwNjFlNjQ4ZTEzYjBiZDhkIiwic2VjcmV0IjoiMzYzMWNiOWY1YjJiYjU5MTUyNjU0ZGIxZGMzNTMxNmU5OWZkMmM5NDc0NzcyY2IzNmM4MGEwNzRlODMwMTRlYzJhZjFmOTQ4NDBkNmRjNzQzNDViOGExMzg2YzRjNzVhNTUwNzExMDczZDQ4OThkNTg4ZjYyN2UxNmUwN2VmNTYwNzhmMjQ2MThlMDk0ZmY5YWM1MzMwOTI2MzNkNGQwYTIzZGZkNTdmNjY0MGVjZjU3YTJhOWQ4NzA1OThjZDBlYmRmOWRiYTM5OTI1YWY4NDU3Yzc2MTczNjc4YTk0YTIyNWU0YmU1YWRkMGQ1ZWVmYmQwNmYwMWJhYmZhNGJlNiJ9',
     domain: 'localhost',
     path: '/'
 };
@@ -599,7 +599,7 @@ test.describe('Dedicated databases', () => {
                 await expect(page.getByText('Engine')).toBeVisible();
                 await expect(page.getByText('CPU')).toBeVisible();
                 await expect(page.getByText('Memory')).toBeVisible();
-                await expect(page.getByText('Storage')).toBeVisible();
+                await expect(page.getByText('Storage', { exact: true }).first()).toBeVisible();
             }
         });
 
