@@ -7,21 +7,23 @@
     import { Button, Form, InputSelect, InputNumber, InputSwitch } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import type { DedicatedDatabase, PoolerConfig, PoolerMode } from '$lib/sdk/dedicatedDatabases';
+    import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
 
     let {
         database
     }: {
-        database: DedicatedDatabase;
+        database: Models.DedicatedDatabase;
     } = $props();
+
+    type PoolerMode = 'transaction' | 'session';
 
     const modeOptions: { value: PoolerMode; label: string }[] = [
         { value: 'transaction', label: 'Transaction' },
         { value: 'session', label: 'Session' }
     ];
 
-    let poolerConfig: PoolerConfig | null = $state(null);
+    let poolerConfig: Models.DedicatedDatabasePooler | null = $state(null);
     let isLoading = $state(true);
 
     let poolerEnabled: boolean = $state(false);
@@ -29,17 +31,17 @@
     let poolSize: number = $state(25);
 
     let initialEnabled = $state(false);
-    let initialMode: PoolerMode = $state('transaction');
+    let initialMode: string = $state('transaction');
     let initialPoolSize = $state(25);
 
     onMount(async () => {
         try {
             poolerConfig = await sdk
                 .forProject(page.params.region, page.params.project)
-                .dedicatedDatabases.getPoolerConfig(database.$id);
+                .compute.getDatabasePooler({ databaseId: database.$id });
 
             poolerEnabled = poolerConfig.enabled;
-            poolerMode = poolerConfig.mode;
+            poolerMode = poolerConfig.mode as PoolerMode;
             poolSize = poolerConfig.defaultPoolSize;
 
             initialEnabled = poolerConfig.enabled;
@@ -61,13 +63,12 @@
 
     async function updatePooler() {
         try {
-            const dedicatedSdk = sdk.forProject(
+            await sdk.forProject(
                 page.params.region,
                 page.params.project
-            ).dedicatedDatabases;
-
-            await dedicatedSdk.updatePoolerConfig(database.$id, {
-                mode: poolerEnabled ? poolerMode : undefined,
+            ).compute.updateDatabasePooler({
+                databaseId: database.$id,
+                mode: poolerEnabled ? poolerMode as any : undefined,
                 defaultPoolSize: poolerEnabled ? poolSize : undefined
             });
 

@@ -7,12 +7,12 @@
     import { Button, Form, InputSelect } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import type { DedicatedDatabase } from '$lib/sdk/dedicatedDatabases';
+    import type { Models } from '@appwrite.io/console';
 
     let {
         database
     }: {
-        database: DedicatedDatabase;
+        database: Models.DedicatedDatabase;
     } = $props();
 
     const tierOptions = [
@@ -48,7 +48,8 @@
 
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .dedicatedDatabases.update(database.$id, {
+                .compute.updateDatabase({
+                    databaseId: database.$id,
                     cpu: resources.cpu,
                     memory: resources.memory
                 });

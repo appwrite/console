@@ -13,12 +13,12 @@
     } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import type { DedicatedDatabase } from '$lib/sdk/dedicatedDatabases';
+    import type { Models } from '@appwrite.io/console';
 
     let {
         database
     }: {
-        database: DedicatedDatabase;
+        database: Models.DedicatedDatabase;
     } = $props();
 
     const allStatements = ['SELECT', 'INSERT', 'UPDATE', 'DELETE', 'EXPLAIN'] as const;
@@ -60,13 +60,14 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .dedicatedDatabases.update(database.$id, {
+                .compute.updateDatabase({
+                    databaseId: database.$id,
                     sqlApiEnabled,
                     sqlApiMaxBytes: maxBytes,
                     sqlApiMaxRows: maxRows,
                     sqlApiTimeoutSeconds: timeout,
                     sqlApiAllowedStatements: allowedStatements
-                });
+                } as any);
 
             initialEnabled = sqlApiEnabled;
             initialMaxBytes = maxBytes;

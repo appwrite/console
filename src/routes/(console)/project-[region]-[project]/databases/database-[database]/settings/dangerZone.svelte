@@ -4,13 +4,13 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import Delete from '../delete.svelte';
-    import type { DedicatedDatabase } from '$lib/sdk/dedicatedDatabases';
+    import type { Models } from '@appwrite.io/console';
     import { Layout, Typography } from '@appwrite.io/pink-svelte';
 
     let {
         database
     }: {
-        database: DedicatedDatabase;
+        database: Models.DedicatedDatabase;
     } = $props();
 
     let showDelete = $state(false);
@@ -53,7 +53,7 @@
 
     <svelte:fragment slot="actions">
         <Button
-            secondary
+            danger
             on:click={() => {
                 showDelete = true;
                 trackEvent(Click.DatabaseDatabaseDelete);

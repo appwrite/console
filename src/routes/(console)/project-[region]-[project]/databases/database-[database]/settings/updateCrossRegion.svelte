@@ -8,14 +8,14 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import type { DedicatedDatabase, CrossRegionStatus } from '$lib/sdk/dedicatedDatabases';
+    import type { Models } from '@appwrite.io/console';
     import { Badge, Layout } from '@appwrite.io/pink-svelte';
     import { toLocaleDateTime } from '$lib/helpers/date';
 
     let {
         database
     }: {
-        database: DedicatedDatabase;
+        database: Models.DedicatedDatabase;
     } = $props();
 
     const regionOptions: { value: string; label: string }[] = [
@@ -29,6 +29,15 @@
         { value: 'ams', label: 'Amsterdam' },
         { value: 'sgp', label: 'Singapore' }
     ];
+
+    type CrossRegionStatus = {
+        enabled: boolean;
+        primaryRegion: string;
+        standbyRegion: string;
+        standbyStatus: 'healthy' | 'degraded' | 'unhealthy' | 'provisioning';
+        lagSeconds: number;
+        lastSyncedAt: string;
+    };
 
     let crossRegionStatus: CrossRegionStatus | null = $state(null);
     let isLoading = $state(true);
@@ -66,7 +75,7 @@
         try {
             crossRegionStatus = await sdk
                 .forProject(page.params.region, page.params.project)
-                .dedicatedDatabases.getCrossRegionStatus(database.$id);
+                .compute['getCrossRegionStatus'](database.$id);
             isEnabled = crossRegionStatus.enabled;
         } catch {
             // 404 means not enabled
@@ -83,7 +92,7 @@
         try {
             crossRegionStatus = await sdk
                 .forProject(page.params.region, page.params.project)
-                .dedicatedDatabases.enableCrossRegion(database.$id, standbyRegion);
+                .compute['enableCrossRegion'](database.$id, standbyRegion);
 
             isEnabled = true;
             standbyRegion = '';
@@ -112,7 +121,7 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .dedicatedDatabases.disableCrossRegion(database.$id);
+                .compute['disableCrossRegion'](database.$id);
 
             isEnabled = false;
             crossRegionStatus = null;
@@ -142,7 +151,7 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .dedicatedDatabases.triggerCrossRegionFailover(database.$id);
+                .compute['triggerCrossRegionFailover'](database.$id);
 
             showFailoverConfirm = false;
 

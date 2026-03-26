@@ -9,25 +9,23 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import type {
-        DedicatedDatabase,
-        DatabaseConnection,
-        ConnectionRole
-    } from '$lib/sdk/dedicatedDatabases';
+    import type { Models } from '@appwrite.io/console';
     import { Badge, Layout, Typography } from '@appwrite.io/pink-svelte';
 
     let {
         database
     }: {
-        database: DedicatedDatabase;
+        database: Models.DedicatedDatabase;
     } = $props();
+
+    type ConnectionRole = 'readonly' | 'readwrite';
 
     const roleOptions: { value: ConnectionRole; label: string }[] = [
         { value: 'readwrite', label: 'Read / Write' },
         { value: 'readonly', label: 'Read only' }
     ];
 
-    let connections: DatabaseConnection[] = $state([]);
+    let connections: Models.DedicatedDatabaseConnection[] = $state([]);
     let isLoading = $state(true);
 
     let username: string = $state('');
@@ -35,14 +33,14 @@
     let isCreating = $state(false);
 
     let showDeleteConfirm = $state(false);
-    let connectionToDelete: DatabaseConnection | null = $state(null);
+    let connectionToDelete: Models.DedicatedDatabaseConnection | null = $state(null);
     let isDeleting = $state(false);
 
     onMount(async () => {
         try {
             const result = await sdk
                 .forProject(page.params.region, page.params.project)
-                .dedicatedDatabases.listConnections(database.$id);
+                .compute.listDatabaseConnections({ databaseId: database.$id });
 
             connections = result.connections;
         } catch {
@@ -58,7 +56,7 @@
         try {
             const connection = await sdk
                 .forProject(page.params.region, page.params.project)
-                .dedicatedDatabases.createConnection(database.$id, username, role);
+                .compute.createDatabaseConnection({ databaseId: database.$id, username, role });
 
             connections = [...connections, connection];
             username = '';
@@ -89,7 +87,7 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .dedicatedDatabases.deleteConnection(database.$id, connectionToDelete.$id);
+                .compute.deleteDatabaseConnection({ databaseId: database.$id, connectionId: connectionToDelete.$id });
 
             connections = connections.filter((c) => c.$id !== connectionToDelete.$id);
             showDeleteConfirm = false;
@@ -114,7 +112,7 @@
         }
     }
 
-    function getRoleLabel(r: ConnectionRole): string {
+    function getRoleLabel(r: string): string {
         return r === 'readwrite' ? 'Read / Write' : 'Read only';
     }
 </script>

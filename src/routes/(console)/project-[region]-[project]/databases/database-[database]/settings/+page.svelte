@@ -13,7 +13,7 @@
     import Delete from '../delete.svelte';
     import { Query } from '@appwrite.io/console';
     import { Layout, Skeleton } from '@appwrite.io/pink-svelte';
-    import type { DedicatedDatabase } from '$lib/sdk/dedicatedDatabases';
+    import type { Models } from '@appwrite.io/console';
     import { getTerminologies } from '$database/(entity)';
     import UpdateName from './updateName.svelte';
     import UpdateTier from './updateTier.svelte';
@@ -24,21 +24,18 @@
     import UpdateAutoscaling from './updateAutoscaling.svelte';
     import UpdatePooler from './updatePooler.svelte';
     import UpdateExtensions from './updateExtensions.svelte';
-    import UpdateConnections from './updateConnections.svelte';
-    import RotateCredentials from './rotateCredentials.svelte';
     import UpgradeVersion from './upgradeVersion.svelte';
     import UpdateReadReplicas from './updateReadReplicas.svelte';
     import UpdateCrossRegion from './updateCrossRegion.svelte';
     import UpdateHAStatus from './updateHAStatus.svelte';
     import UpdateBackupStorage from './updateBackupStorage.svelte';
-    import UpdateSecurity from './updateSecurity.svelte';
     import UpdateSqlApi from './updateSqlApi.svelte';
     import DangerZone from './dangerZone.svelte';
 
     const data = page.data;
 
     const database = $derived(data.database);
-    const dedicatedDatabase = $derived(data.dedicatedDatabase as DedicatedDatabase | null);
+    const dedicatedDatabase = $derived(data.dedicatedDatabase as Models.DedicatedDatabase | null);
 
     const isDedicatedType = $derived(
         dedicatedDatabase !== null &&
@@ -152,13 +149,7 @@
             <UpdateExtensions database={dedicatedDatabase} />
         {/if}
 
-        <!-- 10. Database Users -->
-        <UpdateConnections database={dedicatedDatabase} />
-
-        <!-- 11. Credential Rotation -->
-        <RotateCredentials database={dedicatedDatabase} />
-
-        <!-- 12. Version Upgrade - dedicated and shared -->
+        <!-- 10. Version Upgrade - dedicated and shared -->
         {#if isDedicated || isShared}
             <UpgradeVersion database={dedicatedDatabase} />
         {/if}
@@ -181,13 +172,10 @@
             <UpdateBackupStorage database={dedicatedDatabase} />
         {/if}
 
-        <!-- 17. Security - all types -->
-        <UpdateSecurity database={dedicatedDatabase} />
-
-        <!-- 18. SQL API -->
+        <!-- 17. SQL API -->
         <UpdateSqlApi database={dedicatedDatabase} />
 
-        <!-- 19. Delete Database - all types -->
+        <!-- 18. Delete Database - all types -->
         <DangerZone database={dedicatedDatabase} />
     </Container>
 {:else if database}

@@ -4,24 +4,37 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid, Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Button, InputText } from '$lib/elements/forms';
+    import { Button, InputSelect } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import type { DedicatedDatabase, DatabaseStatusDetail } from '$lib/sdk/dedicatedDatabases';
+    import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { Typography, Layout } from '@appwrite.io/pink-svelte';
 
     let {
         database
     }: {
-        database: DedicatedDatabase;
+        database: Models.DedicatedDatabase;
     } = $props();
 
-    let statusDetail: DatabaseStatusDetail | null = $state(null);
+    let statusDetail: Models.DatabaseStatus | null = $state(null);
     let showConfirm = $state(false);
     let isUpgrading = $state(false);
     let targetVersion: string = $state('');
     let isLoading = $state(true);
+
+    const engineVersions: Record<string, string[]> = {
+        postgres: ['17', '18'],
+        mysql: ['8.0', '8.4'],
+        mariadb: ['10.11', '11.4'],
+        mongodb: ['7.0', '8.0']
+    };
+
+    const versionOptions = $derived(
+        (engineVersions[database.engine] ?? [])
+            .filter((v) => v > database.version)
+            .map((v) => ({ value: v, label: v }))
+    );
 
     const currentVersion = $derived(statusDetail?.version ?? database.version);
 
@@ -29,7 +42,7 @@
         try {
             statusDetail = await sdk
                 .forProject(page.params.region, page.params.project)
-                .dedicatedDatabases.getStatus(database.$id);
+                .compute.getDatabaseStatus({ databaseId: database.$id });
         } catch {
             // Status not available
         } finally {
@@ -42,7 +55,7 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .dedicatedDatabases.upgradeVersion(database.$id, targetVersion);
+                .compute.createDatabaseUpgrade({ databaseId: database.$id, targetVersion });
 
             await invalidate(Dependencies.DATABASE);
 
@@ -69,8 +82,8 @@
 {#if !isLoading}
     <CardGrid>
         <svelte:fragment slot="title">Version</svelte:fragment>
-        Upgrade your database engine to a newer version. This operation may cause a brief
-        interruption.
+        Upgrade your database engine to a newer version. This operation uses green/blue deployment
+        with zero downtime.
         <svelte:fragment slot="aside">
             <Layout.Stack gap="m">
                 <Layout.Stack gap="xxs">
@@ -81,11 +94,12 @@
                         {currentVersion}
                     </Typography.Text>
                 </Layout.Stack>
-                <InputText
+                <InputSelect
                     id="targetVersion"
                     label="Target version"
-                    placeholder="e.g. 16.2"
-                    bind:value={targetVersion} />
+                    placeholder="Select a version"
+                    bind:value={targetVersion}
+                    options={versionOptions} />
             </Layout.Stack>
         </svelte:fragment>
 
@@ -108,8 +122,8 @@
         onSubmit={upgradeVersion}>
         <p class="text">
             Are you sure you want to upgrade <b>{database.name}</b> from version
-            <b>{currentVersion}</b> to <b>{targetVersion}</b>? The database may be briefly
-            unavailable during the upgrade.
+            <b>{currentVersion}</b> to <b>{targetVersion}</b>? This operation uses green/blue
+            deployment with zero downtime.
         </p>
         <svelte:fragment slot="footer">
             <Button text on:click={() => (showConfirm = false)}>Cancel</Button>

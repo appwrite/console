@@ -14,18 +14,16 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import type {
-        DedicatedDatabase,
-        HAStatus,
-        HASyncMode
-    } from '$lib/sdk/dedicatedDatabases';
+    import type { Models } from '@appwrite.io/console';
     import { Badge, Layout } from '@appwrite.io/pink-svelte';
 
     let {
         database
     }: {
-        database: DedicatedDatabase;
+        database: Models.DedicatedDatabase;
     } = $props();
+
+    type HASyncMode = 'async' | 'sync' | 'quorum';
 
     const syncModeOptions: { value: HASyncMode; label: string }[] = [
         { value: 'async', label: 'Asynchronous' },
@@ -33,16 +31,16 @@
         { value: 'quorum', label: 'Quorum' }
     ];
 
-    let haStatus: HAStatus | null = $state(null);
+    let haStatus: Models.DedicatedDatabaseHAStatus | null = $state(null);
     let isLoading = $state(true);
 
     let haEnabled: boolean = $state(database.highAvailability);
     let replicaCount: number = $state(database.haReplicaCount);
-    let syncMode: HASyncMode = $state(database.haSyncMode ?? 'async');
+    let syncMode: HASyncMode = $state((database.haSyncMode ?? 'async') as HASyncMode);
 
     let initialEnabled = $state(database.highAvailability);
     let initialReplicaCount = $state(database.haReplicaCount);
-    let initialSyncMode: HASyncMode = $state(database.haSyncMode ?? 'async');
+    let initialSyncMode: HASyncMode = $state((database.haSyncMode ?? 'async') as HASyncMode);
 
     let showFailoverConfirm = $state(false);
     let isFailingOver = $state(false);
@@ -72,7 +70,7 @@
         try {
             haStatus = await sdk
                 .forProject(page.params.region, page.params.project)
-                .dedicatedDatabases.getHAStatus(database.$id);
+                .compute.getDatabaseHAStatus({ databaseId: database.$id });
         } catch {
             haStatus = null;
         } finally {
@@ -84,10 +82,11 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .dedicatedDatabases.update(database.$id, {
+                .compute.updateDatabase({
+                    databaseId: database.$id,
                     highAvailability: haEnabled,
                     haReplicaCount: replicaCount,
-                    haSyncMode: syncMode
+                    haSyncMode: syncMode as any
                 });
 
             initialEnabled = haEnabled;
@@ -98,7 +97,7 @@
             try {
                 haStatus = await sdk
                     .forProject(page.params.region, page.params.project)
-                    .dedicatedDatabases.getHAStatus(database.$id);
+                    .compute.getDatabaseHAStatus({ databaseId: database.$id });
             } catch {
                 // Ignore if HA was just disabled
             }
@@ -125,7 +124,7 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .dedicatedDatabases.createFailover(database.$id);
+                .compute.createDatabaseFailover({ databaseId: database.$id });
 
             showFailoverConfirm = false;
 
@@ -133,7 +132,7 @@
             try {
                 haStatus = await sdk
                     .forProject(page.params.region, page.params.project)
-                    .dedicatedDatabases.getHAStatus(database.$id);
+                    .compute.getDatabaseHAStatus({ databaseId: database.$id });
             } catch {
                 // Ignore
             }
@@ -213,7 +212,7 @@
             </svelte:fragment>
 
             <svelte:fragment slot="actions">
-                <Layout.Stack direction="row" gap="s">
+                <Layout.Stack direction="row" gap="s" justifyContent="flex-end">
                     {#if haEnabled && haStatus?.enabled}
                         <Button
                             secondary

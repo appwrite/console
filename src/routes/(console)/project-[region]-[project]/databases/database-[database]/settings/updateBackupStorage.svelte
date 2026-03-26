@@ -8,18 +8,16 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import type {
-        DedicatedDatabase,
-        BackupStorageConfig,
-        BackupStorageProvider
-    } from '$lib/sdk/dedicatedDatabases';
+    import type { Models } from '@appwrite.io/console';
     import { Layout } from '@appwrite.io/pink-svelte';
 
     let {
         database
     }: {
-        database: DedicatedDatabase;
+        database: Models.DedicatedDatabase;
     } = $props();
+
+    type BackupStorageProvider = 's3' | 'gcs' | 'azure';
 
     const providerOptions: { value: BackupStorageProvider; label: string }[] = [
         { value: 's3', label: 'Amazon S3' },
@@ -27,7 +25,7 @@
         { value: 'azure', label: 'Azure Blob Storage' }
     ];
 
-    let config: BackupStorageConfig | null = $state(null);
+    let config: Models.DedicatedDatabaseBackupStorage | null = $state(null);
     let isLoading = $state(true);
     let isConfigured = $state(false);
 
@@ -47,7 +45,7 @@
         try {
             config = await sdk
                 .forProject(page.params.region, page.params.project)
-                .dedicatedDatabases.getBackupStorageConfig(database.$id);
+                .compute['getBackupStorageConfig'](database.$id);
             isConfigured = true;
         } catch {
             // 404 means not configured
@@ -63,12 +61,13 @@
         try {
             config = await sdk
                 .forProject(page.params.region, page.params.project)
-                .dedicatedDatabases.configureBackupStorage(database.$id, {
+                .compute.updateDatabaseBackupStorage({
+                    databaseId: database.$id,
                     provider,
                     bucket,
-                    region,
-                    accessKeyId,
-                    secretAccessKey,
+                    accessKey: accessKeyId,
+                    secretKey: secretAccessKey,
+                    region: region || undefined,
                     prefix: prefix || undefined,
                     endpoint: endpoint || undefined
                 });
@@ -103,7 +102,7 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .dedicatedDatabases.deleteBackupStorageConfig(database.$id);
+                .compute['deleteBackupStorageConfig'](database.$id);
 
             isConfigured = false;
             config = null;

@@ -7,13 +7,15 @@
     import { Button, Form, InputSelect, InputNumber } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import type { DedicatedDatabase, MaintenanceDay } from '$lib/sdk/dedicatedDatabases';
+    import type { Models } from '@appwrite.io/console';
 
     let {
         database
     }: {
-        database: DedicatedDatabase;
+        database: Models.DedicatedDatabase;
     } = $props();
+
+    type MaintenanceDay = 'sun' | 'mon' | 'tue' | 'wed' | 'thu' | 'fri' | 'sat';
 
     const dayOptions: { value: MaintenanceDay; label: string }[] = [
         { value: 'sun', label: 'Sunday' },
@@ -30,7 +32,7 @@
         label: `${String(i).padStart(2, '0')}:00 UTC`
     }));
 
-    let day: MaintenanceDay = $state(database.maintenanceWindowDay);
+    let day: MaintenanceDay = $state(database.maintenanceWindowDay as MaintenanceDay);
     let hourUtc: number = $state(database.maintenanceWindowHourUtc);
     let durationMinutes: number = $state(database.maintenanceWindowDurationMinutes);
 
@@ -44,8 +46,9 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .dedicatedDatabases.updateMaintenance(database.$id, {
-                    day,
+                .compute.updateDatabaseMaintenance({
+                    databaseId: database.$id,
+                    day: day as any,
                     hourUtc,
                     durationMinutes
                 });

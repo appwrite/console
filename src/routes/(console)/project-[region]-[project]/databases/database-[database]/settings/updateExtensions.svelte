@@ -8,16 +8,16 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import type { DedicatedDatabase, DatabaseExtensions } from '$lib/sdk/dedicatedDatabases';
+    import type { Models } from '@appwrite.io/console';
     import { Badge, Layout } from '@appwrite.io/pink-svelte';
 
     let {
         database
     }: {
-        database: DedicatedDatabase;
+        database: Models.DedicatedDatabase;
     } = $props();
 
-    let extensions: DatabaseExtensions | null = $state(null);
+    let extensions: Models.DedicatedDatabaseExtensions | null = $state(null);
     let isLoading = $state(true);
     let selectedExtension: string = $state('');
     let isInstalling = $state(false);
@@ -38,7 +38,7 @@
         try {
             extensions = await sdk
                 .forProject(page.params.region, page.params.project)
-                .dedicatedDatabases.listExtensions(database.$id);
+                .compute.listDatabaseExtensions({ databaseId: database.$id });
         } catch {
             extensions = { installed: [], available: [] };
         } finally {
@@ -52,7 +52,7 @@
         try {
             extensions = await sdk
                 .forProject(page.params.region, page.params.project)
-                .dedicatedDatabases.createExtension(database.$id, selectedExtension);
+                .compute.createDatabaseExtension({ databaseId: database.$id, name: selectedExtension });
 
             selectedExtension = '';
 
@@ -81,7 +81,7 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .dedicatedDatabases.deleteExtension(database.$id, extensionToUninstall);
+                .compute.deleteDatabaseExtension({ databaseId: database.$id, extensionName: extensionToUninstall });
 
             if (extensions) {
                 extensions = {

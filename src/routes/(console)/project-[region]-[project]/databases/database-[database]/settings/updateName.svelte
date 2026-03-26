@@ -7,12 +7,12 @@
     import { Button, Form, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import type { DedicatedDatabase } from '$lib/sdk/dedicatedDatabases';
+    import type { Models } from '@appwrite.io/console';
 
     let {
         database
     }: {
-        database: DedicatedDatabase;
+        database: Models.DedicatedDatabase;
     } = $props();
 
     let databaseName: string = $state(database.name);
@@ -21,7 +21,7 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .dedicatedDatabases.update(database.$id, { name: databaseName });
+                .compute.updateDatabase({ databaseId: database.$id, name: databaseName });
 
             await invalidate(Dependencies.DATABASE);
 

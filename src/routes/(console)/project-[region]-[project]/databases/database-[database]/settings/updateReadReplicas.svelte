@@ -8,13 +8,13 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import type { DedicatedDatabase, ReadReplica } from '$lib/sdk/dedicatedDatabases';
+    import type { Models } from '@appwrite.io/console';
     import { Badge, Layout } from '@appwrite.io/pink-svelte';
 
     let {
         database
     }: {
-        database: DedicatedDatabase;
+        database: Models.DedicatedDatabase;
     } = $props();
 
     const regionOptions: { value: string; label: string }[] = [
@@ -29,7 +29,7 @@
         { value: 'sgp', label: 'Singapore' }
     ];
 
-    let replicas: ReadReplica[] = $state([]);
+    let replicas: Models.DedicatedDatabaseReadReplica[] = $state([]);
     let isLoading = $state(true);
 
     let targetRegion: string = $state('');
@@ -37,7 +37,7 @@
     let isCreating = $state(false);
 
     let showDeleteConfirm = $state(false);
-    let replicaToDelete: ReadReplica | null = $state(null);
+    let replicaToDelete: Models.DedicatedDatabaseReadReplica | null = $state(null);
     let isDeleting = $state(false);
 
     const availableRegionOptions = $derived(
@@ -52,7 +52,7 @@
         try {
             const result = await sdk
                 .forProject(page.params.region, page.params.project)
-                .dedicatedDatabases.listReadReplicas(database.$id);
+                .compute.listReadReplicas({ databaseId: database.$id });
             replicas = result.replicas ?? [];
         } catch {
             replicas = [];
@@ -83,11 +83,11 @@
         try {
             const replica = await sdk
                 .forProject(page.params.region, page.params.project)
-                .dedicatedDatabases.createReadReplica(
-                    database.$id,
-                    targetRegion,
+                .compute.createReadReplica({
+                    databaseId: database.$id,
+                    targetRegion: targetRegion as any,
                     crossZoneConsent
-                );
+                });
 
             replicas = [...replicas, replica];
             targetRegion = '';
@@ -118,7 +118,7 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .dedicatedDatabases.deleteReadReplica(database.$id, replicaToDelete.$id);
+                .compute.deleteReadReplica({ databaseId: database.$id, replicaId: replicaToDelete.$id });
 
             replicas = replicas.filter((r) => r.$id !== replicaToDelete?.$id);
             showDeleteConfirm = false;
