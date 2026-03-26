@@ -40,9 +40,11 @@
     export let data: LayoutData;
     $: isProjectBlocked = getIsProjectBlocked(data.project);
     $: $disableCommands(isProjectBlocked);
-    $: allOrgsHavePremiumSupport = $organizationList.teams.every(
-        (team) => (team as Models.Organization).billingPlanDetails.premiumSupport
-    );
+    $: allOrgsHavePremiumSupport =
+        isCloud &&
+        ($organizationList?.teams ?? []).every(
+            (team) => (team as Models.Organization).billingPlanDetails?.premiumSupport === true
+        );
     $: hasPremiumSupport = $currentPlan?.premiumSupport ?? allOrgsHavePremiumSupport ?? false;
 
     function contactSupport() {
