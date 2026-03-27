@@ -39,6 +39,7 @@
     import SecretVariableModal from './secretVariableModal.svelte';
     import { Confirm } from '$lib/components';
     import { resolveRoute, withPath } from '$lib/stores/navigation';
+    import { isSmallViewport } from '$lib/stores/viewport';
 
     export let project: Models.Project;
     export let variableList: Models.VariableList;
@@ -266,6 +267,18 @@
               });
           })
         : false;
+
+    $: variableColumns = $isSmallViewport
+        ? [
+              { id: 'key', width: { min: 320, max: 480 } },
+              { id: 'value', width: { min: 180, max: 320 } },
+              { id: 'actions', width: 50 }
+          ]
+        : [
+              { id: 'key', width: { min: 200, max: 400 } },
+              { id: 'value', width: { min: 200, max: 400 } },
+              { id: 'actions', width: 50 }
+          ];
 </script>
 
 <CardGrid>
@@ -288,8 +301,8 @@
     {/if}
     <svelte:fragment slot="aside">
         <Layout.Stack gap="l">
-            <Layout.Stack direction="row">
-                <Layout.Stack direction="row" gap="s">
+            <Layout.Stack direction="row" gap="s" wrap="wrap">
+                <Layout.Stack direction="row" gap="s" wrap="wrap">
                     <Button
                         secondary
                         on:mousedown={() => {
@@ -345,13 +358,7 @@
                         </p>
                     </Alert.Inline>
                 {/if}
-                <Table.Root
-                    columns={[
-                        { id: 'key', width: { min: 200, max: 400 } },
-                        { id: 'value', width: { min: 200, max: 400 } },
-                        { id: 'actions', width: 50 }
-                    ]}
-                    let:root>
+                <Table.Root columns={variableColumns} let:root>
                     <svelte:fragment slot="header" let:root>
                         <Table.Header.Cell column="key" {root}>Key</Table.Header.Cell>
                         <Table.Header.Cell column="value" {root}>Value</Table.Header.Cell>

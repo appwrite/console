@@ -31,6 +31,7 @@
     import DeleteVariableModal from './deleteVariableModal.svelte';
     import UpdateVariableModal from './updateVariableModal.svelte';
     import { Click, trackEvent } from '$lib/actions/analytics';
+    import { isSmallViewport } from '$lib/stores/viewport';
 
     const DOCS_LINKS: Record<ProductLabel, string> = {
         site: 'https://appwrite.io/docs/products/sites/develop#accessing-environment-variables',
@@ -62,19 +63,27 @@
     const createSource = $derived(analyticsCreateSource || analyticsSource);
     const docsLink = $derived(DOCS_LINKS[productLabel]);
 
-    const tableColumns = [
-        { id: 'key', width: { min: 300 } },
-        { id: 'value', width: { min: 280 } },
-        { id: 'actions', width: 40 }
-    ];
+    const tableColumns = $derived(
+        $isSmallViewport
+            ? [
+                  { id: 'key', width: { min: 360 } },
+                  { id: 'value', width: { min: 220 } },
+                  { id: 'actions', width: 40 }
+              ]
+            : [
+                  { id: 'key', width: { min: 300 } },
+                  { id: 'value', width: { min: 280 } },
+                  { id: 'actions', width: 40 }
+              ]
+    );
 </script>
 
 <Accordion title="Environment variables" badge="Optional" hideDivider>
     <Layout.Stack gap="xl">
         Set up environment variables to securely manage keys and settings for your project.
         <Layout.Stack gap="l">
-            <Layout.Stack direction="row">
-                <Layout.Stack direction="row" gap="s">
+            <Layout.Stack direction="row" gap="s" wrap="wrap">
+                <Layout.Stack direction="row" gap="s" wrap="wrap">
                     <Button
                         secondary
                         size="s"
