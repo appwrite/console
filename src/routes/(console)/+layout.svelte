@@ -34,6 +34,7 @@
     import { feedback } from '$lib/stores/feedback';
     import { hasStripePublicKey, isCloud, VARS } from '$lib/system';
     import { stripe } from '$lib/stores/stripe';
+    import MobileFeedbackModal from './wizard/feedback/mobileFeedbackModal.svelte';
     import MobileSupportModal from './wizard/support/mobileSupportModal.svelte';
     import { showSupportModal } from './wizard/support/store';
     import { activeHeaderAlert, consoleVariables } from './store';
@@ -340,6 +341,10 @@
 {/if}
 
 <Create bind:show={$newOrgModal} />
+
+{#if $feedback.show}
+    <MobileFeedbackModal />
+{/if}
 
 {#if $showSupportModal}
     <MobileSupportModal bind:show={$showSupportModal}></MobileSupportModal>

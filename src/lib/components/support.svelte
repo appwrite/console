@@ -88,7 +88,7 @@
                 </div>
 
                 {#if option.showSupport}
-                    <div class="u-flex u-gap-12 u-cross-center">
+                    <div class="support-premium-row">
                         {#if !hasPremiumSupport}
                             <Button
                                 href={upgradeURL}
@@ -113,14 +113,13 @@
                             </Button>
                         {/if}
 
-                        <div class="u-flex u-gap-6 u-cross-center">
+                        <div class="support-hours">
                             <span
                                 aria-hidden="true"
                                 class="{isSupportOnline()
                                     ? 'icon-check-circle u-color-text-success'
                                     : 'icon-x-circle'} u-padding-block-end-1"></span>
-
-                            {supportTimings}
+                            <span class="support-hours-text">{supportTimings}</span>
                         </div>
                     </div>
                 {:else}
@@ -193,5 +192,40 @@
         border: 1px solid var(--border-neutral, #ededf0);
         /* override required due to the card's background color */
         background: var(--bgcolor-neutral-default, #fafafb) !important;
+    }
+
+    .support-premium-row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.75rem 1rem;
+    }
+
+    .support-hours {
+        display: flex;
+        align-items: center;
+        gap: 0.375rem;
+        min-width: 0;
+    }
+
+    .support-hours-text {
+        font-size: var(--font-size-xs, 0.75rem);
+        line-height: 1.35;
+        color: var(--fgcolor-neutral-secondary, #56565c);
+    }
+
+    :global(.theme-dark) .support-hours-text {
+        color: var(--fgcolor-neutral-secondary, #a0a0a8);
+    }
+
+    @media (max-width: 520px) {
+        .support-premium-row {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .support-hours {
+            padding-inline-start: 0.125rem;
+        }
     }
 </style>
