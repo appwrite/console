@@ -15,6 +15,7 @@
         Upload
     } from '@appwrite.io/pink-svelte';
     import { parse } from '$lib/helpers/envfile';
+    import { removeFile } from '$lib/helpers/files';
 
     export let show = false;
     export let variableList: Models.VariableList;
@@ -33,6 +34,15 @@
     let files: FileList;
     let secret = false;
     let error: string;
+    $: filesList = files?.length
+        ? Array.from(files).map((file) => ({
+              ...file,
+              name: file.name,
+              size: file.size,
+              extension: file.type,
+              removable: true
+          }))
+        : [];
 
     async function handleSubmit() {
         try {
@@ -87,21 +97,33 @@
     <Upload.Dropzone bind:files>
         <Layout.Stack alignItems="center" gap="s">
             <Layout.Stack alignItems="center" gap="s">
-                <Layout.Stack alignItems="center" justifyContent="center" direction="row" gap="s">
-                    <Typography.Text variant="l-500">
+                <Layout.Stack alignItems="center" justifyContent="center" inline>
+                    <Typography.Text variant="l-500" align="center" inline>
                         Drag and drop files here or click to upload
-                    </Typography.Text>
-                    <Tooltip>
-                        <Layout.Stack alignItems="center" justifyContent="center" inline>
-                            <Icon icon={IconInfo} size="s" />
+                        <Layout.Stack
+                            style="display: inline-flex; vertical-align: middle;"
+                            inline
+                            alignItems="center"
+                            justifyContent="center">
+                            <Tooltip>
+                                <Icon icon={IconInfo} size="s" />
+                                <svelte:fragment slot="tooltip"
+                                    >Only .env files allowed</svelte:fragment>
+                            </Tooltip>
                         </Layout.Stack>
-                        <svelte:fragment slot="tooltip">Only .env files allowed</svelte:fragment>
-                    </Tooltip>
+                    </Typography.Text>
                 </Layout.Stack>
-                <Typography.Caption variant="400">Up to 100 variables allowed</Typography.Caption>
+                <Typography.Caption variant="400" align="center">
+                    Up to 100 variables allowed
+                </Typography.Caption>
             </Layout.Stack>
         </Layout.Stack>
     </Upload.Dropzone>
+    {#if files?.length}
+        <Upload.List
+            bind:files={filesList}
+            on:remove={(e) => (files = removeFile(e.detail, files))} />
+    {/if}
 
     {#if variableList.total > 0}
         <Alert.Inline>
