@@ -10,33 +10,10 @@ export const load: PageLoad = async ({ depends, url, params }) => {
     const offset = Number(url.searchParams.get('offset') ?? 0);
     const variablesOffset = Number(url.searchParams.get('variablesOffset') ?? 0);
     const projectSdk = sdk.forProject(params.region, params.project);
-
-    async function listAllVariables() {
-        const allVariables = [];
-        let nextOffset = 0;
-        let total = 0;
-
-        do {
-            const response = await projectSdk.projectApi.listVariables({
-                queries: [Query.limit(limit), Query.offset(nextOffset)]
-            });
-
-            allVariables.push(...response.variables);
-            total = response.total;
-            nextOffset += response.variables.length;
-        } while (nextOffset < total);
-
-        return {
-            total,
-            variables: allVariables
-        };
-    }
-
-    const [variables, allVariables, installations] = await Promise.all([
+    const [variables, installations] = await Promise.all([
         projectSdk.projectApi.listVariables({
             queries: [Query.limit(limit), Query.offset(variablesOffset)]
         }),
-        listAllVariables(),
         projectSdk.vcs.listInstallations({
             queries: [Query.limit(limit), Query.offset(offset)]
         })
@@ -47,7 +24,6 @@ export const load: PageLoad = async ({ depends, url, params }) => {
         offset,
         variablesOffset,
         variables,
-        allVariables,
         installations
     };
 };

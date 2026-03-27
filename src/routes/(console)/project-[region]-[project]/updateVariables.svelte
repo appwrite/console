@@ -1,6 +1,6 @@
 <script lang="ts">
     import { sdk } from '$lib/stores/sdk';
-    import { ID, type Models } from '@appwrite.io/console';
+    import { ID, Query, type Models } from '@appwrite.io/console';
     import { Button } from '$lib/elements/forms';
     import { CardGrid, Empty, Output, PaginationInline } from '$lib/components';
     import UploadVariables from './uploadVariablesModal.svelte';
@@ -74,8 +74,41 @@
     let showSecretModal = false;
     let showDeleteModal = false;
     let deleteError: string;
+    let fullVariableList: Models.VariableList | undefined = allVariableList;
+    let previousVariableList = variableList;
     let offset = 0;
     const limit = 10;
+
+    async function loadAllVariables() {
+        const projectSdk = sdk.forProject(page.params.region, page.params.project);
+        const variables = [...variableList.variables];
+        let nextOffset = variables.length;
+        let total = variableList.total;
+
+        while (nextOffset < total) {
+            const response = await projectSdk.projectApi.listVariables({
+                queries: [Query.limit(variablesLimit), Query.offset(nextOffset)]
+            });
+
+            total = response.total;
+
+            if (response.variables.length === 0) break;
+
+            variables.push(...response.variables);
+            nextOffset += response.variables.length;
+        }
+
+        return {
+            total,
+            variables
+        };
+    }
+
+    async function ensureAllVariablesLoaded() {
+        if (fullVariableList && fullVariableList.total === variableList.total) return;
+
+        fullVariableList = await loadAllVariables();
+    }
     function handleVariablesImportStatus(detail: VariablesOperationItem) {
         variablesOperation.set(detail);
     }
@@ -87,6 +120,7 @@
                 sdkCreateVariable(variable.key, variable.value, variable?.secret || false)
             );
             await Promise.all(promises);
+            fullVariableList = undefined;
             showVariablesModal = false;
             addNotification({
                 type: 'success',
@@ -108,6 +142,7 @@
         const variable = event.detail;
         try {
             await sdkUpdateVariable(variable.$id, variable.key, variable.value, variable.secret);
+            fullVariableList = undefined;
             selectedVar = null;
             showVariablesModal = false;
             addNotification({
@@ -129,6 +164,7 @@
         const variable = event.detail;
         try {
             await sdkUpdateVariable(variable.$id, variable.key, variable.value, variable.secret);
+            fullVariableList = undefined;
             selectedVar = null;
             showVariablesModal = false;
             addNotification({
@@ -159,6 +195,7 @@
             });
 
             await sdkDeleteVariable(selectedVar.$id);
+            fullVariableList = undefined;
             showDeleteModal = false;
             selectedVar = null;
             variablesOperation.set({
@@ -251,6 +288,7 @@
 
             selectedVar = null;
             showPromoteModal = false;
+            fullVariableList = undefined;
 
             await Promise.all([
                 invalidate(Dependencies.FUNCTION),
@@ -290,7 +328,20 @@
           })
         : [];
 
-    $: editorVariableList = allVariableList ?? variableList;
+    $: if (allVariableList && fullVariableList !== allVariableList) {
+        fullVariableList = allVariableList;
+    }
+
+    $: if (variableList !== previousVariableList) {
+        fullVariableList = undefined;
+        previousVariableList = variableList;
+    }
+
+    $: if (fullVariableList && fullVariableList.total !== variableList.total) {
+        fullVariableList = undefined;
+    }
+
+    $: editorVariableList = fullVariableList ?? allVariableList ?? variableList;
     $: displayedVariables = backendPagination
         ? variableList.variables
         : variableList.variables.slice(offset, offset + limit);
@@ -351,7 +402,8 @@
                 <Layout.Stack direction="row" gap="s" wrap={$isSmallViewport ? 'wrap' : 'nowrap'}>
                     <Button
                         secondary
-                        on:mousedown={() => {
+                        on:mousedown={async () => {
+                            await ensureAllVariablesLoaded();
                             showEditorModal = true;
                             trackEvent(Click.VariablesUpdateClick, { source: analyticsSource });
                         }}>
@@ -359,7 +411,8 @@
                     </Button>
                     <Button
                         secondary
-                        on:mousedown={() => {
+                        on:mousedown={async () => {
+                            await ensureAllVariablesLoaded();
                             showVariablesUpload = true;
                             trackEvent(Click.VariablesUpdateClick, { source: analyticsSource });
                         }}>
