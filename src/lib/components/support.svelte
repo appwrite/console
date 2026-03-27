@@ -214,10 +214,6 @@
         color: var(--fgcolor-neutral-secondary, #56565c);
     }
 
-    :global(.theme-dark) .support-hours-text {
-        color: var(--fgcolor-neutral-secondary, #a0a0a8);
-    }
-
     @media (max-width: 520px) {
         .support-premium-row {
             flex-direction: column;

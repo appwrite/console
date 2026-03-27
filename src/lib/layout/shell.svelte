@@ -14,7 +14,7 @@
     import SideNavigation from '$lib/layout/navigation.svelte';
     import { hasOnboardingDismissed } from '$lib/helpers/onboarding';
     import { isSidebarOpen, noWidthTransition } from '$lib/stores/sidebar';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { BillingPlanGroup, type Models } from '@appwrite.io/console';
     import { getSidebarState, isInDatabasesRoute, updateSidebarState } from '$lib/helpers/sidebar';
     import { isTabletViewport } from '$lib/stores/viewport';
@@ -25,13 +25,7 @@
     export let showSideNavigation = false;
     export let selectedProject: Models.Project = null;
 
-    /** Only treat `page.data.project` as active outside project routes (e.g. account, org) it can linger. */
-    $: activeProject =
-        selectedProject &&
-        ($page.route.id?.includes('project-[region]-[project]') ||
-            $page.url.pathname.includes('/project-'))
-            ? selectedProject
-            : null;
+    $: activeProject = selectedProject && page.params.project ? selectedProject : null;
 
     // variables
     let yOnMenuOpen: number;
@@ -145,8 +139,9 @@
     // subscriptions
     isNewWizardStatusOpen.subscribe((value) => (showHeader = !value));
 
-    page.subscribe(({ url }) => {
-        $showSubNavigation = url.searchParams.get('openNavbar') === 'true';
+    $: {
+        const url = page.url;
+        showSubNavigation.set(url.searchParams.get('openNavbar') === 'true');
         clearTimeout(timeoutId);
 
         if (url.pathname.includes('project-')) {
@@ -156,7 +151,7 @@
         } else {
             showContentTransition = false;
         }
-    });
+    }
 
     // reactive blocks
     $: sideSize = $hasSubNavigation ? ($isNarrow ? '17rem' : '25rem') : '12.5rem';
@@ -196,7 +191,7 @@
 
     $: state = $isSidebarOpen ? 'open' : 'closed';
 
-    $: subNavigation = $page.data.subNavigation;
+    $: subNavigation = page.data.subNavigation;
 
     $: shouldRenderSidebar =
         !$isNewWizardStatusOpen && showSideNavigation && !$showOnboardingAnimation;
@@ -257,9 +252,9 @@
         class:icons-content={state === 'icons' && activeProject}
         class:no-sidebar={!hasSidebarSpace}>
         <section class="main-content" data-test={showSideNavigation}>
-            {#if $page.data?.header}
+            {#if page.data?.header}
                 <div class="layout-header">
-                    <svelte:component this={$page.data.header} />
+                    <svelte:component this={page.data.header} />
                 </div>
             {/if}
             <slot />
