@@ -97,6 +97,10 @@
                 {sdkDeleteVariable}
                 isGlobal
                 variableList={data.variables}
+                allVariableList={data.allVariables}
+                backendPagination
+                variablesOffset={data.variablesOffset}
+                variablesLimit={data.limit}
                 project={data.project}
                 analyticsSource="project_settings" />
             <ChangeOrganization />

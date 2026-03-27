@@ -4,6 +4,7 @@
     import { Button } from '$lib/elements/forms';
     import { CardGrid, Empty, Output, PaginationInline } from '$lib/components';
     import UploadVariables from './uploadVariablesModal.svelte';
+    import { variablesOperation, type VariablesOperationItem } from './variablesOperation';
     import { goto, invalidate } from '$app/navigation';
     import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Dependencies } from '$lib/constants';
@@ -43,6 +44,7 @@
 
     export let project: Models.Project;
     export let variableList: Models.VariableList;
+    export let allVariableList: Models.VariableList | undefined = undefined;
     export let globalVariableList: Models.VariableList | undefined = undefined;
     export let analyticsSource = '';
     export let isGlobal: boolean;
@@ -59,6 +61,9 @@
     ) => Promise<unknown>;
     export let sdkDeleteVariable: (variableId: string) => Promise<unknown>;
     export let product: 'function' | 'site' = 'function';
+    export let backendPagination = false;
+    export let variablesOffset = 0;
+    export let variablesLimit = 10;
 
     let selectedVar: Models.Variable = null;
     let showVariablesUpload = false;
@@ -71,6 +76,9 @@
     let deleteError: string;
     let offset = 0;
     const limit = 10;
+    function handleVariablesImportStatus(detail: VariablesOperationItem) {
+        variablesOperation.set(detail);
+    }
 
     async function handleVariableCreated(event: CustomEvent<Models.Variable[]>) {
         const variables = event.detail;
@@ -140,10 +148,25 @@
     }
 
     async function handleVariableDeleted() {
+        const deleteId = selectedVar.$id;
+
         try {
+            variablesOperation.set({
+                id: deleteId,
+                count: 1,
+                mode: 'delete',
+                status: 'deleting'
+            });
+
             await sdkDeleteVariable(selectedVar.$id);
             showDeleteModal = false;
             selectedVar = null;
+            variablesOperation.set({
+                id: deleteId,
+                count: 1,
+                mode: 'delete',
+                status: 'completed'
+            });
             addNotification({
                 type: 'success',
                 message: `${project.name} ${
@@ -153,6 +176,13 @@
             trackEvent(Submit.VariableDelete);
         } catch (error) {
             deleteError = error.message;
+            variablesOperation.set({
+                id: deleteId,
+                count: 1,
+                mode: 'delete',
+                status: 'failed',
+                error: error.message
+            });
             trackError(error, Submit.VariableDelete);
         }
     }
@@ -260,8 +290,13 @@
           })
         : [];
 
+    $: editorVariableList = allVariableList ?? variableList;
+    $: displayedVariables = backendPagination
+        ? variableList.variables
+        : variableList.variables.slice(offset, offset + limit);
+
     $: hasConflictOnPage = globalVariableList
-        ? variableList.variables.slice(offset, offset + limit).filter((variable) => {
+        ? displayedVariables.filter((variable) => {
               return globalVariableList.variables.find((globalVariable) => {
                   return variable.key === globalVariable.key;
               });
@@ -279,6 +314,17 @@
               { id: 'value', width: { min: 200, max: 400 } },
               { id: 'actions', width: 50 }
           ];
+
+    async function handleVariablesPageChange() {
+        const nextUrl = new URL(page.url);
+
+        nextUrl.searchParams.set('variablesOffset', String(variablesOffset));
+
+        await goto(nextUrl, {
+            keepFocus: true,
+            noScroll: true
+        });
+    }
 </script>
 
 <CardGrid>
@@ -364,7 +410,7 @@
                         <Table.Header.Cell column="value" {root}>Value</Table.Header.Cell>
                         <Table.Header.Cell column="actions" {root} />
                     </svelte:fragment>
-                    {#each variableList.variables.slice(offset, offset + limit) as variable}
+                    {#each displayedVariables as variable}
                         <Table.Row.Base {root}>
                             <Table.Cell column="key" {root}>
                                 {@const isConflicting = globalVariableList
@@ -461,10 +507,19 @@
                         </Table.Row.Base>
                     {/each}
                 </Table.Root>
-                {#if sum > limit}
+                {#if sum > (backendPagination ? variablesLimit : limit)}
                     <Layout.Stack direction="row" justifyContent="space-between">
                         <p class="text">Total variables: {sum}</p>
-                        <PaginationInline total={sum} {limit} bind:offset hidePages />
+                        {#if backendPagination}
+                            <PaginationInline
+                                total={sum}
+                                limit={variablesLimit}
+                                bind:offset={variablesOffset}
+                                hidePages
+                                on:change={handleVariablesPageChange} />
+                        {:else}
+                            <PaginationInline total={sum} {limit} bind:offset hidePages />
+                        {/if}
                     </Layout.Stack>
                 {/if}
             </Layout.Stack>
@@ -504,7 +559,7 @@
         {sdkCreateVariable}
         {sdkUpdateVariable}
         {sdkDeleteVariable}
-        {variableList}
+        variableList={editorVariableList}
         bind:showEditor={showEditorModal} />
 {/if}
 
@@ -524,8 +579,9 @@
     <UploadVariables
         {sdkCreateVariable}
         {sdkUpdateVariable}
-        {variableList}
-        bind:show={showVariablesUpload} />
+        variableList={editorVariableList}
+        bind:show={showVariablesUpload}
+        onStatusChange={handleVariablesImportStatus} />
 {/if}
 
 {#if showDeleteModal}
