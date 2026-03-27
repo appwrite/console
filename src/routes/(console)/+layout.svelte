@@ -342,7 +342,7 @@
 
 <Create bind:show={$newOrgModal} />
 
-{#if $feedback.show}
+{#if $feedback.show && $isSmallViewport}
     <MobileFeedbackModal />
 {/if}
 
