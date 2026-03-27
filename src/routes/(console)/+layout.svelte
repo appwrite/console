@@ -44,6 +44,7 @@
     import { UsageRates } from '$lib/components/billing';
     import { canSeeProjects } from '$lib/stores/roles';
     import { BottomModalAlert } from '$lib/components';
+    import { isSmallViewport } from '$lib/stores/viewport';
     import {
         IconAnnotation,
         IconBookOpen,
