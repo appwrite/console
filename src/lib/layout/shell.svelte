@@ -76,6 +76,20 @@
         showAccountMenu = false;
     }
 
+    function closeOpenDialogs() {
+        if (typeof document === 'undefined') return;
+
+        const openDialogs = Array.from(
+            document.querySelectorAll('dialog[open]')
+        ) as HTMLDialogElement[];
+
+        for (const dialog of openDialogs) {
+            dialog.close();
+        }
+
+        document.documentElement.classList.remove('u-overflow-hidden');
+    }
+
     /**
      * Cancel navigation when wizard is open and triggered by popstate
      */
@@ -184,6 +198,7 @@
     $: isProjectBlocked = getIsProjectBlocked(selectedProject);
     $: {
         if ($isSidebarOpen) {
+            closeOpenDialogs();
             yOnMenuOpen = window.scrollY;
             bodyStyle.set({ position: 'fixed', top: `-${window.scrollY}px` });
         } else if (!$isSidebarOpen) {
@@ -260,7 +275,7 @@
 <style lang="scss">
     .shell-sidebar-area {
         position: relative;
-        z-index: 2;
+        z-index: 20;
     }
 
     .content {
@@ -335,7 +350,7 @@
         height: 100vh;
         right: 0;
         top: 0;
-        z-index: 10;
+        z-index: 19;
         background-color: #56565c1a;
         backdrop-filter: blur(5px);
         transition:
