@@ -14,7 +14,7 @@
     import SideNavigation from '$lib/layout/navigation.svelte';
     import { hasOnboardingDismissed } from '$lib/helpers/onboarding';
     import { isSidebarOpen, noWidthTransition } from '$lib/stores/sidebar';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { BillingPlanGroup, type Models } from '@appwrite.io/console';
     import { getSidebarState, isInDatabasesRoute, updateSidebarState } from '$lib/helpers/sidebar';
     import { isTabletViewport } from '$lib/stores/viewport';
@@ -24,6 +24,8 @@
     export let showFooter = true;
     export let showSideNavigation = false;
     export let selectedProject: Models.Project = null;
+
+    $: activeProject = selectedProject && page.params.project ? selectedProject : null;
 
     // variables
     let yOnMenuOpen: number;
@@ -52,23 +54,21 @@
     }
 
     function getProgressCard() {
-        if (selectedProject && !hasOnboardingDismissed(selectedProject.$id, $user)) {
-            const { platforms, pingCount } = selectedProject;
-            let percentage = 33;
+        if (!activeProject || hasOnboardingDismissed(activeProject.$id, $user)) return undefined;
 
-            if (platforms.length > 0 && pingCount === 0) {
-                percentage = 66;
-            } else if (pingCount > 0) {
-                percentage = 100;
-            }
+        const { platforms, pingCount } = activeProject;
+        let percentage = 33;
 
-            return {
-                title: 'Get started',
-                percentage
-            };
+        if (platforms.length > 0 && pingCount === 0) {
+            percentage = 66;
+        } else if (pingCount > 0) {
+            percentage = 100;
         }
 
-        return undefined;
+        return {
+            title: 'Get started',
+            percentage
+        };
     }
 
     function handleResize() {
@@ -139,8 +139,9 @@
     // subscriptions
     isNewWizardStatusOpen.subscribe((value) => (showHeader = !value));
 
-    page.subscribe(({ url }) => {
-        $showSubNavigation = url.searchParams.get('openNavbar') === 'true';
+    $: {
+        const url = page.url;
+        showSubNavigation.set(url.searchParams.get('openNavbar') === 'true');
         clearTimeout(timeoutId);
 
         if (url.pathname.includes('project-')) {
@@ -150,7 +151,7 @@
         } else {
             showContentTransition = false;
         }
-    });
+    }
 
     // reactive blocks
     $: sideSize = $hasSubNavigation ? ($isNarrow ? '17rem' : '25rem') : '12.5rem';
@@ -185,17 +186,17 @@
             };
         }),
 
-        currentProject: selectedProject
+        currentProject: activeProject
     };
 
     $: state = $isSidebarOpen ? 'open' : 'closed';
 
-    $: subNavigation = $page.data.subNavigation;
+    $: subNavigation = page.data.subNavigation;
 
     $: shouldRenderSidebar =
         !$isNewWizardStatusOpen && showSideNavigation && !$showOnboardingAnimation;
-    $: hasSidebarSpace = shouldRenderSidebar && !$isTabletViewport && !!selectedProject;
-    $: isProjectBlocked = getIsProjectBlocked(selectedProject);
+    $: hasSidebarSpace = shouldRenderSidebar && !$isTabletViewport && !!activeProject;
+    $: isProjectBlocked = getIsProjectBlocked(activeProject);
     $: {
         if ($isSidebarOpen) {
             closeOpenDialogs();
@@ -219,6 +220,7 @@
 <main
     class:has-alert={$activeHeaderAlert?.show}
     class:is-open={$showSubNavigation}
+    class:is-sidebar-open={$isSidebarOpen}
     class:u-hide={$wizard.show || $wizard.cover}
     class:is-fixed-layout={$activeHeaderAlert?.show}
     class:no-header={!showHeader || $showOnboardingAnimation}
@@ -230,7 +232,7 @@
     <div class="shell-sidebar-area" inert={isProjectBlocked || undefined}>
         {#if shouldRenderSidebar}
             <Sidebar
-                project={selectedProject}
+                project={activeProject}
                 progressCard={getProgressCard()}
                 avatar={navbarProps.avatar}
                 bind:subNavigation
@@ -247,12 +249,12 @@
     <div
         class="content"
         class:has-transition={showContentTransition}
-        class:icons-content={state === 'icons' && selectedProject}
+        class:icons-content={state === 'icons' && activeProject}
         class:no-sidebar={!hasSidebarSpace}>
         <section class="main-content" data-test={showSideNavigation}>
-            {#if $page.data?.header}
+            {#if page.data?.header}
                 <div class="layout-header">
-                    <svelte:component this={$page.data.header} />
+                    <svelte:component this={page.data.header} />
                 </div>
             {/if}
             <slot />
@@ -276,6 +278,12 @@
     .shell-sidebar-area {
         position: relative;
         z-index: 20;
+    }
+
+    @media (max-width: 1023px) {
+        main.is-sidebar-open .content {
+            pointer-events: none;
+        }
     }
 
     .content {
