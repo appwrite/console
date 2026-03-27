@@ -66,8 +66,8 @@
     const tableColumns = $derived(
         $isSmallViewport
             ? [
-                  { id: 'key', width: { min: 360 } },
-                  { id: 'value', width: { min: 220 } },
+                  { id: 'key', width: { min: 420 } },
+                  { id: 'value', width: { min: 240 } },
                   { id: 'actions', width: 40 }
               ]
             : [
@@ -82,8 +82,8 @@
     <Layout.Stack gap="xl">
         Set up environment variables to securely manage keys and settings for your project.
         <Layout.Stack gap="l">
-            <Layout.Stack direction="row" gap="s" wrap="wrap">
-                <Layout.Stack direction="row" gap="s" wrap="wrap">
+            <Layout.Stack direction="row" gap="s">
+                <Layout.Stack direction="row" gap="s">
                     <Button
                         secondary
                         size="s"
@@ -146,7 +146,7 @@
             {:else if variables?.length}
                 <Paginator items={variables} limit={6} hideFooter={variables.length <= 6}>
                     {#snippet children(paginatedItems)}
-                        <Table.Root let:root columns={tableColumns}>
+                        <Table.Root class="responsive-table" let:root columns={tableColumns}>
                             <svelte:fragment slot="header" let:root>
                                 <Table.Header.Cell column="key" {root}>Key</Table.Header.Cell>
                                 <Table.Header.Cell column="value" {root}>Value</Table.Header.Cell>

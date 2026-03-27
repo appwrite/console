@@ -270,12 +270,12 @@
 
     $: variableColumns = $isSmallViewport
         ? [
-              { id: 'key', width: { min: 320, max: 480 } },
-              { id: 'value', width: { min: 180, max: 320 } },
+              { id: 'key', width: { min: 380, max: 520 } },
+              { id: 'value', width: { min: 200, max: 320 } },
               { id: 'actions', width: 50 }
           ]
         : [
-              { id: 'key', width: { min: 200, max: 400 } },
+              { id: 'key', width: { min: 280, max: 420 } },
               { id: 'value', width: { min: 200, max: 400 } },
               { id: 'actions', width: 50 }
           ];
@@ -301,8 +301,8 @@
     {/if}
     <svelte:fragment slot="aside">
         <Layout.Stack gap="l">
-            <Layout.Stack direction="row" gap="s" wrap="wrap">
-                <Layout.Stack direction="row" gap="s" wrap="wrap">
+            <Layout.Stack direction="row" gap="s" wrap={$isSmallViewport ? 'wrap' : 'nowrap'}>
+                <Layout.Stack direction="row" gap="s" wrap={$isSmallViewport ? 'wrap' : 'nowrap'}>
                     <Button
                         secondary
                         on:mousedown={() => {
@@ -358,7 +358,7 @@
                         </p>
                     </Alert.Inline>
                 {/if}
-                <Table.Root columns={variableColumns} let:root>
+                <Table.Root class="responsive-table" columns={variableColumns} let:root>
                     <svelte:fragment slot="header" let:root>
                         <Table.Header.Cell column="key" {root}>Key</Table.Header.Cell>
                         <Table.Header.Cell column="value" {root}>Value</Table.Header.Cell>
@@ -373,7 +373,11 @@
                                       ) !== undefined
                                     : false}
 
-                                <Layout.Stack gap="xxs" alignItems="center" direction="row">
+                                <Layout.Stack
+                                    gap="xxs"
+                                    alignItems="center"
+                                    direction="row"
+                                    class="variable-key-cell">
                                     {#if isConflicting && hasConflictOnPage}
                                         <span
                                             class="icon-exclamation u-color-text-warning"
@@ -533,3 +537,16 @@
         <p>Are you sure you want to delete this variable? This action is irreversible.</p>
     </Confirm>
 {/if}
+
+<style>
+    :global(.variable-key-cell) {
+        min-width: 0;
+    }
+
+    :global(.variable-key-cell > :last-child) {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+</style>
