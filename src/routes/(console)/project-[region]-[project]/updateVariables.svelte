@@ -7,6 +7,7 @@
     import { goto, invalidate } from '$app/navigation';
     import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Dependencies } from '$lib/constants';
+    import { Container } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import PromoteVariableModal from './promoteVariableModal.svelte';
     import CreateVariable from './createVariableModal.svelte';
@@ -343,111 +344,114 @@
                         </p>
                     </Alert.Inline>
                 {/if}
-                <Table.Root
-                    columns={[
-                        { id: 'key', width: { min: 200, max: 400 } },
-                        { id: 'value', width: { min: 200, max: 400 } },
-                        { id: 'actions', width: 50 }
-                    ]}
-                    let:root>
-                    <svelte:fragment slot="header" let:root>
-                        <Table.Header.Cell column="key" {root}>Key</Table.Header.Cell>
-                        <Table.Header.Cell column="value" {root}>Value</Table.Header.Cell>
-                        <Table.Header.Cell column="actions" {root} />
-                    </svelte:fragment>
-                    {#each variableList.variables.slice(offset, offset + limit) as variable}
-                        <Table.Row.Base {root}>
-                            <Table.Cell column="key" {root}>
-                                {@const isConflicting = globalVariableList
-                                    ? globalVariableList.variables.find(
-                                          (globalVariable) => globalVariable.key === variable.key
-                                      ) !== undefined
-                                    : false}
+                <Container disableMarginBlock>
+                    <Table.Root
+                        columns={[
+                            { id: 'key', width: { min: 200, max: 400 } },
+                            { id: 'value', width: { min: 200, max: 400 } },
+                            { id: 'actions', width: 50 }
+                        ]}
+                        let:root>
+                        <svelte:fragment slot="header" let:root>
+                            <Table.Header.Cell column="key" {root}>Key</Table.Header.Cell>
+                            <Table.Header.Cell column="value" {root}>Value</Table.Header.Cell>
+                            <Table.Header.Cell column="actions" {root} />
+                        </svelte:fragment>
+                        {#each variableList.variables.slice(offset, offset + limit) as variable}
+                            <Table.Row.Base {root}>
+                                <Table.Cell column="key" {root}>
+                                    {@const isConflicting = globalVariableList
+                                        ? globalVariableList.variables.find(
+                                              (globalVariable) =>
+                                                  globalVariable.key === variable.key
+                                          ) !== undefined
+                                        : false}
 
-                                <Layout.Stack gap="xxs" alignItems="center" direction="row">
-                                    {#if isConflicting && hasConflictOnPage}
-                                        <span
-                                            class="icon-exclamation u-color-text-warning"
-                                            aria-hidden="true"></span>
+                                    <Layout.Stack gap="xxs" alignItems="center" direction="row">
+                                        {#if isConflicting && hasConflictOnPage}
+                                            <span
+                                                class="icon-exclamation u-color-text-warning"
+                                                aria-hidden="true"></span>
+                                        {/if}
+                                        <Copy value={variable.key} />
+                                        <Output value={variable.key} hideCopyIcon>
+                                            {variable.key}
+                                        </Output>
+                                    </Layout.Stack>
+                                </Table.Cell>
+
+                                <Table.Cell column="value" {root}>
+                                    {#if variable.secret}
+                                        <Badge content="Secret" variant="secondary" />
+                                    {:else}
+                                        <InteractiveText
+                                            variant="secret"
+                                            isVisible={false}
+                                            text={variable.value} />
                                     {/if}
-                                    <Copy value={variable.key} />
-                                    <Output value={variable.key} hideCopyIcon>
-                                        {variable.key}
-                                    </Output>
-                                </Layout.Stack>
-                            </Table.Cell>
-
-                            <Table.Cell column="value" {root}>
-                                {#if variable.secret}
-                                    <Badge content="Secret" variant="secondary" />
-                                {:else}
-                                    <InteractiveText
-                                        variant="secret"
-                                        isVisible={false}
-                                        text={variable.value} />
-                                {/if}
-                            </Table.Cell>
-                            <Table.Cell column="actions" {root}>
-                                <Popover placement="bottom-end" let:toggle padding="none">
-                                    <Button
-                                        text
-                                        icon
-                                        on:click={(e) => {
-                                            e.preventDefault();
-                                            toggle(e);
-                                        }}>
-                                        <Icon size="s" icon={IconDotsHorizontal} />
-                                    </Button>
-                                    <svelte:fragment slot="tooltip" let:toggle>
-                                        <ActionMenu.Root>
-                                            <ActionMenu.Item.Button
-                                                trailingIcon={IconPencil}
-                                                on:click={(e) => {
-                                                    selectedVar = variable;
-                                                    showUpdate = true;
-                                                    toggle(e);
-                                                }}>
-                                                Update
-                                            </ActionMenu.Item.Button>
-                                            {#if !variable.secret}
+                                </Table.Cell>
+                                <Table.Cell column="actions" {root}>
+                                    <Popover placement="bottom-end" let:toggle padding="none">
+                                        <Button
+                                            text
+                                            icon
+                                            on:click={(e) => {
+                                                e.preventDefault();
+                                                toggle(e);
+                                            }}>
+                                            <Icon size="s" icon={IconDotsHorizontal} />
+                                        </Button>
+                                        <svelte:fragment slot="tooltip" let:toggle>
+                                            <ActionMenu.Root>
                                                 <ActionMenu.Item.Button
-                                                    trailingIcon={IconEyeOff}
+                                                    trailingIcon={IconPencil}
                                                     on:click={(e) => {
                                                         selectedVar = variable;
-                                                        showSecretModal = true;
+                                                        showUpdate = true;
                                                         toggle(e);
                                                     }}>
-                                                    Secret
+                                                    Update
                                                 </ActionMenu.Item.Button>
-                                            {/if}
-                                            {#if !isGlobal}
+                                                {#if !variable.secret}
+                                                    <ActionMenu.Item.Button
+                                                        trailingIcon={IconEyeOff}
+                                                        on:click={(e) => {
+                                                            selectedVar = variable;
+                                                            showSecretModal = true;
+                                                            toggle(e);
+                                                        }}>
+                                                        Secret
+                                                    </ActionMenu.Item.Button>
+                                                {/if}
+                                                {#if !isGlobal}
+                                                    <ActionMenu.Item.Button
+                                                        trailingIcon={IconGlobeAlt}
+                                                        on:click={async (e) => {
+                                                            selectedVar = variable;
+                                                            showPromoteModal = true;
+                                                            toggle(e);
+                                                        }}>
+                                                        Promote
+                                                    </ActionMenu.Item.Button>
+                                                {/if}
                                                 <ActionMenu.Item.Button
-                                                    trailingIcon={IconGlobeAlt}
+                                                    status="danger"
+                                                    trailingIcon={IconTrash}
                                                     on:click={async (e) => {
                                                         selectedVar = variable;
-                                                        showPromoteModal = true;
+                                                        showDeleteModal = true;
                                                         toggle(e);
                                                     }}>
-                                                    Promote
+                                                    Delete
                                                 </ActionMenu.Item.Button>
-                                            {/if}
-                                            <ActionMenu.Item.Button
-                                                status="danger"
-                                                trailingIcon={IconTrash}
-                                                on:click={async (e) => {
-                                                    selectedVar = variable;
-                                                    showDeleteModal = true;
-                                                    toggle(e);
-                                                }}>
-                                                Delete
-                                            </ActionMenu.Item.Button>
-                                        </ActionMenu.Root>
-                                    </svelte:fragment>
-                                </Popover>
-                            </Table.Cell>
-                        </Table.Row.Base>
-                    {/each}
-                </Table.Root>
+                                            </ActionMenu.Root>
+                                        </svelte:fragment>
+                                    </Popover>
+                                </Table.Cell>
+                            </Table.Row.Base>
+                        {/each}
+                    </Table.Root>
+                </Container>
                 {#if sum > limit}
                     <Layout.Stack direction="row" justifyContent="space-between">
                         <p class="text">Total variables: {sum}</p>

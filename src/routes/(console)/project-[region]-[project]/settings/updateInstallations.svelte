@@ -2,6 +2,7 @@
     import { goto } from '$app/navigation';
     import { page } from '$app/state';
     import { Avatar, CardGrid, PaginationInline } from '$lib/components';
+    import { Container } from '$lib/layout';
     import { Button as FormButton } from '$lib/elements/forms';
     import { getApiEndpoint } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
@@ -95,68 +96,73 @@
                         Add installation
                     </FormButton>
                 </Layout.Stack>
-
-                <Table.Root
-                    let:root
-                    columns={[
-                        { id: 'owner', width: { min: 150, max: 500 } },
-                        { id: 'updated', width: { min: 150, max: 500 } },
-                        { id: 'actions', width: 60 }
-                    ]}>
-                    <svelte:fragment slot="header" let:root>
-                        <Table.Header.Cell column="owner" {root}>Owner</Table.Header.Cell>
-                        <Table.Header.Cell column="updated" {root}>Updated</Table.Header.Cell>
-                        <Table.Header.Cell column="actions" {root} />
-                    </svelte:fragment>
-                    {#each installations as installation, i}
-                        <Table.Row.Base {root}>
-                            <Table.Cell column="owner" {root}>
-                                <Layout.Stack direction="row" gap="s" alignItems="center">
-                                    <Avatar alt={installation.provider} size="xs">
-                                        <Icon
-                                            icon={getProviderIcon(installation.provider)}
-                                            size="s" />
-                                    </Avatar>
-                                    <Link href={getInstallationLink(installation)} external icon>
-                                        {installation.organization}
-                                    </Link>
-                                </Layout.Stack>
-                            </Table.Cell>
-                            <Table.Cell column="updated" {root}>
-                                <DualTimeView time={installation.$updatedAt} />
-                            </Table.Cell>
-                            <Table.Cell column="actions" {root}>
-                                <Popover let:toggle padding="none" placement="bottom-end">
-                                    <button
-                                        type="button"
-                                        class="button is-text is-only-icon"
-                                        aria-label="more options"
-                                        on:click={toggle}>
-                                        <span class="icon-dots-horizontal" aria-hidden="true"
-                                        ></span>
-                                    </button>
-                                    <ActionMenu.Root slot="tooltip">
-                                        <ActionMenu.Item.Anchor
-                                            href={configureGitHub()}
-                                            trailingIcon={IconExternalLink}
-                                            on:click={() => (showInstallationDropdown[i] = false)}>
-                                            Configure
-                                        </ActionMenu.Item.Anchor>
-                                        <ActionMenu.Item.Button
-                                            trailingIcon={IconXCircle}
-                                            on:click={() => {
-                                                showInstallationDropdown[i] = false;
-                                                showGitDisconnect = true;
-                                                selectedInstallation = installation;
-                                            }}>
-                                            Disconnect
-                                        </ActionMenu.Item.Button>
-                                    </ActionMenu.Root>
-                                </Popover>
-                            </Table.Cell>
-                        </Table.Row.Base>
-                    {/each}
-                </Table.Root>
+                <Container disableMarginBlock>
+                    <Table.Root
+                        let:root
+                        columns={[
+                            { id: 'owner', width: { min: 150, max: 500 } },
+                            { id: 'updated', width: { min: 150, max: 500 } },
+                            { id: 'actions', width: 60 }
+                        ]}>
+                        <svelte:fragment slot="header" let:root>
+                            <Table.Header.Cell column="owner" {root}>Owner</Table.Header.Cell>
+                            <Table.Header.Cell column="updated" {root}>Updated</Table.Header.Cell>
+                            <Table.Header.Cell column="actions" {root} />
+                        </svelte:fragment>
+                        {#each installations as installation, i}
+                            <Table.Row.Base {root}>
+                                <Table.Cell column="owner" {root}>
+                                    <Layout.Stack direction="row" gap="s" alignItems="center">
+                                        <Avatar alt={installation.provider} size="xs">
+                                            <Icon
+                                                icon={getProviderIcon(installation.provider)}
+                                                size="s" />
+                                        </Avatar>
+                                        <Link
+                                            href={getInstallationLink(installation)}
+                                            external
+                                            icon>
+                                            {installation.organization}
+                                        </Link>
+                                    </Layout.Stack>
+                                </Table.Cell>
+                                <Table.Cell column="updated" {root}>
+                                    <DualTimeView time={installation.$updatedAt} />
+                                </Table.Cell>
+                                <Table.Cell column="actions" {root}>
+                                    <Popover let:toggle padding="none" placement="bottom-end">
+                                        <button
+                                            type="button"
+                                            class="button is-text is-only-icon"
+                                            aria-label="more options"
+                                            on:click={toggle}>
+                                            <span class="icon-dots-horizontal" aria-hidden="true"
+                                            ></span>
+                                        </button>
+                                        <ActionMenu.Root slot="tooltip">
+                                            <ActionMenu.Item.Anchor
+                                                href={configureGitHub()}
+                                                trailingIcon={IconExternalLink}
+                                                on:click={() =>
+                                                    (showInstallationDropdown[i] = false)}>
+                                                Configure
+                                            </ActionMenu.Item.Anchor>
+                                            <ActionMenu.Item.Button
+                                                trailingIcon={IconXCircle}
+                                                on:click={() => {
+                                                    showInstallationDropdown[i] = false;
+                                                    showGitDisconnect = true;
+                                                    selectedInstallation = installation;
+                                                }}>
+                                                Disconnect
+                                            </ActionMenu.Item.Button>
+                                        </ActionMenu.Root>
+                                    </Popover>
+                                </Table.Cell>
+                            </Table.Row.Base>
+                        {/each}
+                    </Table.Root>
+                </Container>
                 {#if total > limit}
                     <Layout.Stack justifyContent="space-between">
                         <p class="text">Total installations: {total}</p>

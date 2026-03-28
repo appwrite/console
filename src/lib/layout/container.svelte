@@ -13,6 +13,7 @@
         databasesScreen = false,
         databasesMainScreen = false,
         expandHeightButton = false,
+        disableMarginBlock = false,
         size = null,
         children,
         ...restProps
@@ -26,6 +27,7 @@
         databasesScreen?: boolean;
         databasesMainScreen?: boolean;
         expandHeightButton?: boolean;
+        disableMarginBlock?: boolean;
         children?: Snippet;
         size?: 'small' | 'medium' | 'large' | 'xl' | 'xxl' | 'xxxl' | null;
     } & HTMLAttributes<HTMLDivElement> = $props();
@@ -46,6 +48,7 @@
         class:databasesScreen
         class:expandHeightButton
         class:databasesMainScreen
+        class:disableMarginBlock
         class="console-container"
         class:paddingInlineEndDouble
         class:paddingInlineEnd={!paddingInlineEnd}>
@@ -62,6 +65,9 @@
     }
     :global(.console-container) {
         margin-block: var(--base-32);
+        &.disableMarginBlock {
+            margin-block: unset;
+        }
 
         &.insideSideSheet {
             margin-block: var(--base-20);
