@@ -1,13 +1,13 @@
 <script lang="ts">
     import { sdk } from '$lib/stores/sdk';
-    import type { Models } from '@appwrite.io/console';
+    import { ID, Query, type Models } from '@appwrite.io/console';
     import { Button } from '$lib/elements/forms';
     import { CardGrid, Empty, Output, PaginationInline } from '$lib/components';
     import UploadVariables from './uploadVariablesModal.svelte';
+    import { variablesOperation, type VariablesOperationItem } from './variablesOperation';
     import { goto, invalidate } from '$app/navigation';
     import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Dependencies } from '$lib/constants';
-    import { Container } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import PromoteVariableModal from './promoteVariableModal.svelte';
     import CreateVariable from './createVariableModal.svelte';
@@ -40,9 +40,12 @@
     import SecretVariableModal from './secretVariableModal.svelte';
     import { Confirm } from '$lib/components';
     import { resolveRoute, withPath } from '$lib/stores/navigation';
+    import { isSmallViewport } from '$lib/stores/viewport';
+    import Container from '$lib/layout/container.svelte';
 
     export let project: Models.Project;
     export let variableList: Models.VariableList;
+    export let allVariableList: Models.VariableList | undefined = undefined;
     export let globalVariableList: Models.VariableList | undefined = undefined;
     export let analyticsSource = '';
     export let isGlobal: boolean;
@@ -59,6 +62,9 @@
     ) => Promise<unknown>;
     export let sdkDeleteVariable: (variableId: string) => Promise<unknown>;
     export let product: 'function' | 'site' = 'function';
+    export let backendPagination = false;
+    export let variablesOffset = 0;
+    export let variablesLimit = 10;
 
     let selectedVar: Models.Variable = null;
     let showVariablesUpload = false;
@@ -69,8 +75,44 @@
     let showSecretModal = false;
     let showDeleteModal = false;
     let deleteError: string;
+    let fullVariableList: Models.VariableList | undefined = allVariableList;
+    let previousVariableList = variableList;
     let offset = 0;
     const limit = 10;
+
+    async function loadAllVariables() {
+        const projectSdk = sdk.forProject(page.params.region, page.params.project);
+        const variables = [...variableList.variables];
+        let nextOffset = variables.length;
+        let total = variableList.total;
+
+        while (nextOffset < total) {
+            const response = await projectSdk.projectApi.listVariables({
+                queries: [Query.limit(variablesLimit), Query.offset(nextOffset)]
+            });
+
+            total = response.total;
+
+            if (response.variables.length === 0) break;
+
+            variables.push(...response.variables);
+            nextOffset += response.variables.length;
+        }
+
+        return {
+            total,
+            variables
+        };
+    }
+
+    async function ensureAllVariablesLoaded() {
+        if (fullVariableList && fullVariableList.total === variableList.total) return;
+
+        fullVariableList = await loadAllVariables();
+    }
+    function handleVariablesImportStatus(detail: VariablesOperationItem) {
+        variablesOperation.set(detail);
+    }
 
     async function handleVariableCreated(event: CustomEvent<Models.Variable[]>) {
         const variables = event.detail;
@@ -79,6 +121,7 @@
                 sdkCreateVariable(variable.key, variable.value, variable?.secret || false)
             );
             await Promise.all(promises);
+            fullVariableList = undefined;
             showVariablesModal = false;
             addNotification({
                 type: 'success',
@@ -100,6 +143,7 @@
         const variable = event.detail;
         try {
             await sdkUpdateVariable(variable.$id, variable.key, variable.value, variable.secret);
+            fullVariableList = undefined;
             selectedVar = null;
             showVariablesModal = false;
             addNotification({
@@ -121,6 +165,7 @@
         const variable = event.detail;
         try {
             await sdkUpdateVariable(variable.$id, variable.key, variable.value, variable.secret);
+            fullVariableList = undefined;
             selectedVar = null;
             showVariablesModal = false;
             addNotification({
@@ -140,10 +185,26 @@
     }
 
     async function handleVariableDeleted() {
+        const deleteId = selectedVar.$id;
+
         try {
+            variablesOperation.set({
+                id: deleteId,
+                count: 1,
+                mode: 'delete',
+                status: 'deleting'
+            });
+
             await sdkDeleteVariable(selectedVar.$id);
+            fullVariableList = undefined;
             showDeleteModal = false;
             selectedVar = null;
+            variablesOperation.set({
+                id: deleteId,
+                count: 1,
+                mode: 'delete',
+                status: 'completed'
+            });
             addNotification({
                 type: 'success',
                 message: `${project.name} ${
@@ -153,6 +214,13 @@
             trackEvent(Submit.VariableDelete);
         } catch (error) {
             deleteError = error.message;
+            variablesOperation.set({
+                id: deleteId,
+                count: 1,
+                mode: 'delete',
+                status: 'failed',
+                error: error.message
+            });
             trackError(error, Submit.VariableDelete);
         }
     }
@@ -173,6 +241,7 @@
                 await sdk
                     .forProject(page.params.region, page.params.project)
                     .projectApi.createVariable({
+                        variableId: ID.unique(),
                         key: variable.key,
                         value: variable.value,
                         secret: variable.secret
@@ -196,6 +265,7 @@
                 await sdk
                     .forProject(page.params.region, page.params.project)
                     .projectApi.createVariable({
+                        variableId: ID.unique(),
                         key: variable.key,
                         value: variable.value,
                         secret: variable.secret
@@ -219,6 +289,7 @@
 
             selectedVar = null;
             showPromoteModal = false;
+            fullVariableList = undefined;
 
             await Promise.all([
                 invalidate(Dependencies.FUNCTION),
@@ -258,13 +329,54 @@
           })
         : [];
 
+    $: if (allVariableList && fullVariableList !== allVariableList) {
+        fullVariableList = allVariableList;
+    }
+
+    $: if (variableList !== previousVariableList) {
+        fullVariableList = undefined;
+        previousVariableList = variableList;
+    }
+
+    $: if (fullVariableList && fullVariableList.total !== variableList.total) {
+        fullVariableList = undefined;
+    }
+
+    $: editorVariableList = fullVariableList ?? allVariableList ?? variableList;
+    $: displayedVariables = backendPagination
+        ? variableList.variables
+        : variableList.variables.slice(offset, offset + limit);
+
     $: hasConflictOnPage = globalVariableList
-        ? variableList.variables.slice(offset, offset + limit).filter((variable) => {
+        ? displayedVariables.filter((variable) => {
               return globalVariableList.variables.find((globalVariable) => {
                   return variable.key === globalVariable.key;
               });
           })
         : false;
+
+    $: variableColumns = $isSmallViewport
+        ? [
+              { id: 'key', width: { min: 380, max: 520 } },
+              { id: 'value', width: { min: 200, max: 320 } },
+              { id: 'actions', width: 50 }
+          ]
+        : [
+              { id: 'key', width: { min: 280, max: 420 } },
+              { id: 'value', width: { min: 200, max: 400 } },
+              { id: 'actions', width: 50 }
+          ];
+
+    async function handleVariablesPageChange() {
+        const nextUrl = new URL(page.url);
+
+        nextUrl.searchParams.set('variablesOffset', String(variablesOffset));
+
+        await goto(nextUrl, {
+            keepFocus: true,
+            noScroll: true
+        });
+    }
 </script>
 
 <CardGrid>
@@ -287,11 +399,12 @@
     {/if}
     <svelte:fragment slot="aside">
         <Layout.Stack gap="l">
-            <Layout.Stack direction="row">
-                <Layout.Stack direction="row" gap="s">
+            <Layout.Stack direction="row" gap="s" wrap={$isSmallViewport ? 'wrap' : 'nowrap'}>
+                <Layout.Stack direction="row" gap="s" wrap={$isSmallViewport ? 'wrap' : 'nowrap'}>
                     <Button
                         secondary
-                        on:mousedown={() => {
+                        on:mousedown={async () => {
+                            await ensureAllVariablesLoaded();
                             showEditorModal = true;
                             trackEvent(Click.VariablesUpdateClick, { source: analyticsSource });
                         }}>
@@ -299,7 +412,8 @@
                     </Button>
                     <Button
                         secondary
-                        on:mousedown={() => {
+                        on:mousedown={async () => {
+                            await ensureAllVariablesLoaded();
                             showVariablesUpload = true;
                             trackEvent(Click.VariablesUpdateClick, { source: analyticsSource });
                         }}>
@@ -345,117 +459,122 @@
                     </Alert.Inline>
                 {/if}
                 <Container disableMarginBlock>
-                    <Table.Root
-                        columns={[
-                            { id: 'key', width: { min: 200, max: 400 } },
-                            { id: 'value', width: { min: 200, max: 400 } },
-                            { id: 'actions', width: 50 }
-                        ]}
-                        let:root>
-                        <svelte:fragment slot="header" let:root>
-                            <Table.Header.Cell column="key" {root}>Key</Table.Header.Cell>
-                            <Table.Header.Cell column="value" {root}>Value</Table.Header.Cell>
-                            <Table.Header.Cell column="actions" {root} />
-                        </svelte:fragment>
-                        {#each variableList.variables.slice(offset, offset + limit) as variable}
-                            <Table.Row.Base {root}>
-                                <Table.Cell column="key" {root}>
-                                    {@const isConflicting = globalVariableList
-                                        ? globalVariableList.variables.find(
-                                              (globalVariable) =>
-                                                  globalVariable.key === variable.key
-                                          ) !== undefined
-                                        : false}
+                <Table.Root class="responsive-table" columns={variableColumns} let:root>
+                    <svelte:fragment slot="header" let:root>
+                        <Table.Header.Cell column="key" {root}>Key</Table.Header.Cell>
+                        <Table.Header.Cell column="value" {root}>Value</Table.Header.Cell>
+                        <Table.Header.Cell column="actions" {root} />
+                    </svelte:fragment>
+                    {#each displayedVariables as variable}
+                        <Table.Row.Base {root}>
+                            <Table.Cell column="key" {root}>
+                                {@const isConflicting = globalVariableList
+                                    ? globalVariableList.variables.find(
+                                          (globalVariable) => globalVariable.key === variable.key
+                                      ) !== undefined
+                                    : false}
 
-                                    <Layout.Stack gap="xxs" alignItems="center" direction="row">
-                                        {#if isConflicting && hasConflictOnPage}
-                                            <span
-                                                class="icon-exclamation u-color-text-warning"
-                                                aria-hidden="true"></span>
-                                        {/if}
-                                        <Copy value={variable.key} />
-                                        <Output value={variable.key} hideCopyIcon>
-                                            {variable.key}
-                                        </Output>
-                                    </Layout.Stack>
-                                </Table.Cell>
-
-                                <Table.Cell column="value" {root}>
-                                    {#if variable.secret}
-                                        <Badge content="Secret" variant="secondary" />
-                                    {:else}
-                                        <InteractiveText
-                                            variant="secret"
-                                            isVisible={false}
-                                            text={variable.value} />
+                                <Layout.Stack
+                                    gap="xxs"
+                                    alignItems="center"
+                                    direction="row"
+                                    class="variable-key-cell">
+                                    {#if isConflicting && hasConflictOnPage}
+                                        <span
+                                            class="icon-exclamation u-color-text-warning"
+                                            aria-hidden="true"></span>
                                     {/if}
-                                </Table.Cell>
-                                <Table.Cell column="actions" {root}>
-                                    <Popover placement="bottom-end" let:toggle padding="none">
-                                        <Button
-                                            text
-                                            icon
-                                            on:click={(e) => {
-                                                e.preventDefault();
-                                                toggle(e);
-                                            }}>
-                                            <Icon size="s" icon={IconDotsHorizontal} />
-                                        </Button>
-                                        <svelte:fragment slot="tooltip" let:toggle>
-                                            <ActionMenu.Root>
+                                    <Copy value={variable.key} />
+                                    <Output value={variable.key} hideCopyIcon>
+                                        {variable.key}
+                                    </Output>
+                                </Layout.Stack>
+                            </Table.Cell>
+
+                            <Table.Cell column="value" {root}>
+                                {#if variable.secret}
+                                    <Badge content="Secret" variant="secondary" />
+                                {:else}
+                                    <InteractiveText
+                                        variant="secret"
+                                        isVisible={false}
+                                        text={variable.value} />
+                                {/if}
+                            </Table.Cell>
+                            <Table.Cell column="actions" {root}>
+                                <Popover placement="bottom-end" let:toggle padding="none">
+                                    <Button
+                                        text
+                                        icon
+                                        on:click={(e) => {
+                                            e.preventDefault();
+                                            toggle(e);
+                                        }}>
+                                        <Icon size="s" icon={IconDotsHorizontal} />
+                                    </Button>
+                                    <svelte:fragment slot="tooltip" let:toggle>
+                                        <ActionMenu.Root>
+                                            <ActionMenu.Item.Button
+                                                trailingIcon={IconPencil}
+                                                on:click={(e) => {
+                                                    selectedVar = variable;
+                                                    showUpdate = true;
+                                                    toggle(e);
+                                                }}>
+                                                Update
+                                            </ActionMenu.Item.Button>
+                                            {#if !variable.secret}
                                                 <ActionMenu.Item.Button
-                                                    trailingIcon={IconPencil}
+                                                    trailingIcon={IconEyeOff}
                                                     on:click={(e) => {
                                                         selectedVar = variable;
-                                                        showUpdate = true;
+                                                        showSecretModal = true;
                                                         toggle(e);
                                                     }}>
-                                                    Update
+                                                    Secret
                                                 </ActionMenu.Item.Button>
-                                                {#if !variable.secret}
-                                                    <ActionMenu.Item.Button
-                                                        trailingIcon={IconEyeOff}
-                                                        on:click={(e) => {
-                                                            selectedVar = variable;
-                                                            showSecretModal = true;
-                                                            toggle(e);
-                                                        }}>
-                                                        Secret
-                                                    </ActionMenu.Item.Button>
-                                                {/if}
-                                                {#if !isGlobal}
-                                                    <ActionMenu.Item.Button
-                                                        trailingIcon={IconGlobeAlt}
-                                                        on:click={async (e) => {
-                                                            selectedVar = variable;
-                                                            showPromoteModal = true;
-                                                            toggle(e);
-                                                        }}>
-                                                        Promote
-                                                    </ActionMenu.Item.Button>
-                                                {/if}
+                                            {/if}
+                                            {#if !isGlobal}
                                                 <ActionMenu.Item.Button
-                                                    status="danger"
-                                                    trailingIcon={IconTrash}
+                                                    trailingIcon={IconGlobeAlt}
                                                     on:click={async (e) => {
                                                         selectedVar = variable;
-                                                        showDeleteModal = true;
+                                                        showPromoteModal = true;
                                                         toggle(e);
                                                     }}>
-                                                    Delete
+                                                    Promote
                                                 </ActionMenu.Item.Button>
-                                            </ActionMenu.Root>
-                                        </svelte:fragment>
-                                    </Popover>
-                                </Table.Cell>
-                            </Table.Row.Base>
-                        {/each}
-                    </Table.Root>
-                </Container>
-                {#if sum > limit}
+                                            {/if}
+                                            <ActionMenu.Item.Button
+                                                status="danger"
+                                                trailingIcon={IconTrash}
+                                                on:click={async (e) => {
+                                                    selectedVar = variable;
+                                                    showDeleteModal = true;
+                                                    toggle(e);
+                                                }}>
+                                                Delete
+                                            </ActionMenu.Item.Button>
+                                        </ActionMenu.Root>
+                                    </svelte:fragment>
+                                </Popover>
+                            </Table.Cell>
+                        </Table.Row.Base>
+                    {/each}
+                </Table.Root></Container>
+                {#if sum > (backendPagination ? variablesLimit : limit)}
                     <Layout.Stack direction="row" justifyContent="space-between">
                         <p class="text">Total variables: {sum}</p>
-                        <PaginationInline total={sum} {limit} bind:offset hidePages />
+                        {#if backendPagination}
+                            <PaginationInline
+                                total={sum}
+                                limit={variablesLimit}
+                                bind:offset={variablesOffset}
+                                hidePages
+                                on:change={handleVariablesPageChange} />
+                        {:else}
+                            <PaginationInline total={sum} {limit} bind:offset hidePages />
+                        {/if}
                     </Layout.Stack>
                 {/if}
             </Layout.Stack>
@@ -495,7 +614,7 @@
         {sdkCreateVariable}
         {sdkUpdateVariable}
         {sdkDeleteVariable}
-        {variableList}
+        variableList={editorVariableList}
         bind:showEditor={showEditorModal} />
 {/if}
 
@@ -515,8 +634,9 @@
     <UploadVariables
         {sdkCreateVariable}
         {sdkUpdateVariable}
-        {variableList}
-        bind:show={showVariablesUpload} />
+        variableList={editorVariableList}
+        bind:show={showVariablesUpload}
+        onStatusChange={handleVariablesImportStatus} />
 {/if}
 
 {#if showDeleteModal}
@@ -528,3 +648,16 @@
         <p>Are you sure you want to delete this variable? This action is irreversible.</p>
     </Confirm>
 {/if}
+
+<style>
+    :global(.variable-key-cell) {
+        min-width: 0;
+    }
+
+    :global(.variable-key-cell > :last-child) {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+</style>

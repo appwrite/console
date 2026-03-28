@@ -14,15 +14,18 @@
     import SideNavigation from '$lib/layout/navigation.svelte';
     import { hasOnboardingDismissed } from '$lib/helpers/onboarding';
     import { isSidebarOpen, noWidthTransition } from '$lib/stores/sidebar';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { BillingPlanGroup, type Models } from '@appwrite.io/console';
     import { getSidebarState, isInDatabasesRoute, updateSidebarState } from '$lib/helpers/sidebar';
     import { isTabletViewport } from '$lib/stores/viewport';
+    import { isProjectBlocked as getIsProjectBlocked } from '$lib/helpers/project';
 
     export let showHeader = true;
     export let showFooter = true;
     export let showSideNavigation = false;
     export let selectedProject: Models.Project = null;
+
+    $: activeProject = selectedProject && page.params.project ? selectedProject : null;
 
     // variables
     let yOnMenuOpen: number;
@@ -51,28 +54,40 @@
     }
 
     function getProgressCard() {
-        if (selectedProject && !hasOnboardingDismissed(selectedProject.$id, $user)) {
-            const { platforms, pingCount } = selectedProject;
-            let percentage = 33;
+        if (!activeProject || hasOnboardingDismissed(activeProject.$id, $user)) return undefined;
 
-            if (platforms.length > 0 && pingCount === 0) {
-                percentage = 66;
-            } else if (pingCount > 0) {
-                percentage = 100;
-            }
+        const { platforms, pingCount } = activeProject;
+        let percentage = 33;
 
-            return {
-                title: 'Get started',
-                percentage
-            };
+        if (platforms.length > 0 && pingCount === 0) {
+            percentage = 66;
+        } else if (pingCount > 0) {
+            percentage = 100;
         }
 
-        return undefined;
+        return {
+            title: 'Get started',
+            percentage
+        };
     }
 
     function handleResize() {
         $isSidebarOpen = false;
         showAccountMenu = false;
+    }
+
+    function closeOpenDialogs() {
+        if (typeof document === 'undefined') return;
+
+        const openDialogs = Array.from(
+            document.querySelectorAll('dialog[open]')
+        ) as HTMLDialogElement[];
+
+        for (const dialog of openDialogs) {
+            dialog.close();
+        }
+
+        document.documentElement.classList.remove('u-overflow-hidden');
     }
 
     /**
@@ -124,8 +139,9 @@
     // subscriptions
     isNewWizardStatusOpen.subscribe((value) => (showHeader = !value));
 
-    page.subscribe(({ url }) => {
-        $showSubNavigation = url.searchParams.get('openNavbar') === 'true';
+    $: {
+        const url = page.url;
+        showSubNavigation.set(url.searchParams.get('openNavbar') === 'true');
         clearTimeout(timeoutId);
 
         if (url.pathname.includes('project-')) {
@@ -135,7 +151,7 @@
         } else {
             showContentTransition = false;
         }
-    });
+    }
 
     // reactive blocks
     $: sideSize = $hasSubNavigation ? ($isNarrow ? '17rem' : '25rem') : '12.5rem';
@@ -170,19 +186,20 @@
             };
         }),
 
-        currentProject: selectedProject
+        currentProject: activeProject
     };
 
     $: state = $isSidebarOpen ? 'open' : 'closed';
 
-    $: subNavigation = $page.data.subNavigation;
+    $: subNavigation = page.data.subNavigation;
 
     $: shouldRenderSidebar =
         !$isNewWizardStatusOpen && showSideNavigation && !$showOnboardingAnimation;
-    $: hasSidebarSpace = shouldRenderSidebar && !$isTabletViewport && !!selectedProject;
-
+    $: hasSidebarSpace = shouldRenderSidebar && !$isTabletViewport && !!activeProject;
+    $: isProjectBlocked = getIsProjectBlocked(activeProject);
     $: {
         if ($isSidebarOpen) {
+            closeOpenDialogs();
             yOnMenuOpen = window.scrollY;
             bodyStyle.set({ position: 'fixed', top: `-${window.scrollY}px` });
         } else if (!$isSidebarOpen) {
@@ -203,6 +220,7 @@
 <main
     class:has-alert={$activeHeaderAlert?.show}
     class:is-open={$showSubNavigation}
+    class:is-sidebar-open={$isSidebarOpen}
     class:u-hide={$wizard.show || $wizard.cover}
     class:is-fixed-layout={$activeHeaderAlert?.show}
     class:no-header={!showHeader || $showOnboardingAnimation}
@@ -211,30 +229,32 @@
         <Navbar {...navbarProps} bind:sideBarIsOpen={$isSidebarOpen} bind:showAccountMenu />
     {/if}
 
-    {#if shouldRenderSidebar}
-        <Sidebar
-            project={selectedProject}
-            progressCard={getProgressCard()}
-            avatar={navbarProps.avatar}
-            bind:subNavigation
-            bind:sideBarIsOpen={$isSidebarOpen}
-            bind:showAccountMenu
-            bind:state />
-    {/if}
+    <div class="shell-sidebar-area" inert={isProjectBlocked || undefined}>
+        {#if shouldRenderSidebar}
+            <Sidebar
+                project={activeProject}
+                progressCard={getProgressCard()}
+                avatar={navbarProps.avatar}
+                bind:subNavigation
+                bind:sideBarIsOpen={$isSidebarOpen}
+                bind:showAccountMenu
+                bind:state />
+        {/if}
 
-    {#if !$showOnboardingAnimation}
-        <SideNavigation bind:subNavigation />
-    {/if}
+        {#if !$showOnboardingAnimation}
+            <SideNavigation bind:subNavigation />
+        {/if}
+    </div>
 
     <div
         class="content"
         class:has-transition={showContentTransition}
-        class:icons-content={state === 'icons' && selectedProject}
+        class:icons-content={state === 'icons' && activeProject}
         class:no-sidebar={!hasSidebarSpace}>
         <section class="main-content" data-test={showSideNavigation}>
-            {#if $page.data?.header}
+            {#if page.data?.header}
                 <div class="layout-header">
-                    <svelte:component this={$page.data.header} />
+                    <svelte:component this={page.data.header} />
                 </div>
             {/if}
             <slot />
@@ -255,6 +275,17 @@
 </main>
 
 <style lang="scss">
+    .shell-sidebar-area {
+        position: relative;
+        z-index: 20;
+    }
+
+    @media (max-width: 1023px) {
+        main.is-sidebar-open .content {
+            pointer-events: none;
+        }
+    }
+
     .content {
         width: 100%;
 
@@ -327,7 +358,7 @@
         height: 100vh;
         right: 0;
         top: 0;
-        z-index: 10;
+        z-index: 19;
         background-color: #56565c1a;
         backdrop-filter: blur(5px);
         transition:

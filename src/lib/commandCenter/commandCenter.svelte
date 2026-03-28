@@ -46,8 +46,7 @@
         {
             callback: toggleCommandCenter,
             keys: ['k'],
-            ctrl: true,
-            forceEnable: true
+            ctrl: true
         },
         {
             label: 'Toggle debug overlay',

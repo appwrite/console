@@ -1,13 +1,16 @@
 <script lang="ts">
     import { Button } from '$lib/elements/forms';
     import { ActionMenu, Icon, Popover } from '@appwrite.io/pink-svelte';
-    import { columnOptions, type Option } from './store';
+    import { getSupportedColumns, type Option } from './store';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { isCsvImportInProgress } from '../store';
     import { CsvDisabled } from '$database/(entity)';
+    import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
 
     export let showCreate = false;
     export let selectedOption: Option['name'] = null;
+
+    $: options = getSupportedColumns($regionalConsoleVariables);
 </script>
 
 {#if $isCsvImportInProgress}
@@ -26,7 +29,7 @@
             </Button>
         </slot>
         <ActionMenu.Root slot="tooltip">
-            {#each columnOptions as column}
+            {#each options as column}
                 <ActionMenu.Item.Button
                     leadingIcon={column.icon}
                     on:click={() => {

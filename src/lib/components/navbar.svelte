@@ -49,6 +49,7 @@
     import { beforeNavigate } from '$app/navigation';
     import { page } from '$app/state';
     import type { Models } from '@appwrite.io/console';
+    import { isProjectBlocked as getIsProjectBlocked } from '$lib/helpers/project';
 
     let showSupport = false;
 
@@ -108,6 +109,7 @@
     }
 
     $: currentOrg = organizations.find((org) => org.isSelected);
+    $: isProjectBlocked = getIsProjectBlocked(currentProject);
 
     beforeNavigate(() => (showAccountMenu = false));
 </script>
@@ -137,7 +139,7 @@
                     size="xs"
                     variant="secondary"
                     href={`${base}/project-${currentProject.region}-${currentProject.$id}/get-started`}
-                    >Connect</Button.Anchor>
+                    disabled={isProjectBlocked}>Connect</Button.Anchor>
             </div>
         {/if}
     </div>
@@ -201,6 +203,7 @@
                     <Button.Button
                         variant="text"
                         aria-label="Toggle Command Center"
+                        disabled={isProjectBlocked}
                         on:click={toggleCommandCenter}
                         icon>
                         <Icon icon={IconSearch} />
