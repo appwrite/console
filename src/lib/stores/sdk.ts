@@ -54,7 +54,10 @@ export function getApiEndpoint(region?: string): string {
     const hostname = url.host; // "hostname:port" (or just "hostname" if no port)
 
     // If instance supports multi-region, add the region subdomain.
-    const subdomain = isMultiRegionSupported(url) ? getSubdomain(region) : '';
+    let subdomain = isMultiRegionSupported(url) ? getSubdomain(region) : '';
+    if (subdomain && hostname.startsWith(subdomain)) {
+        subdomain = '';
+    }
 
     return `${protocol}//${subdomain}${hostname}/v1`;
 }
