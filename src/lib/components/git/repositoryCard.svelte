@@ -13,34 +13,50 @@
 </script>
 
 <Card.Base padding="xs" radius="s" variant="secondary">
-    <Layout.Stack direction="row" gap="s">
-        <Layout.Stack direction="row" gap="s">
+    <Layout.Stack
+        direction="row"
+        alignItems="flex-start"
+        justifyContent="space-between"
+        wrap="wrap"
+        gap="s">
+        <Layout.Stack
+            direction="row"
+            alignItems="flex-start"
+            gap="s"
+            style="min-width: 0; flex: 1 1 16rem;">
             <Icon icon={IconGithub} color="--fgcolor-neutral-primary" />
-            <Layout.Stack gap="xxxs">
+            <Layout.Stack gap="xxxs" style="min-width: 0; flex: 1 1 auto;">
                 <Typography.Text variant="m-400" color="--fgcolor-neutral-primary">
-                    {repository.name}
+                    <span class="repository-copy">{repository.name}</span>
                 </Typography.Text>
-                <Layout.Stack direction="row" gap="s" alignItems="center">
+                <Layout.Stack direction="row" alignItems="center" gap="xs" wrap="wrap">
                     <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
-                        Last updated: {toLocaleDateTime(repository.pushedAt)}
+                        <span class="repository-copy">
+                            Last updated: {toLocaleDateTime(repository.pushedAt)}
+                        </span>
                     </Typography.Caption>
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="2"
-                        height="3"
-                        viewBox="0 0 2 3"
-                        fill="none">
-                        <circle cx="1" cy="1.5" r="1" fill="currentColor" />
-                    </svg>
+                    <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                        •
+                    </Typography.Caption>
                     <Link
                         size="s"
                         variant="muted"
                         external
-                        href={`https://github.com/${repository.organization}`}
-                        >{repository.organization}</Link>
+                        href={`https://github.com/${repository.organization}`}>
+                        <span class="repository-copy">{repository.organization}</span>
+                    </Link>
                 </Layout.Stack>
             </Layout.Stack>
         </Layout.Stack>
         <Button secondary on:click={() => dispatch('disconnect')}>Disconnect</Button>
     </Layout.Stack>
 </Card.Base>
+
+<style>
+    .repository-copy {
+        display: inline-block;
+        min-width: 0;
+        overflow-wrap: anywhere;
+        max-width: 100%;
+    }
+</style>
