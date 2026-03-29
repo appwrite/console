@@ -49,7 +49,7 @@
 <Modal
     bind:show={showCreate}
     onSubmit={handleVariable}
-    title={`Create' ${isGlobal ? 'global' : 'environment'} variable`}>
+    title={`Create ${isGlobal ? 'global' : 'environment'} variables`}>
     <svelte:fragment slot="description">
         <span>
             Set the environment variables or secret keys that will be passed to {!isGlobal

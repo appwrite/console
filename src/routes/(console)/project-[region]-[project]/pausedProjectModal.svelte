@@ -75,7 +75,7 @@
     }
 </script>
 
-<Modal title="Project paused" bind:open={show} size="l" dismissible={false}>
+<Modal title="Project paused" bind:open={show} size="m" dismissible={false}>
     <Layout.Stack gap="m">
         <Typography.Text>This project has been paused due to inactivity.</Typography.Text>
         <Typography.Text>

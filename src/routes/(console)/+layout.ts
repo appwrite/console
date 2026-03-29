@@ -6,6 +6,7 @@ import { Platform, Query } from '@appwrite.io/console';
 import { makePlansMap } from '$lib/helpers/billing';
 import { plansInfo as plansInfoStore } from '$lib/stores/billing';
 import { normalizeConsoleVariables } from '$lib/helpers/domains';
+import { syncServerTime } from '$lib/helpers/fingerprint';
 
 export const load: LayoutLoad = async ({ depends, parent }) => {
     const { organizations, plansInfo } = await parent();
@@ -28,7 +29,14 @@ export const load: LayoutLoad = async ({ depends, parent }) => {
         plansArrayPromise,
         fetch(`${endpoint}/health/version`, {
             headers: { 'X-Appwrite-Project': project as string }
-        }).then((response) => response.json() as { version?: string }),
+        }).then((response) => {
+            const dateHeader = response.headers.get('Date');
+            const parsed = dateHeader ? new Date(dateHeader).getTime() : NaN;
+            if (Number.isFinite(parsed)) {
+                syncServerTime(Math.floor(parsed / 1000));
+            }
+            return response.json() as { version?: string };
+        }),
         sdk.forConsole.console.variables()
     ]);
 
