@@ -21,7 +21,7 @@ export const repositories: Writable<{
     repositories:
         | Models.ProviderRepository[]
         | Models.ProviderRepositoryFramework[]
-        | Models.ProviderRepositoryRuntime[];
+        | (Models.ProviderRepository & { runtime: string })[];
 }> = writable({
     search: '',
     installationId: '',

@@ -5,7 +5,7 @@
     import { iconPath } from '$lib/stores/app';
     import { sdk } from '$lib/stores/sdk';
     import { installation, repository } from '$lib/stores/vcs';
-    import { VCSDetectionType, type Models } from '@appwrite.io/console';
+    import { VCSDetectionType } from '@appwrite.io/console';
     import DirectoryPicker from '$lib/components/git/DirectoryPicker.svelte';
     import { writable } from 'svelte/store';
 
@@ -113,7 +113,7 @@
             const iconName =
                 product === 'sites'
                     ? detection.framework
-                    : (detection as unknown as Models.DetectionRuntime).runtime;
+                    : (detection as unknown as { runtime: string }).runtime;
             const resolved = resolveIconUrl(iconName);
             iconCache.set(path, resolved);
             return resolved;

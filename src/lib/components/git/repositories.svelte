@@ -138,7 +138,7 @@
 
         $repositories.repositories =
             product === 'functions'
-                ? (result as unknown as Models.ProviderRepositoryRuntimeList)
+                ? (result as unknown as { runtimeProviderRepositories: (Models.ProviderRepository & { runtime: string })[] })
                       .runtimeProviderRepositories
                 : (result as unknown as Models.ProviderRepositoryFrameworkList)
                       .frameworkProviderRepositories; //TODO: remove forced cast after backend fixes
