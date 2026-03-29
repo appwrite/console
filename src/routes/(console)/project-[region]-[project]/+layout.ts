@@ -11,7 +11,7 @@ import { loadAvailableRegions } from '$routes/(console)/regions';
 import { type Models, Platform } from '@appwrite.io/console';
 import { redirect } from '@sveltejs/kit';
 import { resolve } from '$app/paths';
-import { generateFingerprintToken } from '$lib/helpers/fingerprint';
+import { generateFingerprintToken, syncServerTime } from '$lib/helpers/fingerprint';
 import { normalizeConsoleVariables } from '$lib/helpers/domains';
 import { browser } from '$app/environment';
 
@@ -107,7 +107,11 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
     // Track console access for cloud projects (fire-and-forget, backend has 6-day cooldown).
     // Skip if paused — user must explicitly resume via the paused project modal.
     if (isCloud && browser && project.status !== 'paused') {
-        generateFingerprintToken()
+        syncServerTime(async () => {
+                const { localTime } = await sdk.forConsole.health.getTime();
+                return localTime;
+            })
+            .then(() => generateFingerprintToken())
             .then((fingerprint) => {
                 sdk.forConsole.client.headers['X-Appwrite-Console-Fingerprint'] = fingerprint;
                 return sdk.forConsole.projects.updateConsoleAccess({

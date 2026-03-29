@@ -3,6 +3,37 @@ import { env } from '$env/dynamic/public';
 const SECRET = env.PUBLIC_CONSOLE_FINGERPRINT_KEY ?? '';
 const CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour
 
+/** Cached server timestamp and the local time it was fetched at, for interpolation. */
+let serverTimeCache: { serverSecs: number; fetchedAtMs: number } | null = null;
+
+/**
+ * Fetch and cache the server's clock so fingerprint timestamps always align
+ * with the backend's clock, regardless of local clock drift.
+ *
+ * @param getServerTime - callback that returns the server's unix timestamp in seconds
+ *                        (e.g. `health.getTime()` → `response.localTime`)
+ */
+export async function syncServerTime(
+    getServerTime: () => Promise<number>
+): Promise<void> {
+    if (serverTimeCache) return;
+    try {
+        const fetchedAtMs = Date.now();
+        const serverSecs = await getServerTime();
+        serverTimeCache = { serverSecs, fetchedAtMs };
+    } catch {
+        console.warn('Failed to sync server time for fingerprint');
+    }
+}
+
+function getServerTimestamp(): number {
+    if (!serverTimeCache) {
+        return Math.floor(Date.now() / 1000);
+    }
+    const elapsedSecs = Math.floor((Date.now() - serverTimeCache.fetchedAtMs) / 1000);
+    return serverTimeCache.serverSecs + elapsedSecs;
+}
+
 async function sha256(message: string): Promise<string> {
     if (!crypto?.subtle) {
         console.warn('crypto.subtle unavailable, fingerprinting disabled');
@@ -204,7 +235,7 @@ export async function generateFingerprintToken(): Promise<string> {
 
     const signals: BrowserSignals = {
         ...staticSignals,
-        timestamp: Math.floor(Date.now() / 1000)
+        timestamp: getServerTimestamp()
     };
 
     const payload = JSON.stringify(signals);
