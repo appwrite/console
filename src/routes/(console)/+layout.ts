@@ -31,8 +31,9 @@ export const load: LayoutLoad = async ({ depends, parent }) => {
             headers: { 'X-Appwrite-Project': project as string }
         }).then((response) => {
             const dateHeader = response.headers.get('Date');
-            if (dateHeader) {
-                syncServerTime(Math.floor(new Date(dateHeader).getTime() / 1000));
+            const parsed = dateHeader ? new Date(dateHeader).getTime() : NaN;
+            if (Number.isFinite(parsed)) {
+                syncServerTime(Math.floor(parsed / 1000));
             }
             return response.json() as { version?: string };
         }),
