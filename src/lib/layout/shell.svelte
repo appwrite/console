@@ -15,6 +15,7 @@
     import { hasOnboardingDismissed } from '$lib/helpers/onboarding';
     import { isSidebarOpen, noWidthTransition } from '$lib/stores/sidebar';
     import { page } from '$app/state';
+    import { page as pageStore } from '$app/stores';
     import { BillingPlanGroup, type Models } from '@appwrite.io/console';
     import { getSidebarState, isInDatabasesRoute, updateSidebarState } from '$lib/helpers/sidebar';
     import { isTabletViewport } from '$lib/stores/viewport';
@@ -191,7 +192,7 @@
 
     $: state = $isSidebarOpen ? 'open' : 'closed';
 
-    $: subNavigation = page.data.subNavigation;
+    $: subNavigation = $pageStore.data.subNavigation;
 
     $: shouldRenderSidebar =
         !$isNewWizardStatusOpen && showSideNavigation && !$showOnboardingAnimation;
@@ -235,14 +236,14 @@
                 project={activeProject}
                 progressCard={getProgressCard()}
                 avatar={navbarProps.avatar}
-                bind:subNavigation
+                {subNavigation}
                 bind:sideBarIsOpen={$isSidebarOpen}
                 bind:showAccountMenu
                 bind:state />
         {/if}
 
         {#if !$showOnboardingAnimation}
-            <SideNavigation bind:subNavigation />
+            <SideNavigation {subNavigation} />
         {/if}
     </div>
 
