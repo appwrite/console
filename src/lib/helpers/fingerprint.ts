@@ -7,23 +7,15 @@ const CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour
 let serverTimeCache: { serverSecs: number; fetchedAtMs: number } | null = null;
 
 /**
- * Fetch and cache the server's clock so fingerprint timestamps always align
- * with the backend's clock, regardless of local clock drift.
+ * Cache the server's clock so fingerprint timestamps always align with the
+ * backend's clock, regardless of local clock drift.
  *
- * @param getServerTime - callback that returns the server's unix timestamp in seconds
- *                        (e.g. `health.getTime()` → `response.localTime`)
+ * @param serverTimeSecs - the server's unix timestamp in seconds
+ *                         (e.g. parsed from a response Date header)
  */
-export async function syncServerTime(
-    getServerTime: () => Promise<number>
-): Promise<void> {
+export function syncServerTime(serverTimeSecs: number): void {
     if (serverTimeCache) return;
-    try {
-        const fetchedAtMs = Date.now();
-        const serverSecs = await getServerTime();
-        serverTimeCache = { serverSecs, fetchedAtMs };
-    } catch {
-        console.warn('Failed to sync server time for fingerprint');
-    }
+    serverTimeCache = { serverSecs: serverTimeSecs, fetchedAtMs: Date.now() };
 }
 
 function getServerTimestamp(): number {

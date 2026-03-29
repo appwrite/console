@@ -6,7 +6,7 @@
     import { Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError } from '$lib/actions/analytics';
-    import { generateFingerprintToken, syncServerTime } from '$lib/helpers/fingerprint';
+    import { generateFingerprintToken } from '$lib/helpers/fingerprint';
     import { Alert, Layout, Modal, Typography } from '@appwrite.io/pink-svelte';
     import { Status } from '@appwrite.io/console';
 
@@ -28,10 +28,6 @@
         error = null;
 
         try {
-            await syncServerTime(async () => {
-                const { localTime } = await sdk.forConsole.health.getTime();
-                return localTime;
-            });
             const fingerprint = await generateFingerprintToken();
             sdk.forConsole.client.headers['X-Appwrite-Console-Fingerprint'] = fingerprint;
 
