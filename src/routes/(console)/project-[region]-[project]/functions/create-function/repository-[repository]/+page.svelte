@@ -84,7 +84,12 @@
                     installationId: data.installation.$id,
                     providerRepositoryId: page.params.repository,
                     type: VCSDetectionType.Runtime
-                })) as unknown as { entrypoint: string; commands: string; runtime: string; variables: { name: string; value: string }[] }; /* SDK return type is wrong atm */
+                })) as unknown as {
+                entrypoint: string;
+                commands: string;
+                runtime: string;
+                variables: { name: string; value: string }[];
+            }; /* SDK return type is wrong atm */
 
             entrypoint = detections.entrypoint;
             buildCommand = detections.commands;
