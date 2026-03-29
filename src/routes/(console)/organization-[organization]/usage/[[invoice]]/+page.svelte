@@ -34,6 +34,7 @@
     const plan = data?.plan ?? undefined;
 
     $: projects = data.organizationUsage.projects;
+    $: orgUsage = data.organizationUsage;
 
     let usageProjects: Record<string, UsageProjectInfo> = {};
 
@@ -412,6 +413,143 @@
                         <ProjectBreakdown {projects} metric="executions" {usageProjects} />
                     {/if}
                 </Layout.Stack>
+            {:else}
+                <Card isDashed>
+                    <Layout.Stack gap="xs" alignItems="center" justifyContent="center">
+                        <Icon icon={IconChartSquareBar} size="l" />
+                        <Typography.Text variant="m-600">No data to show</Typography.Text>
+                    </Layout.Stack>
+                </Card>
+            {/if}
+        </svelte:fragment>
+    </CardGrid>
+
+    <CardGrid gap="none">
+        <svelte:fragment slot="title">Realtime connections</svelte:fragment>
+        Peak concurrent realtime connections across all projects in your organization.
+
+        <svelte:fragment slot="aside">
+            {#if orgUsage.realtimeConnectionsTotal}
+                {@const current = orgUsage.realtimeConnectionsTotal}
+                {@const max = getServiceLimit('realtime', tier, plan)}
+                <ProgressBarBig
+                    currentUnit="Connections"
+                    currentValue={formatNum(current)}
+                    maxValue={max ? `/ ${formatNum(max)} connections` : undefined}
+                    progressValue={current}
+                    progressMax={max}
+                    showBar={false} />
+                <BarChart
+                    options={{
+                        yAxis: {
+                            axisLabel: {
+                                formatter: formatNum
+                            }
+                        }
+                    }}
+                    series={[
+                        {
+                            name: 'Realtime connections',
+                            data: [
+                                ...(orgUsage.realtimeConnections ?? []).map((e) => [
+                                    e.date,
+                                    e.value
+                                ])
+                            ]
+                        }
+                    ]} />
+                {#if projects?.length > 0}
+                    <ProjectBreakdown {projects} metric="realtime" {usageProjects} />
+                {/if}
+            {:else}
+                <Card isDashed>
+                    <Layout.Stack gap="xs" alignItems="center" justifyContent="center">
+                        <Icon icon={IconChartSquareBar} size="l" />
+                        <Typography.Text variant="m-600">No data to show</Typography.Text>
+                    </Layout.Stack>
+                </Card>
+            {/if}
+        </svelte:fragment>
+    </CardGrid>
+
+    <CardGrid gap="none">
+        <svelte:fragment slot="title">Realtime messages</svelte:fragment>
+        Total realtime messages sent to clients across all projects in your organization.
+
+        <svelte:fragment slot="aside">
+            {#if orgUsage.realtimeMessagesTotal}
+                {@const current = orgUsage.realtimeMessagesTotal}
+                {@const max = getServiceLimit('realtimeMessages', tier, plan)}
+                <ProgressBarBig
+                    currentUnit="Messages"
+                    currentValue={formatNum(current)}
+                    maxValue={max ? `/ ${formatNum(max)} messages used` : undefined}
+                    progressValue={current}
+                    progressMax={max}
+                    showBar={false} />
+                <BarChart
+                    options={{
+                        yAxis: {
+                            axisLabel: {
+                                formatter: formatNum
+                            }
+                        }
+                    }}
+                    series={[
+                        {
+                            name: 'Realtime messages',
+                            data: [
+                                ...(orgUsage.realtimeMessages ?? []).map((e) => [e.date, e.value])
+                            ]
+                        }
+                    ]} />
+                {#if projects?.length > 0}
+                    <ProjectBreakdown {projects} metric="realtimeMessages" {usageProjects} />
+                {/if}
+            {:else}
+                <Card isDashed>
+                    <Layout.Stack gap="xs" alignItems="center" justifyContent="center">
+                        <Icon icon={IconChartSquareBar} size="l" />
+                        <Typography.Text variant="m-600">No data to show</Typography.Text>
+                    </Layout.Stack>
+                </Card>
+            {/if}
+        </svelte:fragment>
+    </CardGrid>
+
+    <CardGrid>
+        <svelte:fragment slot="title">Realtime bandwidth</svelte:fragment>
+        Total realtime bandwidth consumed across all projects in your organization.
+
+        <svelte:fragment slot="aside">
+            {#if orgUsage.realtimeBandwidthTotal}
+                {@const current = orgUsage.realtimeBandwidthTotal}
+                {@const currentHumanized = humanFileSize(current)}
+                <ProgressBarBig
+                    currentUnit={currentHumanized.unit}
+                    currentValue={currentHumanized.value}
+                    progressValue={current}
+                    showBar={false} />
+                <BarChart
+                    options={{
+                        yAxis: {
+                            axisLabel: {
+                                formatter: (value) =>
+                                    humanFileSize(value).value + humanFileSize(value).unit
+                            }
+                        }
+                    }}
+                    series={[
+                        {
+                            name: 'Realtime bandwidth',
+                            data: [
+                                ...(orgUsage.realtimeBandwidth ?? []).map((e) => [e.date, e.value])
+                            ]
+                        }
+                    ]} />
+                {#if projects?.length > 0}
+                    <ProjectBreakdown {projects} metric="realtimeBandwidth" {usageProjects} />
+                {/if}
             {:else}
                 <Card isDashed>
                     <Layout.Stack gap="xs" alignItems="center" justifyContent="center">

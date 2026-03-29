@@ -37,6 +37,12 @@
     $: imageTransformationsTotal = data.usage.imageTransformationsTotal;
     $: screenshotsGenerated = data.usage.screenshotsGenerated;
     $: screenshotsGeneratedTotal = data.usage.screenshotsGeneratedTotal;
+    $: realtimeConnections = data.usage.realtimeConnections;
+    $: realtimeConnectionsTotal = data.usage.realtimeConnectionsTotal;
+    $: realtimeMessages = data.usage.realtimeMessages;
+    $: realtimeMessagesTotal = data.usage.realtimeMessagesTotal;
+    $: realtimeBandwidth = data.usage.realtimeBandwidth;
+    $: realtimeBandwidthTotal = data.usage.realtimeBandwidthTotal;
     $: dbReads = data.usage.databasesReads;
     $: dbWrites = data.usage.databasesWrites;
 
@@ -434,6 +440,115 @@
                     progressMax={totalGbHours}
                     progressValue={totalGbHours}
                     progressBarData={progressBarStorageDate} />
+            {:else}
+                <Card isDashed>
+                    <Layout.Stack gap="xs" alignItems="center" justifyContent="center">
+                        <Icon icon={IconChartSquareBar} size="l" />
+                        <Typography.Text variant="m-600">No data to show</Typography.Text>
+                    </Layout.Stack>
+                </Card>
+            {/if}
+        </svelte:fragment>
+    </CardGrid>
+    <CardGrid>
+        <svelte:fragment slot="title">Realtime connections</svelte:fragment>
+        Peak concurrent realtime connections in your project.
+        <svelte:fragment slot="aside">
+            {#if realtimeConnections}
+                {@const current = formatNum(realtimeConnectionsTotal)}
+                <Layout.Stack gap="s" direction="row" alignItems="baseline">
+                    <Typography.Title>
+                        {current}
+                    </Typography.Title>
+                    <Typography.Text>Connections</Typography.Text>
+                </Layout.Stack>
+                <BarChart
+                    options={{
+                        yAxis: {
+                            axisLabel: {
+                                formatter: formatNum
+                            }
+                        }
+                    }}
+                    series={[
+                        {
+                            name: 'Realtime connections',
+                            data: [...realtimeConnections.map((e) => [e.date, e.value])]
+                        }
+                    ]} />
+            {:else}
+                <Card isDashed>
+                    <Layout.Stack gap="xs" alignItems="center" justifyContent="center">
+                        <Icon icon={IconChartSquareBar} size="l" />
+                        <Typography.Text variant="m-600">No data to show</Typography.Text>
+                    </Layout.Stack>
+                </Card>
+            {/if}
+        </svelte:fragment>
+    </CardGrid>
+    <CardGrid>
+        <svelte:fragment slot="title">Realtime messages</svelte:fragment>
+        Total realtime messages sent to clients in your project.
+        <svelte:fragment slot="aside">
+            {#if realtimeMessages}
+                {@const current = formatNum(realtimeMessagesTotal)}
+                <Layout.Stack gap="s" direction="row" alignItems="baseline">
+                    <Typography.Title>
+                        {current}
+                    </Typography.Title>
+                    <Typography.Text>Messages</Typography.Text>
+                </Layout.Stack>
+                <BarChart
+                    options={{
+                        yAxis: {
+                            axisLabel: {
+                                formatter: formatNum
+                            }
+                        }
+                    }}
+                    series={[
+                        {
+                            name: 'Realtime messages',
+                            data: [...realtimeMessages.map((e) => [e.date, e.value])]
+                        }
+                    ]} />
+            {:else}
+                <Card isDashed>
+                    <Layout.Stack gap="xs" alignItems="center" justifyContent="center">
+                        <Icon icon={IconChartSquareBar} size="l" />
+                        <Typography.Text variant="m-600">No data to show</Typography.Text>
+                    </Layout.Stack>
+                </Card>
+            {/if}
+        </svelte:fragment>
+    </CardGrid>
+    <CardGrid>
+        <svelte:fragment slot="title">Realtime bandwidth</svelte:fragment>
+        Total realtime bandwidth consumed in your project.
+        <svelte:fragment slot="aside">
+            {#if realtimeBandwidth}
+                {@const currentHumanized = humanFileSize(realtimeBandwidthTotal)}
+                <Layout.Stack gap="s" direction="row" alignItems="baseline">
+                    <Typography.Title>
+                        {currentHumanized.value}
+                    </Typography.Title>
+                    <Typography.Text>{currentHumanized.unit}</Typography.Text>
+                </Layout.Stack>
+                <BarChart
+                    options={{
+                        yAxis: {
+                            axisLabel: {
+                                formatter: (value) =>
+                                    humanFileSize(value).value + humanFileSize(value).unit
+                            }
+                        }
+                    }}
+                    series={[
+                        {
+                            name: 'Realtime bandwidth',
+                            data: [...realtimeBandwidth.map((e) => [e.date, e.value])]
+                        }
+                    ]} />
             {:else}
                 <Card isDashed>
                     <Layout.Stack gap="xs" alignItems="center" justifyContent="center">

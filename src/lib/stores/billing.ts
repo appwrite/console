@@ -191,6 +191,7 @@ export type PlanServices =
     | 'platforms'
     | 'realtime'
     | 'realtimeAddon'
+    | 'realtimeMessages'
     | 'storage'
     | 'storageAddon'
     | 'teams'
@@ -274,6 +275,7 @@ export function checkForUsageFees(plan: string, id: PlanServices) {
             case 'users':
             case 'executions':
             case 'realtime':
+            case 'realtimeMessages':
                 return true;
 
             default:
