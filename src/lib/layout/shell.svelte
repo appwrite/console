@@ -235,14 +235,14 @@
                 project={activeProject}
                 progressCard={getProgressCard()}
                 avatar={navbarProps.avatar}
-                bind:subNavigation
+                {subNavigation}
                 bind:sideBarIsOpen={$isSidebarOpen}
                 bind:showAccountMenu
                 bind:state />
         {/if}
 
         {#if !$showOnboardingAnimation}
-            <SideNavigation bind:subNavigation />
+            <SideNavigation {subNavigation} />
         {/if}
     </div>
 
