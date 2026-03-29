@@ -13,6 +13,7 @@
             label="POST URL"
             id="url"
             placeholder="https://example.com/callback"
+            helper="Must be https (or http) and a public domain — localhost and private URLs are not accepted on Appwrite Cloud."
             bind:value={url}
             required />
     </Layout.Stack>
