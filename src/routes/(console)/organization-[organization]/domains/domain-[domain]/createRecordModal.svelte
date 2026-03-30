@@ -11,6 +11,9 @@
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import {
+        BODY_TOOLTIP_WRAPPER_STYLE
+    } from '$lib/helpers/tooltipContent';
     import { page } from '$app/state';
     import { recordTypes } from './store';
     import { Dependencies } from '$lib/constants';
