@@ -11,7 +11,6 @@
     import { Badge, Layout, Table } from '@appwrite.io/pink-svelte';
     import DeleteBatch from './deleteBatch.svelte';
     import { capitalize } from '$lib/helpers/string';
-    import { getEffectiveScopes } from '../api-keys/scopes.svelte';
 
     let {
         keyType = 'api',
@@ -31,7 +30,7 @@
 
     function getApiKeyScopeCount(key: Models.Key | Models.DevKey) {
         const apiKey = key as Models.Key;
-        return getEffectiveScopes(apiKey.scopes).length;
+        return apiKey.scopes.length;
     }
 
     function getExpiryDetails(key: Models.Key | Models.DevKey): {
