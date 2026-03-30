@@ -16,7 +16,6 @@
     import { symmetricDifference } from '$lib/helpers/array';
     import Scopes from '../api-keys/scopes.svelte';
     import { InteractiveText, Layout, Typography } from '@appwrite.io/pink-svelte';
-    import { getEffectiveScopes } from '../api-keys/scopes.svelte';
 
     export let key: Models.DevKey | Models.Key;
     export let keyType: 'api' | 'dev' = 'api';
@@ -163,8 +162,6 @@
     {#if isApiKey}
         <Form onSubmit={updateScopes}>
             {@const apiKey = asApiKey(key)}
-            {@const apiKeyCorrectScopes = getEffectiveScopes(apiKey.scopes)}
-            {@const currentEffective = scopes ? getEffectiveScopes(scopes) : null}
             <CardGrid>
                 <svelte:fragment slot="title">Scopes</svelte:fragment>
                 You can choose which permission scope to grant your application. It is a best practice
@@ -178,8 +175,7 @@
                 <svelte:fragment slot="actions">
                     <Button
                         submit
-                        disabled={scopes &&
-                            !symmetricDifference(currentEffective, apiKeyCorrectScopes).length}
+                        disabled={scopes && !symmetricDifference(scopes, apiKey.scopes).length}
                         >Update</Button>
                 </svelte:fragment>
             </CardGrid>
