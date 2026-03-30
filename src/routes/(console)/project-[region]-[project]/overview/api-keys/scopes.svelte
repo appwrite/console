@@ -31,29 +31,21 @@
     import { Button } from '$lib/elements/forms';
     import { symmetricDifference } from '$lib/helpers/array';
     import { scopes as allScopes, cloudOnlyBackupScopes } from '$lib/constants';
-    import { Accordion, Divider, Layout, Selector } from '@appwrite.io/pink-svelte';
+    import { Accordion, Badge, Divider, Layout, Selector } from '@appwrite.io/pink-svelte';
     import type { Scopes } from '@appwrite.io/console';
 
     export let scopes: Scopes[];
 
-    const baseFilteredScopes = allScopes.filter((scope) => {
-        const val = scope.scope;
-        if (!val) return false;
-
-        const legacyPrefixes = ['collections.', 'attributes.', 'documents.'];
-        return !legacyPrefixes.some((prefix) => val.startsWith(prefix));
-    });
-
     // insert cloud-only scopes right after databases.write
-    const databasesWriteIndex = baseFilteredScopes.findIndex((s) => s.scope === 'databases.write');
+    const databasesWriteIndex = allScopes.findIndex((s) => s.scope === 'databases.write');
     const filteredScopes =
         isCloud && databasesWriteIndex !== -1
             ? [
-                  ...baseFilteredScopes.slice(0, databasesWriteIndex + 1),
+                  ...allScopes.slice(0, databasesWriteIndex + 1),
                   ...cloudOnlyBackupScopes,
-                  ...baseFilteredScopes.slice(databasesWriteIndex + 1)
+                  ...allScopes.slice(databasesWriteIndex + 1)
               ]
-            : baseFilteredScopes;
+            : allScopes;
 
     // include all scopes
     const scopeCatalog = new Set([
@@ -90,9 +82,8 @@
 
     onMount(() => {
         scopes.forEach((scope) => {
-            const newerScope = toNewerScope(scope);
-            if (newerScope in activeScopes) {
-                activeScopes[newerScope] = true;
+            if (scope in activeScopes) {
+                activeScopes[scope] = true;
             }
         });
 
@@ -111,36 +102,11 @@
         }
     }
 
-    function toNewerScope(scope: string): string {
-        for (const pair of compatPairs) {
-            if (scope.startsWith(pair.legacy)) {
-                return scope.replace(pair.legacy, pair.newer);
-            }
-        }
-        return scope;
-    }
-
-    function getAllScopeVariants(scope: string): string[] {
-        const variants = new Set([scope]);
-
-        for (const pair of compatPairs) {
-            if (scope.startsWith(pair.newer)) {
-                variants.add(scope.replace(pair.newer, pair.legacy));
-            } else if (scope.startsWith(pair.legacy)) {
-                variants.add(scope.replace(pair.legacy, pair.newer));
-            }
-        }
-
-        return Array.from(variants);
-    }
-
     function categoryState(category: string, s: string[]): boolean | 'indeterminate' {
         const scopesByCategory = filteredScopes.filter((n) => n.category === category);
-
-        const activeInCategory = scopesByCategory.filter((scopeItem) => {
-            const newerScope = scopeItem.scope;
-            return s.some((scope) => toNewerScope(scope) === newerScope);
-        });
+        const activeInCategory = scopesByCategory.filter((scopeItem) =>
+            s.includes(scopeItem.scope as Scopes)
+        );
 
         if (activeInCategory.length === 0) {
             return false;
@@ -161,20 +127,9 @@
     }
 
     function generateSyncedScopes(activeScopesObj: Record<string, boolean>): Scopes[] {
-        const result = new Set<string>();
-
-        Object.entries(activeScopesObj).forEach(([scope, isActive]) => {
-            if (isActive) {
-                const variants = getAllScopeVariants(scope);
-                variants.forEach((variant) => {
-                    if (scopeCatalog.has(variant)) {
-                        result.add(variant);
-                    }
-                });
-            }
-        });
-
-        return Array.from(result) as Scopes[];
+        return Object.entries(activeScopesObj)
+            .filter(([scope, isActive]) => isActive && scopeCatalog.has(scope))
+            .map(([scope]) => scope as Scopes);
     }
 
     $: {
@@ -203,9 +158,7 @@
             {@const checked = categoryState(category, scopes)}
             {@const isLastItem = index === categories.length - 1}
             {@const scopesLength = filteredScopes.filter(
-                (n) =>
-                    n.category === category &&
-                    scopes.some((scope) => toNewerScope(scope) === n.scope)
+                (n) => n.category === category && scopes.includes(n.scope as Scopes)
             ).length}
             <Accordion
                 selectable
@@ -216,12 +169,17 @@
                 on:change={(event) => onCategoryChange(event, category)}>
                 <Layout.Stack>
                     {#each filteredScopes.filter((s) => s.category === category) as scope}
-                        <Selector.Checkbox
-                            size="s"
-                            id={scope.scope}
-                            label={scope.scope}
-                            description={scope.description}
-                            bind:checked={activeScopes[scope.scope]} />
+                        <Layout.Stack direction="row" alignItems="center" gap="s">
+                            <Selector.Checkbox
+                                size="s"
+                                id={scope.scope}
+                                label={scope.scope}
+                                description={scope.description}
+                                bind:checked={activeScopes[scope.scope]} />
+                            {#if scope.deprecated}
+                                <Badge size="xs" variant="secondary" content="Deprecated" />
+                            {/if}
+                        </Layout.Stack>
                     {/each}
                 </Layout.Stack>
             </Accordion>
