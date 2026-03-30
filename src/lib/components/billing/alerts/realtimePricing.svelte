@@ -24,11 +24,11 @@
 {#if $organization?.$id && !dismissed}
     <HeaderAlert
         type="info"
-        title="Realtime pricing enforcement starting April 22nd"
+        title="Realtime pricing enforcement starting April 30th"
         dismissible
         on:dismiss={handleDismiss}>
         <svelte:fragment>
-            Starting April 22nd, realtime usage (connections, messages, and bandwidth) will be
+            Starting April 30th, realtime usage (connections, messages, and bandwidth) will be
             charged based on your plan's rates. Review your usage to avoid unexpected charges.
         </svelte:fragment>
         <svelte:fragment slot="buttons">
