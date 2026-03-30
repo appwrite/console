@@ -111,7 +111,7 @@
             <InputNumber id="ttl" label="TTL" placeholder="Enter number" bind:value={ttl}>
                 <Tooltip slot="info">
                     <Icon icon={IconInfo} size="s" />
-                    <div style="white-space: pre-line;" slot="tooltip">
+                    <div style={BODY_TOOLTIP_WRAPPER_STYLE_PRELINE} slot="tooltip">
                         TTL defines how long DNS information is cached. Lower values update faster;
                         higher values reduce server load.
                     </div>
