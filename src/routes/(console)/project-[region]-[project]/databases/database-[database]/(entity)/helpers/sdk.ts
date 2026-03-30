@@ -140,10 +140,8 @@ export function useDatabaseSdk(
 
         async list(params): Promise<Models.DatabaseList> {
             const results = await Promise.all([
-                baseSdk.tablesDB.list(params)
-
-                // not available just yet!
-                // baseSdk.documentsDB.list(params),
+                baseSdk.tablesDB.list(params),
+                baseSdk.documentsDB.list(params)
             ]);
 
             return results.reduce(
