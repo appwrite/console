@@ -7,6 +7,7 @@
     import { Skeleton } from '@appwrite.io/pink-svelte';
     import { type Models, Query } from '@appwrite.io/console';
     import { getTerminologies, type Record, toSupportiveRecord } from '$database/(entity)';
+    import { getCollectionService } from '$database/(entity)/helpers/sdk';
 
     const {
         record
@@ -32,15 +33,18 @@
 
         const { $databaseId: databaseId, entityId, $id: recordId } = toSupportiveRecord(record);
 
-        if (terminology.type === 'documentsdb') {
-            recordActivityLogs = await sdk
-                .forProject(page.params.region, page.params.project)
-                .documentsDB.listDocumentLogs({
-                    databaseId: databaseId,
-                    collectionId: entityId,
-                    documentId: recordId,
-                    queries: [Query.limit(limit), Query.offset(offset)]
-                });
+        if (terminology.type === 'documentsdb' || terminology.type === 'vectorsdb') {
+            const collectionService = getCollectionService(
+                page.params.region,
+                page.params.project,
+                terminology.type
+            );
+            recordActivityLogs = await collectionService.listDocumentLogs({
+                databaseId: databaseId,
+                collectionId: entityId,
+                documentId: recordId,
+                queries: [Query.limit(limit), Query.offset(offset)]
+            });
         } else {
             recordActivityLogs = await sdk
                 .forProject(page.params.region, page.params.project)

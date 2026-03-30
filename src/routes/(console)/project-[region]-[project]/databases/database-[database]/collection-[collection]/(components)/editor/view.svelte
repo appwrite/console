@@ -15,13 +15,14 @@
 <script lang="ts">
     import {
         EditorView,
+        ViewPlugin,
         keymap,
         lineNumbers,
         highlightActiveLine,
         highlightActiveLineGutter,
         type ViewUpdate
     } from '@codemirror/view';
-    import { history } from '@codemirror/commands';
+    import { history, undo } from '@codemirror/commands';
     import {
         bracketMatching,
         foldGutter,
@@ -41,15 +42,17 @@
         Compartment,
         type Extension
     } from '@codemirror/state';
-    import type { Text } from '@codemirror/state';
+    import type { Text as CmText } from '@codemirror/state';
     import { onMount, onDestroy } from 'svelte';
     import Id, { truncateId } from '$lib/components/id.svelte';
-    import { Icon, Layout, Skeleton, Tooltip } from '@appwrite.io/pink-svelte';
-    import { IconDuplicate, IconX } from '@appwrite.io/pink-icons-svelte';
+    import { Badge, Icon, Layout, Skeleton, Tooltip, Typography } from '@appwrite.io/pink-svelte';
+    import { IconDuplicate } from '@appwrite.io/pink-icons-svelte';
     import { Button } from '$lib/elements/forms';
     import { copy } from '$lib/helpers/copy';
     import { isSmallViewport } from '$lib/stores/viewport';
+    import { isMac } from '$lib/helpers/platform';
 
+    import { makeErrorMessage } from './helpers/errorMessages';
     import { customTheme, customSyntaxHighlighting } from './helpers/theme';
     import { createEditorKeymaps, secondaryKeymaps } from './helpers/keymaps';
     import {
@@ -58,27 +61,31 @@
         createReadOnlyRangesFilter,
         createNestedKeyPlugin,
         createDuplicateKeyLinter,
-        createSystemFieldStylePlugin
+        createSystemFieldStylePlugin,
+        createLineHoverPlugin,
+        createErrorLineHighlight,
+        SYSTEM_FIELD_ID
     } from './extensions';
     import {
         ALLOWED_DOLLAR_PROPS,
         DEBOUNCE_DELAY,
         LINTER_DELAY,
-        AUTOSAVE_DELAY,
-        SUGGESTIONS_HIDE_DELAY,
         INDENT_REGEX,
         SCALAR_VALUE_REGEX,
         TRAILING_COMMA_REGEX,
         WHITESPACE_REGEX,
         WHITESPACE_ONLY_REGEX,
         SKELETON_LINES,
-        getIndent
+        getIndent,
+        SAVE_UNDO_TOOLBAR_TIMEOUT
     } from './helpers/constants';
-    import { toLocaleDateTime } from '$lib/helpers/date';
     import { ID } from '@appwrite.io/console';
-    import { Suggestions, Error as ErrorSonner, Save as SavingSonner } from '../sonners';
     import { sleep } from '$lib/helpers/promises';
+    import { toLocaleDateTime } from '$lib/helpers/date';
+    import { Suggestions, Error as ErrorSonner, Save as SavingSonner } from '../sonners';
+    import HintBadge from '../hintBadge.svelte';
     import { json5, json5ParseCache, json5ParseLinter } from 'codemirror-json5';
+    import { SvelteMap } from 'svelte/reactivity';
 
     interface Props {
         isNew?: boolean;
@@ -87,7 +94,7 @@
         loading?: boolean;
         onChange?: (newData: JsonValue, hasChanged: boolean) => Promise<void> | void;
         onSave?: (newData: JsonValue) => Promise<void> | void;
-        onCancel?: () => void;
+        onDiscard?: () => void;
         readonly?: boolean;
         wrapLines?: boolean;
         errorInPlace?: boolean;
@@ -95,6 +102,9 @@
         showHeaderActions?: boolean;
         showSuggestions?: boolean;
         suggestedAttributes?: string[];
+        showMockSuggestions?: boolean;
+        suggestedDefaults?: Record<string, unknown>;
+        onGenerateEmbedding?: () => void;
     }
 
     let {
@@ -102,7 +112,7 @@
         data = $bindable(),
         onChange,
         onSave,
-        onCancel,
+        onDiscard,
         isSaving = $bindable(false),
         loading = false,
         readonly = false,
@@ -111,7 +121,10 @@
         ctrlSave = false,
         showHeaderActions = true,
         showSuggestions = false,
-        suggestedAttributes = []
+        suggestedAttributes = [],
+        showMockSuggestions = false,
+        suggestedDefaults,
+        onGenerateEmbedding
     }: Props = $props();
 
     let editorContainer: HTMLDivElement = $state(null);
@@ -120,10 +133,7 @@
     let errorMessage = $state<string | null>(null);
     let warningMessage = $state<string | null>(null);
     let changeTimer: ReturnType<typeof setTimeout> | null = null; // debounce timer for parse + onChange
-    let autoSaveTimer: ReturnType<typeof setTimeout> | null = null; // debounce timer for auto-save
-    let saveGeneration = 0; // generation counter to detect stale closures in auto-save
     let tooltipTimer: ReturnType<typeof setTimeout> | null = null; // timer for tooltip message reset
-    let suggestionsHideTimer: ReturnType<typeof setTimeout> | null = null; // timer to auto-hide suggestions
     let pendingCanonicalize = false; // set when a full-document replace (paste-all) occurs
     let lastExpectedContent = ''; // track latest serialized data to avoid spurious rewrites
     let lastDocId: string | null = null; // track current document identity for history reset
@@ -140,8 +150,11 @@
 
     let tooltipMessage = $state('Copy document');
 
+    // Cache embeddings values for the fold placeholder (survives fold state changes)
+    let cachedEmbeddingsPreview = '';
+
     // Store the original data to preserve system values
-    let originalData = $state<JsonValue>($state.snapshot(data));
+    let originalData = $state<JsonValue>(data);
 
     // Check if the update is from editor
     let isUpdatingFromEditor = false;
@@ -194,7 +207,7 @@
 
             if (filteredEntries.length === 0) return '{}';
 
-            // Sort entries: $id first, user fields in middle, timestamps last
+            // Sort entries: $id first, metadata before embeddings, timestamps last
             const sortedEntries = filteredEntries.sort(([keyA], [keyB]) => {
                 // $id always comes first
                 if (keyA === '$id') return -1;
@@ -207,6 +220,10 @@
                 if (isKeyATimestamp && !isKeyBTimestamp) return 1;
                 if (!isKeyATimestamp && isKeyBTimestamp) return -1;
 
+                // metadata before embeddings
+                if (keyA === 'metadata' && keyB === 'embeddings') return -1;
+                if (keyA === 'embeddings' && keyB === 'metadata') return 1;
+
                 return 0;
             });
 
@@ -216,10 +233,19 @@
                 return `${indentStr}  ${key}: ${formattedValue}${isLast ? '' : ','}`;
             });
 
+            if (isNew && !hasUserContent && sortedEntries[0]?.[0] === '$id') {
+                props.splice(1, 0, `${indentStr}  `);
+            }
+
             return `{\n${props.join('\n')}\n${indentStr}}`;
         } else if (type === 'array') {
             const items = value as JsonArray;
             if (items.length === 0) return '[]';
+
+            // Render embeddings as 3 lines: [ / values / ] — enables native fold gutter
+            if (key === 'embeddings' && items.length > 0 && typeof items[0] === 'number') {
+                return `[\n${items.join(',')}\n${indentStr}]`;
+            }
 
             const elements = items.map((item, index) => {
                 const isLast = index === items.length - 1;
@@ -269,6 +295,54 @@
         lastSerializedData = value;
         lastSerializedText = serialized;
         return serialized;
+    }
+
+    export function replaceData(newData: JsonValue) {
+        if (!editorView) return;
+        data = newData;
+        const content = dataToString(newData);
+        lastExpectedContent = content;
+        lastSerializedData = null;
+        isUpdatingFromEditor = true;
+        const currentContent = editorView.state.doc.toString();
+        editorView.dispatch({
+            changes: { from: 0, to: currentContent.length, insert: content },
+            annotations: [Transaction.addToHistory.of(false)]
+        });
+        editorView.requestMeasure({
+            read() {},
+            write(_measure, view) {
+                foldEmbeddings(view);
+            }
+        });
+        queueMicrotask(() => (isUpdatingFromEditor = false));
+    }
+
+    function findNewDocCursorPos(state: EditorState): number | null {
+        const maxLines = Math.min(state.doc.lines, 12);
+        for (let ln = 1; ln <= maxLines; ln += 1) {
+            const line = state.doc.line(ln);
+            const text = line.text;
+            let i = 0;
+            while (i < text.length && (text[i] === ' ' || text[i] === '\t')) i += 1;
+            if (text[i] === '"') {
+                const quoted = `"${SYSTEM_FIELD_ID}"`;
+                if (text.slice(i, i + quoted.length) !== quoted) continue;
+                i += quoted.length;
+            } else if (text.slice(i, i + SYSTEM_FIELD_ID.length) === SYSTEM_FIELD_ID) {
+                i += SYSTEM_FIELD_ID.length;
+            } else {
+                continue;
+            }
+            while (i < text.length && (text[i] === ' ' || text[i] === '\t')) i += 1;
+            if (text[i] !== ':') continue;
+
+            if (ln + 1 > state.doc.lines) return null;
+            const next = state.doc.line(ln + 1);
+            if (next.text.trim() === '') return next.to; // after indentation on the blank line
+            return null;
+        }
+        return null;
     }
 
     // Preserve system key values when content changes
@@ -416,7 +490,7 @@
         if (isPaste) return false;
 
         update.changes.iterChanges(
-            (fromA: number, toA: number, fromB: number, toB: number, inserted: Text) => {
+            (fromA: number, toA: number, fromB: number, toB: number, inserted: CmText) => {
                 if (did) return;
 
                 // Only trigger on insertion (not deletion)
@@ -467,7 +541,7 @@
     function ensureTimestampsAtBottom(
         expectedFields: Array<{ key: '$id' | '$createdAt' | '$updatedAt'; text: string }>,
         hits: Map<string, Hit>,
-        doc: Text,
+        doc: CmText,
         content: string,
         closeIdx: number,
         indent: string
@@ -593,7 +667,7 @@
         expectedFields: Array<{ key: '$id' | '$createdAt' | '$updatedAt'; text: string }>
     ): boolean {
         const FAST_CHECK_LINES = 20;
-        const foundValues = new Map<string, string>();
+        const foundValues = new SvelteMap<string, string>();
 
         // Check first `FAST_CHECK_LINES` lines after opening brace for $id
         let checkPos = openIdx + 1;
@@ -659,7 +733,7 @@
     }
 
     // In-place patch: ensure top-level $ system fields reflect originals without reformatting the whole doc
-    function applySystemFieldsPatch(view: EditorView, doc: Text, parsed: JsonValue): boolean {
+    function applySystemFieldsPatch(view: EditorView, doc: CmText, parsed: JsonValue): boolean {
         if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return false;
         const obj = parsed as JsonObject;
         const expectedFields: Array<{ key: '$id' | '$createdAt' | '$updatedAt'; text: string }> = [
@@ -681,7 +755,7 @@
         }
 
         // Values differ or not all found - proceed with full scan
-        const hits = new Map<string, Hit>();
+        const hits = new SvelteMap<string, Hit>();
 
         // Scan lines between top-level braces to find existing $ fields at the start of a line
         let pos = openIdx + 1;
@@ -828,6 +902,43 @@
 
     const baseJson5Linter = json5ParseLinter();
 
+    function expandErrorRange(state: EditorState, diagnostic: Diagnostic): Diagnostic {
+        if (diagnostic.severity !== 'error') return diagnostic;
+
+        const line = state.doc.lineAt(diagnostic.from);
+        const text = line.text;
+        const colonIndex = text.indexOf(':');
+
+        let from = line.from;
+        let to = line.to;
+
+        if (colonIndex !== -1) {
+            let startOffset = colonIndex + 1;
+            while (startOffset < text.length && /\s/.test(text[startOffset])) {
+                startOffset += 1;
+            }
+
+            let endOffset = text.length;
+            while (endOffset > 0 && /\s/.test(text[endOffset - 1])) {
+                endOffset -= 1;
+            }
+            if (endOffset > 0 && text[endOffset - 1] === ',') {
+                endOffset -= 1;
+            }
+
+            if (endOffset > startOffset) {
+                from = line.from + startOffset;
+                to = line.from + endOffset;
+            }
+        }
+
+        if (to <= from) {
+            return diagnostic;
+        }
+
+        return { ...diagnostic, from, to };
+    }
+
     // JSON5 linter using the parse cache; preserves errorInPlace behavior.
     async function json5Linter(view: EditorView): Promise<Diagnostic[]> {
         if (isUpdatingFromEditor) return [];
@@ -836,10 +947,28 @@
             errorMessage = null;
             return [];
         }
-        const errorMsg = (result[0]?.message || 'Syntax error').replace(/^JSON5:\s*/i, '');
+
+        const smartError = makeErrorMessage(view.state, result[0]);
+        const errorMsg = smartError.hint
+            ? `${smartError.message}: ${smartError.hint}`
+            : smartError.message;
         errorMessage = errorMsg;
         if (errorInPlace) {
-            return result;
+            return result.map((diagnostic, index) => {
+                const expanded = expandErrorRange(view.state, diagnostic);
+                if (index === 0 && diagnostic.severity === 'error') {
+                    if (smartError.range) {
+                        return {
+                            ...expanded,
+                            from: smartError.range.from,
+                            to: smartError.range.to,
+                            message: smartError.message
+                        };
+                    }
+                    return { ...expanded, message: smartError.message };
+                }
+                return expanded;
+            });
         }
         // Fallback to full-doc underline
         return [{ from: 0, to: view.state.doc.length, severity: 'error', message: errorMsg }];
@@ -851,10 +980,10 @@
             return;
         }
 
-        // Create an object with suggested attributes as empty strings
-        const suggestedObject: Record<string, string> = {};
+        // Create an object with suggested attributes
+        const suggestedObject: Record<string, unknown> = {};
         for (const attr of suggestedAttributes) {
-            suggestedObject[attr] = '';
+            suggestedObject[attr] = suggestedDefaults?.[attr] ?? '';
         }
 
         // System fields that should not be overwritten via spread
@@ -891,6 +1020,7 @@
 
         // Update the data
         data = updatedData;
+        hasUserContent = true;
 
         // Manually update the editor content
         const newContent = serializeData(updatedData);
@@ -909,12 +1039,6 @@
         // Hide the suggestions bar after applying
         hasStartedEditing = false;
         hasSuggestionsBeenShown = true;
-
-        // Clear the auto-hide timer
-        if (suggestionsHideTimer) {
-            clearTimeout(suggestionsHideTimer);
-            suggestionsHideTimer = null;
-        }
     }
 
     // Handle save logic - called from both button and keyboard shortcut
@@ -937,9 +1061,48 @@
         await onSave?.(dataToSave);
 
         // update after save completes
-        originalData = $state.snapshot(data);
+        originalData = data;
 
         isSaving = false;
+    }
+
+    function handleUndo() {
+        if (!editorView) return;
+        undo(editorView);
+    }
+
+    /**
+     * Auto-fold the embeddings array. Uses multi-line format so the
+     * native fold gutter handles expand/collapse with the same chevron as metadata.
+     */
+    function foldEmbeddings(view: EditorView) {
+        const doc = view.state.doc;
+        for (let ln = 1; ln <= doc.lines; ln++) {
+            const line = doc.line(ln);
+            const match = line.text.match(/^(\s*embeddings:\s*\[)/);
+            if (!match) continue;
+            // Find closing ] line and cache values for fold placeholder
+            for (let endLn = ln + 1; endLn <= doc.lines; endLn++) {
+                const endLine = doc.line(endLn);
+                if (endLine.text.trim().startsWith(']')) {
+                    // Cache the values line before folding hides it
+                    const valuesLn = ln + 1;
+                    if (valuesLn <= doc.lines && valuesLn < endLn) {
+                        cachedEmbeddingsPreview = doc.line(valuesLn).text.trim();
+                    }
+                    const from = line.from + match[1].length; // after [
+                    const to = endLine.from + endLine.text.indexOf(']'); // before ]
+                    if (to > from) {
+                        view.dispatch({
+                            effects: [foldEffect.of({ from, to })],
+                            annotations: [Transaction.addToHistory.of(false)]
+                        });
+                    }
+                    break;
+                }
+            }
+            return;
+        }
     }
 
     onMount(() => {
@@ -952,6 +1115,76 @@
             lineNumbers(),
             highlightActiveLine(),
             highlightActiveLineGutter(),
+            // Replace embeddings fold placeholder with truncated value preview
+            ViewPlugin.define((view) => {
+                function updatePlaceholder() {
+                    if (!cachedEmbeddingsPreview) return;
+
+                    // Get char width and styles from a number element, or fall back to cm-content
+                    const numberEl = view.dom.querySelector('.cm-number');
+                    const refEl = numberEl || view.dom.querySelector('.cm-content');
+                    if (!refEl) return;
+
+                    const charWidth = numberEl
+                        ? numberEl.getBoundingClientRect().width /
+                          (numberEl.textContent?.length || 1)
+                        : 7.8;
+                    const numberStyles = getComputedStyle(refEl);
+
+                    for (const p of view.dom.querySelectorAll('.cm-foldPlaceholder')) {
+                        const lineEl = p.closest('.cm-line');
+                        if (!lineEl?.textContent?.match(/embeddings:\s*\[/)) continue;
+
+                        const pos = view.posAtDOM(lineEl);
+                        const line = view.state.doc.lineAt(pos);
+                        const match = line.text.match(/^(\s*embeddings:\s*\[)/);
+                        if (!match) continue;
+
+                        const contentWidth =
+                            view.dom.querySelector('.cm-content')?.clientWidth ?? 600;
+                        const available =
+                            Math.floor(contentWidth / charWidth) - match[1].length - 8;
+                        if (available <= 10) continue;
+
+                        const truncated = cachedEmbeddingsPreview.slice(0, available - 3);
+                        const lastComma = truncated.lastIndexOf(',');
+                        const el = p as HTMLElement;
+                        el.textContent =
+                            (lastComma > 0 ? truncated.slice(0, lastComma) : truncated) + '...';
+                        el.classList.add('cm-embeddings-fold');
+
+                        Object.assign(el.style, {
+                            fontFamily: numberStyles.fontFamily,
+                            fontSize: numberStyles.fontSize,
+                            fontWeight: numberStyles.fontWeight,
+                            lineHeight: numberStyles.lineHeight,
+                            letterSpacing: numberStyles.letterSpacing
+                        });
+                    }
+                }
+
+                function scheduleUpdate() {
+                    requestAnimationFrame(() => updatePlaceholder());
+                }
+
+                const observer = new ResizeObserver(scheduleUpdate);
+                observer.observe(view.dom);
+
+                return {
+                    update(update: ViewUpdate) {
+                        if (
+                            update.transactions.some((tr) =>
+                                tr.effects.some((e) => e.is(foldEffect))
+                            )
+                        ) {
+                            scheduleUpdate();
+                        }
+                    },
+                    destroy() {
+                        observer.disconnect();
+                    }
+                };
+            }),
             // Use fold gutter, hide default glyphs (we style via CSS)
             foldGutter({ openText: ' ', closedText: ' ' }),
             indentUnit.of('  '), // Use 2 spaces for indentation
@@ -960,6 +1193,7 @@
             bracketMatching(),
             closeBrackets(),
             linter(json5Linter, { delay: LINTER_DELAY }),
+            createErrorLineHighlight(),
             readOnlyRangesField,
             EditorState.transactionFilter.of(
                 createReadOnlyRangesFilter(readOnlyRangesField, readonly)
@@ -968,6 +1202,7 @@
             createNestedKeyPlugin(),
             createDuplicateKeyLinter({ delay: LINTER_DELAY }),
             createSystemFieldStylePlugin(() => isNew && !hasUserContent),
+            createLineHoverPlugin(),
             highlightSelectionMatches(),
             // Clear selection after fold/unfold to prevent split highlighting
             EditorView.updateListener.of((update) => {
@@ -1013,15 +1248,22 @@
                     }
                 },
                 {
+                    key: 'Mod-g',
+                    preventDefault: true,
+                    run: () => {
+                        if (onGenerateEmbedding) {
+                            onGenerateEmbedding();
+                            return true;
+                        }
+                        return false;
+                    }
+                },
+                {
                     key: 'Escape',
                     run: () => {
                         if (showSuggestions && hasStartedEditing) {
                             hasStartedEditing = false;
                             hasSuggestionsBeenShown = true;
-                            if (suggestionsHideTimer) {
-                                clearTimeout(suggestionsHideTimer);
-                                suggestionsHideTimer = null;
-                            }
                             return true;
                         }
                         return false;
@@ -1032,31 +1274,41 @@
             json5(),
             customSyntaxHighlighting,
             customTheme,
+            EditorView.domEventHandlers({
+                mousedown: () => {
+                    if (isNew && showSuggestions && !hasSuggestionsBeenShown) {
+                        hasStartedEditing = true;
+                    }
+                    return false;
+                }
+            }),
             wrapCompartment.of(wrapLines ? EditorView.lineWrapping : []),
             EditorView.updateListener.of((update) => {
-                if (update.docChanged || update.transactions.some((tr) => tr.effects.length > 0)) {
+                const hasNonHoverEffects = update.transactions.some((tr) => {
+                    if (!tr.effects.length) return false;
+                    return tr.annotation(Transaction.userEvent) !== 'appwrite:hover';
+                });
+                if (update.docChanged || hasNonHoverEffects) {
                     const summary = getLintWarningSummary(update.state);
                     warningMessage = summary.message;
                 }
                 if (!update.docChanged || readonly) return;
+
+                // Hide saved sonner when user starts typing
+                if (saveSonnerState === 'saved') {
+                    saveSonnerState = null;
+                }
 
                 // Check if this is manual typing (not paste, undo, or programmatic)
                 const isPaste = isPasteUpdate(update);
                 const isManualInput = !isPaste && !isUpdatingFromEditor;
 
                 if (isNew && isManualInput && !hasSuggestionsBeenShown) {
-                    hasStartedEditing = true;
-
-                    if (showSuggestions) {
-                        if (suggestionsHideTimer) {
-                            clearTimeout(suggestionsHideTimer);
-                        }
-
-                        suggestionsHideTimer = setTimeout(() => {
-                            hasStartedEditing = false;
-                            hasSuggestionsBeenShown = true;
-                            suggestionsHideTimer = null;
-                        }, SUGGESTIONS_HIDE_DELAY);
+                    if (hasStartedEditing) {
+                        hasStartedEditing = false;
+                        hasSuggestionsBeenShown = true;
+                    } else {
+                        hasStartedEditing = true;
                     }
 
                     const parseCache = update.state.field(json5ParseCache, false);
@@ -1089,12 +1341,6 @@
                     changeTimer = null;
                 }
 
-                // Clear auto-save timer when user starts typing again
-                if (autoSaveTimer) {
-                    clearTimeout(autoSaveTimer);
-                    autoSaveTimer = null;
-                }
-
                 changeTimer = setTimeout(async () => {
                     const state = update.view.state;
                     const parseCache = state.field(json5ParseCache, false);
@@ -1114,47 +1360,6 @@
                     data = parsed;
                     onChange?.(parsed, hasDataChanged);
                     lastExpectedContent = serializeData(parsed);
-
-                    // Check if this was a manual edit (not undo) and trigger auto-save
-                    const isUndoOrRedo = update.transactions.some(
-                        (tr) =>
-                            tr.annotation(Transaction.userEvent) === 'undo' ||
-                            tr.annotation(Transaction.userEvent) === 'redo'
-                    );
-
-                    if (!isUndoOrRedo && !$isSmallViewport && hasDataChanged && onSave) {
-                        // Clear existing auto-save timer
-                        if (autoSaveTimer) {
-                            clearTimeout(autoSaveTimer);
-                            autoSaveTimer = null;
-                        }
-
-                        // Increment generation to track this save attempt
-                        saveGeneration++;
-                        const capturedGeneration = saveGeneration;
-
-                        // Set new auto-save timer
-                        autoSaveTimer = setTimeout(() => {
-                            // Skip if a newer edit has occurred (stale closure detection)
-                            if (capturedGeneration !== saveGeneration) {
-                                autoSaveTimer = null;
-                                return;
-                            }
-
-                            const parseCache = editorView?.state.field(json5ParseCache, false);
-                            if (parseCache?.err || errorMessage) {
-                                autoSaveTimer = null;
-                                return;
-                            }
-                            if (editorView && getLintWarningSummary(editorView.state).hasWarning) {
-                                autoSaveTimer = null;
-                                return;
-                            }
-
-                            handleSave();
-                            autoSaveTimer = null;
-                        }, AUTOSAVE_DELAY);
-                    }
                 }, DEBOUNCE_DELAY);
             }),
             readOnlyCompartment.of(EditorState.readOnly.of(readonly))
@@ -1169,6 +1374,8 @@
             state: startState,
             parent: editorContainer
         });
+
+        foldEmbeddings(editorView);
     });
 
     onDestroy(() => {
@@ -1176,17 +1383,9 @@
             clearTimeout(changeTimer);
             changeTimer = null;
         }
-        if (autoSaveTimer) {
-            clearTimeout(autoSaveTimer);
-            autoSaveTimer = null;
-        }
         if (tooltipTimer) {
             clearTimeout(tooltipTimer);
             tooltipTimer = null;
-        }
-        if (suggestionsHideTimer) {
-            clearTimeout(suggestionsHideTimer);
-            suggestionsHideTimer = null;
         }
         lastSerializedData = null;
         lastSerializedText = '';
@@ -1197,7 +1396,7 @@
     // Reset originalData when transitioning to new document mode
     $effect(() => {
         if (isNew && !wasNew) {
-            originalData = $state.snapshot(data);
+            originalData = data;
             generatedId = ID.unique();
             hasStartedEditing = false; // Reset editing flag for new document
             hasUserContent = false;
@@ -1219,8 +1418,13 @@
             hasUserContent = false;
             hasSuggestionsBeenShown = false; // Reset suggestions shown flag when switching documents
 
+            // Hide saved sonner when document is changed
+            if (saveSonnerState === 'saved') {
+                saveSonnerState = null;
+            }
+
             // Capture original data snapshot when switching documents
-            originalData = $state.snapshot(data);
+            originalData = data;
 
             lastExpectedContent = expectedContent;
 
@@ -1238,6 +1442,23 @@
                 extensions: baseExtensions
             });
             editorView.setState(newState);
+            foldEmbeddings(editorView);
+
+            if (isNew && !readonly) {
+                const pos = findNewDocCursorPos(editorView.state);
+                if (pos !== null) {
+                    editorView.dispatch({
+                        selection: EditorSelection.cursor(pos),
+                        scrollIntoView: true,
+                        annotations: [Transaction.addToHistory.of(false)]
+                    });
+                    editorView.focus();
+
+                    if (!hasSuggestionsBeenShown) {
+                        hasStartedEditing = true;
+                    }
+                }
+            }
             queueMicrotask(() => (isUpdatingFromEditor = false));
             return;
         }
@@ -1257,6 +1478,7 @@
                 changes: { from: 0, to: currentContent.length, insert: expectedContent },
                 annotations: [Transaction.addToHistory.of(false)]
             });
+            foldEmbeddings(editorView);
             queueMicrotask(() => (isUpdatingFromEditor = false));
         }
     });
@@ -1288,7 +1510,7 @@
             saveSonnerState = 'saving';
         } else if (saveSonnerState === 'saving') {
             saveSonnerState = 'saved';
-            sleep(AUTOSAVE_DELAY).then(() => {
+            sleep(SAVE_UNDO_TOOLBAR_TIMEOUT).then(() => {
                 if (saveSonnerState === 'saved') {
                     saveSonnerState = null;
                 }
@@ -1314,21 +1536,15 @@
 
             {#if documentId}
                 <Layout.Stack direction="row" inline gap="s">
-                    {#if isNew && onCancel}
-                        <Tooltip placement="top">
-                            <Button
-                                icon
-                                secondary
-                                size="xs"
-                                class="icon-button"
-                                disabled={loading}
-                                on:click={onCancel}>
-                                <Icon icon={IconX} size="s" />
-                            </Button>
-
-                            <span slot="tooltip">Cancel</span>
-                        </Tooltip>
+                    {#if isNew && onDiscard}
+                        <Button text size="xs" disabled={loading} on:click={onDiscard}>
+                            Discard
+                        </Button>
                     {/if}
+
+                    <Button secondary size="xs" disabled={!hasDataChanged} on:click={handleSave}>
+                        Save
+                    </Button>
 
                     <Tooltip placement="top">
                         <Button
@@ -1384,11 +1600,37 @@
 
     <div bind:this={editorContainer} class="cm-editor-wrapper" class:loading></div>
 
-    {#if showSuggestions && hasStartedEditing}
-        <div
-            class="suggestions-wrapper"
-            style="position: absolute; top: 205px; left: 205px; z-index: 50;">
-            <Suggestions show={showSuggestions} />
+    {#if ($isSmallViewport && showSuggestions) || (showSuggestions && hasStartedEditing)}
+        <Suggestions
+            show={showSuggestions}
+            showMock={showMockSuggestions}
+            onMobileClick={() => {
+                showSuggestions = false;
+                applySuggestedAttributes();
+            }} />
+    {/if}
+
+    {#if onGenerateEmbedding && !$isSmallViewport}
+        <div class="embedding-hint">
+            <HintBadge>
+                <Layout.Stack inline gap="xs" direction="row" alignItems="center">
+                    <Typography.Caption variant="400" color="--fgcolor-neutral-secondary">
+                        Press
+                    </Typography.Caption>
+                    <Layout.Stack
+                        direction="row"
+                        inline
+                        gap="xxxs"
+                        alignItems="center"
+                        style="height: fit-content">
+                        <Badge content={isMac() ? '⌘' : 'Ctrl'} variant="secondary" size="xs" />
+                        <Badge content="G" variant="secondary" size="xs" />
+                    </Layout.Stack>
+                    <Typography.Caption variant="400" color="--fgcolor-neutral-secondary">
+                        to generate embeddings
+                    </Typography.Caption>
+                </Layout.Stack>
+            </HintBadge>
         </div>
     {/if}
 </div>
@@ -1399,7 +1641,7 @@
         severity={errorMessage ? 'error' : 'warning'} />
 {/if}
 
-<SavingSonner state={saveSonnerState} />
+<SavingSonner state={saveSonnerState} onUndo={handleUndo} />
 
 <style lang="scss">
     .editor-container {
@@ -1544,6 +1786,22 @@
             background-color: var(--overlay-neutral-pressed) !important;
         }
 
+        :global(.cm-hovered-line) {
+            background-color: var(--overlay-neutral-hover);
+        }
+
+        :global(.cm-gutterElement.cm-hovered-lineGutter) {
+            background-color: var(--overlay-neutral-hover);
+        }
+
+        :global(.cm-line.cm-error-line) {
+            background-color: var(--bgcolor-error-weak) !important;
+        }
+
+        :global(.cm-gutterElement.cm-error-lineGutter) {
+            background-color: var(--bgcolor-error-weak) !important;
+        }
+
         // Subtle indicator for read-only system-field lines
         :global(.cm-readOnlyLine) {
             cursor: not-allowed;
@@ -1559,14 +1817,21 @@
 
         // Syntax highlighting
         // Property names (keys) must use neutral color with priority
+        :global(.cm-string),
+        :global(.cm-number),
         :global(.cm-propertyName) {
-            color: var(--fgcolor-neutral-primary) !important;
-            font-weight: 500;
+            font-weight: 400;
+            font-style: normal;
+            line-height: 140%; /* 16.8px */
+            font-size: var(--font-size-xs, 12px);
+            color: var(--fgcolor-neutral-primary);
+            font-family: var(--font-family-code, 'Fira Code');
         }
 
         // System fields muted styling (when suggestions are showing)
         // Must come after .cm-propertyName to override
         :global(.cm-system-field-muted),
+        :global(.cm-system-field-muted *),
         :global(.cm-system-field-muted.cm-propertyName),
         :global(.cm-system-field-muted .cm-propertyName) {
             color: var(--fgcolor-neutral-tertiary, #97979b) !important;
@@ -1629,17 +1894,19 @@
 
         // Smooth curved underline for errors
         :global(.cm-lintRange-error) {
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='3' viewBox='0 0 4 3'%3E%3Cpath d='M0 3 Q 1 0 2 3 Q 3 0 4 3' fill='none' stroke='%23f04438' stroke-width='0.6'/%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='4' viewBox='0 0 10 4' fill='none'%3E%3Cpath d='M0 2 C1.5 0.6 3.5 0.6 5 2 C6.5 3.4 8.5 3.4 10 2' stroke='%23f04438' stroke-width='1' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
             background-repeat: repeat-x;
             background-position: left bottom;
-            padding-bottom: 2px;
+            background-size: 10px 4px;
+            padding-bottom: 3px;
         }
 
         :global(.cm-lintRange-warning) {
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='3' viewBox='0 0 4 3'%3E%3Cpath d='M0 3 Q 1 0 2 3 Q 3 0 4 3' fill='none' stroke='%23ffa500' stroke-width='0.6'/%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='4' viewBox='0 0 10 4' fill='none'%3E%3Cpath d='M0 2 C1.5 0.6 3.5 0.6 5 2 C6.5 3.4 8.5 3.4 10 2' stroke='%23ffa500' stroke-width='1' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
             background-repeat: repeat-x;
             background-position: left bottom;
-            padding-bottom: 2px;
+            background-size: 10px 4px;
+            padding-bottom: 3px;
         }
 
         // Hide lint tooltip since we show errors in header
@@ -1657,5 +1924,18 @@
             padding: 0 4px;
             background: var(--bgcolor-neutral-secondary);
         }
+
+        :global(.cm-foldPlaceholder.cm-embeddings-fold) {
+            color: var(--brand-mint-600);
+            background: transparent;
+        }
+    }
+
+    .embedding-hint {
+        bottom: 12px;
+        right: 12px;
+        z-index: 50;
+        position: absolute;
+        pointer-events: none;
     }
 </style>

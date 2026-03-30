@@ -4,17 +4,11 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid, Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import {
-        Button,
-        Form,
-        InputSwitch,
-        InputNumber,
-        InputSelect
-    } from '$lib/elements/forms';
+    import { Button, Form, InputSwitch, InputNumber, InputSelect } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import type { Models } from '@appwrite.io/console';
+    import { HaSyncMode, type Models } from '@appwrite.io/console';
     import { Badge, Layout } from '@appwrite.io/pink-svelte';
 
     let {
@@ -51,9 +45,7 @@
             syncMode !== initialSyncMode
     );
 
-    function getHealthType(
-        status: string
-    ): 'success' | 'warning' | 'error' | undefined {
+    function getHealthType(status: string): 'success' | 'warning' | 'error' | undefined {
         switch (status) {
             case 'healthy':
                 return 'success';
@@ -80,14 +72,12 @@
 
     async function updateHA() {
         try {
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .compute.updateDatabase({
-                    databaseId: database.$id,
-                    highAvailability: haEnabled,
-                    haReplicaCount: replicaCount,
-                    haSyncMode: syncMode as any
-                });
+            await sdk.forProject(page.params.region, page.params.project).compute.updateDatabase({
+                databaseId: database.$id,
+                highAvailability: haEnabled,
+                haReplicaCount: replicaCount,
+                haSyncMode: syncMode as HaSyncMode
+            });
 
             initialEnabled = haEnabled;
             initialReplicaCount = replicaCount;
@@ -193,7 +183,9 @@
                                         <Layout.Stack direction="row" gap="xs" alignItems="center">
                                             <span class="u-bold">{replica.$id}</span>
                                             <Badge
-                                                variant={replica.role === 'primary' ? 'primary' : 'secondary'}
+                                                variant={replica.role === 'primary'
+                                                    ? 'primary'
+                                                    : 'secondary'}
                                                 content={replica.role} />
                                             <Badge
                                                 variant="secondary"
@@ -228,14 +220,11 @@
         </CardGrid>
     </Form>
 
-    <Modal
-        title="Manual failover"
-        bind:show={showFailoverConfirm}
-        onSubmit={manualFailover}>
+    <Modal title="Manual failover" bind:show={showFailoverConfirm} onSubmit={manualFailover}>
         <p class="text">
-            Are you sure you want to trigger a manual failover for <b>{database.name}</b>?
-            This will promote a replica to primary. The operation may cause brief downtime
-            while the roles are switched.
+            Are you sure you want to trigger a manual failover for <b>{database.name}</b>? This will
+            promote a replica to primary. The operation may cause brief downtime while the roles are
+            switched.
         </p>
         <svelte:fragment slot="footer">
             <Button

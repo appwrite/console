@@ -7,7 +7,7 @@
     import { Button, Form, InputSelect, InputNumber, InputSwitch } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import type { Models } from '@appwrite.io/console';
+    import { Mode, type Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
 
     let {
@@ -63,14 +63,13 @@
 
     async function updatePooler() {
         try {
-            await sdk.forProject(
-                page.params.region,
-                page.params.project
-            ).compute.updateDatabasePooler({
-                databaseId: database.$id,
-                mode: poolerEnabled ? poolerMode as any : undefined,
-                defaultPoolSize: poolerEnabled ? poolSize : undefined
-            });
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .compute.updateDatabasePooler({
+                    databaseId: database.$id,
+                    mode: poolerEnabled ? (poolerMode as Mode) : undefined,
+                    defaultPoolSize: poolerEnabled ? poolSize : undefined
+                });
 
             initialEnabled = poolerEnabled;
             initialMode = poolerMode;
@@ -98,8 +97,8 @@
     <Form onSubmit={updatePooler}>
         <CardGrid>
             <svelte:fragment slot="title">Connection pooler</svelte:fragment>
-            A connection pooler sits between your application and the database, reusing connections
-            to reduce overhead. Transaction mode is recommended for serverless workloads.
+            A connection pooler sits between your application and the database, reusing connections to
+            reduce overhead. Transaction mode is recommended for serverless workloads.
             <svelte:fragment slot="aside">
                 <ul>
                     <InputSwitch

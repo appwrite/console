@@ -7,7 +7,7 @@
     import { calculateSize } from '$lib/helpers/sizeConvertion';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { trackEvent } from '$lib/actions/analytics';
-    import type { Models } from '@appwrite.io/console';
+    import { Period, type Models } from '@appwrite.io/console';
     import {
         Alert,
         Badge,
@@ -30,13 +30,24 @@
 
     const database = $derived(data.dedicatedDatabase as ExtendedDedicatedDatabase);
 
-    const computeSdk = $derived(
-        sdk.forProject(page.params.region, page.params.project).compute
-    );
+    const computeSdk = $derived(sdk.forProject(page.params.region, page.params.project).compute);
+
+    type Connection = {
+        pid: number;
+        user: string;
+        database: string;
+        state: string;
+        query: string;
+        connectedAt: string;
+        waitEvent: string;
+    };
 
     let metricsPeriod = $state<'1h' | '24h' | '7d' | '30d'>('24h');
     let metrics = $state<Models.DedicatedDatabaseMetrics | null>(null);
-    let activeConnections = $state<{ total: number; activeConnections: unknown[] }>({ total: 0, activeConnections: [] });
+    let activeConnections = $state<{ total: number; activeConnections: Connection[] }>({
+        total: 0,
+        activeConnections: []
+    });
     let slowQueries = $state<Models.DedicatedDatabaseSlowQueryList>({ total: 0, slowQueries: [] });
     let performanceInsights = $state<Models.DedicatedDatabasePerformanceInsights | null>(null);
     let auditLogs = $state<Models.DedicatedDatabaseAuditLogList>({ total: 0, auditLogs: [] });
@@ -51,7 +62,6 @@
         'metrics' | 'connections' | 'slowQueries' | 'insights' | 'auditLogs'
     >('metrics');
 
-    // -- Column definitions --
     const connectionsColumns = [
         { id: 'pid', width: { min: 80 } },
         { id: 'user', width: { min: 100 } },
@@ -94,12 +104,14 @@
         { id: 'client', width: { min: 120 } }
     ];
 
-    // -- Data loading --
     async function loadMetrics() {
         if (!database) return;
         isLoadingMetrics = true;
         try {
-            metrics = await computeSdk.getDatabaseMetrics({ databaseId: database.$id, period: metricsPeriod as any });
+            metrics = await computeSdk.getDatabaseMetrics({
+                databaseId: database.$id,
+                period: metricsPeriod as Period
+            });
         } catch (error) {
             metrics = null;
             addNotification({
@@ -140,7 +152,9 @@
         if (!database) return;
         isLoadingInsights = true;
         try {
-            performanceInsights = await computeSdk.getDatabaseInsights({ databaseId: database.$id });
+            performanceInsights = await computeSdk.getDatabaseInsights({
+                databaseId: database.$id
+            });
         } catch (error) {
             performanceInsights = null;
         } finally {
@@ -441,11 +455,14 @@
                             <svelte:fragment slot="header" let:root>
                                 <Table.Header.Cell column="pid" {root}>PID</Table.Header.Cell>
                                 <Table.Header.Cell column="user" {root}>User</Table.Header.Cell>
-                                <Table.Header.Cell column="database" {root}>Database</Table.Header.Cell>
+                                <Table.Header.Cell column="database" {root}
+                                    >Database</Table.Header.Cell>
                                 <Table.Header.Cell column="state" {root}>State</Table.Header.Cell>
                                 <Table.Header.Cell column="query" {root}>Query</Table.Header.Cell>
-                                <Table.Header.Cell column="connected" {root}>Connected</Table.Header.Cell>
-                                <Table.Header.Cell column="waitEvent" {root}>Wait Event</Table.Header.Cell>
+                                <Table.Header.Cell column="connected" {root}
+                                    >Connected</Table.Header.Cell>
+                                <Table.Header.Cell column="waitEvent" {root}
+                                    >Wait Event</Table.Header.Cell>
                             </svelte:fragment>
                             {#each activeConnections.activeConnections as conn}
                                 <Table.Row.Base id={String(conn.pid)} {root}>
@@ -493,8 +510,7 @@
             {#if activeSection === 'slowQueries'}
                 <Layout.Stack gap="l">
                     <Typography.Text variant="m-500">
-                        Queries that exceeded the slow query threshold
-                        ({database.metricsSlowQueryLogThresholdMs}ms).
+                        Queries that exceeded the slow query threshold ({database.metricsSlowQueryLogThresholdMs}ms).
                     </Typography.Text>
 
                     {#if isLoadingSlowQueries}
@@ -511,10 +527,12 @@
                         <Table.Root columns={slowQueryColumns} let:root>
                             <svelte:fragment slot="header" let:root>
                                 <Table.Header.Cell column="query" {root}>Query</Table.Header.Cell>
-                                <Table.Header.Cell column="duration" {root}>Duration</Table.Header.Cell>
+                                <Table.Header.Cell column="duration" {root}
+                                    >Duration</Table.Header.Cell>
                                 <Table.Header.Cell column="calls" {root}>Calls</Table.Header.Cell>
                                 <Table.Header.Cell column="user" {root}>User</Table.Header.Cell>
-                                <Table.Header.Cell column="database" {root}>Database</Table.Header.Cell>
+                                <Table.Header.Cell column="database" {root}
+                                    >Database</Table.Header.Cell>
                             </svelte:fragment>
                             {#each slowQueries.slowQueries as sq, i}
                                 <Table.Row.Base id={`sq-${i}`} {root}>
@@ -600,11 +618,16 @@
                                 </Typography.Text>
                                 <Table.Root columns={topQueryColumns} let:root>
                                     <svelte:fragment slot="header" let:root>
-                                        <Table.Header.Cell column="query" {root}>Query</Table.Header.Cell>
-                                        <Table.Header.Cell column="calls" {root}>Calls</Table.Header.Cell>
-                                        <Table.Header.Cell column="totalTime" {root}>Total Time</Table.Header.Cell>
-                                        <Table.Header.Cell column="meanTime" {root}>Mean Time</Table.Header.Cell>
-                                        <Table.Header.Cell column="rows" {root}>Rows</Table.Header.Cell>
+                                        <Table.Header.Cell column="query" {root}
+                                            >Query</Table.Header.Cell>
+                                        <Table.Header.Cell column="calls" {root}
+                                            >Calls</Table.Header.Cell>
+                                        <Table.Header.Cell column="totalTime" {root}
+                                            >Total Time</Table.Header.Cell>
+                                        <Table.Header.Cell column="meanTime" {root}
+                                            >Mean Time</Table.Header.Cell>
+                                        <Table.Header.Cell column="rows" {root}
+                                            >Rows</Table.Header.Cell>
                                     </svelte:fragment>
                                     {#each performanceInsights.topQueries as tq, i}
                                         <Table.Row.Base id={`tq-${i}`} {root}>
@@ -639,10 +662,14 @@
                                 </Typography.Text>
                                 <Table.Root columns={waitEventColumns} let:root>
                                     <svelte:fragment slot="header" let:root>
-                                        <Table.Header.Cell column="event" {root}>Event</Table.Header.Cell>
-                                        <Table.Header.Cell column="type" {root}>Type</Table.Header.Cell>
-                                        <Table.Header.Cell column="count" {root}>Count</Table.Header.Cell>
-                                        <Table.Header.Cell column="totalWait" {root}>Total Wait</Table.Header.Cell>
+                                        <Table.Header.Cell column="event" {root}
+                                            >Event</Table.Header.Cell>
+                                        <Table.Header.Cell column="type" {root}
+                                            >Type</Table.Header.Cell>
+                                        <Table.Header.Cell column="count" {root}
+                                            >Count</Table.Header.Cell>
+                                        <Table.Header.Cell column="totalWait" {root}
+                                            >Total Wait</Table.Header.Cell>
                                     </svelte:fragment>
                                     {#each performanceInsights.waitEvents as we, i}
                                         <Table.Row.Base id={`we-${i}`} {root}>
@@ -665,8 +692,8 @@
                         {/if}
                     {:else}
                         <Alert.Inline status="info" title="No insights available">
-                            Performance insights data is not available. Ensure metrics collection
-                            is enabled and the database has been active.
+                            Performance insights data is not available. Ensure metrics collection is
+                            enabled and the database has been active.
                         </Alert.Inline>
                     {/if}
                 </Layout.Stack>
@@ -675,9 +702,7 @@
             <!-- Audit Logs Section -->
             {#if activeSection === 'auditLogs'}
                 <Layout.Stack gap="l">
-                    <Typography.Text variant="m-500">
-                        Database audit log entries.
-                    </Typography.Text>
+                    <Typography.Text variant="m-500">Database audit log entries.</Typography.Text>
 
                     {#if isLoadingAuditLogs}
                         <Layout.Stack gap="s">
@@ -692,28 +717,25 @@
                     {:else}
                         <Table.Root columns={auditLogColumns} let:root>
                             <svelte:fragment slot="header" let:root>
-                                <Table.Header.Cell column="timestamp" {root}>Timestamp</Table.Header.Cell>
+                                <Table.Header.Cell column="timestamp" {root}
+                                    >Timestamp</Table.Header.Cell>
                                 <Table.Header.Cell column="user" {root}>User</Table.Header.Cell>
                                 <Table.Header.Cell column="action" {root}>Action</Table.Header.Cell>
                                 <Table.Header.Cell column="object" {root}>Object</Table.Header.Cell>
-                                <Table.Header.Cell column="statement" {root}>Statement</Table.Header.Cell>
+                                <Table.Header.Cell column="statement" {root}
+                                    >Statement</Table.Header.Cell>
                                 <Table.Header.Cell column="client" {root}>Client</Table.Header.Cell>
                             </svelte:fragment>
                             {#each auditLogs.auditLogs as log, i}
                                 <Table.Row.Base id={`al-${i}`} {root}>
                                     <Table.Cell column="timestamp" {root}>
-                                        {log.timestamp
-                                            ? toLocaleDateTime(log.timestamp)
-                                            : '-'}
+                                        {log.timestamp ? toLocaleDateTime(log.timestamp) : '-'}
                                     </Table.Cell>
                                     <Table.Cell column="user" {root}>
                                         {log.user}
                                     </Table.Cell>
                                     <Table.Cell column="action" {root}>
-                                        <Badge
-                                            variant="secondary"
-                                            size="s"
-                                            content={log.action} />
+                                        <Badge variant="secondary" size="s" content={log.action} />
                                     </Table.Cell>
                                     <Table.Cell column="object" {root}>
                                         {log.object || '-'}

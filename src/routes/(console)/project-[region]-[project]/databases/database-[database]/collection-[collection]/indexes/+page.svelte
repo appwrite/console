@@ -1,30 +1,28 @@
 <script lang="ts">
     import { page } from '$app/state';
-    import { sdk } from '$lib/stores/sdk';
     import type { PageProps } from './$types';
     import {
         type CreateIndexesCallbackType,
         type DatabaseType,
         Indexes,
         EmptySheet,
-        EmptySheetCards
+        EmptySheetCards,
+        useDatabaseSdk
     } from '$database/(entity)';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     let { data }: PageProps = $props();
 
-    const params = $derived({
-        databaseId: page.params.database,
-        collectionId: page.params.collection
-    });
-
-    const documentsDB = $derived(
-        sdk.forProject(page.params.region, page.params.project).documentsDB
+    const databaseSdk = useDatabaseSdk(
+        page.params.region,
+        page.params.project,
+        data.database.type as DatabaseType
     );
 
     async function onCreateIndex(index: CreateIndexesCallbackType) {
-        await documentsDB.createIndex({
-            ...params,
+        await databaseSdk.createIndex({
+            databaseId: page.params.database,
+            entityId: page.params.collection,
             key: index.key,
             type: index.type,
             attributes: index.fields,
@@ -36,8 +34,9 @@
     async function onDeleteIndexes(selectedKeys: string[]) {
         await Promise.all(
             selectedKeys.map((key) =>
-                documentsDB.deleteIndex({
-                    ...params,
+                databaseSdk.deleteIndex({
+                    databaseId: page.params.database,
+                    entityId: page.params.collection,
                     key
                 })
             )

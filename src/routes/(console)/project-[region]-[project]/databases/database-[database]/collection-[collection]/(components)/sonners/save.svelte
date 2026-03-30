@@ -10,18 +10,21 @@
     } from '@appwrite.io/pink-svelte';
     import { sleep } from '$lib/helpers/promises';
     import { isSmallViewport } from '$lib/stores/viewport';
+    import { SAVE_UNDO_TOOLBAR_TIMEOUT } from '../editor/helpers/constants';
 
     let {
-        state = null
+        state = null,
+        onUndo = null
     }: {
         state: 'saving' | 'saved' | null;
+        onUndo?: () => Promise<void> | void;
     } = $props();
 
     let previousState = state;
 
     $effect(() => {
         if (state === 'saved' && previousState !== 'saved') {
-            sleep(3000).then(() => {
+            sleep(SAVE_UNDO_TOOLBAR_TIMEOUT).then(() => {
                 previousState = state;
                 state = null;
             });
@@ -53,7 +56,7 @@
 
             <svelte:fragment slot="end">
                 {#if state === 'saved' && !$isSmallViewport}
-                    <Button secondary size="xs" on:click={async () => {}}>
+                    <Button secondary size="xs" on:click={async () => onUndo?.()}>
                         <Typography.Caption variant="500">Undo</Typography.Caption>
 
                         <Badge content="⌘Z" variant="secondary" size="xs" />
@@ -77,6 +80,7 @@
         }
 
         & :global(div:first-of-type) {
+            bottom: 32px;
             max-width: 280px;
             transition: width 250ms cubic-bezier(0.4, 0, 0.2, 1);
         }

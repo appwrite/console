@@ -4,22 +4,26 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import {
-        Button,
-        Form,
-        InputSwitch,
-        InputNumber,
-        InputCheckbox
-    } from '$lib/elements/forms';
+    import { Button, Form, InputSwitch, InputNumber, InputCheckbox } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import type { Models } from '@appwrite.io/console';
+    import type { Compute, Models } from '@appwrite.io/console';
+
+    type DedicatedDatabaseWithSqlApi = Models.DedicatedDatabase & {
+        sqlApiEnabled: boolean;
+        sqlApiMaxBytes: number;
+        sqlApiMaxRows: number;
+        sqlApiTimeoutSeconds: number;
+        sqlApiAllowedStatements: string[];
+    };
 
     let {
-        database
+        database: rawDatabase
     }: {
         database: Models.DedicatedDatabase;
     } = $props();
+
+    const database = rawDatabase as DedicatedDatabaseWithSqlApi;
 
     const allStatements = ['SELECT', 'INSERT', 'UPDATE', 'DELETE', 'EXPLAIN'] as const;
 
@@ -58,16 +62,14 @@
 
     async function updateSqlApi() {
         try {
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .compute.updateDatabase({
-                    databaseId: database.$id,
-                    sqlApiEnabled,
-                    sqlApiMaxBytes: maxBytes,
-                    sqlApiMaxRows: maxRows,
-                    sqlApiTimeoutSeconds: timeout,
-                    sqlApiAllowedStatements: allowedStatements
-                } as any);
+            await sdk.forProject(page.params.region, page.params.project).compute.updateDatabase({
+                databaseId: database.$id,
+                sqlApiEnabled,
+                sqlApiMaxBytes: maxBytes,
+                sqlApiMaxRows: maxRows,
+                sqlApiTimeoutSeconds: timeout,
+                sqlApiAllowedStatements: allowedStatements
+            } as unknown as Parameters<Compute['updateDatabase']>[0]);
 
             initialEnabled = sqlApiEnabled;
             initialMaxBytes = maxBytes;
@@ -96,14 +98,11 @@
 <Form onSubmit={updateSqlApi}>
     <CardGrid>
         <svelte:fragment slot="title">SQL API</svelte:fragment>
-        The SQL API allows direct SQL query execution against your database through the Appwrite
-        API. Configure which statements are permitted and set resource limits.
+        The SQL API allows direct SQL query execution against your database through the Appwrite API.
+        Configure which statements are permitted and set resource limits.
         <svelte:fragment slot="aside">
             <ul>
-                <InputSwitch
-                    id="sqlApiEnabled"
-                    label="Enable SQL API"
-                    bind:value={sqlApiEnabled} />
+                <InputSwitch id="sqlApiEnabled" label="Enable SQL API" bind:value={sqlApiEnabled} />
                 {#if sqlApiEnabled}
                     <InputNumber
                         id="maxBytes"

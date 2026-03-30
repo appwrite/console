@@ -37,14 +37,10 @@
     const database = $derived(data.database);
     const dedicatedDatabase = $derived(data.dedicatedDatabase as Models.DedicatedDatabase | null);
 
-    const isDedicatedType = $derived(
-        dedicatedDatabase !== null &&
-            (database.type === 'dedicated' ||
-                database.type === 'shared')
-    );
+    const isDedicatedType = $derived(dedicatedDatabase !== null && database.type === 'dedicateddb');
 
-    const isDedicated = $derived(dedicatedDatabase?.type === 'dedicated');
-    const isShared = $derived(dedicatedDatabase?.type === 'shared');
+    const isDedicated = $derived(isDedicatedType);
+    const isShared = $derived(false);
     const isPostgres = $derived(dedicatedDatabase?.engine === 'postgres');
 
     // Legacy database fallback state

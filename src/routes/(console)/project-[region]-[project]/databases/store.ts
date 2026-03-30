@@ -23,13 +23,43 @@ export const columns = writable<Column[]>(
           ]
 );
 
+export const databaseTypes: Array<{
+    type: DatabaseType;
+    title: string;
+    subtitle: string;
+}> = [
+    {
+        type: 'dedicateddb',
+        title: 'DedicatedDB',
+        subtitle:
+            'Always-on dedicated instances with high availability. Best for production workloads.'
+    },
+    {
+        type: 'tablesdb',
+        title: 'TablesDB',
+        subtitle:
+            'Structure your data in rows and columns. Best for relational data and advanced querying.'
+    },
+    {
+        type: 'documentsdb',
+        title: 'DocumentsDB',
+        subtitle:
+            'Store flexible data without a fixed schema. Best for unstructured data and simple querying.'
+    },
+    {
+        type: 'vectorsdb',
+        title: 'VectorsDB',
+        subtitle:
+            'Store data as vectors to find similar results. Best for semantic search and recommendations.'
+    }
+];
+
 export function getDatabaseTypeTitle(database: Models.Database & { engine?: string }) {
     switch (database.type as DatabaseType) {
-        case 'shared':
-            return 'Shared PostgreSQL';
-        case 'dedicated': {
+        case 'dedicateddb': {
             const engine = database.engine || 'postgres';
-            const engineName = engine === 'postgres' ? 'PostgreSQL' : engine === 'mysql' ? 'MySQL' : engine;
+            const engineName =
+                engine === 'postgres' ? 'PostgreSQL' : engine === 'mysql' ? 'MySQL' : engine;
             return `Dedicated ${engineName}`;
         }
         default:
@@ -38,7 +68,7 @@ export function getDatabaseTypeTitle(database: Models.Database & { engine?: stri
             return 'TablesDB';
         case 'documentsdb':
             return 'DocumentsDB';
-        case 'vectordb':
-            return 'VectorDB';
+        case 'vectorsdb':
+            return 'VectorsDB';
     }
 }

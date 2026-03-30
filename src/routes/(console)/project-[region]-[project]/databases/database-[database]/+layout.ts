@@ -11,7 +11,7 @@ type DatabaseWithType = Models.Database & {
 };
 
 function isDedicatedDatabaseType(type: string | undefined): boolean {
-    return type === 'dedicated' || type === 'shared';
+    return type === 'dedicateddb';
 }
 
 export const load: LayoutLoad = async ({ params, depends }) => {
@@ -34,7 +34,9 @@ export const load: LayoutLoad = async ({ params, depends }) => {
     const dbType = database.type as string | undefined;
     if (isDedicatedDatabaseType(dbType) && !dedicatedDatabase) {
         try {
-            dedicatedDatabase = await projectSdk.compute.getDatabase({ databaseId: params.database });
+            dedicatedDatabase = await projectSdk.compute.getDatabase({
+                databaseId: params.database
+            });
         } catch {
             // Fallback - dedicated details not available
         }

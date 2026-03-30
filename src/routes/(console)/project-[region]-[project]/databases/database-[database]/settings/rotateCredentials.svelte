@@ -51,8 +51,7 @@
 
 <CardGrid>
     <svelte:fragment slot="title">Credential rotation</svelte:fragment>
-    Generate new database credentials. Existing connections using the old credentials will be
-    terminated.
+    Generate new database credentials. Existing connections using the old credentials will be terminated.
     <svelte:fragment slot="aside">
         <Alert.Inline status="warning" title="Warning">
             Rotating credentials will invalidate the current username and password. All active
@@ -73,10 +72,7 @@
     </svelte:fragment>
 </CardGrid>
 
-<Modal
-    title="Rotate credentials"
-    bind:show={showConfirm}
-    onSubmit={rotateCredentials}>
+<Modal title="Rotate credentials" bind:show={showConfirm} onSubmit={rotateCredentials}>
     <p class="text">
         Are you sure you want to rotate the credentials for <b>{database.name}</b>? This will
         generate a new username and password, and all existing connections will be terminated.

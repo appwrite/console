@@ -1,7 +1,8 @@
 <script lang="ts">
-    import { hasPageQueries, queries } from '$lib/components/filters';
+    import { Filters, hasPageQueries, queries } from '$lib/components/filters';
     import ViewSelector from '$lib/components/viewSelector.svelte';
     import { Button } from '$lib/elements/forms';
+    import type { Column, ColumnType } from '$lib/helpers/types';
     import { Container } from '$lib/layout';
     import { preferences } from '$lib/stores/preferences';
     import { Icon, Layout, Divider, Tooltip } from '@appwrite.io/pink-svelte';
@@ -9,17 +10,27 @@
     import FilePicker from '$lib/components/filePicker.svelte';
     import { page } from '$app/state';
     import { addNotification } from '$lib/stores/notifications';
-    import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { isSmallViewport } from '$lib/stores/viewport';
     import {
         IconChevronDown,
         IconChevronUp,
         IconPlus,
-        IconViewBoards
+        IconViewBoards,
+        IconRefresh,
+        IconUpload,
+        IconDownload
     } from '@appwrite.io/pink-icons-svelte';
     import { type Models } from '@appwrite.io/console';
-    import { expandTabs, randomDataModalState } from '$database/store';
-    import { EmptySheet, EmptySheetCards } from '$database/(entity)';
+    import { sdk } from '$lib/stores/sdk';
+    import { goto } from '$app/navigation';
+    import { resolve } from '$app/paths';
+    import { Click } from '$lib/actions/analytics';
+    import { expandTabs, randomDataModalState, spreadsheetRenderKey } from '$database/store';
+    import { invalidate } from '$app/navigation';
+    import { hash } from '$lib/helpers/string';
+    import { Dependencies } from '$lib/constants';
+    import { EmptySheet, EmptySheetCards, type DatabaseType } from '$database/(entity)';
     import {
         isCollectionsJsonImportInProgress,
         noSqlDocument,
@@ -30,9 +41,13 @@
     import ColumnDisplayNameInput from '$database/collection-[collection]/(components)/inputs/displayName.svelte';
     import { Modal } from '$lib/components';
     import { buildInitDoc } from './+layout.svelte';
+    import { writable } from 'svelte/store';
 
     const { data }: PageProps = $props();
 
+    const filterColumns = writable<Column[]>([]);
+
+    let isRefreshing = $state(false);
     let showImportJson = $state(false);
     let showCustomColumnsModal = $state(false);
 
@@ -40,20 +55,56 @@
     let spreadsheet: SpreadSheet | null = $state(null);
     let columnDisplayNameInput: ColumnDisplayNameInput | null = $state(null);
 
+    const disableCreateDocument = $derived(
+        $noSqlDocument.isNew && ($noSqlDocument.hasDataChanged || $noSqlDocument.isDirty)
+    );
+
+    function createFilterableColumns(): Column[] {
+        return [
+            { id: '$id', title: '$id', type: 'string' as ColumnType },
+            { id: '$createdAt', title: '$createdAt', type: 'datetime' as ColumnType },
+            { id: '$updatedAt', title: '$updatedAt', type: 'datetime' as ColumnType }
+        ];
+    }
+
+    function handleColumnToggle() {
+        // Force spreadsheet re-render when columns are toggled
+        spreadsheetRenderKey.set(hash(Date.now().toString()));
+    }
+
+    function getExportUrl() {
+        const queryParam = page.url.searchParams.get('query');
+        const url = resolve(
+            '/(console)/project-[region]-[project]/databases/database-[database]/collection-[collection]/export',
+            {
+                region: page.params.region,
+                project: page.params.project,
+                database: page.params.database,
+                collection: page.params.collection
+            }
+        );
+        return queryParam ? `${url}?query=${encodeURIComponent(queryParam)}` : url;
+    }
+
     async function onSelect(file: Models.File, localFile = false) {
         $isCollectionsJsonImportInProgress = true;
 
-        console.log(file, localFile);
-
         try {
-            /*await sdk
-                .forProject(page.params.region, page.params.project)
-                .migrations.createJSONImport({
-                    bucketId: file.bucketId,
-                    fileId: file.$id,
-                    resourceId: `${page.params.database}:${page.params.collection}`,
-                    internalFile: localFile
-                });*/
+            await (
+                sdk.forProject(page.params.region, page.params.project).migrations as unknown as {
+                    createJSONImport: (params: {
+                        bucketId: string;
+                        fileId: string;
+                        resourceId: string;
+                        internalFile: boolean;
+                    }) => Promise<unknown>;
+                }
+            ).createJSONImport({
+                bucketId: file.bucketId,
+                fileId: file.$id,
+                resourceId: `${page.params.database}:${page.params.collection}`,
+                internalFile: localFile
+            });
 
             addNotification({
                 type: 'success',
@@ -71,6 +122,10 @@
             $isCollectionsJsonImportInProgress = false;
         }
     }
+
+    $effect(() => {
+        filterColumns.set(createFilterableColumns());
+    });
 </script>
 
 {#key page.params.collection}
@@ -89,10 +144,22 @@
                                 view={data.view}
                                 columns={collectionColumns}
                                 disableButton={data.documents.total === 0}
+                                onPreferencesUpdated={handleColumnToggle}
                                 onCustomOptionClick={() => (showCustomColumnsModal = true)} />
                         </div>
 
                         <svelte:fragment slot="tooltip">Columns</svelte:fragment>
+                    </Tooltip>
+
+                    <Tooltip>
+                        <Filters
+                            onlyIcon
+                            query={data.query}
+                            columns={filterColumns}
+                            schema={false}
+                            analyticsSource="database_collections" />
+
+                        <svelte:fragment slot="tooltip">Filters</svelte:fragment>
                     </Tooltip>
                 </Layout.Stack>
                 <Layout.Stack
@@ -105,25 +172,58 @@
                         direction="row"
                         alignItems="center"
                         justifyContent="flex-end">
-                        <Button
-                            secondary
-                            disabled
-                            event={Click.DatabaseImportJson}
-                            on:click={() => (showImportJson = true)}>
-                            Import JSON
-                        </Button>
                         {#if !$isSmallViewport}
-                            <Button
-                                secondary
-                                event="create_document"
-                                on:click={() => {
-                                    if (!$noSqlDocument.isNew) {
-                                        noSqlDocument.create(buildInitDoc());
-                                    }
-                                }}>
-                                <Icon icon={IconPlus} slot="start" size="s" />
-                                Create document
-                            </Button>
+                            <Tooltip placement="top">
+                                <Button
+                                    icon
+                                    size="s"
+                                    secondary
+                                    class="small-button-dimensions"
+                                    on:click={() => (showImportJson = true)}>
+                                    <Icon icon={IconUpload} size="s" />
+                                </Button>
+                                <svelte:fragment slot="tooltip">Import JSON</svelte:fragment>
+                            </Tooltip>
+
+                            <Tooltip placement="top">
+                                <Button
+                                    icon
+                                    size="s"
+                                    secondary
+                                    class="small-button-dimensions"
+                                    disabled={!data.documents.total}
+                                    on:click={() => {
+                                        trackEvent(Click.DatabaseExportCsv);
+                                        goto(getExportUrl());
+                                    }}>
+                                    <Icon icon={IconDownload} size="s" />
+                                </Button>
+                                <svelte:fragment slot="tooltip">Export JSON</svelte:fragment>
+                            </Tooltip>
+                            <Tooltip
+                                maxWidth="210px"
+                                placement="bottom"
+                                disabled={!disableCreateDocument}>
+                                <div>
+                                    <Button
+                                        secondary
+                                        event="create_document"
+                                        disabled={disableCreateDocument}
+                                        on:click={() => {
+                                            if (disableCreateDocument) return;
+                                            if (!$noSqlDocument.isNew) {
+                                                noSqlDocument.create(buildInitDoc());
+                                            }
+                                        }}>
+                                        <Icon icon={IconPlus} slot="start" size="s" />
+                                        Create document
+                                    </Button>
+                                </div>
+
+                                <svelte:fragment slot="tooltip">
+                                    Save your current document before creating a new one
+                                </svelte:fragment>
+                            </Tooltip>
 
                             <Button
                                 icon
@@ -138,6 +238,28 @@
                                     icon={!$expandTabs ? IconChevronDown : IconChevronUp}
                                     size="s" />
                             </Button>
+
+                            <Tooltip
+                                disabled={isRefreshing || !data.documents.total}
+                                placement="top">
+                                <Button
+                                    icon
+                                    size="s"
+                                    secondary
+                                    disabled={isRefreshing || !data.documents.total}
+                                    class="small-button-dimensions"
+                                    on:click={async () => {
+                                        isRefreshing = true;
+                                        await invalidate(Dependencies.COLLECTION);
+                                        isRefreshing = false; /* too fast on local */
+                                    }}>
+                                    <div style:line-height="0px" class:rotating={isRefreshing}>
+                                        <Icon icon={IconRefresh} size="s" />
+                                    </div>
+                                </Button>
+
+                                <svelte:fragment slot="tooltip">Refresh</svelte:fragment>
+                            </Tooltip>
                         {/if}
                     </Layout.Stack>
                 </Layout.Stack>
@@ -183,22 +305,27 @@
                 {/snippet}
             </EmptySheet>
         {:else}
-            <EmptySheet mode="records" type="documentsdb" showActions={$canWriteRows}>
+            <EmptySheet
+                mode="records"
+                type={data.database.type as DatabaseType}
+                showActions={$canWriteRows}>
                 {#snippet actions()}
-                    <EmptySheetCards
-                        icon={IconPlus}
-                        title="Create documents"
-                        subtitle="Create documents manually"
-                        onClick={() => {
-                            noSqlDocument.create(buildInitDoc());
-                        }} />
-
                     <EmptySheetCards
                         icon={IconViewBoards}
                         title="Generate sample data"
                         subtitle="Generate data for testing"
                         onClick={() => {
                             $randomDataModalState.show = true;
+                            $randomDataModalState.columns = true;
+                            $randomDataModalState.managed = false;
+                        }} />
+
+                    <EmptySheetCards
+                        icon={IconPlus}
+                        title="Create document"
+                        subtitle="Manually add documents"
+                        onClick={() => {
+                            noSqlDocument.create(buildInitDoc());
                         }} />
                 {/snippet}
             </EmptySheet>
@@ -232,7 +359,6 @@
     </svelte:fragment>
 
     <ColumnDisplayNameInput
-        inModal
         bind:this={columnDisplayNameInput}
         databaseType={data.database.type}
         collectionId={page.params.collection}
@@ -248,7 +374,8 @@
     <svelte:fragment slot="footer">
         <Button size="s" secondary on:click={() => (showCustomColumnsModal = false)}>Cancel</Button>
 
-        <Button size="s" submit disabled={columnDisplayNameInput?.hasChanged()}>Update</Button>
+        <Button size="s" submit submissionLoader disabled={columnDisplayNameInput?.hasChanged()}
+            >Update</Button>
     </svelte:fragment>
 </Modal>
 
@@ -256,5 +383,18 @@
     :global(.small-button-dimensions) {
         width: 32px !important;
         height: 32px !important;
+    }
+
+    :global(.rotating) {
+        animation: rotate 1s linear infinite;
+    }
+
+    @keyframes rotate {
+        from {
+            transform: rotate(0deg);
+        }
+        to {
+            transform: rotate(360deg);
+        }
     }
 </style>

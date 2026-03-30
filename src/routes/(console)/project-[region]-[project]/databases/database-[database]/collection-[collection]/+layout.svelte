@@ -44,13 +44,19 @@
     import {
         documentActivitySheet,
         documentPermissionSheet,
-        noSqlDocument
+        noSqlDocument,
+        showCreateIndexSheet
     } from '$database/collection-[collection]/store';
     import {
         SideSheet,
         EditRecordPermissions,
         RecordActivity,
-        type Field
+        CreateIndex,
+        useDatabaseSdk,
+        DEFAULT_VECTOR_DIMENSION,
+        type DatabaseType,
+        type Field,
+        type Index
     } from '$database/(entity)';
     import {
         entityColumnSuggestions,
@@ -60,6 +66,7 @@
     } from '$database/(suggestions)';
     import { VARS } from '$lib/system';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import type { OrderBy } from '@appwrite.io/console';
 
     export let data: LayoutData;
 
@@ -69,6 +76,7 @@
      */
     let isWaterfallFromFaker = false;
 
+    let createIndex: CreateIndex;
     let editRecordPermissions: EditRecordPermissions;
 
     $: collection = data.collection;
@@ -81,7 +89,7 @@
         expandTabs.set(preferences.getKey('entityHeaderExpanded', true));
 
         // set faker method.
-        $randomDataModalState.onSubmit = async () => await createFakeData();
+        $randomDataModalState.onSubmit = async () => await createSampleDocuments();
 
         if (
             $entityColumnSuggestions.enabled &&
@@ -92,7 +100,10 @@
         }
 
         return realtime.forProject(page.params.region, ['project', 'console'], (response) => {
-            if (response.events.includes('documentsdb.*.collections.*.indexes.*')) {
+            if (
+                response.events.includes('documentsdb.*.collections.*.indexes.*') ||
+                response.events.includes('vectorsdb.*.collections.*.indexes.*')
+            ) {
                 if (!isWaterfallFromFaker && !$entityColumnSuggestions.entity) {
                     invalidate(Dependencies.COLLECTION);
                 }
@@ -198,10 +209,31 @@
         indexes: 700
     });
 
+    async function handleCreateIndex(index: Index) {
+        const databaseSdk = useDatabaseSdk(
+            page.params.region,
+            page.params.project,
+            data.database.type as DatabaseType
+        );
+
+        await databaseSdk.createIndex({
+            databaseId: page.params.database,
+            entityId: page.params.collection,
+            key: index.key,
+            type: index.type,
+            attributes: index.fields,
+            lengths: index.lengths,
+            orders: index.orders as OrderBy[] /* TODO: @itznotabug: needs to be fixed at SDK level */
+        });
+
+        await invalidate(Dependencies.COLLECTION);
+    }
+
     async function createSampleDocuments() {
         $spreadsheetLoading = true;
         isWaterfallFromFaker = true;
 
+        let documentIds = [];
         let suggestedColumns: { total: number; columns: ColumnInput[] } = {
             total: 0,
             columns: []
@@ -245,20 +277,36 @@
                 status: 'available'
             })) as Field[];
 
-            const { rows } = generateFakeRecords($randomDataModalState.value, fields);
+            const { rows, ids } = generateFakeRecords($randomDataModalState.value, fields);
+            documentIds = ids;
 
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .documentsDB.createDocuments({
+            const dbType = data.database?.type;
+            const isVectorsDb = dbType === 'vectorsdb';
+            const dimension = collection?.dimension ?? DEFAULT_VECTOR_DIMENSION;
+
+            // For vectorsdb, wrap fields in metadata and add empty embeddings
+            const documents = isVectorsDb
+                ? rows.map((row) => {
+                      const { $id, ...rest } = row;
+                      return { $id, metadata: rest, embeddings: new Array(dimension).fill(0) };
+                  })
+                : rows;
+
+            const projectSdk = sdk.forProject(page.params.region, page.params.project);
+
+            if (isVectorsDb) {
+                await projectSdk.vectorsDB.createDocuments({
                     databaseId: page.params.database,
                     collectionId: page.params.collection,
-                    documents: rows
+                    documents
                 });
-
-            addNotification({
-                type: 'success',
-                message: 'Sample data added successfully with AI-suggested attributes'
-            });
+            } else {
+                await projectSdk.documentsDB.createDocuments({
+                    databaseId: page.params.database,
+                    collectionId: page.params.collection,
+                    documents
+                });
+            }
 
             await invalidate(Dependencies.DOCUMENTS);
         } catch (e) {
@@ -277,50 +325,8 @@
 
             $spreadsheetLoading = false;
             isWaterfallFromFaker = false;
+            $randomDataModalState.columns = false;
         }
-    }
-
-    async function createFakeData() {
-        isWaterfallFromFaker = true;
-
-        $spreadsheetLoading = true;
-        $randomDataModalState.show = false;
-
-        /* let the columns be processed! */
-        await sleep(1250);
-
-        let documentIds = [];
-        try {
-            const { rows, ids } = generateFakeRecords($randomDataModalState.value);
-
-            documentIds = ids;
-
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .documentsDB.createDocuments({
-                    databaseId: page.params.database,
-                    collectionId: page.params.collection,
-                    documents: rows
-                });
-
-            addNotification({
-                type: 'success',
-                message: 'Sample data added successfully'
-            });
-
-            await invalidate(Dependencies.DOCUMENTS);
-        } catch (e) {
-            addNotification({
-                type: 'error',
-                message: e.message
-            });
-        } finally {
-            // reset value to 25 default!
-            $randomDataModalState.value = 25;
-        }
-
-        $spreadsheetLoading = false;
-        isWaterfallFromFaker = false;
 
         spreadsheetRenderKey.set(hash(documentIds));
     }
@@ -349,4 +355,22 @@
 
 <SideSheet title="Document activity" bind:show={$documentActivitySheet.show} closeOnBlur>
     <RecordActivity record={$documentActivitySheet.document} />
+</SideSheet>
+
+<SideSheet
+    closeOnBlur
+    title="Create index"
+    bind:show={$showCreateIndexSheet.show}
+    submit={{
+        text: 'Create',
+        onClick: async () => {
+            await createIndex.create();
+        }
+    }}>
+    <CreateIndex
+        entity={collection}
+        bind:this={createIndex}
+        bind:showCreateIndex={$showCreateIndexSheet.show}
+        externalFieldKey={$showCreateIndexSheet.column}
+        onCreateIndex={handleCreateIndex} />
 </SideSheet>

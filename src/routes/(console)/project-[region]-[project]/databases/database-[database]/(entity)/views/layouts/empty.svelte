@@ -27,7 +27,8 @@
         subtitle,
         showActions = true,
         customColumns = [],
-        onOpenCreateColumn
+        onOpenCreateColumn,
+        showNoSqlEditor = false
     }: {
         type?: DatabaseType;
         mode: Mode;
@@ -36,6 +37,7 @@
         actions?: Snippet;
         showActions?: boolean;
         customColumns?: Column[];
+        showNoSqlEditor?: boolean;
         onOpenCreateColumn?: () => Promise<void> | void;
     } = $props();
 
@@ -221,7 +223,6 @@
         return columns;
     };
 
-    // TODO: @itznotabug - we probably don't need `hasCustomColumns` but check please.
     const getDocumentsDbColumns = (): Column[] => [
         {
             id: '$id',
@@ -291,7 +292,7 @@
 
     const spreadsheetColumns = $derived.by(() => {
         return isRecordMode
-            ? type !== 'documentsdb'
+            ? type === 'tablesdb' || type === 'legacy'
                 ? getRowColumns()
                 : getDocumentsDbColumns()
             : getIndexesColumns();
@@ -380,8 +381,10 @@
         </Spreadsheet.Root>
 
         {#snippet noSqlEditor()}
-            {#if type === 'documentsdb' && mode === 'records'}
-                <NoSqlEditor loading />
+            {#if showNoSqlEditor}
+                {#if (type === 'documentsdb' || type === 'vectorsdb') && mode === 'records'}
+                    <NoSqlEditor loading />
+                {/if}
             {/if}
         {/snippet}
     </SpreadsheetContainer>
@@ -408,7 +411,8 @@
                     </Layout.Stack>
 
                     {#if showActions && actions}
-                        {@const isOnlyIndexes = mode === 'indexes' && type === 'documentsdb'}
+                        {@const isOnlyIndexes =
+                            mode === 'indexes' && (type === 'documentsdb' || type === 'vectorsdb')}
                         {@const inline = mode === 'records-filtered' || isOnlyIndexes}
                         <div class="controlled-width" class:single-mode={isOnlyIndexes}>
                             <Layout.Stack
@@ -501,7 +505,8 @@
             }
         }
 
-        &[data-mode='records'][data-type='documentsdb'] {
+        &[data-mode='records'][data-type='documentsdb'],
+        &[data-mode='records'][data-type='vectorsdb'] {
             position: unset;
             // disable animation when not loading!
             &[data-loading='false'] :global(.skeleton) {

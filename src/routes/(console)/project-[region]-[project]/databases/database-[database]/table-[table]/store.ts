@@ -4,56 +4,11 @@ import type { Models } from '@appwrite.io/console';
 import { derived, writable } from 'svelte/store';
 import { SPREADSHEET_PAGE_LIMIT } from '$lib/constants';
 import { createSparsePagedDataStore } from '@appwrite.io/pink-svelte';
-
-export type Columns =
-    | Models.ColumnBoolean
-    | Models.ColumnEmail
-    | Models.ColumnEnum
-    | Models.ColumnFloat
-    | Models.ColumnInteger
-    | Models.ColumnIp
-    | Models.ColumnString
-    | Models.ColumnText
-    | Models.ColumnMediumtext
-    | Models.ColumnLongtext
-    | Models.ColumnVarchar
-    | Models.ColumnUrl
-    | Models.ColumnPoint
-    | Models.ColumnLine
-    | Models.ColumnPolygon
-    | (Models.ColumnRelationship & { default?: never });
-
-export type Attributes =
-    | Models.AttributeBoolean
-    | Models.AttributeEmail
-    | Models.AttributeEnum
-    | Models.AttributeFloat
-    | Models.AttributeInteger
-    | Models.AttributeIp
-    | Models.AttributeString
-    | Models.AttributeUrl
-    | Models.AttributePoint
-    | Models.AttributeLine
-    | Models.AttributePolygon
-    | (Models.AttributeRelationship & { default?: never });
-
-export type Collection = Omit<Models.Collection, 'attributes'> & {
-    attributes: Array<Attributes>;
-};
-
-export type Table = Omit<Models.Table, 'columns'> & {
-    columns: Array<Columns>;
-};
+import type { Columns, SortState, Table } from '$database/store';
 
 export const table = derived(page, ($page) => $page.data.table as Table);
 export const columns = derived(page, ($page) => $page.data.table.columns as Columns[]);
 export const indexes = derived(page, ($page) => $page.data.table.indexes as Models.ColumnIndex[]);
-
-/**
- * adding a lot of fake data will trigger the realtime below
- * and will keep invalidating the `Dependencies.TABLE` making a lot of API noise!
- */
-export const isWaterfallFromFaker = writable(false);
 
 export const tableColumns = writable<Column[]>([]);
 
@@ -121,11 +76,6 @@ export const showRowCreateSheet = writable({
     show: false,
     row: null
 });
-
-export type SortState = {
-    column?: string;
-    direction: 'asc' | 'desc' | 'default';
-};
 
 export const sortState = writable<SortState>({
     column: null,

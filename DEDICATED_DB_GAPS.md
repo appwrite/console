@@ -4,6 +4,7 @@ Tracking file for all missing dedicated DB features in console vs cloud/edge/ddb
 **Status: ALL ITEMS COMPLETE**
 
 ## Legend
+
 - [x] Done
 
 ---
@@ -99,6 +100,7 @@ Tracking file for all missing dedicated DB features in console vs cloud/edge/ddb
 ## Files Changed Summary
 
 ### New Files (28)
+
 - `settings/updateName.svelte`
 - `settings/updateTier.svelte`
 - `settings/updateStorage.svelte`
@@ -123,6 +125,7 @@ Tracking file for all missing dedicated DB features in console vs cloud/edge/ddb
 - `monitoring/+page.ts`
 
 ### Modified Files (5)
+
 - `src/lib/sdk/dedicatedDatabases.ts` — Complete rewrite with all types, enums, and 45 SDK methods
 - `dedicatedOverview.svelte` — Added 5 new CardGrid sections + IP/storageClass fields
 - `settings/+page.svelte` — Rewritten with dedicated type branch + 19 sub-component imports

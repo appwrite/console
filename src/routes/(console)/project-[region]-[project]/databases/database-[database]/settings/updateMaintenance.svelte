@@ -7,7 +7,7 @@
     import { Button, Form, InputSelect, InputNumber } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import type { Models } from '@appwrite.io/console';
+    import { Day, type Models } from '@appwrite.io/console';
 
     let {
         database
@@ -48,7 +48,7 @@
                 .forProject(page.params.region, page.params.project)
                 .compute.updateDatabaseMaintenance({
                     databaseId: database.$id,
-                    day: day as any,
+                    day: day as Day,
                     hourUtc,
                     durationMinutes
                 });
@@ -74,8 +74,8 @@
 <Form onSubmit={updateMaintenance}>
     <CardGrid>
         <svelte:fragment slot="title">Maintenance window</svelte:fragment>
-        Schedule a preferred time window for automatic maintenance operations such as minor
-        version upgrades and patches.
+        Schedule a preferred time window for automatic maintenance operations such as minor version upgrades
+        and patches.
         <svelte:fragment slot="aside">
             <ul>
                 <InputSelect

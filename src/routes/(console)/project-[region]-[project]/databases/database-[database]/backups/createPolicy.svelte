@@ -26,9 +26,9 @@
     import { isSmallViewport } from '$lib/stores/viewport';
     import { goto } from '$app/navigation';
     import { getChangePlanUrl } from '$lib/stores/billing';
-    import { onMount } from 'svelte';
 
     export let isShowing: boolean;
+    export let disabled: boolean = false;
     export let isFromBackupsTab: boolean = false;
     export let title: string | undefined = undefined;
     export let subtitle: string | undefined = undefined;
@@ -98,14 +98,12 @@
 
         listOfCustomPolicies = [...listOfCustomPolicies, userBackupPolicy];
 
-        selectedPolicyGroup = 'custom';
-
         resetFormVariables();
         showCustomPolicy = false;
     };
 
-    const markPolicyChecked = (event: CustomEvent, policy: UserBackupPolicy) => {
-        const isChecked = event.detail as boolean;
+    const markPolicyChecked = (event: CustomEvent<boolean>, policy: UserBackupPolicy) => {
+        const isChecked = event.detail;
         presetPolicies.update((all) => {
             return all.map((p) => {
                 if (p.label === policy.label) {
@@ -134,6 +132,10 @@
             monthlyBackupFrequency,
             daysSelectionArray
         );
+    };
+
+    const getPolicyById = (id: string) => {
+        return $presetPolicies.find((p) => p.id === id);
     };
 
     $: if (showCustomPolicy) {
@@ -178,7 +180,7 @@
         label: freq.charAt(0).toUpperCase() + freq.slice(1)
     }));
 
-    let selectedPolicyGroup: string = null;
+    let selectedPolicyGroup: null | string = null;
     $: if (selectedPolicyGroup) {
         if (selectedPolicyGroup === 'custom') {
             if (listOfCustomPolicies.length === 0) {
@@ -204,15 +206,11 @@
         }
     }
 
-    onMount(() => {
+    $: filteredPresetPolicies = $presetPolicies.filter((policy) => {
         if (isFromBackupsTab) {
-            presetPolicies.update((preset) => {
-                return preset.filter((policy) => policy.id !== 'none');
-            });
+            return policy.id !== 'none';
         } else {
-            presetPolicies.update((preset) => {
-                return preset.filter((policy) => policy.id !== 'hourly');
-            });
+            return policy.id !== 'hourly';
         }
     });
 </script>
@@ -238,7 +236,7 @@
 
     <!-- because we show a set of pre-defined ones -->
     {#if $currentPlan?.backupPolicies === 1}
-        {@const dailyPolicy = $presetPolicies[1]}
+        {@const dailyPolicy = getPolicyById('dank')}
 
         {#if isFromBackupsTab}
             <Layout.Stack gap="m">
@@ -263,6 +261,7 @@
         {:else}
             <Layout.Stack gap="m">
                 <InputSwitch
+                    {disabled}
                     id="daily_backup"
                     label="Daily backups"
                     on:change={(event) => markPolicyChecked(event, dailyPolicy)}>
@@ -284,7 +283,7 @@
         <Layout.Stack gap="m">
             <Layout.Grid columns={isFromBackupsTab ? 2 : 3} columnsS={1}>
                 {#if isFromBackupsTab}
-                    {#each $presetPolicies as policy, index (index)}
+                    {#each filteredPresetPolicies as policy, index (index)}
                         <label for={index.toString()} class="card preset-label-card is-allow-focus">
                             <Layout.Stack gap="s" direction="row">
                                 <InputCheckbox
@@ -300,8 +299,8 @@
                         </label>
                     {/each}
                 {:else}
-                    {@const none = $presetPolicies[1]}
-                    {@const dailPreset = $presetPolicies[0]}
+                    {@const none = getPolicyById('none')}
+                    {@const dailPreset = getPolicyById('daily')}
                     <Card.Selector
                         variant="secondary"
                         imageRadius="s"

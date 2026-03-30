@@ -48,9 +48,7 @@
     const databaseSdk = useDatabaseSdk(page, terminology);
 
     // Check if this is a dedicated database type
-    const isDedicatedType = $derived(
-        terminology.type === 'dedicated' || terminology.type === 'shared'
-    );
+    const isDedicatedType = $derived(terminology.type === 'dedicateddb');
 
     const entityTypePlural = terminology.entity.lower.plural;
     const entityTypeSingular = terminology.entity.lower.singular;
@@ -218,7 +216,7 @@
                 <ul
                     style="margin-inline-start: -1.25rem"
                     class="drop-list bottom-nav u-margin-block-start-4">
-                    {#each (isDedicatedType ? dedicatedDatabaseSubNavigationItems : databaseSubNavigationItems) as action}
+                    {#each isDedicatedType ? dedicatedDatabaseSubNavigationItems : databaseSubNavigationItems as action}
                         {@const href = withPath(databaseBaseRoute, `/${action.href}`)}
 
                         <Layout.Stack gap="s" direction="row" alignItems="center">

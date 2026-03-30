@@ -27,14 +27,12 @@
 
     async function updateNetwork() {
         try {
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .compute.updateDatabase({
-                    databaseId: database.$id,
-                    networkMaxConnections: maxConnections,
-                    networkIdleTimeoutSeconds: idleTimeout,
-                    networkIPAllowlist: ipAllowlist
-                });
+            await sdk.forProject(page.params.region, page.params.project).compute.updateDatabase({
+                databaseId: database.$id,
+                networkMaxConnections: maxConnections,
+                networkIdleTimeoutSeconds: idleTimeout,
+                networkIPAllowlist: ipAllowlist
+            });
 
             await invalidate(Dependencies.DATABASE);
 

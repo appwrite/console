@@ -2,23 +2,13 @@
     import { Wizard } from '$lib/layout';
     import { writable } from 'svelte/store';
     import { Form, InputText, InputSelect, InputCheckbox, Button } from '$lib/elements/forms';
-    import {
-        Alert,
-        Card,
-        Divider,
-        Fieldset,
-        Icon,
-        Layout,
-        Tag,
-        Typography
-    } from '@appwrite.io/pink-svelte';
+    import { Alert, Card, Divider, Fieldset, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { resolveRoute } from '$lib/stores/navigation';
     import { afterNavigate, goto } from '$app/navigation';
     import { CustomId } from '$lib/components';
     import { page } from '$app/state';
-    import { IconPencil } from '@appwrite.io/pink-icons-svelte';
     import { addNotification } from '$lib/stores/notifications';
-    import { ID, type Models } from '@appwrite.io/console';
+    import { BackupServices, ID, type Models } from '@appwrite.io/console';
     import {
         type DatabaseType,
         type DedicatedDatabaseParams,
@@ -36,75 +26,32 @@
     import CreatePolicy from '$database/backups/createPolicy.svelte';
     import { cronExpression, type UserBackupPolicy } from '$lib/helpers/backups';
 
-    import Mongo from '../(assets)/mongo.svelte';
+    import type { PageProps } from './$types';
+    import { createDatabaseStore } from './store';
+    import { databaseTypes } from '../store';
     import { isTabletViewport } from '$lib/stores/viewport';
     import { filterRegions } from '$lib/helpers/regions';
     import { regions as regionsStore } from '$lib/stores/organization';
     import { backupRetainingOptions } from '$database/store';
     import PolicyPresets from '$database/backups/policyPresets.svelte';
 
+    const { data }: PageProps = $props();
+
     let formComponent: Form;
 
     const params = page.url.searchParams;
     const typeFromParams = params.get('type') ?? (null as DatabaseType);
 
-    let databaseId = $state(params.get('id') ?? null);
-    let databaseName = $state(params.get('name') ?? null);
-
     let showCreatePolicies = $state(false);
     let totalPolicies: UserBackupPolicy[] = $state([]);
 
-    let showCustomId = $state(false);
     let showExitModal = $state(false);
     let isSubmitting = $state(writable(false));
     let previousPage: string = $state(resolveRoute('/'));
-    let type = $state(typeFromParams ?? 'tablesdb') as DatabaseType;
+    let type = $state(typeFromParams ?? 'dedicateddb') as DatabaseType;
 
     const isDark = $derived($app.themeInUse === 'dark');
     const backupsImg = $derived(isDark ? EmptyDarkMobile : EmptyLightMobile);
-
-    // Free tier limits for shared databases
-    const sharedTierLimits = {
-        ram: '128 MB',
-        cpu: '0.125 vCPU',
-        storage: '1 GB',
-        maxConnections: 10,
-        queryTimeout: '15s',
-        idleTimeout: '15 min'
-    };
-
-    const databaseTypes: Array<{
-        type: DatabaseType;
-        title: string;
-        subtitle: string;
-        icon?: typeof Mongo;
-    }> = [
-        {
-            type: 'tablesdb',
-            title: 'TablesDB',
-            subtitle:
-                'Structure your data in rows and columns. Best for relational data and advanced querying.'
-        },
-        {
-            type: 'documentsdb',
-            title: 'DocumentsDB',
-            subtitle:
-                'Store flexible data without a fixed schema. Best for unstructured data and simple querying.',
-            icon: Mongo
-        },
-        {
-            type: 'shared',
-            title: 'Shared (Free)',
-            subtitle:
-                'Free serverless PostgreSQL that scales to zero when idle. Great for prototyping and small projects.'
-        },
-        {
-            type: 'dedicated',
-            title: 'DedicatedDB',
-            subtitle:
-                'Always-on dedicated instances with high availability. Best for production workloads.'
-        }
-    ];
 
     // Dedicated DB specific options
     const engineOptions = [
@@ -117,7 +64,7 @@
     const regionOptions = $derived(filterRegions($regionsStore.regions || []));
 
     const tiers: Record<string, { label: string; price: number }> = {
-        'free': { label: 'Free - 0.125 vCPU, 128MB RAM', price: 0 },
+        free: { label: 'Free - 0.125 vCPU, 128MB RAM', price: 0 },
         's-1vcpu-1gb': { label: 'Starter - 1 vCPU, 1GB RAM', price: 15 },
         's-2vcpu-2gb': { label: 'Standard - 2 vCPU, 2GB RAM', price: 30 },
         's-2vcpu-4gb': { label: 'Standard Plus - 2 vCPU, 4GB RAM', price: 60 },
@@ -148,10 +95,9 @@
     let highAvailability = $state(params.get('ha') === 'true');
 
     // Helper to check database type capabilities
-    const showRegionSelect = $derived(type === 'dedicated' || type === 'shared');
-    const showTierSelect = $derived(type === 'dedicated');
-    const showEngineSelect = $derived(type === 'dedicated');
-    const isSharedType = $derived(type === 'shared');
+    const showRegionSelect = $derived(type === 'dedicateddb');
+    const showTierSelect = $derived(type === 'dedicateddb');
+    const showEngineSelect = $derived(type === 'dedicateddb');
     const isFreeTier = $derived(selectedTier === 'free');
 
     const tierPrice = $derived(tiers[selectedTier]?.price ?? 0);
@@ -163,9 +109,7 @@
             case 'tablesdb':
             case 'documentsdb':
                 return 'appwrite';
-            case 'shared':
-                return 'shared';
-            case 'dedicated':
+            case 'dedicateddb':
                 return 'dedicated';
             default:
                 return 'appwrite';
@@ -264,7 +208,7 @@
 
             return sdk.forProject(page.params.region, page.params.project).backups.createPolicy({
                 policyId: ID.unique(),
-                services: ['databases'],
+                services: [BackupServices.Databases],
                 retention: policy.retained,
                 schedule: policy.schedule,
                 name: policy.label,
@@ -278,21 +222,15 @@
 
     async function createDatabase() {
         try {
-            databaseId ??= ID.unique();
+            const databaseId = $createDatabaseStore.id ?? ID.unique();
 
             let database: Models.Database;
             const databaseSdk = useDatabaseSdk(page.params.region, page.params.project);
 
-            if (type === 'shared') {
+            if (type === 'dedicateddb') {
                 database = await databaseSdk.create(type, {
                     databaseId,
-                    name: databaseName,
-                    region: selectedRegion
-                } as DedicatedDatabaseParams);
-            } else if (type === 'dedicated') {
-                database = await databaseSdk.create(type, {
-                    databaseId,
-                    name: databaseName,
+                    name: $createDatabaseStore.name,
                     engine: selectedEngine,
                     region: selectedRegion,
                     tier: selectedTier,
@@ -306,9 +244,8 @@
             } else {
                 database = await databaseSdk.create(type, {
                     databaseId,
-                    name: databaseName
+                    name: $createDatabaseStore.name
                 });
-                // Create Appwrite backup policies for TablesDB/DocumentsDB
                 await createPolicies(database.$id);
             }
 
@@ -327,6 +264,8 @@
                     }
                 )
             );
+
+            resetCreateDatabaseStore();
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -334,6 +273,11 @@
             });
             trackError(error, Submit.DatabaseCreate);
         }
+    }
+
+    function resetCreateDatabaseStore() {
+        $createDatabaseStore.id = '';
+        $createDatabaseStore.name = '';
     }
 </script>
 
@@ -343,12 +287,13 @@
     bind:showExitModal
     confirmExit
     column
-    columnSize="s">
+    columnSize="s"
+    onExit={resetCreateDatabaseStore}>
     <Form bind:this={formComponent} onSubmit={createDatabase} bind:isSubmitting>
         <Layout.Stack gap="xxl">
             {#if typeFromParams === null}
                 <Fieldset legend="Database type">
-                    {@render selectDatabaseType()}
+                    {@render selectDatabaseType($isSubmitting)}
                 </Fieldset>
             {/if}
 
@@ -359,19 +304,18 @@
                         id="name"
                         autofocus
                         label="Name"
-                        bind:value={databaseName}
+                        disabled={$isSubmitting}
+                        bind:value={$createDatabaseStore.name}
                         placeholder="Enter database name" />
 
-                    {#if !showCustomId}
-                        <div>
-                            <Tag size="s" on:click={() => (showCustomId = true)}>
-                                <Icon icon={IconPencil} slot="start" size="s" />
-                                Database ID
-                            </Tag>
-                        </div>
-                    {/if}
-
-                    <CustomId bind:show={showCustomId} name="Database" bind:id={databaseId} />
+                    <CustomId
+                        show
+                        name="Database"
+                        required={false}
+                        autofocus={false}
+                        disabled={$isSubmitting}
+                        bind:id={$createDatabaseStore.id}
+                        syncFrom={$createDatabaseStore.name} />
                 </Layout.Stack>
             </Fieldset>
 
@@ -442,82 +386,21 @@
                             </Layout.Stack>
 
                             <Typography.Text>
-                                You'll be charged <b>{formatCurrency(estimatedMonthly)}</b> every
-                                30 days. Costs may vary with storage and network usage.
+                                You'll be charged <b>{formatCurrency(estimatedMonthly)}</b> every 30 days.
+                                Costs may vary with storage and network usage.
                             </Typography.Text>
                         </Layout.Stack>
                     </Card.Base>
                 </Fieldset>
             {/if}
 
-            {#if isSharedType}
-                <Fieldset legend="Free tier limits">
-                    <Alert.Inline status="info" title="Shared database limits">
-                        Shared databases are free and scale to zero when idle. The following
-                        limits apply:
-                    </Alert.Inline>
-                    <Layout.Grid columns={2} columnsS={1} gap="l">
-                        <Layout.Stack gap="xxs">
-                            <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
-                                RAM
-                            </Typography.Caption>
-                            <Typography.Text variant="m-500">
-                                {sharedTierLimits.ram}
-                            </Typography.Text>
-                        </Layout.Stack>
-                        <Layout.Stack gap="xxs">
-                            <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
-                                CPU
-                            </Typography.Caption>
-                            <Typography.Text variant="m-500">
-                                {sharedTierLimits.cpu}
-                            </Typography.Text>
-                        </Layout.Stack>
-                        <Layout.Stack gap="xxs">
-                            <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
-                                Storage
-                            </Typography.Caption>
-                            <Typography.Text variant="m-500">
-                                {sharedTierLimits.storage}
-                            </Typography.Text>
-                        </Layout.Stack>
-                        <Layout.Stack gap="xxs">
-                            <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
-                                Max Connections
-                            </Typography.Caption>
-                            <Typography.Text variant="m-500">
-                                {sharedTierLimits.maxConnections}
-                            </Typography.Text>
-                        </Layout.Stack>
-                        <Layout.Stack gap="xxs">
-                            <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
-                                Query Timeout
-                            </Typography.Caption>
-                            <Typography.Text variant="m-500">
-                                {sharedTierLimits.queryTimeout}
-                            </Typography.Text>
-                        </Layout.Stack>
-                        <Layout.Stack gap="xxs">
-                            <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
-                                Idle Timeout
-                            </Typography.Caption>
-                            <Typography.Text variant="m-500">
-                                {sharedTierLimits.idleTimeout} (scales to zero)
-                            </Typography.Text>
-                        </Layout.Stack>
-                    </Layout.Grid>
-                </Fieldset>
-            {/if}
-
             <Fieldset legend="Backups">
                 {#if backupSystem === 'appwrite'}
                     {#if isCloud}
-                        {@render cloudBackupOptions()}
+                        {@render cloudBackupOptions($isSubmitting)}
                     {:else}
                         {@render selfHostedBackupOptions()}
                     {/if}
-                {:else if backupSystem === 'shared'}
-                    {@render sharedBackupOptions()}
                 {:else if backupSystem === 'dedicated'}
                     {@render dedicatedBackupOptions()}
                 {/if}
@@ -526,37 +409,35 @@
     </Form>
 
     <svelte:fragment slot="footer">
-        <Button
-            secondary
-            fullWidthMobile
-            disabled={$isSubmitting}
-            on:click={() => (showExitModal = true)}>
+        <Button secondary disabled={$isSubmitting} on:click={() => (showExitModal = true)}>
             Cancel
         </Button>
         <Button
-            fullWidthMobile
+            submissionLoader
             disabled={$isSubmitting}
+            forceShowLoader={$isSubmitting}
             on:click={() => formComponent.triggerSubmit()}>
-            {type === 'dedicated' ? `Create - ${formatCurrency(estimatedMonthly)}/mo` : 'Create'}
+            {type === 'dedicateddb' ? `Create - ${formatCurrency(estimatedMonthly)}/mo` : 'Create'}
         </Button>
     </svelte:fragment>
 </Wizard>
 
-{#snippet cloudBackupOptions()}
+{#snippet cloudBackupOptions(disabled = false)}
     {#if $currentPlan?.backupsEnabled}
         <div style:width="100%">
             <CreatePolicy
+                {disabled}
                 bind:totalPolicies
                 title="Backup policies"
+                project={data.project}
                 bind:isShowing={showCreatePolicies}
-                subtitle="Protect your data and ensure quick recovery by adding backup policies."
-                project={page.data.project} />
+                subtitle="Protect your data and ensure quick recovery by adding backup policies." />
         </div>
     {:else}
         <Alert.Inline title="This database won't be backed up" status="warning">
             Upgrade your plan to ensure your data stays safe and backed up.
             <svelte:fragment slot="actions">
-                <Button compact href={getChangePlanUrl()}>Upgrade plan</Button>
+                <Button compact href={getChangePlanUrl(data?.project?.teamId)}>Upgrade plan</Button>
             </svelte:fragment>
         </Alert.Inline>
     {/if}
@@ -590,15 +471,6 @@
                 </Layout.Stack>
             </Layout.Stack>
         </Layout.Stack>
-    </Layout.Stack>
-{/snippet}
-
-{#snippet sharedBackupOptions()}
-    <Layout.Stack gap="l">
-        <Alert.Inline status="info" title="No backups on free tier">
-            Shared databases on the free tier do not include automatic backups. Upgrade to a
-            dedicated database for configurable backup and point-in-time recovery options.
-        </Alert.Inline>
     </Layout.Stack>
 {/snippet}
 
@@ -653,19 +525,19 @@
     </Layout.Stack>
 {/snippet}
 
-{#snippet selectDatabaseType()}
-    <Layout.Grid columns={2} columnsS={1}>
+{#snippet selectDatabaseType(disabled = false)}
+    <Layout.Grid columns={4} columnsS={2} columnsXS={1}>
         {#each databaseTypes as databaseType}
             <div class="card-selector">
                 <Card.Selector
+                    {disabled}
                     variant="secondary"
                     bind:group={type}
                     name={databaseType.type}
                     id={databaseType.type}
                     value={databaseType.type}
                     title={databaseType.title}
-                    imageRadius="s"
-                    icon={databaseType.icon}>
+                    imageRadius="s">
                     {databaseType.subtitle}
                 </Card.Selector>
             </div>

@@ -8,7 +8,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import type { Models } from '@appwrite.io/console';
+    import { TargetRegion, type Models } from '@appwrite.io/console';
     import { Badge, Layout } from '@appwrite.io/pink-svelte';
 
     let {
@@ -43,8 +43,7 @@
     const availableRegionOptions = $derived(
         regionOptions.filter(
             (r) =>
-                r.value !== database.region &&
-                !replicas.some((rep) => rep.targetRegion === r.value)
+                r.value !== database.region && !replicas.some((rep) => rep.targetRegion === r.value)
         )
     );
 
@@ -61,9 +60,7 @@
         }
     });
 
-    function getStatusType(
-        status: string
-    ): 'success' | 'warning' | 'error' | undefined {
+    function getStatusType(status: string): 'success' | 'warning' | 'error' | undefined {
         switch (status) {
             case 'active':
                 return 'success';
@@ -85,7 +82,7 @@
                 .forProject(page.params.region, page.params.project)
                 .compute.createReadReplica({
                     databaseId: database.$id,
-                    targetRegion: targetRegion as any,
+                    targetRegion: targetRegion as TargetRegion,
                     crossZoneConsent
                 });
 
@@ -118,7 +115,10 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .compute.deleteReadReplica({ databaseId: database.$id, replicaId: replicaToDelete.$id });
+                .compute.deleteReadReplica({
+                    databaseId: database.$id,
+                    replicaId: replicaToDelete.$id
+                });
 
             replicas = replicas.filter((r) => r.$id !== replicaToDelete?.$id);
             showDeleteConfirm = false;
@@ -148,8 +148,8 @@
     <Form onSubmit={addReplica}>
         <CardGrid>
             <svelte:fragment slot="title">Read replicas</svelte:fragment>
-            Deploy read-only replicas of your database to other regions to reduce read latency for
-            geographically distributed workloads.
+            Deploy read-only replicas of your database to other regions to reduce read latency for geographically
+            distributed workloads.
             <svelte:fragment slot="aside">
                 <ul>
                     {#if replicas.length > 0}
@@ -164,7 +164,10 @@
                                             justifyContent="space-between"
                                             alignItems="center">
                                             <Layout.Stack direction="column" gap="xxs">
-                                                <Layout.Stack direction="row" gap="xs" alignItems="center">
+                                                <Layout.Stack
+                                                    direction="row"
+                                                    gap="xs"
+                                                    alignItems="center">
                                                     <span class="u-bold">{replica.$id}</span>
                                                     <Badge
                                                         variant="secondary"
@@ -173,8 +176,7 @@
                                                 </Layout.Stack>
                                                 <span class="text u-x-small">
                                                     {replica.sourceRegion} &rarr; {replica.targetRegion}
-                                                    &bull; Lag: {replica.lagSeconds}s
-                                                    &bull; {replica.hostname}
+                                                    &bull; Lag: {replica.lagSeconds}s &bull; {replica.hostname}
                                                 </span>
                                             </Layout.Stack>
                                             <Button
@@ -220,14 +222,11 @@
         </CardGrid>
     </Form>
 
-    <Modal
-        title="Delete read replica"
-        bind:show={showDeleteConfirm}
-        onSubmit={deleteReplica}>
+    <Modal title="Delete read replica" bind:show={showDeleteConfirm} onSubmit={deleteReplica}>
         <p class="text">
             Are you sure you want to delete the read replica
-            <b>{replicaToDelete?.$id}</b> in region <b>{replicaToDelete?.targetRegion}</b>?
-            This action cannot be undone.
+            <b>{replicaToDelete?.$id}</b> in region <b>{replicaToDelete?.targetRegion}</b>? This
+            action cannot be undone.
         </p>
         <svelte:fragment slot="footer">
             <Button

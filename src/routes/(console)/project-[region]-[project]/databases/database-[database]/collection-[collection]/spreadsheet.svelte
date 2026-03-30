@@ -9,7 +9,7 @@
     import { preferences } from '$lib/stores/preferences';
     import { sdk } from '$lib/stores/sdk';
     import { type Models, Query } from '@appwrite.io/console';
-    import { onMount } from 'svelte';
+    import { onMount, onDestroy } from 'svelte';
     import type { PageData } from './$types';
     import type { Column } from '$lib/helpers/types';
     import {
@@ -39,6 +39,7 @@
     import { mapToQueryParams } from '$lib/components/filters/store';
     import { expandTabs, buildWildcardEntitiesQuery } from '$database/store';
     import { setupUnsavedChangesGuard } from '$lib/helpers/unsavedChanges';
+    import { mockSuggestions } from '$database/(suggestions)';
     import {
         collectionColumns,
         documentActivitySheet,
@@ -46,7 +47,8 @@
         noSqlDocument,
         paginatedDocuments,
         paginatedDocumentsLoading,
-        sortState
+        sortState,
+        showCreateIndexSheet
     } from '$database/collection-[collection]/store';
     import {
         type SortState,
@@ -58,6 +60,7 @@
         type JsonValue,
         NoSqlEditor
     } from '$database/collection-[collection]/(components)/editor';
+    import EmbeddingModal from '$database/collection-[collection]/(components)/editor/embeddingModal.svelte';
     import { buildFieldUrl } from '$database/(entity)/helpers/navigation';
     import {
         SpreadsheetOptions,
@@ -73,13 +76,15 @@
     $: if ($documents) {
         paginatedDocuments.clear();
 
+        const docs = $documents.documents;
+
         // If we have a new document, add it at the start
         if ($noSqlDocument.isDirty && $noSqlDocument.isNew) {
             const tempDoc = $noSqlDocument.document as Models.DefaultDocument;
-            const docsWithTemp = [tempDoc, ...$documents.documents];
+            const docsWithTemp = [tempDoc, ...docs];
             paginatedDocuments.setPage(1, docsWithTemp);
         } else {
-            paginatedDocuments.setPage(1, $documents.documents);
+            paginatedDocuments.setPage(1, docs);
         }
     }
 
@@ -90,6 +95,25 @@
         page.params.project,
         data.database.type as DatabaseType
     );
+
+    const isVectorsDb = data.database.type === 'vectorsdb';
+    let showEmbeddingModal = false;
+    let editorRef: { replaceData: (data: JsonValue) => void } | undefined;
+
+    const projectSdk = sdk.forProject(page.params.region, page.params.project);
+    const listDocumentsFn = isVectorsDb
+        ? projectSdk.vectorsDB.listDocuments.bind(projectSdk.vectorsDB)
+        : projectSdk.documentsDB.listDocuments.bind(projectSdk.documentsDB);
+    const getDocumentFn = isVectorsDb
+        ? projectSdk.vectorsDB.getDocument.bind(projectSdk.vectorsDB)
+        : projectSdk.documentsDB.getDocument.bind(projectSdk.documentsDB);
+
+    function handleEmbeddingGenerated(embeddings: number[]) {
+        if ($noSqlDocument.document && typeof $noSqlDocument.document === 'object') {
+            const updated = { ...$noSqlDocument.document, embeddings };
+            editorRef?.replaceData(updated);
+        }
+    }
 
     const emptyCellsLimit = $spreadsheetLoading
         ? 30
@@ -108,19 +132,20 @@
     let showDelete = false;
     let selectedDocumentForDelete: Models.Document['$id'] | null = null;
 
+    let showUnsavedChangesModal = false;
+    let confirmNavigation: (() => void | Promise<void>) | null = null;
+
     async function loadRemoteDocument() {
         try {
             noSqlDocument.update({ show: true, loading: true });
             const documentId = $noSqlDocument.documentId;
             noSqlDocument.update({ documentId: null }); // reset for later!
 
-            const loadedDocument = await sdk
-                .forProject(page.params.region, page.params.project)
-                .documentsDB.getDocument({
-                    databaseId: page.params.database,
-                    collectionId: page.params.collection,
-                    documentId
-                });
+            const loadedDocument = await getDocumentFn({
+                databaseId: page.params.database,
+                collectionId: page.params.collection,
+                documentId
+            });
 
             if (loadedDocument) {
                 noSqlDocument.edit(loadedDocument);
@@ -278,7 +303,6 @@
 
     async function handleDelete() {
         showDelete = false;
-        let hadErrors = false;
 
         try {
             if (selectedDocumentForDelete) {
@@ -302,13 +326,10 @@
             await invalidate(Dependencies.DOCUMENTS);
             trackEvent(Click.DatabaseRowDelete);
 
-            if (!hadErrors) {
-                // error is already shown above!
-                addNotification({
-                    type: 'success',
-                    message: `${selectedDocuments.length ? selectedDocuments.length : 1} document${selectedDocuments.length > 1 ? 's' : ''} deleted`
-                });
-            }
+            addNotification({
+                type: 'success',
+                message: `${selectedDocuments.length ? selectedDocuments.length : 1} document${selectedDocuments.length > 1 ? 's' : ''} deleted`
+            });
 
             spreadsheetRenderKey.set(
                 hash([
@@ -329,8 +350,29 @@
 
     async function onSelectSheetOption(
         action: HeaderCellAction | RowCellAction,
-        document: Models.Document | null = null
+        document: Models.Document | null = null,
+        columnId: string | null = null
     ) {
+        // Header actions
+        if (action === 'create-index') {
+            $showCreateIndexSheet.show = true;
+            $showCreateIndexSheet.column = columnId;
+            return;
+        }
+
+        if (action === 'sort-asc') {
+            sortState.set({ column: columnId, direction: 'asc' });
+            await sort(Query.orderAsc(columnId));
+            return;
+        }
+
+        if (action === 'sort-desc') {
+            sortState.set({ column: columnId, direction: 'desc' });
+            await sort(Query.orderDesc(columnId));
+            return;
+        }
+
+        // Row actions
         if (action === 'update') {
             noSqlDocument.set({
                 document: document,
@@ -444,7 +486,9 @@
             spreadsheetRenderKey.set(hash(Date.now().toString()));
             const firstDocument = $documents?.documents?.[0];
             if (firstDocument) {
-                noSqlDocument.update({ document: firstDocument });
+                noSqlDocument.update({
+                    document: firstDocument
+                });
             }
         } catch (error) {
             addNotification({
@@ -474,19 +518,17 @@
         const filterQueries = parsedQueries.size ? data.parsedQueries.values() : [];
 
         $paginatedDocumentsLoading = true;
-        const loadedRows = await sdk
-            .forProject(page.params.region, page.params.project)
-            .documentsDB.listDocuments({
-                databaseId,
-                collectionId,
-                queries: [
-                    getCorrectOrderQuery(),
-                    Query.limit(SPREADSHEET_PAGE_LIMIT),
-                    Query.offset(pageToOffset(pageNumber, SPREADSHEET_PAGE_LIMIT)),
-                    ...filterQueries /* filter queries */,
-                    ...buildWildcardEntitiesQuery(collection)
-                ]
-            });
+        const loadedRows = await listDocumentsFn({
+            databaseId,
+            collectionId,
+            queries: [
+                getCorrectOrderQuery(),
+                Query.limit(SPREADSHEET_PAGE_LIMIT),
+                Query.offset(pageToOffset(pageNumber, SPREADSHEET_PAGE_LIMIT)),
+                ...filterQueries /* filter queries */,
+                ...buildWildcardEntitiesQuery(collection)
+            ]
+        });
 
         paginatedDocuments.setPage(pageNumber, loadedRows.documents);
         $paginatedDocumentsLoading = false;
@@ -502,18 +544,16 @@
             paginatedDocuments.setMaxPage(targetPageNum);
             $paginatedDocumentsLoading = true;
 
-            const loadedRows = await sdk
-                .forProject(page.params.region, page.params.project)
-                .documentsDB.listDocuments({
-                    databaseId,
-                    collectionId,
-                    queries: [
-                        getCorrectOrderQuery(),
-                        Query.limit(SPREADSHEET_PAGE_LIMIT),
-                        Query.offset(pageToOffset(targetPageNum, SPREADSHEET_PAGE_LIMIT)),
-                        ...buildWildcardEntitiesQuery(collection)
-                    ]
-                });
+            const loadedRows = await listDocumentsFn({
+                databaseId,
+                collectionId,
+                queries: [
+                    getCorrectOrderQuery(),
+                    Query.limit(SPREADSHEET_PAGE_LIMIT),
+                    Query.offset(pageToOffset(targetPageNum, SPREADSHEET_PAGE_LIMIT)),
+                    ...buildWildcardEntitiesQuery(collection)
+                ]
+            });
 
             paginatedDocuments.setPage(targetPageNum, loadedRows.documents);
             $paginatedDocumentsLoading = false;
@@ -532,17 +572,70 @@
     $: rowSelection =
         !$spreadsheetLoading && !$paginatedDocumentsLoading ? true : ('disabled' as const);
 
+    const MIN_DOCS_FOR_FUZZY_SUGGESTIONS = 5;
+
+    $: useMockSuggestions =
+        !isVectorsDb &&
+        $noSqlDocument.isNew &&
+        ($documents?.documents?.length ?? 0) < MIN_DOCS_FOR_FUZZY_SUGGESTIONS;
+
+    $: metadataKeys =
+        isVectorsDb && $documents?.documents
+            ? (fuzzySearchKeys(
+                  $documents.documents.map((d) => d.metadata ?? {}),
+                  { minOccurrences: 2 }
+              ) ?? [])
+            : [];
+
+    $: vectorsDbMetadataDefaults = isVectorsDb
+        ? Object.fromEntries(metadataKeys.map((key) => [key, '']))
+        : {};
+
     $: suggestedAttributes =
         $noSqlDocument.isNew && $documents?.documents
-            ? (fuzzySearchKeys($documents.documents, { minOccurrences: 2 }) ?? [])
+            ? isVectorsDb
+                ? ['metadata', 'embeddings']
+                : useMockSuggestions
+                  ? mockSuggestions.columns.map((column) => column.name)
+                  : (fuzzySearchKeys($documents.documents, { minOccurrences: 2 }) ?? [])
             : [];
 
     $: showSuggestions = $noSqlDocument.isNew && suggestedAttributes.length > 0;
+
+    const unsubscribeRenderKey = spreadsheetRenderKey.subscribe(() => {
+        const firstDocument = $documents?.documents[0];
+        const currentOpenDocument = $noSqlDocument.document;
+        const isNewOrDirty = $noSqlDocument.isNew || $noSqlDocument.isDirty;
+
+        // check if current document still exists in the list
+        const currentDocStillExists = currentOpenDocument?.$id
+            ? $documents?.documents.some((doc) => doc.$id === currentOpenDocument.$id)
+            : false;
+
+        /* Only reset to first document if current doc was deleted or no doc is open */
+        if (!isNewOrDirty && !currentDocStillExists && firstDocument) {
+            noSqlDocument.update({ document: firstDocument });
+        }
+    });
+
+    onDestroy(() => {
+        unsubscribeRenderKey();
+    });
 
     const hasUnsavedChanges = () =>
         Boolean(
             $noSqlDocument?.hasDataChanged || ($noSqlDocument?.isNew && $noSqlDocument?.isDirty)
         );
+
+    const requestDiscardChanges = (onConfirm: () => void | Promise<void>) => {
+        if (!hasUnsavedChanges()) {
+            void onConfirm();
+            return;
+        }
+
+        confirmNavigation = onConfirm;
+        showUnsavedChangesModal = true;
+    };
 
     const { beforeUnload } = setupUnsavedChangesGuard({
         hasUnsavedChanges,
@@ -550,6 +643,10 @@
         shouldBlockNavigation: (navigation) => {
             const nextPath = navigation.to?.url?.pathname;
             return Boolean(nextPath && nextPath !== page.url.pathname);
+        },
+        onShowConfirmModal: (_, onConfirm) => {
+            confirmNavigation = onConfirm;
+            showUnsavedChangesModal = true;
         }
     });
 </script>
@@ -562,7 +659,7 @@
     sideSheetOptions={{
         sideSheetTitle: $noSqlDocument.document?.$id,
         submit: {
-            text: 'Update',
+            text: $noSqlDocument.documentId ? 'Update' : 'Save',
             disabled: !$noSqlDocument.hasDataChanged,
             onClick: async () => {
                 await createOrUpdateDocument($noSqlDocument.document);
@@ -603,25 +700,42 @@
             }}>
             <svelte:fragment slot="header" let:root>
                 {#each $collectionColumns as column (column.id)}
-                    <Spreadsheet.Header.Cell
-                        {root}
-                        column={column.id}
-                        icon={column.icon ?? undefined}>
-                        {#if !column.isAction}
-                            <Layout.Stack
-                                gap="xs"
-                                direction="row"
-                                alignItems="center"
-                                alignContent="center"
-                                style="min-width: 0;">
-                                <Typography.Text truncate>
-                                    {column.title}
-                                </Typography.Text>
+                    {#if column.isAction}
+                        <Spreadsheet.Header.Cell
+                            {root}
+                            column={column.id}
+                            icon={column.icon ?? undefined} />
+                    {:else}
+                        <SpreadsheetOptions
+                            type="header"
+                            columnId={column.id}
+                            onSelect={(option, columnId) =>
+                                onSelectSheetOption(option, null, columnId)}>
+                            {#snippet children(toggle)}
+                                <Spreadsheet.Header.Cell
+                                    {root}
+                                    column={column.id}
+                                    icon={column.icon ?? undefined}
+                                    on:contextmenu={toggle}>
+                                    <Layout.Stack
+                                        gap="xs"
+                                        direction="row"
+                                        alignItems="center"
+                                        alignContent="center"
+                                        style="min-width: 0;">
+                                        <Typography.Text truncate>
+                                            {column.title}
+                                        </Typography.Text>
 
-                                <SortButton onSort={sort} column={column.id} state={sortState} />
-                            </Layout.Stack>
-                        {/if}
-                    </Spreadsheet.Header.Cell>
+                                        <SortButton
+                                            onSort={sort}
+                                            column={column.id}
+                                            state={sortState} />
+                                    </Layout.Stack>
+                                </Spreadsheet.Header.Cell>
+                            {/snippet}
+                        </SpreadsheetOptions>
+                    {/if}
                 {/each}
             </svelte:fragment>
 
@@ -654,7 +768,8 @@
                     <button
                         onclick={() => {
                             if (isUnsavedRow) return;
-                            noSqlDocument.edit(document);
+                            if (document.$id === $noSqlDocument.document?.$id) return;
+                            requestDiscardChanges(() => noSqlDocument.edit(document));
                         }}
                         style:cursor={isUnsavedRow ? 'default' : 'pointer'}>
                         <Spreadsheet.Row.Base
@@ -773,6 +888,8 @@
                                 variant="secondary"
                                 on:click={() => {
                                     $randomDataModalState.show = true;
+                                    $randomDataModalState.columns = true;
+                                    $randomDataModalState.managed = false;
                                 }}>Generate sample data</Button.Button>
                         </div>
                     {/if}
@@ -783,6 +900,7 @@
 
     {#snippet noSqlEditor()}
         <NoSqlEditor
+            bind:this={editorRef}
             ctrlSave
             isNew={$noSqlDocument.isNew}
             loading={$noSqlDocument.loading}
@@ -791,7 +909,14 @@
             showHeaderActions={!$isSmallViewport}
             {showSuggestions}
             {suggestedAttributes}
-            onCancel={() => {
+            showMockSuggestions={useMockSuggestions}
+            suggestedDefaults={isVectorsDb
+                ? {
+                      metadata: vectorsDbMetadataDefaults,
+                      embeddings: []
+                  }
+                : undefined}
+            onDiscard={() => {
                 const firstDocument = $documents?.documents?.[0];
                 if (firstDocument) {
                     noSqlDocument.edit(firstDocument);
@@ -800,7 +925,8 @@
                 }
             }}
             onSave={async (document) => await createOrUpdateDocument(document)}
-            onChange={(_, hasDataChanged) => noSqlDocument.update({ hasDataChanged })} />
+            onChange={(_, hasDataChanged) => noSqlDocument.update({ hasDataChanged })}
+            onGenerateEmbedding={isVectorsDb ? () => (showEmbeddingModal = true) : undefined} />
     {/snippet}
 
     {#snippet sideSheetHeaderAction()}
@@ -845,24 +971,64 @@
     {/if}
 </SpreadsheetContainer>
 
-<Confirm
-    confirmDeletion
-    bind:open={showDelete}
-    onSubmit={handleDelete}
-    title={selectedDocuments.length === 1 ? 'Delete document' : 'Delete documents'}>
-    {@const isSingle = selectedDocumentForDelete !== null}
+{#if showDelete}
+    <Confirm
+        confirmDeletion
+        bind:open={showDelete}
+        onSubmit={handleDelete}
+        title={selectedDocuments.length === 1 ? 'Delete document' : 'Delete documents'}>
+        {@const isSingle = selectedDocumentForDelete !== null}
 
-    <p>
-        {#if isSingle}
-            Are you sure you want to delete this document from <b>{collection.name}</b>?
-        {:else}
-            Are you sure you want to delete <b>{selectedDocuments.length}</b>
-            {selectedDocuments.length > 1 ? 'documents' : 'document'} from <b>{collection.name}</b>?
-        {/if}
-    </p>
+        <p>
+            {#if isSingle}
+                Are you sure you want to delete this document from <b>{collection.name}</b>?
+            {:else}
+                Are you sure you want to delete <b>{selectedDocuments.length}</b>
+                {selectedDocuments.length > 1 ? 'documents' : 'document'} from
+                <b>{collection.name}</b>?
+            {/if}
+        </p>
 
-    <p class="u-bold">This action is irreversible.</p>
-</Confirm>
+        <p class="u-bold">This action is irreversible.</p>
+    </Confirm>
+{/if}
+
+{#if showUnsavedChangesModal}
+    <Confirm
+        bind:open={showUnsavedChangesModal}
+        title="Unsaved changes"
+        onSubmit={(e) => {
+            e.preventDefault();
+            confirmNavigation?.();
+            showUnsavedChangesModal = false;
+        }}>
+        <svelte:fragment slot="footer">
+            <Button.Button
+                size="s"
+                variant="text"
+                on:click={() => {
+                    confirmNavigation = null;
+                    showUnsavedChangesModal = false;
+                }}>
+                Keep editing
+            </Button.Button>
+
+            <Button.Button
+                size="s"
+                variant="secondary"
+                on:click={() => {
+                    confirmNavigation?.();
+                    showUnsavedChangesModal = false;
+                }}>Discard changes</Button.Button>
+        </svelte:fragment>
+
+        <p>You have changes that haven't been saved.</p>
+    </Confirm>
+{/if}
+
+{#if isVectorsDb}
+    <EmbeddingModal bind:show={showEmbeddingModal} onGenerate={handleEmbeddingGenerated} />
+{/if}
 
 <style lang="scss">
     .floating-action-bar {
@@ -877,6 +1043,10 @@
     // very weird because the library already has this!
     :global(.virtual-row:has([data-editing-mode='true'])) {
         z-index: 1 !important;
+    }
+
+    :global(.virtual-row.hover .select-checkbox) {
+        background: none;
     }
 
     :global(.floating-editor) {

@@ -56,9 +56,7 @@
         regionOptions.filter((r) => r.value !== database.region)
     );
 
-    function getStandbyStatusType(
-        status: string
-    ): 'success' | 'warning' | 'error' | undefined {
+    function getStandbyStatusType(status: string): 'success' | 'warning' | 'error' | undefined {
         switch (status) {
             case 'healthy':
                 return 'success';
@@ -191,7 +189,9 @@
                                         <span class="u-bold">Standby status</span>
                                         <Badge
                                             variant="secondary"
-                                            type={getStandbyStatusType(crossRegionStatus.standbyStatus)}
+                                            type={getStandbyStatusType(
+                                                crossRegionStatus.standbyStatus
+                                            )}
                                             content={crossRegionStatus.standbyStatus} />
                                     </Layout.Stack>
                                     <span class="text u-x-small">
@@ -199,8 +199,9 @@
                                         &bull; Standby: {crossRegionStatus.standbyRegion}
                                     </span>
                                     <span class="text u-x-small">
-                                        Lag: {crossRegionStatus.lagSeconds}s
-                                        &bull; Last synced: {toLocaleDateTime(crossRegionStatus.lastSyncedAt)}
+                                        Lag: {crossRegionStatus.lagSeconds}s &bull; Last synced: {toLocaleDateTime(
+                                            crossRegionStatus.lastSyncedAt
+                                        )}
                                     </span>
                                 </Layout.Stack>
                             </div>
@@ -232,8 +233,8 @@
         <Form onSubmit={enableCrossRegion}>
             <CardGrid>
                 <svelte:fragment slot="title">Cross-region failover</svelte:fragment>
-                Enable cross-region failover to maintain a standby replica in a different region for
-                disaster recovery.
+                Enable cross-region failover to maintain a standby replica in a different region for disaster
+                recovery.
                 <svelte:fragment slot="aside">
                     <ul>
                         <InputSelect
@@ -259,9 +260,9 @@
         bind:show={showDisableConfirm}
         onSubmit={disableCrossRegion}>
         <p class="text">
-            Are you sure you want to disable cross-region failover for <b>{database.name}</b>?
-            The standby replica will be removed and your database will no longer have
-            disaster recovery across regions.
+            Are you sure you want to disable cross-region failover for <b>{database.name}</b>? The
+            standby replica will be removed and your database will no longer have disaster recovery
+            across regions.
         </p>
         <svelte:fragment slot="footer">
             <Button
@@ -282,8 +283,8 @@
         <p class="text">
             Are you sure you want to trigger a cross-region failover for <b>{database.name}</b>?
             This will promote the standby replica in <b>{crossRegionStatus?.standbyRegion}</b>
-            to primary. The current primary in <b>{crossRegionStatus?.primaryRegion}</b> will
-            become the new standby. This operation may cause brief downtime.
+            to primary. The current primary in <b>{crossRegionStatus?.primaryRegion}</b> will become the
+            new standby. This operation may cause brief downtime.
         </p>
         <svelte:fragment slot="footer">
             <Button

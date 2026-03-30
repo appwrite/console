@@ -33,8 +33,7 @@
 
 <CardGrid>
     <svelte:fragment slot="title">Delete database</svelte:fragment>
-    The database will be permanently deleted, including all data and backups. This action is
-    irreversible.
+    The database will be permanently deleted, including all data and backups. This action is irreversible.
     <svelte:fragment slot="aside">
         <BoxAvatar>
             <svelte:fragment slot="title">
@@ -42,7 +41,8 @@
                     <h6 class="u-bold u-trim-1">{database.name}</h6>
                     <Layout.Stack direction="row" gap="s">
                         <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
-                            {getEngineDisplayName(database.engine)} {database.version}
+                            {getEngineDisplayName(database.engine)}
+                            {database.version}
                         </Typography.Caption>
                     </Layout.Stack>
                 </Layout.Stack>

@@ -201,7 +201,9 @@ test.describe('Dedicated databases', () => {
         });
 
         test('URL params pre-populate engine, tier, and name', async ({ page }) => {
-            await page.goto(`${CREATE_URL}?type=dedicated&engine=mysql&tier=s-1vcpu-1gb&name=TestDB`);
+            await page.goto(
+                `${CREATE_URL}?type=dedicated&engine=mysql&tier=s-1vcpu-1gb&name=TestDB`
+            );
             await waitForCreatePage(page, 'Configuration');
 
             // Name should be pre-filled
@@ -528,9 +530,7 @@ test.describe('Dedicated databases', () => {
             await page.waitForLoadState('networkidle');
 
             // The list page should have a create button
-            await expect(
-                page.getByRole('button', { name: /Create database/ })
-            ).toBeVisible();
+            await expect(page.getByRole('button', { name: /Create database/ })).toBeVisible();
 
             // At least one database link should be visible
             const databaseLinks = page.locator('a[href*="/databases/database-"]');
@@ -578,11 +578,21 @@ test.describe('Dedicated databases', () => {
             await page.waitForLoadState('networkidle');
 
             // If it is a dedicated overview, check status-related elements
-            if (await page.getByText('Status', { exact: true }).isVisible().catch(() => false)) {
+            if (
+                await page
+                    .getByText('Status', { exact: true })
+                    .isVisible()
+                    .catch(() => false)
+            ) {
                 // Status badge should be present (Ready, Provisioning, etc.)
                 const statusTexts = ['Ready', 'Provisioning', 'Active', 'Paused', 'Failed'];
                 const results = await Promise.all(
-                    statusTexts.map((s) => page.getByText(s).isVisible().catch(() => false))
+                    statusTexts.map((s) =>
+                        page
+                            .getByText(s)
+                            .isVisible()
+                            .catch(() => false)
+                    )
                 );
                 expect(results.some(Boolean)).toBeTruthy();
             }
@@ -622,7 +632,12 @@ test.describe('Dedicated databases', () => {
             await databaseLink.click();
             await page.waitForLoadState('networkidle');
 
-            if (await page.getByText('Status', { exact: true }).isVisible().catch(() => false)) {
+            if (
+                await page
+                    .getByText('Status', { exact: true })
+                    .isVisible()
+                    .catch(() => false)
+            ) {
                 const refreshButton = page.getByRole('button', { name: /Refresh/ });
                 await expect(refreshButton).toBeVisible();
             }
@@ -642,7 +657,12 @@ test.describe('Dedicated databases', () => {
             await databaseLink.click();
             await page.waitForLoadState('networkidle');
 
-            if (await page.getByText('Status', { exact: true }).isVisible().catch(() => false)) {
+            if (
+                await page
+                    .getByText('Status', { exact: true })
+                    .isVisible()
+                    .catch(() => false)
+            ) {
                 // Should show either connection details or a provisioning message
                 const connectionTitle = page.getByText('Connection', { exact: true });
                 const provisioningMessage = page.getByText('Provisioning in progress');
@@ -670,7 +690,12 @@ test.describe('Dedicated databases', () => {
             await databaseLink.click();
             await page.waitForLoadState('networkidle');
 
-            if (await page.getByText('Status', { exact: true }).isVisible().catch(() => false)) {
+            if (
+                await page
+                    .getByText('Status', { exact: true })
+                    .isVisible()
+                    .catch(() => false)
+            ) {
                 await expect(page.getByText('High Availability')).toBeVisible();
             }
         });
@@ -687,7 +712,12 @@ test.describe('Dedicated databases', () => {
             await databaseLink.click();
             await page.waitForLoadState('networkidle');
 
-            if (await page.getByText('Status', { exact: true }).isVisible().catch(() => false)) {
+            if (
+                await page
+                    .getByText('Status', { exact: true })
+                    .isVisible()
+                    .catch(() => false)
+            ) {
                 await expect(page.getByText('Network', { exact: true })).toBeVisible();
             }
         });
@@ -704,7 +734,12 @@ test.describe('Dedicated databases', () => {
             await databaseLink.click();
             await page.waitForLoadState('networkidle');
 
-            if (await page.getByText('Status', { exact: true }).isVisible().catch(() => false)) {
+            if (
+                await page
+                    .getByText('Status', { exact: true })
+                    .isVisible()
+                    .catch(() => false)
+            ) {
                 await expect(page.getByText('Backups', { exact: true }).first()).toBeVisible();
             }
         });
@@ -721,7 +756,12 @@ test.describe('Dedicated databases', () => {
             await databaseLink.click();
             await page.waitForLoadState('networkidle');
 
-            if (await page.getByText('Status', { exact: true }).isVisible().catch(() => false)) {
+            if (
+                await page
+                    .getByText('Status', { exact: true })
+                    .isVisible()
+                    .catch(() => false)
+            ) {
                 // Security card was removed (encryption at rest is infra-level)
                 await expect(page.getByText('Encryption at Rest')).not.toBeVisible();
                 await expect(page.getByText('Key Management')).not.toBeVisible();
@@ -740,7 +780,12 @@ test.describe('Dedicated databases', () => {
             await databaseLink.click();
             await page.waitForLoadState('networkidle');
 
-            if (await page.getByText('Network', { exact: true }).isVisible().catch(() => false)) {
+            if (
+                await page
+                    .getByText('Network', { exact: true })
+                    .isVisible()
+                    .catch(() => false)
+            ) {
                 await expect(page.getByText('Connection Timeout')).toBeVisible();
                 // "Sleep After Idle" was renamed to "Scale-to-Zero After"
                 await expect(page.getByText('Sleep After Idle')).not.toBeVisible();
@@ -753,9 +798,7 @@ test.describe('Dedicated databases', () => {
             await authenticate(page);
         });
 
-        test('dedicated database header shows Overview tab instead of Tables', async ({
-            page
-        }) => {
+        test('dedicated database header shows Overview tab instead of Tables', async ({ page }) => {
             await page.goto(DATABASES_URL);
             await page.waitForLoadState('networkidle');
 
@@ -805,7 +848,13 @@ test.describe('Dedicated databases', () => {
             // Auth tab only visible for dedicated databases — scope to header tabs area
             const tabsArea = page.locator('[class*="tabs"], nav').filter({ hasText: 'Backups' });
             const authTab = tabsArea.getByRole('link', { name: 'Auth' });
-            if (await page.getByRole('link', { name: 'Overview' }).first().isVisible().catch(() => false)) {
+            if (
+                await page
+                    .getByRole('link', { name: 'Overview' })
+                    .first()
+                    .isVisible()
+                    .catch(() => false)
+            ) {
                 await expect(authTab).toBeVisible({ timeout: 10_000 });
             }
         });
@@ -933,8 +982,15 @@ test.describe('Dedicated databases', () => {
             await databaseLink.click();
             await page.waitForLoadState('networkidle');
 
-            const sidebarBackups = page.locator('a[href*="/backups"]').filter({ hasText: 'Backups' });
-            if (await sidebarBackups.first().isVisible().catch(() => false)) {
+            const sidebarBackups = page
+                .locator('a[href*="/backups"]')
+                .filter({ hasText: 'Backups' });
+            if (
+                await sidebarBackups
+                    .first()
+                    .isVisible()
+                    .catch(() => false)
+            ) {
                 await expect(sidebarBackups.first()).toBeVisible();
             }
         });
@@ -952,7 +1008,12 @@ test.describe('Dedicated databases', () => {
             await page.waitForLoadState('networkidle');
 
             const sidebarAuth = page.locator('a[href*="/auth"]').filter({ hasText: 'Auth' });
-            if (await sidebarAuth.first().isVisible().catch(() => false)) {
+            if (
+                await sidebarAuth
+                    .first()
+                    .isVisible()
+                    .catch(() => false)
+            ) {
                 await expect(sidebarAuth.first()).toBeVisible();
             }
         });
@@ -972,7 +1033,12 @@ test.describe('Dedicated databases', () => {
             const sidebarMonitoring = page
                 .locator('a[href*="/monitoring"]')
                 .filter({ hasText: 'Monitoring' });
-            if (await sidebarMonitoring.first().isVisible().catch(() => false)) {
+            if (
+                await sidebarMonitoring
+                    .first()
+                    .isVisible()
+                    .catch(() => false)
+            ) {
                 await expect(sidebarMonitoring.first()).toBeVisible();
             }
         });
@@ -992,7 +1058,12 @@ test.describe('Dedicated databases', () => {
             const sidebarSettings = page
                 .locator('a[href*="/settings"]')
                 .filter({ hasText: 'Settings' });
-            if (await sidebarSettings.first().isVisible().catch(() => false)) {
+            if (
+                await sidebarSettings
+                    .first()
+                    .isVisible()
+                    .catch(() => false)
+            ) {
                 await expect(sidebarSettings.first()).toBeVisible();
             }
         });
@@ -1010,7 +1081,12 @@ test.describe('Dedicated databases', () => {
             await page.waitForLoadState('networkidle');
 
             const sidebarUsage = page.locator('a[href*="/usage"]').filter({ hasText: 'Usage' });
-            if (await sidebarUsage.first().isVisible().catch(() => false)) {
+            if (
+                await sidebarUsage
+                    .first()
+                    .isVisible()
+                    .catch(() => false)
+            ) {
                 await expect(sidebarUsage.first()).toBeVisible();
             }
         });
@@ -1159,7 +1235,12 @@ test.describe('Dedicated databases', () => {
             const backupTitle = page
                 .getByText('Backup', { exact: false })
                 .filter({ hasText: /Backup/ });
-            if (await backupTitle.first().isVisible().catch(() => false)) {
+            if (
+                await backupTitle
+                    .first()
+                    .isVisible()
+                    .catch(() => false)
+            ) {
                 await expect(backupTitle.first()).toBeVisible();
             }
         });
@@ -1192,7 +1273,12 @@ test.describe('Dedicated databases', () => {
 
             // UpdatePooler is only rendered for postgres
             const poolerTitle = page.getByText('Connection pooler', { exact: false });
-            if (await poolerTitle.first().isVisible().catch(() => false)) {
+            if (
+                await poolerTitle
+                    .first()
+                    .isVisible()
+                    .catch(() => false)
+            ) {
                 await expect(poolerTitle.first()).toBeVisible();
             }
         });
@@ -1216,7 +1302,12 @@ test.describe('Dedicated databases', () => {
             }
 
             const replicasTitle = page.getByText('Read replicas', { exact: false });
-            if (await replicasTitle.first().isVisible().catch(() => false)) {
+            if (
+                await replicasTitle
+                    .first()
+                    .isVisible()
+                    .catch(() => false)
+            ) {
                 await expect(replicasTitle.first()).toBeVisible();
             }
         });
@@ -1228,7 +1319,12 @@ test.describe('Dedicated databases', () => {
             }
 
             const crossRegion = page.getByText('Cross-region', { exact: false });
-            if (await crossRegion.first().isVisible().catch(() => false)) {
+            if (
+                await crossRegion
+                    .first()
+                    .isVisible()
+                    .catch(() => false)
+            ) {
                 await expect(crossRegion.first()).toBeVisible();
             }
         });
@@ -1240,7 +1336,12 @@ test.describe('Dedicated databases', () => {
             }
 
             const storageTitle = page.getByText('Storage', { exact: true });
-            if (await storageTitle.first().isVisible().catch(() => false)) {
+            if (
+                await storageTitle
+                    .first()
+                    .isVisible()
+                    .catch(() => false)
+            ) {
                 await expect(storageTitle.first()).toBeVisible();
             }
         });
@@ -1252,7 +1353,12 @@ test.describe('Dedicated databases', () => {
             }
 
             const maintenanceTitle = page.getByText('Maintenance', { exact: false });
-            if (await maintenanceTitle.first().isVisible().catch(() => false)) {
+            if (
+                await maintenanceTitle
+                    .first()
+                    .isVisible()
+                    .catch(() => false)
+            ) {
                 await expect(maintenanceTitle.first()).toBeVisible();
             }
         });
@@ -1264,7 +1370,12 @@ test.describe('Dedicated databases', () => {
             }
 
             const autoscalingTitle = page.getByText('Autoscaling', { exact: false });
-            if (await autoscalingTitle.first().isVisible().catch(() => false)) {
+            if (
+                await autoscalingTitle
+                    .first()
+                    .isVisible()
+                    .catch(() => false)
+            ) {
                 await expect(autoscalingTitle.first()).toBeVisible();
             }
         });
@@ -1400,9 +1511,20 @@ test.describe('Dedicated databases', () => {
             // For legacy databases, the policies/backups view is shown.
             // Either way, the page should have loaded successfully.
             const contentVisibilities = await Promise.all([
-                page.getByText('Policies', { exact: true }).isVisible().catch(() => false),
-                page.getByText('Backups', { exact: true }).first().isVisible().catch(() => false),
-                page.getByText('Backup', { exact: false }).first().isVisible().catch(() => false)
+                page
+                    .getByText('Policies', { exact: true })
+                    .isVisible()
+                    .catch(() => false),
+                page
+                    .getByText('Backups', { exact: true })
+                    .first()
+                    .isVisible()
+                    .catch(() => false),
+                page
+                    .getByText('Backup', { exact: false })
+                    .first()
+                    .isVisible()
+                    .catch(() => false)
             ]);
             const hasContent = contentVisibilities.some(Boolean);
 
@@ -1419,9 +1541,7 @@ test.describe('Dedicated databases', () => {
             await page.goto(DATABASES_URL);
             await page.waitForLoadState('networkidle');
 
-            await expect(
-                page.getByRole('button', { name: /Create database/ })
-            ).toBeVisible();
+            await expect(page.getByRole('button', { name: /Create database/ })).toBeVisible();
         });
 
         test('database list renders database type indicators', async ({ page }) => {

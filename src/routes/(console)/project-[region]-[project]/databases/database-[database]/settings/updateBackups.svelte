@@ -4,13 +4,7 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import {
-        Button,
-        Form,
-        InputSwitch,
-        InputCron,
-        InputNumber
-    } from '$lib/elements/forms';
+    import { Button, Form, InputSwitch, InputCron, InputNumber } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
@@ -35,15 +29,13 @@
 
     async function updateBackups() {
         try {
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .compute.updateDatabase({
-                    databaseId: database.$id,
-                    backupEnabled,
-                    backupPitr: backupEnabled ? backupPitr : false,
-                    backupCron: backupEnabled ? backupCron : undefined,
-                    backupRetentionDays: backupEnabled ? backupRetentionDays : undefined
-                });
+            await sdk.forProject(page.params.region, page.params.project).compute.updateDatabase({
+                databaseId: database.$id,
+                backupEnabled,
+                backupPitr: backupEnabled ? backupPitr : false,
+                backupCron: backupEnabled ? backupCron : undefined,
+                backupRetentionDays: backupEnabled ? backupRetentionDays : undefined
+            });
 
             await invalidate(Dependencies.DATABASE);
 

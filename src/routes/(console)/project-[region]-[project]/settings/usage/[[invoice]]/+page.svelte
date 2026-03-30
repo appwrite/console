@@ -35,8 +35,11 @@
         data.usage.buildsStorageTotal;
     $: imageTransformations = data.usage.imageTransformations;
     $: imageTransformationsTotal = data.usage.imageTransformationsTotal;
-    $: screenshotsGenerated = data.usage.screenshotsGenerated;
-    $: screenshotsGeneratedTotal = data.usage.screenshotsGeneratedTotal;
+    $: screenshotsGenerated = (
+        data.usage as unknown as Record<string, { date: string; value: number }[]>
+    ).screenshotsGenerated;
+    $: screenshotsGeneratedTotal = (data.usage as unknown as Record<string, number>)
+        .screenshotsGeneratedTotal;
     $: dbReads = data.usage.databasesReads;
     $: dbWrites = data.usage.databasesWrites;
 

@@ -46,8 +46,7 @@
 <Form onSubmit={updateStorage}>
     <CardGrid>
         <svelte:fragment slot="title">Storage</svelte:fragment>
-        Resize the storage allocated to your database. Storage can only be increased, not
-        decreased.
+        Resize the storage allocated to your database. Storage can only be increased, not decreased.
         <svelte:fragment slot="aside">
             <InputNumber
                 id="storage"

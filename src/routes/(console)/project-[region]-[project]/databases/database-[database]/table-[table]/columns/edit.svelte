@@ -8,8 +8,8 @@
     import { Button, InputText } from '$lib/elements/forms';
     import deepEqual from 'deep-equal';
     import { addNotification } from '$lib/stores/notifications';
-    import { columnsOrder, databaseColumnSheetOptions } from '../store';
     import type { Columns } from '$database/store';
+    import { columnsOrder, databaseColumnSheetOptions } from '../store';
     import { columnOptions, STRING_COLUMN_NAME, type Option } from './store';
     import { onMount } from 'svelte';
     import { Layout } from '@appwrite.io/pink-svelte';

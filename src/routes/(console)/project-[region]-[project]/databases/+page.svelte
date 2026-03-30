@@ -3,13 +3,11 @@
     import { page } from '$app/state';
     import { PaginationWithLimit } from '$lib/components';
     import { Button } from '$lib/elements/forms';
-    import { Container, ResponsiveContainerHeader } from '$lib/layout';
+    import { Container } from '$lib/layout';
 
     import Grid from './grid.svelte';
-    import { columns } from './store';
     import Table from './table.svelte';
     import type { PageProps } from './$types';
-    import { Icon, Tooltip } from '@appwrite.io/pink-svelte';
     import { registerCommands } from '$lib/commandCenter';
     import { canWriteDatabases } from '$lib/stores/roles';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
@@ -48,31 +46,6 @@
 </script>
 
 <Container>
-    <ResponsiveContainerHeader
-        hasSearch
-        {columns}
-        view={data.view}
-        searchPlaceholder="Search by name or ID">
-        {#if $canWriteDatabases}
-            <Tooltip disabled={!isLimited}>
-                <div>
-                    <Button
-                        disabled={isLimited}
-                        event="create_database"
-                        on:click={goToCreateDatabaseWizard}>
-                        <Icon icon={IconPlus} slot="start" size="s" />
-                        Create database
-                    </Button>
-                </div>
-                <svelte:fragment slot="tooltip">
-                    <div style="white-space: pre-line;">
-                        You have reached the maximum number of databases for your plan.
-                    </div>
-                </svelte:fragment>
-            </Tooltip>
-        {/if}
-    </ResponsiveContainerHeader>
-
     {#if data.databases.total}
         {#if data.view === 'grid'}
             <Grid {data} onCreateDatabaseClick={goToCreateDatabaseWizard} />

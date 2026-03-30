@@ -21,6 +21,7 @@
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { type RealtimeResponse, realtime, sdk } from '$lib/stores/sdk';
+    import type { TablesDBIndexType } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import {
         columnsOrder,
@@ -31,7 +32,6 @@
         rowActivitySheet,
         databaseRelatedRowSheetOptions,
         rowPermissionSheet,
-        isWaterfallFromFaker,
         showRowCreateSheet
     } from '$database/table-[table]/store';
     import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
@@ -72,7 +72,9 @@
         expandTabs,
         spreadsheetLoading,
         randomDataModalState,
-        spreadsheetRenderKey
+        spreadsheetRenderKey,
+        isWaterfallFromFaker,
+        resetSampleFieldsConfig
     } from '$database/store';
 
     import type { LayoutData } from './$types';
@@ -291,7 +293,6 @@
         indexes: 700
     });
 
-    // TODO: @itznotabug - needs to be fixed!
     async function createFakeData() {
         isWaterfallFromFaker.set(true);
 
@@ -389,8 +390,7 @@
                 message: e.message
             });
         } finally {
-            // reset value to 25 default!
-            $randomDataModalState.value = 25;
+            resetSampleFieldsConfig();
         }
 
         $spreadsheetLoading = false;
@@ -571,7 +571,7 @@
                 databaseId: page.params.database,
                 tableId: page.params.table,
                 key: index.key,
-                type: index.type,
+                type: index.type as TablesDBIndexType,
                 columns: index.fields,
                 lengths: index.lengths,
                 orders: index.orders

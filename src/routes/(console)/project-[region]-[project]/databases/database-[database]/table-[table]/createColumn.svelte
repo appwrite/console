@@ -6,7 +6,11 @@
     import { InputSelect, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { option, getSupportedColumns, type Option } from '$database/table-[table]/columns/store';
+    import {
+        option,
+        getSupportedColumns,
+        type Option
+    } from '$database/table-[table]/columns/store';
     import type { Column } from '$lib/helpers/types';
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
     import { preferences } from '$lib/stores/preferences';

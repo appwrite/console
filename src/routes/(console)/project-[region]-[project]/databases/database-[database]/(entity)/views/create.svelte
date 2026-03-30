@@ -4,14 +4,15 @@
     import { Modal, CustomId } from '$lib/components';
     import { subNavigation } from '$lib/stores/database';
     import { ID } from '@appwrite.io/console';
-    import { Button, InputText } from '$lib/elements/forms';
+    import { Button, InputNumber, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import {
         Input as SuggestionsInput,
         entityColumnSuggestions
     } from '$database/(suggestions)/index';
 
-    import { getTerminologies } from '../helpers';
+    import { getTerminologies, DEFAULT_VECTOR_DIMENSION } from '$database/(entity)';
+    import { resetSampleFieldsConfig } from '$database/store';
 
     let {
         show = $bindable(false),
@@ -20,7 +21,7 @@
     }: {
         show: boolean;
         useSuggestions?: boolean;
-        onCreateEntity: (id: string, name: string) => Promise<void>;
+        onCreateEntity: (id: string, name: string, dimension?: number) => Promise<void>;
     } = $props();
 
     const { analytics, terminology } = getTerminologies();
@@ -28,14 +29,15 @@
     const lower = terminology.entity.lower.singular;
     const title = terminology.entity.title.singular;
     const analyticsCreateSubmit = analytics.submit.entity('Create');
+    const isVectorsDb = terminology.type === 'vectorsdb';
 
     // example - `table-[table]`, `collection-[collection]`
     const isOnEntitiesPage = $derived(page.route?.id.endsWith(`${lower}-[${lower}]`));
 
     let name = $state('');
     let id = $state(null);
+    let dimension = $state(DEFAULT_VECTOR_DIMENSION);
     let error = $state(null);
-    let touchedId = $state(false);
     let creatingEntity = $state(false);
 
     function enableThinkingModeForSuggestions(id: string, name: string) {
@@ -64,7 +66,7 @@
             enableThinkingModeForSuggestions(finalId, name);
 
             // create entity.
-            await onCreateEntity(finalId, name);
+            await onCreateEntity(finalId, name, isVectorsDb ? dimension : undefined);
 
             // cleanup
             updateAndCleanup();
@@ -73,6 +75,7 @@
             trackError(e, analyticsCreateSubmit);
         } finally {
             creatingEntity = false;
+            resetSampleFieldsConfig();
         }
     }
 
@@ -91,34 +94,10 @@
         show = false;
     }
 
-    /**
-     * Converts string to valid Appwrite ID format matching backend rules:
-     * - Lowercase alphanumeric characters, hyphens, underscores, and dots only
-     * - Cannot start with a hyphen
-     * - Cannot end with a dot
-     * - Consecutive underscores collapsed to single underscore
-     * - Maximum 36 characters
-     */
-    function toIdFormat(str: string): string {
-        return str
-            .toLowerCase()
-            .replace(/[^a-z0-9\-_. ]+/g, '')
-            .replace(/ /g, '_')
-            .replace(/^-+/, '')
-            .replace(/\.+$/, '')
-            .replace(/_{2,}/g, '_')
-            .slice(0, 36);
-    }
-
     $effect(() => {
-        if (!touchedId && name) {
-            id = toIdFormat(name);
-        }
-
         if (!show) {
             id = null;
             error = null;
-            touchedId = false;
         }
     });
 
@@ -140,27 +119,22 @@
         placeholder="Enter {lower} name"
         bind:value={name}
         autofocus
-        required
-        on:input={() => {
-            if (!touchedId) {
-                id = toIdFormat(name);
-            }
-        }} />
+        required />
 
-    <CustomId
-        show
-        bind:id
-        required={false}
-        autofocus={false}
-        name={title}
-        on:input={() => {
-            if (!touchedId) {
-                touchedId = true;
-            }
-        }} />
+    <CustomId show bind:id required={false} autofocus={false} name={title} syncFrom={name} />
+
+    {#if isVectorsDb}
+        <InputNumber
+            id="dimension"
+            label="Vector dimension"
+            bind:value={dimension}
+            min={1}
+            max={4096}
+            required />
+    {/if}
 
     {#if useSuggestions}
-        <SuggestionsInput showSampleCountPicker={terminology.type === 'documentsdb'} />
+        <SuggestionsInput showSampleCountPicker={!terminology.schema} />
     {/if}
 
     <svelte:fragment slot="footer">

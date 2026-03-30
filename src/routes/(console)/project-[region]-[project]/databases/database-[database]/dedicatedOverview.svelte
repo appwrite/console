@@ -9,7 +9,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { Dependencies } from '$lib/constants';
     import { trackEvent } from '$lib/actions/analytics';
-    import type { Models } from '@appwrite.io/console';
+    import { Status as DatabaseStatus, type Models } from '@appwrite.io/console';
     import {
         Badge,
         Layout,
@@ -69,8 +69,8 @@
     let isSpinningDown = $state(false);
     let connectionTab = $state<'direct' | 'string'>('direct');
 
-    const isDedicated = $derived(database.type === 'dedicated');
-    const isShared = $derived(database.type === 'shared');
+    const isDedicated = $derived(database.type === 'dedicateddb');
+    const isShared = $derived(false);
     const isActive = $derived(database.status === 'ready' || database.status === 'active');
     const isPaused = $derived(database.status === 'paused');
     const containerIsRunning = $derived(
@@ -208,9 +208,10 @@
     async function pauseDatabase() {
         isPausing = true;
         try {
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .compute.updateDatabase({ databaseId: database.$id, status: 'paused' as any });
+            await sdk.forProject(page.params.region, page.params.project).compute.updateDatabase({
+                databaseId: database.$id,
+                status: 'paused' as unknown as DatabaseStatus
+            });
 
             addNotification({
                 type: 'success',
@@ -231,9 +232,10 @@
     async function resumeDatabase() {
         isResuming = true;
         try {
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .compute.updateDatabase({ databaseId: database.$id, status: 'active' as any });
+            await sdk.forProject(page.params.region, page.params.project).compute.updateDatabase({
+                databaseId: database.$id,
+                status: DatabaseStatus.Active
+            });
 
             addNotification({
                 type: 'success',
@@ -254,9 +256,10 @@
     async function spinDownDatabase() {
         isSpinningDown = true;
         try {
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .compute.updateDatabase({ databaseId: database.$id, status: 'inactive' as any });
+            await sdk.forProject(page.params.region, page.params.project).compute.updateDatabase({
+                databaseId: database.$id,
+                status: 'inactive' as unknown as DatabaseStatus
+            });
 
             addNotification({
                 type: 'success',
@@ -275,13 +278,9 @@
     }
 
     // Check if connection details are available
-    const hasConnectionDetails = $derived(
-        !!database.hostname || !!database.connectionString
-    );
+    const hasConnectionDetails = $derived(!!database.hostname || !!database.connectionString);
 
-    const hasCredentials = $derived(
-        !!database.connectionUser && !!database.connectionPassword
-    );
+    const hasCredentials = $derived(!!database.connectionUser && !!database.connectionPassword);
 
     // Build a connection string from parts when one is not provided by the API
     const resolvedConnectionString = $derived.by(() => {
@@ -486,9 +485,7 @@
                         {/if}
                     {:else}
                         <Layout.Stack gap="m">
-                            <CopyInput
-                                label="Connection String"
-                                value={resolvedConnectionString} />
+                            <CopyInput label="Connection String" value={resolvedConnectionString} />
                             <Layout.Stack gap="xs">
                                 <Typography.Caption
                                     variant="400"
@@ -538,11 +535,11 @@
     {/if}
 
     <!-- Free Tier Limits (shared databases only) -->
-    {#if database.type === 'shared'}
+    {#if isShared}
         <CardGrid>
             <svelte:fragment slot="title">Free Tier Limits</svelte:fragment>
-            Your shared database runs within the free tier. Resources are constrained to the
-            limits below. Upgrade to a dedicated database for higher limits.
+            Your shared database runs within the free tier. Resources are constrained to the limits below.
+            Upgrade to a dedicated database for higher limits.
             <svelte:fragment slot="aside">
                 <Layout.Grid columns={2} columnsS={1} gap="l">
                     <Layout.Stack gap="xxs">
@@ -590,7 +587,8 @@
                         Engine
                     </Typography.Caption>
                     <Typography.Text variant="m-500">
-                        {getEngineDisplayName(database.engine)} {database.version}
+                        {getEngineDisplayName(database.engine)}
+                        {database.version}
                     </Typography.Text>
                 </Layout.Stack>
                 <Layout.Stack gap="xxs">
@@ -642,101 +640,99 @@
     </CardGrid>
 
     <CardGrid>
-            <svelte:fragment slot="title">High Availability</svelte:fragment>
-            Configure replicas and failover settings for your database.
-            <svelte:fragment slot="aside">
+        <svelte:fragment slot="title">High Availability</svelte:fragment>
+        Configure replicas and failover settings for your database.
+        <svelte:fragment slot="aside">
+            <Layout.Grid columns={3} columnsL={2} columnsS={1} gap="l">
+                <Layout.Stack gap="xxs">
+                    <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                        Status
+                    </Typography.Caption>
+                    <Badge
+                        type={database.highAvailability ? 'success' : undefined}
+                        variant="secondary"
+                        size="s"
+                        content={database.highAvailability ? 'Enabled' : 'Disabled'} />
+                </Layout.Stack>
+                {#if database.highAvailability}
+                    <Layout.Stack gap="xxs">
+                        <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                            Replicas
+                        </Typography.Caption>
+                        <Typography.Text variant="m-500">
+                            {database.haReplicaCount}
+                        </Typography.Text>
+                    </Layout.Stack>
+                    {#if database.haSyncMode}
+                        <Layout.Stack gap="xxs">
+                            <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                                Sync Mode
+                            </Typography.Caption>
+                            <Typography.Text variant="m-500">
+                                {capitalizeFirst(database.haSyncMode)}
+                            </Typography.Text>
+                        </Layout.Stack>
+                    {/if}
+                {/if}
+            </Layout.Grid>
+        </svelte:fragment>
+    </CardGrid>
+
+    <CardGrid>
+        <svelte:fragment slot="title">Network</svelte:fragment>
+        Connection limits and network configuration.
+        <svelte:fragment slot="aside">
+            <Layout.Stack gap="l">
                 <Layout.Grid columns={3} columnsL={2} columnsS={1} gap="l">
                     <Layout.Stack gap="xxs">
                         <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
-                            Status
+                            Max Connections
                         </Typography.Caption>
-                        <Badge
-                            type={database.highAvailability ? 'success' : undefined}
-                            variant="secondary"
-                            size="s"
-                            content={database.highAvailability ? 'Enabled' : 'Disabled'} />
-                    </Layout.Stack>
-                    {#if database.highAvailability}
-                        <Layout.Stack gap="xxs">
-                            <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
-                                Replicas
-                            </Typography.Caption>
-                            <Typography.Text variant="m-500">
-                                {database.haReplicaCount}
-                            </Typography.Text>
-                        </Layout.Stack>
-                        {#if database.haSyncMode}
-                            <Layout.Stack gap="xxs">
+                        <Typography.Text variant="m-500">
+                            {database.networkMaxConnections}{#if tierMaxConnections}
                                 <Typography.Caption
                                     variant="400"
                                     color="--fgcolor-neutral-tertiary">
-                                    Sync Mode
+                                    / {tierMaxConnections.toLocaleString()} (tier limit)
                                 </Typography.Caption>
-                                <Typography.Text variant="m-500">
-                                    {capitalizeFirst(database.haSyncMode)}
-                                </Typography.Text>
-                            </Layout.Stack>
-                        {/if}
+                            {/if}
+                        </Typography.Text>
+                    </Layout.Stack>
+                    <Layout.Stack gap="xxs">
+                        <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                            Connection Timeout
+                        </Typography.Caption>
+                        <Typography.Text variant="m-500">
+                            {database.networkIdleTimeoutSeconds}s
+                        </Typography.Text>
+                    </Layout.Stack>
+                    {#if database.idleTimeoutMinutes}
+                        <Layout.Stack gap="xxs">
+                            <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                                Scale-to-Zero After
+                            </Typography.Caption>
+                            <Typography.Text variant="m-500">
+                                {database.idleTimeoutMinutes} min
+                            </Typography.Text>
+                        </Layout.Stack>
                     {/if}
                 </Layout.Grid>
-            </svelte:fragment>
-        </CardGrid>
 
-    <CardGrid>
-            <svelte:fragment slot="title">Network</svelte:fragment>
-            Connection limits and network configuration.
-            <svelte:fragment slot="aside">
-                <Layout.Stack gap="l">
-                    <Layout.Grid columns={3} columnsL={2} columnsS={1} gap="l">
-                        <Layout.Stack gap="xxs">
-                            <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
-                                Max Connections
-                            </Typography.Caption>
-                            <Typography.Text variant="m-500">
-                                {database.networkMaxConnections}{#if tierMaxConnections}
-                                    <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
-                                        / {tierMaxConnections.toLocaleString()} (tier limit)
-                                    </Typography.Caption>
-                                {/if}
-                            </Typography.Text>
+                {#if database.networkIPAllowlist?.length > 0}
+                    <Layout.Stack gap="xs">
+                        <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                            IP Allowlist
+                        </Typography.Caption>
+                        <Layout.Stack direction="row" gap="xs" wrap="wrap">
+                            {#each database.networkIPAllowlist as ip}
+                                <Badge variant="secondary" size="s" content={ip} />
+                            {/each}
                         </Layout.Stack>
-                        <Layout.Stack gap="xxs">
-                            <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
-                                Connection Timeout
-                            </Typography.Caption>
-                            <Typography.Text variant="m-500">
-                                {database.networkIdleTimeoutSeconds}s
-                            </Typography.Text>
-                        </Layout.Stack>
-                        {#if database.idleTimeoutMinutes}
-                            <Layout.Stack gap="xxs">
-                                <Typography.Caption
-                                    variant="400"
-                                    color="--fgcolor-neutral-tertiary">
-                                    Scale-to-Zero After
-                                </Typography.Caption>
-                                <Typography.Text variant="m-500">
-                                    {database.idleTimeoutMinutes} min
-                                </Typography.Text>
-                            </Layout.Stack>
-                        {/if}
-                    </Layout.Grid>
-
-                    {#if database.networkIPAllowlist?.length > 0}
-                        <Layout.Stack gap="xs">
-                            <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
-                                IP Allowlist
-                            </Typography.Caption>
-                            <Layout.Stack direction="row" gap="xs" wrap="wrap">
-                                {#each database.networkIPAllowlist as ip}
-                                    <Badge variant="secondary" size="s" content={ip} />
-                                {/each}
-                            </Layout.Stack>
-                        </Layout.Stack>
-                    {/if}
-                </Layout.Stack>
-            </svelte:fragment>
-        </CardGrid>
+                    </Layout.Stack>
+                {/if}
+            </Layout.Stack>
+        </svelte:fragment>
+    </CardGrid>
 
     <!-- Backups -->
     <CardGrid>
@@ -766,7 +762,9 @@
                                 size="s"
                                 content={database.backupPitr ? 'Enabled' : 'Disabled'} />
                             {#if database.backupPitr && database.pitrRetentionDays}
-                                <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                                <Typography.Caption
+                                    variant="400"
+                                    color="--fgcolor-neutral-tertiary">
                                     ({database.pitrRetentionDays} day window)
                                 </Typography.Caption>
                             {/if}
@@ -923,7 +921,10 @@
                         </Typography.Caption>
                         <Layout.Stack direction="row" gap="xs" wrap="wrap">
                             {#each database.sqlApiAllowedStatements as statement}
-                                <Badge variant="secondary" size="s" content={statement.toUpperCase()} />
+                                <Badge
+                                    variant="secondary"
+                                    size="s"
+                                    content={statement.toUpperCase()} />
                             {/each}
                         </Layout.Stack>
                     </Layout.Stack>

@@ -5,18 +5,6 @@ import type { UserBackupPolicy } from '$lib/helpers/backups';
 export const showCreatePolicy = writable(false);
 export const showCreateBackup = writable(false);
 
-export const dailyPolicy: UserBackupPolicy = {
-    id: 'daily',
-    label: 'Daily',
-    retained: 7,
-    default: true,
-    checked: false,
-    schedule: '{time} * * *',
-    selectedTime: '00:00',
-    plainTextFrequency: 'daily',
-    description: 'Runs every day and is retained for 7 days'
-};
-
 export const presetPolicies = writable<UserBackupPolicy[]>([
     {
         id: 'hourly',

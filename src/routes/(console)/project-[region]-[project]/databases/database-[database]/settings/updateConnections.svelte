@@ -87,7 +87,10 @@
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .compute.deleteDatabaseConnection({ databaseId: database.$id, connectionId: connectionToDelete.$id });
+                .compute.deleteDatabaseConnection({
+                    databaseId: database.$id,
+                    connectionId: connectionToDelete.$id
+                });
 
             connections = connections.filter((c) => c.$id !== connectionToDelete.$id);
             showDeleteConfirm = false;
@@ -201,10 +204,7 @@
         </CardGrid>
     </Form>
 
-    <Modal
-        title="Delete database user"
-        bind:show={showDeleteConfirm}
-        onSubmit={deleteConnection}>
+    <Modal title="Delete database user" bind:show={showDeleteConfirm} onSubmit={deleteConnection}>
         <p class="text">
             Are you sure you want to delete the database user
             <b>{connectionToDelete?.username}</b>? Any active connections using this user will be

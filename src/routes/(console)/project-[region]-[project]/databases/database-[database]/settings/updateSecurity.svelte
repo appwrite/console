@@ -7,14 +7,24 @@
     import { Button, Form, InputSwitch, InputNumber } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import type { Models } from '@appwrite.io/console';
+    import type { Compute, Models } from '@appwrite.io/console';
     import { Layout } from '@appwrite.io/pink-svelte';
 
+    type DedicatedDatabaseWithSecurity = Models.DedicatedDatabase & {
+        securityAuditLogEnabled: boolean;
+        securityLogRetentionDays: number;
+        securityEncryptionAtRest: boolean;
+        securityKeyManagement: string;
+        securityDataResidency: string;
+    };
+
     let {
-        database
+        database: rawDatabase
     }: {
         database: Models.DedicatedDatabase;
     } = $props();
+
+    const database = rawDatabase as DedicatedDatabaseWithSecurity;
 
     function getKeyManagementLabel(km: string): string {
         switch (km) {
@@ -49,19 +59,16 @@
     let initialLogRetentionDays = $state(database.securityLogRetentionDays);
 
     const hasChanges = $derived(
-        auditLogEnabled !== initialAuditLogEnabled ||
-            logRetentionDays !== initialLogRetentionDays
+        auditLogEnabled !== initialAuditLogEnabled || logRetentionDays !== initialLogRetentionDays
     );
 
     async function updateSecurity() {
         try {
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .compute.updateDatabase({
-                    databaseId: database.$id,
-                    securityAuditLogEnabled: auditLogEnabled,
-                    securityLogRetentionDays: logRetentionDays
-                } as any);
+            await sdk.forProject(page.params.region, page.params.project).compute.updateDatabase({
+                databaseId: database.$id,
+                securityAuditLogEnabled: auditLogEnabled,
+                securityLogRetentionDays: logRetentionDays
+            } as unknown as Parameters<Compute['updateDatabase']>[0]);
 
             initialAuditLogEnabled = auditLogEnabled;
             initialLogRetentionDays = logRetentionDays;
@@ -95,7 +102,10 @@
                         <Layout.Stack direction="column" gap="xs">
                             <Layout.Stack direction="row" gap="s">
                                 <span class="u-bold">Encryption at rest:</span>
-                                <span>{database.securityEncryptionAtRest ? 'Enabled' : 'Disabled'}</span>
+                                <span
+                                    >{database.securityEncryptionAtRest
+                                        ? 'Enabled'
+                                        : 'Disabled'}</span>
                             </Layout.Stack>
                             <Layout.Stack direction="row" gap="s">
                                 <span class="u-bold">Key management:</span>

@@ -20,6 +20,7 @@
     import { expandTabs } from '../store';
     import { SpreadsheetContainer } from '$database/(entity)';
     import { onDestroy, onMount, tick } from 'svelte';
+    import type { Columns } from '$database/store';
     import { sdk, realtime, type RealtimeResponse } from '$lib/stores/sdk';
     import { page } from '$app/state';
     import { setupColumnObserver } from '../(observer)/columnObserver';
@@ -37,7 +38,6 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { isWithinSafeRange } from '$lib/helpers/numbers';
-    import type { Columns } from '../table-[table]/store';
     import { columnOptions, getSupportedColumns } from '../table-[table]/columns/store';
     import Options from './options.svelte';
     import { InputSelect, InputText } from '$lib/elements/forms';

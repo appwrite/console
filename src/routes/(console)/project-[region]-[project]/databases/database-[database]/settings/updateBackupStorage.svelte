@@ -8,7 +8,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import type { Models } from '@appwrite.io/console';
+    import { type Models, Provider } from '@appwrite.io/console';
     import { Layout } from '@appwrite.io/pink-svelte';
 
     let {
@@ -63,7 +63,7 @@
                 .forProject(page.params.region, page.params.project)
                 .compute.updateDatabaseBackupStorage({
                     databaseId: database.$id,
-                    provider,
+                    provider: provider as Provider,
                     bucket,
                     accessKey: accessKeyId,
                     secretKey: secretAccessKey,
@@ -141,8 +141,8 @@
     {#if isConfigured && config}
         <CardGrid>
             <svelte:fragment slot="title">Backup storage</svelte:fragment>
-            Your database backups are stored on an external storage provider for added durability
-            and disaster recovery.
+            Your database backups are stored on an external storage provider for added durability and
+            disaster recovery.
             <svelte:fragment slot="aside">
                 <ul>
                     <li class="u-margin-block-end-16">
@@ -198,8 +198,8 @@
         <Form onSubmit={configureStorage}>
             <CardGrid>
                 <svelte:fragment slot="title">Backup storage</svelte:fragment>
-                Configure off-cluster backup storage to store backups on an external cloud provider
-                for added durability and disaster recovery.
+                Configure off-cluster backup storage to store backups on an external cloud provider for
+                added durability and disaster recovery.
                 <svelte:fragment slot="aside">
                     <ul>
                         <InputSelect
@@ -245,7 +245,13 @@
                 </svelte:fragment>
 
                 <svelte:fragment slot="actions">
-                    <Button disabled={!bucket || !region || !accessKeyId || !secretAccessKey || isSubmitting} submit>
+                    <Button
+                        disabled={!bucket ||
+                            !region ||
+                            !accessKeyId ||
+                            !secretAccessKey ||
+                            isSubmitting}
+                        submit>
                         {isSubmitting ? 'Configuring...' : 'Configure'}
                     </Button>
                 </svelte:fragment>
@@ -253,10 +259,7 @@
         </Form>
     {/if}
 
-    <Modal
-        title="Remove backup storage"
-        bind:show={showRemoveConfirm}
-        onSubmit={removeStorage}>
+    <Modal title="Remove backup storage" bind:show={showRemoveConfirm} onSubmit={removeStorage}>
         <p class="text">
             Are you sure you want to remove the off-cluster backup storage configuration for
             <b>{database.name}</b>? Existing backups in the external storage will not be deleted,

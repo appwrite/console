@@ -21,10 +21,7 @@
     );
 
     // Check if this is a dedicated database type
-    const isDedicatedType = $derived(
-        (database?.type as DatabaseType) === 'dedicated' ||
-            (database?.type as DatabaseType) === 'shared'
-    );
+    const isDedicatedType = $derived((database?.type as DatabaseType) === 'dedicateddb');
 
     const tabs = $derived(
         [

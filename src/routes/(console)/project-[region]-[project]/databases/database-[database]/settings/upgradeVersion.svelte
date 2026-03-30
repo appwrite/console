@@ -82,8 +82,8 @@
 {#if !isLoading}
     <CardGrid>
         <svelte:fragment slot="title">Version</svelte:fragment>
-        Upgrade your database engine to a newer version. This operation uses green/blue deployment
-        with zero downtime.
+        Upgrade your database engine to a newer version. This operation uses green/blue deployment with
+        zero downtime.
         <svelte:fragment slot="aside">
             <Layout.Stack gap="m">
                 <Layout.Stack gap="xxs">
@@ -116,10 +116,7 @@
         </svelte:fragment>
     </CardGrid>
 
-    <Modal
-        title="Upgrade database version"
-        bind:show={showConfirm}
-        onSubmit={upgradeVersion}>
+    <Modal title="Upgrade database version" bind:show={showConfirm} onSubmit={upgradeVersion}>
         <p class="text">
             Are you sure you want to upgrade <b>{database.name}</b> from version
             <b>{currentVersion}</b> to <b>{targetVersion}</b>? This operation uses green/blue

@@ -5,20 +5,21 @@
     import { IconArrowRight } from '@appwrite.io/pink-icons-svelte';
     import { Layout, Typography, Icon, Divider } from '@appwrite.io/pink-svelte';
 
-    import MongoDB from './(assets)/mongo-db.svg';
-    import MongoDBDark from './(assets)/dark/mongo-db.svg';
-
     import TablesDB from './(assets)/tables-db.svg';
     import TablesDBDark from './(assets)/dark/tables-db.svg';
 
     import DocumentsDB from './(assets)/documents-db.svg';
     import DocumentsDBDark from './(assets)/dark/documents-db.svg';
 
+    import VectorsDB from './(assets)/vectors-db.svg';
+    import VectorsDBDark from './(assets)/dark/vectors-db.svg';
+
     import DedicatedDB from './(assets)/dedicated-db.svg';
     import DedicatedDBDark from './(assets)/dark/dedicated-db.svg';
 
     import { isSmallViewport } from '$lib/stores/viewport';
     import type { DatabaseType } from '$database/(entity)';
+    import { databaseTypes } from './store';
 
     const {
         disabled,
@@ -29,10 +30,13 @@
     } = $props();
 
     const isDark = $derived($app.themeInUse === 'dark');
-    const mongoDbImage = $derived(isDark ? MongoDBDark : MongoDB);
-    const tablesDbImage = $derived(isDark ? TablesDBDark : TablesDB);
-    const documentsDbImage = $derived(isDark ? DocumentsDBDark : DocumentsDB);
-    const dedicatedDbImage = $derived(isDark ? DedicatedDBDark : DedicatedDB);
+
+    const images: Record<string, string> = $derived({
+        tablesdb: isDark ? TablesDBDark : TablesDB,
+        documentsdb: isDark ? DocumentsDBDark : DocumentsDB,
+        vectorsdb: isDark ? VectorsDBDark : VectorsDB,
+        dedicateddb: isDark ? DedicatedDBDark : DedicatedDB
+    });
 </script>
 
 {#if $isSmallViewport}
@@ -51,60 +55,37 @@
             <Typography.Text variant="l-400"
                 >Store, organize, and manage your app data</Typography.Text>
         </Layout.Stack>
+
+        <Layout.Grid columns={4} columnsS={2} columnsXS={1} gap="xl">
+            {#each databaseTypes as db}
+                {@render databaseTypeCard({
+                    type: db.type,
+                    title: db.title,
+                    subtitle: db.subtitle,
+                    image: images[db.type]
+                })}
+            {/each}
+        </Layout.Grid>
     </Layout.Stack>
-
-    <Layout.Grid columns={2} columnsS={1}>
-        <!-- legacy, tablesDB -->
-        {@render databaseTypeCard({
-            type: 'tablesdb',
-            title: 'TablesDB',
-            subtitle:
-                'Structure your data in rows and columns. Best for relational data and advanced querying.',
-            image: tablesDbImage
-        })}
-
-        <!-- documentsDB -->
-        {@render databaseTypeCard({
-            type: 'documentsdb',
-            title: 'DocumentsDB',
-            subtitle:
-                'Store flexible data without a fixed schema. Best for unstructured data and simple querying.',
-            image: documentsDbImage,
-            footerType: 'mongodb'
-        })}
-
-        <!-- Dedicated Database -->
-        {@render databaseTypeCard({
-            type: 'dedicated',
-            title: 'DedicatedDB',
-            subtitle:
-                'Always-on dedicated database instances with high availability. Best for production workloads.',
-            image: dedicatedDbImage,
-            footerType: 'appwrite'
-        })}
-    </Layout.Grid>
 {/snippet}
 
-{#snippet databaseTypeCard({ type, title, subtitle, image = undefined, footerType = undefined })}
+{#snippet databaseTypeCard({ type, title, subtitle, image = undefined })}
     <Card
         isButton
         radius="s"
         padding="none"
         {disabled}
         on:click={() => onDatabaseTypeSelected?.(type)}>
-        {@const direction = $isSmallViewport ? 'column' : 'row'}
-        <Layout.Stack gap="none" {direction}>
-            <img class="database-image" src={image} alt="database type artwork" />
+        <Layout.Stack gap="none" direction="column">
+            <img src={image} class="database-image adaptive-height" alt="database type artwork" />
 
-            {#if $isSmallViewport}
-                <Divider />
-            {/if}
+            <Divider />
 
             <Layout.Stack
                 gap="xxs"
                 direction="column"
                 justifyContent="space-between"
-                style="margin-block-start: 20px; padding-inline: 20px; flex: 1;">
+                style="padding: var(--gap-xl); flex: 1;">
                 <Layout.Stack direction="column" gap="xxs">
                     <Layout.Stack
                         inline
@@ -118,25 +99,6 @@
 
                     <Typography.Text variant="l-400">{subtitle}</Typography.Text>
                 </Layout.Stack>
-
-                <Layout.Stack
-                    inline
-                    gap="xxs"
-                    direction="row"
-                    alignContent="center"
-                    style="margin-block-end: 20px;">
-                    {#if footerType === 'mongodb'}
-                        <Typography.Text>Powered by</Typography.Text>
-                        <img
-                            height="20px"
-                            width="auto"
-                            src={mongoDbImage}
-                            alt="mongo-db artwork"
-                            style:padding-block-end="2px" />
-                    {:else if footerType === 'appwrite'}
-                        <Typography.Text>Powered by Appwrite</Typography.Text>
-                    {/if}
-                </Layout.Stack>
             </Layout.Stack>
         </Layout.Stack>
     </Card>
@@ -145,6 +107,13 @@
 <style lang="scss">
     .database-image {
         border-radius: var(--border-radius-s) 0 0 var(--border-radius-s);
+
+        &.adaptive-height {
+            max-height: 236px;
+            object-fit: cover;
+            object-position: center 5%;
+            border-radius: var(--border-radius-s) var(--border-radius-s) 0 0;
+        }
 
         @media (max-width: 768px) {
             max-height: 236px;

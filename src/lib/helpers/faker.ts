@@ -79,11 +79,11 @@ export async function generateFields(
         /**
          * Schema-less database types that don't require individual field creation:
          * - documentsdb: Flexible document structure without predefined schema
-         * - vectordb: Vector embeddings and metadata are defined at collection creation
+         * - vectorsdb: Vector embeddings and metadata are defined at collection creation
          * @returns Empty array since no individual field creation is needed
          */
         case 'documentsdb':
-        case 'vectordb': {
+        case 'vectorsdb': {
             return [];
         }
     }

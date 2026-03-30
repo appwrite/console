@@ -63,8 +63,8 @@
     {readonly}
     {disabled}
     {required}
-    {min}
-    {max}
+    min={min != null ? Number(min) : null}
+    max={max != null ? Number(max) : null}
     {label}
     {step}
     {nullable}

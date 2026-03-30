@@ -206,18 +206,6 @@
                                 Create row
                             </Button>
 
-                            <Button
-                                icon
-                                size="s"
-                                secondary
-                                class="small-button-dimensions"
-                                on:click={() => {
-                                    $expandTabs = !$expandTabs;
-                                    preferences.setKey('entityHeaderExpanded', $expandTabs);
-                                }}>
-                                <Icon icon={$expandTabs ? IconChevronUp : IconChevronDown} size="s" />
-                            </Button>
-
                             <Tooltip placement="top">
                                 <Button
                                     icon
@@ -283,7 +271,7 @@
                                     class="small-button-dimensions"
                                     on:click={() => {
                                         $expandTabs = !$expandTabs;
-                                        preferences.setKey('tableHeaderExpanded', $expandTabs);
+                                        preferences.setKey('entityHeaderExpanded', $expandTabs);
                                     }}>
                                     <Icon
                                         icon={!$expandTabs ? IconChevronDown : IconChevronUp}
@@ -312,7 +300,7 @@
 
     <div class="databases-spreadsheet">
         {#if hasColumns && hasValidColumns && $entityColumnSuggestions.force !== true}
-            {#if data.rows.total}
+            {#if data.rows?.total}
                 <Divider />
                 <SpreadSheet {data} bind:showRowCreateSheet={$showRowCreateSheet} />
             {:else if $hasPageQueries}
@@ -339,7 +327,10 @@
                 <EmptySheet
                     mode="records"
                     showActions={$canWriteRows}
-                    customColumns={createTableColumns(table.fields, selected)}>
+                    customColumns={createTableColumns(table.fields, selected)}
+                    onOpenCreateColumn={() => {
+                        $showCreateColumnSheet.show = true;
+                    }}>
                     {#snippet actions()}
                         <EmptySheetCards
                             icon={IconPlus}
@@ -355,6 +346,7 @@
                             subtitle="Generate data for testing"
                             onClick={() => {
                                 $randomDataModalState.show = true;
+                                $randomDataModalState.managed = true;
                             }} />
                     {/snippet}
                 </EmptySheet>
@@ -365,7 +357,10 @@
             <EmptySheet
                 mode="records"
                 showActions={$canWriteTables}
-                title="You have no columns yet">
+                title="You have no columns yet"
+                onOpenCreateColumn={() => {
+                    $showCreateColumnSheet.show = true;
+                }}>
                 {#snippet subtitle()}
                     {#if !isCloud}
                         <!-- shown on self-hosted -->
@@ -406,6 +401,7 @@
                         subtitle="Generate data for testing"
                         onClick={() => {
                             $randomDataModalState.show = true;
+                            $randomDataModalState.managed = true;
                         }} />
 
                     {#if isCloud}

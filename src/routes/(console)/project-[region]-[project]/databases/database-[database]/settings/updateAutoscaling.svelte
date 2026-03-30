@@ -27,16 +27,12 @@
 
     async function updateAutoscaling() {
         try {
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .compute.updateDatabase({
-                    databaseId: database.$id,
-                    storageAutoscaling: autoscaling,
-                    storageAutoscalingThresholdPercent: autoscaling
-                        ? thresholdPercent
-                        : undefined,
-                    storageAutoscalingMaxGb: autoscaling ? maxGb : undefined
-                });
+            await sdk.forProject(page.params.region, page.params.project).compute.updateDatabase({
+                databaseId: database.$id,
+                storageAutoscaling: autoscaling,
+                storageAutoscalingThresholdPercent: autoscaling ? thresholdPercent : undefined,
+                storageAutoscalingMaxGb: autoscaling ? maxGb : undefined
+            });
 
             await invalidate(Dependencies.DATABASE);
 
@@ -59,8 +55,8 @@
 <Form onSubmit={updateAutoscaling}>
     <CardGrid>
         <svelte:fragment slot="title">Storage autoscaling</svelte:fragment>
-        Automatically increase storage when disk usage reaches a threshold. Storage will never
-        exceed the configured maximum.
+        Automatically increase storage when disk usage reaches a threshold. Storage will never exceed
+        the configured maximum.
         <svelte:fragment slot="aside">
             <ul>
                 <InputSwitch

@@ -46,13 +46,11 @@
                 throw new Error('Invalid tier selected');
             }
 
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .compute.updateDatabase({
-                    databaseId: database.$id,
-                    cpu: resources.cpu,
-                    memory: resources.memory
-                });
+            await sdk.forProject(page.params.region, page.params.project).compute.updateDatabase({
+                databaseId: database.$id,
+                cpu: resources.cpu,
+                memory: resources.memory
+            });
 
             await invalidate(Dependencies.DATABASE);
 
@@ -75,8 +73,8 @@
 <Form onSubmit={updateTier}>
     <CardGrid>
         <svelte:fragment slot="title">Resource scaling</svelte:fragment>
-        Change the compute resources allocated to your database. Scaling may cause a brief
-        interruption while the database restarts.
+        Change the compute resources allocated to your database. Scaling may cause a brief interruption
+        while the database restarts.
         <svelte:fragment slot="aside">
             <InputSelect
                 id="tier"

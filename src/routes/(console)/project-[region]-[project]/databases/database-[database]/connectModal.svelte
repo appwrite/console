@@ -115,7 +115,8 @@
                 </div>
                 <div class="reference-item">
                     <Typography.Text variant="m-500">Port</Typography.Text>
-                    <Typography.Text variant="m-400">{database.connectionPort || '-'}</Typography.Text>
+                    <Typography.Text variant="m-400"
+                        >{database.connectionPort || '-'}</Typography.Text>
                 </div>
                 <div class="reference-item">
                     <Typography.Text variant="m-500">Database</Typography.Text>
@@ -123,7 +124,8 @@
                 </div>
                 <div class="reference-item">
                     <Typography.Text variant="m-500">Username</Typography.Text>
-                    <Typography.Text variant="m-400">{database.connectionUser || '-'}</Typography.Text>
+                    <Typography.Text variant="m-400"
+                        >{database.connectionUser || '-'}</Typography.Text>
                 </div>
             </div>
         </Layout.Stack>

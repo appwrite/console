@@ -9,7 +9,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import type { Models } from '@appwrite.io/console';
+    import { Type, type Models } from '@appwrite.io/console';
     import {
         ActionMenu,
         Alert,
@@ -21,11 +21,7 @@
         Tabs,
         Typography
     } from '@appwrite.io/pink-svelte';
-    import {
-        IconDotsHorizontal,
-        IconRefresh,
-        IconTrash
-    } from '@appwrite.io/pink-icons-svelte';
+    import { IconDotsHorizontal, IconRefresh, IconTrash } from '@appwrite.io/pink-icons-svelte';
 
     const {
         database
@@ -34,7 +30,10 @@
     } = $props();
 
     let backups = $state<Models.DedicatedDatabaseBackupList>({ total: 0, backups: [] });
-    let restorations = $state<Models.DedicatedDatabaseRestorationList>({ total: 0, restorations: [] });
+    let restorations = $state<Models.DedicatedDatabaseRestorationList>({
+        total: 0,
+        restorations: []
+    });
     let pitrWindows = $state<Models.DedicatedDatabasePITRWindows | null>(null);
 
     let isLoadingBackups = $state(true);
@@ -53,9 +52,7 @@
 
     let activeTab = $state<'backups' | 'restorations'>('backups');
 
-    const computeSdk = $derived(
-        sdk.forProject(page.params.region, page.params.project).compute
-    );
+    const computeSdk = $derived(sdk.forProject(page.params.region, page.params.project).compute);
 
     function mapBackupStatus(
         status: string
@@ -176,7 +173,10 @@
     async function handleDeleteBackup() {
         if (!selectedBackup) return;
         try {
-            await computeSdk.deleteDatabaseBackup({ databaseId: database.$id, backupId: selectedBackup.$id });
+            await computeSdk.deleteDatabaseBackup({
+                databaseId: database.$id,
+                backupId: selectedBackup.$id
+            });
             addNotification({
                 type: 'success',
                 message: 'Backup deleted'
@@ -197,7 +197,11 @@
     async function handleRestoreBackup() {
         if (!restoreBackup) return;
         try {
-            await computeSdk.createDatabaseRestoration({ databaseId: database.$id, type: 'backup' as any, backupId: restoreBackup.$id });
+            await computeSdk.createDatabaseRestoration({
+                databaseId: database.$id,
+                type: Type.Backup,
+                backupId: restoreBackup.$id
+            });
             addNotification({
                 type: 'success',
                 message: 'Restoration started from backup'
@@ -219,7 +223,11 @@
         if (!pitrTargetDateTime) return;
         try {
             const targetTime = Math.floor(new Date(pitrTargetDateTime).getTime() / 1000);
-            await computeSdk.createDatabaseRestoration({ databaseId: database.$id, type: 'pitr' as any, targetTime });
+            await computeSdk.createDatabaseRestoration({
+                databaseId: database.$id,
+                type: Type.Pitr,
+                targetTime
+            });
             addNotification({
                 type: 'success',
                 message: 'Point-in-time restoration started'
@@ -472,80 +480,73 @@
                     {/each}
                 </Table.Root>
             {/if}
+        {:else if isLoadingRestorations}
+            <article class="empty card u-width-full-line common-section">
+                Loading restorations...
+            </article>
+        {:else if restorations.total === 0}
+            <article class="empty card u-width-full-line common-section">
+                No restorations yet.
+            </article>
         {:else}
-            {#if isLoadingRestorations}
-                <article class="empty card u-width-full-line common-section">
-                    Loading restorations...
-                </article>
-            {:else if restorations.total === 0}
-                <article class="empty card u-width-full-line common-section">
-                    No restorations yet.
-                </article>
-            {:else}
-                <Table.Root
-                    columns={[
-                        { id: 'id', width: { min: 120 } },
-                        { id: 'type', width: { min: 120 } },
-                        { id: 'status', width: { min: 120 } },
-                        { id: 'backupId', width: { min: 120 } },
-                        { id: 'targetTime', width: { min: 140 } },
-                        { id: 'started', width: { min: 140 } },
-                        { id: 'completed', width: { min: 140 } }
-                    ]}
-                    let:root>
-                    <svelte:fragment slot="header" let:root>
-                        <Table.Header.Cell column="id" {root}>ID</Table.Header.Cell>
-                        <Table.Header.Cell column="type" {root}>Type</Table.Header.Cell>
-                        <Table.Header.Cell column="status" {root}>Status</Table.Header.Cell>
-                        <Table.Header.Cell column="backupId" {root}>Backup ID</Table.Header.Cell>
-                        <Table.Header.Cell column="targetTime" {root}>Target Time</Table.Header.Cell>
-                        <Table.Header.Cell column="started" {root}>Started</Table.Header.Cell>
-                        <Table.Header.Cell column="completed" {root}>Completed</Table.Header.Cell>
-                    </svelte:fragment>
-                    {#each restorations.restorations as restoration}
-                        <Table.Row.Base id={restoration.$id} {root}>
-                            <Table.Cell column="id" {root}>
-                                <Typography.Text variant="m-400">
-                                    {restoration.$id.substring(0, 8)}...
-                                </Typography.Text>
-                            </Table.Cell>
-                            <Table.Cell column="type" {root}>
-                                {restoration.type === 'pitr' ? 'Point-in-Time' : 'Backup'}
-                            </Table.Cell>
-                            <Table.Cell column="status" {root}>
-                                <Status
-                                    status={mapRestorationStatus(restoration.status)}
-                                    label={restoration.status} />
-                            </Table.Cell>
-                            <Table.Cell column="backupId" {root}>
-                                {restoration.backupId
-                                    ? restoration.backupId.substring(0, 8) + '...'
-                                    : '-'}
-                            </Table.Cell>
-                            <Table.Cell column="targetTime" {root}>
-                                {restoration.targetTime
-                                    ? formatTimestamp(restoration.targetTime)
-                                    : '-'}
-                            </Table.Cell>
-                            <Table.Cell column="started" {root}>
-                                {formatTimestamp(restoration.startedAt)}
-                            </Table.Cell>
-                            <Table.Cell column="completed" {root}>
-                                {formatTimestamp(restoration.completedAt)}
-                            </Table.Cell>
-                        </Table.Row.Base>
-                    {/each}
-                </Table.Root>
-            {/if}
+            <Table.Root
+                columns={[
+                    { id: 'id', width: { min: 120 } },
+                    { id: 'type', width: { min: 120 } },
+                    { id: 'status', width: { min: 120 } },
+                    { id: 'backupId', width: { min: 120 } },
+                    { id: 'targetTime', width: { min: 140 } },
+                    { id: 'started', width: { min: 140 } },
+                    { id: 'completed', width: { min: 140 } }
+                ]}
+                let:root>
+                <svelte:fragment slot="header" let:root>
+                    <Table.Header.Cell column="id" {root}>ID</Table.Header.Cell>
+                    <Table.Header.Cell column="type" {root}>Type</Table.Header.Cell>
+                    <Table.Header.Cell column="status" {root}>Status</Table.Header.Cell>
+                    <Table.Header.Cell column="backupId" {root}>Backup ID</Table.Header.Cell>
+                    <Table.Header.Cell column="targetTime" {root}>Target Time</Table.Header.Cell>
+                    <Table.Header.Cell column="started" {root}>Started</Table.Header.Cell>
+                    <Table.Header.Cell column="completed" {root}>Completed</Table.Header.Cell>
+                </svelte:fragment>
+                {#each restorations.restorations as restoration}
+                    <Table.Row.Base id={restoration.$id} {root}>
+                        <Table.Cell column="id" {root}>
+                            <Typography.Text variant="m-400">
+                                {restoration.$id.substring(0, 8)}...
+                            </Typography.Text>
+                        </Table.Cell>
+                        <Table.Cell column="type" {root}>
+                            {restoration.type === 'pitr' ? 'Point-in-Time' : 'Backup'}
+                        </Table.Cell>
+                        <Table.Cell column="status" {root}>
+                            <Status
+                                status={mapRestorationStatus(restoration.status)}
+                                label={restoration.status} />
+                        </Table.Cell>
+                        <Table.Cell column="backupId" {root}>
+                            {restoration.backupId
+                                ? restoration.backupId.substring(0, 8) + '...'
+                                : '-'}
+                        </Table.Cell>
+                        <Table.Cell column="targetTime" {root}>
+                            {restoration.targetTime ? formatTimestamp(restoration.targetTime) : '-'}
+                        </Table.Cell>
+                        <Table.Cell column="started" {root}>
+                            {formatTimestamp(restoration.startedAt)}
+                        </Table.Cell>
+                        <Table.Cell column="completed" {root}>
+                            {formatTimestamp(restoration.completedAt)}
+                        </Table.Cell>
+                    </Table.Row.Base>
+                {/each}
+            </Table.Root>
         {/if}
     </Layout.Stack>
 </Container>
 
 <!-- Delete Backup Confirmation -->
-<Confirm
-    title="Delete backup"
-    bind:open={showDeleteConfirm}
-    onSubmit={handleDeleteBackup}>
+<Confirm title="Delete backup" bind:open={showDeleteConfirm} onSubmit={handleDeleteBackup}>
     <Typography.Text>
         Are you sure you want to delete this backup? This action is irreversible.
     </Typography.Text>
@@ -557,10 +558,7 @@
 </Confirm>
 
 <!-- Restore from Backup Confirmation -->
-<Modal
-    title="Restore from backup"
-    bind:show={showRestoreConfirm}
-    onSubmit={handleRestoreBackup}>
+<Modal title="Restore from backup" bind:show={showRestoreConfirm} onSubmit={handleRestoreBackup}>
     <Layout.Stack gap="l">
         <Typography.Text>
             This will restore your database from the selected backup. Your database will be
@@ -587,9 +585,7 @@
                         Size
                     </Typography.Caption>
                     <Typography.Text variant="m-500">
-                        {restoreBackup.sizeBytes
-                            ? calculateSize(restoreBackup.sizeBytes)
-                            : '-'}
+                        {restoreBackup.sizeBytes ? calculateSize(restoreBackup.sizeBytes) : '-'}
                     </Typography.Text>
                 </Layout.Stack>
                 <Layout.Stack gap="xxs">
@@ -603,8 +599,8 @@
             </Layout.Grid>
         {/if}
         <Alert.Inline status="warning" title="Warning">
-            The database will enter a restoring state and will be unavailable until the
-            restoration completes.
+            The database will enter a restoring state and will be unavailable until the restoration
+            completes.
         </Alert.Inline>
     </Layout.Stack>
     <svelte:fragment slot="footer">
@@ -614,14 +610,11 @@
 </Modal>
 
 <!-- PITR Restore Modal -->
-<Modal
-    title="Point-in-Time Recovery"
-    bind:show={showPitrRestore}
-    onSubmit={handlePitrRestore}>
+<Modal title="Point-in-Time Recovery" bind:show={showPitrRestore} onSubmit={handlePitrRestore}>
     <Layout.Stack gap="l">
         <Typography.Text>
-            Select a target date and time to restore your database to. The target must be within
-            the available recovery window.
+            Select a target date and time to restore your database to. The target must be within the
+            available recovery window.
         </Typography.Text>
         {#if pitrWindows}
             <Layout.Grid columns={2} columnsS={1} gap="m">
@@ -656,8 +649,8 @@
                 required />
         </Layout.Stack>
         <Alert.Inline status="warning" title="Warning">
-            The database will enter a restoring state and will be unavailable until the
-            restoration completes. All data after the selected point in time will be lost.
+            The database will enter a restoring state and will be unavailable until the restoration
+            completes. All data after the selected point in time will be lost.
         </Alert.Inline>
     </Layout.Stack>
     <svelte:fragment slot="footer">
