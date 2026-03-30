@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Container } from '$lib/layout';
-    import { CardGrid, Card } from '$lib/components';
+    import { CardGrid, Card, ProgressBarBig } from '$lib/components';
     import {
         showUsageRatesModal,
         billingIdToPlan,
@@ -9,14 +9,16 @@
     } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { Button } from '$lib/elements/forms';
-    import { humanFileSize } from '$lib/helpers/sizeConvertion';
+    import { bytesToSize, humanFileSize, mbSecondsToGBHours } from '$lib/helpers/sizeConvertion';
     import { BarChart } from '$lib/charts';
     import { formatNum } from '$lib/helpers/string';
     import { base } from '$app/paths';
-    import { Icon, Layout, Link, Table, Typography } from '@appwrite.io/pink-svelte';
+    import { Accordion, Icon, Layout, Link, Table, Typography } from '@appwrite.io/pink-svelte';
     import { IconChartSquareBar } from '@appwrite.io/pink-icons-svelte';
     import { page } from '$app/state';
     import { BillingPlanGroup } from '@appwrite.io/console';
+    import { formatCurrency, formatNumberWithCommas } from '$lib/helpers/numbers.js';
+    import { getCountryName } from '$lib/helpers/diallingCodes.js';
 
     export let data;
 
@@ -24,6 +26,10 @@
     $: network = data.usage.network;
     $: users = data.usage.users;
     $: executions = data.usage.executions;
+    $: storage =
+        data.usage.filesStorageTotal +
+        data.usage.deploymentsStorageTotal +
+        data.usage.buildsStorageTotal;
     $: imageTransformations = data.usage.imageTransformations;
     $: screenshotsGenerated = data.usage.screenshotsGenerated;
     $: dbReads = data.usage.databasesReads;
@@ -271,6 +277,159 @@
                             </Table.Row.Link>
                         {/each}
                     </Table.Root>
+                {/if}
+            {:else}
+                <Card isDashed>
+                    <Layout.Stack gap="xs" alignItems="center" justifyContent="center">
+                        <Icon icon={IconChartSquareBar} size="l" />
+                        <Typography.Text variant="m-600">No data to show</Typography.Text>
+                    </Layout.Stack>
+                </Card>
+            {/if}
+        </svelte:fragment>
+    </CardGrid>
+    <CardGrid>
+        <svelte:fragment slot="title">Storage</svelte:fragment>
+        Calculated for all your files, deployments, builds, databases and backups.
+        <svelte:fragment slot="aside">
+            {#if storage}
+                {@const humanized = humanFileSize(storage)}
+                {@const progressBarStorageDate = [
+                    {
+                        size: bytesToSize(data.usage.filesStorageTotal, 'MB'),
+                        color: '#85DBD8',
+                        tooltip: {
+                            title: 'File storage',
+                            label: `${Math.round(bytesToSize(data.usage.filesStorageTotal, 'MB') * 100) / 100}MB`
+                        }
+                    },
+                    {
+                        size: bytesToSize(data.usage.deploymentsStorageTotal, 'MB'),
+                        color: '#7C67FE',
+                        tooltip: {
+                            title: 'Deployments storage',
+                            label: `${Math.round(bytesToSize(data.usage.deploymentsStorageTotal, 'MB') * 100) / 100}MB`
+                        }
+                    },
+                    {
+                        size: bytesToSize(data.usage.buildsStorageTotal, 'MB'),
+                        color: '#FE9567',
+                        tooltip: {
+                            title: 'Builds storage',
+                            label: `${Math.round(bytesToSize(data.usage.buildsStorageTotal, 'MB') * 100) / 100}MB`
+                        }
+                    }
+                ]}
+                <Layout.Stack gap="s" direction="row" alignItems="baseline">
+                    <Typography.Title>
+                        {humanized.value}
+                    </Typography.Title>
+                    <Typography.Text>{humanized.unit}</Typography.Text>
+                </Layout.Stack>
+                <ProgressBarBig
+                    progressValue={bytesToSize(storage, 'MB')}
+                    progressMax={bytesToSize(storage, 'MB')}
+                    progressBarData={progressBarStorageDate} />
+            {:else}
+                <Card isDashed>
+                    <Layout.Stack gap="xs" alignItems="center" justifyContent="center">
+                        <Icon icon={IconChartSquareBar} size="l" />
+                        <Typography.Text variant="m-600">No data to show</Typography.Text>
+                    </Layout.Stack>
+                </Card>
+            {/if}
+        </svelte:fragment>
+    </CardGrid>
+    <CardGrid>
+        <svelte:fragment slot="title">GB hours</svelte:fragment>
+        GB hours represent the memory usage (in gigabytes) of your function executions and builds, multiplied
+        by the total execution time (in hours).
+        <svelte:fragment slot="aside">
+            {#if data.usage.executionsMbSecondsTotal}
+                {@const totalGbHours = mbSecondsToGBHours(
+                    data.usage.executionsMbSecondsTotal + data.usage.buildsMbSecondsTotal
+                )}
+                {@const progressBarStorageDate = [
+                    {
+                        size: mbSecondsToGBHours(data.usage.executionsMbSecondsTotal),
+                        color: '#85DBD8',
+                        tooltip: {
+                            title: 'Executions',
+                            label: `${(Math.round(mbSecondsToGBHours(data.usage.executionsMbSecondsTotal) * 100) / 100).toLocaleString('en-US')} GB hours`
+                        }
+                    },
+                    {
+                        size: mbSecondsToGBHours(data.usage.buildsMbSecondsTotal),
+                        color: '#FE9567',
+                        tooltip: {
+                            title: 'Deployments',
+                            label: `${(Math.round(mbSecondsToGBHours(data.usage.buildsMbSecondsTotal) * 100) / 100).toLocaleString('en-US')} GB hours`
+                        }
+                    }
+                ]}
+                <Layout.Stack gap="s" direction="row" alignItems="baseline">
+                    <Typography.Title>
+                        {(Math.ceil(totalGbHours * 100) / 100).toLocaleString('en-US')}
+                    </Typography.Title>
+                    <Typography.Text>GB hours</Typography.Text>
+                </Layout.Stack>
+                <ProgressBarBig
+                    progressMax={totalGbHours}
+                    progressValue={totalGbHours}
+                    progressBarData={progressBarStorageDate} />
+            {:else}
+                <Card isDashed>
+                    <Layout.Stack gap="xs" alignItems="center" justifyContent="center">
+                        <Icon icon={IconChartSquareBar} size="l" />
+                        <Typography.Text variant="m-600">No data to show</Typography.Text>
+                    </Layout.Stack>
+                </Card>
+            {/if}
+        </svelte:fragment>
+    </CardGrid>
+    <CardGrid>
+        <svelte:fragment slot="title">Phone OTP</svelte:fragment>
+        Calculated for all Phone OTP sent across your project. Resets at the start of each billing cycle.<br />
+        You will not be charged for Phone OTPs before February 10th.
+        <svelte:fragment slot="aside">
+            {#if data.usage.authPhoneTotal}
+                <div class="u-flex u-main-space-between">
+                    <Layout.Stack gap="s" direction="row" alignItems="baseline">
+                        <Typography.Title>
+                            {formatNumberWithCommas(data.usage.authPhoneTotal)}
+                        </Typography.Title>
+                        <Typography.Text>OTPs</Typography.Text>
+                    </Layout.Stack>
+                    <p class="u-flex u-gap-8 u-cross-center">
+                        <span class="u-color-text-offline">Estimated cost</span>
+                        <span class="body-text-2">
+                            {formatCurrency(data.usage.authPhoneEstimate)}
+                        </span>
+                    </p>
+                </div>
+                {#if data.usage.authPhoneCountryBreakdown.length > 0}
+                    <Accordion title="Region breakdown">
+                        <Table.Root columns={3} let:root>
+                            <svelte:fragment slot="header" let:root>
+                                <Table.Header.Cell {root}>Region</Table.Header.Cell>
+                                <Table.Header.Cell {root}>Amount</Table.Header.Cell>
+                                <Table.Header.Cell {root}>Estimated cost</Table.Header.Cell>
+                            </svelte:fragment>
+                            {#each data.usage.authPhoneCountryBreakdown as phone}
+                                <Table.Row.Base {root}>
+                                    <Table.Cell {root}>
+                                        {getCountryName(phone.name)}
+                                    </Table.Cell>
+                                    <Table.Cell {root}>
+                                        {formatNumberWithCommas(phone.value)}
+                                    </Table.Cell>
+                                    <Table.Cell {root}>
+                                        {formatCurrency(phone.estimate)}
+                                    </Table.Cell>
+                                </Table.Row.Base>
+                            {/each}
+                        </Table.Root>
+                    </Accordion>
                 {/if}
             {:else}
                 <Card isDashed>
