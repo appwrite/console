@@ -12,7 +12,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import {
-        BODY_TOOLTIP_WRAPPER_STYLE
+        BODY_TOOLTIP_WRAPPER_STYLE_PRELINE
     } from '$lib/helpers/tooltipContent';
     import { page } from '$app/state';
     import { recordTypes } from './store';
