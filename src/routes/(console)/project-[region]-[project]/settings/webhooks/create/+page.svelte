@@ -49,8 +49,11 @@
                 `${base}/project-${page.params.region}-${page.params.project}/settings/webhooks/${webhook.$id}`
             );
         } catch (error) {
-            trackError(error.message, Submit.DomainCreate);
-            throw new Error(error.message);
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
+            trackError(error, Submit.WebhookCreate);
         }
     }
 </script>

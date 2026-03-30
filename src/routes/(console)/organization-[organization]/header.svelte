@@ -5,6 +5,10 @@
     import { AvatarGroup, Tab, Tabs } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
+    import {
+        BODY_TOOLTIP_MAX_WIDTH,
+        BODY_TOOLTIP_WRAPPER_STYLE
+    } from '$lib/helpers/tooltipContent';
     import { isTabSelected } from '$lib/helpers/load';
     import { Cover } from '$lib/layout';
     import { daysLeftInTrial, getServiceLimit, readOnly } from '$lib/stores/billing';
@@ -110,12 +114,14 @@
                     {/if}
 
                     {#if organization?.billingTrialStartDate && $daysLeftInTrial > 0 && organization.billingPlanDetails.trial && organization?.billingTrialDays}
-                        <Tooltip>
+                        <Tooltip maxWidth={BODY_TOOLTIP_MAX_WIDTH}>
                             <Badge variant="secondary" content="Trial" />
                             <svelte:fragment slot="tooltip">
-                                {`Your trial ends on ${toLocaleDate(
-                                    organization.billingStartDate
-                                )}. ${$daysLeftInTrial} days remaining.`}
+                                <div style={BODY_TOOLTIP_WRAPPER_STYLE}>
+                                    {`Your trial ends on ${toLocaleDate(
+                                        organization.billingStartDate
+                                    )}. ${$daysLeftInTrial} days remaining.`}
+                                </div>
                             </svelte:fragment>
                         </Tooltip>
                     {/if}
@@ -139,7 +145,10 @@
                     {/if}
 
                     {#if $isOwner}
-                        <Tooltip disabled={!areMembersLimited} placement="bottom-end">
+                        <Tooltip
+                            disabled={!areMembersLimited}
+                            placement="bottom-end"
+                            maxWidth={BODY_TOOLTIP_MAX_WIDTH}>
                             <div>
                                 <Button
                                     secondary
@@ -150,7 +159,7 @@
                                     Invite
                                 </Button>
                             </div>
-                            <div slot="tooltip">
+                            <div slot="tooltip" style={BODY_TOOLTIP_WRAPPER_STYLE}>
                                 {!(
                                     organization?.billingPlanDetails?.addons?.seats?.supported ??
                                     true

@@ -7,6 +7,10 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import Upgrade from '$lib/components/roles/upgrade.svelte';
     import { getServiceLimit, readOnly, getRoleLabel } from '$lib/stores/billing';
+    import {
+        BODY_TOOLTIP_MAX_WIDTH,
+        BODY_TOOLTIP_WRAPPER_STYLE
+    } from '$lib/helpers/tooltipContent';
     import { addNotification } from '$lib/stores/notifications';
     import { currentPlan, newMemberModal, organization } from '$lib/stores/organization';
     import { isOwner } from '$lib/stores/roles';
@@ -78,7 +82,10 @@
 <Container>
     <Layout.Stack direction="row" justifyContent="space-between">
         <Typography.Title>Members</Typography.Title>
-        <Tooltip disabled={!isButtonDisabled} placement="bottom-end">
+        <Tooltip
+            disabled={!isButtonDisabled}
+            placement="bottom-end"
+            maxWidth={BODY_TOOLTIP_MAX_WIDTH}>
             <div>
                 <ConsoleButton
                     size="s"
@@ -89,7 +96,7 @@
                     <span class="text">Invite</span>
                 </ConsoleButton>
             </div>
-            <div slot="tooltip">
+            <div slot="tooltip" style={BODY_TOOLTIP_WRAPPER_STYLE}>
                 {!supportsMembers
                     ? 'Upgrade to add more members'
                     : `You've reached the members limit for the ${$organization?.billingPlanDetails.name} plan`}

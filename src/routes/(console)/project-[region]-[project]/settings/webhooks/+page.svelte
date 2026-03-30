@@ -18,6 +18,10 @@
     import { goto } from '$app/navigation';
     import { isServiceLimited } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
+    import {
+        BODY_TOOLTIP_MAX_WIDTH,
+        BODY_TOOLTIP_WRAPPER_STYLE_PRELINE
+    } from '$lib/helpers/tooltipContent';
 
     export let data: PageData;
 
@@ -39,7 +43,7 @@
     <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
         <ViewSelector ui="new" {columns} view={View.Table} hideView />
         {#if $canWriteWebhooks}
-            <Tooltip disabled={!isLimited}>
+            <Tooltip disabled={!isLimited} maxWidth={BODY_TOOLTIP_MAX_WIDTH}>
                 <div>
                     <Button disabled={isLimited} event="create_webhook" href={webhooksCreateUrl}>
                         <Icon icon={IconPlus} slot="start" size="s" />
@@ -47,7 +51,7 @@
                     </Button>
                 </div>
                 <svelte:fragment slot="tooltip">
-                    <div style="white-space: pre-line;">
+                    <div style={BODY_TOOLTIP_WRAPPER_STYLE_PRELINE}>
                         You have reached the maximum number of webhooks for your plan.
                     </div>
                 </svelte:fragment>
