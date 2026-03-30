@@ -295,7 +295,10 @@
     const typeOptions = $derived(
         Object.values(TablesDBIndexType)
             .filter((type) => {
-                if (type === TablesDBIndexType.Spatial && !$regionalConsoleVariables?.supportForSpatials)
+                if (
+                    type === TablesDBIndexType.Spatial &&
+                    !$regionalConsoleVariables?.supportForSpatials
+                )
                     return false;
                 return true;
             })

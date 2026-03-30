@@ -66,7 +66,11 @@ export const baseTerminology = {
         field: 'attribute',
         record: 'document'
     },
-    vectordb: {},
+    vectordb: {
+        entity: 'collection',
+        field: 'attribute',
+        record: 'document'
+	},
     shared: {
         entity: 'table',
         field: 'column',

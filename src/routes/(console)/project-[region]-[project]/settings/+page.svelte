@@ -16,6 +16,7 @@
     import UpdateVariables from '../updateVariables.svelte';
     import { page } from '$app/state';
     import UpdateLabels from './updateLabels.svelte';
+    import { ID } from '@appwrite.io/console';
 
     export let data;
 
@@ -59,7 +60,7 @@
     async function sdkCreateVariable(key: string, value: string, secret: boolean) {
         await sdk
             .forProject(page.params.region, page.params.project)
-            .projectApi.createVariable({ key, value, secret });
+            .projectApi.createVariable({ variableId: ID.unique(), key, value, secret });
         await invalidate(Dependencies.PROJECT_VARIABLES);
     }
 
@@ -96,6 +97,9 @@
                 {sdkDeleteVariable}
                 isGlobal
                 variableList={data.variables}
+                backendPagination
+                variablesOffset={data.variablesOffset}
+                variablesLimit={data.limit}
                 project={data.project}
                 analyticsSource="project_settings" />
             <ChangeOrganization />
