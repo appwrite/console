@@ -56,21 +56,9 @@
     let columnDisplayNameInput: ColumnDisplayNameInput | null = $state(null);
 
     const disableCreateDocument = $derived(
-        $noSqlDocument.isNew && ($noSqlDocument.hasDataChanged || $noSqlDocument.isDirty)
+        $isCollectionsJsonImportInProgress ||
+            ($noSqlDocument.isNew && ($noSqlDocument.hasDataChanged || $noSqlDocument.isDirty))
     );
-
-    function createFilterableColumns(): Column[] {
-        return [
-            { id: '$id', title: '$id', type: 'string' as ColumnType },
-            { id: '$createdAt', title: '$createdAt', type: 'datetime' as ColumnType },
-            { id: '$updatedAt', title: '$updatedAt', type: 'datetime' as ColumnType }
-        ];
-    }
-
-    function handleColumnToggle() {
-        // Force spreadsheet re-render when columns are toggled
-        spreadsheetRenderKey.set(hash(Date.now().toString()));
-    }
 
     function getExportUrl() {
         const queryParam = page.url.searchParams.get('query');
@@ -114,6 +102,19 @@
         } finally {
             $isCollectionsJsonImportInProgress = false;
         }
+    }
+
+    function createFilterableColumns(): Column[] {
+        return [
+            { id: '$id', title: '$id', type: 'string' as ColumnType },
+            { id: '$createdAt', title: '$createdAt', type: 'datetime' as ColumnType },
+            { id: '$updatedAt', title: '$updatedAt', type: 'datetime' as ColumnType }
+        ];
+    }
+
+    function handleColumnToggle() {
+        // Force spreadsheet re-render when columns are toggled
+        spreadsheetRenderKey.set(hash(Date.now().toString()));
     }
 
     $effect(() => {
@@ -214,8 +215,39 @@
                                 </div>
 
                                 <svelte:fragment slot="tooltip">
-                                    Save your current document before creating a new one
+                                    {$isCollectionsJsonImportInProgress
+                                        ? 'This action is disabled during import'
+                                        : 'Save your current document before creating a new one'}
                                 </svelte:fragment>
+                            </Tooltip>
+
+                            <Tooltip placement="top">
+                                <Button
+                                    icon
+                                    size="s"
+                                    secondary
+                                    class="small-button-dimensions"
+                                    disabled={$isCollectionsJsonImportInProgress}
+                                    on:click={() => (showImportJson = true)}>
+                                    <Icon icon={IconUpload} size="s" />
+                                </Button>
+                                <svelte:fragment slot="tooltip">Import JSON</svelte:fragment>
+                            </Tooltip>
+
+                            <Tooltip placement="top">
+                                <Button
+                                    icon
+                                    size="s"
+                                    secondary
+                                    class="small-button-dimensions"
+                                    disabled={!data.documents.total ||
+                                        $isCollectionsJsonImportInProgress}
+                                    on:click={() => {
+                                        goto(getExportUrl());
+                                    }}>
+                                    <Icon icon={IconDownload} size="s" />
+                                </Button>
+                                <svelte:fragment slot="tooltip">Export JSON</svelte:fragment>
                             </Tooltip>
 
                             <Button
