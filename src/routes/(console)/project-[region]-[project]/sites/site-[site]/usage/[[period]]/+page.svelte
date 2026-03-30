@@ -14,9 +14,11 @@
 <Container>
     <Usage
         path={`${base}/project-${page.params.region}-${page.params.project}/sites/site-${page.params.site}/usage`}
+        showAggregateTotal={false}
+        isCumulative
         countMetadata={{
             legend: 'Deployments',
-            title: 'Total deployments'
+            title: 'Deployments per day'
         }}
         {total}
         {count} />

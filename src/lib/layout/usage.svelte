@@ -83,12 +83,13 @@
         legend: string;
     };
 
-    export let total: number;
+    export let total: number = 0;
     export let count: Models.Metric[];
     export let countMetadata: MetricMetadata;
     export let path: string = null;
     export let hidePeriodSelect = false;
     export let isCumulative: boolean = false;
+    export let showAggregateTotal: boolean = true;
 </script>
 
 <Layout.Stack gap="s">
@@ -119,7 +120,9 @@
     <Card>
         {#if count}
             <Layout.Stack gap="xs">
-                <Typography.Title>{formatNumberWithCommas(total)}</Typography.Title>
+                {#if showAggregateTotal}
+                    <Typography.Title>{formatNumberWithCommas(total)}</Typography.Title>
+                {/if}
                 <Typography.Text>{countMetadata.title}</Typography.Text>
             </Layout.Stack>
             <div class="chart-container">

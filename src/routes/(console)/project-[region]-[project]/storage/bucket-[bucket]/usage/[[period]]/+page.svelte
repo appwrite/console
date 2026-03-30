@@ -13,20 +13,23 @@
 <Container>
     <Usage
         path={`${base}/project-${page.params.region}-${page.params.project}/storage/bucket-${page.params.bucket}/usage`}
+        showAggregateTotal={false}
+        isCumulative
         total={filesTotal}
         count={files}
         countMetadata={{
-            legend: 'Files',
-            title: 'Total files'
+            legend: 'Files uploaded',
+            title: 'Files uploaded per day'
         }} />
 
     <Usage
         path={`${base}/project-${page.params.region}-${page.params.project}/storage/bucket-${page.params.bucket}/usage`}
+        showAggregateTotal={false}
         total={transformationsTotal}
         count={transformations}
         countMetadata={{
             legend: 'Image transformations',
-            title: 'Total transformations'
+            title: 'Image transformations per day'
         }}
         isCumulative
         hidePeriodSelect />

@@ -1,6 +1,5 @@
 import { sdk } from '$lib/stores/sdk';
 import type { PageLoad } from './$types';
-import { accumulateUsage } from '$lib/sdk/usage';
 import { type Models, Query } from '@appwrite.io/console';
 
 export const load: PageLoad = async ({ params, parent }) => {
@@ -63,8 +62,6 @@ export const load: PageLoad = async ({ params, parent }) => {
             usage.filesStorageTotal = currentAggregation.usageStorage;
         }
     }
-
-    usage.users = accumulateUsage(usage.users, usage.usersTotal);
 
     return {
         usage,

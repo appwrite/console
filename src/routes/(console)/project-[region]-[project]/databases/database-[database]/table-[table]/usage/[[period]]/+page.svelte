@@ -5,7 +5,6 @@
     let { data }: PageProps = $props();
 
     const count = $derived(data.rows);
-    const total = $derived(data.rowsTotal);
 </script>
 
-<Usage {count} {total} />
+<Usage {count} />
