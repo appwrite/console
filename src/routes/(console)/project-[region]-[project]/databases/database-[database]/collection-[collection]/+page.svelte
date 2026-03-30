@@ -203,7 +203,8 @@
                                     size="s"
                                     secondary
                                     class="small-button-dimensions"
-                                    disabled={!data.documents.total || $isCollectionsJsonImportInProgress}
+                                    disabled={!data.documents.total ||
+                                        $isCollectionsJsonImportInProgress}
                                     on:click={() => {
                                         goto(getExportUrl());
                                     }}>

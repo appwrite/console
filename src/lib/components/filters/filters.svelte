@@ -89,12 +89,22 @@
         ) {
             const columnsWithVirtual =
                 !schema && selectedColumn && !$columns.find((c) => c.id === selectedColumn)
-                    ? [...$columns, { id: selectedColumn, title: selectedColumn, type: 'string' as const }]
+                    ? [
+                          ...$columns,
+                          { id: selectedColumn, title: selectedColumn, type: 'string' as const }
+                      ]
                     : $columns;
 
             // For distance operators, pass the distance as a separate parameter
             if (isDistanceOperator && distanceValue !== null && value !== null) {
-                addFilter(columnsWithVirtual, selectedColumn, operatorKey, value, arrayValues, distanceValue);
+                addFilter(
+                    columnsWithVirtual,
+                    selectedColumn,
+                    operatorKey,
+                    value,
+                    arrayValues,
+                    distanceValue
+                );
             } else {
                 addFilter(columnsWithVirtual, selectedColumn, operatorKey, value, arrayValues);
             }

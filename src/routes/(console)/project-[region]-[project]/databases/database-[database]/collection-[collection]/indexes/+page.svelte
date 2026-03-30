@@ -10,8 +10,11 @@
         EmptySheetCards
     } from '$database/(entity)';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import CreateIndexForm from './createIndex.svelte';
 
     let { data }: PageProps = $props();
+
+    let createIndexRef: CreateIndexForm;
 
     const params = $derived({
         databaseId: page.params.database,
@@ -45,14 +48,21 @@
     }
 </script>
 
-<Indexes {onCreateIndex} {onDeleteIndexes} entity={data.collection}>
+<Indexes {onCreateIndex} {onDeleteIndexes} entity={data.collection} bind:createIndexRef>
+    {#snippet createIndexForm()}
+        <CreateIndexForm
+            entity={data.collection}
+            {onCreateIndex}
+            showCreateIndex={true}
+            bind:this={createIndexRef} />
+    {/snippet}
+
     {#snippet emptyIndexesSheetView(toggle)}
         <EmptySheet mode="indexes" type={data.database.type}>
             {#snippet actions()}
                 <EmptySheetCards
                     icon={IconPlus}
                     title="Create index"
-                    disabled={!data.collection.fields?.length}
                     subtitle="Create indexes manually"
                     onClick={toggle} />
             {/snippet}
