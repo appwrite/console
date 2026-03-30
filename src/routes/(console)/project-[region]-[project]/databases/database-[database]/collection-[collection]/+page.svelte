@@ -24,6 +24,8 @@
     import { type Models } from '@appwrite.io/console';
     import { sdk } from '$lib/stores/sdk';
     import { goto } from '$app/navigation';
+    import { resolve } from '$app/paths';
+    import { Click } from '$lib/actions/analytics';
     import { expandTabs, randomDataModalState, spreadsheetRenderKey } from '$database/store';
     import { invalidate } from '$app/navigation';
     import { hash } from '$lib/helpers/string';
@@ -60,7 +62,15 @@
 
     function getExportUrl() {
         const queryParam = page.url.searchParams.get('query');
-        const url = `${page.url.pathname}/export`;
+        const url = resolve(
+            '/(console)/project-[region]-[project]/databases/database-[database]/collection-[collection]/export',
+            {
+                region: page.params.region,
+                project: page.params.project,
+                database: page.params.database,
+                collection: page.params.collection
+            }
+        );
         return queryParam ? `${url}?query=${encodeURIComponent(queryParam)}` : url;
     }
 
@@ -206,6 +216,7 @@
                                     disabled={!data.documents.total ||
                                         $isCollectionsJsonImportInProgress}
                                     on:click={() => {
+                                        trackEvent(Click.DatabaseExportCsv);
                                         goto(getExportUrl());
                                     }}>
                                     <Icon icon={IconDownload} size="s" />
