@@ -173,7 +173,7 @@
                             <Selector.Checkbox
                                 size="s"
                                 id={scope.scope}
-                                label={scope.scope}
+                                label={`${scope.scope}${scope.deprecated ? ' (Deprecated)' : ''}`}
                                 description={scope.description}
                                 bind:checked={activeScopes[scope.scope]} />
                             {#if scope.deprecated}
