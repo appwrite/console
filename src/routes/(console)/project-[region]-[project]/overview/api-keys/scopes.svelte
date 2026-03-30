@@ -120,7 +120,7 @@
     function onCategoryChange(event: CustomEvent<boolean | 'indeterminate'>, category: Category) {
         if (event.detail === 'indeterminate') return;
         filteredScopes.forEach((s) => {
-            if (s.category === category) {
+            if (s.category === category && !s.deprecated) {
                 activeScopes[s.scope] = event.detail;
             }
         });
