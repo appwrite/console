@@ -25,11 +25,11 @@ import {
     Domains,
     DocumentsDB,
     Webhooks,
-    Compute,
     Realtime,
     Organizations,
     VectorsDB
 } from '@appwrite.io/console';
+import { Compute } from '$lib/sdk/compute';
 import { Sources } from '$lib/sdk/sources';
 import {
     REGION_FRA,

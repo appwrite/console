@@ -14,8 +14,6 @@ import {
 } from './terminology';
 
 import {
-    Backend,
-    Engine,
     Region,
     type Models,
     type OrderBy,
@@ -23,6 +21,7 @@ import {
     type DocumentsDBIndexType,
     type VectorsDBIndexType
 } from '@appwrite.io/console';
+import { Backend, Engine } from '$lib/sdk/dedicated';
 
 export type DedicatedDatabaseParams = {
     databaseId: string;

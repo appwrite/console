@@ -7,7 +7,8 @@
     import { calculateSize } from '$lib/helpers/sizeConvertion';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { trackEvent } from '$lib/actions/analytics';
-    import { Period, type Models } from '@appwrite.io/console';
+    import { type Models } from '@appwrite.io/console';
+    import { Period } from '$lib/sdk/dedicated';
     import {
         Alert,
         Badge,
@@ -478,7 +479,7 @@
                                             CPU Usage
                                         </Typography.Caption>
                                         <Typography.Text variant="m-500">
-                                            {formatPercent(metrics.cpuPercent)}
+                                            {formatPercent(metrics.cpuPercent as number)}
                                         </Typography.Text>
                                     </Layout.Stack>
                                     <Layout.Stack gap="xxs">
@@ -488,14 +489,14 @@
                                             Memory Usage
                                         </Typography.Caption>
                                         <Typography.Text variant="m-500">
-                                            {formatPercent(metrics.memoryPercent)}
+                                            {formatPercent(metrics.memoryPercent as number)}
                                         </Typography.Text>
                                         {#if metrics.memoryUsedBytes && metrics.memoryMaxBytes}
                                             <Typography.Caption
                                                 variant="400"
                                                 color="--fgcolor-neutral-tertiary">
-                                                {calculateSize(metrics.memoryUsedBytes)} /
-                                                {calculateSize(metrics.memoryMaxBytes)}
+                                                {calculateSize(metrics.memoryUsedBytes as number)} /
+                                                {calculateSize(metrics.memoryMaxBytes as number)}
                                             </Typography.Caption>
                                         {/if}
                                     </Layout.Stack>
@@ -507,7 +508,7 @@
                                         </Typography.Caption>
                                         <Typography.Text variant="m-500">
                                             {metrics.storageUsedBytes
-                                                ? calculateSize(metrics.storageUsedBytes)
+                                                ? calculateSize(metrics.storageUsedBytes as number)
                                                 : '-'}
                                         </Typography.Text>
                                     </Layout.Stack>
@@ -527,12 +528,14 @@
                                             Active Connections
                                         </Typography.Caption>
                                         <Typography.Text variant="m-500">
-                                            {formatNumber(metrics.connectionsActive)}
+                                            {formatNumber(metrics.connectionsActive as number)}
                                             {#if metrics.connectionsMax}
                                                 <Typography.Caption
                                                     variant="400"
                                                     color="--fgcolor-neutral-tertiary">
-                                                    / {formatNumber(metrics.connectionsMax)}
+                                                    / {formatNumber(
+                                                        metrics.connectionsMax as number
+                                                    )}
                                                 </Typography.Caption>
                                             {/if}
                                         </Typography.Text>
@@ -544,7 +547,7 @@
                                             IOPS (Read)
                                         </Typography.Caption>
                                         <Typography.Text variant="m-500">
-                                            {formatNumber(metrics.iopsRead)}
+                                            {formatNumber(metrics.iopsRead as number)}
                                         </Typography.Text>
                                     </Layout.Stack>
                                     <Layout.Stack gap="xxs">
@@ -554,7 +557,7 @@
                                             IOPS (Write)
                                         </Typography.Caption>
                                         <Typography.Text variant="m-500">
-                                            {formatNumber(metrics.iopsWrite)}
+                                            {formatNumber(metrics.iopsWrite as number)}
                                         </Typography.Text>
                                     </Layout.Stack>
                                     <Layout.Stack gap="xxs">
@@ -564,7 +567,7 @@
                                             Queries per Second
                                         </Typography.Caption>
                                         <Typography.Text variant="m-500">
-                                            {formatNumber(metrics.qps)}
+                                            {formatNumber(metrics.qps as number)}
                                         </Typography.Text>
                                     </Layout.Stack>
                                 </Layout.Grid>
@@ -615,7 +618,7 @@
                                         </span>
                                     </Table.Cell>
                                     <Table.Cell column="duration" {root}>
-                                        {formatDurationMs(sq.durationMs)}
+                                        {formatDurationMs(sq.duration)}
                                     </Table.Cell>
                                     <Table.Cell column="calls" {root}>
                                         {formatNumber(sq.calls)}
@@ -711,10 +714,10 @@
                                                 {formatNumber(tq.calls)}
                                             </Table.Cell>
                                             <Table.Cell column="totalTime" {root}>
-                                                {formatDurationMs(tq.totalTimeMs)}
+                                                {formatDurationMs(tq.totalTime)}
                                             </Table.Cell>
                                             <Table.Cell column="meanTime" {root}>
-                                                {formatDurationMs(tq.meanTimeMs)}
+                                                {formatDurationMs(tq.meanTime)}
                                             </Table.Cell>
                                             <Table.Cell column="rows" {root}>
                                                 {formatNumber(tq.rows)}
@@ -816,7 +819,7 @@
                                         </span>
                                     </Table.Cell>
                                     <Table.Cell column="client" {root}>
-                                        {log.clientAddress || '-'}
+                                        {log.client || '-'}
                                     </Table.Cell>
                                 </Table.Row.Base>
                             {/each}

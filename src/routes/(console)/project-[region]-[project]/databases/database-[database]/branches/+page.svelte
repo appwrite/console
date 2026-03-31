@@ -27,7 +27,7 @@
 
     const computeSdk = $derived(sdk.forProject(page.params.region, page.params.project).compute);
 
-    let branches = $state<Models.DedicatedDatabaseBranchList>({ branches: [] });
+    let branches = $state<Models.DedicatedDatabaseBranchList>({ total: 0, branches: [] });
     let isLoading = $state(true);
     let isCreating = $state(false);
 

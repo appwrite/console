@@ -7,7 +7,8 @@
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { TargetType, type Models } from '@appwrite.io/console';
+    import { type Models } from '@appwrite.io/console';
+    import { TargetType } from '$lib/sdk/dedicated';
     import { Alert, Badge, Layout, Typography } from '@appwrite.io/pink-svelte';
 
     let {

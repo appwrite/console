@@ -8,7 +8,8 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import { HaSyncMode, type Models } from '@appwrite.io/console';
+    import { type Models } from '@appwrite.io/console';
+    import { HaSyncMode } from '$lib/sdk/dedicated';
     import { Badge, Layout } from '@appwrite.io/pink-svelte';
 
     let {

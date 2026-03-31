@@ -8,7 +8,8 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import { type Models, Provider } from '@appwrite.io/console';
+    import { type Models } from '@appwrite.io/console';
+    import { Provider } from '$lib/sdk/dedicated';
     import { Layout } from '@appwrite.io/pink-svelte';
 
     let {
@@ -44,7 +45,6 @@
     onMount(async () => {
         try {
             const projectSdk = sdk.forProject(page.params.region, page.params.project);
-            // @ts-expect-error SDK types not yet updated
             config = await projectSdk.compute.getBackupStorageConfig(database.$id);
             isConfigured = true;
         } catch {
@@ -101,7 +101,6 @@
         isRemoving = true;
         try {
             const projectSdk = sdk.forProject(page.params.region, page.params.project);
-            // @ts-expect-error SDK types not yet updated
             await projectSdk.compute.deleteBackupStorageConfig(database.$id);
 
             isConfigured = false;

@@ -72,7 +72,6 @@
     onMount(async () => {
         try {
             const projectSdk = sdk.forProject(page.params.region, page.params.project);
-            // @ts-expect-error SDK types not yet updated
             crossRegionStatus = await projectSdk.compute.getCrossRegionStatus(database.$id);
             isEnabled = crossRegionStatus.enabled;
         } catch {
@@ -89,7 +88,6 @@
         isEnabling = true;
         try {
             const projectSdk = sdk.forProject(page.params.region, page.params.project);
-            // @ts-expect-error SDK types not yet updated
             crossRegionStatus = await projectSdk.compute.enableCrossRegion(
                 database.$id,
                 standbyRegion
@@ -121,7 +119,6 @@
         isDisabling = true;
         try {
             const projectSdk = sdk.forProject(page.params.region, page.params.project);
-            // @ts-expect-error SDK types not yet updated
             await projectSdk.compute.disableCrossRegion(database.$id);
 
             isEnabled = false;
@@ -151,7 +148,6 @@
         isFailingOver = true;
         try {
             const projectSdk = sdk.forProject(page.params.region, page.params.project);
-            // @ts-expect-error SDK types not yet updated
             await projectSdk.compute.triggerCrossRegionFailover(database.$id);
 
             showFailoverConfirm = false;
