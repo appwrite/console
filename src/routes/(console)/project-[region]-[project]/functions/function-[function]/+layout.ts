@@ -5,10 +5,13 @@ import Breadcrumbs from './breadcrumbs.svelte';
 import Header from './header.svelte';
 import { Query } from '@appwrite.io/console';
 import { RuleType } from '$lib/stores/sdk';
+import { guardResourceBlock } from '$lib/helpers/project';
 
-export const load: LayoutLoad = async ({ params, depends }) => {
+export const load: LayoutLoad = async ({ params, depends, parent }) => {
     depends(Dependencies.FUNCTION);
     depends(Dependencies.DEPLOYMENTS);
+    const { project } = await parent();
+    guardResourceBlock(project, 'functions', params.function);
 
     const func = await sdk
         .forProject(params.region, params.project)

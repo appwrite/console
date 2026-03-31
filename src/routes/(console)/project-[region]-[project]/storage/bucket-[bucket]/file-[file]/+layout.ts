@@ -3,10 +3,13 @@ import Header from './header.svelte';
 import { sdk } from '$lib/stores/sdk';
 import { Dependencies } from '$lib/constants';
 import type { LayoutLoad } from './$types';
+import { guardResourceBlock } from '$lib/helpers/project';
 
-export const load: LayoutLoad = async ({ params, depends }) => {
+export const load: LayoutLoad = async ({ params, depends, parent }) => {
     depends(Dependencies.FILE);
     depends(Dependencies.FILE_TOKENS);
+    const { project } = await parent();
+    guardResourceBlock(project, 'files', params.file);
 
     return {
         header: Header,

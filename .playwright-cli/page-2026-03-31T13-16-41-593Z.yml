@@ -1,0 +1,11 @@
+- generic [active] [ref=e8]:
+      - generic [ref=e9]:
+            - main [ref=e124]:
+                  - generic [ref=e187]:
+                        - generic [ref=e189]:
+                              - img [ref=e191]
+                              - heading "Creating your project" [level=2] [ref=e194]
+                              - generic [ref=e195]: Database services are initializing
+                        - heading "Welcome to Appwrite" [level=2] [ref=e197]
+            - generic [ref=e49]: Create project - Appwrite
+      - img "Appwrite Logo"

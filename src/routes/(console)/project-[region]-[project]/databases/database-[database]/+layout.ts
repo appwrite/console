@@ -6,13 +6,16 @@ import Breadcrumbs from './breadcrumbs.svelte';
 import SubNavigation from './subNavigation.svelte';
 import type { Models } from '@appwrite.io/console';
 import { error } from '@sveltejs/kit';
+import { guardResourceBlock } from '$lib/helpers/project';
 
 type DatabaseWithType = Models.Database & {
     type?: string;
 };
 
-export const load: LayoutLoad = async ({ params, depends }) => {
+export const load: LayoutLoad = async ({ params, depends, parent }) => {
     depends(Dependencies.DATABASE);
+    const { project } = await parent();
+    guardResourceBlock(project, 'databases', params.database);
 
     const projectSdk = sdk.forProject(params.region, params.project);
 
