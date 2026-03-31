@@ -53,7 +53,7 @@
         "ignore": "^6.0.2",
         "json5": "^2.2.3",
         "nanoid": "^5.1.7",
-        "nanotar": "^0.1.1",
+        "nanotar": "^0.3.0",
         "pretty-bytes": "^6.1.1",
         "remarkable": "^2.0.1",
         "svelte-confetti": "^1.4.0",
@@ -104,6 +104,7 @@
     "overrides": {
         "vite": "npm:rolldown-vite@latest",
         "minimatch": "10.2.3",
+        "brace-expansion": ">=5.0.5",
         "immutable": "^5.1.5",
         "flatted": "^3.4.2",
         "picomatch": "^4.0.4"

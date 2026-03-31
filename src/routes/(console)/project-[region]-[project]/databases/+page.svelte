@@ -14,6 +14,10 @@
     import EmptySearch from '$lib/components/emptySearch.svelte';
     import { isServiceLimited } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
+    import {
+        BODY_TOOLTIP_MAX_WIDTH,
+        BODY_TOOLTIP_WRAPPER_STYLE_PRELINE
+    } from '$lib/helpers/tooltipContent';
 
     import { resolveRoute, withPath } from '$lib/stores/navigation';
     import EmptyDatabaseCloud from './empty.svelte';
@@ -46,6 +50,31 @@
 </script>
 
 <Container>
+    <ResponsiveContainerHeader
+        hasSearch
+        {columns}
+        view={data.view}
+        searchPlaceholder="Search by name or ID">
+        {#if $canWriteDatabases}
+            <Tooltip disabled={!isLimited} maxWidth={BODY_TOOLTIP_MAX_WIDTH}>
+                <div>
+                    <Button
+                        disabled={isLimited}
+                        event="create_database"
+                        on:click={() => (showCreate = true)}>
+                        <Icon icon={IconPlus} slot="start" size="s" />
+                        Create database
+                    </Button>
+                </div>
+                <svelte:fragment slot="tooltip">
+                    <div style={BODY_TOOLTIP_WRAPPER_STYLE_PRELINE}>
+                        You have reached the maximum number of databases for your plan.
+                    </div>
+                </svelte:fragment>
+            </Tooltip>
+        {/if}
+    </ResponsiveContainerHeader>
+
     {#if data.databases.total}
         {#if data.view === 'grid'}
             <Grid {data} onCreateDatabaseClick={goToCreateDatabaseWizard} />

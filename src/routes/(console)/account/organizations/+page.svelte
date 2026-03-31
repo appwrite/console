@@ -17,6 +17,10 @@
     import type { Models } from '@appwrite.io/console';
     import { daysLeftInTrial, billingIdToPlan } from '$lib/stores/billing';
     import { toLocaleDate } from '$lib/helpers/date';
+    import {
+        BODY_TOOLTIP_MAX_WIDTH,
+        BODY_TOOLTIP_WRAPPER_STYLE
+    } from '$lib/helpers/tooltipContent';
     import { goto } from '$app/navigation';
     import { Icon, Tooltip, Typography } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
@@ -132,29 +136,30 @@
                                     {#await planName}
                                         <Skeleton width={30} height={20} variant="line" />
                                     {:then name}
-                                        <Tooltip>
+                                        <Tooltip maxWidth={BODY_TOOLTIP_MAX_WIDTH}>
                                             <Badge size="xs" variant="secondary" content={name} />
 
-                                            <span slot="tooltip">
+                                            <div slot="tooltip" style={BODY_TOOLTIP_WRAPPER_STYLE}>
                                                 You are limited to 1 free organization per account
-                                            </span>
+                                            </div>
                                         </Tooltip>
                                     {/await}
                                 {/if}
                             {/if}
 
                             {#if isOrganizationOnTrial(organization)}
-                                <Tooltip>
+                                <Tooltip maxWidth={BODY_TOOLTIP_MAX_WIDTH}>
                                     <div class="u-flex u-cross-center">
                                         <Badge
                                             class="eyebrow-heading-3"
                                             variant="secondary"
                                             content="TRIAL" />
                                     </div>
-                                    <span slot="tooltip"
-                                        >{`Your trial ends on ${toLocaleDate(
+                                    <div slot="tooltip" style={BODY_TOOLTIP_WRAPPER_STYLE}>
+                                        {`Your trial ends on ${toLocaleDate(
                                             organization.billingStartDate
-                                        )}. ${$daysLeftInTrial} days remaining.`}</span>
+                                        )}. ${$daysLeftInTrial} days remaining.`}
+                                    </div>
                                 </Tooltip>
                             {/if}
 

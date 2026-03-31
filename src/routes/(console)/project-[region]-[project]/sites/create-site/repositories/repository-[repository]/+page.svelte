@@ -75,7 +75,12 @@
                     type: VCSDetectionType.Framework,
                     providerRootDirectory: rootDir
                 });
-            framework = data.frameworks.frameworks.find((f) => f.key === response.framework);
+            framework = data.frameworks.frameworks.find(
+                (f) => f.key === (response as unknown as Models.DetectionFramework).framework
+            );
+            if (!framework) {
+                framework = data.frameworks.frameworks.find((f) => f.key === 'other');
+            }
             adapter = framework?.adapters[0];
             installCommand = adapter?.installCommand;
             buildCommand = adapter?.buildCommand;

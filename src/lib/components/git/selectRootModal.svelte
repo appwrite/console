@@ -112,7 +112,7 @@
 
             const iconName =
                 product === 'sites'
-                    ? detection.framework
+                    ? (detection as unknown as Models.DetectionFramework).framework
                     : (detection as unknown as Models.DetectionRuntime).runtime;
             const resolved = resolveIconUrl(iconName);
             iconCache.set(path, resolved);
