@@ -1,138 +1,243 @@
-# Appwrite Console - Copilot Instructions
+# Appwrite Console
 
-## Repository Overview
+SvelteKit web dashboard for Appwrite. Manages projects, databases, functions, auth, storage, messaging, and sites. Static SPA (no SSR) served behind Nginx at `/console`.
 
-Appwrite Console is the web-based GUI for the Appwrite backend-as-a-service platform. Single-page application built with
-**Svelte 5 + SvelteKit 2**, **TypeScript** (not strict mode), **Vite 7**, tested with **Vitest + Playwright**. Package
-manager/runtime: **Bun** (Node 20+ optional for tooling). ~1500 files with extensive component-based architecture.
+## Commands
 
-## Critical Build & Test Commands
+All commands use **bun** (not pnpm/npm).
 
-### Setup (REQUIRED before any commands)
+| Command               | Purpose                                       |
+| --------------------- | --------------------------------------------- |
+| `bun dev`             | Dev server (port 3000)                        |
+| `bun run build`       | Production build (custom `build.js` via Vite) |
+| `bun check`           | `svelte-kit sync && svelte-check`             |
+| `bun format`          | Prettier write + cache                        |
+| `bun run lint`        | Prettier check + ESLint                       |
+| `bun tests`           | Unit + E2E                                    |
+| `bun test:unit`       | Vitest (TZ=EST)                               |
+| `bun test:unit-watch` | Vitest watch mode                             |
+| `bun test:e2e`        | Playwright                                    |
+| `bun run clean`       | Remove node_modules, .svelte-kit, reinstall   |
 
-1. **Install Bun**:
-    - Linux & macOS: `curl -fsSL https://bun.sh/install | bash`
-    - Windows: `powershell -c "irm bun.sh/install.ps1 | iex"`
-2. **Create .env**: `cp .env.example .env` (configure `PUBLIC_APPWRITE_ENDPOINT` and `PUBLIC_CONSOLE_MODE`)
-3. **Configure network access** (if using GitHub Actions or restricted environments):
-    - Ensure firewall/proxy allows access to: `pkg.pr.new`, `pkg.vc`, `registry.npmjs.org`
-    - These domains are required for dependencies: `@appwrite.io/console`, `@appwrite.io/pink-icons-svelte`,
-      `@appwrite.io/pink-svelte`
-    - In GitHub Actions: Ensure Bun is installed and registry access is configured
-    - If network errors persist, check proxy settings: `npm config get proxy` and `npm config get https-proxy`
-4. **Install dependencies**: `bun install --frozen-lockfile` (if pkg.pr.new/pkg.vc fail due to network restrictions,
-   installation may still succeed with cached versions)
+**Always run before committing:** `bun run format && bun run check && bun run lint && bun run tests && bun run build`
 
-### Development Commands
+## CI checks (`.github/workflows/tests.yml`)
 
-**Standard workflow**: `check` → `lint` → `test` → `build` (before committing)
+`bun audit --audit-level high` -> `bun check` -> `bun lint` -> `bun test:unit` -> `bun run build`. Uses frozen lockfile.
 
-- `bun run check` - TypeScript/Svelte validation (~30-60s)
-- `bun run lint` - ESLint check (~10-20s)
-- `bun run format` - Auto-fix Prettier formatting
-- `bun run test` - Vitest unit tests with TZ=EST (~10-30s)
-- `bun run build` - Production build via build.js (~60-120s)
-- `bun run dev` - Dev server on port 3000
-- `bun run preview` - Preview build on port 4173
-- `bun run e2e` - Playwright tests (needs `bunx playwright install --with-deps chromium` first, ~120s+)
+## Stack
 
-**CI Pipeline** (`.github/workflows/tests.yml`): audit → install → check → lint → test → build
+- **Framework:** SvelteKit 2 + Svelte 5, TypeScript (strict: false), `@sveltejs/adapter-static`
+- **Bundler:** Vite 7 (overridden to `rolldown-vite`)
+- **Design system:** `@appwrite.io/pink-svelte`, `@appwrite.io/pink-icons-svelte`
+- **UI primitives:** Melt UI (`@melt-ui/svelte` with preprocessor)
+- **API client:** `@appwrite.io/console` SDK (pinned to GitHub commit)
+- **Code editing:** CodeMirror 6
+- **Charts:** ECharts 5
+- **3D:** Three.js via Threlte
+- **Payments:** Stripe
+- **AI:** Vercel AI SDK (`@ai-sdk/svelte`)
+- **Testing:** Vitest + @testing-library/svelte (unit), Playwright (E2E)
+- **Error tracking:** Sentry (`@sentry/sveltekit`)
+- **Analytics:** Plausible + custom Growth endpoint
 
-## Project Structure
+## Architecture
 
+### Route structure (`src/routes/`)
+
+SvelteKit file-based routing with layout groups:
+
+- `(public)/` -- unauthenticated routes: `(guest)/` (login, register), auth (OAuth, magic URL), invite, recover, card, functions/sites deploy, hackathon, templates
+- `(console)/` -- authenticated console (projects, orgs, account, onboarding)
+- `(authenticated)/` -- post-login flows (MFA, Git authorization)
+
+Dynamic segments: `project-[region]-[project]`, `organization-[organization]`
+
+### Route file conventions
+
+Each route can have:
+
+- `+page.svelte` -- page component
+- `+page.ts` -- client-side load function
+- `+layout.svelte` / `+layout.ts` -- layout wrappers
+- `store.ts` -- route-scoped state
+- Feature components colocated alongside (e.g. `table.svelte`, `create.svelte`)
+
+### Path aliases
+
+| Alias       | Path                                                                            |
+| ----------- | ------------------------------------------------------------------------------- |
+| `$lib`      | `src/lib` (SvelteKit built-in)                                                  |
+| `$routes`   | `src/routes`                                                                    |
+| `$themes`   | `src/themes`                                                                    |
+| `$database` | `src/routes/(console)/project-[region]-[project]/databases/database-[database]` |
+
+### Library (`src/lib/`)
+
+| Directory         | Contents                                                                                   |
+| ----------------- | ------------------------------------------------------------------------------------------ |
+| `components/`     | Feature components (billing, permissions, filters, etc.) -- barrel-exported via `index.ts` |
+| `elements/forms/` | Form inputs (text, email, phone, OTP, file, geometry, etc.)                                |
+| `elements/table/` | Table components                                                                           |
+| `layout/`         | Shell, Container, Wizard, Breadcrumbs, Navigation -- barrel-exported via `index.ts`        |
+| `stores/`         | Svelte stores for global state                                                             |
+| `helpers/`        | Utilities (array, date, object, numbers, string, validation)                               |
+| `sdk/`            | Custom SDK extensions (billing, usage, sources)                                            |
+| `actions/`        | Svelte actions and analytics tracking                                                      |
+| `charts/`         | Chart visualization components -- barrel-exported via `index.ts`                           |
+| `commandCenter/`  | Command palette                                                                            |
+| `images/`         | SVG assets (logos, illustrations, empty states)                                            |
+| `data/`           | Static data (testimonials)                                                                 |
+| `profiles/`       | CSS profiles and theming                                                                   |
+| `mock/`           | Mock data for development                                                                  |
+
+### Imports
+
+Components use **barrel exports** -- always import from the directory `index.ts`:
+
+```typescript
+import { Card, Modal, Steps } from '$lib/components';
+import { Shell, Container } from '$lib/layout';
+import { InputText, Button, Form } from '$lib/elements/forms';
 ```
-src/
-├── lib/                    # Reusable logic ($lib alias)
-│   ├── components/         # Feature components (billing, domains, permissions, etc.)
-│   ├── elements/           # Basic UI elements
-│   ├── helpers/            # Utility functions (array, date, string, etc.)
-│   ├── stores/             # Svelte stores for state
-│   ├── sdk/                # Appwrite SDK wrappers
-│   └── constants.ts, flags.ts, system.ts
-├── routes/
-│   ├── (console)/          # Auth-required routes
-│   │   ├── organization-[organization]/
-│   │   └── project-[region]-[project]/  # databases, functions, messaging, storage
-│   └── (public)/           # Public routes (login, register, auth callbacks)
-├── themes/                 # Theme definitions ($themes alias)
-└── app.html, hooks.{client,server}.ts, service-worker.ts
+
+### Svelte 5 migration (in progress)
+
+~500 files still use legacy Svelte 4 syntax, ~240 migrated to runes. **When touching a file, migrate it to runes if practical.** Don't mix syntaxes within a single component.
+
+Legacy (Svelte 4):
+
+```svelte
+<script lang="ts">
+    export let items: Item[] = [];
+    export let disabled = false;
+    $: count = items.length;
+</script>
 ```
 
-**SvelteKit conventions**: `+page.svelte` (component), `+page.ts` (data loader), `+layout.svelte` (wrapper),
-`+error.svelte` (errors). Groups like `(console)` organize routes without affecting URLs. Dynamic params: `[param]`.
+Runes (Svelte 5 -- preferred for new and modified code):
 
-## Key Configuration
+```svelte
+<script lang="ts">
+    let { items = $bindable(), disabled = false }: Props = $props();
+    let selected = $state<string | null>(null);
+    const count = $derived(items.length);
+    const filtered = $derived.by(() => items.filter((i) => i.active));
 
-**svelte.config.js**: Adapter = static SPA (fallback: index.html), base path `/console`, aliases: `$lib`, `$routes`,
-`$themes`  
-**vite.config.ts**: Dev port 3000  
-**tsconfig.json**: Extends `.svelte-kit/tsconfig.json`, **NOT strict mode** (`strict: false`)  
-**eslint.config.js**: Flat config (ESLint 9+), many rules disabled (see TODOs)  
-**.prettierrc**: 4 spaces, single quotes, 100 char width, no trailing commas
+    $effect(() => {
+        console.log('selected changed:', selected);
+    });
+</script>
+```
 
-## Testing
+### SDK usage (`src/lib/stores/sdk.ts`)
 
-**Unit (Bun test)**: Tests in `src/lib/helpers/*.test.ts`, run with `TZ=EST` (timezone matters). Setup mocks SvelteKit (
-`$app/*`) in `bun-test-setup.ts` via `bunfig.toml`.  
-**E2E (Playwright)**: Tests in `e2e/journeys/*.spec.ts`, needs build+preview on port 4173, retries 3x, timeout 120s,
-Chromium only.
+Four client instances: `clientConsole` (console API), `scopedConsoleClient` (region-scoped console API, used by `forConsoleIn()`), `clientProject` (project API, admin mode), `clientRealtime` (realtime subscriptions). Region-aware endpoints with subdomain routing (fra., nyc., syd., sfo., sgp., tor.).
 
-## Common Pitfalls
+```typescript
+import { sdk } from '$lib/stores/sdk';
 
-1. **Blank page in dev**: Disable ad blockers if seeing "Failed to fetch dynamically imported module" (known SvelteKit
-   issue)
-2. **Network errors on install**:
-    - pkg.pr.new/pkg.vc deps may fail due to firewall/proxy restrictions
-    - Check access: `curl -I https://pkg.pr.new` and `curl -I https://pkg.vc`
-    - Configure proxy if needed: `npm config set proxy http://proxy:port` and
-      `npm config set https-proxy http://proxy:port`
-    - GitHub Actions: Ensure runner has internet access and Bun is installed
-    - Local dev: Often safe to continue with cached versions if network fails
-3. **OOM on build**: Set `NODE_OPTIONS=--max_old_space_size=8192` (like Dockerfile does)
-4. **Test failures**: Always use `bun run test` (sets TZ=EST), not `bun test` directly
-5. **TS errors not showing**: Run `bun run check` explicitly (dev server doesn't always surface them)
-6. **Format vs lint conflicts**: Run `bun run format` before `bun run lint`
-7. **E2E timeouts**: Wait 120s for preview server startup, tests auto-retry 3x
-8. **Stale build**: Clear `.svelte-kit` if changes not reflected: `rm -rf .svelte-kit && bun run build`
+// Console-level operations
+await sdk.forConsole.account.get();
 
-## Code Conventions
+// Region-scoped console operations
+await sdk.forConsoleIn(region).projects.get({ projectId });
 
-- Imports: Use `$lib`, `$routes`, `$themes` aliases
-- Components: PascalCase, in `src/lib/components/[feature]/`
-- Helpers: Pure functions in `src/lib/helpers/`
-- Types: Inline or `.d.ts`, not `.types.ts` files
-- Comments: Minimal, use for TODOs or complex logic
-- TypeScript: Not strict mode, `any` tolerated
+// Project-level operations (admin mode)
+await sdk.forProject(region, projectId).tablesDB.listTables();
+```
 
-## Workflow
+### Database types (feat-dedicated-db)
 
-1. Run Appwrite backend locally (see [docs](https://appwrite.io/docs/advanced/self-hosting))
-2. Configure `.env` with backend endpoint
-3. `bun install --frozen-lockfile`
-4. `bun run dev` (hot reload on port 3000)
-5. Before commit: `bun run check && bun run format && bun run lint && bun run test && bun run build`
-6. **Take screenshots**: For any UI changes, capture screenshots and include them in the PR description or comments
-   before finalizing
+The databases feature unifies four database backends behind a polymorph API (`$database/(entity)/helpers/sdk.ts`):
 
-## Required Pre-Completion Checklist
+| Type          | Entity     | Field     | Record   |
+| ------------- | ---------- | --------- | -------- |
+| `tablesdb`    | table      | column    | row      |
+| `documentsdb` | collection | attribute | document |
+| `vectorsdb`   | collection | attribute | document |
+| `dedicateddb` | table      | column    | row      |
 
-**CRITICAL**: Before finishing any work or marking a task complete, agents MUST run the following commands in order and
-ensure all pass:
+- `useDatabaseSdk()` returns a unified interface regardless of backing type
+- `useTerminology()` returns singular/plural names for the current database type
+- DedicatedDB uses the `Compute` service (not Appwrite schema APIs) -- creates always-on PostgreSQL/MySQL instances via `compute.createDatabase()` with `Backend.Edge`
 
-1. **`bun run format`** - Auto-fix all formatting issues
-2. **`bun run check`** - Verify TypeScript/Svelte types (must show 0 errors, 0 warnings)
-3. **`bun run lint`** - Check code style (ignore pre-existing issues in files you didn't modify)
-4. **`bun run test`** - Run all unit tests (all tests must pass)
-5. **`bun run build`** - Ensure production build succeeds
+### Data loading
 
-If any command fails:
+Load functions declare dependencies for cache invalidation via `depends()`:
 
-- **Format/Lint**: Run `bun run format` to auto-fix, then re-check
-- **Type errors**: Fix all TypeScript errors in files you modified
-- **Test failures**: Fix failing tests or ensure failures are unrelated to your changes
-- **Build failures**: Debug and resolve build issues before proceeding
+```typescript
+export const load: LayoutLoad = async ({ depends, parent, params }) => {
+    depends(Dependencies.DATABASE);
+    return { database: await sdk.forProject(...).tablesDB.get(...) };
+};
+```
 
-**Never skip these checks** - they are mandatory quality gates before any work is considered complete.
+Invalidate with `await invalidate(Dependencies.DATABASE)` after mutations. Dependency keys defined in `src/lib/constants.ts` as the `Dependencies` enum.
 
-**Trust these instructions** - only search if incomplete/incorrect. See CONTRIBUTING.md for PR conventions. Use
-`--frozen-lockfile` always. Docker builds: multi-stage, final image is nginx serving static files from `/console` path.
+### State management
+
+Stores in `src/lib/stores/` -- writable, derived, and "conservative" (selective update via `createConservative()` from `$lib/helpers/stores`) patterns. Key stores: `app`, `user`, `organization`, `projects`, `billing`, `wizard`, `notifications`, `sdk`.
+
+### Wizard pattern (`$lib/stores/wizard`)
+
+Modal wizard flow: `wizard.start(Component, media?, step?, props?)` to open, `wizard.hide()` to close. Methods: `setInterceptor(callback)` for async pre-step validation, `setNextDisabled(bool)` for flow control, `setStep(n)` / `updateStep(cb)` for navigation, `showCover(Component)` for overlays.
+
+### Notifications (`$lib/stores/notifications`)
+
+```typescript
+import { addNotification } from '$lib/stores/notifications';
+addNotification({ type: 'error', message: error.message });
+```
+
+Types: `'success' | 'error' | 'info' | 'warning'`. Auto-dismisses after 6s. Max 5 visible.
+
+### Analytics (`$lib/actions/analytics`)
+
+Plausible + custom Growth endpoint. Track events via `trackEvent(Click.* | Submit.*, data)` and errors via `trackError(exception, Submit.*)`. Respects `navigator.doNotTrack`.
+
+### Theming and modes
+
+Four theme variants in `src/themes/`: `light`, `dark`, `light-cloud`, `dark-cloud`. Resolved based on `isCloud` flag and user preference. Two modes (`src/lib/system.ts`): `cloud` and `self-hosted`, set via `PUBLIC_CONSOLE_MODE` env var. Gate cloud-only features with `isCloud`.
+
+## Code style
+
+- **Formatter:** Prettier -- 4 spaces, single quotes, no trailing commas, 100 char width, bracket same line
+- **Prefer Svelte 5 runes** in new and modified code (`$props()`, `$state()`, `$derived()`, `$effect()`)
+- Types from `@appwrite.io/console` SDK (`Models`, `Query`, enums) -- don't redefine what the SDK provides
+- Error handling: try/catch with `addNotification()` for user-facing errors, `trackError()` for analytics
+- Queries use the SDK's `Query` builder: `Query.equal()`, `Query.limit()`, `Query.offset()`, etc.
+- Mark tech debt with `@todo` annotations, never `@fixme`
+- Don't add new dependencies without consulting the team
+
+## Environment variables
+
+Set via `.env` (copy `.env.example`). All prefixed with `PUBLIC_` for SvelteKit:
+
+| Variable                             | Default               | Purpose                        |
+| ------------------------------------ | --------------------- | ------------------------------ |
+| `PUBLIC_CONSOLE_MODE`                | `self-hosted`         | `cloud` or `self-hosted`       |
+| `PUBLIC_APPWRITE_ENDPOINT`           | `http://localhost/v1` | API endpoint                   |
+| `PUBLIC_APPWRITE_MULTI_REGION`       | `false`               | Multi-region support           |
+| `PUBLIC_STRIPE_KEY`                  | --                    | Stripe public key (cloud only) |
+| `PUBLIC_GROWTH_ENDPOINT`             | --                    | Analytics endpoint             |
+| `PUBLIC_CONSOLE_FEATURE_FLAGS`       | --                    | Feature flags                  |
+| `PUBLIC_CONSOLE_EMAIL_VERIFICATION`  | `false`               | Require email verification     |
+| `PUBLIC_CONSOLE_MOCK_AI_SUGGESTIONS` | `true`                | Mock AI in dev                 |
+
+## Common pitfalls
+
+- **Blank page in dev:** Disable ad blockers if seeing "Failed to fetch dynamically imported module"
+- **OOM on build:** Set `NODE_OPTIONS=--max_old_space_size=8192`
+- **Test failures:** Always use `bun run tests` (runs test:unit with TZ=EST, plus test:e2e), not `bun test` directly
+- **TS errors not showing:** Run `bun run check` explicitly (dev server doesn't always surface them)
+- **Format vs lint conflicts:** Run `bun run format` before `bun run lint`
+- **Stale build:** Clear `.svelte-kit` if changes not reflected: `rm -rf .svelte-kit && bun run build`
+
+## Branch naming
+
+`TYPE-ISSUE_ID-DESCRIPTION` (e.g. `feat-548-add-backup-ui`). Types: feat, fix, doc, cicd, refactor.
+
+## Cross-repo context
+
+The `feat-dedicated-db` feature spans cloud, edge, and console. When modifying API contracts or response models, check the other repos for breaking changes.
