@@ -152,12 +152,12 @@ await sdk.forProject(region, projectId).tablesDB.listTables();
 
 The databases feature unifies multiple database backends behind a polymorph API (`$database/(entity)/helpers/sdk.ts`):
 
-| Type          | Entity     | Field     | Record   | Status                   |
-| ------------- | ---------- | --------- | -------- | ------------------------ |
-| `tablesdb`    | table      | column    | row      | Implemented              |
-| `documentsdb` | collection | attribute | document | Implemented              |
-| `vectorsdb`   | --         | --        | --       | Not yet implemented      |
-| `dedicateddb` | table      | column    | row      | Cross-repo (cloud/edge)  |
+| Type          | Entity     | Field     | Record   | Status                  |
+| ------------- | ---------- | --------- | -------- | ----------------------- |
+| `tablesdb`    | table      | column    | row      | Implemented             |
+| `documentsdb` | collection | attribute | document | Implemented             |
+| `vectorsdb`   | --         | --        | --       | Not yet implemented     |
+| `dedicateddb` | table      | column    | row      | Cross-repo (cloud/edge) |
 
 - `useDatabaseSdk()` returns a unified interface regardless of backing type
 - `useTerminology()` returns singular/plural names for the current database type
