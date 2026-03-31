@@ -3,7 +3,7 @@
     import { page } from '$app/state';
     import { PaginationWithLimit } from '$lib/components';
     import { Button } from '$lib/elements/forms';
-    import { Container } from '$lib/layout';
+    import { Container, ResponsiveContainerHeader } from '$lib/layout';
 
     import Grid from './grid.svelte';
     import Table from './table.svelte';
@@ -11,6 +11,7 @@
     import { registerCommands } from '$lib/commandCenter';
     import { canWriteDatabases } from '$lib/stores/roles';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { Icon, Tooltip } from '@appwrite.io/pink-svelte';
     import EmptySearch from '$lib/components/emptySearch.svelte';
     import { isServiceLimited } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
@@ -21,6 +22,7 @@
 
     import { resolveRoute, withPath } from '$lib/stores/navigation';
     import EmptyDatabaseCloud from './empty.svelte';
+    import { columns } from './store';
 
     const { data }: PageProps = $props();
 
@@ -61,7 +63,7 @@
                     <Button
                         disabled={isLimited}
                         event="create_database"
-                        on:click={() => (showCreate = true)}>
+                        on:click={goToCreateDatabaseWizard}>
                         <Icon icon={IconPlus} slot="start" size="s" />
                         Create database
                     </Button>
