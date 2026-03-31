@@ -4,20 +4,20 @@ SvelteKit web dashboard for Appwrite. Manages projects, databases, functions, au
 
 ## Commands
 
-All commands use **bun** (not pnpm/npm).
+All commands use **bun** (not pnpm/npm). Use `bun run <script>` consistently — `bun run build` is required to avoid invoking bun's built-in bundler.
 
-| Command               | Purpose                                       |
-| --------------------- | --------------------------------------------- |
-| `bun dev`             | Dev server (port 3000)                        |
-| `bun run build`       | Production build (custom `build.js` via Vite) |
-| `bun check`           | `svelte-kit sync && svelte-check`             |
-| `bun format`          | Prettier write + cache                        |
-| `bun run lint`        | Prettier check + ESLint                       |
-| `bun tests`           | Unit + E2E                                    |
-| `bun test:unit`       | Vitest (TZ=EST)                               |
-| `bun test:unit-watch` | Vitest watch mode                             |
-| `bun test:e2e`        | Playwright                                    |
-| `bun run clean`       | Remove node_modules, .svelte-kit, reinstall   |
+| Command                   | Purpose                                       |
+| ------------------------- | --------------------------------------------- |
+| `bun run dev`             | Dev server (port 3000)                        |
+| `bun run build`           | Production build (custom `build.js` via Vite) |
+| `bun run check`           | `svelte-kit sync && svelte-check`             |
+| `bun run format`          | Prettier write + cache                        |
+| `bun run lint`            | Prettier check + ESLint                       |
+| `bun run tests`           | Unit + E2E                                    |
+| `bun run test:unit`       | Vitest (TZ=EST)                               |
+| `bun run test:unit-watch` | Vitest watch mode                             |
+| `bun run test:e2e`        | Playwright                                    |
+| `bun run clean`           | Remove node_modules, .svelte-kit, reinstall   |
 
 **Always run before committing:** `bun run format && bun run check && bun run lint && bun run tests && bun run build`
 
@@ -119,6 +119,7 @@ Runes (Svelte 5 -- preferred for new and modified code):
 
 ```svelte
 <script lang="ts">
+    // $bindable() enables two-way binding so parent components can mutate items directly
     let { items = $bindable(), disabled = false }: Props = $props();
     let selected = $state<string | null>(null);
     const count = $derived(items.length);
@@ -149,18 +150,17 @@ await sdk.forProject(region, projectId).tablesDB.listTables();
 
 ### Database types (feat-dedicated-db)
 
-The databases feature unifies four database backends behind a polymorph API (`$database/(entity)/helpers/sdk.ts`):
+The databases feature unifies multiple database backends behind a polymorph API (`$database/(entity)/helpers/sdk.ts`):
 
-| Type          | Entity     | Field     | Record   |
-| ------------- | ---------- | --------- | -------- |
-| `tablesdb`    | table      | column    | row      |
-| `documentsdb` | collection | attribute | document |
-| `vectorsdb`   | collection | attribute | document |
-| `dedicateddb` | table      | column    | row      |
+| Type          | Entity     | Field     | Record   | Status                   |
+| ------------- | ---------- | --------- | -------- | ------------------------ |
+| `tablesdb`    | table      | column    | row      | Implemented              |
+| `documentsdb` | collection | attribute | document | Implemented              |
+| `vectorsdb`   | --         | --        | --       | Not yet implemented      |
+| `dedicateddb` | table      | column    | row      | Cross-repo (cloud/edge)  |
 
 - `useDatabaseSdk()` returns a unified interface regardless of backing type
 - `useTerminology()` returns singular/plural names for the current database type
-- DedicatedDB uses the `Compute` service (not Appwrite schema APIs) -- creates always-on PostgreSQL/MySQL instances via `compute.createDatabase()` with `Backend.Edge`
 
 ### Data loading
 
@@ -173,7 +173,7 @@ export const load: LayoutLoad = async ({ depends, parent, params }) => {
 };
 ```
 
-Invalidate with `await invalidate(Dependencies.DATABASE)` after mutations. Dependency keys defined in `src/lib/constants.ts` as the `Dependencies` enum.
+Invalidate with `await invalidate(Dependencies.DATABASE)` after mutations. The `Dependencies` enum in `src/lib/constants.ts` defines 66+ keys for fine-grained cache invalidation (e.g. `DATABASES`, `TABLES`, `FUNCTIONS`, `USERS`, `DEPLOYMENTS`).
 
 ### State management
 
@@ -198,7 +198,7 @@ Plausible + custom Growth endpoint. Track events via `trackEvent(Click.* | Submi
 
 ### Theming and modes
 
-Four theme variants in `src/themes/`: `light`, `dark`, `light-cloud`, `dark-cloud`. Resolved based on `isCloud` flag and user preference. Two modes (`src/lib/system.ts`): `cloud` and `self-hosted`, set via `PUBLIC_CONSOLE_MODE` env var. Gate cloud-only features with `isCloud`.
+Four theme variants in `src/themes/`: `light`, `dark`, `light-cloud`, `dark-cloud`. Resolved based on `isCloud` flag and user preference. Two modes (`src/lib/system.ts`): `cloud` and `self-hosted`, set via `PUBLIC_CONSOLE_MODE` env var. Gate features using `isCloud` (for cloud-only) or `isSelfHosted` (for self-hosted-only).
 
 ## Code style
 
