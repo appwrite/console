@@ -47,11 +47,16 @@ export function getProjectEndpoint(): string {
 
 export function isProjectBlocked(project: Models.Project | null | undefined): boolean {
     const hasGlobalProjectBlock = (project?.blocks ?? []).some((block) => {
-        const type = block.resourceType?.trim();
+        const type = block.resourceType?.trim().toLowerCase();
         const id = block.resourceId?.trim();
 
-        // Global project block: no specific resourceType or resourceId set
-        return !type && !id;
+        // Global project block:
+        // - legacy: both type and id empty
+        // - new: resourceType === 'projects' with no specific resourceId
+        const isLegacyGlobal = !type && !id;
+        const isProjectsGlobal = type === 'projects' && !id;
+
+        return isLegacyGlobal || isProjectsGlobal;
     });
 
     return project?.status !== 'paused' && hasGlobalProjectBlock;
