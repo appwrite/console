@@ -1,12 +1,82 @@
-<svg width="240" height="180" viewBox="0 0 240 180" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="240" height="180" fill="#f8f9fa"/>
-  <rect x="40" y="40" width="160" height="100" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="2"/>
-  <!-- Server rack representation -->
-  <rect x="70" y="55" width="100" height="25" rx="4" fill="#f472b6" stroke="#db2777" stroke-width="2"/>
-  <rect x="70" y="85" width="100" height="25" rx="4" fill="#f472b6" stroke="#db2777" stroke-width="2"/>
-  <circle cx="80" cy="67" r="3" fill="#22c55e"/>
-  <circle cx="80" cy="97" r="3" fill="#22c55e"/>
-  <rect x="90" y="64" width="30" height="6" rx="2" fill="#db2777"/>
-  <rect x="90" y="94" width="30" height="6" rx="2" fill="#db2777"/>
-  <text x="120" y="160" text-anchor="middle" font-family="system-ui" font-size="12" fill="#4a5568">Dedicated Database</text>
+<svg width="347" height="194" viewBox="0 0 347 194" fill="none" xmlns="http://www.w3.org/2000/svg">
+<style>@font-face{font-family:'Inter';src:url('data:font/woff2;base64,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') format('woff2');font-weight:400;font-style:normal;}</style><g clip-path="url(#clip0_dedicated)">
+<rect width="347" height="194" fill="#EDEDF0" fill-opacity="0.4"/>
+<rect width="347" height="194" fill="white"/>
+<!-- Background layer card -->
+<rect x="16" y="24" width="260" height="180" rx="10" fill="white" fill-opacity="0.46" stroke="#EDEDF0" stroke-width="0.9"/>
+<!-- Main card -->
+<rect x="20" y="38" width="256" height="166" rx="10" fill="white" stroke="#EDEDF0" stroke-width="0.675"/>
+<!-- Server unit 1 -->
+<rect x="32" y="50" width="232" height="30" rx="6" fill="#FAFAFB" stroke="#EDEDF0" stroke-width="0.675"/>
+<circle cx="46" cy="65" r="4" fill="#4ADE80"/>
+<rect x="58" y="60" width="44" height="4" rx="2" fill="url(#ddb_pink1)"/>
+<rect x="58" y="68" width="30" height="4" rx="2" fill="url(#ddb_pink2)" opacity="0.6"/>
+<text x="116" y="66" font-family="Inter, sans-serif" font-size="8" fill="#97979B" opacity="0.5">db-prod-primary</text>
+<text x="116" y="74" font-family="Inter, sans-serif" font-size="7" fill="#97979B" opacity="0.3">4 vCPU · 16 GB</text>
+<rect x="212" y="57" width="40" height="16" rx="4" fill="#F02E65" fill-opacity="0.1" stroke="#F02E65" stroke-opacity="0.3" stroke-width="0.5"/>
+<text x="221" y="68" font-family="Inter, sans-serif" font-size="7" font-weight="500" fill="#F02E65" fill-opacity="0.8">Active</text>
+<!-- Separator -->
+<rect x="32" y="86" width="232" height="0.675" fill="#EDEDF0"/>
+<!-- Server unit 2 -->
+<rect x="32" y="92" width="232" height="30" rx="6" fill="#FAFAFB" stroke="#EDEDF0" stroke-width="0.675"/>
+<circle cx="46" cy="107" r="4" fill="#4ADE80"/>
+<rect x="58" y="102" width="36" height="4" rx="2" fill="url(#ddb_pink1)"/>
+<rect x="58" y="110" width="50" height="4" rx="2" fill="url(#ddb_pink2)" opacity="0.6"/>
+<text x="116" y="108" font-family="Inter, sans-serif" font-size="8" fill="#97979B" opacity="0.5">db-prod-replica</text>
+<text x="116" y="116" font-family="Inter, sans-serif" font-size="7" fill="#97979B" opacity="0.3">4 vCPU · 16 GB</text>
+<rect x="212" y="99" width="40" height="16" rx="4" fill="#F02E65" fill-opacity="0.1" stroke="#F02E65" stroke-opacity="0.3" stroke-width="0.5"/>
+<text x="221" y="110" font-family="Inter, sans-serif" font-size="7" font-weight="500" fill="#F02E65" fill-opacity="0.8">Active</text>
+<!-- Separator -->
+<rect x="32" y="128" width="232" height="0.675" fill="#EDEDF0"/>
+<!-- Server unit 3 -->
+<rect x="32" y="134" width="232" height="30" rx="6" fill="#FAFAFB" stroke="#EDEDF0" stroke-width="0.675"/>
+<circle cx="46" cy="149" r="4" fill="#D9D9D9" fill-opacity="0.5"/>
+<rect x="58" y="144" width="24" height="4" rx="2" fill="#D9D9D9" fill-opacity="0.4"/>
+<rect x="58" y="152" width="18" height="4" rx="2" fill="#D9D9D9" fill-opacity="0.2"/>
+<text x="116" y="150" font-family="Inter, sans-serif" font-size="8" fill="#97979B" opacity="0.3">db-staging</text>
+<text x="116" y="158" font-family="Inter, sans-serif" font-size="7" fill="#97979B" opacity="0.2">2 vCPU · 8 GB</text>
+<!-- Floating metrics card -->
+<rect x="180" y="10" width="164" height="170" rx="10" fill="#FAFAFB" stroke="#EDEDF0" stroke-width="0.9"/>
+<rect x="184" y="36" width="156" height="140" rx="10" fill="white" stroke="#EDEDF0" stroke-width="0.675"/>
+<!-- Header labels -->
+<text x="196" y="49" font-family="Inter, sans-serif" font-size="9" fill="#56565C">Performance</text>
+<text x="196" y="58" font-family="Inter, sans-serif" font-size="7" fill="#D9D9D9">Last 24 hours</text>
+<!-- Chart grid -->
+<rect x="196" y="72" width="132" height="0.5" fill="#EDEDF0"/>
+<rect x="196" y="92" width="132" height="0.5" fill="#EDEDF0"/>
+<rect x="196" y="112" width="132" height="0.5" fill="#EDEDF0"/>
+<rect x="196" y="132" width="132" height="0.5" fill="#EDEDF0"/>
+<!-- Chart line -->
+<path d="M196 118 L214 98 L232 106 L250 78 L268 86 L286 72 L304 82 L322 76" stroke="url(#ddb_chart)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+<!-- Chart fill -->
+<path d="M196 118 L214 98 L232 106 L250 78 L268 86 L286 72 L304 82 L322 76 L322 132 L196 132Z" fill="url(#ddb_chartfill)" opacity="0.12"/>
+<!-- Metric pills -->
+<rect x="196" y="142" width="52" height="18" rx="5" fill="#FAFAFB" stroke="#EDEDF0" stroke-width="0.5"/>
+<circle cx="206" cy="151" r="3" fill="#F02E65"/>
+<text x="213" y="154" font-family="Inter, sans-serif" font-size="7" fill="#97979B">CPU</text>
+<rect x="256" y="142" width="52" height="18" rx="5" fill="#FAFAFB" stroke="#EDEDF0" stroke-width="0.5"/>
+<circle cx="266" cy="151" r="3" fill="#94DBD1"/>
+<text x="273" y="154" font-family="Inter, sans-serif" font-size="7" fill="#97979B">Memory</text>
+</g>
+<defs>
+<linearGradient id="ddb_pink1" x1="58" y1="62" x2="102" y2="62" gradientUnits="userSpaceOnUse">
+<stop stop-color="#FD366E"/>
+<stop offset="1" stop-color="#FD535C" stop-opacity="0"/>
+</linearGradient>
+<linearGradient id="ddb_pink2" x1="58" y1="70" x2="88" y2="70" gradientUnits="userSpaceOnUse">
+<stop stop-color="#FD535C"/>
+<stop offset="1" stop-color="#FD535C" stop-opacity="0"/>
+</linearGradient>
+<linearGradient id="ddb_chart" x1="196" y1="95" x2="322" y2="95" gradientUnits="userSpaceOnUse">
+<stop stop-color="#F02E65"/>
+<stop offset="1" stop-color="#F02E65" stop-opacity="0"/>
+</linearGradient>
+<linearGradient id="ddb_chartfill" x1="259" y1="72" x2="259" y2="132" gradientUnits="userSpaceOnUse">
+<stop stop-color="#F02E65"/>
+<stop offset="1" stop-color="#F02E65" stop-opacity="0"/>
+</linearGradient>
+<clipPath id="clip0_dedicated">
+<rect width="347" height="194" rx="8" fill="white"/>
+</clipPath>
+</defs>
 </svg>
