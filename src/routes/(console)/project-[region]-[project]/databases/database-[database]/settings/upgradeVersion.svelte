@@ -32,7 +32,12 @@
 
     const versionOptions = $derived(
         (engineVersions[database.engine] ?? [])
-            .filter((v) => v > database.version)
+            .filter((v) => {
+                const parse = (s: string) => s.split('.').map(Number);
+                const [major = 0, minor = 0] = parse(v);
+                const [currentMajor = 0, currentMinor = 0] = parse(database.version);
+                return major > currentMajor || (major === currentMajor && minor > currentMinor);
+            })
             .map((v) => ({ value: v, label: v }))
     );
 

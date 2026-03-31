@@ -71,9 +71,9 @@
 
     onMount(async () => {
         try {
-            crossRegionStatus = await sdk
-                .forProject(page.params.region, page.params.project)
-                .compute['getCrossRegionStatus'](database.$id);
+            const projectSdk = sdk.forProject(page.params.region, page.params.project);
+            // @ts-expect-error SDK types not yet updated
+            crossRegionStatus = await projectSdk.compute.getCrossRegionStatus(database.$id);
             isEnabled = crossRegionStatus.enabled;
         } catch {
             // 404 means not enabled
@@ -88,9 +88,9 @@
         if (!standbyRegion) return;
         isEnabling = true;
         try {
-            crossRegionStatus = await sdk
-                .forProject(page.params.region, page.params.project)
-                .compute['enableCrossRegion'](database.$id, standbyRegion);
+            const projectSdk = sdk.forProject(page.params.region, page.params.project);
+            // @ts-expect-error SDK types not yet updated
+            crossRegionStatus = await projectSdk.compute.enableCrossRegion(database.$id, standbyRegion);
 
             isEnabled = true;
             standbyRegion = '';
@@ -117,9 +117,9 @@
     async function disableCrossRegion() {
         isDisabling = true;
         try {
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .compute['disableCrossRegion'](database.$id);
+            const projectSdk = sdk.forProject(page.params.region, page.params.project);
+            // @ts-expect-error SDK types not yet updated
+            await projectSdk.compute.disableCrossRegion(database.$id);
 
             isEnabled = false;
             crossRegionStatus = null;
@@ -147,9 +147,9 @@
     async function triggerFailover() {
         isFailingOver = true;
         try {
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .compute['triggerCrossRegionFailover'](database.$id);
+            const projectSdk = sdk.forProject(page.params.region, page.params.project);
+            // @ts-expect-error SDK types not yet updated
+            await projectSdk.compute.triggerCrossRegionFailover(database.$id);
 
             showFailoverConfirm = false;
 

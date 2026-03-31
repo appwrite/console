@@ -4,6 +4,7 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import Delete from '../delete.svelte';
+    import { getEngineDisplayName } from '../dedicated';
     import type { Models } from '@appwrite.io/console';
     import { Layout, Typography } from '@appwrite.io/pink-svelte';
 
@@ -14,21 +15,6 @@
     } = $props();
 
     let showDelete = $state(false);
-
-    function getEngineDisplayName(engine: string): string {
-        switch (engine) {
-            case 'postgres':
-                return 'PostgreSQL';
-            case 'mysql':
-                return 'MySQL';
-            case 'mariadb':
-                return 'MariaDB';
-            case 'mongodb':
-                return 'MongoDB';
-            default:
-                return engine;
-        }
-    }
 </script>
 
 <CardGrid>

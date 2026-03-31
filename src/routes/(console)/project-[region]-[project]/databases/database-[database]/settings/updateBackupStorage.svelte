@@ -43,9 +43,9 @@
 
     onMount(async () => {
         try {
-            config = await sdk
-                .forProject(page.params.region, page.params.project)
-                .compute['getBackupStorageConfig'](database.$id);
+            const projectSdk = sdk.forProject(page.params.region, page.params.project);
+            // @ts-expect-error SDK types not yet updated
+            config = await projectSdk.compute.getBackupStorageConfig(database.$id);
             isConfigured = true;
         } catch {
             // 404 means not configured
@@ -100,9 +100,9 @@
     async function removeStorage() {
         isRemoving = true;
         try {
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .compute['deleteBackupStorageConfig'](database.$id);
+            const projectSdk = sdk.forProject(page.params.region, page.params.project);
+            // @ts-expect-error SDK types not yet updated
+            await projectSdk.compute.deleteBackupStorageConfig(database.$id);
 
             isConfigured = false;
             config = null;
