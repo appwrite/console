@@ -17,6 +17,7 @@
     import DedicatedDB from './(assets)/dedicated-db.svg';
     import DedicatedDBDark from './(assets)/dark/dedicated-db.svg';
 
+    import { isCloud } from '$lib/system';
     import { isSmallViewport } from '$lib/stores/viewport';
     import type { DatabaseType } from '$database/(entity)';
     import { databaseTypes } from './store';
@@ -56,14 +57,16 @@
                 >Store, organize, and manage your app data</Typography.Text>
         </Layout.Stack>
 
-        <Layout.Grid columns={4} columnsS={2} columnsXS={1} gap="xl">
+        <Layout.Grid columns={databaseTypes.length} columnsS={2} columnsXS={1} gap="xl">
             {#each databaseTypes as db}
-                {@render databaseTypeCard({
-                    type: db.type,
-                    title: db.title,
-                    subtitle: db.subtitle,
-                    image: images[db.type]
-                })}
+                {#if db.type !== 'dedicateddb' || isCloud}
+                    {@render databaseTypeCard({
+                        type: db.type,
+                        title: db.title,
+                        subtitle: db.subtitle,
+                        image: images[db.type]
+                    })}
+                {/if}
             {/each}
         </Layout.Grid>
     </Layout.Stack>

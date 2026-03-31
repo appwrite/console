@@ -8,7 +8,7 @@
     import { CustomId } from '$lib/components';
     import { page } from '$app/state';
     import { addNotification } from '$lib/stores/notifications';
-    import { BackupServices, ID, type Models } from '@appwrite.io/console';
+    import { BackupServices, Engine, ID, type Models } from '@appwrite.io/console';
     import {
         type DatabaseType,
         type DedicatedDatabaseParams,
@@ -40,7 +40,7 @@
     let formComponent: Form;
 
     const params = page.url.searchParams;
-    const typeFromParams = params.get('type') ?? (null as DatabaseType);
+    const typeFromParams: DatabaseType | null = params.get('type') as DatabaseType | null;
 
     let showCreatePolicies = $state(false);
     let totalPolicies: UserBackupPolicy[] = $state([]);
@@ -48,7 +48,7 @@
     let showExitModal = $state(false);
     let isSubmitting = $state(writable(false));
     let previousPage: string = $state(resolveRoute('/'));
-    let type = $state(typeFromParams ?? 'dedicateddb') as DatabaseType;
+    let type = $state(typeFromParams ?? (isCloud ? 'dedicateddb' : 'tablesdb')) as DatabaseType;
 
     const isDark = $derived($app.themeInUse === 'dark');
     const backupsImg = $derived(isDark ? EmptyDarkMobile : EmptyLightMobile);
@@ -81,7 +81,7 @@
     }));
 
     // State for dedicated options (pre-populated from URL params)
-    let selectedEngine = $state(params.get('engine') ?? 'postgres');
+    let selectedEngine = $state<Engine>((params.get('engine') as Engine) ?? Engine.Postgres);
     let selectedRegion = $state<string | null>(params.get('region') ?? null);
     let selectedTier = $state(params.get('tier') ?? 'free');
 
@@ -526,21 +526,23 @@
 {/snippet}
 
 {#snippet selectDatabaseType(disabled = false)}
-    <Layout.Grid columns={4} columnsS={2} columnsXS={1}>
+    <Layout.Grid columns={databaseTypes.length} columnsS={2} columnsXS={1}>
         {#each databaseTypes as databaseType}
-            <div class="card-selector">
-                <Card.Selector
-                    {disabled}
-                    variant="secondary"
-                    bind:group={type}
-                    name={databaseType.type}
-                    id={databaseType.type}
-                    value={databaseType.type}
-                    title={databaseType.title}
-                    imageRadius="s">
-                    {databaseType.subtitle}
-                </Card.Selector>
-            </div>
+            {#if databaseType.type !== 'dedicateddb' || isCloud}
+                <div class="card-selector">
+                    <Card.Selector
+                        {disabled}
+                        variant="secondary"
+                        bind:group={type}
+                        name={databaseType.type}
+                        id={databaseType.type}
+                        value={databaseType.type}
+                        title={databaseType.title}
+                        imageRadius="s">
+                        {databaseType.subtitle}
+                    </Card.Selector>
+                </div>
+            {/if}
         {/each}
     </Layout.Grid>
 {/snippet}

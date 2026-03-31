@@ -6,6 +6,7 @@
     import { canWriteDatabases } from '$lib/stores/roles';
     import { resolveRoute, withPath } from '$lib/stores/navigation';
     import { useTerminology, type DatabaseType } from '$database/(entity)';
+    import { isCloud } from '$lib/system';
     import { isSmallViewport } from '$lib/stores/viewport';
 
     const terminology = useTerminology(page);
@@ -20,7 +21,6 @@
         page.params
     );
 
-    // Check if this is a dedicated database type
     const isDedicatedType = $derived((database?.type as DatabaseType) === 'dedicateddb');
 
     const tabs = $derived(
@@ -41,13 +41,13 @@
                 href: withPath(baseDatabasePath, '/auth'),
                 title: 'Auth',
                 event: 'auth',
-                disabled: !isDedicatedType
+                disabled: !isDedicatedType || !isCloud
             },
             {
                 href: withPath(baseDatabasePath, '/monitoring'),
                 title: 'Monitoring',
                 event: 'monitoring',
-                disabled: !isDedicatedType
+                disabled: !isDedicatedType || !isCloud
             },
             {
                 href: withPath(baseDatabasePath, '/usage'),

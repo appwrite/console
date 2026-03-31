@@ -23,16 +23,18 @@ export const columns = writable<Column[]>(
           ]
 );
 
-export const databaseTypes: Array<{
+const allDatabaseTypes: Array<{
     type: DatabaseType;
     title: string;
     subtitle: string;
+    cloudOnly?: boolean;
 }> = [
     {
         type: 'dedicateddb',
         title: 'DedicatedDB',
         subtitle:
-            'Always-on dedicated instances with high availability. Best for production workloads.'
+            'Always-on dedicated instances with high availability. Best for production workloads.',
+        cloudOnly: true
     },
     {
         type: 'tablesdb',
@@ -53,6 +55,8 @@ export const databaseTypes: Array<{
             'Store data as vectors to find similar results. Best for semantic search and recommendations.'
     }
 ];
+
+export const databaseTypes = allDatabaseTypes.filter((db) => !db.cloudOnly || isCloud);
 
 export function getDatabaseTypeTitle(database: Models.Database & { engine?: string }) {
     switch (database.type as DatabaseType) {
