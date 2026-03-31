@@ -32,45 +32,18 @@
 
     const computeSdk = $derived(sdk.forProject(page.params.region, page.params.project).compute);
 
-    type Connection = {
-        pid: number;
-        user: string;
-        database: string;
-        state: string;
-        query: string;
-        connectedAt: string;
-        waitEvent: string;
-    };
-
     let metricsPeriod = $state<'1h' | '24h' | '7d' | '30d'>('24h');
     let metrics = $state<Models.DedicatedDatabaseMetrics | null>(null);
-    let activeConnections = $state<{ total: number; activeConnections: Connection[] }>({
-        total: 0,
-        activeConnections: []
-    });
     let slowQueries = $state<Models.DedicatedDatabaseSlowQueryList>({ total: 0, slowQueries: [] });
     let performanceInsights = $state<Models.DedicatedDatabasePerformanceInsights | null>(null);
     let auditLogs = $state<Models.DedicatedDatabaseAuditLogList>({ total: 0, auditLogs: [] });
 
     let isLoadingMetrics = $state(true);
-    let isLoadingConnections = $state(true);
     let isLoadingSlowQueries = $state(true);
     let isLoadingInsights = $state(true);
     let isLoadingAuditLogs = $state(true);
 
-    let activeSection = $state<
-        'metrics' | 'connections' | 'slowQueries' | 'insights' | 'auditLogs'
-    >('metrics');
-
-    const connectionsColumns = [
-        { id: 'pid', width: { min: 80 } },
-        { id: 'user', width: { min: 100 } },
-        { id: 'database', width: { min: 100 } },
-        { id: 'state', width: { min: 120 } },
-        { id: 'query', width: { min: 200 } },
-        { id: 'connected', width: { min: 140 } },
-        { id: 'waitEvent', width: { min: 120 } }
-    ];
+    let activeSection = $state<'metrics' | 'slowQueries' | 'insights' | 'auditLogs'>('metrics');
 
     const slowQueryColumns = [
         { id: 'query', width: { min: 200 } },
@@ -123,19 +96,6 @@
         }
     }
 
-    async function loadActiveConnections() {
-        if (!database) return;
-        isLoadingConnections = true;
-        try {
-            // Active connections endpoint is not available in the Compute SDK
-            activeConnections = { total: 0, activeConnections: [] };
-        } catch (error) {
-            activeConnections = { total: 0, activeConnections: [] };
-        } finally {
-            isLoadingConnections = false;
-        }
-    }
-
     async function loadSlowQueries() {
         if (!database) return;
         isLoadingSlowQueries = true;
@@ -178,7 +138,6 @@
         trackEvent('dedicated_monitoring_refresh');
         await Promise.all([
             loadMetrics(),
-            loadActiveConnections(),
             loadSlowQueries(),
             loadPerformanceInsights(),
             loadAuditLogs()
@@ -207,19 +166,18 @@
         return query.substring(0, maxLen) + '...';
     }
 
-    // Load metrics whenever the period changes (also runs on mount)
+    let previousId = $state('');
+
     $effect(() => {
-        // Reference metricsPeriod so this re-runs when it changes
         void metricsPeriod;
         if (database) {
             loadMetrics();
         }
     });
 
-    // Load all other data on mount
     $effect(() => {
-        if (database) {
-            loadActiveConnections();
+        if (database && database.$id !== previousId) {
+            previousId = database.$id;
             loadSlowQueries();
             loadPerformanceInsights();
             loadAuditLogs();
@@ -244,12 +202,6 @@
                         on:click={() => (activeSection = 'metrics')}
                         active={activeSection === 'metrics'}>
                         Metrics
-                    </Tabs.Item.Button>
-                    <Tabs.Item.Button
-                        {root}
-                        on:click={() => (activeSection = 'connections')}
-                        active={activeSection === 'connections'}>
-                        Connections
                     </Tabs.Item.Button>
                     <Tabs.Item.Button
                         {root}
@@ -429,79 +381,6 @@
                             Metrics data is not available for this database. Ensure metrics
                             collection is enabled in the database settings.
                         </Alert.Inline>
-                    {/if}
-                </Layout.Stack>
-            {/if}
-
-            <!-- Active Connections Section -->
-            {#if activeSection === 'connections'}
-                <Layout.Stack gap="l">
-                    <Typography.Text variant="m-500">
-                        Currently active database connections.
-                    </Typography.Text>
-
-                    {#if isLoadingConnections}
-                        <Layout.Stack gap="s">
-                            {#each Array(3) as _}
-                                <Skeleton variant="line" width="100%" height={40} />
-                            {/each}
-                        </Layout.Stack>
-                    {:else if activeConnections.total === 0}
-                        <article class="empty card u-width-full-line">
-                            No active connections.
-                        </article>
-                    {:else}
-                        <Table.Root columns={connectionsColumns} let:root>
-                            <svelte:fragment slot="header" let:root>
-                                <Table.Header.Cell column="pid" {root}>PID</Table.Header.Cell>
-                                <Table.Header.Cell column="user" {root}>User</Table.Header.Cell>
-                                <Table.Header.Cell column="database" {root}
-                                    >Database</Table.Header.Cell>
-                                <Table.Header.Cell column="state" {root}>State</Table.Header.Cell>
-                                <Table.Header.Cell column="query" {root}>Query</Table.Header.Cell>
-                                <Table.Header.Cell column="connected" {root}
-                                    >Connected</Table.Header.Cell>
-                                <Table.Header.Cell column="waitEvent" {root}
-                                    >Wait Event</Table.Header.Cell>
-                            </svelte:fragment>
-                            {#each activeConnections.activeConnections as conn}
-                                <Table.Row.Base id={String(conn.pid)} {root}>
-                                    <Table.Cell column="pid" {root}>
-                                        {conn.pid}
-                                    </Table.Cell>
-                                    <Table.Cell column="user" {root}>
-                                        {conn.user}
-                                    </Table.Cell>
-                                    <Table.Cell column="database" {root}>
-                                        {conn.database}
-                                    </Table.Cell>
-                                    <Table.Cell column="state" {root}>
-                                        <Badge
-                                            variant="secondary"
-                                            size="s"
-                                            type={conn.state === 'active'
-                                                ? 'success'
-                                                : conn.state === 'idle'
-                                                  ? undefined
-                                                  : 'warning'}
-                                            content={conn.state} />
-                                    </Table.Cell>
-                                    <Table.Cell column="query" {root}>
-                                        <span class="query-text" title={conn.query}>
-                                            {truncateQuery(conn.query, 80)}
-                                        </span>
-                                    </Table.Cell>
-                                    <Table.Cell column="connected" {root}>
-                                        {conn.connectedAt
-                                            ? toLocaleDateTime(conn.connectedAt)
-                                            : '-'}
-                                    </Table.Cell>
-                                    <Table.Cell column="waitEvent" {root}>
-                                        {conn.waitEvent || '-'}
-                                    </Table.Cell>
-                                </Table.Row.Base>
-                            {/each}
-                        </Table.Root>
                     {/if}
                 </Layout.Stack>
             {/if}

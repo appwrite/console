@@ -36,8 +36,8 @@
         children: Snippet;
     } = $props();
 
-    const project = page.params.project;
-    const databaseId = page.params.database;
+    const project = $derived(page.params.project);
+    const databaseId = $derived(page.params.database);
 
     const { databaseSdk, terminology } = getTerminologies();
 
