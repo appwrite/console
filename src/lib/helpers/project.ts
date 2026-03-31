@@ -3,6 +3,7 @@ import { get } from 'svelte/store';
 import { sdk } from '$lib/stores/sdk';
 import { projectRegion } from '$routes/(console)/project-[region]-[project]/store';
 import type { Models } from '@appwrite.io/console';
+import { error } from '@sveltejs/kit';
 
 /**
  * Returns the current project ID.
@@ -45,5 +46,45 @@ export function getProjectEndpoint(): string {
 }
 
 export function isProjectBlocked(project: Models.Project | null | undefined): boolean {
-    return project?.status !== 'paused' && !!project?.blocks?.length;
+    const hasGlobalProjectBlock = (project?.blocks ?? []).some((block) => {
+        const type = block.resourceType?.trim();
+        const id = block.resourceId?.trim();
+
+        // Global project block: no specific resourceType or resourceId set
+        return !type && !id;
+    });
+
+    return project?.status !== 'paused' && hasGlobalProjectBlock;
+}
+
+export function isResourceBlocked(
+    project: Models.Project | null | undefined,
+    resourceType: string,
+    resourceId: string
+): boolean {
+    const normalizedType = resourceType.trim().toLowerCase();
+    const normalizedId = resourceId.trim();
+
+    return (project?.blocks ?? []).some((block) => {
+        const type = block.resourceType?.trim().toLowerCase();
+        const id = block.resourceId?.trim();
+
+        return type === normalizedType && id === normalizedId;
+    });
+}
+
+export function guardResourceBlock(
+    project: Models.Project | null | undefined,
+    resourceType: string | string[],
+    resourceId: string
+) {
+    const resourceTypes = Array.isArray(resourceType) ? resourceType : [resourceType];
+    const isBlocked = resourceTypes.some((type) => isResourceBlocked(project, type, resourceId));
+
+    if (isBlocked) {
+        error(403, {
+            type: 'general_resource_blocked',
+            message: 'This resource page cannot be accessed.'
+        });
+    }
 }
