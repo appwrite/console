@@ -90,7 +90,10 @@
         try {
             const projectSdk = sdk.forProject(page.params.region, page.params.project);
             // @ts-expect-error SDK types not yet updated
-            crossRegionStatus = await projectSdk.compute.enableCrossRegion(database.$id, standbyRegion);
+            crossRegionStatus = await projectSdk.compute.enableCrossRegion(
+                database.$id,
+                standbyRegion
+            );
 
             isEnabled = true;
             standbyRegion = '';

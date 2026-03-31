@@ -30,6 +30,7 @@
     import UpdateHAStatus from './updateHAStatus.svelte';
     import UpdateBackupStorage from './updateBackupStorage.svelte';
     import UpdateSqlApi from './updateSqlApi.svelte';
+    import MigrateDatabaseType from './migrateDatabaseType.svelte';
     import DangerZone from './dangerZone.svelte';
 
     const data = page.data;
@@ -171,7 +172,10 @@
         <!-- 17. SQL API -->
         <UpdateSqlApi database={dedicatedDatabase} />
 
-        <!-- 18. Delete Database - all types -->
+        <!-- 18. Migrate Database Type -->
+        <MigrateDatabaseType database={dedicatedDatabase} />
+
+        <!-- 19. Delete Database - all types -->
         <DangerZone database={dedicatedDatabase} />
     </Container>
 {:else if database}
