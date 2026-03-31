@@ -153,25 +153,46 @@ export function getCollectionService(region: string, project: string, type: Data
     }
 }
 
+export function useDatabaseSdkFromPage(
+    page: Page,
+    terminology: TerminologyResult
+): DatabaseSdkResult {
+    const region = page?.params?.region || '';
+    const project = page?.params?.project || '';
+    return buildDatabaseSdk(region, project, terminology.type);
+}
+
+export function useDatabaseSdkFromParams(
+    region: string,
+    project: string,
+    databaseType: DatabaseType
+): DatabaseSdkResult {
+    return buildDatabaseSdk(region, project, databaseType);
+}
+
 export function useDatabaseSdk(
     regionOrPage: string | Page,
     projectOrTerminology: string | TerminologyResult,
-    databaseType?: DatabaseType /* nullable for use at top `databases` level */
+    databaseType?: DatabaseType
 ): DatabaseSdkResult {
-    let region: string;
-    let project: string;
-    let type: DatabaseType;
-
     if (typeof regionOrPage === 'object' && typeof projectOrTerminology === 'object') {
-        type = projectOrTerminology.type;
-        region = regionOrPage?.params?.region || '';
-        project = regionOrPage?.params?.project || '';
-    } else {
-        type = databaseType;
-        region = regionOrPage as string;
-        project = projectOrTerminology as string;
+        return useDatabaseSdkFromPage(regionOrPage, projectOrTerminology);
     }
+    return useDatabaseSdkFromParams(
+        regionOrPage as string,
+        projectOrTerminology as string,
+        databaseType
+    );
+}
 
+type DedicatedDatabaseMapped = Models.Database & {
+    engine: string;
+    status: string;
+    tier: string;
+    region: string;
+};
+
+function buildDatabaseSdk(region: string, project: string, type: DatabaseType): DatabaseSdkResult {
     const baseSdk = sdk.forProject(region, project);
 
     return {
@@ -209,9 +230,16 @@ export function useDatabaseSdk(
             }
         },
 
+        // Pagination is per-backend, not aggregate across all backends.
         async list(params): Promise<Models.DatabaseList> {
-            const [tablesResult, documentsResult, vectorsResult, dedicatedResult] =
-                await Promise.all([
+            const emptyDatabaseList: Models.DatabaseList = { total: 0, databases: [] };
+            const emptyDedicatedList: Models.DedicatedDatabaseList = {
+                total: 0,
+                databases: []
+            };
+
+            const [tablesSettled, documentsSettled, vectorsSettled, dedicatedSettled] =
+                await Promise.allSettled([
                     baseSdk.tablesDB.list(params),
                     baseSdk.documentsDB.list(params),
                     baseSdk.vectorsDB.list(params),
@@ -221,19 +249,35 @@ export function useDatabaseSdk(
                     })
                 ]);
 
-            const dedicatedAsDatabases = (dedicatedResult.databases ?? []).map(
-                (db) =>
-                    ({
-                        $id: db.$id,
-                        $createdAt: db.$createdAt,
-                        $updatedAt: db.$updatedAt,
-                        name: db.name,
-                        enabled: true,
-                        type: db.type,
-                        policies: [],
-                        archives: []
-                    }) as unknown as Models.Database
-            );
+            const tablesResult =
+                tablesSettled.status === 'fulfilled' ? tablesSettled.value : emptyDatabaseList;
+            const documentsResult =
+                documentsSettled.status === 'fulfilled'
+                    ? documentsSettled.value
+                    : emptyDatabaseList;
+            const vectorsResult =
+                vectorsSettled.status === 'fulfilled' ? vectorsSettled.value : emptyDatabaseList;
+            const dedicatedResult =
+                dedicatedSettled.status === 'fulfilled'
+                    ? dedicatedSettled.value
+                    : emptyDedicatedList;
+
+            const dedicatedAsDatabases: DedicatedDatabaseMapped[] = (
+                dedicatedResult.databases ?? []
+            ).map((database) => ({
+                $id: database.$id,
+                $createdAt: database.$createdAt,
+                $updatedAt: database.$updatedAt,
+                name: database.name,
+                enabled: database.status === 'ready' || database.status === 'active',
+                type: database.type as Models.Database['type'],
+                policies: [],
+                archives: [],
+                engine: database.engine,
+                status: database.status,
+                tier: database.tier,
+                region: database.region
+            }));
 
             return {
                 total:
@@ -397,6 +441,8 @@ export function useDatabaseSdk(
                             enabled: params.enabled
                         })
                     );
+                case 'dedicateddb':
+                    throw new Error('DedicatedDB does not support entity updates via Appwrite');
                 case 'documentsdb':
                     return toSupportiveEntity(
                         await baseSdk.documentsDB.updateCollection({
@@ -617,6 +663,8 @@ export function useDatabaseSdk(
                     });
                     return toSupportiveIndex(index);
                 }
+                case 'dedicateddb':
+                    throw new Error('DedicatedDB does not support index creation via Appwrite');
                 case 'documentsdb': {
                     const index = await baseSdk.documentsDB.createIndex({
                         databaseId: params.databaseId,
@@ -656,6 +704,8 @@ export function useDatabaseSdk(
                         tableId: params.entityId,
                         key: params.key
                     });
+                case 'dedicateddb':
+                    throw new Error('DedicatedDB does not support index deletion via Appwrite');
                 case 'documentsdb':
                     return await baseSdk.documentsDB.deleteIndex({
                         databaseId: params.databaseId,
