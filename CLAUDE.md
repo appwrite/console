@@ -95,10 +95,20 @@ import { Card, Modal, Steps } from '$lib/components';
 import { Shell, Container } from '$lib/layout';
 ```
 
-### Svelte 5 runes
+### Svelte 5 migration (in progress)
 
-The codebase uses **Svelte 5 runes exclusively** — no legacy `export let` or `$:` syntax.
+The codebase is migrating from Svelte 4 to Svelte 5 runes. Most files (~500) still use legacy `export let` and `$:` syntax. ~240 files have been migrated to runes. **When touching a file, migrate it to runes if practical.** Don't mix syntaxes within a single component.
 
+Legacy (Svelte 4):
+```svelte
+<script lang="ts">
+    export let items: Item[] = [];
+    export let disabled = false;
+    $: count = items.length;
+</script>
+```
+
+Runes (Svelte 5 — preferred for new and modified code):
 ```svelte
 <script lang="ts">
     let { items = $bindable(), disabled = false }: Props = $props();
@@ -191,7 +201,7 @@ Two modes: `cloud` and `self-hosted`, set via `PUBLIC_CONSOLE_MODE` env var. Gat
 ## Code style
 
 - **Formatter:** Prettier — 4 spaces, single quotes, no trailing commas, 100 char width, bracket same line
-- **Svelte 5 runes only** — use `$props()`, `$state()`, `$derived()`, `$effect()`, `$bindable()`. Never `export let` or `$:`
+- **Prefer Svelte 5 runes** in new and modified code (`$props()`, `$state()`, `$derived()`, `$effect()`). Migrate legacy syntax when touching a file.
 - Types from `@appwrite.io/console` SDK (`Models`, `Query`, enums) — don't redefine what the SDK provides
 - Error handling: try/catch with `addNotification()` for user-facing errors, `trackError()` for analytics
 - Queries use the SDK's `Query` builder: `Query.equal()`, `Query.limit()`, `Query.offset()`, etc.
