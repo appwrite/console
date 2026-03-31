@@ -1,6 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
 
-const BASE = 'http://localhost:3000/console';
 const PROJECT_ID = '69c5061ee68ebce1a541';
 const REGION = 'fra';
 
@@ -11,7 +10,7 @@ const SESSION_COOKIE = {
     path: '/'
 };
 
-const DATABASES_URL = `${BASE}/project-${REGION}-${PROJECT_ID}/databases`;
+const DATABASES_URL = `project-${REGION}-${PROJECT_ID}/databases`;
 const CREATE_URL = `${DATABASES_URL}/create`;
 
 async function authenticate(page: Page) {
