@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from '$app/state';
-    import { CardGrid } from '$lib/components';
+    import { CardGrid, Code } from '$lib/components';
     import { Container } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
@@ -19,7 +19,7 @@
         Typography
     } from '@appwrite.io/pink-svelte';
     import { IconRefresh } from '@appwrite.io/pink-icons-svelte';
-    import { Button } from '$lib/elements/forms';
+    import { Button, InputChoice, InputTextarea } from '$lib/elements/forms';
     import type { PageProps } from './$types';
 
     const { data }: PageProps = $props();
@@ -43,7 +43,44 @@
     let isLoadingInsights = $state(true);
     let isLoadingAuditLogs = $state(true);
 
-    let activeSection = $state<'metrics' | 'slowQueries' | 'insights' | 'auditLogs'>('metrics');
+    // Schema state
+    let schema = $state<Record<string, unknown> | null>(null);
+    let isLoadingSchema = $state(false);
+    let schemaLoaded = $state(false);
+
+    // Schema Preview state
+    let previewSql = $state('');
+    let previewResult = $state<Record<string, unknown> | null>(null);
+    let isLoadingPreview = $state(false);
+
+    // Explain Query state
+    let explainQuery = $state('');
+    let explainAnalyze = $state(false);
+    let explainResult = $state<Record<string, unknown> | null>(null);
+    let isLoadingExplain = $state(false);
+
+    // Tuning state
+    let tuningResult = $state<Record<string, unknown> | null>(null);
+    let isLoadingTuning = $state(false);
+    let tuningLoaded = $state(false);
+
+    // Index Suggestions state
+    let indexSuggestions = $state<Record<string, unknown> | null>(null);
+    let isLoadingIndexSuggestions = $state(false);
+    let indexSuggestionsLoaded = $state(false);
+
+    type ActiveSection =
+        | 'metrics'
+        | 'slowQueries'
+        | 'insights'
+        | 'auditLogs'
+        | 'schema'
+        | 'schemaPreview'
+        | 'explain'
+        | 'tuning'
+        | 'indexes';
+
+    let activeSection = $state<ActiveSection>('metrics');
 
     const slowQueryColumns = [
         { id: 'query', width: { min: 200 } },
@@ -134,6 +171,102 @@
         }
     }
 
+    async function loadSchema() {
+        if (!database) return;
+        isLoadingSchema = true;
+        try {
+            schema = (await computeSdk.getDatabaseSchema({
+                databaseId: database.$id
+            })) as Record<string, unknown>;
+            schemaLoaded = true;
+        } catch (error) {
+            schema = null;
+            addNotification({
+                type: 'error',
+                message: `Failed to load schema: ${error.message}`
+            });
+        } finally {
+            isLoadingSchema = false;
+        }
+    }
+
+    async function handlePreviewSchema() {
+        if (!database || !previewSql.trim()) return;
+        isLoadingPreview = true;
+        try {
+            previewResult = (await computeSdk.previewDatabaseSchemaChange({
+                databaseId: database.$id,
+                sql: previewSql
+            })) as Record<string, unknown>;
+        } catch (error) {
+            previewResult = null;
+            addNotification({
+                type: 'error',
+                message: `Schema preview failed: ${error.message}`
+            });
+        } finally {
+            isLoadingPreview = false;
+        }
+    }
+
+    async function handleExplainQuery() {
+        if (!database || !explainQuery.trim()) return;
+        isLoadingExplain = true;
+        try {
+            explainResult = (await computeSdk.explainDatabaseQuery({
+                databaseId: database.$id,
+                query: explainQuery,
+                analyze: explainAnalyze
+            })) as Record<string, unknown>;
+        } catch (error) {
+            explainResult = null;
+            addNotification({
+                type: 'error',
+                message: `Explain query failed: ${error.message}`
+            });
+        } finally {
+            isLoadingExplain = false;
+        }
+    }
+
+    async function loadTuning() {
+        if (!database) return;
+        isLoadingTuning = true;
+        try {
+            tuningResult = (await computeSdk.getDatabaseTuning({
+                databaseId: database.$id
+            })) as Record<string, unknown>;
+            tuningLoaded = true;
+        } catch (error) {
+            tuningResult = null;
+            addNotification({
+                type: 'error',
+                message: `Failed to load tuning recommendations: ${error.message}`
+            });
+        } finally {
+            isLoadingTuning = false;
+        }
+    }
+
+    async function loadIndexSuggestions() {
+        if (!database) return;
+        isLoadingIndexSuggestions = true;
+        try {
+            indexSuggestions = (await computeSdk.getDatabaseIndexSuggestions({
+                databaseId: database.$id
+            })) as Record<string, unknown>;
+            indexSuggestionsLoaded = true;
+        } catch (error) {
+            indexSuggestions = null;
+            addNotification({
+                type: 'error',
+                message: `Failed to load index suggestions: ${error.message}`
+            });
+        } finally {
+            isLoadingIndexSuggestions = false;
+        }
+    }
+
     async function refreshAll() {
         trackEvent('dedicated_monitoring_refresh');
         await Promise.all([
@@ -166,6 +299,21 @@
         return query.substring(0, maxLen) + '...';
     }
 
+    function formatJson(value: unknown): string {
+        try {
+            return JSON.stringify(value, null, 2);
+        } catch {
+            return String(value);
+        }
+    }
+
+    function renderEntries(obj: Record<string, unknown>): Array<{ key: string; value: string }> {
+        return Object.entries(obj).map(([key, value]) => ({
+            key,
+            value: typeof value === 'object' ? formatJson(value) : String(value ?? '-')
+        }));
+    }
+
     let previousId = $state('');
 
     $effect(() => {
@@ -183,6 +331,24 @@
             loadAuditLogs();
         }
     });
+
+    $effect(() => {
+        if (activeSection === 'schema' && !schemaLoaded && !isLoadingSchema) {
+            loadSchema();
+        }
+    });
+
+    $effect(() => {
+        if (activeSection === 'tuning' && !tuningLoaded && !isLoadingTuning) {
+            loadTuning();
+        }
+    });
+
+    $effect(() => {
+        if (activeSection === 'indexes' && !indexSuggestionsLoaded && !isLoadingIndexSuggestions) {
+            loadIndexSuggestions();
+        }
+    });
 </script>
 
 {#if !database}
@@ -193,7 +359,6 @@
     </Container>
 {:else}
     <Container>
-        <!-- Section Tabs -->
         <Layout.Stack gap="xl">
             <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
                 <Tabs.Root variant="secondary" let:root>
@@ -221,18 +386,49 @@
                         active={activeSection === 'auditLogs'}>
                         Audit Logs
                     </Tabs.Item.Button>
+                    <Tabs.Item.Button
+                        {root}
+                        on:click={() => (activeSection = 'schema')}
+                        active={activeSection === 'schema'}>
+                        Schema
+                    </Tabs.Item.Button>
+                    <Tabs.Item.Button
+                        {root}
+                        on:click={() => (activeSection = 'schemaPreview')}
+                        active={activeSection === 'schemaPreview'}>
+                        Schema Preview
+                    </Tabs.Item.Button>
+                    <Tabs.Item.Button
+                        {root}
+                        on:click={() => (activeSection = 'explain')}
+                        active={activeSection === 'explain'}>
+                        Explain
+                    </Tabs.Item.Button>
+                    <Tabs.Item.Button
+                        {root}
+                        on:click={() => (activeSection = 'tuning')}
+                        active={activeSection === 'tuning'}>
+                        Tuning
+                    </Tabs.Item.Button>
+                    <Tabs.Item.Button
+                        {root}
+                        on:click={() => (activeSection = 'indexes')}
+                        active={activeSection === 'indexes'}>
+                        Indexes
+                    </Tabs.Item.Button>
                 </Tabs.Root>
 
-                <Button secondary on:click={refreshAll}>
-                    <Icon icon={IconRefresh} size="s" slot="start" />
-                    Refresh
-                </Button>
+                {#if activeSection === 'metrics' || activeSection === 'slowQueries' || activeSection === 'insights' || activeSection === 'auditLogs'}
+                    <Button secondary on:click={refreshAll}>
+                        <Icon icon={IconRefresh} size="s" slot="start" />
+                        Refresh
+                    </Button>
+                {/if}
             </Layout.Stack>
 
             <!-- Metrics Section -->
             {#if activeSection === 'metrics'}
                 <Layout.Stack gap="l">
-                    <!-- Period Selector -->
                     <Tabs.Root variant="secondary" let:root>
                         <Tabs.Item.Button
                             {root}
@@ -270,7 +466,6 @@
                             {/each}
                         </Layout.Grid>
                     {:else if metrics}
-                        <!-- Resource Utilization -->
                         <CardGrid>
                             <svelte:fragment slot="title">Resource Utilization</svelte:fragment>
                             CPU, memory, and storage usage for the selected period.
@@ -320,7 +515,6 @@
                             </svelte:fragment>
                         </CardGrid>
 
-                        <!-- Database Activity -->
                         <CardGrid>
                             <svelte:fragment slot="title">Database Activity</svelte:fragment>
                             Connection count, IOPS, and queries per second.
@@ -449,7 +643,6 @@
                             {/each}
                         </Layout.Stack>
                     {:else if performanceInsights}
-                        <!-- Summary Stats -->
                         <CardGrid>
                             <svelte:fragment slot="title">Query Summary</svelte:fragment>
                             Aggregated query performance statistics.
@@ -489,7 +682,6 @@
                             </svelte:fragment>
                         </CardGrid>
 
-                        <!-- Top Queries by Execution Time -->
                         {#if performanceInsights.topQueries.length > 0}
                             <Layout.Stack gap="s">
                                 <Typography.Text variant="m-500">
@@ -533,7 +725,6 @@
                             </Layout.Stack>
                         {/if}
 
-                        <!-- Wait Events -->
                         {#if performanceInsights.waitEvents.length > 0}
                             <Layout.Stack gap="s">
                                 <Typography.Text variant="m-500">
@@ -630,6 +821,251 @@
                                 </Table.Row.Base>
                             {/each}
                         </Table.Root>
+                    {/if}
+                </Layout.Stack>
+            {/if}
+
+            <!-- Schema Section -->
+            {#if activeSection === 'schema'}
+                <Layout.Stack gap="l">
+                    <Layout.Stack
+                        direction="row"
+                        justifyContent="space-between"
+                        alignItems="center">
+                        <Typography.Text variant="m-500">
+                            Current database schema (tables, columns, types, constraints, and
+                            indexes).
+                        </Typography.Text>
+                        <Button secondary on:click={loadSchema}>
+                            <Icon icon={IconRefresh} size="s" slot="start" />
+                            Refresh
+                        </Button>
+                    </Layout.Stack>
+
+                    {#if isLoadingSchema}
+                        <Layout.Stack gap="s">
+                            {#each Array(5) as _}
+                                <Skeleton variant="line" width="100%" height={20} />
+                            {/each}
+                        </Layout.Stack>
+                    {:else if schema}
+                        <Code language="json" code={formatJson(schema)} withCopy />
+                    {:else}
+                        <Alert.Inline status="info" title="No schema available">
+                            Schema data is not available for this database.
+                        </Alert.Inline>
+                    {/if}
+                </Layout.Stack>
+            {/if}
+
+            <!-- Schema Preview Section -->
+            {#if activeSection === 'schemaPreview'}
+                <Layout.Stack gap="l">
+                    <Typography.Text variant="m-500">
+                        Preview the impact of a SQL schema change without applying it.
+                    </Typography.Text>
+
+                    <Alert.Inline status="info" title="Dry run">
+                        This performs a dry-run analysis only. No changes will be applied to your
+                        database.
+                    </Alert.Inline>
+
+                    <InputTextarea
+                        id="preview-sql"
+                        label="SQL Statement"
+                        placeholder="ALTER TABLE users ADD COLUMN email VARCHAR(255);"
+                        rows={4}
+                        bind:value={previewSql} />
+
+                    <Layout.Stack direction="row" gap="s">
+                        <Button
+                            secondary
+                            disabled={!previewSql.trim() || isLoadingPreview}
+                            on:click={handlePreviewSchema}>
+                            {isLoadingPreview ? 'Analyzing...' : 'Preview Changes'}
+                        </Button>
+                        {#if previewResult}
+                            <Button
+                                text
+                                on:click={() => {
+                                    previewResult = null;
+                                    previewSql = '';
+                                }}>
+                                Clear
+                            </Button>
+                        {/if}
+                    </Layout.Stack>
+
+                    {#if previewResult}
+                        <Code language="json" code={formatJson(previewResult)} withCopy />
+                    {/if}
+                </Layout.Stack>
+            {/if}
+
+            <!-- Explain Query Section -->
+            {#if activeSection === 'explain'}
+                <Layout.Stack gap="l">
+                    <Typography.Text variant="m-500">
+                        Run EXPLAIN on a SQL query to view its execution plan.
+                    </Typography.Text>
+
+                    <InputTextarea
+                        id="explain-sql"
+                        label="SQL Query"
+                        placeholder="SELECT * FROM users WHERE email = 'test@example.com';"
+                        rows={4}
+                        bind:value={explainQuery} />
+
+                    <Layout.Stack gap="s">
+                        <InputChoice
+                            type="checkbox"
+                            id="explain-analyze"
+                            label="Run EXPLAIN ANALYZE (executes the query to get actual statistics)"
+                            bind:value={explainAnalyze} />
+                        {#if explainAnalyze}
+                            <Alert.Inline status="warning" title="Warning">
+                                EXPLAIN ANALYZE will execute the query against your database. Use
+                                with caution on write operations.
+                            </Alert.Inline>
+                        {/if}
+                    </Layout.Stack>
+
+                    <Layout.Stack direction="row" gap="s">
+                        <Button
+                            secondary
+                            disabled={!explainQuery.trim() || isLoadingExplain}
+                            on:click={handleExplainQuery}>
+                            {isLoadingExplain ? 'Running...' : 'Explain'}
+                        </Button>
+                        {#if explainResult}
+                            <Button
+                                text
+                                on:click={() => {
+                                    explainResult = null;
+                                    explainQuery = '';
+                                    explainAnalyze = false;
+                                }}>
+                                Clear
+                            </Button>
+                        {/if}
+                    </Layout.Stack>
+
+                    {#if explainResult}
+                        <Code language="json" code={formatJson(explainResult)} withCopy />
+                    {/if}
+                </Layout.Stack>
+            {/if}
+
+            <!-- Tuning Section -->
+            {#if activeSection === 'tuning'}
+                <Layout.Stack gap="l">
+                    <Layout.Stack
+                        direction="row"
+                        justifyContent="space-between"
+                        alignItems="center">
+                        <Typography.Text variant="m-500">
+                            Configuration tuning recommendations based on workload analysis.
+                        </Typography.Text>
+                        <Button
+                            secondary
+                            on:click={() => {
+                                tuningLoaded = false;
+                                loadTuning();
+                            }}>
+                            <Icon icon={IconRefresh} size="s" slot="start" />
+                            Refresh
+                        </Button>
+                    </Layout.Stack>
+
+                    {#if isLoadingTuning}
+                        <Layout.Stack gap="s">
+                            {#each Array(4) as _}
+                                <Skeleton variant="line" width="100%" height={40} />
+                            {/each}
+                        </Layout.Stack>
+                    {:else if tuningResult}
+                        {@const entries = renderEntries(tuningResult)}
+                        {#if entries.length === 0}
+                            <Alert.Inline status="info" title="No recommendations">
+                                No tuning recommendations at this time. Your configuration looks
+                                good.
+                            </Alert.Inline>
+                        {:else}
+                            <Table.Root
+                                columns={[
+                                    { id: 'parameter', width: { min: 200 } },
+                                    { id: 'recommendation', width: { min: 300 } }
+                                ]}
+                                let:root>
+                                <svelte:fragment slot="header" let:root>
+                                    <Table.Header.Cell column="parameter" {root}
+                                        >Parameter</Table.Header.Cell>
+                                    <Table.Header.Cell column="recommendation" {root}
+                                        >Recommendation</Table.Header.Cell>
+                                </svelte:fragment>
+                                {#each entries as entry, i}
+                                    <Table.Row.Base id={`tuning-${i}`} {root}>
+                                        <Table.Cell column="parameter" {root}>
+                                            <span class="query-text">{entry.key}</span>
+                                        </Table.Cell>
+                                        <Table.Cell column="recommendation" {root}>
+                                            <span class="query-text">{entry.value}</span>
+                                        </Table.Cell>
+                                    </Table.Row.Base>
+                                {/each}
+                            </Table.Root>
+                        {/if}
+                    {:else}
+                        <Alert.Inline status="info" title="No tuning data">
+                            Tuning recommendations are not available. Ensure the database has been
+                            active with sufficient workload data.
+                        </Alert.Inline>
+                    {/if}
+                </Layout.Stack>
+            {/if}
+
+            <!-- Index Suggestions Section -->
+            {#if activeSection === 'indexes'}
+                <Layout.Stack gap="l">
+                    <Layout.Stack
+                        direction="row"
+                        justifyContent="space-between"
+                        alignItems="center">
+                        <Typography.Text variant="m-500">
+                            Index suggestions based on query patterns and table statistics.
+                        </Typography.Text>
+                        <Button
+                            secondary
+                            on:click={() => {
+                                indexSuggestionsLoaded = false;
+                                loadIndexSuggestions();
+                            }}>
+                            <Icon icon={IconRefresh} size="s" slot="start" />
+                            Refresh
+                        </Button>
+                    </Layout.Stack>
+
+                    {#if isLoadingIndexSuggestions}
+                        <Layout.Stack gap="s">
+                            {#each Array(3) as _}
+                                <Skeleton variant="line" width="100%" height={40} />
+                            {/each}
+                        </Layout.Stack>
+                    {:else if indexSuggestions}
+                        {@const entries = renderEntries(indexSuggestions)}
+                        {#if entries.length === 0}
+                            <Alert.Inline status="info" title="No suggestions">
+                                No index suggestions at this time. Your indexes appear to be
+                                well-optimized.
+                            </Alert.Inline>
+                        {:else}
+                            <Code language="json" code={formatJson(indexSuggestions)} withCopy />
+                        {/if}
+                    {:else}
+                        <Alert.Inline status="info" title="No index data">
+                            Index suggestions are not available. Ensure the database has been active
+                            with sufficient query history.
+                        </Alert.Inline>
                     {/if}
                 </Layout.Stack>
             {/if}
