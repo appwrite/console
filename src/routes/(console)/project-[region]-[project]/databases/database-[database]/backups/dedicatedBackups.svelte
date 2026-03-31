@@ -267,7 +267,12 @@
         verifyingBackupId = verifyBackup.$id;
         try {
             // @todo Replace with computeSdk.verifyDatabaseBackup() when SDK is updated
-            await (computeSdk as unknown as Record<string, Function>).verifyDatabaseBackup({
+            await (
+                computeSdk as unknown as Record<
+                    string,
+                    (params: Record<string, string>) => Promise<unknown>
+                >
+            ).verifyDatabaseBackup({
                 databaseId: database.$id,
                 backupId: verifyBackup.$id
             });
