@@ -8,6 +8,7 @@ import Breadcrumbs from './breadcrumbs.svelte';
 import Header from './header.svelte';
 import { headerAlert } from '$lib/stores/headerAlert';
 import ProjectsAtRisk from '$lib/components/billing/alerts/projectsAtRisk.svelte';
+import RealtimePricing from '$lib/components/billing/alerts/realtimePricing.svelte';
 import { get } from 'svelte/store';
 import { preferences } from '$lib/stores/preferences';
 import { defaultRoles, defaultScopes } from '$lib/constants';
@@ -63,6 +64,15 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
             preferences.loadTeamPrefs(params.organization),
             loadAvailableRegions(params.organization)
         ]);
+
+        if (isCloud && new Date() < new Date('2026-04-22')) {
+            headerAlert.add({
+                show: true,
+                component: RealtimePricing,
+                id: 'realtimePricing',
+                importance: 1
+            });
+        }
 
         return {
             header: Header,

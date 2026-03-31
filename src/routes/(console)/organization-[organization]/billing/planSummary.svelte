@@ -361,6 +361,27 @@
                         getResource(resources, 'GBHours'),
                         currentPlan?.GBHours
                     ),
+                    createResourceRow(
+                        'realtime',
+                        'Realtime connections',
+                        getResource(resources, 'realtime'),
+                        currentPlan?.realtime
+                    ),
+                    createResourceRow(
+                        'realtime-messages',
+                        'Realtime messages',
+                        getResource(resources, 'realtimeMessages'),
+                        currentPlan?.realtimeMessages
+                    ),
+                    createRow({
+                        id: 'realtime-bandwidth',
+                        label: 'Realtime bandwidth',
+                        resource: getResource(resources, 'realtimeBandwidth'),
+                        usageFormatter: ({ value }) =>
+                            humanFileSize(value).value + humanFileSize(value).unit,
+                        priceFormatter: ({ amount }) => formatCurrency(amount),
+                        includeProgress: false
+                    }),
                     createRow({
                         id: 'sms',
                         label: 'Phone OTP',
