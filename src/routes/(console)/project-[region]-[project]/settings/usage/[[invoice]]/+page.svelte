@@ -19,41 +19,50 @@
     import { Accordion, Icon, Layout, Link, Table, Typography } from '@appwrite.io/pink-svelte';
     import { IconChartSquareBar } from '@appwrite.io/pink-icons-svelte';
     import { page } from '$app/state';
-    import { BillingPlanGroup } from '@appwrite.io/console';
+    import { BillingPlanGroup, type Models } from '@appwrite.io/console';
+
+    type UsageProjectExtended = Models.UsageProject & {
+        screenshotsGenerated: Models.Metric[];
+        screenshotsGeneratedTotal: number;
+        realtimeConnections: Models.Metric[];
+        realtimeConnectionsTotal: number;
+        realtimeMessages: Models.Metric[];
+        realtimeMessagesTotal: number;
+        realtimeBandwidth: Models.Metric[];
+        realtimeBandwidthTotal: number;
+    };
 
     export let data;
 
     $: baseRoute = `${base}/project-${page.params.region}-${page.params.project}`;
-    $: network = data.usage.network;
-    $: users = data.usage.users;
-    $: usersTotal = data.usage.usersTotal;
-    $: executions = data.usage.executions;
-    $: executionsTotal = data.usage.executionsTotal;
-    $: storage =
-        data.usage.filesStorageTotal +
-        data.usage.deploymentsStorageTotal +
-        data.usage.buildsStorageTotal;
-    $: imageTransformations = data.usage.imageTransformations;
-    $: imageTransformationsTotal = data.usage.imageTransformationsTotal;
-    $: screenshotsGenerated = data.usage.screenshotsGenerated;
-    $: screenshotsGeneratedTotal = data.usage.screenshotsGeneratedTotal;
-    $: realtimeConnections = data.usage.realtimeConnections;
-    $: realtimeConnectionsTotal = data.usage.realtimeConnectionsTotal;
-    $: realtimeMessages = data.usage.realtimeMessages;
-    $: realtimeMessagesTotal = data.usage.realtimeMessagesTotal;
-    $: realtimeBandwidth = data.usage.realtimeBandwidth;
-    $: realtimeBandwidthTotal = data.usage.realtimeBandwidthTotal;
-    $: dbReads = data.usage.databasesReads;
-    $: dbWrites = data.usage.databasesWrites;
+    $: usage = data.usage as UsageProjectExtended;
+    $: network = usage.network;
+    $: users = usage.users;
+    $: usersTotal = usage.usersTotal;
+    $: executions = usage.executions;
+    $: executionsTotal = usage.executionsTotal;
+    $: storage = usage.filesStorageTotal + usage.deploymentsStorageTotal + usage.buildsStorageTotal;
+    $: imageTransformations = usage.imageTransformations;
+    $: imageTransformationsTotal = usage.imageTransformationsTotal;
+    $: screenshotsGenerated = usage.screenshotsGenerated;
+    $: screenshotsGeneratedTotal = usage.screenshotsGeneratedTotal;
+    $: realtimeConnections = usage.realtimeConnections;
+    $: realtimeConnectionsTotal = usage.realtimeConnectionsTotal;
+    $: realtimeMessages = usage.realtimeMessages;
+    $: realtimeMessagesTotal = usage.realtimeMessagesTotal;
+    $: realtimeBandwidth = usage.realtimeBandwidth;
+    $: realtimeBandwidthTotal = usage.realtimeBandwidthTotal;
+    $: dbReads = usage.databasesReads;
+    $: dbWrites = usage.databasesWrites;
 
     $: legendData = [
         {
             name: 'Reads',
-            value: clampMin(data.usage.databasesReads.reduce((sum, item) => sum + item.value, 0))
+            value: clampMin(usage.databasesReads.reduce((sum, item) => sum + item.value, 0))
         },
         {
             name: 'Writes',
-            value: clampMin(data.usage.databasesWrites.reduce((sum, item) => sum + item.value, 0))
+            value: clampMin(usage.databasesWrites.reduce((sum, item) => sum + item.value, 0))
         }
     ];
 
@@ -321,13 +330,13 @@
                             data: [...executions.map((e) => [e.date, e.value])]
                         }
                     ]} />
-                {#if data.usage.executionsBreakdown.length > 0}
+                {#if usage.executionsBreakdown.length > 0}
                     <Table.Root columns={2} let:root>
                         <svelte:fragment slot="header" let:root>
                             <Table.Header.Cell {root}>Function</Table.Header.Cell>
                             <Table.Header.Cell {root}>Usage</Table.Header.Cell>
                         </svelte:fragment>
-                        {#each data.usage.executionsBreakdown as func}
+                        {#each usage.executionsBreakdown as func}
                             <Table.Row.Link
                                 href={`${baseRoute}/functions/function-${func.resourceId}`}
                                 {root}>
@@ -359,27 +368,27 @@
                 {@const humanized = humanFileSize(storage)}
                 {@const progressBarStorageDate = [
                     {
-                        size: bytesToSize(data.usage.filesStorageTotal, 'MB'),
+                        size: bytesToSize(usage.filesStorageTotal, 'MB'),
                         color: '#85DBD8',
                         tooltip: {
                             title: 'File storage',
-                            label: `${Math.round(bytesToSize(data.usage.filesStorageTotal, 'MB') * 100) / 100}MB`
+                            label: `${Math.round(bytesToSize(usage.filesStorageTotal, 'MB') * 100) / 100}MB`
                         }
                     },
                     {
-                        size: bytesToSize(data.usage.deploymentsStorageTotal, 'MB'),
+                        size: bytesToSize(usage.deploymentsStorageTotal, 'MB'),
                         color: '#7C67FE',
                         tooltip: {
                             title: 'Deployments storage',
-                            label: `${Math.round(bytesToSize(data.usage.deploymentsStorageTotal, 'MB') * 100) / 100}MB`
+                            label: `${Math.round(bytesToSize(usage.deploymentsStorageTotal, 'MB') * 100) / 100}MB`
                         }
                     },
                     {
-                        size: bytesToSize(data.usage.buildsStorageTotal, 'MB'),
+                        size: bytesToSize(usage.buildsStorageTotal, 'MB'),
                         color: '#FE9567',
                         tooltip: {
                             title: 'Builds storage',
-                            label: `${Math.round(bytesToSize(data.usage.buildsStorageTotal, 'MB') * 100) / 100}MB`
+                            label: `${Math.round(bytesToSize(usage.buildsStorageTotal, 'MB') * 100) / 100}MB`
                         }
                     }
                 ]}
@@ -408,25 +417,25 @@
         GB hours represent the memory usage (in gigabytes) of your function executions and builds, multiplied
         by the total execution time (in hours).
         <svelte:fragment slot="aside">
-            {#if data.usage.executionsMbSecondsTotal}
+            {#if usage.executionsMbSecondsTotal}
                 {@const totalGbHours = mbSecondsToGBHours(
-                    data.usage.executionsMbSecondsTotal + data.usage.buildsMbSecondsTotal
+                    usage.executionsMbSecondsTotal + usage.buildsMbSecondsTotal
                 )}
                 {@const progressBarStorageDate = [
                     {
-                        size: mbSecondsToGBHours(data.usage.executionsMbSecondsTotal),
+                        size: mbSecondsToGBHours(usage.executionsMbSecondsTotal),
                         color: '#85DBD8',
                         tooltip: {
                             title: 'Executions',
-                            label: `${(Math.round(mbSecondsToGBHours(data.usage.executionsMbSecondsTotal) * 100) / 100).toLocaleString('en-US')} GB hours`
+                            label: `${(Math.round(mbSecondsToGBHours(usage.executionsMbSecondsTotal) * 100) / 100).toLocaleString('en-US')} GB hours`
                         }
                     },
                     {
-                        size: mbSecondsToGBHours(data.usage.buildsMbSecondsTotal),
+                        size: mbSecondsToGBHours(usage.buildsMbSecondsTotal),
                         color: '#FE9567',
                         tooltip: {
                             title: 'Deployments',
-                            label: `${(Math.round(mbSecondsToGBHours(data.usage.buildsMbSecondsTotal) * 100) / 100).toLocaleString('en-US')} GB hours`
+                            label: `${(Math.round(mbSecondsToGBHours(usage.buildsMbSecondsTotal) * 100) / 100).toLocaleString('en-US')} GB hours`
                         }
                     }
                 ]}
@@ -564,22 +573,22 @@
         Calculated for all Phone OTP sent across your project. Resets at the start of each billing cycle.<br />
         You will not be charged for Phone OTPs before February 10th.
         <svelte:fragment slot="aside">
-            {#if data.usage.authPhoneTotal}
+            {#if usage.authPhoneTotal}
                 <div class="u-flex u-main-space-between">
                     <Layout.Stack gap="s" direction="row" alignItems="baseline">
                         <Typography.Title>
-                            {formatNumberWithCommas(data.usage.authPhoneTotal)}
+                            {formatNumberWithCommas(usage.authPhoneTotal)}
                         </Typography.Title>
                         <Typography.Text>OTPs</Typography.Text>
                     </Layout.Stack>
                     <p class="u-flex u-gap-8 u-cross-center">
                         <span class="u-color-text-offline">Estimated cost</span>
                         <span class="body-text-2">
-                            {formatCurrency(data.usage.authPhoneEstimate)}
+                            {formatCurrency(usage.authPhoneEstimate)}
                         </span>
                     </p>
                 </div>
-                {#if data.usage.authPhoneCountryBreakdown.length > 0}
+                {#if usage.authPhoneCountryBreakdown.length > 0}
                     <Accordion title="Region breakdown">
                         <Table.Root columns={3} let:root>
                             <svelte:fragment slot="header" let:root>
@@ -587,7 +596,7 @@
                                 <Table.Header.Cell {root}>Amount</Table.Header.Cell>
                                 <Table.Header.Cell {root}>Estimated cost</Table.Header.Cell>
                             </svelte:fragment>
-                            {#each data.usage.authPhoneCountryBreakdown as phone}
+                            {#each usage.authPhoneCountryBreakdown as phone}
                                 <Table.Row.Base {root}>
                                     <Table.Cell {root}>
                                         {getCountryName(phone.name)}
