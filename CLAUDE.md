@@ -27,7 +27,7 @@ Runs on PRs: `bun audit` -> `bun check` -> `bun run lint` -> `bun test:unit` -> 
 
 ## Stack
 
-- **Framework:** SvelteKit 2 + **Svelte 5** (runes), TypeScript, `@sveltejs/adapter-static`
+- **Framework:** SvelteKit 2 + Svelte 5, TypeScript, `@sveltejs/adapter-static`
 - **Bundler:** Vite 7 (overridden to `rolldown-vite`)
 - **Design system:** `@appwrite.io/pink-svelte`, `@appwrite.io/pink-icons-svelte`
 - **UI primitives:** Melt UI (`@melt-ui/svelte` with preprocessor)
@@ -46,9 +46,9 @@ Runs on PRs: `bun audit` -> `bun check` -> `bun run lint` -> `bun test:unit` -> 
 ### Route structure (`src/routes/`)
 
 SvelteKit file-based routing with layout groups:
-- `(public)/` — login, register, auth callbacks, invite, recover
-- `(console)/` — authenticated console (projects, orgs, account)
-- `(authenticated)/` — auth-related flows (MFA, Git integration)
+- `(public)/` — unauthenticated routes: `(guest)/` (login, register), auth (OAuth, magic URL), invite, recover, card, functions/sites deploy, hackathon, templates
+- `(console)/` — authenticated console (projects, orgs, account, onboarding)
+- `(authenticated)/` — post-login flows (MFA, Git authorization)
 
 Dynamic segments: `project-[region]-[project]`, `organization-[organization]`
 
@@ -84,6 +84,8 @@ Each route can have:
 | `actions/` | Svelte actions and analytics tracking |
 | `charts/` | Chart visualization components — barrel-exported via `index.ts` |
 | `commandCenter/` | Command palette |
+| `images/` | SVG assets (logos, illustrations, empty states) |
+| `data/` | Static data (testimonials) |
 | `profiles/` | CSS profiles and theming |
 | `mock/` | Mock data for development |
 
@@ -124,7 +126,7 @@ Runes (Svelte 5 — preferred for new and modified code):
 
 ### SDK usage (`src/lib/stores/sdk.ts`)
 
-Three client instances: `clientConsole` (console API), `clientProject` (project API, admin mode), `clientRealtime` (realtime subscriptions). Region-aware endpoints with subdomain routing (fra., nyc., syd., sfo., sgp., tor.).
+Four client instances: `clientConsole` (console API), `scopedConsoleClient` (region-scoped console API, used by `forConsoleIn()`), `clientProject` (project API, admin mode), `clientRealtime` (realtime subscriptions). Region-aware endpoints with subdomain routing (fra., nyc., syd., sfo., sgp., tor.).
 
 ```typescript
 import { sdk } from '$lib/stores/sdk';
@@ -176,7 +178,7 @@ Stores in `src/lib/stores/` — writable, derived, and "conservative" (selective
 
 ### Wizard pattern (`$lib/stores/wizard`)
 
-Modal wizard flow: `wizard.start(Component, media?, step?, props?)` to open, `wizard.hide()` to close. Supports `setInterceptor()` for async pre-step validation, `finalAction()` for completion, and `setNextDisabled()` for flow control.
+Modal wizard flow: `wizard.start(Component, media?, step?, props?)` to open, `wizard.hide()` to close. Methods: `setInterceptor(callback)` for async pre-step validation, `setNextDisabled(bool)` for flow control, `setStep(n)` / `updateStep(cb)` for navigation, `showCover(Component)` for overlays. `finalAction` is a property on `WizardStore`, set via `wizard.update()`.
 
 ### Notifications (`$lib/stores/notifications`)
 
