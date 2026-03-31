@@ -1,7 +1,7 @@
 <script lang="ts">
     import { page } from '$app/state';
     import { Confirm, Modal } from '$lib/components';
-    import { Button } from '$lib/elements/forms';
+    import { Button, InputRadio } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import { CardGrid } from '$lib/components';
     import { toLocaleDateTime } from '$lib/helpers/date';
@@ -21,7 +21,12 @@
         Tabs,
         Typography
     } from '@appwrite.io/pink-svelte';
-    import { IconDotsHorizontal, IconRefresh, IconTrash } from '@appwrite.io/pink-icons-svelte';
+    import {
+        IconDotsHorizontal,
+        IconRefresh,
+        IconShieldCheck,
+        IconTrash
+    } from '@appwrite.io/pink-icons-svelte';
 
     const {
         database
@@ -49,6 +54,13 @@
 
     let showPitrRestore = $state(false);
     let pitrTargetDateTime = $state('');
+
+    let showCreateBackupModal = $state(false);
+    let backupType = $state<'full' | 'incremental'>('full');
+
+    let verifyingBackupId = $state<string | null>(null);
+    let showVerifyConfirm = $state(false);
+    let verifyBackup = $state<Models.DedicatedDatabaseBackup | null>(null);
 
     let activeTab = $state<'backups' | 'restorations'>('backups');
 
@@ -152,12 +164,17 @@
     async function handleCreateBackup() {
         isCreatingBackup = true;
         try {
-            await computeSdk.createDatabaseBackup({ databaseId: database.$id });
+            await computeSdk.createDatabaseBackup({
+                databaseId: database.$id,
+                type: backupType as unknown as Type
+            });
             addNotification({
                 type: 'success',
                 message: 'Backup creation started'
             });
             trackEvent(Submit.DedicatedBackupCreate);
+            showCreateBackupModal = false;
+            backupType = 'full';
             await loadBackups();
         } catch (error) {
             addNotification({
@@ -245,6 +262,34 @@
         }
     }
 
+    async function handleVerifyBackup() {
+        if (!verifyBackup) return;
+        verifyingBackupId = verifyBackup.$id;
+        try {
+            // @todo Replace with computeSdk.verifyDatabaseBackup() when SDK is updated
+            await (computeSdk as unknown as Record<string, Function>).verifyDatabaseBackup({
+                databaseId: database.$id,
+                backupId: verifyBackup.$id
+            });
+            addNotification({
+                type: 'success',
+                message: 'Backup verification started'
+            });
+            trackEvent('submit_dedicated_backup_verify');
+            showVerifyConfirm = false;
+            verifyBackup = null;
+            await loadBackups();
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
+            trackEvent('submit_dedicated_backup_verify_error');
+        } finally {
+            verifyingBackupId = null;
+        }
+    }
+
     function formatPitrTime(isoString: string): string {
         if (!isoString) return '-';
         return toLocaleDateTime(isoString);
@@ -307,9 +352,7 @@
             </Layout.Grid>
         </svelte:fragment>
         <svelte:fragment slot="actions">
-            <Button secondary disabled={isCreatingBackup} on:click={handleCreateBackup}>
-                {isCreatingBackup ? 'Creating...' : 'Create Backup'}
-            </Button>
+            <Button secondary on:click={() => (showCreateBackupModal = true)}>Create Backup</Button>
         </svelte:fragment>
     </CardGrid>
 
@@ -462,6 +505,19 @@
                                                     Restore
                                                 </ActionMenu.Item.Button>
                                             {/if}
+                                            {#if backup.status === 'completed'}
+                                                <ActionMenu.Item.Button
+                                                    trailingIcon={IconShieldCheck}
+                                                    on:click={(e) => {
+                                                        toggle(e);
+                                                        verifyBackup = backup;
+                                                        showVerifyConfirm = true;
+                                                    }}>
+                                                    {verifyingBackupId === backup.$id
+                                                        ? 'Verifying...'
+                                                        : 'Verify'}
+                                                </ActionMenu.Item.Button>
+                                            {/if}
                                             <ActionMenu.Item.Button
                                                 status="danger"
                                                 trailingIcon={IconTrash}
@@ -545,6 +601,60 @@
     </Layout.Stack>
 </Container>
 
+<!-- Verify Backup Confirmation -->
+<Modal title="Verify backup" bind:show={showVerifyConfirm} onSubmit={handleVerifyBackup}>
+    <Layout.Stack gap="l">
+        <Typography.Text>
+            Verify the integrity of this backup by restoring it to a temporary environment and
+            running health checks.
+        </Typography.Text>
+        {#if verifyBackup}
+            <Layout.Grid columns={2} columnsS={1} gap="m">
+                <Layout.Stack gap="xxs">
+                    <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                        Backup ID
+                    </Typography.Caption>
+                    <Typography.Text variant="m-500">{verifyBackup.$id}</Typography.Text>
+                </Layout.Stack>
+                <Layout.Stack gap="xxs">
+                    <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                        Type
+                    </Typography.Caption>
+                    <Typography.Text variant="m-500">
+                        {formatBackupType(verifyBackup.type)}
+                    </Typography.Text>
+                </Layout.Stack>
+                <Layout.Stack gap="xxs">
+                    <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                        Size
+                    </Typography.Caption>
+                    <Typography.Text variant="m-500">
+                        {verifyBackup.sizeBytes ? calculateSize(verifyBackup.sizeBytes) : '-'}
+                    </Typography.Text>
+                </Layout.Stack>
+                <Layout.Stack gap="xxs">
+                    <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                        Created
+                    </Typography.Caption>
+                    <Typography.Text variant="m-500">
+                        {toLocaleDateTime(verifyBackup.$createdAt)}
+                    </Typography.Text>
+                </Layout.Stack>
+            </Layout.Grid>
+        {/if}
+        <Alert.Inline status="info" title="Verification process">
+            A temporary database will be created to restore and validate this backup. This does not
+            affect your production database. The backup status will change to "verified" on success.
+        </Alert.Inline>
+    </Layout.Stack>
+    <svelte:fragment slot="footer">
+        <Button text on:click={() => (showVerifyConfirm = false)}>Cancel</Button>
+        <Button submit disabled={verifyingBackupId !== null}>
+            {verifyingBackupId ? 'Verifying...' : 'Verify'}
+        </Button>
+    </svelte:fragment>
+</Modal>
+
 <!-- Delete Backup Confirmation -->
 <Confirm title="Delete backup" bind:open={showDeleteConfirm} onSubmit={handleDeleteBackup}>
     <Typography.Text>
@@ -606,6 +716,33 @@
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showRestoreConfirm = false)}>Cancel</Button>
         <Button submit>Restore</Button>
+    </svelte:fragment>
+</Modal>
+
+<!-- Create Backup Modal -->
+<Modal title="Create backup" bind:show={showCreateBackupModal} onSubmit={handleCreateBackup}>
+    <Layout.Stack gap="l">
+        <Typography.Text>Select the backup type to create.</Typography.Text>
+        <Layout.Stack gap="s">
+            <InputRadio
+                id="backup-full"
+                name="backupType"
+                label="Full backup"
+                value="full"
+                bind:group={backupType} />
+            <InputRadio
+                id="backup-incremental"
+                name="backupType"
+                label="Incremental backup (only changes since last full backup)"
+                value="incremental"
+                bind:group={backupType} />
+        </Layout.Stack>
+    </Layout.Stack>
+    <svelte:fragment slot="footer">
+        <Button text on:click={() => (showCreateBackupModal = false)}>Cancel</Button>
+        <Button submit disabled={isCreatingBackup}>
+            {isCreatingBackup ? 'Creating...' : 'Create'}
+        </Button>
     </svelte:fragment>
 </Modal>
 
