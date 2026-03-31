@@ -9,6 +9,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { Dependencies } from '$lib/constants';
     import { trackEvent } from '$lib/actions/analytics';
+    import { capitalize } from '$lib/helpers/string';
     import { Status as DatabaseStatus, type Models } from '@appwrite.io/console';
     import {
         Badge,
@@ -22,6 +23,7 @@
         Divider
     } from '@appwrite.io/pink-svelte';
     import { IconDuplicate, IconRefresh } from '@appwrite.io/pink-icons-svelte';
+    import { getEngineDisplayName } from './dedicated';
 
     type ExtendedDedicatedDatabase = Models.DedicatedDatabase & {
         metricsSlowQueryLogThresholdMs?: number;
@@ -144,23 +146,6 @@
 
     const tierMaxConnections = $derived(tierConnectionLimits[database.tier] ?? null);
 
-    function getEngineDisplayName(engine: string): string {
-        switch (engine) {
-            case 'postgres':
-                return 'PostgreSQL';
-            case 'mysql':
-                return 'MySQL';
-            case 'mariadb':
-                return 'MariaDB';
-            default:
-                return engine;
-        }
-    }
-
-    function capitalizeFirst(str: string): string {
-        return str.charAt(0).toUpperCase() + str.slice(1);
-    }
-
     async function refreshStatus() {
         isRefreshing = true;
         try {
@@ -193,8 +178,7 @@
 
             trackEvent('click_database_cold_start');
 
-            // Refresh status after a short delay
-            setTimeout(() => invalidate(Dependencies.DATABASE), 2000);
+            await invalidate(Dependencies.DATABASE);
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -218,7 +202,7 @@
                 message: 'Database is pausing'
             });
             trackEvent('click_database_pause');
-            setTimeout(() => invalidate(Dependencies.DATABASE), 2000);
+            await invalidate(Dependencies.DATABASE);
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -242,7 +226,7 @@
                 message: 'Database is resuming'
             });
             trackEvent('click_database_resume');
-            setTimeout(() => invalidate(Dependencies.DATABASE), 2000);
+            await invalidate(Dependencies.DATABASE);
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -266,7 +250,7 @@
                 message: 'Database container is spinning down'
             });
             trackEvent('click_database_spin_down');
-            setTimeout(() => invalidate(Dependencies.DATABASE), 2000);
+            await invalidate(Dependencies.DATABASE);
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -282,14 +266,17 @@
 
     const hasCredentials = $derived(!!database.connectionUser && !!database.connectionPassword);
 
-    // Build a connection string from parts when one is not provided by the API
+    const defaultDatabaseName = $derived(database.engine === 'postgres' ? 'postgres' : '');
+
     const resolvedConnectionString = $derived.by(() => {
         if (database.connectionString) return database.connectionString;
         if (!database.hostname || !hasCredentials) return '';
-        return `${database.engine}://${database.connectionUser}:${database.connectionPassword}@${database.hostname}:${database.connectionPort}/postgres`;
+        const user = encodeURIComponent(database.connectionUser);
+        const password = encodeURIComponent(database.connectionPassword);
+        const suffix = defaultDatabaseName ? `/${defaultDatabaseName}` : '';
+        return `${database.engine}://${user}:${password}@${database.hostname}:${database.connectionPort}${suffix}`;
     });
 
-    // Generate connection command based on engine
     function getConnectionCommand(): string {
         if (!resolvedConnectionString) return '';
 
@@ -298,7 +285,7 @@
                 return `psql "${resolvedConnectionString}"`;
             case 'mysql':
             case 'mariadb':
-                return `mysql -h ${database.hostname} -P ${database.connectionPort} -u ${database.connectionUser} -p${database.connectionPassword} postgres`;
+                return `mysql -h ${database.hostname} -P ${database.connectionPort} -u ${database.connectionUser} -p'${database.connectionPassword}'`;
             default:
                 return resolvedConnectionString;
         }
@@ -372,12 +359,12 @@
             <Layout.Stack gap="l">
                 <Layout.Stack direction="row" gap="xl" alignItems="center" wrap="wrap">
                     <Status status={statusComponentStatus}>
-                        {capitalizeFirst(database.status)}
+                        {capitalize(database.status)}
                     </Status>
 
                     {#if database.containerStatus}
                         <Status status={containerComponentStatus}>
-                            Container: {capitalizeFirst(database.containerStatus)}
+                            Container: {capitalize(database.containerStatus)}
                         </Status>
                     {/if}
 
@@ -472,7 +459,9 @@
                                 </div>
                             </div>
                         </Layout.Grid>
-                        <CopyInput label="Database" value="postgres" />
+                        {#if defaultDatabaseName}
+                            <CopyInput label="Database" value={defaultDatabaseName} />
+                        {/if}
                         {#if database.externalIP || database.internalIP}
                             <Layout.Grid columns={2} columnsS={1} gap="m">
                                 {#if database.externalIP}
@@ -596,7 +585,7 @@
                         Tier
                     </Typography.Caption>
                     <Typography.Text variant="m-500">
-                        {capitalizeFirst(database.tier)}
+                        {capitalize(database.tier)}
                     </Typography.Text>
                 </Layout.Stack>
                 <Layout.Stack gap="xxs">
@@ -604,7 +593,7 @@
                         Backend
                     </Typography.Caption>
                     <Typography.Text variant="m-500">
-                        {capitalizeFirst(database.backend)}
+                        {capitalize(database.backend)}
                     </Typography.Text>
                 </Layout.Stack>
                 <Layout.Stack gap="xxs">
@@ -669,7 +658,7 @@
                                 Sync Mode
                             </Typography.Caption>
                             <Typography.Text variant="m-500">
-                                {capitalizeFirst(database.haSyncMode)}
+                                {capitalize(database.haSyncMode)}
                             </Typography.Text>
                         </Layout.Stack>
                     {/if}
