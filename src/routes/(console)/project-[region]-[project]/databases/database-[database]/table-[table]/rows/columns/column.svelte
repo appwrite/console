@@ -16,7 +16,16 @@
     export let label: string;
     export let array: boolean | undefined = undefined;
     export let optionalText: string | undefined = undefined;
-    export let value: string | number | bigint | boolean | null | string[] | number[] | bigint[] | boolean[];
+    export let value:
+        | string
+        | number
+        | bigint
+        | boolean
+        | null
+        | string[]
+        | number[]
+        | bigint[]
+        | boolean[];
     export let editing = false;
     export let limited = false;
     export let column:
