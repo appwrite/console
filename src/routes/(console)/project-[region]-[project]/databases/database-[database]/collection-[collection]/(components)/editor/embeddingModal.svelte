@@ -25,9 +25,9 @@
 
         generating = true;
         try {
-            const response = await sdk
-                .forProject(page.params.region, page.params.project)
-                .vectorsDB.createTextEmbeddings({ texts: [content.trim()] });
+            const vectorsSdk = sdk.forProject(page.params.region, page.params.project).vectorsDB;
+            // @ts-expect-error createTextEmbeddings not yet in SDK type
+            const response = await vectorsSdk.createTextEmbeddings({ texts: [content.trim()] });
 
             const embedding = response?.embeddings?.[0]?.embedding;
             if (embedding?.length) {

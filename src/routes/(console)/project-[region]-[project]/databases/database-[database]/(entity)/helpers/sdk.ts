@@ -14,14 +14,14 @@ import {
 } from './terminology';
 
 import {
+    Backend,
+    Engine,
     Region,
+    type DatabasesIndexType,
     type Models,
     type OrderBy,
-    type TablesDBIndexType,
-    type DocumentsDBIndexType,
-    type VectorsDBIndexType
+    type TablesDBIndexType
 } from '@appwrite.io/console';
-import { Backend, Engine } from '$lib/sdk/dedicated';
 
 export type DedicatedDatabaseParams = {
     databaseId: string;
@@ -314,11 +314,12 @@ function buildDatabaseSdk(region: string, project: string, type: DatabaseType): 
                     return toSupportiveEntity(table);
                 }
                 case 'vectorsdb': {
-                    const collection = await baseSdk.vectorsDB.createCollection({
+                    const collectionParams = {
                         ...params,
                         dimension: params.dimension,
                         collectionId: params.entityId
-                    });
+                    };
+                    const collection = await baseSdk.vectorsDB.createCollection(collectionParams);
 
                     return toSupportiveEntity(collection);
                 }
@@ -669,7 +670,7 @@ function buildDatabaseSdk(region: string, project: string, type: DatabaseType): 
                         databaseId: params.databaseId,
                         collectionId: params.entityId,
                         key: params.key,
-                        type: params.type as DocumentsDBIndexType,
+                        type: params.type as DatabasesIndexType,
                         attributes: params.attributes,
                         lengths: params.lengths,
                         orders: params.orders
@@ -681,7 +682,7 @@ function buildDatabaseSdk(region: string, project: string, type: DatabaseType): 
                         databaseId: params.databaseId,
                         collectionId: params.entityId,
                         key: params.key,
-                        type: params.type as VectorsDBIndexType,
+                        type: params.type as DatabasesIndexType,
                         attributes: params.attributes,
                         lengths: params.lengths,
                         orders: params.orders

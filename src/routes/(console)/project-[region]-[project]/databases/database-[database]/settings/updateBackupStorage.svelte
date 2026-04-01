@@ -8,8 +8,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import { type Models } from '@appwrite.io/console';
-    import { Provider } from '$lib/sdk/dedicated';
+    import { Provider, type Models } from '@appwrite.io/console';
     import { Layout } from '@appwrite.io/pink-svelte';
 
     let {
@@ -45,6 +44,7 @@
     onMount(async () => {
         try {
             const projectSdk = sdk.forProject(page.params.region, page.params.project);
+            // @ts-expect-error SDK method not yet available
             config = await projectSdk.compute.getBackupStorageConfig({ databaseId: database.$id });
             isConfigured = true;
         } catch {
@@ -101,6 +101,7 @@
         isRemoving = true;
         try {
             const projectSdk = sdk.forProject(page.params.region, page.params.project);
+            // @ts-expect-error SDK method not yet available
             await projectSdk.compute.deleteBackupStorageConfig({ databaseId: database.$id });
 
             isConfigured = false;

@@ -9,8 +9,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { type Models } from '@appwrite.io/console';
-    import { Type } from '$lib/sdk/dedicated';
+    import { Type, type Models } from '@appwrite.io/console';
     import {
         ActionMenu,
         Alert,

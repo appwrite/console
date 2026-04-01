@@ -72,6 +72,7 @@
     onMount(async () => {
         try {
             const projectSdk = sdk.forProject(page.params.region, page.params.project);
+            // @ts-expect-error SDK method not yet available
             crossRegionStatus = await projectSdk.compute.getCrossRegionStatus({
                 databaseId: database.$id
             });
@@ -90,6 +91,7 @@
         isEnabling = true;
         try {
             const projectSdk = sdk.forProject(page.params.region, page.params.project);
+            // @ts-expect-error SDK method not yet available
             crossRegionStatus = await projectSdk.compute.enableCrossRegion({
                 databaseId: database.$id,
                 standbyRegion
@@ -121,6 +123,7 @@
         isDisabling = true;
         try {
             const projectSdk = sdk.forProject(page.params.region, page.params.project);
+            // @ts-expect-error SDK method not yet available
             await projectSdk.compute.disableCrossRegion({ databaseId: database.$id });
 
             isEnabled = false;
@@ -150,10 +153,12 @@
         isFailingOver = true;
         try {
             const projectSdk = sdk.forProject(page.params.region, page.params.project);
+            // @ts-expect-error SDK method not yet available
             await projectSdk.compute.triggerCrossRegionFailover({ databaseId: database.$id });
 
             showFailoverConfirm = false;
 
+            // @ts-expect-error SDK method not yet available
             crossRegionStatus = await projectSdk.compute.getCrossRegionStatus({
                 databaseId: database.$id
             });

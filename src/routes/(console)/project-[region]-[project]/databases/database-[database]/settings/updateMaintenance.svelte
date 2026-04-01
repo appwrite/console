@@ -7,8 +7,7 @@
     import { Button, Form, InputSelect, InputNumber } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { type Models } from '@appwrite.io/console';
-    import { Day } from '$lib/sdk/dedicated';
+    import { Day, type Models } from '@appwrite.io/console';
 
     let {
         database

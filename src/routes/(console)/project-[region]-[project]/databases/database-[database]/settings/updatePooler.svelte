@@ -7,8 +7,7 @@
     import { Button, Form, InputSelect, InputNumber, InputSwitch } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { type Models } from '@appwrite.io/console';
-    import { Mode } from '$lib/sdk/dedicated';
+    import { Mode, type Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
 
     let {

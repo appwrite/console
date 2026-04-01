@@ -5,31 +5,30 @@ import {
     Avatars,
     Backups,
     Client,
+    Compute,
     Console,
+    Databases,
+    Domains,
     Functions,
     Health,
     Locale,
     Messaging,
     Migrations,
+    Organizations,
     Project,
     Project as ProjectApi,
     Projects,
     Proxy,
+    Realtime,
+    Sites,
     Storage,
+    TablesDB,
     Teams,
+    Tokens,
     Users,
     Vcs,
-    Sites,
-    Tokens,
-    TablesDB,
-    Domains,
-    DocumentsDB,
-    Webhooks,
-    Realtime,
-    Organizations,
-    VectorsDB
+    Webhooks
 } from '@appwrite.io/console';
-import { Compute } from '$lib/sdk/compute';
 import { Sources } from '$lib/sdk/sources';
 import {
     REGION_FRA,
@@ -142,9 +141,9 @@ const sdkForProject = {
     migrations: new Migrations(clientProject),
     sites: new Sites(clientProject),
     tablesDB: new TablesDB(clientProject),
-    documentsDB: new DocumentsDB(clientProject),
+    documentsDB: new Databases(clientProject),
     compute: new Compute(clientProject),
-    vectorsDB: new VectorsDB(clientProject),
+    vectorsDB: new Databases(clientProject),
     webhooks: new Webhooks(clientProject),
     console: new Console(clientProject) // for suggestions API
 };

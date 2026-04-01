@@ -8,8 +8,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import { type Models } from '@appwrite.io/console';
-    import { TargetRegion } from '$lib/sdk/dedicated';
+    import { TargetRegion, type Models } from '@appwrite.io/console';
     import { Badge, Layout } from '@appwrite.io/pink-svelte';
 
     let {

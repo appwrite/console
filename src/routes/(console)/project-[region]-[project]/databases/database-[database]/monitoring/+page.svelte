@@ -7,8 +7,7 @@
     import { calculateSize } from '$lib/helpers/sizeConvertion';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { Click, trackEvent } from '$lib/actions/analytics';
-    import { type Models } from '@appwrite.io/console';
-    import { Period } from '$lib/sdk/dedicated';
+    import { Period, type Models } from '@appwrite.io/console';
     import {
         Alert,
         Badge,
@@ -633,7 +632,7 @@
                                         </span>
                                     </Table.Cell>
                                     <Table.Cell column="duration" {root}>
-                                        {formatDurationMs(sq.duration)}
+                                        {formatDurationMs(sq.durationMs)}
                                     </Table.Cell>
                                     <Table.Cell column="calls" {root}>
                                         {formatNumber(sq.calls)}
@@ -729,10 +728,10 @@
                                                 {formatNumber(tq.calls)}
                                             </Table.Cell>
                                             <Table.Cell column="totalTime" {root}>
-                                                {formatDurationMs(tq.totalTime)}
+                                                {formatDurationMs(tq.totalTimeMs)}
                                             </Table.Cell>
                                             <Table.Cell column="meanTime" {root}>
-                                                {formatDurationMs(tq.meanTime)}
+                                                {formatDurationMs(tq.meanTimeMs)}
                                             </Table.Cell>
                                             <Table.Cell column="rows" {root}>
                                                 {formatNumber(tq.rows)}
@@ -834,7 +833,7 @@
                                         </span>
                                     </Table.Cell>
                                     <Table.Cell column="client" {root}>
-                                        {log.client || '-'}
+                                        {log.clientAddress || '-'}
                                     </Table.Cell>
                                 </Table.Row.Base>
                             {/each}

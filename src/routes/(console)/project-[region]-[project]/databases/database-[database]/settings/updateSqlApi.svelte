@@ -7,8 +7,7 @@
     import { Button, Form, InputSwitch, InputNumber, InputCheckbox } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import type { Compute } from '$lib/sdk/compute';
-    import type { Models } from '@appwrite.io/console';
+    import type { Compute, Models } from '@appwrite.io/console';
 
     type DedicatedDatabaseWithSqlApi = Models.DedicatedDatabase & {
         sqlApiEnabled: boolean;

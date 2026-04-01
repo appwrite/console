@@ -21,21 +21,10 @@
     import { page } from '$app/state';
     import { BillingPlanGroup, type Models } from '@appwrite.io/console';
 
-    type UsageProjectExtended = Models.UsageProject & {
-        screenshotsGenerated: Models.Metric[];
-        screenshotsGeneratedTotal: number;
-        realtimeConnections: Models.Metric[];
-        realtimeConnectionsTotal: number;
-        realtimeMessages: Models.Metric[];
-        realtimeMessagesTotal: number;
-        realtimeBandwidth: Models.Metric[];
-        realtimeBandwidthTotal: number;
-    };
-
     export let data;
 
     $: baseRoute = `${base}/project-${page.params.region}-${page.params.project}`;
-    $: usage = data.usage as UsageProjectExtended;
+    $: usage = data.usage as Models.UsageProject;
     $: network = usage.network;
     $: users = usage.users;
     $: usersTotal = usage.usersTotal;

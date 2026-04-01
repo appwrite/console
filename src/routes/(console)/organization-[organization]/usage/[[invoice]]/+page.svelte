@@ -25,15 +25,6 @@
     import type { UsageProjectInfo } from '../../store';
     import { type Models, BillingPlanGroup } from '@appwrite.io/console';
 
-    type UsageOrganizationExtended = Models.UsageOrganization & {
-        realtimeConnections: Models.Metric[];
-        realtimeConnectionsTotal: number;
-        realtimeMessages: Models.Metric[];
-        realtimeMessagesTotal: number;
-        realtimeBandwidth: Models.Metric[];
-        realtimeBandwidthTotal: number;
-    };
-
     export let data;
 
     const tier = data?.plan
@@ -43,7 +34,7 @@
     const plan = data?.plan ?? undefined;
 
     $: projects = data.organizationUsage.projects;
-    $: orgUsage = data.organizationUsage as UsageOrganizationExtended;
+    $: orgUsage = data.organizationUsage as Models.UsageOrganization;
 
     let usageProjects: Record<string, UsageProjectInfo> = {};
 

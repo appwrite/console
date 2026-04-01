@@ -8,8 +8,7 @@
     import { CustomId } from '$lib/components';
     import { page } from '$app/state';
     import { addNotification } from '$lib/stores/notifications';
-    import { BackupServices, ID, type Models } from '@appwrite.io/console';
-    import { Engine } from '$lib/sdk/dedicated';
+    import { BackupServices, Engine, ID, type Models } from '@appwrite.io/console';
     import {
         type DatabaseType,
         type DedicatedDatabaseParams,
