@@ -53,6 +53,9 @@
 
     export async function submit() {
         try {
+            if (!option?.update) {
+                throw new Error('Unsupported column type');
+            }
             await option.update(databaseId, tableId, selectedColumn, originalKey);
             await invalidate(Dependencies.TABLE);
 
@@ -103,7 +106,7 @@
 
     // TODO: @itznotabug - runes?
     $: onShow(showEdit);
-    $: title = `Update ${columnOptions.find((v) => v.name === option.name)?.sentenceName ?? ''} column`;
+    $: title = `Update ${option ? (columnOptions.find((v) => v.name === option.name)?.sentenceName ?? '') : ''} column`;
 
     function onShow(show: boolean) {
         if (show) {
