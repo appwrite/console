@@ -11,6 +11,7 @@ export type Columns =
     | Models.ColumnEmail
     | Models.ColumnEnum
     | Models.ColumnFloat
+    | Models.ColumnBigint
     | Models.ColumnInteger
     | Models.ColumnIp
     | Models.ColumnString

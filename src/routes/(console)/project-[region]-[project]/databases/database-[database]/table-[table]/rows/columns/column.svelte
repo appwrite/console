@@ -16,7 +16,7 @@
     export let label: string;
     export let array: boolean | undefined = undefined;
     export let optionalText: string | undefined = undefined;
-    export let value: string | number | boolean | null | string[];
+    export let value: string | number | bigint | boolean | null | string[] | number[] | bigint[] | boolean[];
     export let editing = false;
     export let limited = false;
     export let column:
@@ -24,6 +24,7 @@
         | Models.ColumnEmail
         | Models.ColumnEnum
         | Models.ColumnFloat
+        | Models.ColumnBigint
         | Models.ColumnInteger
         | Models.ColumnIp
         | Models.ColumnString
@@ -43,6 +44,7 @@
         text: String,
         mediumtext: String,
         longtext: String,
+        bigint: Integer,
         integer: Integer,
         double: Integer,
         boolean: Boolean,

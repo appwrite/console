@@ -15,16 +15,7 @@
     }: {
         id: string;
         label: string;
-        value:
-            | string
-            | number
-            | bigint
-            | boolean
-            | string[]
-            | number[]
-            | bigint[]
-            | boolean[]
-            | null;
+        value: string | number | boolean | string[] | number[] | boolean[] | null;
         array?: boolean;
         limited?: boolean;
         column:
@@ -56,26 +47,12 @@
 
     let stringValue = $state('');
 
-    function safeStringify(v: unknown): string {
-        // Note: `JSON.stringify` throws on `bigint` values unless a replacer is used.
-        return JSON.stringify(v, (_key, value) =>
-            typeof value === 'bigint' ? value.toString() : value
-        );
-    }
-
-    function parseValue(str: string | null): number | bigint | boolean | string | null {
+    function parseValue(str: string | null): number | boolean | string | null {
         const trimmed = str?.trim() ?? null;
         if (!trimmed) return null;
 
         switch (column.type) {
-            case 'bigint': {
-                try {
-                    return BigInt(trimmed);
-                } catch {
-                    return null;
-                }
-            }
-
+            case 'bigint':
             case 'integer': {
                 const int = parseInt(trimmed, 10);
                 return isNaN(int) ? null : int;
@@ -120,8 +97,8 @@
                 .split(',')
                 .map((item) => parseValue(item))
                 .filter((item) => item !== null);
-            if (safeStringify(newArray) !== safeStringify(value)) {
-                value = newArray as string[] | number[] | bigint[] | boolean[];
+            if (JSON.stringify(newArray) !== JSON.stringify(value)) {
+                value = newArray as string[] | number[] | boolean[];
             }
         } else {
             let parsedValue = parseValue(stringValue);
@@ -138,7 +115,7 @@
                 }
             }
 
-            if (safeStringify(parsedValue) !== safeStringify(value)) {
+            if (JSON.stringify(parsedValue) !== JSON.stringify(value)) {
                 value = parsedValue;
             }
         }
