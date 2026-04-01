@@ -36,7 +36,10 @@ export class Compute {
 
                 return (...args: unknown[]) => {
                     const payload =
-                        args.length === 1 && typeof args[0] === 'object' && args[0] !== null
+                        args.length === 1 &&
+                        typeof args[0] === 'object' &&
+                        args[0] !== null &&
+                        !Array.isArray(args[0])
                             ? (args[0] as Record<string, unknown>)
                             : args.reduce<Record<string, unknown>>((accumulator, value, index) => {
                                   accumulator[`arg${index}`] = value;

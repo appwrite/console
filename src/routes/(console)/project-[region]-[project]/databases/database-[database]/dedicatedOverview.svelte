@@ -388,7 +388,7 @@
     </CardGrid>
 
     <!-- Connection Settings -->
-    {#if database.status === 'ready' && hasConnectionDetails && hasCredentials}
+    {#if isActive && hasConnectionDetails && hasCredentials}
         <CardGrid>
             <svelte:fragment slot="title">Connection</svelte:fragment>
             Use these credentials to connect to your database.
@@ -458,7 +458,7 @@
                 </Layout.Stack>
             </svelte:fragment>
         </CardGrid>
-    {:else if database.status === 'ready' && hasConnectionDetails && !hasCredentials}
+    {:else if isActive && hasConnectionDetails && !hasCredentials}
         <CardGrid>
             <svelte:fragment slot="title">Connection</svelte:fragment>
             <svelte:fragment slot="aside">

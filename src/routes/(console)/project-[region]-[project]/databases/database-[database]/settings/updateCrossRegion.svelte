@@ -154,6 +154,10 @@
 
             showFailoverConfirm = false;
 
+            crossRegionStatus = await projectSdk.compute.getCrossRegionStatus({
+                databaseId: database.$id
+            });
+
             await invalidate(Dependencies.DATABASE);
 
             addNotification({
