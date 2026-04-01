@@ -75,13 +75,12 @@ export function trackEvent(name: string, data: object = null): void {
     }
 }
 
-export function trackError(exception: Error, event: Submit): void {
-    if (exception instanceof AppwriteException && exception.type && event) {
-        trackEvent(Submit.Error, {
-            type: exception.type,
-            form: event
-        });
-    }
+export function trackError(exception: Error, event?: Submit): void {
+    if (!(exception instanceof AppwriteException) || !exception.type) return;
+
+    const data: Record<string, unknown> = { type: exception.type };
+    if (event) data.form = event;
+    trackEvent(Submit.Error, data);
 }
 
 export function trackPageView(path: string) {
@@ -153,9 +152,15 @@ export enum Click {
     DatabaseIndexDelete = 'click_index_delete',
     DatabaseTableDelete = 'click_table_delete',
     DatabaseRowDelete = 'click_row_delete',
+    DatabaseColdStart = 'click_database_cold_start',
     DatabaseDatabaseDelete = 'click_database_delete',
     DatabaseImportCsv = 'click_database_import_csv',
     DatabaseExportCsv = 'click_database_export_csv',
+    DatabaseImportJson = 'click_database_import_json',
+    DatabasePause = 'click_database_pause',
+    DatabaseResume = 'click_database_resume',
+    DatabaseSpinDown = 'click_database_spin_down',
+    DedicatedMonitoringRefresh = 'click_dedicated_monitoring_refresh',
     DomainCreateClick = 'click_domain_create',
     DomainDeleteClick = 'click_domain_delete',
     DomainRetryDomainVerificationClick = 'click_domain_retry_domain_verification',
@@ -284,8 +289,41 @@ export enum Submit {
     DatabaseUpdateName = 'submit_database_update_name',
     DatabaseImportCsv = 'submit_database_import_csv',
     DatabaseExportCsv = 'submit_database_export_csv',
+    DatabaseImportJSON = 'submit_database_import_json',
     DatabaseBackupDelete = 'submit_database_backup_delete',
     DatabaseBackupPolicyCreate = 'submit_database_backup_policy_create',
+    DatabaseUpdateTier = 'submit_database_update_tier',
+    DatabaseResizeStorage = 'submit_database_resize_storage',
+    DatabaseUpdateNetwork = 'submit_database_update_network',
+    DatabaseUpdateMaintenance = 'submit_database_update_maintenance',
+    DatabaseUpdateBackups = 'submit_database_update_backups',
+    DatabaseUpdateAutoscaling = 'submit_database_update_autoscaling',
+    DatabaseUpdatePooler = 'submit_database_update_pooler',
+    DatabaseRotateCredentials = 'submit_database_rotate_credentials',
+    DatabaseUpgradeVersion = 'submit_database_upgrade_version',
+    DedicatedBackupCreate = 'submit_dedicated_backup_create',
+    DedicatedBackupDelete = 'submit_dedicated_backup_delete',
+    DedicatedBackupRestore = 'submit_dedicated_backup_restore',
+    DedicatedBackupVerify = 'submit_dedicated_backup_verify',
+    DedicatedBranchCreate = 'submit_dedicated_branch_create',
+    DedicatedBranchDelete = 'submit_dedicated_branch_delete',
+    DedicatedDatabaseMigrate = 'submit_dedicated_database_migrate',
+    DedicatedPitrRestore = 'submit_dedicated_pitr_restore',
+    DatabaseInstallExtension = 'submit_database_install_extension',
+    DatabaseUninstallExtension = 'submit_database_uninstall_extension',
+    DatabaseCreateConnection = 'submit_database_create_connection',
+    DatabaseDeleteConnection = 'submit_database_delete_connection',
+    DatabaseCreateReadReplica = 'submit_database_create_read_replica',
+    DatabaseDeleteReadReplica = 'submit_database_delete_read_replica',
+    DatabaseEnableCrossRegion = 'submit_database_enable_cross_region',
+    DatabaseDisableCrossRegion = 'submit_database_disable_cross_region',
+    DatabaseTriggerCrossRegionFailover = 'submit_database_trigger_cross_region_failover',
+    DatabaseUpdateHA = 'submit_database_update_ha',
+    DatabaseManualFailover = 'submit_database_manual_failover',
+    DatabaseConfigureBackupStorage = 'submit_database_configure_backup_storage',
+    DatabaseDeleteBackupStorage = 'submit_database_delete_backup_storage',
+    DatabaseUpdateSecurity = 'submit_database_update_security',
+    DatabaseUpdateSqlApi = 'submit_database_update_sql_api',
 
     ColumnCreate = 'submit_column_create',
     ColumnUpdate = 'submit_column_update',
@@ -297,6 +335,11 @@ export enum Submit {
     RowUpdate = 'submit_row_update',
     RowUpdatePermissions = 'submit_row_update_permissions',
 
+    DocumentCreate = 'submit_document_create',
+    DocumentDelete = 'submit_document_delete',
+    DocumentUpdate = 'submit_document_update',
+    DocumentUpdatePermissions = 'submit_document_update_permissions',
+
     IndexCreate = 'submit_index_create',
     IndexDelete = 'submit_index_delete',
 
@@ -307,6 +350,14 @@ export enum Submit {
     TableUpdateSecurity = 'submit_table_update_security',
     TableUpdateEnabled = 'submit_table_update_enabled',
     TableUpdateDisplayNames = 'submit_table_update_display_names',
+
+    CollectionCreate = 'submit_collection_create',
+    CollectionDelete = 'submit_collection_delete',
+    CollectionUpdateName = 'submit_collection_update_name',
+    CollectionUpdatePermissions = 'submit_collection_update_permissions',
+    CollectionUpdateSecurity = 'submit_collection_update_security',
+    CollectionUpdateEnabled = 'submit_collection_update_enabled',
+    CollectionUpdateDisplayNames = 'submit_collection_update_display_names',
 
     FunctionCreate = 'submit_function_create',
     FunctionDelete = 'submit_function_delete',

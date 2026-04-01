@@ -1,7 +1,7 @@
 import Header from './header.svelte';
 import type { LayoutLoad } from './$types';
 import { Dependencies } from '$lib/constants';
-import { Breadcrumbs, useDatabaseSdk } from '$database/(entity)';
+import { Breadcrumbs, useDatabaseSdk, type DatabaseType } from '$database/(entity)';
 import { guardResourceBlock } from '$lib/helpers/project';
 
 export const load: LayoutLoad = async ({ params, depends, parent }) => {
@@ -9,7 +9,11 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
     depends(Dependencies.TABLE);
     guardResourceBlock(project, ['tables', 'collections'], params.table);
 
-    const databaseSdk = useDatabaseSdk(params.region, params.project, database.type);
+    const databaseSdk = useDatabaseSdk(
+        params.region,
+        params.project,
+        database.type as DatabaseType
+    );
 
     const table = await databaseSdk.getEntity({
         databaseId: params.database,

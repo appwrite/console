@@ -1,0 +1,70 @@
+- generic [ref=e8]:
+      - generic [ref=e9]:
+            - main [ref=e50]:
+                  - generic [ref=e51]:
+                        - link "Appwrite Logo" [ref=e54] [cursor=pointer]:
+                              - /url: /console
+                              - img "Appwrite Logo" [ref=e55]
+                        - generic [ref=e57]:
+                              - generic [ref=e60]:
+                                    - paragraph [ref=e61]: With its comprehensive suite of services, Appwrite emerged as an ideal choice for my needs.
+                                    - generic [ref=e62]:
+                                          - img "Xue" [ref=e63]
+                                          - generic [ref=e64]:
+                                                - paragraph [ref=e65]: Xue
+                                                - paragraph [ref=e66]: Founder at LangX
+                              - generic [ref=e67]:
+                                    - heading "LangX handled millions of requests using Appwrite" [level=4] [ref=e68]
+                                    - paragraph [ref=e69]: Join thousands of developers building amazing apps with Appwrite
+                  - generic [ref=e72]:
+                        - heading "Sign up" [level=3] [ref=e73]
+                        - generic [ref=e76]:
+                              - button "Sign up with GitHub" [ref=e78] [cursor=pointer]:
+                                    - generic [ref=e79]: 
+                                    - generic [ref=e80]: Sign up with GitHub
+                              - generic [ref=e81]: or
+                              - generic [ref=e82]:
+                                    - generic [ref=e83]: Name
+                                    - textbox "Name" [ref=e85]:
+                                          - /placeholder: Your name
+                                          - text: Test User
+                              - generic [ref=e86]:
+                                    - generic [ref=e87]: Email
+                                    - textbox "Email" [ref=e89]:
+                                          - /placeholder: Your email
+                                          - text: test@test.com
+                              - generic [ref=e90]:
+                                    - generic [ref=e91]: Password
+                                    - generic [ref=e92]:
+                                          - textbox "Password" [ref=e93]:
+                                                - /placeholder: Your password
+                                                - text: password123!
+                                          - button [ref=e94] [cursor=pointer]:
+                                                - img [ref=e96]
+                                    - generic [ref=e99]:
+                                          - img [ref=e102]
+                                          - generic [ref=e104]: Password must be at least 8 characters long
+                              - generic [ref=e106]:
+                                    - generic [ref=e107]:
+                                          - button [active] [ref=e108] [cursor=pointer]:
+                                                - img [ref=e121]
+                                          - checkbox [checked]
+                                    - paragraph [ref=e110]:
+                                          - text: By registering, you agree that you have read, understand, and acknowledge our
+                                          - link "Privacy Policy" [ref=e111] [cursor=pointer]:
+                                                - /url: https://appwrite.io/privacy
+                                                - generic [ref=e112]: Privacy Policy
+                                          - text: and accept our
+                                          - link "General Terms of Use" [ref=e113] [cursor=pointer]:
+                                                - /url: https://appwrite.io/terms
+                                                - generic [ref=e114]: General Terms of Use
+                                          - text: .
+                              - button "Sign up" [ref=e123] [cursor=pointer]
+                        - list [ref=e115]:
+                              - paragraph [ref=e116]:
+                                    - text: Already got an account?
+                                    - link "Sign in" [ref=e117] [cursor=pointer]:
+                                          - /url: /console/login?redirect=%2Fconsole%2F
+                                          - generic [ref=e118]: Sign in
+            - generic [ref=e49]: Sign up - Appwrite
+      - img "Appwrite Logo"

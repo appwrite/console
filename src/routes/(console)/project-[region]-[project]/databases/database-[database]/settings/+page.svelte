@@ -13,16 +13,40 @@
     import Delete from '../delete.svelte';
     import { Query } from '@appwrite.io/console';
     import { Layout, Skeleton } from '@appwrite.io/pink-svelte';
-    import type { PageProps } from './$types';
+    import type { Models } from '@appwrite.io/console';
     import { getTerminologies } from '$database/(entity)';
+    import UpdateName from './updateName.svelte';
+    import UpdateTier from './updateTier.svelte';
+    import UpdateStorage from './updateStorage.svelte';
+    import UpdateNetwork from './updateNetwork.svelte';
+    import UpdateMaintenance from './updateMaintenance.svelte';
+    import UpdateBackups from './updateBackups.svelte';
+    import UpdateAutoscaling from './updateAutoscaling.svelte';
+    import UpdatePooler from './updatePooler.svelte';
+    import UpdateExtensions from './updateExtensions.svelte';
+    import UpgradeVersion from './upgradeVersion.svelte';
+    import UpdateReadReplicas from './updateReadReplicas.svelte';
+    import UpdateCrossRegion from './updateCrossRegion.svelte';
+    import UpdateHAStatus from './updateHAStatus.svelte';
+    import UpdateBackupStorage from './updateBackupStorage.svelte';
+    import UpdateSqlApi from './updateSqlApi.svelte';
+    import MigrateDatabaseType from './migrateDatabaseType.svelte';
+    import DangerZone from './dangerZone.svelte';
 
-    const { data }: PageProps = $props();
+    const data = page.data;
 
     const database = $derived(data.database);
+    const dedicatedDatabase = $derived(data.dedicatedDatabase as Models.DedicatedDatabase | null);
 
+    const isDedicatedType = $derived(dedicatedDatabase !== null && database.type === 'dedicateddb');
+
+    const isDedicated = $derived(isDedicatedType);
+    const isShared = $derived(false);
+    const isPostgres = $derived(dedicatedDatabase?.engine === 'postgres');
+
+    // Legacy database fallback state
     let showDelete = $state(false);
     let databaseName: string | null = $state(null);
-
     let errorMessage: string = $state('Something went wrong');
     let errorType: 'error' | 'warning' | 'success' = $state('error');
     let showError: false | 'name' | 'email' | 'password' = $state(false);
@@ -35,7 +59,7 @@
 
     async function loadEntityCount() {
         const { total } = await databaseSdk.listEntities({
-            databaseId: database.$id,
+            databaseId: page.params.database,
             queries: [Query.limit(1)]
         });
 
@@ -70,7 +94,92 @@
     }
 </script>
 
-{#if database}
+{#if isDedicatedType && dedicatedDatabase}
+    <!-- Dedicated / Shared database settings -->
+    <Container>
+        <CardGrid>
+            <svelte:fragment slot="title">{dedicatedDatabase.name}</svelte:fragment>
+            <svelte:fragment slot="aside">
+                <div class="grid-1-2-col-2">
+                    <p>Created: {toLocaleDateTime(dedicatedDatabase.$createdAt)}</p>
+                    <p>Last updated: {toLocaleDateTime(dedicatedDatabase.$updatedAt)}</p>
+                </div>
+            </svelte:fragment>
+        </CardGrid>
+
+        <!-- 1. Rename Database - all types -->
+        <UpdateName database={dedicatedDatabase} />
+
+        <!-- 2. Resource Scaling - dedicated only -->
+        {#if isDedicated}
+            <UpdateTier database={dedicatedDatabase} />
+        {/if}
+
+        <!-- 3. Storage Resize - dedicated and shared -->
+        {#if isDedicated || isShared}
+            <UpdateStorage database={dedicatedDatabase} />
+        {/if}
+
+        <!-- 4. Network Settings -->
+        <UpdateNetwork database={dedicatedDatabase} />
+
+        <!-- 5. Maintenance Window - dedicated and shared -->
+        {#if isDedicated || isShared}
+            <UpdateMaintenance database={dedicatedDatabase} />
+        {/if}
+
+        <!-- 6. Backup Settings - all types -->
+        <UpdateBackups database={dedicatedDatabase} />
+
+        <!-- 7. Storage Autoscaling - dedicated and shared -->
+        {#if isDedicated || isShared}
+            <UpdateAutoscaling database={dedicatedDatabase} />
+        {/if}
+
+        <!-- 8. Connection Pooler - PostgreSQL only -->
+        {#if isPostgres}
+            <UpdatePooler database={dedicatedDatabase} />
+        {/if}
+
+        <!-- 9. Extensions - PostgreSQL only -->
+        {#if isPostgres}
+            <UpdateExtensions database={dedicatedDatabase} />
+        {/if}
+
+        <!-- 10. Version Upgrade - dedicated and shared -->
+        {#if isDedicated || isShared}
+            <UpgradeVersion database={dedicatedDatabase} />
+        {/if}
+
+        <!-- 13. Read Replicas - dedicated only -->
+        {#if isDedicated}
+            <UpdateReadReplicas database={dedicatedDatabase} />
+        {/if}
+
+        <!-- 14. Cross-Region Failover - dedicated only -->
+        {#if isDedicated}
+            <UpdateCrossRegion database={dedicatedDatabase} />
+        {/if}
+
+        <!-- 15. High Availability -->
+        <UpdateHAStatus database={dedicatedDatabase} />
+
+        <!-- 16. Backup Storage - dedicated only -->
+        {#if isDedicated}
+            <UpdateBackupStorage database={dedicatedDatabase} />
+        {/if}
+
+        <!-- 17. SQL API -->
+        <UpdateSqlApi database={dedicatedDatabase} />
+
+        <!-- 18. Migrate Database Type -->
+        <MigrateDatabaseType database={dedicatedDatabase} />
+
+        <!-- 19. Delete Database - all types -->
+        <DangerZone database={dedicatedDatabase} />
+    </Container>
+{:else if database}
+    <!-- Legacy / tablesdb / documentsdb settings -->
     <Container databasesMainScreen>
         <CardGrid>
             <svelte:fragment slot="title">{database.name}</svelte:fragment>

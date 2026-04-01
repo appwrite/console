@@ -36,8 +36,8 @@
                     domainId: domain.$id
                 });
             }
-        } catch {
-            // Ignore error
+        } catch (e) {
+            console.warn('[viewLogsModal] Failed to update nameservers:', e?.message ?? e);
         }
 
         try {

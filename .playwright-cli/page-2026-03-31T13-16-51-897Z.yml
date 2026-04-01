@@ -1,0 +1,192 @@
+- generic [active] [ref=e8]:
+      - generic [ref=e9]:
+            - generic [ref=e237]:
+                  - generic [ref=e238]: 
+                  - generic [ref=e239]:
+                        - heading "Realtime pricing enforcement starting April 30th" [level=6] [ref=e240]
+                        - paragraph [ref=e241]: Starting April 30th, realtime usage (connections, messages, and bandwidth) will be charged based on your plan's rates. Review your usage to avoid unexpected charges.
+                  - generic [ref=e242]:
+                        - link "View usage" [ref=e243] [cursor=pointer]:
+                              - /url: /console/organization-69cbc92d00163e3adfee/usage
+                              - generic [ref=e244]: View usage
+                        - button [ref=e245] [cursor=pointer]:
+                              - img [ref=e248]
+            - main [ref=e124]:
+                  - generic [ref=e250]:
+                        - generic [ref=e251]:
+                              - link "Logo Appwrite" [ref=e252] [cursor=pointer]:
+                                    - /url: /console/organization-69cbc92d00163e3adfee
+                                    - img "Logo Appwrite" [ref=e253]
+                              - menubar [ref=e254]:
+                                    - text: /
+                                    - menuitem "Open organizations tab" [ref=e255] [cursor=pointer]:
+                                          - generic [ref=e256]: Personal projects
+                                          - generic [ref=e258]: Free
+                                          - img [ref=e260]
+                                    - text: /
+                                    - menuitem "Open projects tab" [ref=e262] [cursor=pointer]:
+                                          - generic [ref=e263]: New Project
+                                          - img [ref=e265]
+                              - link "Connect" [ref=e268] [cursor=pointer]:
+                                    - /url: /console/project-fra-69cbc93700226e89fffb/get-started
+                        - generic [ref=e270]:
+                              - generic [ref=e271]:
+                                    - link "Upgrade" [ref=e272] [cursor=pointer]:
+                                          - /url: /console/organization-69cbc92d00163e3adfee/change-plan
+                                    - button "Feedback" [ref=e274] [cursor=pointer]
+                                    - button "Support" [ref=e276] [cursor=pointer]
+                              - note [ref=e278]:
+                                    - button "Toggle Command Center" [ref=e279] [cursor=pointer]:
+                                          - img [ref=e281]
+                              - button [ref=e284] [cursor=pointer]
+                  - generic:
+                        - generic:
+                              - button [ref=e285]:
+                                    - img [ref=e289]
+                              - navigation [ref=e291]:
+                                    - generic [ref=e293]:
+                                          - note [ref=e294]:
+                                                - link "Get started 33% complete" [ref=e295] [cursor=pointer]:
+                                                      - /url: /console/project-fra-69cbc93700226e89fffb/get-started
+                                                      - img [ref=e298]
+                                                      - generic [ref=e301]:
+                                                            - paragraph [ref=e302]: Get started
+                                                            - paragraph [ref=e303]: 33% complete
+                                          - generic [ref=e304]:
+                                                - note [ref=e305]:
+                                                      - link "Overview" [ref=e306] [cursor=pointer]:
+                                                            - /url: /console/project-fra-69cbc93700226e89fffb/overview/platforms
+                                                            - img [ref=e309]
+                                                            - generic [ref=e311]: Overview
+                                                - generic [ref=e313]: Build
+                                                - note [ref=e314]:
+                                                      - link "Auth" [ref=e315] [cursor=pointer]:
+                                                            - /url: /console/project-fra-69cbc93700226e89fffb/auth
+                                                            - img [ref=e318]
+                                                            - generic [ref=e320]: Auth
+                                                - note [ref=e321]:
+                                                      - link "Databases" [ref=e322] [cursor=pointer]:
+                                                            - /url: /console/project-fra-69cbc93700226e89fffb/databases
+                                                            - img [ref=e325]
+                                                            - generic [ref=e329]: Databases
+                                                - note [ref=e330]:
+                                                      - link "Functions" [ref=e331] [cursor=pointer]:
+                                                            - /url: /console/project-fra-69cbc93700226e89fffb/functions
+                                                            - img [ref=e334]
+                                                            - generic [ref=e336]: Functions
+                                                - note [ref=e337]:
+                                                      - link "Messaging" [ref=e338] [cursor=pointer]:
+                                                            - /url: /console/project-fra-69cbc93700226e89fffb/messaging
+                                                            - img [ref=e341]
+                                                            - generic [ref=e343]: Messaging
+                                                - note [ref=e344]:
+                                                      - link "Storage" [ref=e345] [cursor=pointer]:
+                                                            - /url: /console/project-fra-69cbc93700226e89fffb/storage
+                                                            - img [ref=e348]
+                                                            - generic [ref=e350]: Storage
+                                                - generic [ref=e352]: Deploy
+                                                - note [ref=e353]:
+                                                      - link "Sites" [ref=e354] [cursor=pointer]:
+                                                            - /url: /console/project-fra-69cbc93700226e89fffb/sites
+                                                            - img [ref=e357]
+                                                            - generic [ref=e359]: Sites
+                                    - note [ref=e362]:
+                                          - link "Settings" [ref=e363] [cursor=pointer]:
+                                                - /url: /console/project-fra-69cbc93700226e89fffb/settings
+                                                - img [ref=e366]
+                                                - generic [ref=e368]: Settings
+                  - generic [ref=e154]:
+                        - generic [ref=e373]:
+                              - generic [ref=e374]:
+                                    - heading "Welcome, Test User" [level=1] [ref=e375]
+                                    - paragraph [ref=e376]: Follow a few quick steps to get started with Appwrite
+                              - button "Dismiss this page" [ref=e378] [cursor=pointer]
+                        - generic [ref=e384]:
+                              - generic [ref=e391]:
+                                    - generic [ref=e393]: Done
+                                    - heading "Create project" [level=4] [ref=e397]
+                              - generic [ref=e398]:
+                                    - img [ref=e402]
+                                    - generic [ref=e411]:
+                                          - generic [ref=e413]: Now
+                                          - generic [ref=e414]:
+                                                - generic [ref=e416]:
+                                                      - heading "Connect your platform" [level=4] [ref=e417]
+                                                      - generic [ref=e418]: Start building with your preferred web, mobile, and native frameworks.
+                                                - generic [ref=e419]:
+                                                      - generic [ref=e420]:
+                                                            - button "Web" [ref=e421] [cursor=pointer]:
+                                                                  - generic [ref=e424]:
+                                                                        - heading "Web" [level=4] [ref=e425]
+                                                                        - img [ref=e428]
+                                                            - button "React Native" [ref=e430] [cursor=pointer]:
+                                                                  - generic [ref=e433]:
+                                                                        - heading "React Native" [level=4] [ref=e434]
+                                                                        - img [ref=e437]
+                                                      - generic [ref=e439]:
+                                                            - button "Apple" [ref=e440] [cursor=pointer]:
+                                                                  - generic [ref=e442]:
+                                                                        - heading "Apple" [level=4] [ref=e443]
+                                                                        - img [ref=e446]
+                                                            - button "Android" [ref=e448] [cursor=pointer]:
+                                                                  - generic [ref=e450]:
+                                                                        - heading "Android" [level=4] [ref=e451]
+                                                                        - img [ref=e454]
+                                                            - button "Flutter" [ref=e456] [cursor=pointer]:
+                                                                  - generic [ref=e458]:
+                                                                        - heading "Flutter" [level=4] [ref=e459]
+                                                                        - img [ref=e462]
+                                                      - generic [ref=e464]: or
+                                                      - button "Create API key Connect your server or backend to Appwrite" [ref=e465] [cursor=pointer]:
+                                                            - generic [ref=e468]:
+                                                                  - generic [ref=e469]:
+                                                                        - heading "Create API key" [level=4] [ref=e470]
+                                                                        - paragraph [ref=e471]: Connect your server or backend to Appwrite
+                                                                  - img [ref=e474]
+                              - generic [ref=e482]:
+                                    - generic [ref=e484]: Next
+                                    - heading "Build your app" [level=4] [ref=e486]
+                        - generic [ref=e488]:
+                              - separator [ref=e489]
+                              - generic [ref=e490]:
+                                    - generic [ref=e491]:
+                                          - generic [ref=e492]: ⓒ 2026 Appwrite. All rights reserved.
+                                          - separator [ref=e494]
+                                          - generic [ref=e495]:
+                                                - link "Appwrite on Github" [ref=e496] [cursor=pointer]:
+                                                      - /url: https://github.com/appwrite/appwrite
+                                                      - img [ref=e498]
+                                                - link "Appwrite on Discord" [ref=e500] [cursor=pointer]:
+                                                      - /url: https://appwrite.io/discord
+                                                      - img [ref=e502]
+                                    - generic [ref=e504]:
+                                          - generic [ref=e505]: Generally Available
+                                          - img [ref=e507]
+                                          - link "Docs" [ref=e509] [cursor=pointer]:
+                                                - /url: https://appwrite.io/docs
+                                                - generic [ref=e510]: Docs
+                                          - separator [ref=e512]
+                                          - link "Terms" [ref=e513] [cursor=pointer]:
+                                                - /url: https://appwrite.io/terms
+                                                - generic [ref=e514]: Terms
+                                          - separator [ref=e516]
+                                          - link "Privacy" [ref=e517] [cursor=pointer]:
+                                                - /url: https://appwrite.io/privacy
+                                                - generic [ref=e518]: Privacy
+                                          - separator [ref=e520]
+                                          - link "Cookies" [ref=e521] [cursor=pointer]:
+                                                - /url: https://appwrite.io/cookies
+                                                - generic [ref=e522]: Cookies
+            - article [ref=e525]:
+                  - button "Close modal" [ref=e526] [cursor=pointer]:
+                        - img [ref=e527]
+                  - generic [ref=e529]:
+                        - img "Imagine" [ref=e534]
+                        - generic [ref=e535]:
+                              - paragraph [ref=e536]: Introducing Imagine
+                              - generic [ref=e537]: The most complete AI builder to date
+                        - button "Try it now" [ref=e540] [cursor=pointer]:
+                              - generic [ref=e541]: Try it now
+            - text: 
+            - generic [ref=e49]: Console - Appwrite
+      - img "Appwrite Logo"

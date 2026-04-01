@@ -23,7 +23,7 @@
     import { IconChartSquareBar, IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { onMount } from 'svelte';
     import type { UsageProjectInfo } from '../../store';
-    import { BillingPlanGroup } from '@appwrite.io/console';
+    import { type Models, BillingPlanGroup } from '@appwrite.io/console';
 
     export let data;
 
@@ -34,7 +34,7 @@
     const plan = data?.plan ?? undefined;
 
     $: projects = data.organizationUsage.projects;
-    $: orgUsage = data.organizationUsage;
+    $: orgUsage = data.organizationUsage as Models.UsageOrganization;
 
     let usageProjects: Record<string, UsageProjectInfo> = {};
 

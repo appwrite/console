@@ -5,28 +5,29 @@ import {
     Avatars,
     Backups,
     Client,
+    Compute,
     Console,
+    Databases,
+    Domains,
     Functions,
     Health,
     Locale,
     Messaging,
     Migrations,
+    Organizations,
     Project,
     Project as ProjectApi,
     Projects,
     Proxy,
+    Realtime,
+    Sites,
     Storage,
+    TablesDB,
     Teams,
+    Tokens,
     Users,
     Vcs,
-    Sites,
-    Tokens,
-    TablesDB,
-    Domains,
-    Webhooks,
-    /*DocumentsDB,*/
-    Realtime,
-    Organizations
+    Webhooks
 } from '@appwrite.io/console';
 import { Sources } from '$lib/sdk/sources';
 import {
@@ -140,9 +141,11 @@ const sdkForProject = {
     migrations: new Migrations(clientProject),
     sites: new Sites(clientProject),
     tablesDB: new TablesDB(clientProject),
-    /*documentsDB: new DocumentsDB(clientProject),*/
-    console: new Console(clientProject), // for suggestions API
-    webhooks: new Webhooks(clientProject)
+    documentsDB: new Databases(clientProject),
+    compute: new Compute(clientProject),
+    vectorsDB: new Databases(clientProject),
+    webhooks: new Webhooks(clientProject),
+    console: new Console(clientProject) // for suggestions API
 };
 
 export const realtime = {

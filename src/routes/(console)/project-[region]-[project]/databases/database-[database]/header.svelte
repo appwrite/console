@@ -5,7 +5,9 @@
     import { isTabSelected } from '$lib/helpers/load';
     import { canWriteDatabases } from '$lib/stores/roles';
     import { resolveRoute, withPath } from '$lib/stores/navigation';
-    import { useTerminology } from '$database/(entity)';
+    import { useTerminology, type DatabaseType } from '$database/(entity)';
+    import { isCloud } from '$lib/system';
+    import { isSmallViewport } from '$lib/stores/viewport';
 
     const terminology = useTerminology(page);
     const baseDatabasePath = resolveRoute(
@@ -19,19 +21,33 @@
         page.params
     );
 
+    const isDedicatedType = $derived((database?.type as DatabaseType) === 'dedicateddb');
+
     const tabs = $derived(
         [
             {
                 href: baseDatabasePath,
-                title: terminology.entity.title.plural,
-                event: terminology.entity.lower.plural,
-                hasChildren: true
+                title: isDedicatedType ? 'Overview' : terminology.entity.title.plural,
+                event: isDedicatedType ? 'overview' : terminology.entity.lower.plural,
+                hasChildren: !isDedicatedType
             },
             {
                 href: withPath(baseDatabasePath, '/backups'),
                 title: 'Backups',
                 event: 'backups',
                 hasChildren: true
+            },
+            {
+                href: withPath(baseDatabasePath, '/auth'),
+                title: 'Auth',
+                event: 'auth',
+                disabled: !isDedicatedType || !isCloud
+            },
+            {
+                href: withPath(baseDatabasePath, '/monitoring'),
+                title: 'Monitoring',
+                event: 'monitoring',
+                disabled: !isDedicatedType || !isCloud
             },
             {
                 href: withPath(baseDatabasePath, '/usage'),
@@ -47,11 +63,13 @@
             }
         ].filter((tab) => !tab.disabled)
     );
+
+    const responsiveInlineStart = $derived($isSmallViewport ? '0' : '-2.5rem');
 </script>
 
 <Cover databasesMainScreen>
     <svelte:fragment slot="header">
-        <CoverTitle href={baseDatabasesPath} style="margin-inline-start: -2.5rem;">
+        <CoverTitle href={baseDatabasesPath} style="margin-inline-start: {responsiveInlineStart};">
             {database?.name}
         </CoverTitle>
 

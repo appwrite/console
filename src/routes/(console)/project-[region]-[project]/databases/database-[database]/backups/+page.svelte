@@ -5,6 +5,7 @@
     import BackupPolicy from './policy.svelte';
     import LockedCard from './locked.svelte';
     import Table from './table.svelte';
+    import DedicatedBackups from './dedicatedBackups.svelte';
     import type { PageProps } from './$types';
     import CreatePolicy from './createPolicy.svelte';
     import { Button } from '$lib/elements/forms';
@@ -24,8 +25,11 @@
     import { Layout, Typography } from '@appwrite.io/pink-svelte';
     import { page } from '$app/state';
     import IconQuestionMarkCircle from './components/questionIcon.svelte';
+    import type { Models } from '@appwrite.io/console';
 
     const { data }: PageProps = $props();
+
+    const isDedicatedType = $derived(data.database?.type === 'dedicateddb');
 
     let policyCreateError: string | null = $state(null);
     let totalPolicies: UserBackupPolicy[] = $state([]);
@@ -170,70 +174,74 @@
     });
 </script>
 
-<Container size="xxl" databasesMainScreen>
-    <div class="backups-page u-flex u-gap-32 u-flex-vertical-mobile">
-        {#if !isDisabled}
-            <div class="u-flex-vertical u-gap-16 policies-holder-card">
-                <ContainerHeader
-                    title="Policies"
-                    buttonText="Create policy"
-                    buttonEvent="create_backup"
-                    buttonType="secondary"
-                    project={data.project}
-                    buttonDisabled={isDisabled}
-                    policiesCreated={data.policies.total}
-                    maxPolicies={$currentPlan.backupPolicies}
-                    buttonMethod={() => {
-                        $showCreatePolicy = true;
-                        trackEvent('click_policy_create');
-                    }} />
+{#if isDedicatedType && data.dedicatedDatabase}
+    <DedicatedBackups database={data.dedicatedDatabase as Models.DedicatedDatabase} />
+{:else}
+    <Container size="xxl" databasesMainScreen>
+        <div class="backups-page u-flex u-gap-32 u-flex-vertical-mobile">
+            {#if !isDisabled}
+                <div class="u-flex-vertical u-gap-16 policies-holder-card">
+                    <ContainerHeader
+                        title="Policies"
+                        buttonText="Create policy"
+                        buttonEvent="create_backup"
+                        buttonType="secondary"
+                        project={data.project}
+                        buttonDisabled={isDisabled}
+                        policiesCreated={data.policies.total}
+                        maxPolicies={$currentPlan.backupPolicies}
+                        buttonMethod={() => {
+                            $showCreatePolicy = true;
+                            trackEvent('click_policy_create');
+                        }} />
 
-                <BackupPolicy
-                    bind:showCreatePolicy={$showCreatePolicy}
-                    policies={data.policies}
-                    lastBackupDates={data.lastBackupDates} />
-            </div>
+                    <BackupPolicy
+                        bind:showCreatePolicy={$showCreatePolicy}
+                        policies={data.policies}
+                        lastBackupDates={data.lastBackupDates} />
+                </div>
 
-            <div class="u-flex-vertical u-gap-16 u-width-full-line u-overflow-x-auto">
-                <ContainerHeader
-                    title="Backups"
-                    buttonText="Manual backup"
-                    buttonEvent="create_backup"
-                    buttonType="secondary"
-                    project={data.project}
-                    buttonDisabled={isDisabled}
-                    buttonMethod={() => {
-                        $showCreateBackup = true;
-                        trackEvent('click_manual_create');
-                    }} />
+                <div class="u-flex-vertical u-gap-16 u-width-full-line u-overflow-x-auto">
+                    <ContainerHeader
+                        title="Backups"
+                        buttonText="Manual backup"
+                        buttonEvent="create_backup"
+                        buttonType="secondary"
+                        project={data.project}
+                        buttonDisabled={isDisabled}
+                        buttonMethod={() => {
+                            $showCreateBackup = true;
+                            trackEvent('click_manual_create');
+                        }} />
 
-                {#if data.backups.total}
-                    <Layout.Stack gap="xxl">
-                        <Table {data} />
+                    {#if data.backups.total}
+                        <Layout.Stack gap="xxl">
+                            <Table {data} />
 
-                        {#if data.backups.total > 6}
-                            <PaginationWithLimit
-                                name="Backups"
-                                limit={data.limit}
-                                offset={data.offset}
-                                total={data.backups.total} />
-                        {/if}
-                    </Layout.Stack>
-                {:else}
-                    <div class="u-flex u-flex-vertical u-gap-16">
-                        <article class="empty card u-width-full-line common-section">
-                            No backups yet
-                        </article>
-                    </div>
-                {/if}
-            </div>
-        {:else}
-            <div class="u-flex-vertical u-gap-32">
-                <LockedCard project={data.project} />
-            </div>
-        {/if}
-    </div>
-</Container>
+                            {#if data.backups.total > 6}
+                                <PaginationWithLimit
+                                    name="Backups"
+                                    limit={data.limit}
+                                    offset={data.offset}
+                                    total={data.backups.total} />
+                            {/if}
+                        </Layout.Stack>
+                    {:else}
+                        <div class="u-flex u-flex-vertical u-gap-16">
+                            <article class="empty card u-width-full-line common-section">
+                                No backups yet
+                            </article>
+                        </div>
+                    {/if}
+                </div>
+            {:else}
+                <div class="u-flex-vertical u-gap-32">
+                    <LockedCard project={data.project} />
+                </div>
+            {/if}
+        </div>
+    </Container>
+{/if}
 
 <Modal
     title="Create backup policy"
