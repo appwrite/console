@@ -9,12 +9,7 @@ import { normalizeConsoleVariables } from '$lib/helpers/domains';
 import { syncServerTime } from '$lib/helpers/fingerprint';
 import { redirect } from '@sveltejs/kit';
 import { resolve } from '$app/paths';
-
-function isEmailVerificationEnabledFromBackend(flag: string | undefined): boolean {
-    if (!flag) return false;
-    const normalized = flag.toLowerCase();
-    return normalized === 'enabled' || normalized === 'true' || normalized === '1';
-}
+import { isEmailVerificationEnabled } from '$lib/helpers/emailVerification';
 
 export const load: LayoutLoad = async ({ depends, parent, url }) => {
     const { organizations, plansInfo, account } = await parent();
@@ -50,11 +45,12 @@ export const load: LayoutLoad = async ({ depends, parent, url }) => {
 
     const consoleVariables = normalizeConsoleVariables(rawConsoleVariables);
 
-    const emailVerificationEnabled = isEmailVerificationEnabledFromBackend(
-        consoleVariables._APP_CONSOLE_EMAIL_VERIFICATION
-    );
-
-    if (isCloud && account && !account.emailVerification && emailVerificationEnabled) {
+    if (
+        isCloud &&
+        account &&
+        !account.emailVerification &&
+        isEmailVerificationEnabled(consoleVariables)
+    ) {
         const isVerifyEmailPage = url.pathname === resolve('/verify-email');
 
         if (!isVerifyEmailPage) {

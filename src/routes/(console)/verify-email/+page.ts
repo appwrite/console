@@ -4,19 +4,12 @@ import type { PageLoad } from './$types';
 import { Dependencies } from '$lib/constants';
 import { sdk } from '$lib/stores/sdk';
 import { addNotification } from '$lib/stores/notifications';
-
-function isEmailVerificationEnabledFromBackend(flag: string | undefined): boolean {
-    if (!flag) return false;
-    const normalized = flag.toLowerCase();
-    return normalized === 'enabled' || normalized === 'true' || normalized === '1';
-}
+import { isEmailVerificationEnabled } from '$lib/helpers/emailVerification';
 
 export const load: PageLoad = async ({ parent, depends, url }) => {
     const { account, consoleVariables } = await parent();
 
-    const emailVerificationEnabled = isEmailVerificationEnabledFromBackend(
-        consoleVariables?._APP_CONSOLE_EMAIL_VERIFICATION
-    );
+    const emailVerificationEnabled = isEmailVerificationEnabled(consoleVariables);
 
     if (!emailVerificationEnabled) {
         redirect(303, resolve('/'));
