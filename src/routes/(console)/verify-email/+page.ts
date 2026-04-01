@@ -4,14 +4,24 @@ import type { PageLoad } from './$types';
 import { Dependencies } from '$lib/constants';
 import { sdk } from '$lib/stores/sdk';
 import { addNotification } from '$lib/stores/notifications';
-import { VARS } from '$lib/system';
+
+function isEmailVerificationEnabledFromBackend(flag: string | undefined): boolean {
+    if (!flag) return false;
+    const normalized = flag.toLowerCase();
+    return normalized === 'enabled' || normalized === 'true' || normalized === '1';
+}
 
 export const load: PageLoad = async ({ parent, depends, url }) => {
-    if (!VARS.EMAIL_VERIFICATION) {
+    const { account, consoleVariables } = await parent();
+
+    const emailVerificationEnabled = isEmailVerificationEnabledFromBackend(
+        consoleVariables?._APP_CONSOLE_EMAIL_VERIFICATION
+    );
+
+    if (!emailVerificationEnabled) {
         redirect(303, resolve('/'));
     }
 
-    const { account } = await parent();
     depends(Dependencies.ACCOUNT);
 
     const user = url.searchParams.get('userId') ?? null;

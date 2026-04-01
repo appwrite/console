@@ -9,7 +9,7 @@ import { redirectTo } from './store';
 import { resolve } from '$app/paths';
 import type { Account } from '$lib/stores/user';
 import { type AppwriteException, Platform } from '@appwrite.io/console';
-import { isCloud, VARS } from '$lib/system';
+import { isCloud } from '$lib/system';
 import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
 import { getTeamOrOrganizationList } from '$lib/stores/organization';
 import { makePlansMap } from '$lib/helpers/billing';
@@ -32,15 +32,6 @@ export const load: LayoutLoad = async ({ depends, url, route }) => {
     }
 
     if (account) {
-        if (isCloud && !account.emailVerification && VARS.EMAIL_VERIFICATION) {
-            const isConsoleRoute = route.id?.startsWith('/(console)');
-            const isVerifyEmailPage = url.pathname === resolve('/verify-email');
-
-            if (isConsoleRoute && !isVerifyEmailPage) {
-                redirect(303, resolve('/verify-email'));
-            }
-        }
-
         const plansInfo = await getPlatformPlans();
         plansInfoStore.set(plansInfo);
 
