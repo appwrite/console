@@ -45,7 +45,7 @@
     onMount(async () => {
         try {
             const projectSdk = sdk.forProject(page.params.region, page.params.project);
-            config = await projectSdk.compute.getBackupStorageConfig(database.$id);
+            config = await projectSdk.compute.getBackupStorageConfig({ databaseId: database.$id });
             isConfigured = true;
         } catch {
             // 404 means not configured
@@ -101,7 +101,7 @@
         isRemoving = true;
         try {
             const projectSdk = sdk.forProject(page.params.region, page.params.project);
-            await projectSdk.compute.deleteBackupStorageConfig(database.$id);
+            await projectSdk.compute.deleteBackupStorageConfig({ databaseId: database.$id });
 
             isConfigured = false;
             config = null;

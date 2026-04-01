@@ -1,7 +1,7 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
     import { page } from '$app/state';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { CardGrid, Confirm } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
@@ -17,11 +17,11 @@
         database: Models.DedicatedDatabase;
     } = $props();
 
-    const currentType = $derived(database.type === 'dedicated' ? 'Dedicated' : 'Shared');
+    const currentType = $derived(database.type === 'dedicateddb' ? 'Dedicated' : 'Shared');
     const targetType = $derived(
-        database.type === 'dedicated' ? TargetType.Shared : TargetType.Dedicated
+        database.type === 'dedicateddb' ? TargetType.Shared : TargetType.Dedicated
     );
-    const targetLabel = $derived(database.type === 'dedicated' ? 'Shared' : 'Dedicated');
+    const targetLabel = $derived(database.type === 'dedicateddb' ? 'Shared' : 'Dedicated');
 
     let showConfirm = $state(false);
 
@@ -41,14 +41,14 @@
                 type: 'success'
             });
 
-            trackEvent('submit_dedicated_database_migrate');
+            trackEvent(Submit.DedicatedDatabaseMigrate);
             showConfirm = false;
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
-            trackEvent('submit_dedicated_database_migrate_error');
+            trackError(error, Submit.DedicatedDatabaseMigrate);
         }
     }
 </script>
@@ -73,7 +73,7 @@
                 </Layout.Stack>
             </Layout.Grid>
             <Alert.Inline status="info" title="Migration details">
-                {#if database.type === 'dedicated'}
+                {#if database.type === 'dedicateddb'}
                     Migrating to shared converts your database to a serverless pod that scales to
                     zero when idle, reducing costs for low-traffic workloads.
                 {:else}

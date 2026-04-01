@@ -8,7 +8,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Dependencies } from '$lib/constants';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Click, trackEvent } from '$lib/actions/analytics';
     import { capitalize } from '$lib/helpers/string';
     import { Status as DatabaseStatus, type Models } from '@appwrite.io/console';
     import {
@@ -68,16 +68,11 @@
     let isColdStarting = $state(false);
     let isPausing = $state(false);
     let isResuming = $state(false);
-    let isSpinningDown = $state(false);
     let connectionTab = $state<'direct' | 'string'>('direct');
 
     const isDedicated = $derived(database.type === 'dedicateddb');
-    const isShared = $derived(false);
     const isActive = $derived(database.status === 'ready' || database.status === 'active');
     const isPaused = $derived(database.status === 'paused');
-    const containerIsRunning = $derived(
-        database.containerStatus === 'running' || database.containerStatus === 'active'
-    );
 
     // Map database status to Status component status
     const statusComponentStatus = $derived.by((): 'ready' | 'processing' | 'failed' | 'pending' => {
@@ -176,7 +171,7 @@
                 message: 'Database is starting up'
             });
 
-            trackEvent('click_database_cold_start');
+            trackEvent(Click.DatabaseColdStart);
 
             await invalidate(Dependencies.DATABASE);
         } catch (error) {
@@ -201,7 +196,7 @@
                 type: 'success',
                 message: 'Database is pausing'
             });
-            trackEvent('click_database_pause');
+            trackEvent(Click.DatabasePause);
             await invalidate(Dependencies.DATABASE);
         } catch (error) {
             addNotification({
@@ -225,7 +220,7 @@
                 type: 'success',
                 message: 'Database is resuming'
             });
-            trackEvent('click_database_resume');
+            trackEvent(Click.DatabaseResume);
             await invalidate(Dependencies.DATABASE);
         } catch (error) {
             addNotification({
@@ -234,30 +229,6 @@
             });
         } finally {
             isResuming = false;
-        }
-    }
-
-    async function spinDownDatabase() {
-        isSpinningDown = true;
-        try {
-            await sdk.forProject(page.params.region, page.params.project).compute.updateDatabase({
-                databaseId: database.$id,
-                status: 'inactive' as unknown as DatabaseStatus
-            });
-
-            addNotification({
-                type: 'success',
-                message: 'Database container is spinning down'
-            });
-            trackEvent('click_database_spin_down');
-            await invalidate(Dependencies.DATABASE);
-        } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
-        } finally {
-            isSpinningDown = false;
         }
     }
 
@@ -277,15 +248,19 @@
         return `${database.engine}://${user}:${password}@${database.hostname}:${database.connectionPort}${suffix}`;
     });
 
+    function escapeShellSingleQuote(value: string): string {
+        return value.replace(/'/g, "'\\''");
+    }
+
     function getConnectionCommand(): string {
         if (!resolvedConnectionString) return '';
 
         switch (database.engine) {
             case 'postgres':
-                return `psql "${resolvedConnectionString}"`;
+                return `psql '${escapeShellSingleQuote(resolvedConnectionString)}'`;
             case 'mysql':
             case 'mariadb':
-                return `mysql -h ${database.hostname} -P ${database.connectionPort} -u ${database.connectionUser} -p'${database.connectionPassword}'`;
+                return `mysql -h '${escapeShellSingleQuote(database.hostname)}' -P '${escapeShellSingleQuote(String(database.connectionPort))}' -u '${escapeShellSingleQuote(database.connectionUser)}' -p'${escapeShellSingleQuote(database.connectionPassword)}'`;
             default:
                 return resolvedConnectionString;
         }
@@ -405,11 +380,6 @@
                     {isResuming ? 'Resuming...' : 'Resume'}
                 </Button>
             {/if}
-            {#if isShared && isActive && containerIsRunning}
-                <Button secondary disabled={isSpinningDown} on:click={spinDownDatabase}>
-                    {isSpinningDown ? 'Spinning down...' : 'Spin Down'}
-                </Button>
-            {/if}
             <Button secondary disabled={isRefreshing} on:click={refreshStatus}>
                 <Icon icon={IconRefresh} size="s" slot="start" />
                 Refresh
@@ -519,48 +489,6 @@
                         <Skeleton variant="line" width="100%" height={40} />
                     </Layout.Stack>
                 </Layout.Stack>
-            </svelte:fragment>
-        </CardGrid>
-    {/if}
-
-    <!-- Free Tier Limits (shared databases only) -->
-    {#if isShared}
-        <CardGrid>
-            <svelte:fragment slot="title">Free Tier Limits</svelte:fragment>
-            Your shared database runs within the free tier. Resources are constrained to the limits below.
-            Upgrade to a dedicated database for higher limits.
-            <svelte:fragment slot="aside">
-                <Layout.Grid columns={2} columnsS={1} gap="l">
-                    <Layout.Stack gap="xxs">
-                        <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
-                            Storage
-                        </Typography.Caption>
-                        <Typography.Text variant="m-500">1 GB</Typography.Text>
-                    </Layout.Stack>
-                    <Layout.Stack gap="xxs">
-                        <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
-                            Max Connections
-                        </Typography.Caption>
-                        <Typography.Text variant="m-500">10</Typography.Text>
-                    </Layout.Stack>
-                    <Layout.Stack gap="xxs">
-                        <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
-                            Query Timeout
-                        </Typography.Caption>
-                        <Typography.Text variant="m-500">15s</Typography.Text>
-                    </Layout.Stack>
-                    <Layout.Stack gap="xxs">
-                        <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
-                            Idle Timeout
-                        </Typography.Caption>
-                        <Typography.Text variant="m-500">
-                            15 min
-                            <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
-                                (scales to zero)
-                            </Typography.Caption>
-                        </Typography.Text>
-                    </Layout.Stack>
-                </Layout.Grid>
             </svelte:fragment>
         </CardGrid>
     {/if}

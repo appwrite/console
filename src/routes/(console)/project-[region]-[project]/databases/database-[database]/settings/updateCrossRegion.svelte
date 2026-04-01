@@ -72,7 +72,9 @@
     onMount(async () => {
         try {
             const projectSdk = sdk.forProject(page.params.region, page.params.project);
-            crossRegionStatus = await projectSdk.compute.getCrossRegionStatus(database.$id);
+            crossRegionStatus = await projectSdk.compute.getCrossRegionStatus({
+                databaseId: database.$id
+            });
             isEnabled = crossRegionStatus.enabled;
         } catch {
             // 404 means not enabled
@@ -88,10 +90,10 @@
         isEnabling = true;
         try {
             const projectSdk = sdk.forProject(page.params.region, page.params.project);
-            crossRegionStatus = await projectSdk.compute.enableCrossRegion(
-                database.$id,
+            crossRegionStatus = await projectSdk.compute.enableCrossRegion({
+                databaseId: database.$id,
                 standbyRegion
-            );
+            });
 
             isEnabled = true;
             standbyRegion = '';
@@ -119,7 +121,7 @@
         isDisabling = true;
         try {
             const projectSdk = sdk.forProject(page.params.region, page.params.project);
-            await projectSdk.compute.disableCrossRegion(database.$id);
+            await projectSdk.compute.disableCrossRegion({ databaseId: database.$id });
 
             isEnabled = false;
             crossRegionStatus = null;
@@ -148,7 +150,7 @@
         isFailingOver = true;
         try {
             const projectSdk = sdk.forProject(page.params.region, page.params.project);
-            await projectSdk.compute.triggerCrossRegionFailover(database.$id);
+            await projectSdk.compute.triggerCrossRegionFailover({ databaseId: database.$id });
 
             showFailoverConfirm = false;
 

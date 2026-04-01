@@ -6,7 +6,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { calculateSize } from '$lib/helpers/sizeConvertion';
     import { toLocaleDateTime } from '$lib/helpers/date';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Click, trackEvent } from '$lib/actions/analytics';
     import { type Models } from '@appwrite.io/console';
     import { Period } from '$lib/sdk/dedicated';
     import {
@@ -141,6 +141,10 @@
             slowQueries = await computeSdk.listDatabaseQueries({ databaseId: database.$id });
         } catch (error) {
             slowQueries = { total: 0, slowQueries: [] };
+            addNotification({
+                type: 'error',
+                message: `Failed to load slow queries: ${error.message}`
+            });
         } finally {
             isLoadingSlowQueries = false;
         }
@@ -155,6 +159,10 @@
             });
         } catch (error) {
             performanceInsights = null;
+            addNotification({
+                type: 'error',
+                message: `Failed to load performance insights: ${error.message}`
+            });
         } finally {
             isLoadingInsights = false;
         }
@@ -167,6 +175,10 @@
             auditLogs = await computeSdk.listDatabaseLogs({ databaseId: database.$id });
         } catch (error) {
             auditLogs = { total: 0, auditLogs: [] };
+            addNotification({
+                type: 'error',
+                message: `Failed to load audit logs: ${error.message}`
+            });
         } finally {
             isLoadingAuditLogs = false;
         }
@@ -182,6 +194,7 @@
             schemaLoaded = true;
         } catch (error) {
             schema = null;
+            schemaLoaded = true;
             addNotification({
                 type: 'error',
                 message: `Failed to load schema: ${error.message}`
@@ -240,6 +253,7 @@
             tuningLoaded = true;
         } catch (error) {
             tuningResult = null;
+            tuningLoaded = true;
             addNotification({
                 type: 'error',
                 message: `Failed to load tuning recommendations: ${error.message}`
@@ -259,6 +273,7 @@
             indexSuggestionsLoaded = true;
         } catch (error) {
             indexSuggestions = null;
+            indexSuggestionsLoaded = true;
             addNotification({
                 type: 'error',
                 message: `Failed to load index suggestions: ${error.message}`
@@ -269,7 +284,7 @@
     }
 
     async function refreshAll() {
-        trackEvent('dedicated_monitoring_refresh');
+        trackEvent(Click.DedicatedMonitoringRefresh);
         await Promise.all([
             loadMetrics(),
             loadSlowQueries(),

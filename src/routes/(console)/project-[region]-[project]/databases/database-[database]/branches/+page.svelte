@@ -6,7 +6,7 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { ID, type Models } from '@appwrite.io/console';
     import {
         ActionMenu,
@@ -69,14 +69,14 @@
                 type: 'success',
                 message: 'Branch created'
             });
-            trackEvent('submit_dedicated_branch_create');
+            trackEvent(Submit.DedicatedBranchCreate);
             await loadBranches();
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
-            trackEvent('submit_dedicated_branch_create_error');
+            trackError(error, Submit.DedicatedBranchCreate);
         } finally {
             isCreating = false;
         }
@@ -93,7 +93,7 @@
                 type: 'success',
                 message: 'Branch deleted'
             });
-            trackEvent('submit_dedicated_branch_delete');
+            trackEvent(Submit.DedicatedBranchDelete);
             showDeleteConfirm = false;
             selectedBranch = null;
             await loadBranches();
@@ -102,7 +102,7 @@
                 type: 'error',
                 message: error.message
             });
-            trackEvent('submit_dedicated_branch_delete_error');
+            trackError(error, Submit.DedicatedBranchDelete);
         }
     }
 
@@ -111,8 +111,11 @@
         return toLocaleDateTime(new Date(timestamp * 1000).toISOString());
     }
 
+    let previousId = $state('');
+
     $effect(() => {
-        if (database) {
+        if (database?.$id && database.$id !== previousId) {
+            previousId = database.$id;
             loadBranches();
         }
     });

@@ -57,7 +57,7 @@
     let pitrTargetDateTime = $state('');
 
     let showCreateBackupModal = $state(false);
-    let backupType = $state<'full' | 'incremental'>('full');
+    let backupType = $state<Type>(Type.Full);
 
     let verifyingBackupId = $state<string | null>(null);
     let showVerifyConfirm = $state(false);
@@ -167,7 +167,7 @@
         try {
             await computeSdk.createDatabaseBackup({
                 databaseId: database.$id,
-                type: backupType as unknown as Type
+                type: backupType
             });
             addNotification({
                 type: 'success',
@@ -175,7 +175,7 @@
             });
             trackEvent(Submit.DedicatedBackupCreate);
             showCreateBackupModal = false;
-            backupType = 'full';
+            backupType = Type.Full;
             await loadBackups();
         } catch (error) {
             addNotification({
@@ -281,7 +281,7 @@
                 type: 'success',
                 message: 'Backup verification started'
             });
-            trackEvent('submit_dedicated_backup_verify');
+            trackEvent(Submit.DedicatedBackupVerify);
             showVerifyConfirm = false;
             verifyBackup = null;
             await loadBackups();
@@ -290,7 +290,7 @@
                 type: 'error',
                 message: error.message
             });
-            trackEvent('submit_dedicated_backup_verify_error');
+            trackError(error, Submit.DedicatedBackupVerify);
         } finally {
             verifyingBackupId = null;
         }
@@ -308,11 +308,15 @@
         return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
     }
 
-    // Load data on mount
+    let previousId = $state('');
+
     $effect(() => {
-        loadBackups();
-        loadRestorations();
-        loadPitrWindows();
+        if (database?.$id && database.$id !== previousId) {
+            previousId = database.$id;
+            loadBackups();
+            loadRestorations();
+            loadPitrWindows();
+        }
     });
 </script>
 
@@ -734,13 +738,13 @@
                 id="backup-full"
                 name="backupType"
                 label="Full backup"
-                value="full"
+                value={Type.Full}
                 bind:group={backupType} />
             <InputRadio
                 id="backup-incremental"
                 name="backupType"
                 label="Incremental backup (only changes since last full backup)"
-                value="incremental"
+                value={Type.Incremental}
                 bind:group={backupType} />
         </Layout.Stack>
     </Layout.Stack>
