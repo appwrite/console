@@ -1,8 +1,4 @@
-import { test as base, expect, type Page } from '@playwright/test';
-
-// @todo These tests require a pre-seeded project with dedicated database support.
-// Skip in CI until a dedicated test environment is available.
-const test = process.env.CI ? base.skip : base;
+import { test, expect, type Page } from '@playwright/test';
 
 const PROJECT_ID = '69c5061ee68ebce1a541';
 const REGION = 'fra';
@@ -120,6 +116,9 @@ async function navigateToFirstDatabase(page: Page): Promise<boolean> {
 
 test.describe('Dedicated databases', () => {
     test.beforeEach(async ({ page }) => {
+        // @todo These tests require a pre-seeded project with dedicated database support.
+        // Skip in CI until a dedicated test environment is available.
+        test.skip(!!process.env.CI, 'Requires pre-seeded dedicated database environment');
         await authenticate(page);
     });
 
