@@ -332,6 +332,7 @@
         switch (type) {
             case 'string':
                 return IconText;
+            case 'bigint':
             case 'double':
             case 'integer':
                 return IconHashtag;

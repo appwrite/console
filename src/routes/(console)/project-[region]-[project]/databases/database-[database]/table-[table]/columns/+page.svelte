@@ -198,7 +198,7 @@
         ) {
             const stringColumn = column as Models.ColumnString;
             return { display: `Size: ${stringColumn.size}` };
-        } else if (column.type === 'integer' || column.type === 'double') {
+        } else if (column.type === 'bigint' || column.type === 'integer' || column.type === 'double') {
             const numbersColumn = column as Models.ColumnInteger | Models.ColumnFloat;
             const { min, max } = numbersColumn;
 

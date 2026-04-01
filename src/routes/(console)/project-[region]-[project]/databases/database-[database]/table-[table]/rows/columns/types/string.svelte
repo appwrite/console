@@ -24,6 +24,7 @@
             | Models.ColumnText
             | Models.ColumnMediumtext
             | Models.ColumnLongtext
+            | Models.ColumnBigint
             | Models.ColumnInteger
             | Models.ColumnFloat
             | Models.ColumnBoolean
@@ -51,6 +52,7 @@
         if (!trimmed) return null;
 
         switch (column.type) {
+            case 'bigint':
             case 'integer': {
                 const int = parseInt(trimmed, 10);
                 return isNaN(int) ? null : int;
@@ -122,6 +124,7 @@
     const getPlaceholder = () => {
         if (!array) {
             switch (column.type) {
+                case 'bigint':
                 case 'integer':
                     return 'Enter integer';
                 case 'double':
@@ -134,6 +137,7 @@
             }
         } else {
             switch (column.type) {
+                case 'bigint':
                 case 'integer':
                     return 'Enter integers separated by commas';
                 case 'double':
