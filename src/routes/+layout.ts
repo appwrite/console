@@ -8,12 +8,13 @@ import type { LayoutLoad } from './$types';
 import { redirectTo } from './store';
 import { resolve } from '$app/paths';
 import type { Account } from '$lib/stores/user';
-import { type AppwriteException, Platform } from '@appwrite.io/console';
+import { AppwriteException, Platform } from '@appwrite.io/console';
 import { isCloud } from '$lib/system';
 import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
 import { getTeamOrOrganizationList } from '$lib/stores/organization';
 import { makePlansMap } from '$lib/helpers/billing';
 import { plansInfo as plansInfoStore } from '$lib/stores/billing';
+import { isEmailVerificationRequiredError } from '$lib/helpers/emailVerification';
 
 export const ssr = false;
 
@@ -32,14 +33,33 @@ export const load: LayoutLoad = async ({ depends, url, route }) => {
     }
 
     if (account) {
-        const plansInfo = await getPlatformPlans();
-        plansInfoStore.set(plansInfo);
+        try {
+            const [plansInfo, organizations] = await Promise.all([
+                getPlatformPlans(),
+                getTeamOrOrganizationList()
+            ]);
 
-        return {
-            plansInfo,
-            account: account,
-            organizations: await getTeamOrOrganizationList()
-        };
+            plansInfoStore.set(plansInfo);
+
+            return {
+                plansInfo,
+                account: account,
+                organizations
+            };
+        } catch (error) {
+            if (
+                error instanceof AppwriteException &&
+                isEmailVerificationRequiredError(error.type)
+            ) {
+                const verifyEmailUrl = resolve('/verify-email');
+
+                if (url.pathname !== verifyEmailUrl) {
+                    redirect(303, withParams(verifyEmailUrl, url.searchParams));
+                }
+            }
+
+            throw error;
+        }
     }
 
     const isPublicRoute = route.id?.startsWith('/(public)');
@@ -55,6 +75,14 @@ export const load: LayoutLoad = async ({ depends, url, route }) => {
                 mfaRequired: true
             };
         redirect(303, withParams(mfaUrl, url.searchParams));
+    }
+
+    if (isEmailVerificationRequiredError(error.type)) {
+        const verifyEmailUrl = resolve('/verify-email');
+
+        if (url.pathname !== verifyEmailUrl) {
+            redirect(303, withParams(verifyEmailUrl, url.searchParams));
+        }
     }
 
     if (!isPublicRoute) {

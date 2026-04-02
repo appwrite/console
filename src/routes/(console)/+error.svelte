@@ -1,9 +1,17 @@
-<script>
-    import { base } from '$app/paths';
+<script lang="ts">
+    import { goto } from '$app/navigation';
+    import { base, resolve } from '$app/paths';
     import { page } from '$app/state';
     import { Button } from '$lib/elements/forms';
+    import { isEmailVerificationRequiredError } from '$lib/helpers/emailVerification';
     import { Container } from '$lib/layout';
     import { Typography } from '@appwrite.io/pink-svelte';
+
+    $effect(() => {
+        if (isEmailVerificationRequiredError(page.error.type)) {
+            goto(resolve('/verify-email'), { replaceState: true });
+        }
+    });
 </script>
 
 <Container>

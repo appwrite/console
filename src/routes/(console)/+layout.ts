@@ -2,17 +2,17 @@ import { sdk } from '$lib/stores/sdk';
 import { isCloud } from '$lib/system';
 import type { LayoutLoad } from './$types';
 import { Dependencies } from '$lib/constants';
-import { Platform, Query } from '@appwrite.io/console';
+import { AppwriteException, Platform, Query } from '@appwrite.io/console';
 import { makePlansMap } from '$lib/helpers/billing';
 import { plansInfo as plansInfoStore } from '$lib/stores/billing';
 import { normalizeConsoleVariables } from '$lib/helpers/domains';
 import { syncServerTime } from '$lib/helpers/fingerprint';
 import { redirect } from '@sveltejs/kit';
 import { resolve } from '$app/paths';
-import { isEmailVerificationEnabled } from '$lib/helpers/emailVerification';
+import { isEmailVerificationRequiredError } from '$lib/helpers/emailVerification';
 
-export const load: LayoutLoad = async ({ depends, parent, url }) => {
-    const { organizations, plansInfo, account } = await parent();
+export const load: LayoutLoad = async ({ depends, parent }) => {
+    const { organizations, plansInfo } = await parent();
 
     depends(Dependencies.RUNTIMES);
     depends(Dependencies.CONSOLE_VARIABLES);
@@ -41,22 +41,15 @@ export const load: LayoutLoad = async ({ depends, parent, url }) => {
             return response.json() as { version?: string };
         }),
         sdk.forConsole.console.variables()
-    ]);
-
-    const consoleVariables = normalizeConsoleVariables(rawConsoleVariables);
-
-    if (
-        isCloud &&
-        account &&
-        !account.emailVerification &&
-        isEmailVerificationEnabled(consoleVariables)
-    ) {
-        const isVerifyEmailPage = url.pathname === resolve('/verify-email');
-
-        if (!isVerifyEmailPage) {
+    ]).catch((error) => {
+        if (error instanceof AppwriteException && isEmailVerificationRequiredError(error.type)) {
             redirect(303, resolve('/verify-email'));
         }
-    }
+
+        throw error;
+    });
+
+    const consoleVariables = normalizeConsoleVariables(rawConsoleVariables);
 
     let fallbackPlansInfoArray = plansInfo;
     if (!fallbackPlansInfoArray) {
@@ -81,6 +74,10 @@ export const load: LayoutLoad = async ({ depends, parent, url }) => {
                 })
             ).total;
         } catch (e) {
+            if (e instanceof AppwriteException && isEmailVerificationRequiredError(e.type)) {
+                redirect(303, resolve('/verify-email'));
+            }
+
             projectsCount = 0;
         }
     }
