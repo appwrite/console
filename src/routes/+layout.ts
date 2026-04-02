@@ -39,8 +39,8 @@ export const load: LayoutLoad = async ({ depends, url, route }) => {
     if (account) {
         // `/v1/teams` (and org list on cloud) returns 401 until the console account is verified;
         // do not call that API on this route while still unverified.
-        if (url.pathname === verifyEmailPath && !account.emailVerification) {
-            const plansInfo = await getPlatformPlans();
+        if (url.pathname === verifyEmailPath) {
+            const plansInfo = await getPlatformPlans().catch(() => null);
             plansInfoStore.set(plansInfo);
             return {
                 plansInfo,
@@ -69,7 +69,7 @@ export const load: LayoutLoad = async ({ depends, url, route }) => {
                 }
 
                 // Already on verify-email: do not rethrow; the teams API is blocked until verified.
-                const plansInfo = await getPlatformPlans();
+                const plansInfo = await getPlatformPlans().catch(() => null);
                 plansInfoStore.set(plansInfo);
                 return {
                     plansInfo,
