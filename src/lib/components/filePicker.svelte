@@ -9,7 +9,7 @@
     import { Button, InputSelect } from '$lib/elements/forms';
     import DualTimeView from './dualTimeView.svelte';
     import type { Models } from '@appwrite.io/console';
-    import { calculateSize } from '$lib/helpers/sizeConvertion';
+    import { calculateSize, humanFileSize, sizeToBytes } from '$lib/helpers/sizeConvertion';
     import InputSearch from '$lib/elements/forms/inputSearch.svelte';
     import { ID, Query, Permission, Role } from '@appwrite.io/console';
     import {
@@ -34,6 +34,8 @@
     import { showCreateBucket } from '$routes/(console)/project-[region]-[project]/storage/+page.svelte';
     import { preferences } from '$lib/stores/preferences';
     import { addNotification } from '$lib/stores/notifications';
+    import { isCloud } from '$lib/system';
+    import { currentPlan } from '$lib/stores/organization';
 
     export let show: boolean;
     export let mimeTypeQuery: string = 'image/';
@@ -53,6 +55,10 @@
     let fileSelector: HTMLInputElement;
     let uploading = false;
     let view: 'grid' | 'list' = 'list';
+    $: planMaxSize =
+        isCloud && $currentPlan?.['fileSize']
+            ? sizeToBytes($currentPlan['fileSize'], 'MB', 1000)
+            : null;
 
     onMount(() => {
         const lastSelectedBucket = preferences.getKey('lastSelectedBucket', null);
@@ -381,8 +387,12 @@
                                                     : `${allowedExtension} files are allowed`}</svelte:fragment>
                                         </Tooltip>
                                     </Layout.Stack>
-                                    <Typography.Caption variant="400"
-                                        >Max file size: 10MB</Typography.Caption>
+                                    {#if planMaxSize}
+                                        {@const readableMaxSize = humanFileSize(planMaxSize)}
+                                        <Typography.Caption variant="400"
+                                            >Max file size: {readableMaxSize.value +
+                                                readableMaxSize.unit}</Typography.Caption>
+                                    {/if}
                                 </Layout.Stack>
                             </Layout.Stack>
                         </Upload.Dropzone>
