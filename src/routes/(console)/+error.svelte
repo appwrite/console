@@ -8,8 +8,9 @@
     import { Typography } from '@appwrite.io/pink-svelte';
 
     $effect(() => {
-        if (isVerifyEmailRedirectError(page.error)) {
-            goto(resolve('/verify-email'), { replaceState: true });
+        const verifyEmailPath = resolve('/verify-email');
+        if (isVerifyEmailRedirectError(page.error) && page.url.pathname !== verifyEmailPath) {
+            goto(verifyEmailPath, { replaceState: true });
         }
     });
 </script>

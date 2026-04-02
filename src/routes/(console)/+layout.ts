@@ -27,7 +27,7 @@ export const load: LayoutLoad = async ({ depends, parent, url }) => {
         depends(Dependencies.ORGANIZATION);
 
         const [preferences, rawConsoleVariables, versionData] = await Promise.all([
-            sdk.forConsole.account.getPrefs(),
+            sdk.forConsole.account.getPrefs().catch(() => ({}) as Models.DefaultPreferences),
             sdk.forConsole.console.variables().catch(() => ({}) as Models.ConsoleVariables),
             fetch(`${endpoint}/health/version`, {
                 headers: { 'X-Appwrite-Project': project as string }
