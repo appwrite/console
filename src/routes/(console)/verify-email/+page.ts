@@ -4,16 +4,9 @@ import type { PageLoad } from './$types';
 import { Dependencies } from '$lib/constants';
 import { sdk } from '$lib/stores/sdk';
 import { addNotification } from '$lib/stores/notifications';
-import { isEmailVerificationEnabled } from '$lib/helpers/emailVerification';
 
 export const load: PageLoad = async ({ parent, depends, url }) => {
-    const { account, consoleVariables } = await parent();
-
-    const emailVerificationEnabled = isEmailVerificationEnabled(consoleVariables);
-
-    if (!emailVerificationEnabled) {
-        redirect(303, resolve('/'));
-    }
+    const { account } = await parent();
 
     depends(Dependencies.ACCOUNT);
 

@@ -11,7 +11,7 @@ import { redirect } from '@sveltejs/kit';
 import { resolve } from '$app/paths';
 import { isEmailVerificationRequiredError } from '$lib/helpers/emailVerification';
 
-export const load: LayoutLoad = async ({ depends, parent }) => {
+export const load: LayoutLoad = async ({ depends, parent, url }) => {
     const { organizations, plansInfo } = await parent();
 
     depends(Dependencies.RUNTIMES);
@@ -19,6 +19,11 @@ export const load: LayoutLoad = async ({ depends, parent }) => {
     depends(Dependencies.ORGANIZATION);
 
     const { endpoint, project } = sdk.forConsole.client.config;
+    const verifyEmailUrl = resolve('/verify-email');
+    const shouldRedirectToVerifyEmail = (error: unknown) =>
+        error instanceof AppwriteException &&
+        isEmailVerificationRequiredError(error.type) &&
+        url.pathname !== verifyEmailUrl;
 
     const plansArrayPromise =
         plansInfo || !isCloud
@@ -42,8 +47,8 @@ export const load: LayoutLoad = async ({ depends, parent }) => {
         }),
         sdk.forConsole.console.variables()
     ]).catch((error) => {
-        if (error instanceof AppwriteException && isEmailVerificationRequiredError(error.type)) {
-            redirect(303, resolve('/verify-email'));
+        if (shouldRedirectToVerifyEmail(error)) {
+            redirect(303, verifyEmailUrl);
         }
 
         throw error;
@@ -74,8 +79,8 @@ export const load: LayoutLoad = async ({ depends, parent }) => {
                 })
             ).total;
         } catch (e) {
-            if (e instanceof AppwriteException && isEmailVerificationRequiredError(e.type)) {
-                redirect(303, resolve('/verify-email'));
+            if (shouldRedirectToVerifyEmail(e)) {
+                redirect(303, verifyEmailUrl);
             }
 
             projectsCount = 0;
