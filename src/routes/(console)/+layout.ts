@@ -1,29 +1,71 @@
 import { sdk } from '$lib/stores/sdk';
 import { isCloud } from '$lib/system';
 import type { LayoutLoad } from './$types';
+import type { Account } from '$lib/stores/user';
 import { Dependencies } from '$lib/constants';
-import { AppwriteException, Platform, Query } from '@appwrite.io/console';
+import { Platform, Query, type Models } from '@appwrite.io/console';
 import { makePlansMap } from '$lib/helpers/billing';
 import { plansInfo as plansInfoStore } from '$lib/stores/billing';
 import { normalizeConsoleVariables } from '$lib/helpers/domains';
 import { syncServerTime } from '$lib/helpers/fingerprint';
 import { redirect } from '@sveltejs/kit';
 import { resolve } from '$app/paths';
-import { isEmailVerificationRequiredError } from '$lib/helpers/emailVerification';
+import { isVerifyEmailRedirectError } from '$lib/helpers/emailVerification';
 
 export const load: LayoutLoad = async ({ depends, parent, url }) => {
-    const { organizations, plansInfo } = await parent();
+    const parentData = await parent();
+    const { organizations, plansInfo } = parentData;
+    const account = parentData.account as Account | undefined;
+
+    const { endpoint, project } = sdk.forConsole.client.config;
+    const verifyEmailUrl = resolve('/verify-email');
+
+    // While unverified, several console APIs (not only teams) may return 401; avoid failing the layout.
+    if (url.pathname === verifyEmailUrl && account && !account.emailVerification) {
+        depends(Dependencies.RUNTIMES);
+        depends(Dependencies.CONSOLE_VARIABLES);
+        depends(Dependencies.ORGANIZATION);
+
+        const [preferences, rawConsoleVariables, versionData] = await Promise.all([
+            sdk.forConsole.account.getPrefs(),
+            sdk.forConsole.console.variables().catch(() => ({}) as Models.ConsoleVariables),
+            fetch(`${endpoint}/health/version`, {
+                headers: { 'X-Appwrite-Project': project as string }
+            })
+                .then(async (response) => {
+                    const dateHeader = response.headers.get('Date');
+                    const parsed = dateHeader ? new Date(dateHeader).getTime() : NaN;
+                    if (Number.isFinite(parsed)) {
+                        syncServerTime(Math.floor(parsed / 1000));
+                    }
+                    return response.json() as { version?: string };
+                })
+                .catch(() => null)
+        ]);
+
+        const consoleVariables = normalizeConsoleVariables(rawConsoleVariables);
+
+        plansInfoStore.set(plansInfo ?? null);
+
+        return {
+            roles: [],
+            scopes: [],
+            preferences,
+            currentOrgId: undefined,
+            organizations,
+            consoleVariables,
+            allProjectsCount: 0,
+            plansInfo: plansInfo ?? null,
+            version: versionData?.version ?? null
+        };
+    }
 
     depends(Dependencies.RUNTIMES);
     depends(Dependencies.CONSOLE_VARIABLES);
     depends(Dependencies.ORGANIZATION);
 
-    const { endpoint, project } = sdk.forConsole.client.config;
-    const verifyEmailUrl = resolve('/verify-email');
     const shouldRedirectToVerifyEmail = (error: unknown) =>
-        error instanceof AppwriteException &&
-        isEmailVerificationRequiredError(error.type) &&
-        url.pathname !== verifyEmailUrl;
+        isVerifyEmailRedirectError(error) && url.pathname !== verifyEmailUrl;
 
     const plansArrayPromise =
         plansInfo || !isCloud

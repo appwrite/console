@@ -3,12 +3,12 @@
     import { base, resolve } from '$app/paths';
     import { page } from '$app/state';
     import { Button } from '$lib/elements/forms';
-    import { isEmailVerificationRequiredError } from '$lib/helpers/emailVerification';
+    import { isVerifyEmailRedirectError } from '$lib/helpers/emailVerification';
     import { Container } from '$lib/layout';
     import { Typography } from '@appwrite.io/pink-svelte';
 
     $effect(() => {
-        if (isEmailVerificationRequiredError(page.error.type)) {
+        if (isVerifyEmailRedirectError(page.error)) {
             goto(resolve('/verify-email'), { replaceState: true });
         }
     });
