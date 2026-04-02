@@ -7,5 +7,5 @@ export function isEmailVerificationEnabled(
         return false;
     }
 
-    return String(consoleVariables._APP_CONSOLE_EMAIL_VERIFICATION) === '1';
+    return String(consoleVariables._APP_CONSOLE_EMAIL_VERIFICATION) === 'true';
 }
