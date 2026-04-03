@@ -46,6 +46,7 @@
     {#snippet createIndexForm()}
         <CreateIndexForm
             entity={data.collection}
+            databaseType={data.database.type}
             {onCreateIndex}
             showCreateIndex={true}
             bind:this={createIndexRef} />

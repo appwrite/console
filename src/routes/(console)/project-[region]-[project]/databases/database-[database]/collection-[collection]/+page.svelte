@@ -167,6 +167,33 @@
                         alignItems="center"
                         justifyContent="flex-end">
                         {#if !$isSmallViewport}
+                            <Tooltip placement="top">
+                                <Button
+                                    icon
+                                    size="s"
+                                    secondary
+                                    class="small-button-dimensions"
+                                    on:click={() => (showImportJson = true)}>
+                                    <Icon icon={IconUpload} size="s" />
+                                </Button>
+                                <svelte:fragment slot="tooltip">Import JSON</svelte:fragment>
+                            </Tooltip>
+
+                            <Tooltip placement="top">
+                                <Button
+                                    icon
+                                    size="s"
+                                    secondary
+                                    class="small-button-dimensions"
+                                    disabled={!data.documents.total}
+                                    on:click={() => {
+                                        trackEvent(Click.DatabaseExportCsv);
+                                        goto(getExportUrl());
+                                    }}>
+                                    <Icon icon={IconDownload} size="s" />
+                                </Button>
+                                <svelte:fragment slot="tooltip">Export JSON</svelte:fragment>
+                            </Tooltip>
                             <Tooltip
                                 maxWidth="210px"
                                 placement="bottom"
