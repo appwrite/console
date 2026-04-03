@@ -4,9 +4,12 @@ import Header from './header.svelte';
 import { sdk } from '$lib/stores/sdk';
 import { Dependencies } from '$lib/constants';
 import type { Models } from '@appwrite.io/console';
+import { guardResourceBlock } from '$lib/helpers/project';
 
-export const load: LayoutLoad = async ({ params, depends }) => {
+export const load: LayoutLoad = async ({ params, depends, parent }) => {
     depends(Dependencies.MESSAGING_MESSAGE);
+    const { project } = await parent();
+    guardResourceBlock(project, 'messages', params.message);
 
     const message = await sdk
         .forProject(params.region, params.project)

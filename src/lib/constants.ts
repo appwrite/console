@@ -158,12 +158,15 @@ export const defaultRoles: string[] = ['owner'];
 
 // these are kept for backwards compatibility with keys and events that already exists.
 // for the new ones, we use the new terminology.
-export const scopes: {
+export type ScopeDefinition = {
     scope: string;
     description: string;
     category: string;
     icon: string;
-}[] = [
+    deprecated?: boolean;
+};
+
+export const scopes: ScopeDefinition[] = [
     {
         scope: 'sessions.write',
         description: "Access to create, update and delete your project's sessions",
@@ -210,13 +213,15 @@ export const scopes: {
         scope: 'collections.read',
         description: "Access to read your project's database collections",
         category: 'Database',
-        icon: 'database'
+        icon: 'database',
+        deprecated: true
     },
     {
         scope: 'collections.write',
         description: "Access to create, update, and delete your project's database collections",
         category: 'Database',
-        icon: 'database'
+        icon: 'database',
+        deprecated: true
     },
     {
         scope: 'tables.read',
@@ -234,14 +239,16 @@ export const scopes: {
         scope: 'attributes.read',
         description: "Access to read your project's database collection's attributes",
         category: 'Database',
-        icon: 'database'
+        icon: 'database',
+        deprecated: true
     },
     {
         scope: 'attributes.write',
         description:
             "Access to create, update, and delete your project's database collection's attributes",
         category: 'Database',
-        icon: 'database'
+        icon: 'database',
+        deprecated: true
     },
     {
         scope: 'columns.read',
@@ -271,13 +278,15 @@ export const scopes: {
         scope: 'documents.read',
         description: "Access to read your project's database documents",
         category: 'Database',
-        icon: 'database'
+        icon: 'database',
+        deprecated: true
     },
     {
         scope: 'documents.write',
         description: "Access to create, update, and delete your project's database documents",
         category: 'Database',
-        icon: 'database'
+        icon: 'database',
+        deprecated: true
     },
     {
         scope: 'rows.read',
@@ -469,7 +478,7 @@ export const scopes: {
     }
 ];
 
-export const cloudOnlyBackupScopes = [
+export const cloudOnlyBackupScopes: ScopeDefinition[] = [
     {
         scope: 'policies.read',
         description: 'Access to read your database backup policies',

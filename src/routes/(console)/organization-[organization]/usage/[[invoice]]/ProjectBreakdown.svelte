@@ -17,7 +17,10 @@
         | 'databasesReads'
         | 'databasesWrites'
         | 'imageTransformations'
-        | 'screenshotsGenerated';
+        | 'screenshotsGenerated'
+        | 'realtime'
+        | 'realtimeMessages'
+        | 'realtimeBandwidth';
 
     type Estimate = 'authPhoneEstimate';
 
@@ -97,9 +100,12 @@
                 return formatNumberWithCommas(value);
             case 'executions':
             case 'users':
+            case 'realtime':
+            case 'realtimeMessages':
                 return abbreviateNumber(value);
             case 'storage':
             case 'bandwidth':
+            case 'realtimeBandwidth':
                 return humanFileSize(value).value + humanFileSize(value).unit;
         }
     }

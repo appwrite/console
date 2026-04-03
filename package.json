@@ -20,7 +20,7 @@
     },
     "dependencies": {
         "@ai-sdk/svelte": "^1.1.24",
-        "@appwrite.io/console": "github:appwrite/sdk-for-console#fc5ed94",
+        "@appwrite.io/console": "https://pkg.vc/-/@appwrite/@appwrite.io/console@e259e61",
         "@appwrite.io/pink-icons": "0.25.0",
         "@appwrite.io/pink-icons-svelte": "https://pkg.vc/-/@appwrite/@appwrite.io/pink-icons-svelte@bfe7ce3",
         "@appwrite.io/pink-legacy": "^1.0.3",
@@ -53,7 +53,7 @@
         "ignore": "^6.0.2",
         "json5": "^2.2.3",
         "nanoid": "^5.1.7",
-        "nanotar": "^0.1.1",
+        "nanotar": "^0.3.0",
         "pretty-bytes": "^6.1.1",
         "remarkable": "^2.0.1",
         "svelte-confetti": "^1.4.0",
@@ -104,8 +104,11 @@
     "overrides": {
         "vite": "npm:rolldown-vite@latest",
         "minimatch": "10.2.3",
+        "brace-expansion": ">=5.0.5",
         "immutable": "^5.1.5",
         "flatted": "^3.4.2",
-        "picomatch": "^2.3.2"
+        "yaml": "^1.10.3",
+        "picomatch": "^2.3.2",
+        "cookie": "^0.7.0"
     }
 }

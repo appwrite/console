@@ -8,18 +8,23 @@ import type { LayoutLoad } from './$types';
 import { redirectTo } from './store';
 import { resolve } from '$app/paths';
 import type { Account } from '$lib/stores/user';
-import { type AppwriteException, Platform } from '@appwrite.io/console';
-import { isCloud, VARS } from '$lib/system';
+import { AppwriteException, Platform, type Models } from '@appwrite.io/console';
+import { isCloud } from '$lib/system';
 import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
 import { getTeamOrOrganizationList } from '$lib/stores/organization';
 import { makePlansMap } from '$lib/helpers/billing';
 import { plansInfo as plansInfoStore } from '$lib/stores/billing';
+import { isVerifyEmailRedirectError } from '$lib/helpers/emailVerification';
 
 export const ssr = false;
+
+const EMPTY_ORGANIZATIONS: Models.TeamList = { total: 0, teams: [] };
 
 export const load: LayoutLoad = async ({ depends, url, route }) => {
     depends(Dependencies.ACCOUNT);
     depends(Dependencies.ORGANIZATIONS);
+
+    const verifyEmailPath = resolve('/verify-email');
 
     const [account, error] = (await sdk.forConsole.account
         .get()
@@ -32,23 +37,49 @@ export const load: LayoutLoad = async ({ depends, url, route }) => {
     }
 
     if (account) {
-        if (isCloud && !account.emailVerification && VARS.EMAIL_VERIFICATION) {
-            const isConsoleRoute = route.id?.startsWith('/(console)');
-            const isVerifyEmailPage = url.pathname === resolve('/verify-email');
-
-            if (isConsoleRoute && !isVerifyEmailPage) {
-                redirect(303, resolve('/verify-email'));
-            }
+        // `/v1/teams` (and org list on cloud) returns 401 until the console account is verified;
+        // do not call that API on this route while still unverified.
+        if (url.pathname === verifyEmailPath) {
+            const plansInfo = await getPlatformPlans().catch(() => null);
+            plansInfoStore.set(plansInfo);
+            return {
+                plansInfo,
+                account,
+                organizations: EMPTY_ORGANIZATIONS
+            };
         }
 
-        const plansInfo = await getPlatformPlans();
-        plansInfoStore.set(plansInfo);
+        try {
+            const [plansInfo, organizations] = await Promise.all([
+                getPlatformPlans(),
+                getTeamOrOrganizationList()
+            ]);
 
-        return {
-            plansInfo,
-            account: account,
-            organizations: await getTeamOrOrganizationList()
-        };
+            plansInfoStore.set(plansInfo);
+
+            return {
+                plansInfo,
+                account: account,
+                organizations
+            };
+        } catch (error) {
+            if (isVerifyEmailRedirectError(error)) {
+                if (url.pathname !== verifyEmailPath) {
+                    redirect(303, withParams(verifyEmailPath, url.searchParams));
+                }
+
+                // Already on verify-email: do not rethrow; the teams API is blocked until verified.
+                const plansInfo = await getPlatformPlans().catch(() => null);
+                plansInfoStore.set(plansInfo);
+                return {
+                    plansInfo,
+                    account,
+                    organizations: EMPTY_ORGANIZATIONS
+                };
+            }
+
+            throw error;
+        }
     }
 
     const isPublicRoute = route.id?.startsWith('/(public)');
@@ -64,6 +95,12 @@ export const load: LayoutLoad = async ({ depends, url, route }) => {
                 mfaRequired: true
             };
         redirect(303, withParams(mfaUrl, url.searchParams));
+    }
+
+    if (isVerifyEmailRedirectError(error)) {
+        if (url.pathname !== verifyEmailPath) {
+            redirect(303, withParams(verifyEmailPath, url.searchParams));
+        }
     }
 
     if (!isPublicRoute) {

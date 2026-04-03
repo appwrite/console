@@ -35,6 +35,10 @@
     } from '@appwrite.io/pink-icons-svelte';
     import type { PageProps } from './$types';
     import { getPlatformInfo } from '$lib/helpers/platform';
+    import {
+        BODY_TOOLTIP_MAX_WIDTH,
+        BODY_TOOLTIP_WRAPPER_STYLE
+    } from '$lib/helpers/tooltipContent';
     import CreateProjectCloud from './createProjectCloud.svelte';
     import { regions as regionsStore } from '$lib/stores/organization';
 
@@ -147,16 +151,16 @@
 
         {#if $canWriteProjects}
             {#if projectCreationDisabled && reachedProjectLimit}
-                <Tooltip placement="bottom">
+                <Tooltip placement="bottom" maxWidth={BODY_TOOLTIP_MAX_WIDTH}>
                     <div>
                         <Button event="create_project" disabled>
                             <Icon icon={IconPlus} slot="start" size="s" />
                             Create project
                         </Button>
                     </div>
-                    <span slot="tooltip">
+                    <div slot="tooltip" style={BODY_TOOLTIP_WRAPPER_STYLE}>
                         You have reached your limit of {projectsLimit} projects.
-                    </span>
+                    </div>
                 </Tooltip>
             {:else}
                 <Button
