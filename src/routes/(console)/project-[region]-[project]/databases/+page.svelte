@@ -55,7 +55,6 @@
     {@render containerHeader()}
 
     {#if data.databases.total}
-
         {#if data.view === 'grid'}
             <Grid {data} onCreateDatabaseClick={goToCreateDatabaseWizard} />
         {:else}
