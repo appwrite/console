@@ -34,6 +34,7 @@
     import { feedback } from '$lib/stores/feedback';
     import { hasStripePublicKey, isCloud, VARS } from '$lib/system';
     import { stripe } from '$lib/stores/stripe';
+    import MobileFeedbackModal from './wizard/feedback/mobileFeedbackModal.svelte';
     import MobileSupportModal from './wizard/support/mobileSupportModal.svelte';
     import { showSupportModal } from './wizard/support/store';
     import { activeHeaderAlert, consoleVariables } from './store';
@@ -43,6 +44,7 @@
     import { UsageRates } from '$lib/components/billing';
     import { canSeeProjects } from '$lib/stores/roles';
     import { BottomModalAlert } from '$lib/components';
+    import { isSmallViewport } from '$lib/stores/viewport';
     import {
         IconAnnotation,
         IconBookOpen,
@@ -340,6 +342,10 @@
 {/if}
 
 <Create bind:show={$newOrgModal} />
+
+{#if $feedback.show && $isSmallViewport}
+    <MobileFeedbackModal />
+{/if}
 
 {#if $showSupportModal}
     <MobileSupportModal bind:show={$showSupportModal}></MobileSupportModal>

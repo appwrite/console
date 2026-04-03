@@ -8,14 +8,25 @@
     import { parse } from '$lib/helpers/envfile';
     import { Icon, InlineCode, Layout, Tabs } from '@appwrite.io/pink-svelte';
     import { InputTextarea } from '$lib/elements/forms';
-    import { IconDownload, IconDuplicate } from '@appwrite.io/pink-icons-svelte';
+    import {
+        IconChevronLeft,
+        IconChevronRight,
+        IconDownload,
+        IconDuplicate
+    } from '@appwrite.io/pink-icons-svelte';
 
     export let isGlobal: boolean;
     export let showEditor = false;
     export let variableList: Models.VariableList;
 
+    type DraftVariable = { key: string; value: string };
+
+    const EDITOR_PAGE_LIMIT = 10;
     const editableVariables = variableList.variables.filter((variable) => !variable.secret);
-    const secretVariables = variableList.variables.filter((variable) => variable.secret);
+    const initialDraftEntries = editableVariables.map((variable) => ({
+        key: variable.key,
+        value: variable.value
+    }));
 
     export let sdkCreateVariable: (
         key: string,
@@ -31,39 +42,109 @@
     export let sdkDeleteVariable: (variableId: string) => Promise<unknown>;
 
     let error = '';
-    let envCode = editableVariables
-        .map((variable) => `${variable.key}=${variable.value}`)
-        .join('\n');
-    let jsonCode = JSON.stringify(
-        JSON.parse(
-            `{${editableVariables
-                .map((variable) => `"${variable.key}":"${variable.value.split('"').join('\\"')}"`)
-                .join(',')}}`
-        ),
-        null,
-        2
-    );
-    let baseEnvCode = envCode;
-    let baseJsonCode = jsonCode;
+    let tab: 'env' | 'json' = 'env';
+    let isSubmitting = false;
+    let pageOffset = 0;
+    let draftEntries = initialDraftEntries.map((variable) => ({ ...variable }));
+    let editorCode = serializeEntries(tab, getPageEntries(draftEntries, pageOffset));
 
-    if (jsonCode === '{}') {
-        jsonCode = '';
-        baseJsonCode = '';
+    function getPageEntries(entries: DraftVariable[], offset: number) {
+        return entries.slice(offset, offset + EDITOR_PAGE_LIMIT);
     }
 
-    let tab: 'env' | 'json' = 'env';
+    function serializeEntries(view: 'env' | 'json', entries: DraftVariable[]) {
+        if (view === 'env') {
+            return entries.map((variable) => `${variable.key}=${variable.value}`).join('\n');
+        }
+
+        const jsonObject = Object.fromEntries(
+            entries.map((variable) => [variable.key, variable.value])
+        );
+
+        return Object.keys(jsonObject).length ? JSON.stringify(jsonObject, null, 2) : '';
+    }
+
+    function parseEntries(code: string, view: 'env' | 'json') {
+        const variables = view === 'env' ? parse(code) : JSON.parse(code || '{}');
+
+        return Object.entries(variables).map(([key, value]) => ({
+            key,
+            value: `${value}`
+        }));
+    }
+
+    function validateEntries(entries: DraftVariable[]) {
+        for (const { key, value } of entries) {
+            if (value.length > 8192) {
+                throw new Error(`Variable ${key} is longer than 8192 allowed characters`);
+            }
+        }
+    }
+
+    function replacePageEntries(
+        entries: DraftVariable[],
+        offset: number,
+        pageEntries: DraftVariable[]
+    ) {
+        return [
+            ...entries.slice(0, offset),
+            ...pageEntries,
+            ...entries.slice(offset + EDITOR_PAGE_LIMIT)
+        ];
+    }
+
+    function buildDraftEntries() {
+        const pageEntries = parseEntries(editorCode, tab);
+
+        validateEntries(pageEntries);
+
+        return replacePageEntries(draftEntries, pageOffset, pageEntries);
+    }
+
+    function syncEditorCode() {
+        editorCode = serializeEntries(tab, getPageEntries(draftEntries, pageOffset));
+    }
+
+    function trySyncDraft() {
+        try {
+            draftEntries = buildDraftEntries();
+            error = '';
+        } catch {
+            // Keep draft state intact while the user is mid-edit.
+        }
+    }
+
+    function changeTab(nextTab: 'env' | 'json') {
+        try {
+            draftEntries = buildDraftEntries();
+            tab = nextTab;
+            error = '';
+            syncEditorCode();
+        } catch (e) {
+            error = e.message;
+        }
+    }
+
+    function changePage(nextOffset: number) {
+        try {
+            draftEntries = buildDraftEntries();
+            pageOffset = nextOffset;
+            error = '';
+            syncEditorCode();
+        } catch (e) {
+            error = e.message;
+        }
+    }
 
     async function handleSubmit() {
         try {
-            const vars = tab === 'env' ? parse(envCode) : JSON.parse(jsonCode ? jsonCode : '{}');
+            isSubmitting = true;
 
-            const entries = Object.entries(vars);
-
-            for (const [key, value] of entries) {
-                if (('' + value).length > 8192) {
-                    throw new Error(`Variable ${key} is longer than 8192 allowed characters`);
-                }
-            }
+            const vars = Object.fromEntries(
+                buildDraftEntries().map((variable) => [variable.key, variable.value])
+            );
+            const editableVariables = variableList.variables.filter((variable) => !variable.secret);
+            const secretVariables = variableList.variables.filter((variable) => variable.secret);
 
             await Promise.all(
                 editableVariables.map(async (variable) => {
@@ -81,9 +162,20 @@
             // Add new variables, skipping keys that exist in secret variables
             await Promise.all(
                 Object.keys(vars).map(async (key) => {
-                    if (!secretVariables.some((v) => v.key === key)) {
-                        await sdkCreateVariable(key, vars[key], false);
+                    const existingVariable = variableList.variables.find(
+                        (variable) => variable.key === key
+                    );
+
+                    if (existingVariable?.secret) {
+                        return;
                     }
+
+                    if (existingVariable) {
+                        await sdkUpdateVariable(existingVariable.$id, key, vars[key], false);
+                        return;
+                    }
+
+                    await sdkCreateVariable(key, vars[key], false);
                 })
             );
             // Ensure secret variables are preserved
@@ -103,11 +195,25 @@
         } catch (e) {
             error = e.message;
             trackError(e, Submit.VariableEditor);
+        } finally {
+            isSubmitting = false;
         }
     }
 
     function downloadVariables() {
-        const content = tab === 'json' ? jsonCode : envCode;
+        let content = '';
+
+        try {
+            const nextDraftEntries = buildDraftEntries();
+
+            content = serializeEntries(tab, nextDraftEntries);
+            draftEntries = nextDraftEntries;
+            error = '';
+        } catch (e) {
+            error = e.message;
+            return;
+        }
+
         const fileName = tab === 'json' ? 'vars.json' : '.env';
         const type = tab === 'json' ? 'application/json' : 'application/x-envoy';
 
@@ -127,8 +233,19 @@
         window.URL.revokeObjectURL(url);
     }
 
+    $: totalEntries = draftEntries.length;
+    $: currentPageEntries = getPageEntries(draftEntries, pageOffset);
+    $: renderedPageCode = serializeEntries(tab, currentPageEntries);
+    $: hasUnsyncedChanges = editorCode !== renderedPageCode;
+    $: copyValue = (() => {
+        try {
+            return serializeEntries(tab, buildDraftEntries());
+        } catch {
+            return editorCode;
+        }
+    })();
     $: isButtonDisabled =
-        (tab === 'env' && baseEnvCode === envCode) || (tab === 'json' && baseJsonCode === jsonCode);
+        !hasUnsyncedChanges && JSON.stringify(draftEntries) === JSON.stringify(initialDraftEntries);
 </script>
 
 <Modal title="Editor" bind:show={showEditor} onSubmit={handleSubmit} bind:error>
@@ -138,10 +255,10 @@
     </p>
     <Layout.Stack gap="s">
         <Tabs.Root stretch let:root>
-            <Tabs.Item.Button {root} on:click={() => (tab = 'env')} active={tab === 'env'}>
+            <Tabs.Item.Button {root} on:click={() => changeTab('env')} active={tab === 'env'}>
                 ENV
             </Tabs.Item.Button>
-            <Tabs.Item.Button {root} on:click={() => (tab = 'json')} active={tab === 'json'}>
+            <Tabs.Item.Button {root} on:click={() => changeTab('json')} active={tab === 'json'}>
                 JSON
             </Tabs.Item.Button>
         </Tabs.Root>
@@ -151,23 +268,53 @@
                 <InputTextarea
                     spellcheck={false}
                     id="variables"
-                    bind:value={envCode}
+                    bind:value={editorCode}
+                    on:input={trySyncDraft}
                     rows={10}
                     placeholder={`SECRET_KEY=dQw4w9WgXcQ...`} />
             {:else if tab === 'json'}
                 <InputTextarea
                     spellcheck={false}
                     id="variables"
-                    bind:value={jsonCode}
+                    bind:value={editorCode}
+                    on:input={trySyncDraft}
                     rows={10}
                     placeholder={`{\n  "SECRET_KEY": "dQw4w9WgXcQ..."\n}`} />
+            {/if}
+            {#if totalEntries > EDITOR_PAGE_LIMIT}
+                <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
+                    <p class="text">
+                        Variables {pageOffset + 1}-{Math.min(
+                            pageOffset + EDITOR_PAGE_LIMIT,
+                            totalEntries
+                        )} of {totalEntries}
+                    </p>
+                    <Layout.Stack direction="row" gap="xs" inline>
+                        <Button
+                            size="xs"
+                            secondary
+                            disabled={pageOffset === 0}
+                            on:click={() => changePage(pageOffset - EDITOR_PAGE_LIMIT)}>
+                            <Icon size="s" slot="start" icon={IconChevronLeft} />
+                            Prev
+                        </Button>
+                        <Button
+                            size="xs"
+                            secondary
+                            disabled={pageOffset + EDITOR_PAGE_LIMIT >= totalEntries}
+                            on:click={() => changePage(pageOffset + EDITOR_PAGE_LIMIT)}>
+                            Next
+                            <Icon size="s" slot="end" icon={IconChevronRight} />
+                        </Button>
+                    </Layout.Stack>
+                </Layout.Stack>
             {/if}
             <Layout.Stack direction="row" gap="xs">
                 <Button size="xs" on:click={() => downloadVariables()} secondary>
                     <Icon size="s" slot="start" icon={IconDownload} />
                     Download
                 </Button>
-                <Copy value={tab == 'json' ? jsonCode : envCode}>
+                <Copy value={copyValue}>
                     <Button size="xs" secondary>
                         <Icon size="s" slot="start" icon={IconDuplicate} />
                         Copy
@@ -178,7 +325,11 @@
     </Layout.Stack>
 
     <svelte:fragment slot="footer">
-        <Button secondary on:click={() => (showEditor = false)}>Cancel</Button>
-        <Button submit disabled={isButtonDisabled}>Save</Button>
+        <Button secondary on:click={() => (showEditor = false)} disabled={isSubmitting}>
+            Cancel
+        </Button>
+        <Button submit disabled={isButtonDisabled || isSubmitting}>
+            {isSubmitting ? 'Saving...' : 'Save'}
+        </Button>
     </svelte:fragment>
 </Modal>

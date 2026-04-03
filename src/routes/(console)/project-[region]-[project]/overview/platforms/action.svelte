@@ -14,13 +14,17 @@
     import { isServiceLimited } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { page } from '$app/state';
+    import {
+        BODY_TOOLTIP_MAX_WIDTH,
+        BODY_TOOLTIP_WRAPPER_STYLE_PRELINE
+    } from '$lib/helpers/tooltipContent';
 
     $: isLimited = isServiceLimited('platforms', $organization, page.data.platforms.total);
 </script>
 
 {#if $canWritePlatforms}
     {#if isLimited}
-        <Tooltip>
+        <Tooltip maxWidth={BODY_TOOLTIP_MAX_WIDTH}>
             <div>
                 <Button disabled>
                     <Icon icon={IconPlus} slot="start" />
@@ -29,7 +33,7 @@
             </div>
 
             <svelte:fragment slot="tooltip">
-                <div style="white-space: pre-line;">
+                <div style={BODY_TOOLTIP_WRAPPER_STYLE_PRELINE}>
                     You have reached the maximum number of platforms for your plan in a project.
                 </div>
             </svelte:fragment>

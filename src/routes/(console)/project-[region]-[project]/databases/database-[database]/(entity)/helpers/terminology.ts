@@ -1,7 +1,7 @@
 import type { Page } from '@sveltejs/kit';
 
 import { capitalize, plural } from '$lib/helpers/string';
-import { AppwriteException, type DatabasesIndexType, type Models } from '@appwrite.io/console';
+import { AppwriteException, type TablesDBIndexType, type Models } from '@appwrite.io/console';
 import type { Attributes, Collection, Columns, Table } from '$database/store';
 import type { Term, TerminologyResult, TerminologyShape } from '$database/(entity)/helpers/types';
 
@@ -103,7 +103,7 @@ const terminologyData = Object.fromEntries(
 export function toSupportiveIndex(index: Models.Index | Models.ColumnIndex): Index {
     return {
         ...index,
-        type: index.type as DatabasesIndexType,
+        type: index.type as TablesDBIndexType,
         fields: (index as Models.Index).attributes ?? (index as Models.ColumnIndex).columns ?? []
     };
 }

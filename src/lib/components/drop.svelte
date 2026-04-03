@@ -141,7 +141,8 @@
     bind:this={tooltip}
     class:u-width-full-line={fullWidth}
     style:--arrow-size={`${arrowSize}px`}
-    style:z-index="21">
+    style:z-index="21"
+    style:pointer-events={show ? 'auto' : 'none'}>
     <div
         class="drop-arrow"
         class:is-popover={isPopover}

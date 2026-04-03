@@ -84,7 +84,7 @@
     <svelte:fragment slot="aside">
         {#if total > 0}
             <Layout.Stack gap="l">
-                <Layout.Stack direction="row" justifyContent="flex-end">
+                <div class="installations-action-row">
                     <FormButton
                         secondary
                         href={configureGitHub()}
@@ -94,7 +94,7 @@
                         <Icon icon={IconPlus} slot="start" size="s" />
                         Add installation
                     </FormButton>
-                </Layout.Stack>
+                </div>
 
                 <Table.Root
                     let:root
@@ -233,3 +233,16 @@
         </Card.Base>
     </svelte:fragment>
 </CardGrid>
+
+<style>
+    .installations-action-row {
+        display: flex;
+        justify-content: flex-start;
+    }
+
+    @media (min-width: 769px) {
+        .installations-action-row {
+            justify-content: flex-end;
+        }
+    }
+</style>
