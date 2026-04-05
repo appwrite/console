@@ -1,6 +1,6 @@
 import { writable } from 'svelte/store';
 import { OrderBy } from '@appwrite.io/console';
-import { TablesDBIndexType } from '$lib/sdk/compat';
+import { TablesDBIndexType } from '@appwrite.io/console';
 import { columnOptions } from '../table-[table]/columns/store';
 
 export type TableColumnSuggestions = {

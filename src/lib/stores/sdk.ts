@@ -25,11 +25,10 @@ import {
     Domains,
     /*DocumentsDB,*/
     Realtime,
-    // @todo: import Webhooks from '@appwrite.io/console' once SDK includes both BAA + Webhooks
+    Webhooks,
     Organizations
 } from '@appwrite.io/console';
 import { Sources } from '$lib/sdk/sources';
-import { Webhooks } from '$lib/sdk/webhooks';
 import {
     REGION_FRA,
     REGION_NYC,
