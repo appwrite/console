@@ -35,6 +35,10 @@
         const cycleStart = new Date(currentInvoiceDate);
         const cycleEnd = new Date(nextInvoiceDate);
 
+        if (Number.isNaN(cycleStart.getTime()) || Number.isNaN(cycleEnd.getTime())) {
+            return BAA_MONTHLY_PRICE;
+        }
+
         const totalDays = Math.max(
             1,
             Math.ceil((cycleEnd.getTime() - cycleStart.getTime()) / (1000 * 60 * 60 * 24))
@@ -88,6 +92,10 @@
                     invalidate(Dependencies.ADDONS),
                     invalidate(Dependencies.ORGANIZATION)
                 ]);
+                addNotification({
+                    message: 'BAA addon is already active or pending for your organization',
+                    type: 'success'
+                });
                 show = false;
             } else {
                 error = e.message;
@@ -120,8 +128,8 @@
         </div>
         <hr class="divider" />
         <div class="price-row u-bold">
-            <span class="text">Total</span>
-            <span class="text">{formatCurrency(BAA_MONTHLY_PRICE)} / month</span>
+            <span class="text">Due today (prorated)</span>
+            <span class="text">{formatCurrency(proratedAmount)}</span>
         </div>
         <p class="text u-color-text-offline u-margin-block-start-8 u-text-end">
             * Plus applicable tax and fees

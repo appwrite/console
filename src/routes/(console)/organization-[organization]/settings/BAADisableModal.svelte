@@ -11,7 +11,7 @@
     export let show = false;
     export let addonId: string;
 
-    let error: string = null;
+    let error: string | null = null;
     let submitting = false;
 
     async function handleSubmit() {

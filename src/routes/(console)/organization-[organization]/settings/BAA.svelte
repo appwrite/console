@@ -6,9 +6,11 @@
     import { organization } from '$lib/stores/organization';
     import { get } from 'svelte/store';
     import { invalidate } from '$app/navigation';
+    import { resolve } from '$app/paths';
     import { Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
+    import { confirmPayment } from '$lib/stores/stripe';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Badge } from '@appwrite.io/pink-svelte';
     import type { Models } from '@appwrite.io/console';
@@ -64,10 +66,26 @@
     async function handleReEnable() {
         reEnabling = true;
         try {
-            await sdk.forConsole.organizations.createBaaAddon({
-                organizationId: $organization.$id,
-                key: 'baa'
-            });
+            const result: Models.Addon | Models.PaymentAuthentication =
+                await sdk.forConsole.organizations.createBaaAddon({
+                    organizationId: $organization.$id,
+                    key: 'baa'
+                });
+
+            if ('clientSecret' in result) {
+                const paymentAuth = result as unknown as Models.PaymentAuthentication;
+                const settingsUrl = resolve('/(console)/organization-[organization]/settings', {
+                    organization: $organization.$id
+                });
+                await confirmPayment({
+                    clientSecret: paymentAuth.clientSecret,
+                    paymentMethodId: $organization.paymentMethodId,
+                    orgId: $organization.$id,
+                    route: `${settingsUrl}?type=validate-addon&addonId=${paymentAuth.addonId}`
+                });
+                return;
+            }
+
             await Promise.all([
                 invalidate(Dependencies.ADDONS),
                 invalidate(Dependencies.ORGANIZATION)

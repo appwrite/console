@@ -31,6 +31,7 @@
             let addonId = page.url.searchParams.get('addonId');
 
             // Fall back to listing addons if addonId is missing or invalid
+            let lookupFailed = false;
             if (!addonId || addonId === 'undefined') {
                 try {
                     const addons = await sdk.forConsole.organizations.listAddons({
@@ -40,9 +41,21 @@
                         (a) => a.key === 'baa' && a.status === 'pending'
                     );
                     addonId = pending?.$id ?? null;
-                } catch {
-                    addonId = null;
+                } catch (e) {
+                    lookupFailed = true;
+                    addNotification({
+                        message: e?.message ?? 'Unable to verify BAA addon status. Please retry.',
+                        type: 'error'
+                    });
                 }
+            }
+
+            if (lookupFailed) {
+                const settingsUrl = resolve('/(console)/organization-[organization]/settings', {
+                    organization: $organization.$id
+                });
+                await goto(settingsUrl, { replaceState: true });
+                return;
             }
 
             if (addonId) {
@@ -77,6 +90,12 @@
                         });
                     }
                 }
+            } else {
+                addNotification({
+                    message:
+                        'Could not verify BAA payment. Please check your BAA status or contact support.',
+                    type: 'error'
+                });
             }
 
             const settingsUrl = resolve('/(console)/organization-[organization]/settings', {
