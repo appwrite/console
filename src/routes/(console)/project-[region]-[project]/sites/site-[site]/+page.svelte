@@ -10,6 +10,10 @@
     import { realtime } from '$lib/stores/sdk';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
+    import {
+        BODY_TOOLTIP_MAX_WIDTH,
+        BODY_TOOLTIP_WRAPPER_STYLE
+    } from '$lib/helpers/tooltipContent';
     import { onMount } from 'svelte';
     import { page } from '$app/state';
     import { base } from '$app/paths';
@@ -44,7 +48,9 @@
                             Visit
                         </Button>
                     {/if}
-                    <Tooltip disabled={data.hasProdReadyDeployments}>
+                    <Tooltip
+                        disabled={data.hasProdReadyDeployments}
+                        maxWidth={BODY_TOOLTIP_MAX_WIDTH}>
                         <div>
                             <Button
                                 secondary
@@ -53,10 +59,10 @@
                                 Instant rollback
                             </Button>
                         </div>
-                        <span slot="tooltip">
+                        <div slot="tooltip" style={BODY_TOOLTIP_WRAPPER_STYLE}>
                             Rollback is possible only if there is a deployment that is ready and was
                             active.
-                        </span>
+                        </div>
                     </Tooltip>
                 {/snippet}
             </SiteCard>

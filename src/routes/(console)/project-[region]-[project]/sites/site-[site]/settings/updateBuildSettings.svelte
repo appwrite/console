@@ -112,8 +112,13 @@
                 site.adapter = adapter;
             }
             if (specs && specs.specifications?.length) {
-                if (!specs.specifications.some((s) => s.slug === site.buildSpecification)) {
-                    site.buildSpecification = specs.specifications[0].slug;
+                const enabledSpecs = specs.specifications.filter((s) => s.enabled);
+                const fallbackSlug = enabledSpecs[0]?.slug ?? specs.specifications[0]?.slug;
+                if (!enabledSpecs.some((s) => s.slug === site.buildSpecification)) {
+                    site.buildSpecification = fallbackSlug;
+                }
+                if (!enabledSpecs.some((s) => s.slug === site.runtimeSpecification)) {
+                    site.runtimeSpecification = fallbackSlug;
                 }
             }
         }
@@ -128,10 +133,12 @@
         }
         // only allow enabled specsification for it
         const enabledSpecs = specs?.specifications?.filter((s) => s.enabled) ?? [];
-        let specToSend = enabledSpecs.some((s) => s.slug === site.buildSpecification)
+        const specToSend = enabledSpecs.some((s) => s.slug === site.buildSpecification)
             ? site.buildSpecification
             : enabledSpecs[0]?.slug;
-        site.buildSpecification = specToSend;
+        const runtimeSpecToSend = enabledSpecs.some((s) => s.slug === site.runtimeSpecification)
+            ? site.runtimeSpecification
+            : enabledSpecs[0]?.slug;
         try {
             await sdk.forProject(page.params.region, page.params.project).sites.update({
                 siteId: site.$id,
@@ -151,8 +158,11 @@
                 providerBranch: site.providerBranch || undefined,
                 providerSilentMode: site.providerSilentMode || undefined,
                 providerRootDirectory: site.providerRootDirectory || undefined,
-                buildSpecification: specToSend || undefined
+                buildSpecification: specToSend || undefined,
+                runtimeSpecification: runtimeSpecToSend || undefined
             });
+            site.buildSpecification = specToSend;
+            site.runtimeSpecification = runtimeSpecToSend;
             await invalidate(Dependencies.SITE);
             addNotification({
                 message: 'Build settings have been updated',

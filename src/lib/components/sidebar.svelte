@@ -124,7 +124,7 @@
             </div>
         </div>
         <div slot="middle" class="middle-container" class:icons={state === 'icons'}>
-            {#if progressCard}
+            {#if progressCard && project}
                 <Tooltip placement="right" disabled={state !== 'icons'}>
                     <a
                         class="progress-card"

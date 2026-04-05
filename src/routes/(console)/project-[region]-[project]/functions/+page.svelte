@@ -16,6 +16,10 @@
     import { isServiceLimited } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { wizard } from '$lib/stores/wizard';
+    import {
+        BODY_TOOLTIP_MAX_WIDTH,
+        BODY_TOOLTIP_WRAPPER_STYLE_PRELINE
+    } from '$lib/helpers/tooltipContent';
 
     import { parseExpression } from 'cron-parser';
     import { onMount } from 'svelte';
@@ -101,7 +105,7 @@
     <Layout.Stack direction="row" justifyContent="space-between">
         <SearchQuery placeholder="Search by name or ID" />
 
-        <Tooltip disabled={!isLimited}>
+        <Tooltip disabled={!isLimited} maxWidth={BODY_TOOLTIP_MAX_WIDTH}>
             <div>
                 <Button disabled={isLimited} href={createFunctionsUrl}>
                     <Icon icon={IconPlus} slot="start" />
@@ -109,7 +113,7 @@
                 </Button>
             </div>
             <svelte:fragment slot="tooltip">
-                <div style="white-space: pre-line;">
+                <div style={BODY_TOOLTIP_WRAPPER_STYLE_PRELINE}>
                     You have reached the maximum number of functions for your plan.
                 </div>
             </svelte:fragment>

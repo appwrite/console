@@ -67,13 +67,24 @@
         {/each}
         {#each Object.entries(org.billingPlanDetails.usage) as [key, usage]}
             {@const limit = getPlanLimit(key)}
-            {@const show = limit !== false}
-            {#if show}
+            {#if limit !== false}
                 <Table.Row.Base {root}>
                     <Table.Cell column="resource" {root}>{usage.name}</Table.Cell>
                     <Table.Cell column="limit" {root}>
                         {abbreviateNumber(limit)}{usage.unit}
                     </Table.Cell>
+                    {#if !isFree}
+                        <Table.Cell column="rate" {root}>
+                            {formatCurrency(usage.price)}/{abbreviateNumber(
+                                usage.value
+                            )}{usage.unit}
+                        </Table.Cell>
+                    {/if}
+                </Table.Row.Base>
+            {:else if usage.price > 0}
+                <Table.Row.Base {root}>
+                    <Table.Cell column="resource" {root}>{usage.name}</Table.Cell>
+                    <Table.Cell column="limit" {root}>Pay-as-you-go</Table.Cell>
                     {#if !isFree}
                         <Table.Cell column="rate" {root}>
                             {formatCurrency(usage.price)}/{abbreviateNumber(

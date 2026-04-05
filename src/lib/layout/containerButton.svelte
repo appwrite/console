@@ -1,5 +1,9 @@
 <script lang="ts">
     import { Button } from '$lib/elements/forms';
+    import {
+        BODY_TOOLTIP_MAX_WIDTH,
+        BODY_TOOLTIP_WRAPPER_STYLE
+    } from '$lib/helpers/tooltipContent';
     import { organization } from '$lib/stores/organization';
     import { Tooltip } from '@appwrite.io/pink-svelte';
     import { BillingPlanGroup } from '@appwrite.io/console';
@@ -23,7 +27,7 @@
     export let buttonType: 'primary' | 'secondary' | 'text' = 'primary';
 </script>
 
-<Tooltip disabled={!disabled}>
+<Tooltip disabled={!disabled} maxWidth={BODY_TOOLTIP_MAX_WIDTH}>
     <Button
         size="s"
         text={buttonType === 'text'}
@@ -38,5 +42,5 @@
         {/if}
         <span class="text">{buttonText}</span>
     </Button>
-    <div slot="tooltip">{tooltipContent}</div>
+    <div slot="tooltip" style={BODY_TOOLTIP_WRAPPER_STYLE}>{tooltipContent}</div>
 </Tooltip>

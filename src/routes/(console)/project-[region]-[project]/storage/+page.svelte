@@ -21,6 +21,10 @@
     import { isServiceLimited } from '$lib/stores/billing';
     import type { PageProps } from './$types';
     import { organization } from '$lib/stores/organization';
+    import {
+        BODY_TOOLTIP_MAX_WIDTH,
+        BODY_TOOLTIP_WRAPPER_STYLE_PRELINE
+    } from '$lib/helpers/tooltipContent';
 
     let { data }: PageProps = $props();
 
@@ -44,7 +48,7 @@
         view={data.view}
         searchPlaceholder="Search by name or ID">
         {#if $canWriteBuckets}
-            <Tooltip disabled={!isLimited}>
+            <Tooltip disabled={!isLimited} maxWidth={BODY_TOOLTIP_MAX_WIDTH}>
                 <div>
                     <Button
                         size="s"
@@ -56,7 +60,7 @@
                     </Button>
                 </div>
                 <svelte:fragment slot="tooltip">
-                    <div style="white-space: pre-line;">
+                    <div style={BODY_TOOLTIP_WRAPPER_STYLE_PRELINE}>
                         You have reached the maximum number of buckets for your plan.
                     </div>
                 </svelte:fragment>

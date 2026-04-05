@@ -5,6 +5,7 @@
     import { Layout } from '@appwrite.io/pink-svelte';
     import Form from '$lib/elements/forms/form.svelte';
     import { goto } from '$app/navigation';
+    import { ID } from '@appwrite.io/console';
     import { sdk } from '$lib/stores/sdk';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { addNotification } from '$lib/stores/notifications';
@@ -25,16 +26,18 @@
     export let data;
     async function create() {
         try {
-            const webhook = await sdk.forConsole.projects.createWebhook({
-                projectId: data.project.$id,
-                name,
-                events,
-                url,
-                security,
-                enabled: true,
-                httpUser: httpUser || undefined,
-                httpPass: httpPass || undefined
-            });
+            const webhook = await sdk
+                .forProject(page.params.region, data.project.$id)
+                .webhooks.create({
+                    webhookId: ID.unique(),
+                    name,
+                    events,
+                    url,
+                    security,
+                    enabled: true,
+                    httpUser: httpUser || undefined,
+                    httpPass: httpPass || undefined
+                });
             addNotification({
                 message: 'Webhook has been created',
                 type: 'success'
@@ -46,8 +49,11 @@
                 `${base}/project-${page.params.region}-${page.params.project}/settings/webhooks/${webhook.$id}`
             );
         } catch (error) {
-            trackError(error.message, Submit.DomainCreate);
-            throw new Error(error.message);
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
+            trackError(error, Submit.WebhookCreate);
         }
     }
 </script>
