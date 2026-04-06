@@ -23,9 +23,9 @@ import {
     Tokens,
     TablesDB,
     Domains,
+    Webhooks,
     /*DocumentsDB,*/
     Realtime,
-    Webhooks,
     Organizations
 } from '@appwrite.io/console';
 import { Sources } from '$lib/sdk/sources';

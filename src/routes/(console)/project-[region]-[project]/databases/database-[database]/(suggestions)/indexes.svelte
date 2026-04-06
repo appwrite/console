@@ -6,8 +6,7 @@
     import { Modal } from '$lib/components';
     import { type Entity, SideSheet } from '$database/(entity)';
     import { isSmallViewport } from '$lib/stores/viewport';
-    import { OrderBy } from '@appwrite.io/console';
-    import { TablesDBIndexType } from '@appwrite.io/console';
+    import { TablesDBIndexType, OrderBy } from '@appwrite.io/console';
     import { capitalize } from '$lib/helpers/string';
     import { type Columns } from '../table-[table]/store';
     import { isRelationship } from '../table-[table]/rows/store';
