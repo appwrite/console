@@ -38,6 +38,7 @@
     }
 
     let error = false;
+    let errorMessage = '';
     let isOpen = false;
     let report: Models.MigrationReport;
 
@@ -86,6 +87,13 @@
         } catch (e) {
             if (!isOpen) return;
             error = true;
+            errorMessage =
+                typeof e === 'object' &&
+                e !== null &&
+                'message' in e &&
+                typeof e.message === 'string'
+                    ? e.message
+                    : '';
         }
 
         isOpen = false;
@@ -141,7 +149,9 @@
 <Layout.Stack gap="l">
     {#if error}
         <Alert.Inline status="error" title="Couldn’t load resources">
-            {#if migrationType === 'provider'}
+            {#if errorMessage}
+                {errorMessage}
+            {:else if migrationType === 'provider'}
                 Please double-check your credentials from the previous step and try again.
             {:else}
                 The API key required for the migration may no longer be valid or has expired, please
