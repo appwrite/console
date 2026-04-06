@@ -6,8 +6,9 @@
     import { organization } from '$lib/stores/organization';
     import { get } from 'svelte/store';
     import { onMount } from 'svelte';
-    import { invalidate } from '$app/navigation';
+    import { goto, invalidate } from '$app/navigation';
     import { resolve } from '$app/paths';
+    import { page } from '$app/state';
     import { Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
@@ -15,18 +16,17 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { formatCurrency } from '$lib/helpers/numbers';
     import { Badge } from '@appwrite.io/pink-svelte';
-    import { Addon } from '@appwrite.io/console';
     import type { Models } from '@appwrite.io/console';
     import BAAEnableModal from './BAAEnableModal.svelte';
     import BAADisableModal from './BAADisableModal.svelte';
 
     export let addons: Models.AddonList | null = null;
+    export let addonPrice: Models.AddonPrice | null = null;
 
     let showEnable = false;
     let showDisable = false;
     let reEnabling = false;
     let cancelling = false;
-    let addonPrice: Models.AddonPrice | null = null;
 
     $: planSupportsBaa = $currentPlan?.supportedAddons?.baa === true;
     $: canUpgradeToBaa = !planSupportsBaa && hasUpgradeablePlanWithBaa($currentPlan);
@@ -39,13 +39,81 @@
     $: monthlyPriceLabel = addonPrice ? formatCurrency(addonPrice.monthlyPrice) : '$350';
 
     onMount(async () => {
-        try {
-            addonPrice = await sdk.forConsole.organizations.getAddonPrice({
-                organizationId: $organization.$id,
-                addon: Addon.Baa
+        if (page.url.searchParams.get('type') === 'confirm-addon') {
+            let addonId = page.url.searchParams.get('addonId');
+
+            // Fall back to listing addons if addonId is missing or invalid
+            let lookupFailed = false;
+            if (!addonId || addonId === 'undefined') {
+                try {
+                    const addonList = await sdk.forConsole.organizations.listAddons({
+                        organizationId: $organization.$id
+                    });
+                    const pending = addonList.addons.find(
+                        (a) => a.key === 'baa' && a.status === 'pending'
+                    );
+                    addonId = pending?.$id ?? null;
+                } catch (e) {
+                    lookupFailed = true;
+                    addNotification({
+                        message: e?.message ?? 'Unable to verify BAA addon status. Please retry.',
+                        type: 'error'
+                    });
+                }
+            }
+
+            if (lookupFailed) {
+                const settingsUrl = resolve('/(console)/organization-[organization]/settings', {
+                    organization: $organization.$id
+                });
+                await goto(settingsUrl, { replaceState: true });
+                return;
+            }
+
+            if (addonId) {
+                try {
+                    await sdk.forConsole.organizations.confirmAddonPayment({
+                        organizationId: $organization.$id,
+                        addonId
+                    });
+                    await Promise.all([
+                        invalidate(Dependencies.ADDONS),
+                        invalidate(Dependencies.ORGANIZATION)
+                    ]);
+                    addNotification({
+                        message: 'BAA addon has been enabled',
+                        type: 'success'
+                    });
+                } catch (e) {
+                    // If addon not found, payment webhook may have already activated it
+                    if (e?.type === 'addon_not_found' || e?.code === 404) {
+                        await Promise.all([
+                            invalidate(Dependencies.ADDONS),
+                            invalidate(Dependencies.ORGANIZATION)
+                        ]);
+                        addNotification({
+                            message: 'BAA addon has been enabled',
+                            type: 'success'
+                        });
+                    } else {
+                        addNotification({
+                            message: e.message,
+                            type: 'error'
+                        });
+                    }
+                }
+            } else {
+                addNotification({
+                    message:
+                        'Could not verify BAA payment. Please check your BAA status or contact support.',
+                    type: 'error'
+                });
+            }
+
+            const settingsUrl = resolve('/(console)/organization-[organization]/settings', {
+                organization: $organization.$id
             });
-        } catch {
-            // Fall back to displaying default price text
+            await goto(settingsUrl, { replaceState: true });
         }
     });
 
@@ -208,7 +276,7 @@
     </svelte:fragment>
 </CardGrid>
 
-<BAAEnableModal bind:show={showEnable} />
+<BAAEnableModal bind:show={showEnable} {addonPrice} />
 
 {#if baaAddon}
     <BAADisableModal bind:show={showDisable} addonId={baaAddon.$id} />

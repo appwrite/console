@@ -8,11 +8,16 @@
     import { organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
 
-    export let show = false;
-    export let addonId: string;
+    let {
+        show = $bindable(false),
+        addonId
+    }: {
+        show: boolean;
+        addonId: string;
+    } = $props();
 
-    let error: string | null = null;
-    let submitting = false;
+    let error = $state<string | null>(null);
+    let submitting = $state(false);
 
     async function handleSubmit() {
         submitting = true;

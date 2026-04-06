@@ -6,11 +6,9 @@
     import { sdk } from '$lib/stores/sdk';
     import { members, organization } from '$lib/stores/organization';
     import { projects } from '../store';
-    import { goto, invalidate } from '$app/navigation';
-    import { resolve } from '$app/paths';
+    import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { onMount } from 'svelte';
-    import { page } from '$app/state';
     import Delete from './deleteOrganizationModal.svelte';
     import DownloadDPA from './downloadDPA.svelte';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
@@ -24,85 +22,8 @@
     let name: string;
     let showDelete = false;
 
-    onMount(async () => {
+    onMount(() => {
         name = $organization.name;
-
-        if (page.url.searchParams.get('type') === 'confirm-addon') {
-            let addonId = page.url.searchParams.get('addonId');
-
-            // Fall back to listing addons if addonId is missing or invalid
-            let lookupFailed = false;
-            if (!addonId || addonId === 'undefined') {
-                try {
-                    const addons = await sdk.forConsole.organizations.listAddons({
-                        organizationId: $organization.$id
-                    });
-                    const pending = addons.addons.find(
-                        (a) => a.key === 'baa' && a.status === 'pending'
-                    );
-                    addonId = pending?.$id ?? null;
-                } catch (e) {
-                    lookupFailed = true;
-                    addNotification({
-                        message: e?.message ?? 'Unable to verify BAA addon status. Please retry.',
-                        type: 'error'
-                    });
-                }
-            }
-
-            if (lookupFailed) {
-                const settingsUrl = resolve('/(console)/organization-[organization]/settings', {
-                    organization: $organization.$id
-                });
-                await goto(settingsUrl, { replaceState: true });
-                return;
-            }
-
-            if (addonId) {
-                try {
-                    await sdk.forConsole.organizations.confirmAddonPayment({
-                        organizationId: $organization.$id,
-                        addonId
-                    });
-                    await Promise.all([
-                        invalidate(Dependencies.ADDONS),
-                        invalidate(Dependencies.ORGANIZATION)
-                    ]);
-                    addNotification({
-                        message: 'BAA addon has been enabled',
-                        type: 'success'
-                    });
-                } catch (e) {
-                    // If addon not found, payment webhook may have already activated it
-                    if (e?.type === 'addon_not_found' || e?.code === 404) {
-                        await Promise.all([
-                            invalidate(Dependencies.ADDONS),
-                            invalidate(Dependencies.ORGANIZATION)
-                        ]);
-                        addNotification({
-                            message: 'BAA addon has been enabled',
-                            type: 'success'
-                        });
-                    } else {
-                        addNotification({
-                            message: e.message,
-                            type: 'error'
-                        });
-                    }
-                }
-            } else {
-                addNotification({
-                    message:
-                        'Could not verify BAA payment. Please check your BAA status or contact support.',
-                    type: 'error'
-                });
-            }
-
-            const settingsUrl = resolve('/(console)/organization-[organization]/settings', {
-                organization: $organization.$id
-            });
-            await goto(settingsUrl, { replaceState: true });
-        }
     });
 
     async function updateName() {
@@ -154,7 +75,7 @@
 
         {#if isCloud}
             <DownloadDPA />
-            <Baa addons={data.addons} />
+            <Baa addons={data.addons} addonPrice={data.addonPrice} />
             <Soc2 locale={data.locale} countryList={data.countryList} />
         {/if}
 

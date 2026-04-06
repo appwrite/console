@@ -1,7 +1,7 @@
 import type { PageLoad } from './$types';
 import { Dependencies } from '$lib/constants';
 import { sdk } from '$lib/stores/sdk';
-import { Query } from '@appwrite.io/console';
+import { Addon, Query } from '@appwrite.io/console';
 import { isCloud } from '$lib/system';
 
 export const load: PageLoad = async ({ depends, params, parent }) => {
@@ -9,7 +9,7 @@ export const load: PageLoad = async ({ depends, params, parent }) => {
     depends(Dependencies.ORGANIZATION);
     depends(Dependencies.ADDONS);
 
-    const [projects, invoices, addons] = await Promise.all([
+    const [projects, invoices, addons, addonPrice] = await Promise.all([
         sdk.forConsole.projects.list({
             queries: [Query.equal('teamId', params.organization), Query.select(['$id', 'name'])]
         }),
@@ -24,6 +24,14 @@ export const load: PageLoad = async ({ depends, params, parent }) => {
                       organizationId: params.organization
                   })
                   .catch(() => null)
+            : null,
+        isCloud
+            ? sdk.forConsole.organizations
+                  .getAddonPrice({
+                      organizationId: params.organization,
+                      addon: Addon.Baa
+                  })
+                  .catch(() => null)
             : null
     ]);
 
@@ -31,6 +39,7 @@ export const load: PageLoad = async ({ depends, params, parent }) => {
         projects,
         invoices,
         addons,
+        addonPrice,
         countryList,
         locale
     };

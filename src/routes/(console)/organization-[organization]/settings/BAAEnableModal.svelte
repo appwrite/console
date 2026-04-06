@@ -10,38 +10,20 @@
     import { organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import { formatCurrency } from '$lib/helpers/numbers';
-    import { Spinner } from '@appwrite.io/pink-svelte';
-    import { Addon } from '@appwrite.io/console';
     import type { Models } from '@appwrite.io/console';
 
-    export let show = false;
+    let {
+        show = $bindable(false),
+        addonPrice = null
+    }: {
+        show: boolean;
+        addonPrice: Models.AddonPrice | null;
+    } = $props();
 
     const BAA_AGREEMENT_URL = 'https://appwrite.io/legal/baa';
 
-    let error: string | null = null;
-    let submitting = false;
-    let loadingPrice = false;
-    let addonPrice: Models.AddonPrice | null = null;
-
-    $: if (show && !addonPrice && !loadingPrice) {
-        fetchAddonPrice();
-    }
-
-    async function fetchAddonPrice() {
-        loadingPrice = true;
-        error = null;
-        try {
-            addonPrice = await sdk.forConsole.organizations.getAddonPrice({
-                organizationId: $organization.$id,
-                addon: Addon.Baa
-            });
-        } catch (e) {
-            error = e.message ?? 'Failed to fetch addon pricing';
-            trackError(e, Submit.BAAAddonEnable);
-        } finally {
-            loadingPrice = false;
-        }
-    }
+    let error = $state<string | null>(null);
+    let submitting = $state(false);
 
     async function handleSubmit() {
         submitting = true;
@@ -100,11 +82,7 @@
 </script>
 
 <Modal bind:error bind:show onSubmit={handleSubmit} title="HIPAA BAA">
-    {#if loadingPrice}
-        <div class="u-flex u-main-center u-cross-center" style="min-height: 8rem;">
-            <Spinner />
-        </div>
-    {:else if addonPrice}
+    {#if addonPrice}
         <p class="text">
             By clicking <b>Accept & Enable</b>, the amount of
             <b>{formatCurrency(addonPrice.monthlyPrice)}</b> will be added to your subscription and
@@ -137,8 +115,7 @@
 
     <svelte:fragment slot="footer">
         <Button text on:click={() => (show = false)}>Cancel</Button>
-        <Button secondary submit disabled={submitting || loadingPrice || !addonPrice}
-            >Accept & Enable</Button>
+        <Button secondary submit disabled={submitting || !addonPrice}>Accept & Enable</Button>
     </svelte:fragment>
 </Modal>
 
