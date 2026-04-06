@@ -1,6 +1,5 @@
 <script module lang="ts">
-    import { OrderBy } from '@appwrite.io/console';
-    import { TablesDBIndexType } from '@appwrite.io/console';
+    import { TablesDBIndexType, OrderBy } from '@appwrite.io/console';
     export type CreateIndexesCallbackType = {
         key: string;
         type: TablesDBIndexType;
