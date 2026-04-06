@@ -5,6 +5,7 @@
     import { currentPlan } from '$lib/stores/organization';
     import { organization } from '$lib/stores/organization';
     import { get } from 'svelte/store';
+    import { onMount } from 'svelte';
     import { invalidate } from '$app/navigation';
     import { resolve } from '$app/paths';
     import { Dependencies } from '$lib/constants';
@@ -12,7 +13,9 @@
     import { sdk } from '$lib/stores/sdk';
     import { confirmPayment } from '$lib/stores/stripe';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import { formatCurrency } from '$lib/helpers/numbers';
     import { Badge } from '@appwrite.io/pink-svelte';
+    import { Addon } from '@appwrite.io/console';
     import type { Models } from '@appwrite.io/console';
     import BAAEnableModal from './BAAEnableModal.svelte';
     import BAADisableModal from './BAADisableModal.svelte';
@@ -23,6 +26,7 @@
     let showDisable = false;
     let reEnabling = false;
     let cancelling = false;
+    let addonPrice: Models.AddonPrice | null = null;
 
     $: planSupportsBaa = $currentPlan?.supportedAddons?.baa === true;
     $: canUpgradeToBaa = !planSupportsBaa && hasUpgradeablePlanWithBaa($currentPlan);
@@ -32,6 +36,18 @@
     $: isPending = baaAddon?.status === 'pending';
     $: isActive = baaAddon?.status === 'active';
     $: isScheduledForRemoval = isActive && baaAddon?.nextValue === 0;
+    $: monthlyPriceLabel = addonPrice ? formatCurrency(addonPrice.monthlyPrice) : '$350';
+
+    onMount(async () => {
+        try {
+            addonPrice = await sdk.forConsole.organizations.getAddonPrice({
+                organizationId: $organization.$id,
+                addon: Addon.Baa
+            });
+        } catch {
+            // Fall back to displaying default price text
+        }
+    });
 
     function hasUpgradeablePlanWithBaa(plan: Models.BillingPlan): boolean {
         if (!plan) return false;
@@ -81,7 +97,7 @@
                     clientSecret: paymentAuth.clientSecret,
                     paymentMethodId: $organization.paymentMethodId,
                     orgId: $organization.$id,
-                    route: `${settingsUrl}?type=validate-addon&addonId=${paymentAuth.addonId}`
+                    route: `${settingsUrl}?type=confirm-addon&addonId=${paymentAuth.addonId}`
                 });
                 return;
             }
@@ -155,7 +171,7 @@
                     {/if}
                 </div>
                 <p class="text u-margin-block-start-8">
-                    BAA is enabled for your organization at $350/month.
+                    BAA is enabled for your organization at {monthlyPriceLabel}/month.
                 </p>
                 {#if isScheduledForRemoval}
                     <p class="text u-margin-block-start-8">
@@ -179,7 +195,7 @@
             {:else}
                 <p class="text u-margin-block-start-8">
                     Enable BAA for your organization to ensure HIPAA compliance. This addon costs
-                    $350/month, prorated for your current billing cycle.
+                    {monthlyPriceLabel}/month, prorated for your current billing cycle.
                 </p>
                 <Button
                     secondary

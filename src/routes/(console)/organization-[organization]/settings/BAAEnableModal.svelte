@@ -10,45 +10,37 @@
     import { organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import { formatCurrency } from '$lib/helpers/numbers';
+    import { Spinner } from '@appwrite.io/pink-svelte';
+    import { Addon } from '@appwrite.io/console';
     import type { Models } from '@appwrite.io/console';
 
     export let show = false;
 
-    const BAA_MONTHLY_PRICE = 350;
     const BAA_AGREEMENT_URL = 'https://appwrite.io/legal/baa';
 
     let error: string | null = null;
     let submitting = false;
+    let loadingPrice = false;
+    let addonPrice: Models.AddonPrice | null = null;
 
-    $: proratedAmount = calculateProratedAmount(
-        $organization?.billingCurrentInvoiceDate,
-        $organization?.billingNextInvoiceDate
-    );
+    $: if (show && !addonPrice && !loadingPrice) {
+        fetchAddonPrice();
+    }
 
-    function calculateProratedAmount(
-        currentInvoiceDate: string | undefined,
-        nextInvoiceDate: string | undefined
-    ): number {
-        if (!currentInvoiceDate || !nextInvoiceDate) return BAA_MONTHLY_PRICE;
-
-        const today = new Date();
-        const cycleStart = new Date(currentInvoiceDate);
-        const cycleEnd = new Date(nextInvoiceDate);
-
-        if (Number.isNaN(cycleStart.getTime()) || Number.isNaN(cycleEnd.getTime())) {
-            return BAA_MONTHLY_PRICE;
+    async function fetchAddonPrice() {
+        loadingPrice = true;
+        error = null;
+        try {
+            addonPrice = await sdk.forConsole.organizations.getAddonPrice({
+                organizationId: $organization.$id,
+                addon: Addon.Baa
+            });
+        } catch (e) {
+            error = e.message ?? 'Failed to fetch addon pricing';
+            trackError(e, Submit.BAAAddonEnable);
+        } finally {
+            loadingPrice = false;
         }
-
-        const totalDays = Math.max(
-            1,
-            Math.ceil((cycleEnd.getTime() - cycleStart.getTime()) / (1000 * 60 * 60 * 24))
-        );
-        const remainingDays = Math.max(
-            0,
-            Math.ceil((cycleEnd.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
-        );
-
-        return Math.round(((BAA_MONTHLY_PRICE * remainingDays) / totalDays) * 100) / 100;
     }
 
     async function handleSubmit() {
@@ -70,7 +62,7 @@
                     clientSecret: paymentAuth.clientSecret,
                     paymentMethodId: $organization.paymentMethodId,
                     orgId: $organization.$id,
-                    route: `${settingsUrl}?type=validate-addon&addonId=${paymentAuth.addonId}`
+                    route: `${settingsUrl}?type=confirm-addon&addonId=${paymentAuth.addonId}`
                 });
                 return;
             }
@@ -93,7 +85,7 @@
                     invalidate(Dependencies.ORGANIZATION)
                 ]);
                 addNotification({
-                    message: 'BAA addon is already active or pending for your organization',
+                    message: 'BAA addon is already active for your organization',
                     type: 'success'
                 });
                 show = false;
@@ -108,37 +100,45 @@
 </script>
 
 <Modal bind:error bind:show onSubmit={handleSubmit} title="HIPAA BAA">
-    <p class="text">
-        By clicking <b>Accept & Enable</b>, the amount of
-        <b>{formatCurrency(BAA_MONTHLY_PRICE)}</b> will be added to your subscription and your
-        payment method will be charged
-        <b>{formatCurrency(proratedAmount)} immediately</b> for the remaining days in your billing cycle.
-    </p>
-    <p class="text u-margin-block-start-16">
-        Your action confirms acceptance of Appwrite's
-        <a class="link" href={BAA_AGREEMENT_URL} target="_blank" rel="noopener noreferrer"
-            >Business Associate Agreement</a>
-        and related terms.
-    </p>
-
-    <div class="price-breakdown u-margin-block-start-24">
-        <div class="price-row">
-            <span class="text">HIPAA BAA</span>
-            <span class="text">{formatCurrency(BAA_MONTHLY_PRICE)} / month</span>
+    {#if loadingPrice}
+        <div class="u-flex u-main-center u-cross-center" style="min-height: 8rem;">
+            <Spinner />
         </div>
-        <hr class="divider" />
-        <div class="price-row u-bold">
-            <span class="text">Due today (prorated)</span>
-            <span class="text">{formatCurrency(proratedAmount)}</span>
-        </div>
-        <p class="text u-color-text-offline u-margin-block-start-8 u-text-end">
-            * Plus applicable tax and fees
+    {:else if addonPrice}
+        <p class="text">
+            By clicking <b>Accept & Enable</b>, the amount of
+            <b>{formatCurrency(addonPrice.monthlyPrice)}</b> will be added to your subscription and
+            your payment method will be charged
+            <b>{formatCurrency(addonPrice.proratedAmount)} immediately</b> for the remaining days in your
+            billing cycle.
         </p>
-    </div>
+        <p class="text u-margin-block-start-16">
+            Your action confirms acceptance of Appwrite's
+            <a class="link" href={BAA_AGREEMENT_URL} target="_blank" rel="noopener noreferrer"
+                >Business Associate Agreement</a>
+            and related terms.
+        </p>
+
+        <div class="price-breakdown u-margin-block-start-24">
+            <div class="price-row">
+                <span class="text">{addonPrice.name}</span>
+                <span class="text">{formatCurrency(addonPrice.monthlyPrice)} / month</span>
+            </div>
+            <hr class="divider" />
+            <div class="price-row u-bold">
+                <span class="text">Due today (prorated)</span>
+                <span class="text">{formatCurrency(addonPrice.proratedAmount)}</span>
+            </div>
+            <p class="text u-color-text-offline u-margin-block-start-8 u-text-end">
+                * Plus applicable tax and fees
+            </p>
+        </div>
+    {/if}
 
     <svelte:fragment slot="footer">
         <Button text on:click={() => (show = false)}>Cancel</Button>
-        <Button secondary submit disabled={submitting}>Accept & Enable</Button>
+        <Button secondary submit disabled={submitting || loadingPrice || !addonPrice}
+            >Accept & Enable</Button>
     </svelte:fragment>
 </Modal>
 

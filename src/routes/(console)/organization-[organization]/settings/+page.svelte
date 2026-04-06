@@ -27,7 +27,7 @@
     onMount(async () => {
         name = $organization.name;
 
-        if (page.url.searchParams.get('type') === 'validate-addon') {
+        if (page.url.searchParams.get('type') === 'confirm-addon') {
             let addonId = page.url.searchParams.get('addonId');
 
             // Fall back to listing addons if addonId is missing or invalid
@@ -60,7 +60,7 @@
 
             if (addonId) {
                 try {
-                    await sdk.forConsole.organizations.validateAddonPayment({
+                    await sdk.forConsole.organizations.confirmAddonPayment({
                         organizationId: $organization.$id,
                         addonId
                     });
