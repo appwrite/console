@@ -438,7 +438,10 @@
                                     bind:this={fileSelector} />
                                 {#if uploading}
                                     <div class="loader is-small"></div>
-                                    <span>Uploading{uploadProgress > 0 ? ` ${uploadProgress}%` : ''}</span>
+                                    <span
+                                        >Uploading{uploadProgress > 0
+                                            ? ` ${uploadProgress}%`
+                                            : ''}</span>
                                 {:else}
                                     <span class="icon-upload" aria-hidden="true"></span>
                                     <span>Upload</span>
