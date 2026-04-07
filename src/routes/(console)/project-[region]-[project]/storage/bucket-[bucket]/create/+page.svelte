@@ -122,7 +122,7 @@
                         extensions={data.bucket.allowedFileExtensions}
                         on:invalid={handleInvalid}>
                         <Typography.Text variant="l-500"
-                            >Drag and drop files here or click to upload</Typography.Text>
+                            >Drag and drop a file here or click to upload</Typography.Text>
                     </Upload.Dropzone>
 
                     {#if files}
