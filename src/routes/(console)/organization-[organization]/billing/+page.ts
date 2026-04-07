@@ -70,26 +70,53 @@ export const load: PageLoad = async ({ parent, depends, url, route }) => {
 
     const areCreditsSupported = isCloud ? currentPlan?.supportsCredits : false;
 
-    const [paymentMethods, addressList, billingAddress, availableCredit, billingPlanDowngrade] =
-        await Promise.all([
-            sdk.forConsole.account.listPaymentMethods(),
-            sdk.forConsole.account.listBillingAddresses(),
-            billingAddressPromise,
-            areCreditsSupported
-                ? sdk.forConsole.organizations.getAvailableCredits({
-                      organizationId: organization.$id
+    const primaryPaymentMethodPromise: Promise<Models.PaymentMethod> = organization.paymentMethodId
+        ? sdk.forConsole.organizations
+              .getPaymentMethod({
+                  organizationId: organization.$id,
+                  paymentMethodId: organization.paymentMethodId
+              })
+              .catch(() => null)
+        : null;
+
+    const backupPaymentMethodPromise: Promise<Models.PaymentMethod> =
+        organization.backupPaymentMethodId
+            ? sdk.forConsole.organizations
+                  .getPaymentMethod({
+                      organizationId: organization.$id,
+                      paymentMethodId: organization.backupPaymentMethodId
                   })
-                : null,
-            organization.billingPlanDowngrade
-                ? sdk.forConsole.console.getPlan({
-                      planId: organization.billingPlanDowngrade
-                  })
-                : null
-        ]);
+                  .catch(() => null)
+            : null;
+
+    const [
+        paymentMethods,
+        addressList,
+        billingAddress,
+        availableCredit,
+        billingPlanDowngrade,
+        primary,
+        backup
+    ] = await Promise.all([
+        sdk.forConsole.account.listPaymentMethods(),
+        sdk.forConsole.account.listBillingAddresses(),
+        billingAddressPromise,
+        areCreditsSupported
+            ? sdk.forConsole.organizations.getAvailableCredits({
+                  organizationId: organization.$id
+              })
+            : null,
+        organization.billingPlanDowngrade
+            ? sdk.forConsole.console.getPlan({
+                  planId: organization.billingPlanDowngrade
+              })
+            : null,
+        primaryPaymentMethodPromise,
+        backupPaymentMethodPromise
+    ]);
 
     // make number
     const credits = availableCredit ? availableCredit.available : null;
-    const { backup, primary } = getOrganizationPaymentMethods(organization, paymentMethods);
 
     return {
         paymentMethods,
@@ -112,26 +139,3 @@ export const load: PageLoad = async ({ parent, depends, url, route }) => {
         primaryPaymentMethod: primary
     };
 };
-
-function getOrganizationPaymentMethods(
-    organization: Models.Organization,
-    paymentMethods: Models.PaymentMethodList
-): {
-    backup: Models.PaymentMethod | null;
-    primary: Models.PaymentMethod | null;
-} {
-    let backup: Models.PaymentMethod | null = null;
-    let primary: Models.PaymentMethod | null = null;
-
-    for (const paymentMethod of paymentMethods.paymentMethods) {
-        if (paymentMethod.$id === organization.paymentMethodId) {
-            primary = paymentMethod;
-        } else if (paymentMethod.$id === organization.backupPaymentMethodId) {
-            backup = paymentMethod;
-        }
-
-        if (primary && backup) break;
-    }
-
-    return { primary, backup };
-}
