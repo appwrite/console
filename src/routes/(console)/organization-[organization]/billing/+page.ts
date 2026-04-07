@@ -70,16 +70,17 @@ export const load: PageLoad = async ({ parent, depends, url, route }) => {
 
     const areCreditsSupported = isCloud ? currentPlan?.supportsCredits : false;
 
-    const primaryPaymentMethodPromise: Promise<Models.PaymentMethod> = organization.paymentMethodId
-        ? sdk.forConsole.organizations
-              .getPaymentMethod({
-                  organizationId: organization.$id,
-                  paymentMethodId: organization.paymentMethodId
-              })
-              .catch(() => null)
-        : null;
+    const primaryPaymentMethodPromise: Promise<Models.PaymentMethod | null> | null =
+        organization.paymentMethodId
+            ? sdk.forConsole.organizations
+                  .getPaymentMethod({
+                      organizationId: organization.$id,
+                      paymentMethodId: organization.paymentMethodId
+                  })
+                  .catch(() => null)
+            : null;
 
-    const backupPaymentMethodPromise: Promise<Models.PaymentMethod> =
+    const backupPaymentMethodPromise: Promise<Models.PaymentMethod | null> | null =
         organization.backupPaymentMethodId
             ? sdk.forConsole.organizations
                   .getPaymentMethod({
