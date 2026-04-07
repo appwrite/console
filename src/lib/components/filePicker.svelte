@@ -54,6 +54,7 @@
     let searchEnabled = false;
     let fileSelector: HTMLInputElement;
     let uploading = false;
+    let uploadProgress = 0;
     let view: 'grid' | 'list' = 'list';
     $: planMaxSize =
         isCloud && $currentPlan?.['fileSize']
@@ -97,12 +98,17 @@
     async function uploadFile() {
         try {
             uploading = true;
+            uploadProgress = 0;
             let file = null;
+
             if (localFileBucketSelected) {
                 file = await sdk.forConsoleIn(page.params.region).storage.createFile({
                     bucketId: 'default',
                     fileId: ID.unique(),
-                    file: localFile[0]
+                    file: localFile[0],
+                    onProgress: (progress) => {
+                        uploadProgress = progress.progress;
+                    }
                 });
             } else {
                 file = await sdk
@@ -111,7 +117,10 @@
                         bucketId: selectedBucket,
                         fileId: ID.unique(),
                         file: fileSelector.files[0],
-                        permissions: [Permission.read(Role.any())]
+                        permissions: [Permission.read(Role.any())],
+                        onProgress: (progress) => {
+                            uploadProgress = progress.progress;
+                        }
                     });
                 search.set($search === null ? '' : null);
             }
@@ -123,6 +132,7 @@
             });
         } finally {
             uploading = false;
+            uploadProgress = 0;
         }
     }
 
@@ -428,7 +438,7 @@
                                     bind:this={fileSelector} />
                                 {#if uploading}
                                     <div class="loader is-small"></div>
-                                    <span>Uploading</span>
+                                    <span>Uploading{uploadProgress > 0 ? ` ${uploadProgress}%` : ''}</span>
                                 {:else}
                                     <span class="icon-upload" aria-hidden="true"></span>
                                     <span>Upload</span>
@@ -714,9 +724,15 @@
                 <Button text on:click={closeModal}>Cancel</Button>
                 <Button
                     submit
-                    disabled={(selectedBucket === null && localFileBucketSelected === false) ||
-                        (selectedFile === null && localFile === null)}
-                    >Select
+                    disabled={uploading ||
+                        (selectedBucket === null && localFileBucketSelected === false) ||
+                        (selectedFile === null && localFile === null)}>
+                    {#if uploading}
+                        <div class="loader is-small"></div>
+                        <span>Uploading{uploadProgress > 0 ? ` ${uploadProgress}%` : ''}</span>
+                    {:else}
+                        Select
+                    {/if}
                 </Button>
             </Layout.Stack>
         </svelte:fragment>
