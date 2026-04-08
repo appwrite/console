@@ -55,7 +55,7 @@
 
     const isEducationProgram = $derived(data.program?.$id === educationProgramId);
     const shouldShowEducationPlanAlert = $derived(
-        isCloud && isEducationProgram && data.projects.total >= 1
+        isCloud && isEducationProgram && data.projects.total >= 2
     );
 
     const projectCreationDisabled = $derived.by(() => {
