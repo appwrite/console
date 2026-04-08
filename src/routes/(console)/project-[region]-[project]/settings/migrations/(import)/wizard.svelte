@@ -23,6 +23,7 @@
         Fieldset,
         Icon,
         Layout,
+        Selector,
         Typography
     } from '@appwrite.io/pink-svelte';
     import { Link } from '$lib/elements';
@@ -38,6 +39,9 @@
     import { capitalize } from '$lib/helpers/string';
     import { page } from '$app/state';
 
+    let importOverwrite = false;
+    let importSkip = false;
+
     const onExit = () => {
         resetImportStores();
     };
@@ -45,6 +49,11 @@
     const onFinish = async () => {
         try {
             const resources = migrationFormToResources($formData, $provider.provider);
+
+            const importOptions = {
+                overwrite: importOverwrite,
+                skip: importSkip
+            };
 
             switch ($provider.provider) {
                 case 'appwrite': {
@@ -54,7 +63,8 @@
                             resources: resources as AppwriteMigrationResource[],
                             endpoint: $provider.endpoint,
                             projectId: $provider.projectID,
-                            apiKey: $provider.apiKey
+                            apiKey: $provider.apiKey,
+                            ...importOptions
                         });
 
                     await invalidate(Dependencies.MIGRATIONS);
@@ -70,7 +80,8 @@
                             databaseHost: $provider.host,
                             username: $provider.username || 'postgres',
                             password: $provider.password,
-                            port: $provider.port || 5432
+                            port: $provider.port || 5432,
+                            ...importOptions
                         });
                     await invalidate(Dependencies.MIGRATIONS);
                     break;
@@ -80,7 +91,8 @@
                         .forProject(page.params.region, page.params.project)
                         .migrations.createFirebaseMigration({
                             resources: resources as FirebaseMigrationResource[],
-                            serviceAccount: $provider.serviceAccount
+                            serviceAccount: $provider.serviceAccount,
+                            ...importOptions
                         });
                     await invalidate(Dependencies.MIGRATIONS);
                     break;
@@ -95,7 +107,8 @@
                             adminSecret: $provider.adminSecret,
                             database: $provider.database || $provider.subdomain,
                             username: $provider.username || 'postgres',
-                            password: $provider.password
+                            password: $provider.password,
+                            ...importOptions
                         });
 
                     await invalidate(Dependencies.MIGRATIONS);
@@ -196,6 +209,31 @@
                             projectSdk={sdk.forProject(page.params.region, page.params.project)} />
                     </Layout.Stack>
                 </Fieldset>
+
+                {#if $formData.databases.root}
+                    <Fieldset legend="Import options">
+                        <Layout.Stack gap="m">
+                            <Selector.Checkbox
+                                size="s"
+                                checked={importOverwrite}
+                                on:change={(e) => {
+                                    importOverwrite = e.detail;
+                                    if (e.detail) importSkip = false;
+                                }}
+                                label="Overwrite existing documents"
+                                description="Documents with matching IDs will be updated with the imported data." />
+                            <Selector.Checkbox
+                                size="s"
+                                checked={importSkip}
+                                on:change={(e) => {
+                                    importSkip = e.detail;
+                                    if (e.detail) importOverwrite = false;
+                                }}
+                                label="Skip existing documents"
+                                description="Documents with matching IDs will be silently skipped." />
+                        </Layout.Stack>
+                    </Fieldset>
+                {/if}
             {/if}
         </Layout.Stack>
     </Layout.Stack>
