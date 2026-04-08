@@ -16,7 +16,8 @@
     import type { PageProps } from './$types';
 
     let { data }: PageProps = $props();
-    const { project } = data;
+    /** Must stay derived from `data` so OAuth/auth toggles reflect `invalidate(Dependencies.PROJECT)` without a full reload. */
+    const project = $derived(data.project);
 
     let showProvider = $state(false);
     let selectedProvider: Models.AuthProvider | null = $state(null);
