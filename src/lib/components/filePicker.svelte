@@ -256,7 +256,7 @@
 <svelte:document on:visibilitychange={handleVisibilityChange} />
 
 <Form {onSubmit} isModal class="file-picker-modal-form">
-    <Modal bind:open={show} title="Select file" size="l">
+    <Modal bind:open={show} title="Select file" size="l" dismissible={!uploading}>
         <Layout.Stack direction={$isSmallViewport ? 'column' : 'row'} height="50vh" gap="none">
             <!-- min-width to avoid a layout-shift -->
             <aside>
@@ -724,7 +724,7 @@
         </Layout.Stack>
         <svelte:fragment slot="footer">
             <Layout.Stack direction="row" justifyContent="flex-end">
-                <Button text on:click={closeModal}>Cancel</Button>
+                <Button text disabled={uploading} on:click={closeModal}>Cancel</Button>
                 <Button
                     submit
                     disabled={uploading ||
