@@ -10,25 +10,24 @@
     import { project } from '../../../store';
     import { platform } from './store';
 
-    let key: string = null;
+    import type { Models } from '@appwrite.io/console';
+
+    let bundleIdentifier: string = null;
 
     onMount(() => {
-        key ??= $platform.key;
+        bundleIdentifier ??= ($platform as Models.PlatformApple).bundleIdentifier;
     });
 
-    async function updateHostname() {
+    async function updateBundleIdentifier() {
         try {
-            await sdk.forConsole.projects.updatePlatform({
-                projectId: $project.$id,
+            await sdk.forProject($project.region, $project.$id).project.updateApplePlatform({
                 platformId: $platform.$id,
                 name: $platform.name,
-                key,
-                store: $platform.store || undefined,
-                hostname: $platform.hostname || undefined
+                bundleIdentifier
             });
             await invalidate(Dependencies.PLATFORM);
             trackEvent(Submit.PlatformUpdate, {
-                type: 'flutter-ios'
+                type: 'apple'
             });
             addNotification({
                 type: 'success',
@@ -44,7 +43,7 @@
     }
 </script>
 
-<Form onSubmit={updateHostname}>
+<Form onSubmit={updateBundleIdentifier}>
     <CardGrid>
         <svelte:fragment slot="title">Bundle ID</svelte:fragment>
         You can find your Bundle Identifier in the General tab for your app's primary target in Xcode.
@@ -52,13 +51,15 @@
             <InputText
                 id="bundle-id"
                 label="Bundle ID"
-                bind:value={key}
+                bind:value={bundleIdentifier}
                 required
                 placeholder="com.company.appname" />
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={key === $platform.key} submit>Update</Button>
+            <Button
+                disabled={bundleIdentifier === ($platform as Models.PlatformApple).bundleIdentifier}
+                submit>Update</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>

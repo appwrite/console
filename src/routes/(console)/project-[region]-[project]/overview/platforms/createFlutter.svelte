@@ -24,13 +24,12 @@
     import { fade } from 'svelte/transition';
     import ConnectionLine from './components/ConnectionLine.svelte';
     import OnboardingPlatformCard from './components/OnboardingPlatformCard.svelte';
-    import { PlatformType } from '@appwrite.io/console';
+    import { ID } from '@appwrite.io/console';
     import { project } from '../../store';
     import { getCorrectTitle, type PlatformProps } from './store';
     import LlmBanner from './llmBanner.svelte';
 
-    let { isConnectPlatform = false, platform = PlatformType.Flutterandroid }: PlatformProps =
-        $props();
+    let { isConnectPlatform = false, platform = 'flutter-android' }: PlatformProps = $props();
 
     let showExitModal = $state(false);
     let isCreatingPlatform = $state(false);
@@ -80,54 +79,52 @@ client.ping();
   static const String appwritePublicEndpoint = '${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}';
 }`;
 
-    let platforms: { [key: string]: PlatformType } = {
-        Android: PlatformType.Flutterandroid,
-        iOS: PlatformType.Flutterios,
-        Linux: PlatformType.Flutterlinux,
-        macOS: PlatformType.Fluttermacos,
-        Windows: PlatformType.Flutterwindows,
-        Web: PlatformType.Flutterweb
+    let platforms: { [key: string]: string } = {
+        Android: 'flutter-android',
+        iOS: 'flutter-ios',
+        Linux: 'flutter-linux',
+        macOS: 'flutter-macos',
+        Windows: 'flutter-windows',
+        Web: 'flutter-web'
     };
 
-    const placeholder: Partial<
-        Record<
-            PlatformType,
-            {
-                name: string;
-                hostname: string;
-                tooltip: string;
-            }
-        >
+    const placeholder: Record<
+        string,
+        {
+            name: string;
+            hostname: string;
+            tooltip: string;
+        }
     > = {
-        [PlatformType.Flutterandroid]: {
+        'flutter-android': {
             name: 'My Android app',
             hostname: 'com.company.appname',
             tooltip:
                 'Your package name is generally the applicationId in your app-level build.gradle file.'
         },
-        [PlatformType.Flutterios]: {
+        'flutter-ios': {
             name: 'My iOS app',
             hostname: 'com.company.appname',
             tooltip:
                 "You can find your Bundle Identifier in the General tab for your app's primary target in Xcode."
         },
-        [PlatformType.Flutterlinux]: {
+        'flutter-linux': {
             name: 'My Linux app',
             hostname: 'appname',
             tooltip: 'Your application name'
         },
-        [PlatformType.Fluttermacos]: {
+        'flutter-macos': {
             name: 'My mac OS app',
             hostname: 'com.company.appname',
             tooltip:
                 "You can find your Bundle Identifier in the General tab for your app's primary target in Xcode."
         },
-        [PlatformType.Flutterwindows]: {
+        'flutter-windows': {
             name: 'My Windows app',
             hostname: 'appname',
             tooltip: 'Your application name'
         },
-        [PlatformType.Flutterweb]: {
+        'flutter-web': {
             name: 'My Web app',
             hostname: 'localhost',
             tooltip:
@@ -135,13 +132,13 @@ client.ping();
         }
     };
 
-    const hostname: Partial<Record<PlatformType, string>> = {
-        [PlatformType.Flutterandroid]: 'Package name',
-        [PlatformType.Flutterios]: 'Bundle ID',
-        [PlatformType.Flutterlinux]: 'Package name',
-        [PlatformType.Fluttermacos]: 'Bundle ID',
-        [PlatformType.Flutterweb]: 'Hostname',
-        [PlatformType.Flutterwindows]: 'Package name'
+    const hostnameLabel: Record<string, string> = {
+        'flutter-android': 'Package name',
+        'flutter-ios': 'Bundle ID',
+        'flutter-linux': 'Package name',
+        'flutter-macos': 'Bundle ID',
+        'flutter-web': 'Hostname',
+        'flutter-windows': 'Package name'
     };
 
     async function fetchFlutterSdkVersion() {
@@ -163,19 +160,46 @@ client.ping();
     async function createFlutterPlatform() {
         try {
             isCreatingPlatform = true;
-            await sdk.forConsole.projects.createPlatform({
-                projectId,
-                type: platform,
-                name: $createPlatform.name,
-                key:
-                    platform === PlatformType.Flutterweb
-                        ? undefined
-                        : $createPlatform.key || undefined,
-                hostname:
-                    platform === PlatformType.Flutterweb
-                        ? $createPlatform.hostname || undefined
-                        : undefined
-            });
+            const projectSdk = sdk.forProject(page.params.region, page.params.project).project;
+            const platformId = ID.unique();
+            switch (platform) {
+                case 'flutter-android':
+                    await projectSdk.createAndroidPlatform({
+                        platformId,
+                        name: $createPlatform.name,
+                        applicationId: $createPlatform.key
+                    });
+                    break;
+                case 'flutter-ios':
+                case 'flutter-macos':
+                    await projectSdk.createApplePlatform({
+                        platformId,
+                        name: $createPlatform.name,
+                        bundleIdentifier: $createPlatform.key
+                    });
+                    break;
+                case 'flutter-linux':
+                    await projectSdk.createLinuxPlatform({
+                        platformId,
+                        name: $createPlatform.name,
+                        packageName: $createPlatform.key
+                    });
+                    break;
+                case 'flutter-windows':
+                    await projectSdk.createWindowsPlatform({
+                        platformId,
+                        name: $createPlatform.name,
+                        packageIdentifierName: $createPlatform.key
+                    });
+                    break;
+                case 'flutter-web':
+                    await projectSdk.createWebPlatform({
+                        platformId,
+                        name: $createPlatform.name,
+                        hostname: $createPlatform.hostname || undefined
+                    });
+                    break;
+            }
 
             isPlatformCreated = true;
             trackEvent(Submit.PlatformCreate, {
@@ -255,10 +279,10 @@ client.ping();
                                     bind:value={$createPlatform.name} />
 
                                 <!-- Tooltips on InputText don't work as of now -->
-                                {#if platform === PlatformType.Flutterweb}
+                                {#if platform === 'flutter-web'}
                                     <InputText
                                         id="hostname"
-                                        label={hostname[platform]}
+                                        label={hostnameLabel[platform]}
                                         placeholder={placeholder[platform].hostname}
                                         required
                                         bind:value={$createPlatform.hostname}>
@@ -272,7 +296,7 @@ client.ping();
                                 {:else}
                                     <InputText
                                         id="key"
-                                        label={hostname[platform]}
+                                        label={hostnameLabel[platform]}
                                         placeholder={placeholder[platform].hostname}
                                         required
                                         bind:value={$createPlatform.key}>
