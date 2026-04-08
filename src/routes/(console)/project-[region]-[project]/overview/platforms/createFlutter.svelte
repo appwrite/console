@@ -199,6 +199,8 @@ client.ping();
                         hostname: $createPlatform.hostname || undefined
                     });
                     break;
+                default:
+                    throw new Error(`Unknown platform type: ${platform}`);
             }
 
             isPlatformCreated = true;

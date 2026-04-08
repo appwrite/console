@@ -79,7 +79,9 @@
         IconAndroid,
         IconApple,
         IconCode,
+        IconDesktopComputer,
         IconFlutter,
+        IconLinux,
         IconReact
     } from '@appwrite.io/pink-icons-svelte';
     import type { ComponentType } from 'svelte';
@@ -115,8 +117,11 @@
                 return IconApple;
             case 'android':
                 return IconAndroid;
+            case 'linux':
+                return IconLinux;
+            case 'windows':
+                return IconDesktopComputer;
             case 'web':
-                return IconCode;
             default:
                 return IconCode;
         }

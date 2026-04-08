@@ -74,6 +74,8 @@
                         packageName: ($platform as Models.PlatformLinux).packageName
                     });
                     break;
+                default:
+                    throw new Error(`Unknown platform type: ${$platform.type}`);
             }
             await invalidate(Dependencies.PLATFORM);
             addNotification({
