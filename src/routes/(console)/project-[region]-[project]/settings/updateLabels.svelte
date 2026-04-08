@@ -23,7 +23,7 @@
 
     async function updateLabels() {
         try {
-            await sdk.forConsole.projects.updateLabels({ projectId: $project.$id, labels });
+            await sdk.forProject($project.region, $project.$id).project.updateLabels({ labels });
             await invalidate(Dependencies.PROJECT);
             isDisabled = true;
             addNotification({

@@ -14,11 +14,9 @@
     import { addNotification } from '$lib/stores/notifications';
     import { writable } from 'svelte/store';
     import Scopes from '../api-keys/scopes.svelte';
-    import { type Scopes as ScopesType } from '@appwrite.io/console';
+    import { ID, type Scopes as ScopesType } from '@appwrite.io/console';
     import { page } from '$app/state';
     import { copy } from '$lib/helpers/copy';
-
-    const projectId = page.params.project;
 
     let showExitModal = false;
     let formComponent: Form;
@@ -30,12 +28,14 @@
 
     async function create() {
         try {
-            const { $id, secret } = await sdk.forConsole.projects.createKey({
-                projectId,
-                name,
-                scopes,
-                expire: expire || undefined
-            });
+            const { $id, secret } = await sdk
+                .forProject(page.params.region, page.params.project)
+                .project.createKey({
+                    keyId: ID.unique(),
+                    name,
+                    scopes,
+                    expire: expire || undefined
+                });
 
             if ($onboarding) {
                 await invalidate(Dependencies.PROJECT);
