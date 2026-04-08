@@ -152,8 +152,7 @@
         try {
             const result: Models.Addon | Models.PaymentAuthentication =
                 await sdk.forConsole.organizations.createBaaAddon({
-                    organizationId: $organization.$id,
-                    key: 'baa'
+                    organizationId: $organization.$id
                 });
 
             if ('clientSecret' in result) {
