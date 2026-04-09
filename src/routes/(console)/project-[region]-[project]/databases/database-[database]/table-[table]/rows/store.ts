@@ -52,6 +52,47 @@ export function isSpatialType(
     return spatialTypes.includes(field.type.toLowerCase());
 }
 
+function castBigIntValue(value: unknown): unknown {
+    if (value === null || value === undefined || value === '') {
+        return value;
+    }
+
+    if (typeof value === 'bigint') {
+        return value;
+    }
+
+    try {
+        console.log({ value });
+        return BigInt(value as string | number | boolean);
+    } catch {
+        return value;
+    }
+}
+
+export function buildPayload(
+    fields: Field[] | undefined,
+    row: Record<string, unknown>
+): Record<string, unknown> {
+    const payload = structuredClone(row);
+
+    for (const field of fields ?? []) {
+        if (field.type !== 'bigint') {
+            continue;
+        }
+
+        const value = payload[field.key];
+
+        if (field.array && Array.isArray(value)) {
+            payload[field.key] = value.map((item) => castBigIntValue(item));
+            continue;
+        }
+
+        payload[field.key] = castBigIntValue(value);
+    }
+
+    return payload;
+}
+
 /**
  * Returns select queries for all main and related fields in an `Entity`.
  */

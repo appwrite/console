@@ -2,6 +2,12 @@
     import { page } from '$app/state';
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
+    
+    function normalizeBigInt(value) {
+        if (value === undefined) return undefined;
+        if (value === null) return null;
+        return BigInt(value);
+    }
 
     export async function submitBigInt(
         databaseId: string,
@@ -16,7 +22,7 @@
             required: data.required,
             min: data.min,
             max: data.max,
-            xdefault: data.default,
+            xdefault: normalizeBigInt(data.default),
             array: data.array
         });
     }
@@ -32,7 +38,7 @@
             tableId,
             key: originalKey,
             required: data.required,
-            xdefault: data.default,
+            xdefault: normalizeBigInt(data.default),
             min: data.min,
             max: data.max,
             newKey: data.key !== originalKey ? data.key : undefined

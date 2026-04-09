@@ -14,7 +14,8 @@
         buildWildcardColumnsQuery,
         isRelationship,
         isRelationshipToMany,
-        isSpatialType
+        isSpatialType,
+        buildPayload
     } from './store';
     import { Layout, Skeleton } from '@appwrite.io/pink-svelte';
     import { deepClone } from '$lib/helpers/object';
@@ -142,11 +143,13 @@
         if (!row || !work) return;
 
         try {
+            const payload = buildPayload(table.fields, $work as Record<string, unknown>);
+
             await sdk.forProject(page.params.region, page.params.project).tablesDB.updateRow({
                 databaseId: table.databaseId,
                 tableId: table.$id,
                 rowId: row.$id,
-                data: $work,
+                data: payload,
                 permissions: $work.$permissions
             });
 
