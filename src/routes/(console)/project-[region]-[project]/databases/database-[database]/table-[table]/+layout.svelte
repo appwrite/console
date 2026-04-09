@@ -346,7 +346,7 @@
                                     databaseId: page.params.database,
                                     tableId: page.params.table,
                                     rowId: row.$id,
-                                    data: buildPayload(columns, row as Record<string, unknown>)
+                                    data: buildPayload(columns, row)
                                 })
                             )
                         );
@@ -358,7 +358,7 @@
                 await tablesSDK.createRows({
                     databaseId: page.params.database,
                     tableId: page.params.table,
-                    rows: rows.map((row) => buildPayload(columns, row as Record<string, unknown>))
+                    rows: rows.map((row) => buildPayload(columns, row))
                 });
             }
 

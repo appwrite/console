@@ -4,6 +4,12 @@ import type { Attributes, Columns } from '../store';
 import { type Models, Query } from '@appwrite.io/console';
 import type { Entity, Field } from '$database/(entity)';
 
+type RowPrimitive = string | number | bigint | boolean | null | undefined;
+interface RowObject {
+    [key: string]: RowValue;
+}
+type RowValue = RowPrimitive | RowValue[] | RowObject;
+
 export function isRelationshipToMany(field: Field) {
     if (!field) return false;
     if (!isRelationship(field)) return false;
@@ -52,28 +58,19 @@ export function isSpatialType(
     return spatialTypes.includes(field.type.toLowerCase());
 }
 
-function castBigIntValue(value: unknown): unknown {
+function castBigIntValue(value: RowValue): RowValue {
     if (value === null || value === undefined || value === '') {
         return value;
     }
 
-    if (typeof value === 'bigint') {
-        return value;
-    }
-
-    try {
-        console.log({ value });
-        return BigInt(value as string | number | boolean);
-    } catch {
-        return value;
-    }
+    return String(value);
 }
 
-export function buildPayload(
+export function buildPayload<T extends Record<string, RowValue>>(
     fields: Field[] | undefined,
-    row: Record<string, unknown>
-): Record<string, unknown> {
-    const payload = structuredClone(row);
+    row: T
+): T {
+    const payload = structuredClone(row) as Record<string, RowValue>;
 
     for (const field of fields ?? []) {
         if (field.type !== 'bigint') {
@@ -90,7 +87,7 @@ export function buildPayload(
         payload[field.key] = castBigIntValue(value);
     }
 
-    return payload;
+    return payload as T;
 }
 
 /**

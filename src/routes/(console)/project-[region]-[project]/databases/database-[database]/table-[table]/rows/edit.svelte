@@ -143,7 +143,7 @@
         if (!row || !work) return;
 
         try {
-            const payload = buildPayload(table.fields, $work as Record<string, unknown>);
+            const payload = buildPayload(table.fields, $work);
 
             await sdk.forProject(page.params.region, page.params.project).tablesDB.updateRow({
                 databaseId: table.databaseId,

@@ -646,7 +646,7 @@
 
     async function updateRowContents(row: Models.Row) {
         try {
-            const payload = buildPayload(table.fields, row as Record<string, unknown>);
+            const payload = buildPayload(table.fields, row);
 
             await sdk.forProject(page.params.region, page.params.project).tablesDB.updateRow({
                 databaseId,

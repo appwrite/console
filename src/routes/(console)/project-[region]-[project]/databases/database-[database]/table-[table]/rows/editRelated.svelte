@@ -258,10 +258,7 @@
                 const work = workData.get(rowId);
 
                 const workValue = get(work);
-                const payload = buildPayload(
-                    relatedTable.fields,
-                    workValue as Record<string, unknown>
-                );
+                const payload = buildPayload(relatedTable.fields, workValue);
                 await sdk.forProject(page.params.region, page.params.project).tablesDB.updateRow({
                     databaseId,
                     tableId: relatedTable.$id,
@@ -280,10 +277,7 @@
                     if (!work) return;
 
                     const workValue = get(work);
-                    const payload = buildPayload(
-                        relatedTable.fields,
-                        workValue as Record<string, unknown>
-                    );
+                    const payload = buildPayload(relatedTable.fields, workValue);
                     return sdk
                         .forProject(page.params.region, page.params.project)
                         .tablesDB.updateRow({
