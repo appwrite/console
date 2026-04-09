@@ -2,7 +2,7 @@
     import { page } from '$app/state';
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
-    
+
     function normalizeBigInt(value) {
         if (value === undefined) return undefined;
         if (value === null) return null;
