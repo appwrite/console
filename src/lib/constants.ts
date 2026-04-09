@@ -473,6 +473,18 @@ export const scopes: ScopeDefinition[] = [
         description: "Access to delete your site's logs",
         category: 'Sites',
         icon: 'globe'
+    },
+    {
+        scope: 'webhooks.read',
+        description: "Access to read your project's webhooks",
+        category: 'Other',
+        icon: 'globe'
+    },
+    {
+        scope: 'webhooks.write',
+        description: "Access to create, update, and delete your project's webhooks",
+        category: 'Other',
+        icon: 'globe'
     }
 ];
 
