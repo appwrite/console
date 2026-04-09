@@ -44,17 +44,17 @@
         transition:
             transform 200ms cubic-bezier(0.4, 0, 0.2, 1),
             box-shadow 200ms cubic-bezier(0.4, 0, 0.2, 1);
-        will-change: transform, box-shadow;
     }
 
     .card-grid-wrapper :global(.card:hover) {
+        will-change: transform, box-shadow;
         transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        box-shadow: var(--shadow-md, 0 8px 20px rgba(0, 0, 0, 0.12));
     }
 
     .card-grid-wrapper :global(.card:active) {
         transform: translateY(0);
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+        box-shadow: var(--shadow-sm, 0 4px 10px rgba(0, 0, 0, 0.08));
     }
 
     .card-grid-content {
