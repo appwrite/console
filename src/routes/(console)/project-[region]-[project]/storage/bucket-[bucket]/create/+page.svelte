@@ -69,7 +69,14 @@
             trackEvent(Submit.FileCreate, {
                 customId: !!id
             });
-            await promise;
+            const results = await promise;
+            const failures = results.filter((r) => r.status === 'rejected');
+            if (failures.length) {
+                addNotification({
+                    type: 'error',
+                    message: `${failures.length} file(s) failed to upload`
+                });
+            }
             invalidate(Dependencies.FILES);
         } catch (e) {
             addNotification({

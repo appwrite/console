@@ -82,22 +82,29 @@ const createUploader = () => {
             n.files.unshift(newFile);
             return n;
         });
-        const uploadedFile = await temporaryStorage(region, projectId).createFile({
-            bucketId,
-            fileId: id ?? ID.unique(),
-            file,
-            permissions,
-            onProgress: (progress) => {
-                newFile.$id = progress.$id;
-                newFile.progress = progress.progress;
-                newFile.status = progress.progress === 100 ? 'success' : 'pending';
-                updateFile(progress.$id, newFile);
-            }
-        });
-        newFile.$id = uploadedFile.$id;
-        newFile.progress = 100;
-        newFile.status = 'success';
-        updateFile(newFile.$id, newFile);
+        try {
+            const uploadedFile = await temporaryStorage(region, projectId).createFile({
+                bucketId,
+                fileId: id ?? ID.unique(),
+                file,
+                permissions,
+                onProgress: (progress) => {
+                    newFile.$id = progress.$id;
+                    newFile.progress = progress.progress;
+                    newFile.status = progress.progress === 100 ? 'success' : 'pending';
+                    updateFile(progress.$id, newFile);
+                }
+            });
+            newFile.$id = uploadedFile.$id;
+            newFile.progress = 100;
+            newFile.status = 'success';
+            updateFile(newFile.$id, newFile);
+        } catch (e) {
+            newFile.status = 'failed';
+            newFile.error = e?.message ?? 'Upload failed';
+            updateFile(newFile.$id, newFile);
+            throw e;
+        }
     };
 
     const uploadFiles = async (

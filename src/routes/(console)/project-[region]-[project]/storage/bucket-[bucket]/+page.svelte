@@ -105,9 +105,30 @@
         isDragging = false;
         if (!event.dataTransfer?.files?.length) return;
 
+        const allowedExtensions: string[] = data.bucket.allowedFileExtensions ?? [];
         const droppedFiles = Array.from(event.dataTransfer.files);
-        const count = droppedFiles.length;
 
+        const validFiles: File[] = [];
+        const rejectedFiles: File[] = [];
+        for (const file of droppedFiles) {
+            const ext = file.name.split('.').pop()?.toLowerCase();
+            if (allowedExtensions.length && (!ext || !allowedExtensions.includes(ext))) {
+                rejectedFiles.push(file);
+            } else {
+                validFiles.push(file);
+            }
+        }
+
+        if (rejectedFiles.length) {
+            addNotification({
+                type: 'error',
+                message: `${rejectedFiles.length} file(s) rejected — only ${allowedExtensions.join(', ')} allowed`
+            });
+        }
+
+        if (!validFiles.length) return;
+
+        const count = validFiles.length;
         addNotification({
             type: 'success',
             message: count === 1 ? 'File upload in progress' : `${count} file uploads in progress`
@@ -115,18 +136,25 @@
 
         trackEvent(Submit.FileCreate, { customId: false });
 
-        const filesToUpload = droppedFiles.map((file) => ({
+        const filesToUpload = validFiles.map((file) => ({
             id: ID.unique(),
             file
         }));
 
-        await uploader.uploadFiles(
+        const results = await uploader.uploadFiles(
             page.params.region,
             page.params.project,
             page.params.bucket,
             filesToUpload,
             []
         );
+        const failures = results.filter((r) => r.status === 'rejected');
+        if (failures.length) {
+            addNotification({
+                type: 'error',
+                message: `${failures.length} file(s) failed to upload`
+            });
+        }
         invalidate(Dependencies.FILES);
     }
 
