@@ -39,8 +39,6 @@ const temporaryFunctions = (region: string, projectId: string) => {
     return new Functions(clientProject);
 };
 
-const MAX_CONCURRENT_UPLOADS = 5;
-
 const createUploader = () => {
     const { subscribe, set, update } = writable<Uploader>({
         isOpen: false,
@@ -106,6 +104,8 @@ const createUploader = () => {
             throw e;
         }
     };
+
+    const MAX_CONCURRENT_UPLOADS = 5;
 
     const uploadFiles = async (
         region: string,
