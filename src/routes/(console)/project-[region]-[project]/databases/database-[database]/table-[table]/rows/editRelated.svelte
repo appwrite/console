@@ -9,7 +9,7 @@
     import { Dependencies } from '$lib/constants';
     import { invalidate } from '$app/navigation';
     import { type Columns, PROHIBITED_ROW_KEYS } from '../store';
-    import ColumnItem from './columns/columnItem.svelte';
+    import RelatedRowColumns from './relatedRowColumns.svelte';
     import {
         buildWildcardColumnsQuery,
         isRelationship,
@@ -19,12 +19,7 @@
     import { Accordion, Layout, Skeleton } from '@appwrite.io/pink-svelte';
     import { deepClone } from '$lib/helpers/object';
     import { preferences } from '$lib/stores/preferences';
-    import {
-        type Entity,
-        type Field,
-        getTerminologies,
-        toRelationalField
-    } from '$database/(entity)';
+    import { type Entity, type Field, getTerminologies } from '$database/(entity)';
     import { onMount } from 'svelte';
 
     const databaseId = page.params.database;
@@ -68,6 +63,12 @@
 
         try {
             if (isSingleStore()) {
+                // Load schema first so relationship wildcard selects are correct.
+                relatedTable = await databaseSdk.getEntity({
+                    databaseId,
+                    entityId: tableId
+                });
+
                 const fetchedRow = await sdk
                     .forProject(page.params.region, page.params.project)
                     .tablesDB.getRow({
@@ -76,12 +77,6 @@
                         rowId: rows as string,
                         queries: buildWildcardColumnsQuery(relatedTable)
                     });
-
-                // cannot use page.data.entities!
-                relatedTable = await databaseSdk.getEntity({
-                    databaseId,
-                    entityId: tableId
-                });
 
                 fetchedRows = [fetchedRow];
             } else {
@@ -327,11 +322,6 @@
         firstInput?.focus({ preventScroll: true });
     }
 
-    function getStore(id: string) {
-        const rowInstance = workData.get(id);
-        return get(rowInstance);
-    }
-
     function handleFormUpdate(rowId: string) {
         return (updatedFormValues: object) => {
             const workStore = workData.get(rowId);
@@ -357,14 +347,6 @@
     }
 
     $effect(() => {
-        if (rows && tableId) {
-            loadRelatedRow().then(() => {
-                focusFirstInput();
-            });
-        }
-    });
-
-    $effect(() => {
         disabledState = calculateAndCompareDisabledState();
     });
 </script>
@@ -388,40 +370,27 @@
 
     <div bind:this={columnFormWrapper}>
         {#if fetchedRows.length === 1}
-            {@const workStore = getStore(fetchedRows[0].$id)}
+            {@const workStore = workData.get(fetchedRows[0].$id)}
             {#if workStore}
-                <Layout.Stack direction="column" gap="l">
-                    {#each columnsToRender as column}
-                        {@const label = column.key}
-                        <ColumnItem
-                            {label}
-                            editing
-                            formValues={workStore}
-                            column={toRelationalField(column)}
-                            onUpdateFormValues={handleFormUpdate(fetchedRows[0].$id)} />
-                    {/each}
-                </Layout.Stack>
+                <RelatedRowColumns
+                    {workStore}
+                    {columnsToRender}
+                    onUpdateFormValues={handleFormUpdate(fetchedRows[0].$id)} />
             {/if}
         {:else}
             <Layout.Stack direction="column" gap="m" class="column-item-stack">
                 <Layout.Stack direction="column" gap="xs" class="column-item-stack">
                     {#each fetchedRows as row, index (row.$id)}
-                        {@const workStore = getStore(row.$id)}
+                        {@const workStore = workData.get(row.$id)}
                         <Accordion
                             title={getAccordionTitle(row)}
                             hideDivider={index >= fetchedRows.length - 1}>
                             {#if workStore}
-                                <Layout.Stack direction="column" gap="m">
-                                    {#each columnsToRender as column}
-                                        {@const label = column.key}
-                                        <ColumnItem
-                                            {label}
-                                            editing
-                                            formValues={workStore}
-                                            column={toRelationalField(column)}
-                                            onUpdateFormValues={handleFormUpdate(row.$id)} />
-                                    {/each}
-                                </Layout.Stack>
+                                <RelatedRowColumns
+                                    {workStore}
+                                    {columnsToRender}
+                                    gap="m"
+                                    onUpdateFormValues={handleFormUpdate(row.$id)} />
                             {/if}
                         </Accordion>
                     {/each}

@@ -43,8 +43,7 @@
     async function updateName() {
         try {
             if (isApiKey) {
-                await sdk.forConsole.projects.updateKey({
-                    projectId: $project.$id,
+                await sdk.forProject($project.region, $project.$id).project.updateKey({
                     keyId: key.$id,
                     name,
                     scopes,
@@ -76,8 +75,7 @@
 
     async function updateScopes() {
         try {
-            await sdk.forConsole.projects.updateKey({
-                projectId: $project.$id,
+            await sdk.forProject($project.region, $project.$id).project.updateKey({
                 keyId: key.$id,
                 name: key.name,
                 scopes,

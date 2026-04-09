@@ -62,7 +62,7 @@
                                 <Link.Anchor
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    href="https://appwrite.io/docs/products/auth">
+                                    href="https://appwrite.io/docs/products/auth/impersonation">
                                     Learn more.
                                 </Link.Anchor>
                             </Typography.Text>
