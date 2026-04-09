@@ -22,7 +22,7 @@
     import { uploader } from '$lib/stores/uploader';
     import { sdk } from '$lib/stores/sdk.js';
     import DeleteFile from './deleteFile.svelte';
-    import { Layout, Table, Icon, Popover, ActionMenu } from '@appwrite.io/pink-svelte';
+    import { Layout, Table, Icon, Popover, ActionMenu, Typography } from '@appwrite.io/pink-svelte';
     import { onMount } from 'svelte';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
     import {
@@ -32,6 +32,8 @@
         IconTrash
     } from '@appwrite.io/pink-icons-svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
+    import { ID } from '@appwrite.io/console';
+    import { addNotification } from '$lib/stores/notifications';
     import type { PageProps } from './$types';
 
     const { data }: PageProps = $props();
@@ -39,6 +41,7 @@
     let showDelete = $state(false);
     let isUploading = $state(false);
     let selectedFile: Models.File | null = $state(null);
+    let isDragging = $state(false);
 
     function getPreview(fileId: string) {
         return (
@@ -98,6 +101,35 @@
         }
     };
 
+    async function handleDrop(event: DragEvent) {
+        isDragging = false;
+        if (!event.dataTransfer?.files?.length) return;
+
+        const droppedFiles = Array.from(event.dataTransfer.files);
+        const count = droppedFiles.length;
+
+        addNotification({
+            type: 'success',
+            message: count === 1 ? 'File upload in progress' : `${count} file uploads in progress`
+        });
+
+        trackEvent(Submit.FileCreate, { customId: false });
+
+        const filesToUpload = droppedFiles.map((file) => ({
+            id: ID.unique(),
+            file
+        }));
+
+        await uploader.uploadFiles(
+            page.params.region,
+            page.params.project,
+            page.params.bucket,
+            filesToUpload,
+            []
+        );
+        invalidate(Dependencies.FILES);
+    }
+
     onMount(() => {
         return uploader.subscribe(() => {
             isUploading = $uploader.files.some(
@@ -110,160 +142,222 @@
 
 <svelte:window on:beforeunload={beforeunload} />
 
-<Container>
-    <Layout.Stack direction="row" justifyContent="space-between">
-        <Layout.Stack direction="row" alignItems="center">
-            <SearchQuery placeholder="Search files" />
-        </Layout.Stack>
-        <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
-            <Button
-                href={`${base}/project-${page.params.region}-${page.params.project}/storage/bucket-${page.params.bucket}/create`}
-                event="create_file"
-                size="s">
-                <Icon icon={IconPlus} slot="start" size="s" />
-                Create file
-            </Button>
-        </Layout.Stack>
-    </Layout.Stack>
+<!-- svelte-ignore a11y_no_static_element_interactions -->
+<div
+    class="drop-target"
+    class:is-dragging={isDragging}
+    ondrop={(e) => {
+        e.preventDefault();
+        handleDrop(e);
+    }}
+    ondragenter={(e) => {
+        e.preventDefault();
+        isDragging = true;
+    }}
+    ondragover={(e) => {
+        e.preventDefault();
+        isDragging = true;
+    }}
+    ondragleave={(e) => {
+        e.preventDefault();
+        if (!e.currentTarget.contains(e.relatedTarget as Node)) isDragging = false;
+    }}>
+    {#if isDragging}
+        <div class="drop-overlay">
+            <Layout.Stack alignItems="center" gap="s">
+                <Icon icon={IconPlus} size="l" />
+                <Typography.Text variant="l-500">Drop files to upload</Typography.Text>
+            </Layout.Stack>
+        </div>
+    {/if}
 
-    {#if data.files.total}
-        <MultiSelectionTable
-            resource="file"
-            computeKey={data.files.total}
-            onDelete={handleBulkDelete}
-            columns={[
-                { id: 'filename', width: $isSmallViewport ? 24 : undefined },
-                { id: 'type', width: { min: 140 } },
-                { id: 'size', width: { min: 100 } },
-                { id: 'created', width: { min: 120 } },
-                { id: 'actions', width: 40 }
-            ]}>
-            {#snippet header(root)}
-                <Table.Header.Cell column="filename" {root}>Filename</Table.Header.Cell>
-                <Table.Header.Cell column="type" {root}>Type</Table.Header.Cell>
-                <Table.Header.Cell column="size" {root}>Size</Table.Header.Cell>
-                <Table.Header.Cell column="created" {root}>Created</Table.Header.Cell>
-                <Table.Header.Cell column="actions" {root} />
-            {/snippet}
+    <Container>
+        <Layout.Stack direction="row" justifyContent="space-between">
+            <Layout.Stack direction="row" alignItems="center">
+                <SearchQuery placeholder="Search files" />
+            </Layout.Stack>
+            <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
+                <Button
+                    href={`${base}/project-${page.params.region}-${page.params.project}/storage/bucket-${page.params.bucket}/create`}
+                    event="create_file"
+                    size="s">
+                    <Icon icon={IconPlus} slot="start" size="s" />
+                    Create file
+                </Button>
+            </Layout.Stack>
+        </Layout.Stack>
 
-            {#snippet children(root)}
-                {#each data.files.files as file}
-                    {#if file.chunksTotal / file.chunksUploaded !== 1}
-                        <Table.Row.Base {root} id={file.$id}>
-                            <Table.Cell column="filename" {root}>
-                                <Layout.Stack direction="row" alignItems="center">
-                                    <span class="avatar is-size-small is-color-empty"></span>
-                                    <span class="text u-trim">{file.name}</span>
-                                    <div>
-                                        <Badge
-                                            variant="secondary"
-                                            type="warning"
-                                            content="Pending" />
+        {#if data.files.total}
+            <MultiSelectionTable
+                resource="file"
+                computeKey={data.files.total}
+                onDelete={handleBulkDelete}
+                columns={[
+                    { id: 'filename', width: $isSmallViewport ? 24 : undefined },
+                    { id: 'type', width: { min: 140 } },
+                    { id: 'size', width: { min: 100 } },
+                    { id: 'created', width: { min: 120 } },
+                    { id: 'actions', width: 40 }
+                ]}>
+                {#snippet header(root)}
+                    <Table.Header.Cell column="filename" {root}>Filename</Table.Header.Cell>
+                    <Table.Header.Cell column="type" {root}>Type</Table.Header.Cell>
+                    <Table.Header.Cell column="size" {root}>Size</Table.Header.Cell>
+                    <Table.Header.Cell column="created" {root}>Created</Table.Header.Cell>
+                    <Table.Header.Cell column="actions" {root} />
+                {/snippet}
+
+                {#snippet children(root)}
+                    {#each data.files.files as file}
+                        {#if file.chunksTotal / file.chunksUploaded !== 1}
+                            <Table.Row.Base {root} id={file.$id}>
+                                <Table.Cell column="filename" {root}>
+                                    <Layout.Stack direction="row" alignItems="center">
+                                        <span class="avatar is-size-small is-color-empty"></span>
+                                        <span class="text u-trim">{file.name}</span>
+                                        <div>
+                                            <Badge
+                                                variant="secondary"
+                                                type="warning"
+                                                content="Pending" />
+                                        </div>
+                                    </Layout.Stack>
+                                </Table.Cell>
+                                <Table.Cell column="type" {root}>{file.mimeType}</Table.Cell>
+                                <Table.Cell column="size" {root}>
+                                    {calculateSize(file.sizeOriginal)}
+                                </Table.Cell>
+                                <Table.Cell column="created" {root}>
+                                    <DualTimeView time={file.$createdAt} />
+                                </Table.Cell>
+                                <Table.Cell column="actions" {root}>
+                                    <div class="u-flex u-main-center">
+                                        <button
+                                            class="button is-only-icon is-text"
+                                            aria-label="Delete item"
+                                            onclick={(event) => {
+                                                event.preventDefault();
+                                                deleteFile(file);
+                                            }}>
+                                            <span class="icon-trash" aria-hidden="true"></span>
+                                        </button>
                                     </div>
-                                </Layout.Stack>
-                            </Table.Cell>
-                            <Table.Cell column="type" {root}>{file.mimeType}</Table.Cell>
-                            <Table.Cell column="size" {root}>
-                                {calculateSize(file.sizeOriginal)}
-                            </Table.Cell>
-                            <Table.Cell column="created" {root}>
-                                <DualTimeView time={file.$createdAt} />
-                            </Table.Cell>
-                            <Table.Cell column="actions" {root}>
-                                <div class="u-flex u-main-center">
-                                    <button
-                                        class="button is-only-icon is-text"
-                                        aria-label="Delete item"
-                                        onclick={(event) => {
-                                            event.preventDefault();
-                                            deleteFile(file);
-                                        }}>
-                                        <span class="icon-trash" aria-hidden="true"></span>
-                                    </button>
-                                </div>
-                            </Table.Cell>
-                        </Table.Row.Base>
-                    {:else}
-                        {@const href = `${base}/project-${page.params.region}-${page.params.project}/storage/bucket-${page.params.bucket}/file-${file.$id}`}
-                        <Table.Row.Link {href} {root} id={file.$id}>
-                            <Table.Cell column="filename" {root}>
-                                <div class="u-flex u-gap-12 u-cross-center">
-                                    <Avatar size="xs" src={getPreview(file.$id)} alt={file.name} />
-                                    <span class="text u-trim">{file.name}</span>
-                                </div>
-                            </Table.Cell>
-                            <Table.Cell column="type" {root}>{file.mimeType}</Table.Cell>
-                            <Table.Cell column="size" {root}>
-                                {calculateSize(file.sizeOriginal)}
-                            </Table.Cell>
-                            <Table.Cell column="created" {root}>
-                                <DualTimeView time={file.$createdAt} />
-                            </Table.Cell>
-                            <Table.Cell column="actions" {root}>
-                                <Popover let:toggle placement="bottom-start" padding="none">
-                                    <Button
-                                        text
-                                        icon
-                                        ariaLabel="more options"
-                                        on:click={(e) => {
-                                            e.stopPropagation();
-                                            e.preventDefault();
-                                            toggle();
-                                        }}>
-                                        <Icon icon={IconDotsHorizontal} size="s" />
-                                    </Button>
-                                    <ActionMenu.Root slot="tooltip">
-                                        <ActionMenu.Item.Anchor {href} leadingIcon={IconPencil}>
-                                            Update
-                                        </ActionMenu.Item.Anchor>
-                                        <ActionMenu.Item.Button
-                                            leadingIcon={IconTrash}
+                                </Table.Cell>
+                            </Table.Row.Base>
+                        {:else}
+                            {@const href = `${base}/project-${page.params.region}-${page.params.project}/storage/bucket-${page.params.bucket}/file-${file.$id}`}
+                            <Table.Row.Link {href} {root} id={file.$id}>
+                                <Table.Cell column="filename" {root}>
+                                    <div class="u-flex u-gap-12 u-cross-center">
+                                        <Avatar
+                                            size="xs"
+                                            src={getPreview(file.$id)}
+                                            alt={file.name} />
+                                        <span class="text u-trim">{file.name}</span>
+                                    </div>
+                                </Table.Cell>
+                                <Table.Cell column="type" {root}>{file.mimeType}</Table.Cell>
+                                <Table.Cell column="size" {root}>
+                                    {calculateSize(file.sizeOriginal)}
+                                </Table.Cell>
+                                <Table.Cell column="created" {root}>
+                                    <DualTimeView time={file.$createdAt} />
+                                </Table.Cell>
+                                <Table.Cell column="actions" {root}>
+                                    <Popover let:toggle placement="bottom-start" padding="none">
+                                        <Button
+                                            text
+                                            icon
+                                            ariaLabel="more options"
                                             on:click={(e) => {
                                                 e.stopPropagation();
                                                 e.preventDefault();
-                                                selectedFile = file;
-                                                showDelete = true;
+                                                toggle();
                                             }}>
-                                            Delete
-                                        </ActionMenu.Item.Button>
-                                    </ActionMenu.Root>
-                                </Popover>
-                            </Table.Cell>
-                        </Table.Row.Link>
-                    {/if}
-                {/each}
-            {/snippet}
+                                            <Icon icon={IconDotsHorizontal} size="s" />
+                                        </Button>
+                                        <ActionMenu.Root slot="tooltip">
+                                            <ActionMenu.Item.Anchor {href} leadingIcon={IconPencil}>
+                                                Update
+                                            </ActionMenu.Item.Anchor>
+                                            <ActionMenu.Item.Button
+                                                leadingIcon={IconTrash}
+                                                on:click={(e) => {
+                                                    e.stopPropagation();
+                                                    e.preventDefault();
+                                                    selectedFile = file;
+                                                    showDelete = true;
+                                                }}>
+                                                Delete
+                                            </ActionMenu.Item.Button>
+                                        </ActionMenu.Root>
+                                    </Popover>
+                                </Table.Cell>
+                            </Table.Row.Link>
+                        {/if}
+                    {/each}
+                {/snippet}
 
-            {#snippet deleteContentNotice()}
-                This action is irreversible and will permanently remove the selected files.
-            {/snippet}
-        </MultiSelectionTable>
+                {#snippet deleteContentNotice()}
+                    This action is irreversible and will permanently remove the selected files.
+                {/snippet}
+            </MultiSelectionTable>
 
-        <PaginationWithLimit
-            name="Files"
-            limit={data.limit}
-            offset={data.offset}
-            total={data.files.total} />
-    {:else if data.search}
-        <EmptySearch target="files" search={data.search} hidePagination={data.files.total === 0}>
-            <Button
-                secondary
-                size="s"
-                href={`${base}/project-${page.params.region}-${page.params.project}/storage/bucket-${page.params.bucket}`}>
-                Clear Search
-            </Button>
-        </EmptySearch>
-    {:else}
-        <Empty
-            single
-            href="https://appwrite.io/docs/products/storage"
-            target="file"
-            allowCreate
-            on:click={() =>
-                goto(
-                    `${base}/project-${page.params.region}-${page.params.project}/storage/bucket-${page.params.bucket}/create`
-                )} />
-    {/if}
-</Container>
+            <PaginationWithLimit
+                name="Files"
+                limit={data.limit}
+                offset={data.offset}
+                total={data.files.total} />
+        {:else if data.search}
+            <EmptySearch
+                target="files"
+                search={data.search}
+                hidePagination={data.files.total === 0}>
+                <Button
+                    secondary
+                    size="s"
+                    href={`${base}/project-${page.params.region}-${page.params.project}/storage/bucket-${page.params.bucket}`}>
+                    Clear Search
+                </Button>
+            </EmptySearch>
+        {:else}
+            <Empty
+                single
+                href="https://appwrite.io/docs/products/storage"
+                target="file"
+                allowCreate
+                on:click={() =>
+                    goto(
+                        `${base}/project-${page.params.region}-${page.params.project}/storage/bucket-${page.params.bucket}/create`
+                    )} />
+        {/if}
+    </Container>
+</div>
 
 <DeleteFile bind:showDelete file={selectedFile} on:deleted={fileDeleted} />
+
+<style>
+    .drop-target {
+        position: relative;
+        min-height: 100%;
+    }
+
+    .drop-target.is-dragging {
+        outline: 2px dashed var(--color-border-neutral-strong, hsl(var(--p-body-text-color)));
+        outline-offset: -2px;
+        border-radius: var(--border-radius-s);
+    }
+
+    .drop-overlay {
+        position: absolute;
+        inset: 0;
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--bgcolor-neutral-default, hsl(var(--p-body-bg-color)));
+        opacity: 0.9;
+        border-radius: var(--border-radius-s);
+        pointer-events: none;
+    }
+</style>
