@@ -485,6 +485,18 @@ export const scopes: ScopeDefinition[] = [
         description: "Access to create, update, and delete your project's webhooks",
         category: 'Other',
         icon: 'globe'
+    },
+    {
+        scope: 'keys.read',
+        description: "Access to read your project's API keys",
+        category: 'Other',
+        icon: 'globe'
+    },
+    {
+        scope: 'keys.write',
+        description: "Access to create, update, and delete your project's API keys",
+        category: 'Other',
+        icon: 'globe'
     }
 ];
 
