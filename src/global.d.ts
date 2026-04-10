@@ -12,3 +12,6 @@ namespace App {
         type?: string;
     }
 }
+
+declare module '@appwrite.io/pink-legacy';
+declare module '@appwrite.io/pink-icons';

@@ -41,41 +41,41 @@
 </div>
 
 <style>
-    .card-grid-wrapper.interactive :global(.card) {
-        transition:
-            transform 200ms cubic-bezier(0.4, 0, 0.2, 1),
-            box-shadow 200ms cubic-bezier(0.4, 0, 0.2, 1);
-        cursor: pointer;
-    }
+    .card-grid-wrapper.interactive {
+    transition:
+        transform 200ms cubic-bezier(0.4, 0, 0.2, 1),
+        box-shadow 200ms cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+}
 
-    .card-grid-wrapper.interactive :global(.card:hover) {
-        will-change: transform, box-shadow;
-        transform: translateY(-2px);
-        box-shadow: var(--shadow-md, 0 8px 20px rgba(0, 0, 0, 0.12));
-    }
+.card-grid-wrapper.interactive:hover {
+    will-change: transform, box-shadow;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md, 0 8px 20px rgba(0, 0, 0, 0.12));
+}
 
-    .card-grid-wrapper.interactive :global(.card:active) {
-        transform: translateY(0);
-        box-shadow: var(--shadow-sm, 0 4px 10px rgba(0, 0, 0, 0.08));
-    }
+.card-grid-wrapper.interactive:active {
+    transform: translateY(0);
+    box-shadow: var(--shadow-sm, 0 4px 10px rgba(0, 0, 0, 0.08));
+}
 
+.card-grid-content {
+    display: grid;
+    gap: var(--space-10);
+    align-items: start;
+    grid-template-columns: minmax(0, 1fr);
+}
+
+.card-grid-main,
+.card-grid-aside {
+    min-width: 0;
+}
+
+@media (min-width: 769px) {
     .card-grid-content {
-        display: grid;
-        gap: var(--space-10);
-        align-items: start;
-        grid-template-columns: minmax(0, 1fr);
+        column-gap: var(--space-13);
+        row-gap: var(--space-10);
+        grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
     }
-
-    .card-grid-main,
-    .card-grid-aside {
-        min-width: 0;
-    }
-
-    @media (min-width: 769px) {
-        .card-grid-content {
-            column-gap: var(--space-13);
-            row-gap: var(--space-10);
-            grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
-        }
-    }
+}
 </style>
