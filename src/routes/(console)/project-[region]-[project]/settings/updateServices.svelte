@@ -41,7 +41,7 @@
         apiServiceUpdates.add(service.method);
 
         try {
-            await sdk.forConsole.projects.updateServiceStatus({
+            await sdk.forConsoleIn($project.region).projects.updateServiceStatus({
                 projectId: $project.$id,
                 service: service.method,
                 status: service.value
@@ -74,7 +74,7 @@
         isUpdatingAllServices = true;
 
         try {
-            await sdk.forConsole.projects.updateServiceStatusAll({
+            await sdk.forConsoleIn($project.region).projects.updateServiceStatusAll({
                 projectId: $project.$id,
                 status
             });
