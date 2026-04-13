@@ -47,7 +47,7 @@ function createServices() {
                     value: project.serviceStatusForDatabases
                 },
                 {
-                    label: 'Tables',
+                    label: 'TablesDB',
                     method: ApiService.Tablesdb,
                     value: project.serviceStatusForTablesdb
                 },
