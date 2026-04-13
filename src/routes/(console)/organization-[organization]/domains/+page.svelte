@@ -22,6 +22,7 @@
         Layout,
         Popover,
         Table,
+        Tooltip,
         Typography
     } from '@appwrite.io/pink-svelte';
     import DeleteDomainModal from './deleteDomainModal.svelte';
@@ -30,11 +31,19 @@
     import SearchQuery from '$lib/components/searchQuery.svelte';
     import { app } from '$lib/stores/app';
     import { Click, trackEvent } from '$lib/actions/analytics';
+    import {
+        BODY_TOOLTIP_MAX_WIDTH,
+        BODY_TOOLTIP_WRAPPER_STYLE_PRELINE
+    } from '$lib/helpers/tooltipContent';
+    import { isServiceLimited } from '$lib/stores/billing';
+    import { organization } from '$lib/stores/organization';
     import { columns } from './store';
     import { View } from '$lib/helpers/load';
     import type { Models } from '@appwrite.io/console';
 
     export let data;
+
+    $: isDomainLimitReached = isServiceLimited('domains', $organization, data.domains.total);
 
     let showDelete = false;
     let showRetry = false;
@@ -50,16 +59,28 @@
         <SearchQuery placeholder="Search domains" />
         <Layout.Stack direction="row" gap="m" inline>
             <ViewSelector ui="new" view={View.Table} {columns} hideView />
-            <Button
-                on:click={() => {
-                    trackEvent(Click.DomainCreateClick, {
-                        source: 'organization_domain_overview'
-                    });
-                }}
-                href={`${base}/organization-${page.params.organization}/domains/add-domain`}>
-                <Icon icon={IconPlus} size="s" />
-                Add domain
-            </Button>
+            <Tooltip disabled={!isDomainLimitReached} maxWidth={BODY_TOOLTIP_MAX_WIDTH}>
+                <div>
+                    <Button
+                        disabled={isDomainLimitReached}
+                        on:click={() => {
+                            trackEvent(Click.DomainCreateClick, {
+                                source: 'organization_domain_overview'
+                            });
+                        }}
+                        href={isDomainLimitReached
+                            ? undefined
+                            : `${base}/organization-${page.params.organization}/domains/add-domain`}>
+                        <Icon icon={IconPlus} size="s" />
+                        Add domain
+                    </Button>
+                </div>
+                <svelte:fragment slot="tooltip">
+                    <div style={BODY_TOOLTIP_WRAPPER_STYLE_PRELINE}>
+                        You have reached the maximum number of custom domains for your plan.
+                    </div>
+                </svelte:fragment>
+            </Tooltip>
         </Layout.Stack>
     </Layout.Stack>
 
@@ -206,17 +227,29 @@
                         size="s"
                         ariaLabel="add domain">Documentation</Button>
 
-                    <Button
-                        secondary
-                        on:click={() => {
-                            trackEvent(Click.DomainCreateClick, {
-                                source: 'organization_domain_overview'
-                            });
-                        }}
-                        href={`${base}/organization-${page.params.organization}/domains/add-domain`}
-                        size="s">
-                        Add domain
-                    </Button>
+                    <Tooltip disabled={!isDomainLimitReached} maxWidth={BODY_TOOLTIP_MAX_WIDTH}>
+                        <div>
+                            <Button
+                                secondary
+                                disabled={isDomainLimitReached}
+                                on:click={() => {
+                                    trackEvent(Click.DomainCreateClick, {
+                                        source: 'organization_domain_overview'
+                                    });
+                                }}
+                                href={isDomainLimitReached
+                                    ? undefined
+                                    : `${base}/organization-${page.params.organization}/domains/add-domain`}
+                                size="s">
+                                Add domain
+                            </Button>
+                        </div>
+                        <svelte:fragment slot="tooltip">
+                            <div style={BODY_TOOLTIP_WRAPPER_STYLE_PRELINE}>
+                                You have reached the maximum number of custom domains for your plan.
+                            </div>
+                        </svelte:fragment>
+                    </Tooltip>
                 </svelte:fragment>
             </Empty>
         </Card.Base>
