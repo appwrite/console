@@ -14,8 +14,9 @@ import { resolve } from '$app/paths';
 import { generateFingerprintToken } from '$lib/helpers/fingerprint';
 import { normalizeConsoleVariables } from '$lib/helpers/domains';
 import { browser } from '$app/environment';
+import { base } from '$app/paths';
 
-export const load: LayoutLoad = async ({ params, depends, parent }) => {
+export const load: LayoutLoad = async ({ params, depends, parent, url }) => {
     const { plansInfo, organizations, preferences: prefs } = await parent();
     depends(Dependencies.PROJECT);
 
@@ -31,6 +32,18 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
     }
 
     project.region ??= 'default';
+
+    // Canonical project URL: route segment `region` must match the project's home region (multi-region).
+    if (params.region !== project.region) {
+        const prefix = `${base}/project-${params.region}-${params.project}`;
+        if (url.pathname.startsWith(prefix)) {
+            const suffix = url.pathname.slice(prefix.length);
+            redirect(
+                303,
+                `${base}/project-${project.region}-${params.project}${suffix}${url.search}`
+            );
+        }
+    }
 
     // fast path without a network call!
     let organization = (organizations as Models.OrganizationList)?.teams?.find(
@@ -110,7 +123,7 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
         generateFingerprintToken()
             .then((fingerprint) => {
                 sdk.forConsole.client.headers['X-Appwrite-Console-Fingerprint'] = fingerprint;
-                return sdk.forConsole.projects.updateConsoleAccess({
+                return sdk.forConsoleIn(project.region).projects.updateConsoleAccess({
                     projectId: params.project
                 });
             })
