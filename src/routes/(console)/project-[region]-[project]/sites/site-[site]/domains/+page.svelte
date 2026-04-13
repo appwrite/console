@@ -17,9 +17,11 @@
     import { organization } from '$lib/stores/organization';
     import Table from './table.svelte';
 
-    export let data;
+    let { data } = $props();
 
-    $: isDomainLimitReached = isServiceLimited('domains', $organization, data.proxyRules.total);
+    const isDomainLimitReached = $derived(
+        isServiceLimited('domains', $organization, data.proxyRules.total)
+    );
 </script>
 
 <Container>
