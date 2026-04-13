@@ -13,7 +13,7 @@ function createServices() {
             { label: 'Account', method: ApiService.Account, value: null },
             { label: 'Avatars', method: ApiService.Avatars, value: null },
             { label: 'Databases', method: ApiService.Databases, value: null },
-            { label: 'Tables', method: ApiService.Tablesdb, value: null },
+            { label: 'TablesDB', method: ApiService.Tablesdb, value: null },
             { label: 'Locale', method: ApiService.Locale, value: null },
             { label: 'Health', method: ApiService.Health, value: null },
             { label: 'Storage', method: ApiService.Storage, value: null },
