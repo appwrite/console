@@ -58,8 +58,8 @@
     {onDelete}>
     {#snippet header(root)}
         {#each $tableViewColumns as { id, title } (id)}
-            {@const safeid = id === 'actions' ? '__actions' : id}
-            <Table.Header.Cell column={safeid} {root}>{title}</Table.Header.Cell>
+            {@const safeId = id === 'actions' ? '__actions' : id}
+            <Table.Header.Cell column={safeId} {root}>{title}</Table.Header.Cell>
         {/each}
     {/snippet}
 
