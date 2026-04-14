@@ -19,9 +19,9 @@
     let name = '',
         events: string[] = [],
         url = '',
-        security = true,
-        httpUser = '',
-        httpPass = '';
+        tls = true,
+        authUsername = '',
+        authPassword = '';
 
     export let data;
     async function create() {
@@ -33,10 +33,10 @@
                     name,
                     events,
                     url,
-                    security,
+                    tls,
                     enabled: true,
-                    httpUser: httpUser || undefined,
-                    httpPass: httpPass || undefined
+                    authUsername: authUsername || undefined,
+                    authPassword: authPassword || undefined
                 });
             addNotification({
                 message: 'Webhook has been created',
@@ -68,7 +68,7 @@
         <Layout.Stack gap="xxl">
             <Step1 bind:name bind:url />
             <Step2 bind:events />
-            <Step3 bind:httpUser bind:httpPass bind:security />
+            <Step3 bind:authUsername bind:authPassword bind:tls />
         </Layout.Stack>
 
         <svelte:fragment slot="footer">

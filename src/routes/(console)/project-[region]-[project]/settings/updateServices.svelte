@@ -10,7 +10,8 @@
     import { project } from '../store';
     import Button from '$lib/elements/forms/button.svelte';
     import { Dialog, Divider, Layout, Spinner } from '@appwrite.io/pink-svelte';
-    import type { ApiService } from '@appwrite.io/console';
+    import type { ServiceId } from '@appwrite.io/console';
+    import { get } from 'svelte/store';
 
     import { SvelteSet } from 'svelte/reactivity';
 
@@ -18,7 +19,7 @@
     let showUpdateServiceDialog = $state(false);
     let updateServicesEnabledMode = $state<boolean | null>(null);
 
-    let apiServiceUpdates = new SvelteSet<ApiService>();
+    let apiServiceUpdates = new SvelteSet<ServiceId>();
 
     const isAnyServiceUpdating = $derived(apiServiceUpdates.size > 0);
     const isAnyUpdateInProgress = $derived(isUpdatingAllServices || isAnyServiceUpdating);
@@ -41,10 +42,9 @@
         apiServiceUpdates.add(service.method);
 
         try {
-            await sdk.forConsoleIn($project.region).projects.updateServiceStatus({
-                projectId: $project.$id,
-                service: service.method,
-                status: service.value
+            await sdk.forProject($project.region, $project.$id).project.updateServiceStatus({
+                serviceId: service.method,
+                enabled: service.value
             });
 
             await invalidate(Dependencies.PROJECT);
@@ -74,10 +74,14 @@
         isUpdatingAllServices = true;
 
         try {
-            await sdk.forConsoleIn($project.region).projects.updateServiceStatusAll({
-                projectId: $project.$id,
-                status
-            });
+            const projectSdk = sdk.forProject($project.region, $project.$id);
+            for (const s of get(services).list) {
+                if (s.value === status) continue;
+                await projectSdk.project.updateServiceStatus({
+                    serviceId: s.method,
+                    enabled: status
+                });
+            }
 
             await invalidate(Dependencies.PROJECT);
 
