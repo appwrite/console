@@ -52,7 +52,7 @@
     <InputSwitch id="state" bind:value={enabled} label={enabled ? 'Enabled' : 'Disabled'} />
     <InputText
         id="appID"
-        label={provider.key === 'github' ? 'Client ID' : 'App ID'}
+        label={provider.key === 'github' || provider.key === 'githubenterprise' ? 'Client ID' : 'App ID'}
         autofocus={true}
         placeholder="Enter ID"
         bind:value={appId}
