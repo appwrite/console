@@ -59,11 +59,12 @@ function projectServiceRows(project: Models.Project | null): Service[] {
             method: ServiceId.Project,
             value: project?.serviceStatusForProject ?? null
         },
-        {
-            label: 'Proxy',
-            method: ServiceId.Proxy,
-            value: project?.serviceStatusForProxy ?? null
-        },
+        // @todo Re-enable when Proxy is ready for public release.
+        // {
+        //     label: 'Proxy',
+        //     method: ServiceId.Proxy,
+        //     value: project?.serviceStatusForProxy ?? null
+        // },
         {
             label: 'Sites',
             method: ServiceId.Sites,
@@ -75,7 +76,7 @@ function projectServiceRows(project: Models.Project | null): Service[] {
             value: project?.serviceStatusForStorage ?? null
         },
         {
-            label: 'Tables',
+            label: 'TablesDB',
             method: ServiceId.Tablesdb,
             value: project?.serviceStatusForTablesdb ?? null
         },
@@ -88,12 +89,13 @@ function projectServiceRows(project: Models.Project | null): Service[] {
             label: 'Users',
             method: ServiceId.Users,
             value: project?.serviceStatusForUsers ?? null
-        },
-        {
-            label: 'VCS',
-            method: ServiceId.Vcs,
-            value: project?.serviceStatusForVcs ?? null
         }
+        // @todo Re-enable when VCS is ready for public release.
+        // {
+        //     label: 'VCS',
+        //     method: ServiceId.Vcs,
+        //     value: project?.serviceStatusForVcs ?? null
+        // }
     ];
 
     return rows.sort((a, b) => a.label.localeCompare(b.label));

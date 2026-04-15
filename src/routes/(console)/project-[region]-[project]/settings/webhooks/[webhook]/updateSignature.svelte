@@ -1,9 +1,8 @@
 <script lang="ts">
-    import { CardGrid, Secret } from '$lib/components';
+    import { CardGrid } from '$lib/components';
     import { Button } from '$lib/elements/forms';
-    import { Link } from '@appwrite.io/pink-svelte';
+    import { Alert, Link } from '@appwrite.io/pink-svelte';
     import Regenerate from './regenerate.svelte';
-    import { webhook } from './store';
     import { Click, trackEvent } from '$lib/actions/analytics';
 
     let showRegenerate = false;
@@ -18,9 +17,9 @@
         rel="noopener noreferrer"
         class="link">Learn more</Link.Anchor>
     <svelte:fragment slot="aside">
-        <div>
-            <Secret label="Key" copyEvent="signature" bind:value={$webhook.secret} />
-        </div>
+        <Alert.Inline status="info">
+            The signature key is only shown once after it is created or updated.
+        </Alert.Inline>
     </svelte:fragment>
     <svelte:fragment slot="actions">
         <Button
@@ -29,7 +28,7 @@
                 trackEvent(Click.SettingsWebhookUpdateSignatureClick);
             }}
             secondary
-            submit>Regenerate key</Button>
+            submit>Update key</Button>
     </svelte:fragment>
 </CardGrid>
 
