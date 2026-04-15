@@ -9,8 +9,8 @@
 </script>
 
 <CardGrid>
-    <svelte:fragment slot="title">Signature key</svelte:fragment>
-    Add the Signature Key to the X-Appwrite-Webhook-Signature header to validate your webhooks.
+    <svelte:fragment slot="title">Webhook secret</svelte:fragment>
+    Used to validate incoming webhook payloads with the `X-Appwrite-Webhook-Signature` header.
     <Link.Anchor
         href="https://appwrite.io/docs/advanced/platform/webhooks#verification"
         target="_blank"
@@ -18,7 +18,7 @@
         class="link">Learn more</Link.Anchor>
     <svelte:fragment slot="aside">
         <Alert.Inline status="info">
-            The signature key is only shown once after it is created or updated.
+            This secret is only shown once after webhook creation or secret rotation.
         </Alert.Inline>
     </svelte:fragment>
     <svelte:fragment slot="actions">
@@ -28,7 +28,7 @@
                 trackEvent(Click.SettingsWebhookUpdateSignatureClick);
             }}
             secondary
-            submit>Update key</Button>
+            submit>Rotate secret</Button>
     </svelte:fragment>
 </CardGrid>
 

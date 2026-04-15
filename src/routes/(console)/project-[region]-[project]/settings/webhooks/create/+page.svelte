@@ -54,7 +54,7 @@
                     authPassword: authPassword || undefined
                 });
             addNotification({
-                message: 'Webhook has been created',
+                message: 'Webhook created. Secret ready to copy.',
                 type: 'success'
             });
             trackEvent(Submit.WebhookCreate, {
@@ -102,8 +102,7 @@
 <Modal title="Webhook Created" bind:show={showSecretModal} onSubmit={openWebhook}>
     <Layout.Stack gap="l">
         <Typography.Text>
-            Copy this signing secret now. For security reasons, you will not be able to view it
-            again after closing this dialog.
+            This secret is only shown once after webhook creation or secret rotation. Copy it now.
         </Typography.Text>
         <Secret label="Secret" copyEvent="signature" bind:value={createdSecret} />
     </Layout.Stack>

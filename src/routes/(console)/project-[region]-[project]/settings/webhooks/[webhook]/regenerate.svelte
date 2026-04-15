@@ -42,7 +42,7 @@
             revealedSecret = customSecret || updatedWebhook.secret;
             addNotification({
                 type: 'success',
-                message: customSecret ? 'Key has been updated' : 'Key has been regenerated'
+                message: customSecret ? 'Webhook secret updated.' : 'Webhook secret rotated.'
             });
             trackEvent(Submit.WebhookUpdateSignature);
         } catch (error) {
@@ -55,24 +55,25 @@
     }
 </script>
 
-<Modal title="Update Key" bind:show onSubmit={regenerate}>
+<Modal title="Rotate Webhook Secret" bind:show onSubmit={regenerate}>
     <Layout.Stack gap="l">
         {#if revealedSecret}
             <Typography.Text>
-                Copy this signature key now. For security reasons, you will not be able to view it
-                again after closing this dialog.
+                This secret is only shown once after webhook creation or secret rotation. Copy it
+                now.
             </Typography.Text>
-            <Secret label="Key" copyEvent="signature" bind:value={revealedSecret} />
+            <Secret label="Secret" copyEvent="signature" bind:value={revealedSecret} />
         {:else}
             <Typography.Text>
-                Enter a custom signing key, or leave the field empty to generate a new one.
+                Leave this empty to rotate the webhook secret automatically, or enter a value to set
+                a custom secret.
             </Typography.Text>
             <Typography.Text variant="m-400">
-                You will not be able to recover the current key after this change.
+                Used to validate incoming webhook payloads.
             </Typography.Text>
             <InputPassword
                 id="webhook-secret"
-                label="Custom key"
+                label="Secret"
                 placeholder="Leave empty to auto-generate"
                 minlength={0}
                 autocomplete
@@ -85,7 +86,7 @@
             <Button on:click={() => (show = false)}>Done</Button>
         {:else}
             <Button text on:click={() => (show = false)}>Cancel</Button>
-            <Button submit>{secret.trim() ? 'Update key' : 'Regenerate key'}</Button>
+            <Button submit>{secret.trim() ? 'Set custom secret' : 'Rotate secret'}</Button>
         {/if}
     </svelte:fragment>
 </Modal>
