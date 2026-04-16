@@ -19,7 +19,7 @@
         class="link">Learn more</Link.Anchor>
     <svelte:fragment slot="aside">
         <div>
-            <Secret label="Key" copyEvent="signature" bind:value={$webhook.signatureKey} />
+            <Secret label="Key" copyEvent="signature" bind:value={$webhook.secret} />
         </div>
     </svelte:fragment>
     <svelte:fragment slot="actions">

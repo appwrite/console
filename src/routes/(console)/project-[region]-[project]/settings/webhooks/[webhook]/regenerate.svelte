@@ -13,7 +13,7 @@
 
     async function regenerate() {
         try {
-            await sdk.forProject(page.params.region, projectId).webhooks.updateSignature({
+            await sdk.forProject(page.params.region, projectId).webhooks.updateSecret({
                 webhookId: $webhook.$id
             });
             await invalidate(Dependencies.WEBHOOK);
