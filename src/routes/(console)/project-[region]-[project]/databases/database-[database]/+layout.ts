@@ -4,9 +4,12 @@ import type { LayoutLoad } from './$types';
 import Breadcrumbs from './breadcrumbs.svelte';
 import Header from './header.svelte';
 import SubNavigation from './subNavigation.svelte';
+import { guardResourceBlock } from '$lib/helpers/project';
 
-export const load: LayoutLoad = async ({ params, depends }) => {
+export const load: LayoutLoad = async ({ params, depends, parent }) => {
     depends(Dependencies.DATABASE);
+    const { project } = await parent();
+    guardResourceBlock(project, 'databases', params.database);
 
     const database = await sdk.forProject(params.region, params.project).tablesDB.get({
         databaseId: params.database

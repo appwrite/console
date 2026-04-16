@@ -1,16 +1,11 @@
 <script lang="ts">
+    import type { Models } from '@appwrite.io/console';
     import Delete from './delete.svelte';
     import Web from './web.svelte';
-    import FlutterIos from './flutterIOS.svelte';
-    import FlutterAndroid from './flutterAndroid.svelte';
-    import FlutterLinux from './flutterLinux.svelte';
-    import FlutterMacOs from './flutterMacOS.svelte';
-    import FlutterWindows from './flutterWindows.svelte';
     import AppleiOs from './appleIOS.svelte';
-    import AppleMacOs from './appleMacOS.svelte';
-    import AppleWatchOs from './appleWatchOS.svelte';
-    import AppleTvos from './appleTvOS.svelte';
     import Android from './android.svelte';
+    import FlutterLinux from './flutterLinux.svelte';
+    import FlutterWindows from './flutterWindows.svelte';
     import { Box, CardGrid } from '$lib/components';
     import { Button, Form, InputText } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
@@ -21,20 +16,14 @@
     import { platform } from './store';
     import { Dependencies } from '$lib/constants';
     import { invalidate } from '$app/navigation';
+    import { getPlatformIdentifier } from '$lib/helpers/platform';
 
     const types: Record<string, Component> = {
         web: Web,
         android: Android,
-        'apple-ios': AppleiOs,
-        'apple-macos': AppleMacOs,
-        'apple-watchos': AppleWatchOs,
-        'apple-tvos': AppleTvos,
-        'flutter-ios': FlutterIos,
-        'flutter-android': FlutterAndroid,
-        'flutter-linux': FlutterLinux,
-        'flutter-macos': FlutterMacOs,
-        'flutter-windows': FlutterWindows,
-        'flutter-web': Web
+        apple: AppleiOs,
+        windows: FlutterWindows,
+        linux: FlutterLinux
     };
 
     let showDelete = false;
@@ -46,14 +35,48 @@
 
     async function updateName() {
         try {
-            await sdk.forConsole.projects.updatePlatform({
-                projectId: $project.$id,
-                platformId: $platform.$id,
-                name,
-                key: $platform.key || undefined,
-                store: $platform.store || undefined,
-                hostname: $platform.hostname || undefined
-            });
+            const projectSdk = sdk.forProject($project.region, $project.$id).project;
+            const platformId = $platform.$id;
+            switch ($platform.type) {
+                case 'web':
+                    await projectSdk.updateWebPlatform({
+                        platformId,
+                        name,
+                        hostname: ($platform as Models.PlatformWeb).hostname || undefined
+                    });
+                    break;
+                case 'android':
+                    await projectSdk.updateAndroidPlatform({
+                        platformId,
+                        name,
+                        applicationId: ($platform as Models.PlatformAndroid).applicationId
+                    });
+                    break;
+                case 'apple':
+                    await projectSdk.updateApplePlatform({
+                        platformId,
+                        name,
+                        bundleIdentifier: ($platform as Models.PlatformApple).bundleIdentifier
+                    });
+                    break;
+                case 'windows':
+                    await projectSdk.updateWindowsPlatform({
+                        platformId,
+                        name,
+                        packageIdentifierName: ($platform as Models.PlatformWindows)
+                            .packageIdentifierName
+                    });
+                    break;
+                case 'linux':
+                    await projectSdk.updateLinuxPlatform({
+                        platformId,
+                        name,
+                        packageName: ($platform as Models.PlatformLinux).packageName
+                    });
+                    break;
+                default:
+                    throw new Error(`Unknown platform type: ${$platform.type}`);
+            }
             await invalidate(Dependencies.PLATFORM);
             addNotification({
                 type: 'success',
@@ -98,7 +121,7 @@
                 <div class="u-flex u-gap-16">
                     <div class="u-cross-child-center u-line-height-1-5">
                         <h6 class="u-bold">{$platform.name}</h6>
-                        <p>{$platform.hostname || $platform.key}</p>
+                        <p>{getPlatformIdentifier($platform)}</p>
                     </div>
                 </div>
             </Box>

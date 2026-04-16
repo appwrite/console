@@ -35,6 +35,10 @@
     } from '@appwrite.io/pink-icons-svelte';
     import type { PageProps } from './$types';
     import { getPlatformInfo } from '$lib/helpers/platform';
+    import {
+        BODY_TOOLTIP_MAX_WIDTH,
+        BODY_TOOLTIP_WRAPPER_STYLE
+    } from '$lib/helpers/tooltipContent';
     import CreateProjectCloud from './createProjectCloud.svelte';
     import { regions as regionsStore } from '$lib/stores/organization';
 
@@ -43,9 +47,16 @@
     let showCreate = $state(false);
     let addOrganization = $state(false);
     let showCreateProjectCloud = $state(false);
+    let educationPlanAlertDismissed = $state(false);
     let freePlanAlertDismissed = $state(false);
 
     let searchQuery: SearchQuery | null = $state(null);
+    const educationProgramId = 'github-student-developer';
+
+    const isEducationProgram = $derived(data.program?.$id === educationProgramId);
+    const shouldShowEducationPlanAlert = $derived(
+        isCloud && isEducationProgram && data.projects.total >= 2
+    );
 
     const projectCreationDisabled = $derived.by(() => {
         return (
@@ -108,10 +119,19 @@
         });
     }
 
+    function dismissEducationPlanAlert() {
+        educationPlanAlertDismissed = true;
+        const notificationId = `educationPlanAlert_${data.organization.$id}`;
+        hideNotification(notificationId, { coolOffPeriod: 24 });
+    }
+
     onMount(async () => {
         checkPricingRefAndRedirect(page.url.searchParams);
+        const educationNotificationId = `educationPlanAlert_${data.organization.$id}`;
         const notificationId = `freePlanAlert_${data.organization.$id}`;
+        const shouldShowEducation = shouldShowNotification(educationNotificationId);
         const shouldShow = shouldShowNotification(notificationId);
+        educationPlanAlertDismissed = !shouldShowEducation;
         freePlanAlertDismissed = !shouldShow;
     });
 
@@ -147,16 +167,16 @@
 
         {#if $canWriteProjects}
             {#if projectCreationDisabled && reachedProjectLimit}
-                <Tooltip placement="bottom">
+                <Tooltip placement="bottom" maxWidth={BODY_TOOLTIP_MAX_WIDTH}>
                     <div>
                         <Button event="create_project" disabled>
                             <Icon icon={IconPlus} slot="start" size="s" />
                             Create project
                         </Button>
                     </div>
-                    <span slot="tooltip">
+                    <div slot="tooltip" style={BODY_TOOLTIP_WRAPPER_STYLE}>
                         You have reached your limit of {projectsLimit} projects.
-                    </span>
+                    </div>
                 </Tooltip>
             {:else}
                 <Button
@@ -169,6 +189,20 @@
             {/if}
         {/if}
     </Layout.Stack>
+
+    {#if shouldShowEducationPlanAlert && !educationPlanAlertDismissed}
+        <Alert.Inline status="info" dismissible on:dismiss={dismissEducationPlanAlert}>
+            <Typography.Text>
+                Education plan organizations can have up to 2 projects. To create a new project,
+                please delete an existing one or
+                <a
+                    href={getChangePlanUrl(data.organization.$id)}
+                    style="text-decoration: underline;">
+                    upgrade your plan
+                </a>.
+            </Typography.Text>
+        </Alert.Inline>
+    {/if}
 
     {#if isCloud && !data.program && data.currentPlan?.projects && activeProjectsTotal <= data.currentPlan.projects && !freePlanAlertDismissed}
         <Alert.Inline dismissible on:dismiss={dismissFreePlanAlert}>

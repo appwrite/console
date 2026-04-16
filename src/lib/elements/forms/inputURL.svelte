@@ -15,6 +15,7 @@
     export let autocomplete = false;
     export let maxlength: number = null;
     export let leadingIcon: ComponentType | undefined = undefined;
+    export let helper: string = undefined;
 
     let error: string;
 
@@ -52,7 +53,7 @@
     type="url"
     autofocus={autofocus || undefined}
     autocomplete={autocomplete ? 'on' : 'off'}
-    helper={error}
+    helper={error || helper}
     state={error ? 'error' : 'default'}
     on:invalid={handleInvalid}
     on:input

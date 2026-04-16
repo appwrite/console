@@ -4,14 +4,10 @@ import type { PageLoad } from './$types';
 import { Dependencies } from '$lib/constants';
 import { sdk } from '$lib/stores/sdk';
 import { addNotification } from '$lib/stores/notifications';
-import { VARS } from '$lib/system';
 
 export const load: PageLoad = async ({ parent, depends, url }) => {
-    if (!VARS.EMAIL_VERIFICATION) {
-        redirect(303, resolve('/'));
-    }
-
     const { account } = await parent();
+
     depends(Dependencies.ACCOUNT);
 
     const user = url.searchParams.get('userId') ?? null;

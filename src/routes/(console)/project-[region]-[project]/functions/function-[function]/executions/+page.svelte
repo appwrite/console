@@ -2,6 +2,10 @@
     import { invalidate } from '$app/navigation';
     import { Empty, EmptyFilter, PaginationWithLimit } from '$lib/components';
     import { Dependencies } from '$lib/constants';
+    import {
+        BODY_TOOLTIP_MAX_WIDTH,
+        BODY_TOOLTIP_WRAPPER_STYLE_PRELINE
+    } from '$lib/helpers/tooltipContent';
     import { Button } from '$lib/elements/forms';
     import { Container, ResponsiveContainerHeader } from '$lib/layout';
     import { realtime } from '$lib/stores/sdk';
@@ -27,7 +31,7 @@
 
 <Container>
     <ResponsiveContainerHeader hasFilters {columns} hideView analyticsSource="function_executions">
-        <Tooltip disabled={!!data.func?.deploymentId}>
+        <Tooltip disabled={!!data.func?.deploymentId} maxWidth={BODY_TOOLTIP_MAX_WIDTH}>
             <div>
                 <Button
                     event="execute_function"
@@ -37,9 +41,9 @@
                     Create execution
                 </Button>
             </div>
-            <span slot="tooltip">
+            <div slot="tooltip" style={BODY_TOOLTIP_WRAPPER_STYLE_PRELINE}>
                 Execution cannot be created because there is no active deployment.
-            </span>
+            </div>
         </Tooltip>
     </ResponsiveContainerHeader>
 
@@ -63,7 +67,7 @@
                     event="empty_documentation"
                     size="s"
                     ariaLabel="create execution">Documentation</Button>
-                <Tooltip disabled={!!data.func?.deploymentId}>
+                <Tooltip disabled={!!data.func?.deploymentId} maxWidth={BODY_TOOLTIP_MAX_WIDTH}>
                     <div>
                         <Button
                             secondary
@@ -73,9 +77,9 @@
                             Create execution
                         </Button>
                     </div>
-                    <span slot="tooltip">
+                    <div slot="tooltip" style={BODY_TOOLTIP_WRAPPER_STYLE_PRELINE}>
                         Execution cannot be created because there is no active deployment.
-                    </span>
+                    </div>
                 </Tooltip>
             </svelte:fragment>
         </Empty>

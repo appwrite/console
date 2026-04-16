@@ -39,6 +39,8 @@ const temporaryFunctions = (region: string, projectId: string) => {
     return new Functions(clientProject);
 };
 
+const MAX_CONCURRENT_UPLOADS = 5;
+
 const createUploader = () => {
     const { subscribe, set, update } = writable<Uploader>({
         isOpen: false,
@@ -56,6 +58,85 @@ const createUploader = () => {
 
             return n;
         });
+    };
+
+    const uploadFile = async (
+        region: string,
+        projectId: string,
+        bucketId: string,
+        id: string,
+        file: File,
+        permissions: string[]
+    ) => {
+        const newFile: UploaderFile = {
+            $id: id,
+            resourceId: bucketId,
+            name: file.name,
+            size: file.size,
+            progress: 0,
+            status: 'pending'
+        };
+        update((n) => {
+            n.isOpen = true;
+            n.isCollapsed = false;
+            n.files.unshift(newFile);
+            return n;
+        });
+        try {
+            const uploadedFile = await temporaryStorage(region, projectId).createFile({
+                bucketId,
+                fileId: id ?? ID.unique(),
+                file,
+                permissions,
+                onProgress: (progress) => {
+                    newFile.$id = progress.$id;
+                    newFile.progress = progress.progress;
+                    newFile.status = progress.progress === 100 ? 'success' : 'pending';
+                    updateFile(progress.$id, newFile);
+                }
+            });
+            newFile.$id = uploadedFile.$id;
+            newFile.progress = 100;
+            newFile.status = 'success';
+            updateFile(newFile.$id, newFile);
+        } catch (e) {
+            newFile.status = 'failed';
+            newFile.error = e?.message ?? 'Upload failed';
+            updateFile(newFile.$id, newFile);
+            throw e;
+        }
+    };
+
+    const uploadFiles = async (
+        region: string,
+        projectId: string,
+        bucketId: string,
+        files: { id: string; file: File }[],
+        permissions: string[]
+    ) => {
+        const results: PromiseSettledResult<void>[] = [];
+        const executing = new Set<Promise<void>>();
+
+        for (const { id, file } of files) {
+            const task = uploadFile(region, projectId, bucketId, id, file, permissions).then(
+                () => {
+                    results.push({ status: 'fulfilled', value: undefined });
+                    executing.delete(task);
+                },
+                (reason) => {
+                    results.push({ status: 'rejected', reason });
+                    executing.delete(task);
+                }
+            );
+            executing.add(task);
+
+            if (executing.size >= MAX_CONCURRENT_UPLOADS) {
+                await Promise.race(executing);
+            }
+        }
+
+        await Promise.all(executing);
+        return results;
     };
 
     return {
@@ -78,45 +159,8 @@ const createUploader = () => {
                 isCollapsed: false,
                 files: []
             }),
-        uploadFile: async (
-            region: string,
-            projectId: string,
-            bucketId: string,
-            id: string,
-            file: File,
-            permissions: string[]
-        ) => {
-            const newFile: UploaderFile = {
-                $id: id,
-                resourceId: bucketId,
-                name: file.name,
-                size: file.size,
-                progress: 0,
-                status: 'pending'
-            };
-            update((n) => {
-                n.isOpen = true;
-                n.isCollapsed = false;
-                n.files.unshift(newFile);
-                return n;
-            });
-            const uploadedFile = await temporaryStorage(region, projectId).createFile({
-                bucketId,
-                fileId: id ?? ID.unique(),
-                file,
-                permissions,
-                onProgress: (progress) => {
-                    newFile.$id = progress.$id;
-                    newFile.progress = progress.progress;
-                    newFile.status = progress.progress === 100 ? 'success' : 'pending';
-                    updateFile(progress.$id, newFile);
-                }
-            });
-            newFile.$id = uploadedFile.$id;
-            newFile.progress = 100;
-            newFile.status = 'success';
-            updateFile(newFile.$id, newFile);
-        },
+        uploadFile,
+        uploadFiles,
         uploadSiteDeployment: async ({
             siteId,
             code,

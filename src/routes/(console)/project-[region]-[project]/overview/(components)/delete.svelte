@@ -26,8 +26,7 @@
     async function handleDelete() {
         try {
             isApiKey
-                ? await sdk.forConsole.projects.deleteKey({
-                      projectId,
+                ? await sdk.forProject(page.params.region, page.params.project).project.deleteKey({
                       keyId: key.$id
                   })
                 : await sdk.forConsole.projects.deleteDevKey({

@@ -11,6 +11,7 @@
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import { BODY_TOOLTIP_WRAPPER_STYLE_PRELINE } from '$lib/helpers/tooltipContent';
     import { page } from '$app/state';
     import { recordTypes } from './store';
     import { Dependencies } from '$lib/constants';
@@ -99,7 +100,7 @@
         </Layout.Stack>
 
         <InputText id="value" label="Value" {placeholder} bind:value required>
-            <Tooltip slot="info">
+            <Tooltip slot="info" maxWidth="fit-content">
                 <Icon icon={IconInfo} size="s" />
                 <span slot="tooltip">
                     Enter the target or destination for this DNS record (e.g., IP address, hostname,
@@ -111,10 +112,10 @@
             <InputNumber id="ttl" label="TTL" placeholder="Enter number" bind:value={ttl}>
                 <Tooltip slot="info">
                     <Icon icon={IconInfo} size="s" />
-                    <span slot="tooltip">
+                    <div style={BODY_TOOLTIP_WRAPPER_STYLE_PRELINE} slot="tooltip">
                         TTL defines how long DNS information is cached. Lower values update faster;
                         higher values reduce server load.
-                    </span>
+                    </div>
                 </Tooltip>
             </InputNumber>
             {#if showPriority(type)}

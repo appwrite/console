@@ -8,7 +8,6 @@
     import CreateWeb from './createWeb.svelte';
     import { createPlatform } from './wizard/store';
     import { Click, trackEvent } from '$lib/actions/analytics';
-    import type { PlatformType } from '@appwrite.io/console';
 
     export enum Platform {
         Web,
@@ -31,11 +30,12 @@
         platform: Platform,
         name: string,
         key: string,
-        type: PlatformType
+        type: string
     ) {
         createPlatform.set({
             name: name,
             key: key,
+            hostname: null,
             type: type
         });
 
@@ -79,15 +79,17 @@
         IconAndroid,
         IconApple,
         IconCode,
+        IconDesktopComputer,
         IconFlutter,
+        IconLinux,
         IconReact
     } from '@appwrite.io/pink-icons-svelte';
     import type { ComponentType } from 'svelte';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
+    import type { AnyPlatform } from '$lib/helpers/platform';
 
     import { page } from '$app/state';
     import type { PageProps } from './$types';
-    import type { Models } from '@appwrite.io/console';
     import {
         type DeleteOperationState,
         type DeleteOperation,
@@ -97,41 +99,35 @@
     import { Submit, trackError } from '$lib/actions/analytics';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
+    import { getPlatformIdentifier } from '$lib/helpers/platform';
 
     const { data }: PageProps = $props();
 
     const PlatformTypes = {
-        'apple-ios': 'iOS',
-        'apple-macos': 'macOS',
-        'apple-watchos': 'watchOS',
-        'apple-tvos': 'tvOS',
         android: 'Android',
-        'flutter-android': 'Android',
-        'flutter-ios': 'iOS',
-        'flutter-linux': 'Linux',
-        'flutter-macos': 'macOS',
-        'flutter-windows': 'Windows',
-        'flutter-web': 'Web',
-        'react-native-android': 'Android',
-        'react-native-ios': 'iOS',
-        web: 'Web'
+        apple: 'Apple',
+        web: 'Web',
+        windows: 'Windows',
+        linux: 'Linux'
     } as const;
 
-    function getPlatformInfo(platform: string): ComponentType {
-        if (platform.includes('flutter')) {
-            return IconFlutter;
-        } else if (platform.includes('react-native')) {
-            return IconReact;
-        } else if (platform.includes('apple')) {
-            return IconApple;
-        } else if (platform.includes('android')) {
-            return IconAndroid;
-        } else {
-            return IconCode;
+    function getPlatformIcon(platform: string): ComponentType {
+        switch (platform) {
+            case 'apple':
+                return IconApple;
+            case 'android':
+                return IconAndroid;
+            case 'linux':
+                return IconLinux;
+            case 'windows':
+                return IconDesktopComputer;
+            case 'web':
+            default:
+                return IconCode;
         }
     }
 
-    function getPlatformPath(platform: Models.Platform) {
+    function getPlatformPath(platform: AnyPlatform) {
         return resolve('/(console)/project-[region]-[project]/overview/platforms/[platform]', {
             region: page.params.region,
             project: page.params.project,
@@ -143,8 +139,7 @@
         batchDelete: DeleteOperation
     ): Promise<DeleteOperationState> {
         const result = await batchDelete((platformId) =>
-            sdk.forConsole.projects.deletePlatform({
-                projectId: page.params.project,
+            sdk.forProject(page.params.region, page.params.project).project.deletePlatform({
                 platformId
             })
         );
@@ -187,16 +182,12 @@
                     </Table.Cell>
                     <Table.Cell {root}>
                         <Layout.Stack direction="row" gap="s" alignItems="center">
-                            <Icon icon={getPlatformInfo(platform.type)} />
+                            <Icon icon={getPlatformIcon(platform.type)} />
                             {PlatformTypes[platform.type]}
                         </Layout.Stack>
                     </Table.Cell>
                     <Table.Cell {root}>
-                        {#if platform.type.includes('web') || platform.type === 'web'}
-                            {platform.hostname || '—'}
-                        {:else}
-                            {platform.key || platform.hostname || '—'}
-                        {/if}
+                        {getPlatformIdentifier(platform) || '—'}
                     </Table.Cell>
                     <Table.Cell {root}>
                         {#if platform.$updatedAt}

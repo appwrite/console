@@ -78,10 +78,16 @@ export const showBudgetAlert = derived(
 );
 
 function getPlansInfoStore(): BillingPlansMap | null {
-    return get(plansInfo) ?? get(page).data?.plansInfo ?? null;
+    return get(plansInfo) ?? get(page).data?.plansInfo ?? new Map();
 }
 
-function makeBillingPlan(billingPlanOrId: string | Models.BillingPlan): Models.BillingPlan {
+function makeBillingPlan(
+    billingPlanOrId: string | Models.BillingPlan | null | undefined
+): Models.BillingPlan | null {
+    if (!billingPlanOrId) {
+        return null;
+    }
+
     return typeof billingPlanOrId === 'string' ? billingIdToPlan(billingPlanOrId) : billingPlanOrId;
 }
 
@@ -89,21 +95,35 @@ export function getRoleLabel(role: string) {
     return roles.find((r) => r.value === role)?.label ?? role;
 }
 
-export function isStarterPlan(billingPlanOrId: string | Models.BillingPlan): boolean {
+export function isStarterPlan(
+    billingPlanOrId: string | Models.BillingPlan | null | undefined
+): boolean {
     const billingPlan = makeBillingPlan(billingPlanOrId);
     return planHasGroup(billingPlan, BillingPlanGroup.Starter);
 }
 
-export function canUpgrade(billingPlanOrId: string | Models.BillingPlan): boolean {
+export function canUpgrade(
+    billingPlanOrId: string | Models.BillingPlan | null | undefined
+): boolean {
     const billingPlan = makeBillingPlan(billingPlanOrId);
+    if (!billingPlan?.$id) {
+        return false;
+    }
+
     const nextTier = getNextTierBillingPlan(billingPlan.$id);
 
     // defaults back to PRO, so adjust the check!
     return billingPlan.$id !== nextTier.$id;
 }
 
-export function canDowngrade(billingPlanOrId: string | Models.BillingPlan): boolean {
+export function canDowngrade(
+    billingPlanOrId: string | Models.BillingPlan | null | undefined
+): boolean {
     const billingPlan = makeBillingPlan(billingPlanOrId);
+    if (!billingPlan?.$id) {
+        return false;
+    }
+
     const nextTier = getPreviousTierBillingPlan(billingPlan.$id);
 
     // defaults back to Starter, so adjust the check!
@@ -111,7 +131,7 @@ export function canDowngrade(billingPlanOrId: string | Models.BillingPlan): bool
 }
 
 export function planHasGroup(
-    billingPlanOrId: string | Models.BillingPlan,
+    billingPlanOrId: string | Models.BillingPlan | null | undefined,
     group: BillingPlanGroup
 ): boolean {
     const billingPlan = makeBillingPlan(billingPlanOrId);
@@ -123,7 +143,7 @@ export function getBasePlanFromGroup(billingPlanGroup: BillingPlanGroup): Models
     const plansInfoStore = getPlansInfoStore();
 
     const proPlans = Array.from(plansInfoStore.values()).filter(
-        (plan) => plan.group === billingPlanGroup
+        (plan): plan is Models.BillingPlan => !!plan && plan.group === billingPlanGroup
     );
 
     return proPlans.sort((a, b) => a.order - b.order)[0];
@@ -180,6 +200,7 @@ export type PlanServices =
     | 'bandwidthAddon'
     | 'buckets'
     | 'databases'
+    | 'domains'
     | 'executions'
     | 'executionsAddon'
     | 'fileSize'
@@ -191,6 +212,7 @@ export type PlanServices =
     | 'platforms'
     | 'realtime'
     | 'realtimeAddon'
+    | 'realtimeMessages'
     | 'storage'
     | 'storageAddon'
     | 'teams'
@@ -274,6 +296,7 @@ export function checkForUsageFees(plan: string, id: PlanServices) {
             case 'users':
             case 'executions':
             case 'realtime':
+            case 'realtimeMessages':
                 return true;
 
             default:
@@ -294,6 +317,7 @@ export function checkForProjectLimitation(plan: string, id: PlanServices) {
 
     switch (id) {
         case 'databases':
+        case 'domains':
         case 'functions':
         case 'buckets':
         case 'members': // Only applies to Free plan now
@@ -565,6 +589,9 @@ export function checkForMarkedForDeletion(org: Models.Organization) {
 
 export async function checkForMissingPaymentMethod() {
     const starterPlan = getBasePlanFromGroup(BillingPlanGroup.Starter);
+    if (!starterPlan?.$id) {
+        return;
+    }
 
     const orgs = await sdk.forConsole.organizations.list({
         queries: [

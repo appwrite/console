@@ -10,7 +10,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { user } from '$lib/stores/user';
     import { organization } from '$lib/stores/organization';
-    import { Scopes } from '@appwrite.io/console';
+    import { ID, Scopes } from '@appwrite.io/console';
 
     export let show = false;
 
@@ -88,34 +88,36 @@
 
         const currEndpoint = getCurrentEndpoint();
         // Create API key
-        const { secret } = await sdk.forConsole.projects.createKey({
-            projectId: $project.$id,
-            name: `[AUTO-GENERATED] Migration ${new Date().toISOString()}`,
-            scopes: [
-                Scopes.UsersRead,
-                Scopes.TeamsRead,
-                Scopes.DatabasesRead,
-                Scopes.CollectionsRead /* legacy */,
-                Scopes.AttributesRead /* legacy */,
-                Scopes.IndexesRead,
-                Scopes.DocumentsRead /* legacy */,
-                Scopes.TablesRead,
-                Scopes.ColumnsRead,
-                Scopes.RowsRead,
-                Scopes.FilesRead,
-                Scopes.BucketsRead,
-                Scopes.FunctionsRead,
-                Scopes.ExecutionRead,
-                Scopes.SitesRead,
-                Scopes.ProvidersRead,
-                Scopes.TopicsRead,
-                Scopes.SubscribersRead,
-                Scopes.MessagesRead,
-                Scopes.LocaleRead,
-                Scopes.AvatarsRead,
-                Scopes.HealthRead
-            ]
-        });
+        const { secret } = await sdk
+            .forProject(page.params.region, page.params.project)
+            .project.createKey({
+                keyId: ID.unique(),
+                name: `[AUTO-GENERATED] Migration ${new Date().toISOString()}`,
+                scopes: [
+                    Scopes.UsersRead,
+                    Scopes.TeamsRead,
+                    Scopes.DatabasesRead,
+                    Scopes.CollectionsRead /* legacy */,
+                    Scopes.AttributesRead /* legacy */,
+                    Scopes.IndexesRead,
+                    Scopes.DocumentsRead /* legacy */,
+                    Scopes.TablesRead,
+                    Scopes.ColumnsRead,
+                    Scopes.RowsRead,
+                    Scopes.FilesRead,
+                    Scopes.BucketsRead,
+                    Scopes.FunctionsRead,
+                    Scopes.ExecutionRead,
+                    Scopes.SitesRead,
+                    Scopes.ProvidersRead,
+                    Scopes.TopicsRead,
+                    Scopes.SubscribersRead,
+                    Scopes.MessagesRead,
+                    Scopes.LocaleRead,
+                    Scopes.AvatarsRead,
+                    Scopes.HealthRead
+                ]
+            });
 
         const migrationData = {
             endpoint: currEndpoint,
