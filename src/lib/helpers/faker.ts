@@ -243,6 +243,10 @@ function generateSingleValue(field: Field): string | number | boolean | NestedNu
             return faker.number.int({ min, max });
         }
 
+        case 'bigint': {
+            return faker.number.bigInt().toString();
+        }
+
         case 'double': {
             const floatAttr = field as Models.ColumnFloat;
             const min = isWithinSafeRange(floatAttr.min) ? floatAttr.min : 0;

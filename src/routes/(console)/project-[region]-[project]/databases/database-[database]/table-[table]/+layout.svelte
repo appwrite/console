@@ -64,7 +64,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { hash } from '$lib/helpers/string';
     import { preferences } from '$lib/stores/preferences';
-    import { buildRowUrl, isRelationship } from './rows/store';
+    import { buildRowUrl, isRelationship, buildPayload } from './rows/store';
     import { chunks } from '$lib/helpers/array';
     import { Submit, trackEvent } from '$lib/actions/analytics';
 
@@ -346,7 +346,7 @@
                                     databaseId: page.params.database,
                                     tableId: page.params.table,
                                     rowId: row.$id,
-                                    data: row
+                                    data: buildPayload(columns, row)
                                 })
                             )
                         );
@@ -358,7 +358,7 @@
                 await tablesSDK.createRows({
                     databaseId: page.params.database,
                     tableId: page.params.table,
-                    rows
+                    rows: rows.map((row) => buildPayload(columns, row))
                 });
             }
 

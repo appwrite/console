@@ -4,6 +4,12 @@ import type { Attributes, Columns } from '../store';
 import { type Models, Query } from '@appwrite.io/console';
 import type { Entity, Field } from '$database/(entity)';
 
+type RowPrimitive = string | number | bigint | boolean | null | undefined;
+interface RowObject {
+    [key: string]: RowValue;
+}
+type RowValue = RowPrimitive | RowValue[] | RowObject;
+
 export function isRelationshipToMany(field: Field) {
     if (!field) return false;
     if (!isRelationship(field)) return false;
@@ -50,6 +56,38 @@ export function isSpatialType(
     const spatialTypes = ['point', 'linestring', 'polygon'];
 
     return spatialTypes.includes(field.type.toLowerCase());
+}
+
+function castBigIntValue(value: RowValue): RowValue {
+    if (value === null || value === undefined || value === '') {
+        return value;
+    }
+
+    return String(value);
+}
+
+export function buildPayload<T extends Record<string, RowValue>>(
+    fields: Field[] | undefined,
+    row: T
+): T {
+    const payload = structuredClone(row) as Record<string, RowValue>;
+
+    for (const field of fields ?? []) {
+        if (field.type !== 'bigint') {
+            continue;
+        }
+
+        const value = payload[field.key];
+
+        if (field.array && Array.isArray(value)) {
+            payload[field.key] = value.map((item) => castBigIntValue(item));
+            continue;
+        }
+
+        payload[field.key] = castBigIntValue(value);
+    }
+
+    return payload as T;
 }
 
 /**
