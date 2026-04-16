@@ -66,7 +66,9 @@ export function getRegionSubdomain(region?: string): string {
 
 /**
  * Builds the `/v1` API base URL (protocol + host + `/v1`).
- * When `isMultiRegion` is true, strips any known region prefix from the host, then prepends the requested region.
+ * When `isMultiRegion` is true and a region is selected, strips any known region prefix from the host,
+ * then prepends that region. If multi-region is on but no region is requested (`region` missing or
+ * unknown), the hostname is left unchanged so a default region baked into `APPWRITE_ENDPOINT` is kept.
  */
 export function buildRegionalV1Endpoint(
     protocol: string,
@@ -78,8 +80,11 @@ export function buildRegionalV1Endpoint(
         return `${protocol}//${hostname}/v1`;
     }
 
-    const hostWithoutRegion = stripLeadingRegionSubdomain(hostname);
     const subdomain = getRegionSubdomain(region);
+    if (!subdomain) {
+        return `${protocol}//${hostname}/v1`;
+    }
 
+    const hostWithoutRegion = stripLeadingRegionSubdomain(hostname);
     return `${protocol}//${subdomain}${hostWithoutRegion}/v1`;
 }
