@@ -1,18 +1,15 @@
 import { isValueOfStringEnum } from '$lib/helpers/types';
+import { sdk } from '$lib/stores/sdk';
 import { UsageRange } from '@appwrite.io/console';
 import type { PageLoad } from './$types';
-import { getCollectionService } from '$database/(entity)';
 
-export const load: PageLoad = async ({ params, parent }) => {
-    const { database } = await parent();
+export const load: PageLoad = async ({ params }) => {
     const period = isValueOfStringEnum(UsageRange, params.period)
         ? params.period
         : UsageRange.ThirtyDays;
 
-    const collectionSdk = getCollectionService(params.region, params.project, database.type);
-
     return {
-        ...(await collectionSdk.getCollectionUsage({
+        ...(await sdk.forProject(params.region, params.project).documentsDB.getCollectionUsage({
             databaseId: params.database,
             collectionId: params.collection,
             range: period
