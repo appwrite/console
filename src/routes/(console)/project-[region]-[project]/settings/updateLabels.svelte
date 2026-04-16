@@ -21,22 +21,9 @@
         labels = [...(($project as { labels?: string[] }).labels ?? [])];
     });
 
-    async function updateProjectLabels(projectId: string, nextLabels: string[]) {
-        const client = sdk.forConsole.client;
-        const apiPath = `/projects/${projectId}/labels`;
-        const uri = new URL(client.config.endpoint + apiPath);
-
-        return client.call(
-            'put',
-            uri,
-            { 'content-type': 'application/json' },
-            { labels: nextLabels }
-        );
-    }
-
     async function updateLabels() {
         try {
-            await updateProjectLabels($project.$id, labels);
+            await sdk.forProject($project.region, $project.$id).project.updateLabels({ labels });
             await invalidate(Dependencies.PROJECT);
             isDisabled = true;
             addNotification({

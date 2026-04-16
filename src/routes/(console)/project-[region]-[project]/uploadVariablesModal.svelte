@@ -148,7 +148,7 @@
             <Layout.Stack alignItems="center" gap="s">
                 <Layout.Stack alignItems="center" justifyContent="center" inline>
                     <Typography.Text variant="l-500" align="center" inline>
-                        Drag and drop files here or click to upload
+                        Drag and drop a file here or click to upload
                         <Layout.Stack
                             style="display: inline-flex; vertical-align: middle;"
                             inline

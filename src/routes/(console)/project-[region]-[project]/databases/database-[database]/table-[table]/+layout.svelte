@@ -539,11 +539,13 @@
         disabled: editRelatedRowDisabled,
         onClick: async () => await editRelatedRow?.update()
     }}>
-    <EditRelatedRow
-        bind:this={editRelatedRow}
-        rows={$databaseRelatedRowSheetOptions.rows}
-        tableId={$databaseRelatedRowSheetOptions.tableId}
-        bind:disabledState={editRelatedRowDisabled} />
+    {#if $databaseRelatedRowSheetOptions.show && $databaseRelatedRowSheetOptions.tableId && $databaseRelatedRowSheetOptions.rows != null}
+        <EditRelatedRow
+            bind:this={editRelatedRow}
+            rows={$databaseRelatedRowSheetOptions.rows}
+            tableId={$databaseRelatedRowSheetOptions.tableId}
+            bind:disabledState={editRelatedRowDisabled} />
+    {/if}
 </SideSheet>
 
 <SideSheet
