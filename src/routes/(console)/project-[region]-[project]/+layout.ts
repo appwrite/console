@@ -99,7 +99,7 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
         loadFailedInvoices(project.teamId);
     }
 
-    if (!includedInBasePlans) {
+    if (!includedInBasePlans && organizationPlan) {
         // save the custom plan to `plansInfo` cache.
         plansInfo.set(organization.billingPlanId, organizationPlan);
     }

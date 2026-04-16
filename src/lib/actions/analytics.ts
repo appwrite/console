@@ -443,6 +443,8 @@ export enum Submit {
     MessagingTopicSubscriberDelete = 'submit_messaging_topic_subscriber_delete',
     ApplyQuickFilter = 'submit_apply_quick_filter',
     RequestBAA = 'submit_request_baa',
+    BAAAddonEnable = 'submit_baa_addon_enable',
+    BAAAddonDisable = 'submit_baa_addon_disable',
     RequestSoc2 = 'submit_request_soc2',
     SiteCreate = 'submit_site_create',
     SiteDelete = 'submit_site_delete',

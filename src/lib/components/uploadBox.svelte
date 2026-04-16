@@ -9,7 +9,8 @@
             return {
                 name: file.name,
                 size: file.size,
-                status: file.status
+                status: file.status,
+                progress: file.progress
             };
         })}
         on:close={() => uploader.close()} />

@@ -143,7 +143,7 @@ export function getBasePlanFromGroup(billingPlanGroup: BillingPlanGroup): Models
     const plansInfoStore = getPlansInfoStore();
 
     const proPlans = Array.from(plansInfoStore.values()).filter(
-        (plan) => plan.group === billingPlanGroup
+        (plan): plan is Models.BillingPlan => !!plan && plan.group === billingPlanGroup
     );
 
     return proPlans.sort((a, b) => a.order - b.order)[0];
@@ -200,6 +200,7 @@ export type PlanServices =
     | 'bandwidthAddon'
     | 'buckets'
     | 'databases'
+    | 'domains'
     | 'executions'
     | 'executionsAddon'
     | 'fileSize'
@@ -316,6 +317,7 @@ export function checkForProjectLimitation(plan: string, id: PlanServices) {
 
     switch (id) {
         case 'databases':
+        case 'domains':
         case 'functions':
         case 'buckets':
         case 'members': // Only applies to Free plan now

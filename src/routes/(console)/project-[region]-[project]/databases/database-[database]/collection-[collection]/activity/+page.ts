@@ -1,23 +1,20 @@
+import { sdk } from '$lib/stores/sdk';
 import type { PageLoad } from './$types';
 import { PAGE_LIMIT } from '$lib/constants';
 import { Query } from '@appwrite.io/console';
 import { getLimit, getPage, pageToOffset } from '$lib/helpers/load';
-import { getCollectionService } from '$database/(entity)';
 
-export const load: PageLoad = async ({ params, url, route, parent }) => {
-    const { database } = await parent();
+export const load: PageLoad = async ({ params, url, route }) => {
     const page = getPage(url);
     const limit = getLimit(url, route, PAGE_LIMIT);
     const offset = pageToOffset(page, limit);
 
-    const collectionSdk = getCollectionService(params.region, params.project, database.type);
-
     return {
         offset,
         limit,
-        logs: await collectionSdk.listCollectionLogs({
+        logs: await sdk.forProject(params.region, params.project).tablesDB.listTableLogs({
             databaseId: params.database,
-            collectionId: params.collection,
+            tableId: params.collection,
             queries: [Query.limit(limit), Query.offset(offset)]
         })
     };

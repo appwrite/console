@@ -93,7 +93,7 @@
                         direction="row"
                         gap="s">
                         <Typography.Text variant="l-500">
-                            Drag and drop file here or click to upload
+                            Drag and drop a file here or click to upload
                         </Typography.Text>
                         <Tooltip>
                             <Layout.Stack alignItems="center" justifyContent="center" inline>

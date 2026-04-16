@@ -88,7 +88,8 @@ export enum Dependencies {
     MESSAGING_TOPIC_SUBSCRIBERS = 'dependency:messaging_topic_subscribers',
     SITE = 'dependency:site',
     SITES = 'dependency:sites',
-    SITES_DOMAINS = 'dependency:sites_domains'
+    SITES_DOMAINS = 'dependency:sites_domains',
+    ADDONS = 'dependency:addons'
 }
 
 export const defaultScopes: string[] = [
@@ -474,6 +475,30 @@ export const scopes: ScopeDefinition[] = [
         scope: 'log.write',
         description: "Access to delete your site's logs",
         category: 'Sites',
+        icon: 'globe'
+    },
+    {
+        scope: 'webhooks.read',
+        description: "Access to read your project's webhooks",
+        category: 'Other',
+        icon: 'globe'
+    },
+    {
+        scope: 'webhooks.write',
+        description: "Access to create, update, and delete your project's webhooks",
+        category: 'Other',
+        icon: 'globe'
+    },
+    {
+        scope: 'keys.read',
+        description: "Access to read your project's API keys",
+        category: 'Other',
+        icon: 'globe'
+    },
+    {
+        scope: 'keys.write',
+        description: "Access to create, update, and delete your project's API keys",
+        category: 'Other',
         icon: 'globe'
     }
 ];
