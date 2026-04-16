@@ -8,9 +8,11 @@ export const load: PageLoad = async ({ params }) => {
         ? params.period
         : UsageRange.ThirtyDays;
 
-    return sdk.forProject(params.region, params.project).documentsDB.getCollectionUsage({
-        databaseId: params.database,
-        collectionId: params.collection,
-        range: period
-    });
+    return {
+        ...(await sdk.forProject(params.region, params.project).documentsDB.getCollectionUsage({
+            databaseId: params.database,
+            collectionId: params.collection,
+            range: period
+        }))
+    };
 };
