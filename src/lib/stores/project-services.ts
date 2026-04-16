@@ -1,120 +1,116 @@
 import { writable } from 'svelte/store';
-import { ApiService, type Models } from '@appwrite.io/console';
+import { ServiceId, type Models } from '@appwrite.io/console';
 
 export type Service = {
     label: string;
-    method: ApiService;
+    method: ServiceId;
     value: boolean | null;
 };
 
+function projectServiceRows(project: Models.Project | null): Service[] {
+    const rows: Service[] = [
+        {
+            label: 'Account',
+            method: ServiceId.Account,
+            value: project?.serviceStatusForAccount ?? null
+        },
+        {
+            label: 'Avatars',
+            method: ServiceId.Avatars,
+            value: project?.serviceStatusForAvatars ?? null
+        },
+        {
+            label: 'Databases',
+            method: ServiceId.Databases,
+            value: project?.serviceStatusForDatabases ?? null
+        },
+        {
+            label: 'Functions',
+            method: ServiceId.Functions,
+            value: project?.serviceStatusForFunctions ?? null
+        },
+        {
+            label: 'GraphQL',
+            method: ServiceId.Graphql,
+            value: project?.serviceStatusForGraphql ?? null
+        },
+        {
+            label: 'Health',
+            method: ServiceId.Health,
+            value: project?.serviceStatusForHealth ?? null
+        },
+        {
+            label: 'Locale',
+            method: ServiceId.Locale,
+            value: project?.serviceStatusForLocale ?? null
+        },
+        {
+            label: 'Messaging',
+            method: ServiceId.Messaging,
+            value: project?.serviceStatusForMessaging ?? null
+        },
+        {
+            label: 'Migrations',
+            method: ServiceId.Migrations,
+            value: project?.serviceStatusForMigrations ?? null
+        },
+        {
+            label: 'Project',
+            method: ServiceId.Project,
+            value: project?.serviceStatusForProject ?? null
+        },
+        // @todo Re-enable when Proxy is ready for public release.
+        // {
+        //     label: 'Proxy',
+        //     method: ServiceId.Proxy,
+        //     value: project?.serviceStatusForProxy ?? null
+        // },
+        {
+            label: 'Sites',
+            method: ServiceId.Sites,
+            value: project?.serviceStatusForSites ?? null
+        },
+        {
+            label: 'Storage',
+            method: ServiceId.Storage,
+            value: project?.serviceStatusForStorage ?? null
+        },
+        {
+            label: 'TablesDB',
+            method: ServiceId.Tablesdb,
+            value: project?.serviceStatusForTablesdb ?? null
+        },
+        {
+            label: 'Teams',
+            method: ServiceId.Teams,
+            value: project?.serviceStatusForTeams ?? null
+        },
+        {
+            label: 'Users',
+            method: ServiceId.Users,
+            value: project?.serviceStatusForUsers ?? null
+        }
+        // @todo Re-enable when VCS is ready for public release.
+        // {
+        //     label: 'VCS',
+        //     method: ServiceId.Vcs,
+        //     value: project?.serviceStatusForVcs ?? null
+        // }
+    ];
+
+    return rows.sort((a, b) => a.label.localeCompare(b.label));
+}
+
 function createServices() {
     const { subscribe, set } = writable({
-        list: [
-            {
-                label: 'Account',
-                method: ApiService.Account,
-                value: null
-            },
-            {
-                label: 'Avatars',
-                method: ApiService.Avatars,
-                value: null
-            },
-            {
-                label: 'Databases',
-                method: ApiService.Databases,
-                value: null
-            },
-            {
-                label: 'Functions',
-                method: ApiService.Functions,
-                value: null
-            },
-            {
-                label: 'Locale',
-                method: ApiService.Locale,
-                value: null
-            },
-            {
-                label: 'Messaging',
-                method: ApiService.Messaging,
-                value: null
-            },
-            {
-                label: 'Storage',
-                method: ApiService.Storage,
-                value: null
-            },
-            {
-                label: 'Teams',
-                method: ApiService.Teams,
-                value: null
-            },
-            {
-                label: 'Users',
-                method: ApiService.Users,
-                value: null
-            },
-            {
-                label: 'GraphQL',
-                method: ApiService.Graphql,
-                value: null
-            }
-        ]
+        list: projectServiceRows(null)
     });
 
     return {
         subscribe,
         set,
         load: (project: Models.Project) => {
-            const list = [
-                {
-                    label: 'Account',
-                    method: ApiService.Account,
-                    value: project.serviceStatusForAccount
-                },
-                {
-                    label: 'Avatars',
-                    method: ApiService.Avatars,
-                    value: project.serviceStatusForAvatars
-                },
-                {
-                    label: 'Databases',
-                    method: ApiService.Databases,
-                    value: project.serviceStatusForDatabases
-                },
-                {
-                    label: 'Functions',
-                    method: ApiService.Functions,
-                    value: project.serviceStatusForFunctions
-                },
-                {
-                    label: 'Locale',
-                    method: ApiService.Locale,
-                    value: project.serviceStatusForLocale
-                },
-                {
-                    label: 'Messaging',
-                    method: ApiService.Messaging,
-                    value: project.serviceStatusForMessaging
-                },
-                {
-                    label: 'Storage',
-                    method: ApiService.Storage,
-                    value: project.serviceStatusForStorage
-                },
-                {
-                    label: 'Teams',
-                    method: ApiService.Teams,
-                    value: project.serviceStatusForTeams
-                },
-                {
-                    label: 'Users',
-                    method: ApiService.Users,
-                    value: project.serviceStatusForUsers
-                }
-            ];
-            set({ list });
+            set({ list: projectServiceRows(project) });
         }
     };
 }
