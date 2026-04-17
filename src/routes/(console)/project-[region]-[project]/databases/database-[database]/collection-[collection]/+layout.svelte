@@ -51,12 +51,12 @@
         SideSheet,
         EditRecordPermissions,
         RecordActivity,
-        CreateIndex,
         useDatabaseSdk,
         DEFAULT_VECTOR_DIMENSION,
         type Field,
         type Index
     } from '$database/(entity)';
+    import CreateIndex from './indexes/createIndex.svelte';
     import {
         entityColumnSuggestions,
         type ColumnInput,
@@ -368,6 +368,7 @@
     }}>
     <CreateIndex
         entity={collection}
+        databaseType={data.database.type}
         bind:this={createIndex}
         bind:showCreateIndex={$showCreateIndexSheet.show}
         externalFieldKey={$showCreateIndexSheet.column}

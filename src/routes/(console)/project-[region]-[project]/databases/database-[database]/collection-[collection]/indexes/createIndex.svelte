@@ -22,11 +22,13 @@
         entity,
         databaseType,
         showCreateIndex = $bindable(false),
+        externalFieldKey = null,
         onCreateIndex
     }: {
         entity: Entity;
         databaseType: DatabaseType;
         showCreateIndex: boolean;
+        externalFieldKey?: string | null;
         onCreateIndex: (index: CreateIndexesCallbackType) => Promise<void>;
     } = $props();
 
@@ -98,7 +100,9 @@
     function initialize() {
         selectedType =
             databaseType === 'vectorsdb' ? VectorsDBIndexType.Key : DocumentsDBIndexType.Key;
-        fieldList = [{ value: '', order: OrderBy.Asc, length: null }];
+        fieldList = externalFieldKey
+            ? [{ value: externalFieldKey, order: OrderBy.Asc, length: null }]
+            : [{ value: '', order: OrderBy.Asc, length: null }];
         key = `index_${entity.indexes.length + 1}`;
     }
 
