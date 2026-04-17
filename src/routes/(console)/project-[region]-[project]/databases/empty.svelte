@@ -19,6 +19,9 @@
 
     import { isSmallViewport } from '$lib/stores/viewport';
     import type { DatabaseType } from '$database/(entity)';
+    import { flags } from '$lib/flags';
+    import { user } from '$lib/stores/user';
+    import { organization } from '$lib/stores/organization';
 
     const {
         disabled,
@@ -62,23 +65,25 @@
                 image: tablesDbImage
             })}
 
-            <!-- documentsDB -->
-            {@render databaseTypeCard({
-                type: 'documentsdb',
-                title: 'DocumentsDB',
-                subtitle:
-                    'Store flexible data without a fixed schema. Best for unstructured data and simple querying.',
-                image: documentsDbImage
-            })}
+            {#if flags.multiDb({ account: $user, organization: $organization })}
+                <!-- documentsDB -->
+                {@render databaseTypeCard({
+                    type: 'documentsdb',
+                    title: 'DocumentsDB',
+                    subtitle:
+                        'Store flexible data without a fixed schema. Best for unstructured data and simple querying.',
+                    image: documentsDbImage
+                })}
 
-            <!-- vectorsDB -->
-            {@render databaseTypeCard({
-                type: 'vectorsdb',
-                title: 'VectorsDB',
-                subtitle:
-                    'Store data as vectors to find similar results. Best for semantic search and recommendations.',
-                image: vectorsDbImage
-            })}
+                <!-- vectorsDB -->
+                {@render databaseTypeCard({
+                    type: 'vectorsdb',
+                    title: 'VectorsDB',
+                    subtitle:
+                        'Store data as vectors to find similar results. Best for semantic search and recommendations.',
+                    image: vectorsDbImage
+                })}
+            {/if}
         </Layout.Grid>
     </Layout.Stack>
 {/snippet}

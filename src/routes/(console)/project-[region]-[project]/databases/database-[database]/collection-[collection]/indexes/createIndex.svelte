@@ -132,10 +132,13 @@
         }
     });
 
-    // HNSW indexes: auto-fill embeddings, single field only
+    // HNSW indexes: auto-fill embeddings, single field only.
+    // When switching away to Key/Unique, reset stale `order: null` left over from HNSW.
     $effect(() => {
         if (isHnswType) {
             fieldList = [{ value: 'embeddings', order: null, length: null }];
+        } else if (!isObjectType && fieldList.some((f) => f.order === null)) {
+            fieldList = [{ value: '', order: OrderBy.Asc, length: null }];
         }
     });
 
