@@ -35,11 +35,6 @@ function projectServiceRows(project: Models.Project | null): Service[] {
             value: project?.serviceStatusForGraphql ?? null
         },
         {
-            label: 'Health',
-            method: ServiceId.Health,
-            value: project?.serviceStatusForHealth ?? null
-        },
-        {
             label: 'Locale',
             method: ServiceId.Locale,
             value: project?.serviceStatusForLocale ?? null
