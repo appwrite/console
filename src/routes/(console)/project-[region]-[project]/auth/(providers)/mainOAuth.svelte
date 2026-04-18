@@ -5,7 +5,7 @@
     import { onMount } from 'svelte';
     import { updateOAuth } from '../updateOAuth';
     import type { Models } from '@appwrite.io/console';
-    import { oAuthProviders, type Provider } from '$lib/stores/oauth-providers';
+    import { oAuthProviders, Provider } from '$lib/stores/oauth-providers';
     import { Link, Alert } from '@appwrite.io/pink-svelte';
     import { getApiEndpoint } from '$lib/stores/sdk';
 
@@ -52,7 +52,7 @@
     <InputSwitch id="state" bind:value={enabled} label={enabled ? 'Enabled' : 'Disabled'} />
     <InputText
         id="appID"
-        label="App ID"
+        label={provider.key === 'github' || provider.key === 'githubenterprise' ? 'Client ID' : 'App ID'}
         autofocus={true}
         placeholder="Enter ID"
         bind:value={appId}
