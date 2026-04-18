@@ -17,6 +17,8 @@
     import UpdateVariables from '../updateVariables.svelte';
     import { page } from '$app/state';
     import UpdateLabels from './updateLabels.svelte';
+    import PremiumGeoDB from './premiumGeoDB.svelte';
+    import { isCloud } from '$lib/system';
     import { ID } from '@appwrite.io/console';
 
     export let data;
@@ -93,6 +95,9 @@
             <UpdateProtocols />
             <UpdateServices />
             <UpdateInstallations {...data.installations} limit={data.limit} offset={data.offset} />
+            {#if isCloud}
+                <PremiumGeoDB addons={data.addons} />
+            {/if}
             <UpdateVariables
                 {sdkCreateVariable}
                 {sdkUpdateVariable}
