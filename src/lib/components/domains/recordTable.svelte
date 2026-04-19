@@ -143,6 +143,8 @@
                     Since <Badge variant="secondary" size="s" content={domain} /> is an apex domain, CNAME
                     record is only supported by certain providers. If yours doesn't, please verify using
                     <Link variant="muted" on:click={onNavigateToNameservers}>nameservers</Link> instead.
+                    If you're using Cloudflare or another CDN, make sure the proxy is disabled (set to
+                    DNS only) for this record, since Appwrite serves your domain through its own CDN.
                 </Alert.Inline>
             {:else if aTabVisible || aaaaTabVisible}
                 <Alert.Inline>
@@ -155,7 +157,9 @@
                             >{/if}
                     {:else if aaaaTabVisible}
                         <Link variant="muted" on:click={onNavigateToAAAA}>AAAA record</Link>
-                    {/if} instead.
+                    {/if} instead. If you're using Cloudflare or another CDN, make sure the proxy is
+                    disabled (set to DNS only) for this record, since Appwrite serves your domain through
+                    its own CDN.
                 </Alert.Inline>
             {/if}
         {:else}
