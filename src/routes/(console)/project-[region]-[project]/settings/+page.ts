@@ -21,18 +21,18 @@ export const load: PageLoad = async ({ depends, url, params }) => {
         }),
         isCloud
             ? sdk
-                .forConsoleIn(params.region)
-                .projects.listAddons({ projectId: params.project })
-                .catch(() => null)
+                  .forConsoleIn(params.region)
+                  .projects.listAddons({ projectId: params.project })
+                  .catch(() => null)
             : Promise.resolve(null),
         isCloud
-            ? sdk.forConsoleIn(params.region)
-                .projects
-                .getAddonPrice({
-                    projectId: params.project,
-                    addon: Addon.Premiumgeodb
-                })
-                .catch(() => null)
+            ? sdk
+                  .forConsoleIn(params.region)
+                  .projects.getAddonPrice({
+                      projectId: params.project,
+                      addon: Addon.Premiumgeodb
+                  })
+                  .catch(() => null)
             : Promise.resolve(null)
     ]);
 
