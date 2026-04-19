@@ -4,11 +4,10 @@ import { sdk } from '$lib/stores/sdk';
 import { Addon, Query } from '@appwrite.io/console';
 import type { PageLoad } from './$types';
 
-export const load: PageLoad = async ({ depends, url, params, parent }) => {
+export const load: PageLoad = async ({ depends, url, params }) => {
     depends(Dependencies.PROJECT_VARIABLES);
     depends(Dependencies.PROJECT_INSTALLATIONS);
     depends(Dependencies.ADDONS);
-    const { project } = await parent();
     const limit = PAGE_LIMIT;
     const offset = Number(url.searchParams.get('offset') ?? 0);
     const variablesOffset = Number(url.searchParams.get('variablesOffset') ?? 0);
@@ -22,17 +21,18 @@ export const load: PageLoad = async ({ depends, url, params, parent }) => {
         }),
         isCloud
             ? sdk
-                  .forConsoleIn(params.region)
-                  .projects.listAddons({ projectId: params.project })
-                  .catch(() => null)
+                .forConsoleIn(params.region)
+                .projects.listAddons({ projectId: params.project })
+                .catch(() => null)
             : Promise.resolve(null),
         isCloud
-            ? sdk.forConsole.organizations
-                  .getAddonPrice({
-                      organizationId: project.teamId,
-                      addon: Addon.Premiumgeodb
-                  })
-                  .catch(() => null)
+            ? sdk.forConsoleIn(params.region)
+                .projects
+                .getAddonPrice({
+                    projectId: params.project,
+                    addon: Addon.Premiumgeodb
+                })
+                .catch(() => null)
             : Promise.resolve(null)
     ]);
 
