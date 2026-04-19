@@ -9,12 +9,14 @@
     import { Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
+    import { formatCurrency } from '$lib/helpers/numbers';
     import { Badge } from '@appwrite.io/pink-svelte';
     import type { Models } from '@appwrite.io/console';
     import PremiumGeoDBEnableModal from './premiumGeoDBEnableModal.svelte';
     import PremiumGeoDBDisableModal from './premiumGeoDBDisableModal.svelte';
 
     export let addons: Models.AddonList | null = null;
+    export let addonPrice: Models.AddonPrice | null = null;
 
     let showEnable = false;
     let showDisable = false;
@@ -30,6 +32,7 @@
     $: isPending = premiumGeoDBAddon?.status === 'pending';
     $: isActive = premiumGeoDBAddon?.status === 'active';
     $: isScheduledForRemoval = isActive && premiumGeoDBAddon?.nextValue === 0;
+    $: monthlyPriceLabel = addonPrice ? formatCurrency(addonPrice.monthlyPrice) : null;
 
     function hasUpgradeablePlanWithPremiumGeoDB(plan: Models.BillingPlan): boolean {
         if (!plan) return false;
@@ -132,7 +135,11 @@
                     {/if}
                 </div>
                 <p class="text u-margin-block-start-8">
-                    Premium Geo DB is enabled for this project.
+                    {#if monthlyPriceLabel}
+                        Premium Geo DB is enabled for this project at {monthlyPriceLabel}/month.
+                    {:else}
+                        Premium Geo DB is enabled for this project.
+                    {/if}
                 </p>
                 {#if isScheduledForRemoval}
                     <p class="text u-margin-block-start-8">
@@ -156,7 +163,12 @@
             {:else}
                 <p class="text u-margin-block-start-8">
                     Enable Premium Geo DB for this project to collect detailed geolocation data on
-                    every request. Billed prorated for your current cycle.
+                    every request.{#if monthlyPriceLabel}
+                        This addon costs {monthlyPriceLabel}/month, prorated for your current
+                        billing cycle.
+                    {:else}
+                        Billed prorated for your current cycle.
+                    {/if}
                 </p>
                 <Button
                     secondary
@@ -169,7 +181,7 @@
     </svelte:fragment>
 </CardGrid>
 
-<PremiumGeoDBEnableModal bind:show={showEnable} />
+<PremiumGeoDBEnableModal bind:show={showEnable} {addonPrice} />
 
 {#if premiumGeoDBAddon}
     <PremiumGeoDBDisableModal bind:show={showDisable} addonId={premiumGeoDBAddon.$id} />

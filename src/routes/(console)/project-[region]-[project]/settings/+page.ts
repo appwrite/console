@@ -1,18 +1,19 @@
 import { Dependencies, PAGE_LIMIT } from '$lib/constants';
 import { isCloud } from '$lib/system';
 import { sdk } from '$lib/stores/sdk';
-import { Query } from '@appwrite.io/console';
+import { Addon, Query } from '@appwrite.io/console';
 import type { PageLoad } from './$types';
 
-export const load: PageLoad = async ({ depends, url, params }) => {
+export const load: PageLoad = async ({ depends, url, params, parent }) => {
     depends(Dependencies.PROJECT_VARIABLES);
     depends(Dependencies.PROJECT_INSTALLATIONS);
     depends(Dependencies.ADDONS);
+    const { project } = await parent();
     const limit = PAGE_LIMIT;
     const offset = Number(url.searchParams.get('offset') ?? 0);
     const variablesOffset = Number(url.searchParams.get('variablesOffset') ?? 0);
     const projectSdk = sdk.forProject(params.region, params.project);
-    const [variables, installations, addons] = await Promise.all([
+    const [variables, installations, addons, addonPrice] = await Promise.all([
         projectSdk.projectApi.listVariables({
             queries: [Query.limit(limit), Query.offset(variablesOffset)]
         }),
@@ -24,6 +25,14 @@ export const load: PageLoad = async ({ depends, url, params }) => {
                   .forConsoleIn(params.region)
                   .projects.listAddons({ projectId: params.project })
                   .catch(() => null)
+            : Promise.resolve(null),
+        isCloud
+            ? sdk.forConsole.organizations
+                  .getAddonPrice({
+                      organizationId: project.teamId,
+                      addon: Addon.Premiumgeodb
+                  })
+                  .catch(() => null)
             : Promise.resolve(null)
     ]);
 
@@ -33,6 +42,7 @@ export const load: PageLoad = async ({ depends, url, params }) => {
         variablesOffset,
         variables,
         installations,
-        addons
+        addons,
+        addonPrice
     };
 };

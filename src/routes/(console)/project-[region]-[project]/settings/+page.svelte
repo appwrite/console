@@ -96,7 +96,7 @@
             <UpdateServices />
             <UpdateInstallations {...data.installations} limit={data.limit} offset={data.offset} />
             {#if isCloud}
-                <PremiumGeoDB addons={data.addons} />
+                <PremiumGeoDB addons={data.addons} addonPrice={data.addonPrice} />
             {/if}
             <UpdateVariables
                 {sdkCreateVariable}
