@@ -157,9 +157,9 @@
                             >{/if}
                     {:else if aaaaTabVisible}
                         <Link variant="muted" on:click={onNavigateToAAAA}>AAAA record</Link>
-                    {/if} instead. If you're using Cloudflare or another CDN, make sure the proxy is
-                    disabled (set to DNS only) for this record, since Appwrite serves your domain through
-                    its own CDN.
+                    {/if} instead. If you're using Cloudflare or another CDN, make sure the proxy is disabled
+                    (set to DNS only) for this record, since Appwrite serves your domain through its own
+                    CDN.
                 </Alert.Inline>
             {/if}
         {:else}
