@@ -102,7 +102,7 @@
                 maxlength="500"
                 onkeydown={handleKeydown}></textarea>
             <div class="attribute-note__editor-actions">
-                <span class="attribute-note__hint">Ctrl+Enter to save · Esc to cancel</span>
+                <span class="attribute-note__hint">Ctrl+Enter / Cmd+Enter to save · Esc to cancel</span>
                 <div class="attribute-note__buttons">
                     {#if note}
                         <button
