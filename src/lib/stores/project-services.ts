@@ -30,11 +30,6 @@ function projectServiceRows(project: Models.Project | null): Service[] {
             value: project?.serviceStatusForFunctions ?? null
         },
         {
-            label: 'GraphQL',
-            method: ServiceId.Graphql,
-            value: project?.serviceStatusForGraphql ?? null
-        },
-        {
             label: 'Locale',
             method: ServiceId.Locale,
             value: project?.serviceStatusForLocale ?? null
