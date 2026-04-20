@@ -88,8 +88,11 @@ function createAttributeNotesStore() {
             update((notes) => {
                 const key = buildNoteKey(databaseId, collectionId, attributeKey);
                 const updated = { ...notes };
-                if (note.trim()) {
-                    updated[key] = note;
+                
+                const trimmedNote = note.trim();
+
+                if (trimmedNote) {
+                    updated[key] = trimmedNote;
                 } else {
                     delete updated[key];
                 }
