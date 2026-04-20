@@ -35,6 +35,17 @@
     // Draft copy while the user types
     let draft = $state(note);
 
+    $effect(() => {
+        const nextNote = attributeNotes.getNote(databaseId, collectionId, attributeKey);
+
+        note = nextNote;
+
+        // Only overwrite draft if user is NOT editing
+        if (!editing) {
+            draft = nextNote;
+        }
+    });
+
     // Textarea ref for auto-focus
     let textareaRef = $state<HTMLTextAreaElement | null>(null);
 
