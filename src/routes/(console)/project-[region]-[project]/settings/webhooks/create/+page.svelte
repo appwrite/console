@@ -1,8 +1,10 @@
 <script lang="ts">
     import { base } from '$app/paths';
     import { page } from '$app/state';
+    import Modal from '$lib/components/modal.svelte';
+    import { Secret } from '$lib/components';
     import { Wizard } from '$lib/layout';
-    import { Layout } from '@appwrite.io/pink-svelte';
+    import { Layout, Typography } from '@appwrite.io/pink-svelte';
     import Form from '$lib/elements/forms/form.svelte';
     import { goto } from '$app/navigation';
     import { ID } from '@appwrite.io/console';
@@ -15,6 +17,9 @@
     import Button from '$lib/elements/forms/button.svelte';
 
     let showExitModal = false;
+    let showSecretModal = false;
+    let createdWebhookId = '';
+    let createdSecret = '';
 
     let name = '',
         events: string[] = [],
@@ -24,6 +29,16 @@
         authPassword = '';
 
     export let data;
+
+    async function openWebhook() {
+        showSecretModal = false;
+        if (!createdWebhookId) return;
+
+        await goto(
+            `${base}/project-${page.params.region}-${page.params.project}/settings/webhooks/${createdWebhookId}`
+        );
+    }
+
     async function create() {
         try {
             const webhook = await sdk
@@ -39,15 +54,22 @@
                     authPassword: authPassword || undefined
                 });
             addNotification({
-                message: 'Webhook has been created',
+                message: 'Webhook created. Secret ready to copy.',
                 type: 'success'
             });
             trackEvent(Submit.WebhookCreate, {
                 events: events
             });
-            goto(
-                `${base}/project-${page.params.region}-${page.params.project}/settings/webhooks/${webhook.$id}`
-            );
+
+            createdWebhookId = webhook.$id;
+            createdSecret = webhook.secret;
+
+            if (createdSecret) {
+                showSecretModal = true;
+                return;
+            }
+
+            await openWebhook();
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -76,3 +98,16 @@
         </svelte:fragment>
     </Wizard>
 </Form>
+
+<Modal title="Webhook Created" bind:show={showSecretModal} onSubmit={openWebhook}>
+    <Layout.Stack gap="l">
+        <Typography.Text>
+            This secret is only shown once after webhook creation or secret rotation. Copy it now.
+        </Typography.Text>
+        <Secret label="Secret" copyEvent="signature" bind:value={createdSecret} />
+    </Layout.Stack>
+
+    <svelte:fragment slot="footer">
+        <Button submit>Continue</Button>
+    </svelte:fragment>
+</Modal>

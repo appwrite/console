@@ -73,7 +73,7 @@
                 bind:value={authPassword} />
 
             <Selector.Checkbox
-                id="security"
+                id="tls"
                 label="Certificate verification (SSL/TLS)"
                 bind:checked={tls}
                 description="Placeholder" />

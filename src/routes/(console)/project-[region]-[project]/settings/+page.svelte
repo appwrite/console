@@ -8,6 +8,7 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import UpdateName from './updateName.svelte';
+    import UpdateProtocols from './updateProtocols.svelte';
     import UpdateServices from './updateServices.svelte';
     import UpdateInstallations from './updateInstallations.svelte';
     import DeleteProject from './deleteProject.svelte';
@@ -89,6 +90,7 @@
         {#if $canWriteProjects}
             <UpdateName />
             <UpdateLabels />
+            <UpdateProtocols />
             <UpdateServices />
             <UpdateInstallations {...data.installations} limit={data.limit} offset={data.offset} />
             <UpdateVariables

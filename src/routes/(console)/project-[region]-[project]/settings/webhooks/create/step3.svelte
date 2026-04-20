@@ -13,7 +13,7 @@
         <Layout.Stack gap="s">
             <InputChoice
                 type="switchbox"
-                id="Security"
+                id="tls"
                 label="Certificate verification (SSL/TLS)"
                 bind:value={tls} />
             {#if !tls}
