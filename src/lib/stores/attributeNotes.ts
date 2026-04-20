@@ -13,6 +13,7 @@
  * Issue: https://github.com/appwrite/appwrite/issues/11945
  */
 
+import { browser } from '$app/environment';
 import { writable } from 'svelte/store';
 
 const STORAGE_KEY = 'appwrite_attribute_notes';
@@ -38,6 +39,7 @@ function isNotesMap(value: unknown): value is NotesMap {
 }
 
 function loadFromStorage(): NotesMap {
+    if (!browser) return {};
     try {
         const raw = localStorage.getItem(STORAGE_KEY);
         if (!raw) return {};
@@ -52,6 +54,7 @@ function loadFromStorage(): NotesMap {
  * Persist notes map to localStorage.
  */
 function saveToStorage(notes: NotesMap): void {
+    if (!browser) return;
     try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
     } catch {
