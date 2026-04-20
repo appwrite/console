@@ -12,8 +12,8 @@
     <Usage
         path={`${base}/project-${page.params.region}-${page.params.project}/functions/usage`}
         countMetadata={{
-            legend: 'Functions',
-            title: 'Total functions'
+            legend: 'Deployments',
+            title: 'Total deployments'
         }}
         {total}
         {count} />
