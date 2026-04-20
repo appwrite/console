@@ -13,9 +13,9 @@
     import { Dependencies } from '$lib/constants';
     import Cancel from './(modals)/cancelDeploymentModal.svelte';
     import { base } from '$app/paths';
-    import { ActionMenu, Icon, Status, Table } from '@appwrite.io/pink-svelte';
+    import { ActionMenu, Icon, Status, Table, Tooltip } from '@appwrite.io/pink-svelte'; // Tooltip added
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { IconDotsHorizontal, IconLightningBolt, IconRefresh, IconTrash } from '@appwrite.io/pink-icons-svelte';
+    import { IconDotsHorizontal, IconLightningBolt, IconRefresh, IconTrash, IconX } from '@appwrite.io/pink-icons-svelte'; // IconX added
     import { Button } from '$lib/elements/forms';
     import { DeploymentCreatedBy, DeploymentSource } from '$lib/components/git';
     import Delete from './(modals)/deleteModal.svelte';
@@ -29,7 +29,6 @@
 
     let { data, columns }: { data: PageData; columns: Column[] } = $props();
 
-    // FIX: TypeScript and Svelte 5 Warning bypass
     const TableComponent = MultiSelectionTable as any;
 
     let showDelete = $state(false);
@@ -37,7 +36,9 @@
     let showActivate = $state(false);
     let showRedeploy = $state(false);
     let selectedDeployment: Models.Deployment | null = $state(null);
-    let selectedIds = $state<any[]>([]); 
+    
+    // Bot Suggestion: Changed any[] to string[] for better type safety
+    let selectedIds = $state<string[]>([]); 
 
     function handleActivate() {
         invalidate(Dependencies.DEPLOYMENTS);
@@ -68,7 +69,7 @@
 <TableComponent
     allowSelection={true}
     selectedIds={selectedIds}
-    onSelectionChange={(ids: any) => (selectedIds = ids)}
+    onSelectionChange={(ids: string[]) => (selectedIds = ids)}
     resource="deployment"
     onDelete={deleteDeployments}
     columns={[...columns, { id: 'actions', width: 40 }]}>
@@ -116,6 +117,10 @@
                             {/if}
                         {:else if column.id === 'totalSize'}
                             {calculateSize(deployment.totalSize)}
+                        {:else if column.id === 'sourceSize'}
+                            {calculateSize(deployment.sourceSize)}
+                        {:else if column.id === 'buildSize'}
+                            {calculateSize(deployment.buildSize)}
                         {/if}
                     </Table.Cell>
                 {/each}
@@ -127,11 +132,18 @@
                         </Button>
                         <svelte:fragment slot="menu" let:toggle>
                             <ActionMenu.Root>
-                                <ActionMenu.Item.Button 
-                                    leadingIcon={IconRefresh} 
-                                    on:click={() => { selectedDeployment = deployment; showRedeploy = true; toggle(); }}>
-                                    Redeploy
-                                </ActionMenu.Item.Button>
+                                <Tooltip disabled={deployment.sourceSize !== 0}>
+                                    <ActionMenu.Item.Button 
+                                        leadingIcon={IconRefresh} 
+                                        disabled={deployment.sourceSize === 0}
+                                        on:click={() => { selectedDeployment = deployment; showRedeploy = true; toggle(); }}>
+                                        Redeploy
+                                    </ActionMenu.Item.Button>
+                                    {#snippet tooltip()}
+                                        Deployment has no source
+                                    {/snippet}
+                                </Tooltip>
+
                                 {#if deployment.status === 'ready' && deployment.$id !== data.activeDeployment?.$id}
                                     <ActionMenu.Item.Button 
                                         leadingIcon={IconLightningBolt} 
@@ -139,6 +151,15 @@
                                         Activate
                                     </ActionMenu.Item.Button>
                                 {/if}
+
+                                {#if ['waiting', 'processing', 'building'].includes(effectiveStatus)}
+                                    <ActionMenu.Item.Button 
+                                        leadingIcon={IconX} 
+                                        on:click={() => { selectedDeployment = deployment; showCancel = true; toggle(); }}>
+                                        Cancel
+                                    </ActionMenu.Item.Button>
+                                {/if}
+
                                 <DownloadActionMenuItem {deployment} {toggle} />
                                 <ActionMenu.Item.Button 
                                     leadingIcon={IconTrash} 
