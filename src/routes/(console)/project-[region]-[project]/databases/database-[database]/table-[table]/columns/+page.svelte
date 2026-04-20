@@ -1,4 +1,5 @@
 <script lang="ts">
+    import AttributeNote from '$lib/components/AttributeNote.svelte';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import {
@@ -408,6 +409,7 @@
                             alignItems="center"
                             justifyContent="space-between"
                             style="min-width:0">
+                
                             <Layout.Stack
                                 gap="s"
                                 inline
@@ -472,6 +474,13 @@
                                         <Badge size="xs" variant="secondary" content="required" />
                                     {/if}
                                 </Layout.Stack>
+
+                                <AttributeNote
+                                    databaseId={databaseId}
+                                    collectionId={table}
+                                    attributeKey={column.$id || column.key}
+                                />
+
                             </Layout.Stack>
                             {@const minMaxSize = getMinMaxSizeForColumn(column)}
                             {@const relationType = getRelationshipTypeForColumn(column)}
