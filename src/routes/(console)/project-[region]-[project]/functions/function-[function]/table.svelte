@@ -13,9 +13,9 @@
     import { Dependencies } from '$lib/constants';
     import Cancel from './(modals)/cancelDeploymentModal.svelte';
     import { base } from '$app/paths';
-    import { ActionMenu, Icon, Status, Table, Tooltip } from '@appwrite.io/pink-svelte'; // Tooltip added
+    import { ActionMenu, Icon, Status, Table, Tooltip } from '@appwrite.io/pink-svelte';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { IconDotsHorizontal, IconLightningBolt, IconRefresh, IconTrash, IconX } from '@appwrite.io/pink-icons-svelte'; // IconX added
+    import { IconDotsHorizontal, IconLightningBolt, IconRefresh, IconTrash, IconX } from '@appwrite.io/pink-icons-svelte';
     import { Button } from '$lib/elements/forms';
     import { DeploymentCreatedBy, DeploymentSource } from '$lib/components/git';
     import Delete from './(modals)/deleteModal.svelte';
@@ -36,8 +36,6 @@
     let showActivate = $state(false);
     let showRedeploy = $state(false);
     let selectedDeployment: Models.Deployment | null = $state(null);
-    
-    // Bot Suggestion: Changed any[] to string[] for better type safety
     let selectedIds = $state<string[]>([]); 
 
     function handleActivate() {
@@ -158,15 +156,16 @@
                                         on:click={() => { selectedDeployment = deployment; showCancel = true; toggle(); }}>
                                         Cancel
                                     </ActionMenu.Item.Button>
+                                {:else}
+                                    <ActionMenu.Item.Button 
+                                        leadingIcon={IconTrash} 
+                                        status="danger" 
+                                        on:click={() => { selectedDeployment = deployment; showDelete = true; toggle(); }}>
+                                        Delete
+                                    </ActionMenu.Item.Button>
                                 {/if}
 
                                 <DownloadActionMenuItem {deployment} {toggle} />
-                                <ActionMenu.Item.Button 
-                                    leadingIcon={IconTrash} 
-                                    status="danger" 
-                                    on:click={() => { selectedDeployment = deployment; showDelete = true; toggle(); }}>
-                                    Delete
-                                </ActionMenu.Item.Button>
                             </ActionMenu.Root>
                         </svelte:fragment>
                     </Menu>
