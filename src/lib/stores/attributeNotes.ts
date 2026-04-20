@@ -33,11 +33,16 @@ export function buildNoteKey(
 /**
  * Load notes map from localStorage, returning an empty object on any error.
  */
+function isNotesMap(value: unknown): value is NotesMap {
+    return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
 function loadFromStorage(): NotesMap {
     try {
         const raw = localStorage.getItem(STORAGE_KEY);
         if (!raw) return {};
-        return JSON.parse(raw) as NotesMap;
+        const parsed: unknown = JSON.parse(raw);
+        return isNotesMap(parsed) ? parsed : {};
     } catch {
         return {};
     }
