@@ -43,21 +43,26 @@
     }
 
     async function deleteDeployments(batchDelete: any) {
-        const result = await batchDelete((deploymentId: string) =>
-            sdk.forProject(page.params.region, page.params.project).functions.deleteDeployment({
-                functionId: page.params.function,
-                deploymentId
-            })
-        );
-
+        let result;
         try {
+            // FIX: batchDelete is now inside try block to ensure proper error tracking and UI sync
+            result = await batchDelete((deploymentId: string) =>
+                sdk.forProject(page.params.region, page.params.project).functions.deleteDeployment({
+                    functionId: page.params.function,
+                    deploymentId
+                })
+            );
+
             if (result.error) {
                 trackError(result.error, Submit.DeploymentDelete);
             } else {
                 trackEvent(Submit.DeploymentDelete, { total: result.deleted.length });
                 selectedIds = []; 
             }
+        } catch (e) {
+            trackError(e, Submit.DeploymentDelete);
         } finally {
+            // Ensures UI is refreshed even if some deletions fail
             await invalidate(Dependencies.DEPLOYMENTS);
         }
         return result;
