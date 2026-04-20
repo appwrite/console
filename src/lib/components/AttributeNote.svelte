@@ -97,6 +97,7 @@
                 bind:this={textareaRef}
                 bind:value={draft}
                 class="attribute-note__textarea"
+                aria-label={`Note for ${attributeKey}`}
                 placeholder="Add a note about this column (optional)…"
                 rows="3"
                 maxlength="500"
