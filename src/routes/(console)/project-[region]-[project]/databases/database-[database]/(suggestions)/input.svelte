@@ -35,6 +35,8 @@
     const record = terminology.record.lower;
     const entity = terminology.entity.lower.singular;
 
+    const isSchemaless = type === 'documentsdb' || type === 'vectorsdb';
+
     const title = $derived.by(() => {
         switch (type) {
             default:
@@ -45,20 +47,19 @@
                     : `Smart ${field.singular} suggestions available on Cloud`;
 
             case 'documentsdb':
+            case 'vectorsdb':
                 return featureActive ? `Sample Data` : `Sample Data available on Cloud`;
         }
     });
 
     const subtitle = $derived.by(() => {
-        const isDocs = type === 'documentsdb';
-
         if (featureActive) {
-            return isDocs
+            return isSchemaless
                 ? `Generate sample ${record.plural} based on your ${entity} name`
                 : `Enable AI to suggest useful ${field.plural} based on your ${entity} name`;
         }
 
-        return isDocs
+        return isSchemaless
             ? `Sign up for Cloud to generate sample documents based on your ${entity} name`
             : `Sign up for Cloud to generate ${field.plural} based on your ${entity} name`;
     });

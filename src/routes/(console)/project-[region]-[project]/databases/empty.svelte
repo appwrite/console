@@ -14,8 +14,14 @@
     import DocumentsDB from './(assets)/documents-db.svg';
     import DocumentsDBDark from './(assets)/dark/documents-db.svg';
 
-    import { isSmallViewport, isViewPortWidthInRange } from '$lib/stores/viewport';
+    import VectorsDB from './(assets)/vectors-db.svg';
+    import VectorsDBDark from './(assets)/dark/vectors-db.svg';
+
+    import { isSmallViewport } from '$lib/stores/viewport';
     import type { DatabaseType } from '$database/(entity)';
+    import { flags } from '$lib/flags';
+    import { user } from '$lib/stores/user';
+    import { organization } from '$lib/stores/organization';
 
     const {
         disabled,
@@ -29,8 +35,7 @@
     /*const mongoDbImage = $derived(isDark ? MongoDBDark : MongoDB);*/
     const tablesDbImage = $derived(isDark ? TablesDBDark : TablesDB);
     const documentsDbImage = $derived(isDark ? DocumentsDBDark : DocumentsDB);
-
-    const inRangeStore = isViewPortWidthInRange(1024, 1280);
+    const vectorsDbImage = $derived(isDark ? VectorsDBDark : VectorsDB);
 </script>
 
 {#if $isSmallViewport}
@@ -50,7 +55,7 @@
                 >Store, organize, and manage your app data</Typography.Text>
         </Layout.Stack>
 
-        <Layout.Grid columns={2} columnsS={1} gap="xl">
+        <Layout.Grid columns={3} columnsS={2} columnsXS={1} gap="xl">
             <!-- legacy, tablesDB -->
             {@render databaseTypeCard({
                 type: 'tablesdb',
@@ -60,14 +65,25 @@
                 image: tablesDbImage
             })}
 
-            <!-- documentsDB -->
-            {@render databaseTypeCard({
-                type: 'documentsdb',
-                title: 'DocumentsDB',
-                subtitle:
-                    'Store flexible data without a fixed schema. Best for unstructured data and simple querying.',
-                image: documentsDbImage
-            })}
+            {#if flags.multiDb({ account: $user, organization: $organization })}
+                <!-- documentsDB -->
+                {@render databaseTypeCard({
+                    type: 'documentsdb',
+                    title: 'DocumentsDB',
+                    subtitle:
+                        'Store flexible data without a fixed schema. Best for unstructured data and simple querying.',
+                    image: documentsDbImage
+                })}
+
+                <!-- vectorsDB -->
+                {@render databaseTypeCard({
+                    type: 'vectorsdb',
+                    title: 'VectorsDB',
+                    subtitle:
+                        'Store data as vectors to find similar results. Best for semantic search and recommendations.',
+                    image: vectorsDbImage
+                })}
+            {/if}
         </Layout.Grid>
     </Layout.Stack>
 {/snippet}
@@ -79,25 +95,16 @@
         padding="none"
         {disabled}
         on:click={() => onDatabaseTypeSelected?.(type)}>
-        {@const direction = $isSmallViewport || $inRangeStore ? 'column' : 'row'}
-        <Layout.Stack gap="none" {direction}>
-            <img
-                src={image}
-                class="database-image"
-                class:adaptive-height={$inRangeStore}
-                alt="database type artwork" />
+        <Layout.Stack gap="none" direction="column">
+            <img src={image} class="database-image adaptive-height" alt="database type artwork" />
 
-            {#if $isSmallViewport || $inRangeStore}
-                <Divider />
-            {/if}
+            <Divider />
 
             <Layout.Stack
                 gap="xxs"
                 direction="column"
                 justifyContent="space-between"
-                style="padding: var(--gap-xl); flex: 1; {!$isSmallViewport && !$inRangeStore
-                    ? 'border-inline-start: 1px solid var(--border-neutral);'
-                    : ''}">
+                style="padding: var(--gap-xl); flex: 1;">
                 <Layout.Stack direction="column" gap="xxs">
                     <Layout.Stack
                         inline

@@ -17,7 +17,8 @@ import type {
     Models,
     OrderBy,
     TablesDBIndexType,
-    DocumentsDBIndexType
+    DocumentsDBIndexType,
+    VectorsDBIndexType
 } from '@appwrite.io/console';
 
 export type DatabaseSdkResult = {
@@ -35,6 +36,7 @@ export type DatabaseSdkResult = {
         entityId: string;
         name: string;
         databaseType?: DatabaseType;
+        dimension?: number /* vectorsDB specific */;
     }) => Promise<Entity>;
     getEntity: (params: {
         databaseId: string;
@@ -53,6 +55,15 @@ export type DatabaseSdkResult = {
         entityId: string;
         databaseType?: DatabaseType;
     }) => Promise<{}>;
+    updateEntity: (params: {
+        databaseId: string;
+        entityId: string;
+        name?: string;
+        permissions?: string[];
+        documentSecurity?: boolean;
+        enabled?: boolean;
+        databaseType?: DatabaseType;
+    }) => Promise<Entity>;
     createRecord: (params: {
         databaseId: string;
         entityId: string;
@@ -98,7 +109,29 @@ export type DatabaseSdkResult = {
         orders?: OrderBy[];
         databaseType?: DatabaseType;
     }) => Promise<Index>;
+    deleteIndex: (params: {
+        databaseId: string;
+        entityId: string;
+        key: string;
+        databaseType?: DatabaseType;
+    }) => Promise<{}>;
 };
+
+/**
+ * Returns the raw DocumentsDB or VectorsDB SDK service for a given database type.
+ * Use in load functions (.ts) where Svelte runes aren't available.
+ */
+export function getCollectionService(region: string, project: string, type: DatabaseType) {
+    const projectSdk = sdk.forProject(region, project);
+    switch (type) {
+        case 'documentsdb':
+            return projectSdk.documentsDB;
+        case 'vectorsdb':
+            return projectSdk.vectorsDB;
+        default:
+            throw new Error(`Unsupported collection database type: ${type}`);
+    }
+}
 
 export function useDatabaseSdk(
     regionOrPage: string | Page,
@@ -131,8 +164,9 @@ export function useDatabaseSdk(
                 case 'documentsdb': {
                     return await baseSdk.documentsDB.create(params);
                 }
-                case 'vectorsdb':
-                    throw new Error('Database type not supported yet');
+                case 'vectorsdb': {
+                    return await baseSdk.vectorsDB.create(params);
+                }
                 default:
                     throw new Error('Unknown database type');
             }
@@ -141,7 +175,8 @@ export function useDatabaseSdk(
         async list(params): Promise<Models.DatabaseList> {
             const results = await Promise.all([
                 baseSdk.tablesDB.list(params),
-                baseSdk.documentsDB.list(params)
+                baseSdk.documentsDB.list(params),
+                baseSdk.vectorsDB.list(params)
             ]);
 
             return results.reduce(
@@ -171,8 +206,15 @@ export function useDatabaseSdk(
 
                     return toSupportiveEntity(table);
                 }
-                case 'vectorsdb':
-                    throw new Error('Database type not supported yet');
+                case 'vectorsdb': {
+                    const collection = await baseSdk.vectorsDB.createCollection({
+                        ...params,
+                        dimension: params.dimension,
+                        collectionId: params.entityId
+                    });
+
+                    return toSupportiveEntity(collection);
+                }
                 default:
                     throw new Error('Unknown database type');
             }
@@ -190,8 +232,10 @@ export function useDatabaseSdk(
                         await baseSdk.documentsDB.listCollections(params);
                     return { total, entities: collections.map(toSupportiveEntity) };
                 }
-                case 'vectorsdb':
-                    throw new Error(`Database type not supported yet`);
+                case 'vectorsdb': {
+                    const { total, collections } = await baseSdk.vectorsDB.listCollections(params);
+                    return { total, entities: collections.map(toSupportiveEntity) };
+                }
                 default:
                     throw new Error(`Unknown database type`);
             }
@@ -215,8 +259,14 @@ export function useDatabaseSdk(
 
                     return toSupportiveEntity(collection);
                 }
-                case 'vectorsdb':
-                    throw new Error(`Database type not supported yet`);
+                case 'vectorsdb': {
+                    const collection = await baseSdk.vectorsDB.getCollection({
+                        databaseId: params.databaseId,
+                        collectionId: params.entityId
+                    });
+
+                    return toSupportiveEntity(collection);
+                }
                 default:
                     throw new Error(`Unknown database type`);
             }
@@ -230,7 +280,7 @@ export function useDatabaseSdk(
                 case 'documentsdb':
                     return await baseSdk.documentsDB.delete(params);
                 case 'vectorsdb':
-                    throw new Error('Database type not supported yet');
+                    return await baseSdk.vectorsDB.delete(params);
                 default:
                     throw new Error(`Unknown database type`);
             }
@@ -250,7 +300,51 @@ export function useDatabaseSdk(
                         collectionId: params.entityId
                     });
                 case 'vectorsdb':
-                    throw new Error('Database type not supported yet');
+                    return await baseSdk.vectorsDB.deleteCollection({
+                        databaseId: params.databaseId,
+                        collectionId: params.entityId
+                    });
+                default:
+                    throw new Error(`Unknown database type`);
+            }
+        },
+
+        async updateEntity(params) {
+            switch (type ?? params.databaseType) {
+                case 'legacy': /* databases api */
+                case 'tablesdb':
+                    return toSupportiveEntity(
+                        await baseSdk.tablesDB.updateTable({
+                            databaseId: params.databaseId,
+                            tableId: params.entityId,
+                            name: params.name,
+                            permissions: params.permissions,
+                            rowSecurity: params.documentSecurity,
+                            enabled: params.enabled
+                        })
+                    );
+                case 'documentsdb':
+                    return toSupportiveEntity(
+                        await baseSdk.documentsDB.updateCollection({
+                            databaseId: params.databaseId,
+                            collectionId: params.entityId,
+                            name: params.name,
+                            permissions: params.permissions,
+                            documentSecurity: params.documentSecurity,
+                            enabled: params.enabled
+                        })
+                    );
+                case 'vectorsdb':
+                    return toSupportiveEntity(
+                        await baseSdk.vectorsDB.updateCollection({
+                            databaseId: params.databaseId,
+                            collectionId: params.entityId,
+                            name: params.name,
+                            permissions: params.permissions,
+                            documentSecurity: params.documentSecurity,
+                            enabled: params.enabled
+                        })
+                    );
                 default:
                     throw new Error(`Unknown database type`);
             }
@@ -275,8 +369,15 @@ export function useDatabaseSdk(
                         data: params.data,
                         permissions: params.permissions
                     });
-                case 'vectorsdb':
-                    throw new Error('Database type not supported yet');
+                case 'vectorsdb': {
+                    return await baseSdk.vectorsDB.createDocument({
+                        databaseId: params.databaseId,
+                        collectionId: params.entityId,
+                        documentId: params.recordId,
+                        data: params.data,
+                        permissions: params.permissions
+                    });
+                }
                 default:
                     throw new Error(`Unknown database type`);
             }
@@ -301,8 +402,15 @@ export function useDatabaseSdk(
                         data: params.data,
                         permissions: params.permissions
                     });
-                case 'vectorsdb':
-                    throw new Error('Database type not supported yet');
+                case 'vectorsdb': {
+                    return await baseSdk.vectorsDB.upsertDocument({
+                        databaseId: params.databaseId,
+                        collectionId: params.entityId,
+                        documentId: params.recordId,
+                        data: params.data,
+                        permissions: params.permissions
+                    });
+                }
                 default:
                     throw new Error(`Unknown database type`);
             }
@@ -325,8 +433,14 @@ export function useDatabaseSdk(
                         documentId: params.recordId,
                         permissions: params.permissions
                     });
-                case 'vectorsdb':
-                    throw new Error('Database type not supported yet');
+                case 'vectorsdb': {
+                    return await baseSdk.vectorsDB.upsertDocument({
+                        databaseId: params.databaseId,
+                        collectionId: params.entityId,
+                        documentId: params.recordId,
+                        permissions: params.permissions
+                    });
+                }
                 default:
                     throw new Error(`Unknown database type`);
             }
@@ -351,8 +465,19 @@ export function useDatabaseSdk(
                     });
                     return toSupportiveRecord(document);
                 }
-                case 'vectorsdb':
-                    throw new Error('Database type not supported yet');
+                case 'vectorsdb': {
+                    if (!params.recordId) {
+                        throw new Error('Record ID is required to delete a VectorsDB document');
+                    }
+
+                    const document = await baseSdk.vectorsDB.deleteDocument({
+                        databaseId: params.databaseId,
+                        collectionId: params.entityId,
+                        documentId: params.recordId
+                    });
+
+                    return toSupportiveRecord(document);
+                }
                 default:
                     throw new Error(`Unknown database type`);
             }
@@ -377,8 +502,15 @@ export function useDatabaseSdk(
                     });
                     return { total, records: documents.map(toSupportiveRecord) };
                 }
-                case 'vectorsdb':
-                    throw new Error('Database type not supported yet');
+                case 'vectorsdb': {
+                    const { total, documents } = await baseSdk.vectorsDB.deleteDocuments({
+                        databaseId: params.databaseId,
+                        collectionId: params.entityId,
+                        queries: params.queries
+                    });
+
+                    return { total, records: documents.map(toSupportiveRecord) };
+                }
                 default:
                     throw new Error(`Unknown database type`);
             }
@@ -411,8 +543,45 @@ export function useDatabaseSdk(
                     });
                     return toSupportiveIndex(index);
                 }
+                case 'vectorsdb': {
+                    const index = await baseSdk.vectorsDB.createIndex({
+                        databaseId: params.databaseId,
+                        collectionId: params.entityId,
+                        key: params.key,
+                        type: params.type as VectorsDBIndexType,
+                        attributes: params.attributes,
+                        lengths: params.lengths,
+                        orders: params.orders
+                    });
+
+                    return toSupportiveIndex(index);
+                }
+                default:
+                    throw new Error(`Unknown database type`);
+            }
+        },
+
+        async deleteIndex(params) {
+            switch (type ?? params.databaseType) {
+                case 'legacy': /* databases api */
+                case 'tablesdb':
+                    return await baseSdk.tablesDB.deleteIndex({
+                        databaseId: params.databaseId,
+                        tableId: params.entityId,
+                        key: params.key
+                    });
+                case 'documentsdb':
+                    return await baseSdk.documentsDB.deleteIndex({
+                        databaseId: params.databaseId,
+                        collectionId: params.entityId,
+                        key: params.key
+                    });
                 case 'vectorsdb':
-                    throw new Error('Database type not supported yet');
+                    return await baseSdk.vectorsDB.deleteIndex({
+                        databaseId: params.databaseId,
+                        collectionId: params.entityId,
+                        key: params.key
+                    });
                 default:
                     throw new Error(`Unknown database type`);
             }

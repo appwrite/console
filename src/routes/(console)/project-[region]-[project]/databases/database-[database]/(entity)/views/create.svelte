@@ -4,14 +4,14 @@
     import { Modal, CustomId } from '$lib/components';
     import { subNavigation } from '$lib/stores/database';
     import { ID } from '@appwrite.io/console';
-    import { Button, InputText } from '$lib/elements/forms';
+    import { Button, InputNumber, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import {
         Input as SuggestionsInput,
         entityColumnSuggestions
     } from '$database/(suggestions)/index';
 
-    import { getTerminologies } from '../helpers';
+    import { getTerminologies, DEFAULT_VECTOR_DIMENSION } from '$database/(entity)';
     import { resetSampleFieldsConfig } from '$database/store';
 
     let {
@@ -21,7 +21,7 @@
     }: {
         show: boolean;
         useSuggestions?: boolean;
-        onCreateEntity: (id: string, name: string) => Promise<void>;
+        onCreateEntity: (id: string, name: string, dimension?: number) => Promise<void>;
     } = $props();
 
     const { analytics, terminology } = getTerminologies();
@@ -29,12 +29,14 @@
     const lower = terminology.entity.lower.singular;
     const title = terminology.entity.title.singular;
     const analyticsCreateSubmit = analytics.submit.entity('Create');
+    const isVectorsDb = terminology.type === 'vectorsdb';
 
     // example - `table-[table]`, `collection-[collection]`
     const isOnEntitiesPage = $derived(page.route?.id.endsWith(`${lower}-[${lower}]`));
 
     let name = $state('');
     let id = $state(null);
+    let dimension = $state(DEFAULT_VECTOR_DIMENSION);
     let error = $state(null);
     let creatingEntity = $state(false);
 
@@ -64,7 +66,7 @@
             enableThinkingModeForSuggestions(finalId, name);
 
             // create entity.
-            await onCreateEntity(finalId, name);
+            await onCreateEntity(finalId, name, isVectorsDb ? dimension : undefined);
 
             // cleanup
             updateAndCleanup();
@@ -120,6 +122,16 @@
         required />
 
     <CustomId show bind:id required={false} autofocus={false} name={title} syncFrom={name} />
+
+    {#if isVectorsDb}
+        <InputNumber
+            id="dimension"
+            label="Vector dimension"
+            bind:value={dimension}
+            min={1}
+            max={4096}
+            required />
+    {/if}
 
     {#if useSuggestions}
         <SuggestionsInput showSampleCountPicker={!terminology.schema} />

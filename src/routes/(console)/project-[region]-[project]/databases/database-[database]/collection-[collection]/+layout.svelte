@@ -51,11 +51,12 @@
         SideSheet,
         EditRecordPermissions,
         RecordActivity,
-        CreateIndex,
         useDatabaseSdk,
+        DEFAULT_VECTOR_DIMENSION,
         type Field,
         type Index
     } from '$database/(entity)';
+    import CreateIndex from './indexes/createIndex.svelte';
     import {
         entityColumnSuggestions,
         type ColumnInput,
@@ -98,7 +99,10 @@
         }
 
         return realtime.forProject(page.params.region, ['project', 'console'], (response) => {
-            if (response.events.includes('documentsdb.*.collections.*.indexes.*')) {
+            if (
+                response.events.includes('documentsdb.*.collections.*.indexes.*') ||
+                response.events.includes('vectorsdb.*.collections.*.indexes.*')
+            ) {
                 if (!isWaterfallFromFaker && !$entityColumnSuggestions.entity) {
                     invalidate(Dependencies.COLLECTION);
                 }
@@ -205,7 +209,11 @@
     });
 
     async function handleCreateIndex(index: Index) {
-        const databaseSdk = useDatabaseSdk(page.params.region, page.params.project);
+        const databaseSdk = useDatabaseSdk(
+            page.params.region,
+            page.params.project,
+            data.database.type
+        );
 
         await databaseSdk.createIndex({
             databaseId: page.params.database,
@@ -271,13 +279,33 @@
             const { rows, ids } = generateFakeRecords($randomDataModalState.value, fields);
             documentIds = ids;
 
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .documentsDB.createDocuments({
+            const dbType = data.database?.type;
+            const isVectorsDb = dbType === 'vectorsdb';
+            const dimension = collection?.dimension ?? DEFAULT_VECTOR_DIMENSION;
+
+            // For vectorsdb, wrap fields in metadata and add empty embeddings
+            const documents = isVectorsDb
+                ? rows.map((row) => {
+                      const { $id, ...rest } = row;
+                      return { $id, metadata: rest, embeddings: new Array(dimension).fill(0) };
+                  })
+                : rows;
+
+            const projectSdk = sdk.forProject(page.params.region, page.params.project);
+
+            if (isVectorsDb) {
+                await projectSdk.vectorsDB.createDocuments({
                     databaseId: page.params.database,
                     collectionId: page.params.collection,
-                    documents: rows
+                    documents
                 });
+            } else {
+                await projectSdk.documentsDB.createDocuments({
+                    databaseId: page.params.database,
+                    collectionId: page.params.collection,
+                    documents
+                });
+            }
 
             await invalidate(Dependencies.DOCUMENTS);
         } catch (e) {
@@ -340,6 +368,7 @@
     }}>
     <CreateIndex
         entity={collection}
+        databaseType={data.database.type}
         bind:this={createIndex}
         bind:showCreateIndex={$showCreateIndexSheet.show}
         externalFieldKey={$showCreateIndexSheet.column}
