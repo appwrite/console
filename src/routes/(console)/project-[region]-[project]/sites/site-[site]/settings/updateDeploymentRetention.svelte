@@ -4,7 +4,7 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Button, Form, InputNumber, InputSwitch } from '$lib/elements/forms';
+    import { Button, Form, InputSelect, InputSwitch } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Adapter, BuildRuntime, Framework, type Models } from '@appwrite.io/console';
@@ -12,12 +12,35 @@
     let { site }: { site: Models.Site } = $props();
 
     const MAX_DEPLOYMENT_RETENTION = 36500;
+    const DEPLOYMENT_RETENTION_OPTIONS = [
+        { value: 7, label: '1 week' },
+        { value: 30, label: '1 month' },
+        { value: 90, label: '3 months' },
+        { value: 180, label: '6 months' },
+        { value: 365, label: '1 year' },
+        { value: 730, label: '2 years' },
+        { value: 1825, label: '5 years' },
+        { value: 3650, label: '10 years' },
+        { value: MAX_DEPLOYMENT_RETENTION, label: '100 years' }
+    ];
     const getInitialDeploymentRetention = () => site.deploymentRetention;
+    const getRetentionOptions = (retention: number) => {
+        const hasCurrentOption = DEPLOYMENT_RETENTION_OPTIONS.some(
+            (option) => option.value === retention
+        );
+
+        if (retention < 1 || retention > MAX_DEPLOYMENT_RETENTION || hasCurrentOption) {
+            return DEPLOYMENT_RETENTION_OPTIONS;
+        }
+
+        return [{ value: retention, label: `${retention} days` }, ...DEPLOYMENT_RETENTION_OPTIONS];
+    };
 
     let retentionEnabled = $state(getInitialDeploymentRetention() > 0);
     let retentionDays = $state(
         getInitialDeploymentRetention() > 0 ? getInitialDeploymentRetention() : 30
     );
+    const retentionOptions = $derived(getRetentionOptions(retentionDays));
     const deploymentRetention = $derived(retentionEnabled ? retentionDays : 0);
     let isUnchanged = $derived(site.deploymentRetention === deploymentRetention);
     let isInvalid = $derived(
@@ -78,12 +101,11 @@
                 id="deployment-retention-enabled"
                 label="Delete inactive deployments"
                 bind:value={retentionEnabled} />
-            <InputNumber
-                min={1}
-                max={MAX_DEPLOYMENT_RETENTION}
+            <InputSelect
                 id="deployment-retention"
-                label="Retention (days)"
-                placeholder="Enter retention"
+                label="Retention period"
+                placeholder="Select retention period"
+                options={retentionOptions}
                 disabled={!retentionEnabled}
                 required
                 bind:value={retentionDays} />
