@@ -16,6 +16,7 @@
     import UpdateResourceLimits from './updateResourceLimits.svelte';
     import UpdateVariables from '$routes/(console)/project-[region]-[project]/updateVariables.svelte';
     import UpdateLogging from './updateLogging.svelte';
+    import UpdateDeploymentRetention from './updateDeploymentRetention.svelte';
 
     export let data;
 
@@ -81,6 +82,7 @@
     {#if isCloud}
         <UpdateResourceLimits site={data.site} specs={data.specificationsList} />
     {/if}
+    <UpdateDeploymentRetention site={data.site} />
     <UpdateTimeout site={data.site} />
     <UpdateLogging site={data.site} />
     <DangerZone site={data.site} />
