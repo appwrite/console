@@ -10,6 +10,8 @@
     import { IconPencil } from '@appwrite.io/pink-icons-svelte';
     import { Icon, Layout, Tag } from '@appwrite.io/pink-svelte';
     import { createEventDispatcher } from 'svelte';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
 
     export let show = false;
     export let teamId: string;
@@ -34,6 +36,11 @@
             });
             show = false;
             dispatch('created', project);
+            try {
+                await invalidate(Dependencies.ORGANIZATION);
+            } catch (invalidateError) {
+                trackError(invalidateError, Submit.ProjectCreate);
+            }
             trackEvent(Submit.ProjectCreate, {
                 customId: !!id,
                 teamId
