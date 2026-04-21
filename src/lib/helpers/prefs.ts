@@ -55,6 +55,17 @@ export function sanitizePrefs(prefs: PrefRow[]) {
 export function parsePrefValue(value: string, original: unknown): unknown {
     const trimmed = value.trim();
 
+    if (typeof original === 'number') {
+        const parsed = Number(trimmed);
+        return Number.isNaN(parsed) ? value : parsed;
+    }
+
+    if (typeof original === 'boolean') {
+        if (trimmed === 'true') return true;
+        if (trimmed === 'false') return false;
+        return value;
+    }
+
     if (!trimmed.startsWith('{') && !trimmed.startsWith('[')) return value;
 
     try {
