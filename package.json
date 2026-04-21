@@ -106,7 +106,7 @@
         "immutable": "^5.1.5",
         "flatted": "^3.4.2",
         "yaml": "^1.10.3",
-        "picomatch": "^2.3.2",
+        "picomatch": "^4.0.4",
         "cookie": "^0.7.0"
     }
 }

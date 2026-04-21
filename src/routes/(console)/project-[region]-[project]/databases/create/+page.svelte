@@ -24,6 +24,9 @@
     import type { PageProps } from './$types';
     import { createDatabaseStore } from './store';
     import { isTabletViewport } from '$lib/stores/viewport';
+    import { flags } from '$lib/flags';
+    import { user } from '$lib/stores/user';
+    import { organization } from '$lib/stores/organization';
 
     const { data }: PageProps = $props();
 
@@ -42,24 +45,36 @@
     const isDark = $derived($app.themeInUse === 'dark');
     const backupsImg = $derived(isDark ? EmptyDarkMobile : EmptyLightMobile);
 
+    const isMultiDb = $derived(flags.multiDb({ account: $user, organization: $organization }));
+
     const databaseTypes: Array<{
         type: DatabaseType;
         title: string;
         subtitle: string;
-    }> = [
+    }> = $derived([
         {
-            type: 'tablesdb',
+            type: 'tablesdb' as DatabaseType,
             title: 'TablesDB',
             subtitle:
                 'Structure your data in rows and columns. Best for relational data and advanced querying.'
         },
-        {
-            type: 'documentsdb',
-            title: 'DocumentsDB',
-            subtitle:
-                'Store flexible data without a fixed schema. Best for unstructured data and simple querying.'
-        }
-    ];
+        ...(isMultiDb
+            ? [
+                  {
+                      type: 'documentsdb' as DatabaseType,
+                      title: 'DocumentsDB',
+                      subtitle:
+                          'Store flexible data without a fixed schema. Best for unstructured data and simple querying.'
+                  },
+                  {
+                      type: 'vectorsdb' as DatabaseType,
+                      title: 'VectorsDB',
+                      subtitle:
+                          'Store data as vectors to find similar results. Best for semantic search and recommendations.'
+                  }
+              ]
+            : [])
+    ]);
 
     afterNavigate(({ from }) => (previousPage = from?.url?.pathname || previousPage));
 
@@ -276,7 +291,7 @@
 {/snippet}
 
 {#snippet selectDatabaseType(disabled = false)}
-    <Layout.Grid columns={2} columnsS={1}>
+    <Layout.Grid columns={3} columnsS={1}>
         {#each databaseTypes as databaseType}
             <div class="card-selector">
                 <Card.Selector

@@ -6,10 +6,13 @@ import type { Attributes, Collection, Columns, Table } from '$database/store';
 import type { Term, TerminologyResult, TerminologyShape } from '$database/(entity)/helpers/types';
 
 type BaseTerminology = typeof baseTerminology;
-type ImplementedDBTypes = Omit<BaseTerminology, 'vectorsdb' | 'legacy'>;
+type ImplementedDBTypes = Omit<BaseTerminology, 'legacy'>;
 
 /* manual type for the time being because vectorsdb is pending */
 export type DatabaseType = 'legacy' | 'tablesdb' | 'documentsdb' | 'vectorsdb';
+export type CollectionDatabaseType = Extract<DatabaseType, 'documentsdb' | 'vectorsdb'>;
+
+export const DEFAULT_VECTOR_DIMENSION = 768;
 
 export type RecordType = ImplementedDBTypes[keyof ImplementedDBTypes]['record'];
 
@@ -18,6 +21,7 @@ export type Entity = Partial<Collection | Table> & {
     indexes?: Index[];
     fields?: (Attributes | Columns)[];
     recordSecurity?: Models.Collection['documentSecurity'] | Models.Table['rowSecurity'];
+    dimension?: number;
 };
 
 export type Field = Partial<Attributes> | Partial<Columns>;
@@ -62,7 +66,11 @@ export const baseTerminology = {
         field: 'attribute',
         record: 'document'
     },
-    vectorsdb: {}
+    vectorsdb: {
+        entity: 'collection',
+        field: 'attribute',
+        record: 'document'
+    }
 } as const;
 
 const createTerm = (singular: string, pluralForm: string): Term => {

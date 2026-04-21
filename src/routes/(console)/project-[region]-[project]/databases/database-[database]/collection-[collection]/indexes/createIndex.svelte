@@ -1,6 +1,7 @@
 <script module lang="ts">
-    import { DocumentsDBIndexType, OrderBy } from '@appwrite.io/console';
+    import { DocumentsDBIndexType, VectorsDBIndexType, OrderBy } from '@appwrite.io/console';
     import type { CreateIndexesCallbackType } from '$database/(entity)';
+    import type { DatabaseType } from '$database/(entity)/helpers/terminology';
 </script>
 
 <script lang="ts">
@@ -12,28 +13,60 @@
     import { remove } from '$lib/helpers/array';
     import { addNotification } from '$lib/stores/notifications';
     import { Icon, Layout } from '@appwrite.io/pink-svelte';
-    import { IconCalendar, IconFingerPrint, IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
+    import { IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
     import { type Entity, getTerminologies } from '$database/(entity)';
     import { resolveRoute, withPath } from '$lib/stores/navigation';
 
     let {
         entity,
+        databaseType,
         showCreateIndex = $bindable(false),
+        externalFieldKey = null,
         onCreateIndex
     }: {
         entity: Entity;
+        databaseType: DatabaseType;
         showCreateIndex: boolean;
+        externalFieldKey?: string | null;
         onCreateIndex: (index: CreateIndexesCallbackType) => Promise<void>;
     } = $props();
 
     let key = $state('');
     let initializedForOpen = $state(false);
-    let selectedType = $state<DocumentsDBIndexType>(DocumentsDBIndexType.Key);
+    let selectedType = $state<string>(
+        databaseType === 'vectorsdb' ? VectorsDBIndexType.Key : DocumentsDBIndexType.Key
+    );
 
     const { dependencies, terminology } = getTerminologies();
 
-    const hasAttributes = $derived(entity.fields?.length > 0);
+    const types = $derived.by(() => {
+        if (databaseType === 'vectorsdb') {
+            return [
+                { value: VectorsDBIndexType.Key, label: 'Key' },
+                { value: VectorsDBIndexType.Unique, label: 'Unique' },
+                { value: VectorsDBIndexType.HnswEuclidean, label: 'HNSW Euclidean' },
+                { value: VectorsDBIndexType.HnswDot, label: 'HNSW Dot' },
+                { value: VectorsDBIndexType.HnswCosine, label: 'HNSW Cosine' },
+                { value: VectorsDBIndexType.Object, label: 'Object' }
+            ];
+        }
+        return [
+            { value: DocumentsDBIndexType.Key, label: 'Key' },
+            { value: DocumentsDBIndexType.Unique, label: 'Unique' },
+            { value: DocumentsDBIndexType.Fulltext, label: 'Fulltext' }
+        ];
+    });
+
+    const isHnswType = $derived(
+        [
+            VectorsDBIndexType.HnswEuclidean,
+            VectorsDBIndexType.HnswDot,
+            VectorsDBIndexType.HnswCosine
+        ].includes(selectedType as VectorsDBIndexType)
+    );
+
+    const isObjectType = $derived(selectedType === VectorsDBIndexType.Object);
 
     const fieldOptions = $derived(
         (entity.fields ?? []).map((field) => ({
@@ -44,15 +77,9 @@
 
     let fieldList: Array<{
         value: string;
-        order: OrderBy;
+        order: OrderBy | null;
         length: number | null;
     }> = $state([{ value: '', order: OrderBy.Asc, length: null }]);
-
-    const types = [
-        { value: DocumentsDBIndexType.Key, label: 'Key' },
-        { value: DocumentsDBIndexType.Unique, label: 'Unique' },
-        { value: DocumentsDBIndexType.Fulltext, label: 'Fulltext' }
-    ];
 
     const orderOptions = [
         { value: OrderBy.Asc, label: 'ASC' },
@@ -71,12 +98,20 @@
     }
 
     function initialize() {
-        selectedType = DocumentsDBIndexType.Key;
-        fieldList = [{ value: '', order: OrderBy.Asc, length: null }];
+        selectedType =
+            databaseType === 'vectorsdb' ? VectorsDBIndexType.Key : DocumentsDBIndexType.Key;
+        fieldList = externalFieldKey
+            ? [{ value: externalFieldKey, order: OrderBy.Asc, length: null }]
+            : [{ value: '', order: OrderBy.Asc, length: null }];
         key = `index_${entity.indexes.length + 1}`;
     }
 
-    const addFieldDisabled = $derived(!fieldList.at(-1)?.value || !fieldList.at(-1)?.order);
+    const addFieldDisabled = $derived(
+        isHnswType ||
+            isObjectType ||
+            !fieldList.at(-1)?.value ||
+            (!isObjectType && !fieldList.at(-1)?.order)
+    );
 
     const isOnIndexesPage = $derived(page.route.id?.endsWith('/indexes'));
     const navigatorPathToIndexes = $derived.by(() => {
@@ -101,10 +136,25 @@
         }
     });
 
+    // HNSW indexes: auto-fill embeddings, single field only.
+    // When switching away to Key/Unique, reset stale `order: null` left over from HNSW.
+    $effect(() => {
+        if (isHnswType) {
+            fieldList = [{ value: 'embeddings', order: null, length: null }];
+        } else if (!isObjectType && fieldList.some((f) => f.order === null)) {
+            fieldList = [{ value: '', order: OrderBy.Asc, length: null }];
+        }
+    });
+
     export async function create() {
         const fieldType = terminology.field.lower.singular;
 
-        if (!key || !selectedType || addFieldDisabled) {
+        if (
+            !key ||
+            !selectedType ||
+            (!isHnswType && !isObjectType && addFieldDisabled) ||
+            ((isHnswType || isObjectType) && !fieldList.at(0)?.value)
+        ) {
             addNotification({
                 type: 'error',
                 message: `Selected ${fieldType} key or type invalid`
@@ -117,8 +167,16 @@
                 key,
                 type: selectedType,
                 fields: fieldList.map((a) => a.value),
-                lengths: fieldList.map((a) => (a.length ? Number(a.length) : null)),
-                orders: fieldList.map((a) => a.order)
+                lengths:
+                    isHnswType || isObjectType
+                        ? []
+                        : fieldList.map((a) => (a.length ? Number(a.length) : null)),
+                orders:
+                    isHnswType || isObjectType
+                        ? []
+                        : fieldList
+                              .map((a) => a.order)
+                              .filter((order): order is OrderBy => order !== null)
             });
 
             await Promise.allSettled([
@@ -173,21 +231,20 @@
     {#each fieldList as field, index}
         {@const direction = $isSmallViewport ? 'column' : 'row'}
         <Layout.Stack {direction}>
-            {#if hasAttributes}
+            {#if isHnswType}
+                <InputText
+                    required
+                    disabled
+                    id={`field-${index}`}
+                    label={index === 0 ? fieldType : undefined}
+                    bind:value={field.value} />
+            {:else if fieldOptions.length}
                 <InputSelect
                     required
                     options={[
-                        { value: '$id', label: '$id', leadingIcon: IconFingerPrint },
-                        {
-                            value: '$createdAt',
-                            label: '$createdAt',
-                            leadingIcon: IconCalendar
-                        },
-                        {
-                            value: '$updatedAt',
-                            label: '$updatedAt',
-                            leadingIcon: IconCalendar
-                        },
+                        { value: '$id', label: '$id' },
+                        { value: '$createdAt', label: '$createdAt' },
+                        { value: '$updatedAt', label: '$updatedAt' },
                         ...fieldOptions
                     ]}
                     id={`field-${index}`}
@@ -203,20 +260,22 @@
                     bind:value={field.value} />
             {/if}
 
-            <InputSelect
-                options={orderOptions}
-                required
-                id={`order-${index}`}
-                label={index === 0 ? 'Order' : undefined}
-                bind:value={field.order}
-                placeholder="Select order" />
+            {#if !isHnswType && !isObjectType}
+                <InputSelect
+                    options={orderOptions}
+                    required
+                    id={`order-${index}`}
+                    label={index === 0 ? 'Order' : undefined}
+                    bind:value={field.order}
+                    placeholder="Select order" />
 
-            {#if selectedType === DocumentsDBIndexType.Key}
-                <InputNumber
-                    id={`length-${index}`}
-                    label={index === 0 ? 'Length' : undefined}
-                    placeholder="Enter length"
-                    bind:value={field.length} />
+                {#if selectedType === DocumentsDBIndexType.Key || selectedType === VectorsDBIndexType.Key}
+                    <InputNumber
+                        id={`length-${index}`}
+                        label={index === 0 ? 'Length' : undefined}
+                        placeholder="Enter length"
+                        bind:value={field.length} />
+                {/if}
             {/if}
 
             {#if $isSmallViewport}
@@ -247,12 +306,14 @@
             {/if}
         </Layout.Stack>
     {/each}
-    <div>
-        <Button compact on:click={addField} disabled={addFieldDisabled}>
-            <Icon icon={IconPlus} slot="start" size="s" />
-            Add {fieldTypeLower}
-        </Button>
-    </div>
+    {#if !isHnswType && !isObjectType}
+        <div>
+            <Button compact on:click={addField} disabled={addFieldDisabled}>
+                <Icon icon={IconPlus} slot="start" size="s" />
+                Add {fieldTypeLower}
+            </Button>
+        </div>
+    {/if}
 </Layout.Stack>
 
 <style lang="scss">
