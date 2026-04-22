@@ -25,11 +25,7 @@
                 message: `${user.name ? user.name : 'User'} has been deleted`
             });
             trackEvent(Submit.UserDelete);
-            await goto(
-                resolveRoute('/(console)/project-[region]-[project]/auth', {
-                    ...page.params
-                })
-            );
+            await goto(resolveRoute('/(console)/project-[region]-[project]/auth', page.params));
         } catch (e) {
             error = e.message;
             trackError(e, Submit.UserDelete);

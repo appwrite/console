@@ -23,10 +23,11 @@ import {
     Tokens,
     TablesDB,
     Domains,
+    DocumentsDB,
     Webhooks,
-    /*DocumentsDB,*/
     Realtime,
-    Organizations
+    Organizations,
+    VectorsDB
 } from '@appwrite.io/console';
 import { buildRegionalV1Endpoint } from '$lib/helpers/apiEndpoint';
 import { Sources } from '$lib/sdk/sources';
@@ -100,9 +101,10 @@ const sdkForProject = {
     migrations: new Migrations(clientProject),
     sites: new Sites(clientProject),
     tablesDB: new TablesDB(clientProject),
-    /*documentsDB: new DocumentsDB(clientProject),*/
-    console: new Console(clientProject), // for suggestions API
-    webhooks: new Webhooks(clientProject)
+    documentsDB: new DocumentsDB(clientProject),
+    vectorsDB: new VectorsDB(clientProject),
+    webhooks: new Webhooks(clientProject),
+    console: new Console(clientProject) // for suggestions API
 };
 
 export const realtime = {
