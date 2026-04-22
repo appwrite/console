@@ -29,6 +29,10 @@
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
     import { normalizeDetectedVariables, mergeVariables } from '$lib/helpers/variables';
 
+    type FrameworkAdapterWithStartCommand = Models.FrameworkAdapter & {
+        startCommand?: string;
+    };
+
     export let data;
     let showExitModal = false;
 
@@ -38,11 +42,12 @@
     let name = '';
     let id = ID.unique();
     let framework: Models.Framework = data.frameworks.frameworks.find((f) => f.key === 'other');
-    let adapter = framework?.adapters[0];
+    let adapter = framework?.adapters[0] as FrameworkAdapterWithStartCommand;
     let branch: string;
     let rootDir = './';
     let installCommand = adapter?.installCommand;
     let buildCommand = adapter?.buildCommand;
+    let startCommand = adapter?.startCommand;
     let outputDirectory = adapter?.outputDirectory;
     let variables: Partial<Models.Variable>[] = [];
     let silentMode = false;
@@ -81,9 +86,10 @@
             if (!framework) {
                 framework = data.frameworks.frameworks.find((f) => f.key === 'other');
             }
-            adapter = framework?.adapters[0];
+            adapter = framework?.adapters[0] as FrameworkAdapterWithStartCommand;
             installCommand = adapter?.installCommand;
             buildCommand = adapter?.buildCommand;
+            startCommand = adapter?.startCommand;
             outputDirectory = adapter?.outputDirectory;
             const detectedVariables = normalizeDetectedVariables(response?.variables);
             if (detectedVariables.length) {
@@ -121,6 +127,7 @@
                 buildRuntime,
                 installCommand,
                 buildCommand,
+                startCommand,
                 outputDirectory,
                 installationId: data.installation.$id,
                 providerRepositoryId: data.repository.id,
@@ -218,6 +225,7 @@
                 <Configuration
                     bind:installCommand
                     bind:buildCommand
+                    bind:startCommand
                     bind:outputDirectory
                     bind:selectedFramework={framework}
                     bind:variables

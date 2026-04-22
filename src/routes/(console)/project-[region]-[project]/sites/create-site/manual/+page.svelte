@@ -23,6 +23,10 @@
     import Domain from '../domain.svelte';
     import { uploader } from '$lib/stores/uploader';
 
+    type FrameworkAdapterWithStartCommand = Models.FrameworkAdapter & {
+        startCommand?: string;
+    };
+
     export let data;
     let showExitModal = false;
 
@@ -36,9 +40,10 @@
     let framework: Models.Framework =
         data.frameworks.frameworks?.find((f) => f.key === 'other') ??
         data.frameworks.frameworks?.[0];
-    let adapter = framework?.adapters[0];
+    let adapter = framework?.adapters[0] as FrameworkAdapterWithStartCommand;
     let installCommand = adapter?.installCommand;
     let buildCommand = adapter?.buildCommand;
+    let startCommand = adapter?.startCommand;
     let outputDirectory = adapter?.outputDirectory;
     let variables: Partial<Models.Variable>[] = [];
     let files: FileList;
@@ -73,6 +78,7 @@
                 buildRuntime,
                 installCommand: installCommand || undefined,
                 buildCommand: buildCommand || undefined,
+                startCommand: startCommand || undefined,
                 outputDirectory: outputDirectory || undefined
             });
 
@@ -243,6 +249,7 @@
             <Configuration
                 bind:installCommand
                 bind:buildCommand
+                bind:startCommand
                 bind:outputDirectory
                 bind:selectedFramework={framework}
                 bind:variables
