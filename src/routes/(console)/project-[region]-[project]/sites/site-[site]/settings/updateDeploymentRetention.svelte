@@ -13,15 +13,14 @@
 
     const MAX_DEPLOYMENT_RETENTION = 36500;
     const DEPLOYMENT_RETENTION_OPTIONS = [
-        { value: 7, label: '1 week' },
-        { value: 30, label: '1 month' },
-        { value: 90, label: '3 months' },
-        { value: 180, label: '6 months' },
-        { value: 365, label: '1 year' },
-        { value: 730, label: '2 years' },
-        { value: 1825, label: '5 years' },
-        { value: 3650, label: '10 years' },
-        { value: MAX_DEPLOYMENT_RETENTION, label: '100 years' }
+        { value: 7, label: '1 Week' },
+        { value: 30, label: '1 Month' },
+        { value: 90, label: '3 Months' },
+        { value: 180, label: '6 Months' },
+        { value: 365, label: '1 Year' },
+        { value: 730, label: '2 Years' },
+        { value: 1825, label: '5 Years' },
+        { value: 3650, label: '10 Years' }
     ];
     const getInitialDeploymentRetention = () => site.deploymentRetention;
     const getRetentionOptions = (retention: number) => {
@@ -36,15 +35,15 @@
         return [{ value: retention, label: `${retention} days` }, ...DEPLOYMENT_RETENTION_OPTIONS];
     };
 
-    let retentionEnabled = $state(getInitialDeploymentRetention() > 0);
+    let unlimitedRetention = $state(getInitialDeploymentRetention() === 0);
     let retentionDays = $state(
         getInitialDeploymentRetention() > 0 ? getInitialDeploymentRetention() : 30
     );
     const retentionOptions = $derived(getRetentionOptions(retentionDays));
-    const deploymentRetention = $derived(retentionEnabled ? retentionDays : 0);
+    const deploymentRetention = $derived(unlimitedRetention ? 0 : retentionDays);
     let isUnchanged = $derived(site.deploymentRetention === deploymentRetention);
     let isInvalid = $derived(
-        retentionEnabled &&
+        !unlimitedRetention &&
             (retentionDays === null ||
                 retentionDays < 1 ||
                 retentionDays > MAX_DEPLOYMENT_RETENTION)
@@ -94,21 +93,22 @@
 <Form onSubmit={update}>
     <CardGrid>
         <svelte:fragment slot="title">Deployment retention</svelte:fragment>
-        Automatically delete inactive deployments after a set number of days. Active deployments are never
-        deleted.
+        Keep active deployments and choose when inactive deployments are deleted.
         <svelte:fragment slot="aside">
             <InputSwitch
-                id="deployment-retention-enabled"
-                label="Delete inactive deployments"
-                bind:value={retentionEnabled} />
-            <InputSelect
-                id="deployment-retention"
-                label="Retention period"
-                placeholder="Select retention period"
-                options={retentionOptions}
-                disabled={!retentionEnabled}
-                required
-                bind:value={retentionDays} />
+                id="deployment-retention-unlimited"
+                label="Keep deployments forever"
+                bind:value={unlimitedRetention} />
+
+            {#if !unlimitedRetention}
+                <InputSelect
+                    id="deployment-retention"
+                    label="Keep for"
+                    placeholder="1 Month"
+                    options={retentionOptions}
+                    required
+                    bind:value={retentionDays} />
+            {/if}
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
