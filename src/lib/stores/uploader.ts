@@ -166,12 +166,14 @@ const createUploader = () => {
             code,
             buildCommand,
             installCommand,
+            startCommand,
             outputDirectory
         }: {
             siteId: string;
             code: File;
             buildCommand?: string;
             installCommand?: string;
+            startCommand?: string;
             outputDirectory?: string;
         }) => {
             const newDeployment: UploaderFile = {
@@ -188,15 +190,13 @@ const createUploader = () => {
                 n.files.unshift(newDeployment);
                 return n;
             });
-            const uploadedFile = await temporarySites(
-                page.params.region,
-                page.params.project
-            ).createDeployment({
+            const deploymentPayload = {
                 siteId,
                 code,
                 activate: true,
                 buildCommand,
                 installCommand,
+                startCommand,
                 outputDirectory,
                 onProgress: (progress) => {
                     newDeployment.$id = progress.$id;
@@ -204,7 +204,11 @@ const createUploader = () => {
                     newDeployment.status = progress.progress === 100 ? 'success' : 'pending';
                     updateFile(progress.$id, newDeployment);
                 }
-            });
+            };
+            const uploadedFile = await temporarySites(
+                page.params.region,
+                page.params.project
+            ).createDeployment(deploymentPayload);
             newDeployment.$id = uploadedFile.$id;
             newDeployment.progress = 100;
             newDeployment.status = 'success';

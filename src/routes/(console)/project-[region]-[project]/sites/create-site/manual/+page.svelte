@@ -101,6 +101,7 @@
                 code: files[0],
                 buildCommand: buildCommand || undefined,
                 installCommand: installCommand || undefined,
+                startCommand: startCommand || undefined,
                 outputDirectory: outputDirectory || undefined
             });
 
