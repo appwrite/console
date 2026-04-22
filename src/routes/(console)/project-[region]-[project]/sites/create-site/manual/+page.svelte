@@ -22,10 +22,7 @@
     import { currentPlan } from '$lib/stores/organization';
     import Domain from '../domain.svelte';
     import { uploader } from '$lib/stores/uploader';
-
-    type FrameworkAdapterWithStartCommand = Models.FrameworkAdapter & {
-        startCommand?: string;
-    };
+    import type { FrameworkAdapterWithStartCommand } from '$lib/stores/sites';
 
     export let data;
     let showExitModal = false;

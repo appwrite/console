@@ -3,12 +3,8 @@
     import { Fieldset, Layout, Accordion } from '@appwrite.io/pink-svelte';
     import type { Models } from '@appwrite.io/console';
     import { iconPath } from '$lib/stores/app';
-    import { getFrameworkIcon } from '$lib/stores/sites';
+    import { getFrameworkIcon, type FrameworkAdapterWithStartCommand } from '$lib/stores/sites';
     import { EnvironmentVariables } from '$lib/components/variables';
-
-    type FrameworkAdapterWithStartCommand = Models.FrameworkAdapter & {
-        startCommand?: string;
-    };
 
     export let frameworks: Models.Framework[];
     export let selectedFramework: Models.Framework;
@@ -73,7 +69,8 @@
                             <Button
                                 secondary
                                 size="s"
-                                disabled={adapterData?.installCommand === installCommand}
+                                disabled={(adapterData?.installCommand ?? '') ===
+                                    (installCommand ?? '')}
                                 on:click={() => (installCommand = adapterData?.installCommand)}>
                                 Reset
                             </Button>
@@ -87,7 +84,8 @@
                             <Button
                                 secondary
                                 size="s"
-                                disabled={adapterData?.buildCommand === buildCommand}
+                                disabled={(adapterData?.buildCommand ?? '') ===
+                                    (buildCommand ?? '')}
                                 on:click={() => (buildCommand = adapterData?.buildCommand)}>
                                 Reset
                             </Button>

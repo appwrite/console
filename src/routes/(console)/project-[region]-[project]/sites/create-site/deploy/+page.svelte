@@ -27,6 +27,7 @@
     import { writable } from 'svelte/store';
     import { getLatestTag } from '$lib/helpers/github';
     import Link from '$lib/elements/link.svelte';
+    import type { FrameworkAdapterWithStartCommand } from '$lib/stores/sites';
 
     let {
         data
@@ -88,7 +89,7 @@
                 const adapter = fw.adapters[0];
                 installCommand = adapter.installCommand || '';
                 buildCommand = adapter.buildCommand || '';
-                startCommand = (adapter as { startCommand?: string }).startCommand || '';
+                startCommand = (adapter as FrameworkAdapterWithStartCommand).startCommand || '';
                 outputDirectory = adapter.outputDirectory || '';
             }
         }
@@ -118,7 +119,7 @@
                 const adapter = fw.adapters[0];
                 installCommand = adapter.installCommand || '';
                 buildCommand = adapter.buildCommand || '';
-                startCommand = (adapter as { startCommand?: string }).startCommand || '';
+                startCommand = (adapter as FrameworkAdapterWithStartCommand).startCommand || '';
                 outputDirectory = adapter.outputDirectory || '';
             }
         }

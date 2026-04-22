@@ -28,10 +28,7 @@
     import Domain from '../../domain.svelte';
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
     import { normalizeDetectedVariables, mergeVariables } from '$lib/helpers/variables';
-
-    type FrameworkAdapterWithStartCommand = Models.FrameworkAdapter & {
-        startCommand?: string;
-    };
+    import type { FrameworkAdapterWithStartCommand } from '$lib/stores/sites';
 
     export let data;
     let showExitModal = false;

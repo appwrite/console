@@ -1,3 +1,9 @@
+import type { Models } from '@appwrite.io/console';
+
+export type FrameworkAdapterWithStartCommand = Models.FrameworkAdapter & {
+    startCommand?: string;
+};
+
 export function getFrameworkIcon(framework: string) {
     switch (true) {
         case framework.toLocaleLowerCase().includes('sveltekit'):

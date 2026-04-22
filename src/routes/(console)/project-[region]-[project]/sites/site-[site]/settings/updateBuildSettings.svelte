@@ -12,12 +12,8 @@
     import { Link } from '$lib/elements';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { adapterDataList } from './store';
-    import { getFrameworkIcon } from '$lib/stores/sites';
+    import { getFrameworkIcon, type FrameworkAdapterWithStartCommand } from '$lib/stores/sites';
     import { page } from '$app/state';
-
-    type FrameworkAdapterWithStartCommand = Models.FrameworkAdapter & {
-        startCommand?: string;
-    };
 
     let {
         site,
@@ -308,7 +304,8 @@
                                 secondary
                                 size="s"
                                 on:click={() => reset('installCommand')}
-                                disabled={installCommand === frameworkAdapterData?.installCommand}>
+                                disabled={(installCommand ?? '') ===
+                                    (frameworkAdapterData?.installCommand ?? '')}>
                                 Reset
                             </Button>
                         </Layout.Stack>
@@ -322,7 +319,8 @@
                             <Button
                                 secondary
                                 size="s"
-                                disabled={buildCommand === frameworkAdapterData?.buildCommand}
+                                disabled={(buildCommand ?? '') ===
+                                    (frameworkAdapterData?.buildCommand ?? '')}
                                 on:click={() => reset('buildCommand')}>
                                 Reset
                             </Button>
