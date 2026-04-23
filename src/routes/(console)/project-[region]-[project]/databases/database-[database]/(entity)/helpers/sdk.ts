@@ -1,4 +1,8 @@
 import { sdk } from '$lib/stores/sdk';
+import { flags } from '$lib/flags';
+import { user } from '$lib/stores/user';
+import { organization } from '$lib/stores/organization';
+import { get } from 'svelte/store';
 import type { Page } from '@sveltejs/kit';
 import type { TerminologyResult } from './types';
 import {
@@ -173,11 +177,17 @@ export function useDatabaseSdk(
         },
 
         async list(params): Promise<Models.DatabaseList> {
-            const results = await Promise.all([
-                baseSdk.tablesDB.list(params),
-                baseSdk.documentsDB.list(params),
-                baseSdk.vectorsDB.list(params)
-            ]);
+            const isMultiDb = flags.multiDb({
+                account: get(user),
+                organization: get(organization)
+            });
+
+            const calls: Array<Promise<Models.DatabaseList>> = [baseSdk.tablesDB.list(params)];
+            if (isMultiDb) {
+                calls.push(baseSdk.documentsDB.list(params), baseSdk.vectorsDB.list(params));
+            }
+
+            const results = await Promise.all(calls);
 
             return results.reduce(
                 (acc, curr) => ({
