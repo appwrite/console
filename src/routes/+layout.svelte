@@ -15,8 +15,7 @@
     import { loading } from '$routes/store';
     import {
         impersonationRevision,
-        readImpersonationTargetUserId,
-        restoreImpersonation
+        readImpersonationTargetUserId
     } from '$lib/appwrite/impersonation';
     import { headerAlert } from '$lib/stores/headerAlert';
     import ImpersonationBanner from '$lib/components/impersonation/banner.svelte';
@@ -36,8 +35,6 @@
     }
 
     onMount(async () => {
-        restoreImpersonation();
-
         headerAlert.add({
             id: 'impersonation',
             component: ImpersonationBanner,

@@ -1,5 +1,5 @@
 import { isMultiRegionSupported, VARS } from '$lib/system';
-import { registerImpersonationClients } from '$lib/appwrite/impersonation';
+import { registerImpersonationClients, restoreImpersonation } from '$lib/appwrite/impersonation';
 import {
     Account,
     Assistant,
@@ -88,6 +88,7 @@ if (!building) {
         clientProject,
         clientRealtime
     ]);
+    restoreImpersonation();
 }
 
 const sdkForProject = {
