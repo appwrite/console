@@ -24,7 +24,8 @@
         isCsvImportInProgress,
         isWaterfallFromFaker,
         reorderItems,
-        showCreateIndexSheet
+        showCreateIndexSheet,
+        INTERNAL_ACTIONS_COLUMN_ID
     } from '../store';
     import EditColumn from './edit.svelte';
     import DeleteColumn from './deleteColumn.svelte';
@@ -336,7 +337,7 @@
             minimumWidth: 200,
             resizable: true
         },
-        { id: 'actions', width: 40, isAction: true, resizable: false }
+        { id: INTERNAL_ACTIONS_COLUMN_ID, width: 40, isAction: true, resizable: false }
     ]);
 
     $effect(() => {
@@ -388,7 +389,7 @@
                 <Spreadsheet.Header.Cell column="indexed" {root}>Indexed</Spreadsheet.Header.Cell>
                 <Spreadsheet.Header.Cell column="default" {root}
                     >Default value</Spreadsheet.Header.Cell>
-                <Spreadsheet.Header.Cell column="actions" {root} />
+                <Spreadsheet.Header.Cell column={INTERNAL_ACTIONS_COLUMN_ID} {root} />
             </svelte:fragment>
 
             {#each updatedColumnsForSheet as column, index (column.key)}
@@ -544,7 +545,7 @@
                             {_default}
                         {/if}
                     </Spreadsheet.Cell>
-                    <Spreadsheet.Cell column="actions" {root} isEditable={false}>
+                    <Spreadsheet.Cell column={INTERNAL_ACTIONS_COLUMN_ID} {root} isEditable={false}>
                         {#if $isCsvImportInProgress}
                             <CsvDisabled>
                                 <Button disabled text icon ariaLabel="more options">

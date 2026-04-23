@@ -58,6 +58,8 @@ export const isWaterfallFromFaker = writable(false);
 
 export const tableColumns = writable<Column[]>([]);
 
+export const INTERNAL_ACTIONS_COLUMN_ID = '$actions';
+
 export const isCsvImportInProgress = writable(false);
 
 export const columnsOrder = writable<string[]>([]);
