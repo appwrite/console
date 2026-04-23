@@ -24,13 +24,12 @@
     import { fade } from 'svelte/transition';
     import ConnectionLine from './components/ConnectionLine.svelte';
     import OnboardingPlatformCard from './components/OnboardingPlatformCard.svelte';
-    import { PlatformType } from '@appwrite.io/console';
+    import { ID } from '@appwrite.io/console';
     import { project } from '../../store';
     import { getCorrectTitle, type PlatformProps } from './store';
     import LlmBanner from './llmBanner.svelte';
 
-    let { isConnectPlatform = false, platform = PlatformType.Reactnativeandroid }: PlatformProps =
-        $props();
+    let { isConnectPlatform = false, platform = 'react-native-android' }: PlatformProps = $props();
 
     let showExitModal = $state(false);
     let isCreatingPlatform = $state(false);
@@ -74,28 +73,26 @@ EXPO_PUBLIC_APPWRITE_ENDPOINT=${sdk.forProject(page.params.region, page.params.p
         .setEndpoint("${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}")
     `;
 
-    let platforms: { [key: string]: PlatformType } = {
-        Android: PlatformType.Reactnativeandroid,
-        iOS: PlatformType.Reactnativeios
+    let platforms: { [key: string]: string } = {
+        Android: 'react-native-android',
+        iOS: 'react-native-ios'
     };
 
-    const placeholder: Partial<
-        Record<
-            PlatformType,
-            {
-                name: string;
-                hostname: string;
-                tooltip: string;
-            }
-        >
+    const placeholder: Record<
+        string,
+        {
+            name: string;
+            hostname: string;
+            tooltip: string;
+        }
     > = {
-        [PlatformType.Reactnativeandroid]: {
+        'react-native-android': {
             name: 'My Android App',
             hostname: 'com.company.appname',
             tooltip:
                 'Your package name is generally the applicationId in your app-level build.gradle file.'
         },
-        [PlatformType.Reactnativeios]: {
+        'react-native-ios': {
             name: 'My iOS App',
             hostname: 'com.company.appname',
             tooltip:
@@ -103,20 +100,28 @@ EXPO_PUBLIC_APPWRITE_ENDPOINT=${sdk.forProject(page.params.region, page.params.p
         }
     };
 
-    const hostname: Partial<Record<PlatformType, string>> = {
-        [PlatformType.Reactnativeandroid]: 'Package name',
-        [PlatformType.Reactnativeios]: 'Bundle ID'
+    const hostnameLabel: Record<string, string> = {
+        'react-native-android': 'Package name',
+        'react-native-ios': 'Bundle ID'
     };
 
     async function createReactNativePlatform() {
         try {
             isCreatingPlatform = true;
-            await sdk.forConsole.projects.createPlatform({
-                projectId,
-                type: platform,
-                name: $createPlatform.name,
-                key: $createPlatform.key || undefined
-            });
+            const projectSdk = sdk.forProject(page.params.region, page.params.project).project;
+            if (platform === 'react-native-android') {
+                await projectSdk.createAndroidPlatform({
+                    platformId: ID.unique(),
+                    name: $createPlatform.name,
+                    applicationId: $createPlatform.key
+                });
+            } else {
+                await projectSdk.createApplePlatform({
+                    platformId: ID.unique(),
+                    name: $createPlatform.name,
+                    bundleIdentifier: $createPlatform.key
+                });
+            }
 
             isPlatformCreated = true;
             trackEvent(Submit.PlatformCreate, {
@@ -197,7 +202,7 @@ EXPO_PUBLIC_APPWRITE_ENDPOINT=${sdk.forProject(page.params.region, page.params.p
                                 <!-- Tooltips on InputText don't work as of now -->
                                 <InputText
                                     id="hostname"
-                                    label={hostname[platform]}
+                                    label={hostnameLabel[platform]}
                                     placeholder={placeholder[platform].hostname}
                                     required
                                     bind:value={$createPlatform.key}>
@@ -284,7 +289,7 @@ EXPO_PUBLIC_APPWRITE_ENDPOINT=${sdk.forProject(page.params.region, page.params.p
                             size="s"
                             code="npm install" /> followed by <InlineCode
                             size="s"
-                            code={platform === PlatformType.Reactnativeios
+                            code={platform === 'react-native-ios'
                                 ? 'npm run ios'
                                 : 'npm run android'} />, then click the <InlineCode
                             size="s"

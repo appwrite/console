@@ -30,8 +30,11 @@
     import PlatformSdkImgSourceDark from './assets/platform-sdk-dark.png';
     import { resolve } from '$app/paths';
     import { isSmallViewport } from '$lib/stores/viewport';
-    import type { Models } from '@appwrite.io/console';
-    import { getPlatformInfo } from '$lib/helpers/platform';
+    import {
+        getPlatformInfo,
+        getPlatformIdentifier,
+        type AnyPlatform
+    } from '$lib/helpers/platform';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { goto } from '$app/navigation';
     import { page } from '$app/state';
@@ -42,11 +45,11 @@
         platforms = []
     }: {
         pingCount: number;
-        platforms: Array<Models.Platform>;
+        platforms: Array<AnyPlatform>;
     } = $props();
 
     const platformMap = $derived.by(() => {
-        const map = new Map<string, Models.Platform>();
+        const map = new Map<string, AnyPlatform>();
         platforms.forEach((platform) => {
             const platformInfo = getPlatformInfo(platform.type);
             map.set(platformInfo.name, platform);
@@ -68,9 +71,9 @@
         goto(`${projectRoute}/overview/api-keys/create`, { replaceState: true });
     }
 
-    function openPlatformWizard(type: Platform, platform?: Models.Platform) {
+    function openPlatformWizard(type: Platform, platform?: AnyPlatform) {
         if (platform) {
-            continuePlatform(type, platform.name, platform.key, platform.type);
+            continuePlatform(type, platform.name, getPlatformIdentifier(platform), platform.type);
         } else {
             trackEvent(Click.PlatformCreateClick, { source: 'onboarding' });
             addPlatform(type);

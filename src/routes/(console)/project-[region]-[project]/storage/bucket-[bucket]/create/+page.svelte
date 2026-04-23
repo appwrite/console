@@ -42,15 +42,19 @@
     let permissions: string[] = [];
 
     async function create() {
-        const fileId = id ?? ID.unique();
+        const fileArray = Array.from(files);
+        const isSingle = fileArray.length === 1;
 
         try {
-            const promise = uploader.uploadFile(
+            const filesToUpload = fileArray.map((file) => ({
+                id: isSingle ? (id ?? ID.unique()) : ID.unique(),
+                file
+            }));
+            const promise = uploader.uploadFiles(
                 page.params.region,
                 page.params.project,
                 page.params.bucket,
-                fileId,
-                files[0],
+                filesToUpload,
                 permissions
             );
             await goto(
@@ -58,15 +62,23 @@
             );
             addNotification({
                 type: 'success',
-                message: `File upload in progress`
+                message: isSingle
+                    ? 'File upload in progress'
+                    : `${fileArray.length} file uploads in progress`
             });
             trackEvent(Submit.FileCreate, {
                 customId: !!id
             });
-            await promise;
+            const results = await promise;
+            const failures = results.filter((r) => r.status === 'rejected');
+            if (failures.length) {
+                addNotification({
+                    type: 'error',
+                    message: `${failures.length} file(s) failed to upload`
+                });
+            }
             invalidate(Dependencies.FILES);
         } catch (e) {
-            uploader.removeFromQueue(fileId);
             addNotification({
                 type: 'error',
                 message: e.message
@@ -94,7 +106,7 @@
 <Wizard
     column
     confirmExit
-    title="Create file"
+    title={files?.length > 1 ? `Create ${files.length} files` : 'Create file'}
     bind:showExitModal
     href={`${base}/project-${page.params.region}-${page.params.project}/storage/bucket-${page.params.bucket}/`}>
     <Form bind:this={formComponent} onSubmit={create} bind:isSubmitting>
@@ -119,6 +131,7 @@
                     <Upload.Dropzone
                         bind:files
                         required
+                        multiple
                         extensions={data.bucket.allowedFileExtensions}
                         on:invalid={handleInvalid}>
                         <Typography.Text variant="l-500"
@@ -139,15 +152,17 @@
                             on:remove={(e) => (files = removeFile(e.detail, files))} />
                     {/if}
 
-                    {#if !showCustomId}
-                        <div>
-                            <Tag on:click={() => (showCustomId = !showCustomId)}>
-                                <Icon icon={IconPencil} slot="start" />
-                                <span class="text"> File ID </span>
-                            </Tag>
-                        </div>
-                    {:else}
-                        <CustomId autofocus bind:show={showCustomId} name="File" bind:id />
+                    {#if files?.length === 1}
+                        {#if !showCustomId}
+                            <div>
+                                <Tag on:click={() => (showCustomId = !showCustomId)}>
+                                    <Icon icon={IconPencil} slot="start" />
+                                    <span class="text"> File ID </span>
+                                </Tag>
+                            </div>
+                        {:else}
+                            <CustomId autofocus bind:show={showCustomId} name="File" bind:id />
+                        {/if}
                     {/if}
                 </Layout.Stack>
             </Fieldset>

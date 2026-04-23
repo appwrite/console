@@ -25,6 +25,7 @@ export const load: PageLoad = async ({ parent, depends, url, route }) => {
     depends(Dependencies.CREDIT);
     depends(Dependencies.INVOICES);
     depends(Dependencies.ADDRESS);
+    depends(Dependencies.ADDONS);
     // aggregation reloads on page param changes
     depends(Dependencies.BILLING_AGGREGATION);
 

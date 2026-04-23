@@ -10,8 +10,10 @@
         Layout,
         Popover,
         Selector,
-        Typography
+        Typography,
+        Icon
     } from '@appwrite.io/pink-svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { Button } from '$lib/elements/forms';
 
     let {
@@ -21,7 +23,8 @@
         allowNoColumns = false,
         showAnyway = false,
         children,
-        onPreferencesUpdated = null
+        onPreferencesUpdated = null,
+        onCustomOptionClick = null
     }: {
         columns: Writable<Column[]>;
         isCustomTable?: boolean;
@@ -30,6 +33,7 @@
         showAnyway?: boolean;
         children: Snippet<[toggle: () => void, selectedColumnsNumber: number]>;
         onPreferencesUpdated?: () => void;
+        onCustomOptionClick?: () => void;
     } = $props();
 
     let search = $state('');
@@ -115,7 +119,7 @@
             cols.map((col) =>
                 col.exclude
                     ? col
-                    : filteredColumns.some((fc) => fc.id === col.id)
+                    : filteredColumns.some((fc) => fc.id === col.id && !col.disable)
                       ? { ...col, hide: false }
                       : col
             )
@@ -126,7 +130,9 @@
     function deselectAll() {
         columns.update((cols) => {
             const realColumns = cols.filter((col) => !col.exclude && !col.isAction);
-            const filtered = filteredColumns.filter((col) => !col.exclude && !col.isAction);
+            const filtered = filteredColumns.filter(
+                (col) => !col.exclude && !col.isAction && !col.disable
+            );
 
             if (filtered.length === 0) return cols;
 
@@ -187,7 +193,7 @@
     {@const placement = isNewStyle ? 'bottom-start' : 'bottom-end'}
     <Popover let:toggle {placement} padding="none">
         {@render children(toggle, selectedColumnsNumber)}
-        <svelte:fragment slot="tooltip">
+        <svelte:fragment slot="tooltip" let:toggle>
             <div bind:this={containerRef} class="actions-menu-wrapper" style:max-height={maxHeight}>
                 <ActionMenu.Root>
                     {#if isNewStyle && showActions}
@@ -231,7 +237,8 @@
                                     on:click={() => toggleColumn(column)}
                                     disabled={allowNoColumns
                                         ? false
-                                        : visibleRealColumns.length <= 1 && !column.hide}>
+                                        : (visibleRealColumns.length <= 1 && !column.hide) ||
+                                          column.disable}>
                                     <Layout.Stack direction="row" gap="s">
                                         <Selector.Checkbox
                                             size="s"
@@ -243,6 +250,26 @@
                             {/if}
                         {/each}
                     </Layout.Stack>
+
+                    {#if onCustomOptionClick && isCustomTable}
+                        <Divider />
+                        <Layout.Stack gap="s" direction="row" style="padding-block-start: 0.175rem">
+                            <Button
+                                text
+                                size="s"
+                                fullWidth
+                                on:click={() => {
+                                    toggle();
+                                    onCustomOptionClick();
+                                }}>
+                                <Layout.Stack direction="row" gap="s" alignItems="center">
+                                    <Icon icon={IconPlus} size="s" />
+
+                                    Custom
+                                </Layout.Stack>
+                            </Button>
+                        </Layout.Stack>
+                    {/if}
                 </ActionMenu.Root>
             </div>
         </svelte:fragment>

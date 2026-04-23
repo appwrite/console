@@ -200,6 +200,7 @@ export type PlanServices =
     | 'bandwidthAddon'
     | 'buckets'
     | 'databases'
+    | 'domains'
     | 'executions'
     | 'executionsAddon'
     | 'fileSize'
@@ -316,6 +317,7 @@ export function checkForProjectLimitation(plan: string, id: PlanServices) {
 
     switch (id) {
         case 'databases':
+        case 'domains':
         case 'functions':
         case 'buckets':
         case 'members': // Only applies to Free plan now

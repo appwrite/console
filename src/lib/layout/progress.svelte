@@ -74,6 +74,10 @@
 
     let progressBarStartTimeout: ReturnType<typeof setTimeout> | null = null;
     beforeNavigate((nav) => {
+        if (running) {
+            complete();
+        }
+
         if (progressBarStartTimeout) {
             clearTimeout(progressBarStartTimeout);
             progressBarStartTimeout = null;

@@ -69,7 +69,11 @@
             ?.$id;
 
     afterNavigate(({ from }) => {
-        previousPage = from?.url?.pathname || previousPage;
+        if (from?.url) {
+            const search = from.url.search;
+            const pathname = from.url.pathname;
+            previousPage = search ? `${pathname}${search}` : pathname;
+        }
     });
 
     onMount(async () => {

@@ -24,10 +24,10 @@
                 name,
                 events: $webhook.events,
                 url: $webhook.url,
-                security: $webhook.security,
+                tls: $webhook.tls,
                 enabled: true,
-                httpUser: $webhook.httpUser || undefined,
-                httpPass: $webhook.httpPass || undefined
+                authUsername: $webhook.authUsername || undefined,
+                authPassword: $webhook.authPassword || undefined
             });
 
             await invalidate(Dependencies.WEBHOOK);

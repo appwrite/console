@@ -10,26 +10,25 @@
     import { project } from '../../../store';
     import { platform } from './store';
 
-    let key: string = null;
+    import type { Models } from '@appwrite.io/console';
+
+    let packageIdentifierName: string = null;
 
     onMount(() => {
-        key ??= $platform.key;
+        packageIdentifierName ??= ($platform as Models.PlatformWindows).packageIdentifierName;
     });
 
-    async function updateHostname() {
+    async function updatePackageIdentifierName() {
         try {
-            await sdk.forConsole.projects.updatePlatform({
-                projectId: $project.$id,
+            await sdk.forProject($project.region, $project.$id).project.updateWindowsPlatform({
                 platformId: $platform.$id,
                 name: $platform.name,
-                key,
-                store: $platform.store || undefined,
-                hostname: $platform.hostname || undefined
+                packageIdentifierName
             });
 
             await invalidate(Dependencies.PLATFORM);
             trackEvent(Submit.PlatformUpdate, {
-                type: 'flutter-windows'
+                type: 'windows'
             });
             addNotification({
                 type: 'success',
@@ -45,7 +44,7 @@
     }
 </script>
 
-<Form onSubmit={updateHostname}>
+<Form onSubmit={updatePackageIdentifierName}>
     <CardGrid>
         <svelte:fragment slot="title">Package name</svelte:fragment>
         Your application name.
@@ -53,13 +52,16 @@
             <InputText
                 id="package-name"
                 label="Package Name"
-                bind:value={key}
+                bind:value={packageIdentifierName}
                 required
                 placeholder="appname" />
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={key === $platform.key} submit>Update</Button>
+            <Button
+                disabled={packageIdentifierName ===
+                    ($platform as Models.PlatformWindows).packageIdentifierName}
+                submit>Update</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>

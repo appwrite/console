@@ -6,9 +6,9 @@
 
     import { writable } from 'svelte/store';
     import ColumnForm from './columns/columnForm.svelte';
-    import { Permissions } from '$lib/components/permissions';
-    import { type Columns, spreadsheetRenderKey } from '../store';
     import { ID, type Models } from '@appwrite.io/console';
+    import { Permissions } from '$lib/components/permissions';
+    import { type Columns, spreadsheetRenderKey } from '$database/store';
     import { Alert, Layout, Typography, Selector } from '@appwrite.io/pink-svelte';
     import { type Entity, SideSheet, toRelationalField } from '$database/(entity)';
     import { invalidate } from '$app/navigation';

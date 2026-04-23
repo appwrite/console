@@ -1,5 +1,6 @@
 <script lang="ts">
     import { sdk } from '$lib/stores/sdk';
+    import { ID } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { project } from '../store';
@@ -7,6 +8,7 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import UpdateName from './updateName.svelte';
+    import UpdateProtocols from './updateProtocols.svelte';
     import UpdateServices from './updateServices.svelte';
     import UpdateInstallations from './updateInstallations.svelte';
     import DeleteProject from './deleteProject.svelte';
@@ -16,7 +18,6 @@
     import UpdateVariables from '../updateVariables.svelte';
     import { page } from '$app/state';
     import UpdateLabels from './updateLabels.svelte';
-    import { ID } from '@appwrite.io/console';
 
     export let data;
 
@@ -89,6 +90,7 @@
         {#if $canWriteProjects}
             <UpdateName />
             <UpdateLabels />
+            <UpdateProtocols />
             <UpdateServices />
             <UpdateInstallations {...data.installations} limit={data.limit} offset={data.offset} />
             <UpdateVariables

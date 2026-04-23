@@ -236,6 +236,12 @@ export const oAuthProviders: Record<string, Provider> = {
         docs: 'https://developer.wordpress.com/docs/oauth2/',
         component: Main
     },
+    x: {
+        name: 'X',
+        icon: 'x',
+        docs: 'https://developer.x.com/en/docs/authentication/oauth-2-0',
+        component: Main
+    },
     yahoo: {
         name: 'Yahoo',
         icon: 'yahoo',
