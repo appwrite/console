@@ -1,4 +1,5 @@
 import { isMultiRegionSupported, VARS } from '$lib/system';
+import { registerImpersonationClients } from '$lib/appwrite/impersonation';
 import {
     Account,
     Assistant,
@@ -78,6 +79,8 @@ if (!building) {
 
     clientProject.setEndpoint(endpoint).setMode('admin');
     clientRealtime.setEndpoint(endpoint).setProject('console');
+
+    registerImpersonationClients([clientConsole, scopedConsoleClient, clientProject, clientRealtime]);
 }
 
 const sdkForProject = {

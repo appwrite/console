@@ -13,6 +13,9 @@
     import { sdk } from '$lib/stores/sdk';
     import { user } from '$lib/stores/user';
     import { loading } from '$routes/store';
+    import { restoreImpersonation } from '$lib/appwrite/impersonation';
+    import { headerAlert } from '$lib/stores/headerAlert';
+    import ImpersonationBanner from '$lib/components/impersonation/banner.svelte';
     import { Root } from '@appwrite.io/pink-svelte';
     import { ThemeDark, ThemeLight, ThemeDarkCloud, ThemeLightCloud } from '../themes';
     import { isSmallViewport, updateViewport } from '$lib/stores/viewport';
@@ -29,6 +32,15 @@
     }
 
     onMount(async () => {
+        restoreImpersonation();
+
+        headerAlert.add({
+            id: 'impersonation',
+            component: ImpersonationBanner,
+            show: true,
+            importance: 100 // highest priority — always visible when active
+        });
+
         updateViewport();
         // handle sources
         if (isCloud) {
