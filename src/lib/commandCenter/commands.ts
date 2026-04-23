@@ -29,11 +29,9 @@ const groups = [
     'migrations',
     'users',
     'tables',
-    'collections',
     'columns',
     'indexes',
     'rows',
-    'documents',
     'teams',
     'security',
     'buckets',
@@ -104,19 +102,8 @@ const commandsEnabled = derived(disabledMap, ($disabledMap) => {
 
 export function isTargetInputLike(element: EventTarget | null) {
     if (!(element instanceof HTMLElement)) return false;
-
     return !!element.closest(
-        [
-            'input',
-            'textarea',
-            'select',
-            '[contenteditable]',
-            '[role="combobox"]',
-            '[role="textbox"]',
-            '[role="searchbox"]',
-            '[data-command-center-ignore]',
-            '.cm-editor'
-        ].join(',')
+        'input,textarea,select,[contenteditable],[role="combobox"],[role="textbox"],[role="searchbox"],[data-command-center-ignore]'
     );
 }
 

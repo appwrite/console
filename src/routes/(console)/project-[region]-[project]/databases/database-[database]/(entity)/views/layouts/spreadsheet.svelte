@@ -2,37 +2,11 @@
     import { debounce } from '$lib/helpers/debounce';
     import { scrollStore, sheetHeightStore } from './store';
     import { onMount, onDestroy, type Snippet, tick } from 'svelte';
-    import { isSmallViewport } from '$lib/stores/viewport';
-    import { SideSheet } from '$database/(entity)';
-    import { SvelteSet } from 'svelte/reactivity';
 
     let {
-        children,
-        noSqlEditor,
-        sideSheetHeaderAction,
-        sideSheetOptions = null,
-        sideSheetStateCallbacks = null,
-        showEditorSideSheet = $bindable(false)
+        children
     }: {
         children: Snippet;
-        noSqlEditor?: Snippet;
-        sideSheetHeaderAction?: Snippet;
-        showEditorSideSheet?: boolean;
-        /* this sheet is only on mobile */
-        sideSheetStateCallbacks?: {
-            onOpen?: () => void;
-            onClose?: () => void;
-        };
-        sideSheetOptions?: {
-            sideSheetTitle?: string;
-            submit?:
-                | {
-                      text: string;
-                      disabled?: boolean;
-                      onClick?: () => boolean | void | Promise<boolean | void>;
-                  }
-                | undefined;
-        };
     } = $props();
 
     let spreadsheetWrapper: HTMLDivElement;
@@ -43,7 +17,7 @@
     let mutationObserver: MutationObserver;
 
     /** to avoid querySelector for perf! */
-    let cachedElements = new SvelteSet<Element>();
+    let cachedElements = new Set<Element>();
 
     /** writable store to prevent jumps when changing views */
     let spreadsheetHeight = $state($sheetHeightStore);
@@ -111,16 +85,6 @@
         });
     }
 
-    function manageStateCallbacks(isOpen: boolean) {
-        if (sideSheetStateCallbacks) {
-            if (isOpen) {
-                sideSheetStateCallbacks.onOpen?.();
-            } else {
-                sideSheetStateCallbacks.onClose?.();
-            }
-        }
-    }
-
     /** save grid sheet scroll for restore */
     export function saveGridSheetScroll(): void {
         if (initSpreadsheetGridContainer()) {
@@ -146,85 +110,14 @@
         resizeObserver?.disconnect();
         mutationObserver?.disconnect();
     });
-
-    let previousShowEditorSideSheet = showEditorSideSheet;
-
-    $effect(() => {
-        if (showEditorSideSheet !== previousShowEditorSideSheet) {
-            manageStateCallbacks(showEditorSideSheet);
-            previousShowEditorSideSheet = showEditorSideSheet;
-        }
-    });
 </script>
 
-<!-- in some cases, its window! -->
-<svelte:window on:resize={handleResize} />
-
-<div
-    bind:this={spreadsheetWrapper}
-    class="spreadsheet-wrapper"
-    style:height={spreadsheetHeight}
-    class:has-json-editor={typeof noSqlEditor !== 'undefined'}>
+<div bind:this={spreadsheetWrapper} class="spreadsheet-wrapper" style:height={spreadsheetHeight}>
     {@render children()}
-
-    <div class="no-sql-editor">
-        {#if !$isSmallViewport}
-            <div class="no-sql-editor desktop" style:height={spreadsheetHeight}>
-                {@render noSqlEditor?.()}
-            </div>
-        {:else}
-            <SideSheet
-                noContentPadding
-                bind:show={showEditorSideSheet}
-                submit={sideSheetOptions?.submit}
-                cancel={{
-                    onClick: () => {
-                        // fires state callback.
-                        showEditorSideSheet = false;
-                    }
-                }}
-                title={sideSheetOptions?.sideSheetTitle ?? 'Edit document'}>
-                {@render noSqlEditor?.()}
-
-                {#snippet topEndActions()}
-                    {@render sideSheetHeaderAction?.()}
-                {/snippet}
-            </SideSheet>
-        {/if}
-    </div>
 </div>
 
-<style lang="scss">
+<style>
     .spreadsheet-wrapper {
         transition: height 300ms cubic-bezier(0.4, 0, 0.2, 1);
-
-        &.has-json-editor {
-            gap: 0;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-
-            & :global(.cm-indent-markers) {
-                --indent-markers: unset !important;
-            }
-
-            @media (max-width: 768px) {
-                grid-template-columns: 1fr;
-            }
-
-            &:has(.no-sql-editor:empty),
-            &:has(.no-sql-editor.desktop:empty) {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .no-sql-editor {
-            &:empty {
-                display: none;
-            }
-
-            &:has(:global(.sheet-container:empty)) {
-                display: none;
-            }
-        }
     }
 </style>

@@ -21,7 +21,7 @@
 
     let projectId = ID.unique();
     let projectRegion = Region.Fra;
-    let projectName = 'New Project';
+    let projectName = 'Appwrite Project';
 
     const projectIdForLog = projectId;
 

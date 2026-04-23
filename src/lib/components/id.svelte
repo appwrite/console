@@ -1,8 +1,7 @@
-<script module lang="ts">
+<script context="module" lang="ts">
     import { tick } from 'svelte';
     import { debounce } from '$lib/helpers/debounce';
 
-    // TODO - @itznotabug, use SvelteSet
     const batchQueue = new Set<() => void>();
     let batchPromise: Promise<void> | null = null;
 
@@ -28,11 +27,6 @@
         if (!batchPromise) {
             batchPromise = processBatch();
         }
-    }
-
-    export function truncateId(id: string, head: number = 5, tail: number = 9): string {
-        if (id.length <= head + tail) return id;
-        return `${id.slice(0, head)}...${id.slice(-tail)}`;
     }
 
     export function truncateText(node: HTMLElement) {
@@ -90,30 +84,18 @@
 </script>
 
 <script lang="ts">
-    import { Copy } from '.';
-    import type { Snippet } from 'svelte';
     import { Icon, Tag } from '@appwrite.io/pink-svelte';
+    import { Copy } from '.';
     import { IconDuplicate } from '@appwrite.io/pink-icons-svelte';
     import type { TooltipPlacement } from '$lib/components/copy.svelte';
 
-    const {
-        value,
-        event = null,
-        tooltipPortal = false,
-        tooltipDelay = 0,
-        tooltipPlacement,
-        copyText,
-        children
-    }: {
-        value: string;
-        event?: string | null;
-        tooltipPortal?: boolean;
-        tooltipDelay?: number;
-        tooltipPlacement?: TooltipPlacement;
-        truncate?: boolean;
-        copyText?: string;
-        children: Snippet;
-    } = $props();
+    export let value: string;
+    export let event: string = null;
+
+    export let tooltipPortal = false;
+    export let tooltipDelay: number = 0;
+    export let tooltipPlacement: TooltipPlacement = undefined;
+    export let copyText: string | undefined = undefined;
 </script>
 
 {#key value}
@@ -125,7 +107,7 @@
                 style:overflow="hidden"
                 style:word-break="break-all"
                 use:truncateText>
-                {@render children()}
+                <slot />
             </span>
         </Tag>
     </Copy>

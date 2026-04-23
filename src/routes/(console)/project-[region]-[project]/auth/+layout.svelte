@@ -14,7 +14,9 @@
     let { children } = $props();
 
     const authProjectRoute = $derived.by(() => {
-        return resolveRoute('/(console)/project-[region]-[project]/auth', page.params);
+        return resolveRoute('/(console)/project-[region]-[project]/auth', {
+            ...page.params
+        });
     });
 
     $effect(() => {

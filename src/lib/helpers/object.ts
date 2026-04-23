@@ -1,5 +1,3 @@
-import deepEqual from 'deep-equal';
-
 /**
  * Strict typed `Object.entries`
  * Extracted from https://github.com/antfu/utils
@@ -59,20 +57,4 @@ export function parseIfString(value: unknown): unknown {
     }
 
     return value;
-}
-
-/**
- * `stringify` is faster on small to medium-sized objects
- * while the `recursive` logic via `deepEqual` is faster on big objects!
- */
-export function areObjectsSame<T>(
-    objectOne: T,
-    objectTwo: T,
-    method: 'recursive' | 'stringify' = 'stringify'
-): boolean {
-    if (method === 'recursive') {
-        return deepEqual(objectOne, objectTwo);
-    }
-
-    return JSON.stringify(objectOne) === JSON.stringify(objectTwo);
 }

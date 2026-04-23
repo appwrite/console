@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from '$app/state';
-    import { columns, getDatabaseTypeTitle } from './store';
+    import { columns } from './store';
     import { Id } from '$lib/components';
     import type { Models } from '@appwrite.io/console';
     import { useTerminology } from '$database/(entity)';
@@ -69,8 +69,6 @@
                         {/key}
                     {:else if column.id === 'name'}
                         {database.name}
-                    {:else if column.id === 'type'}
-                        {getDatabaseTypeTitle(database)}
                     {:else if column.id === 'backup'}
                         {@const backupPolicies = policies?.[database.$id] ?? null}
                         {@const lastBackup = lastBackups?.[database.$id] ?? null}

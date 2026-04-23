@@ -12,11 +12,13 @@
     import type { PageData } from './$types';
     import {
         tableColumns,
-        isTablesCsvImportInProgress,
+        isCsvImportInProgress,
         showRowCreateSheet,
-        showCreateColumnSheet
-    } from '$database/table-[table]/store';
-    import SpreadSheet from '$database/table-[table]/spreadsheet.svelte';
+        showCreateColumnSheet,
+        randomDataModalState,
+        expandTabs
+    } from './store';
+    import SpreadSheet from './spreadsheet.svelte';
     import { writable } from 'svelte/store';
     import FilePicker from '$lib/components/filePicker.svelte';
     import { page } from '$app/state';
@@ -35,20 +37,19 @@
         IconDownload
     } from '@appwrite.io/pink-icons-svelte';
     import type { Models } from '@appwrite.io/console';
-    import CreateRow from '$database/table-[table]/rows/create.svelte';
+    import CreateRow from './rows/create.svelte';
     import { onDestroy } from 'svelte';
     import { isCloud } from '$lib/system';
-    import { columnOptions } from '$database/table-[table]/columns/store';
+    import { columnOptions } from './columns/store';
     import { EmptySheet, EmptySheetCards, type Field } from '$database/(entity)';
-    import {
-        Empty as SuggestionsEmptySheet,
-        entityColumnSuggestions,
-        showColumnsSuggestionsModal
-    } from '$database/(suggestions)';
-    import { expandTabs, randomDataModalState } from '$database/store';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import IconAI from '$database/(suggestions)/icon/aiForButton.svelte';
+    import {
+        Empty as SuggestionsEmptySheet,
+        tableColumnSuggestions,
+        showColumnsSuggestionsModal
+    } from '../(suggestions)';
+    import IconAI from '../(suggestions)/icon/aiForButton.svelte';
 
     export let data: PageData;
 
@@ -101,14 +102,14 @@
     $: canShowSuggestionsSheet =
         // enabled, has table details
         // and it matches current table
-        $entityColumnSuggestions.enabled &&
-        $entityColumnSuggestions.entity &&
-        $entityColumnSuggestions.entity.id === page.params.table;
+        $tableColumnSuggestions.enabled &&
+        $tableColumnSuggestions.table &&
+        $tableColumnSuggestions.table.id === page.params.table;
 
     $: disableButton = canShowSuggestionsSheet;
 
     async function onSelect(file: Models.File, localFile = false) {
-        $isTablesCsvImportInProgress = true;
+        $isCsvImportInProgress = true;
 
         try {
             await sdk
@@ -133,7 +134,7 @@
                 message: e.message
             });
         } finally {
-            $isTablesCsvImportInProgress = false;
+            $isCsvImportInProgress = false;
         }
     }
 
@@ -190,7 +191,7 @@
                     direction="row"
                     alignItems="center"
                     justifyContent="flex-end"
-                    style="padding-right: {$isSmallViewport ? '0' : '40px'};">
+                    style="padding-right: 40px;">
                     <Layout.Stack
                         direction="row"
                         alignItems="center"
@@ -272,7 +273,7 @@
                                     class="small-button-dimensions"
                                     on:click={() => {
                                         $expandTabs = !$expandTabs;
-                                        preferences.setKey('entityHeaderExpanded', $expandTabs);
+                                        preferences.setKey('tableHeaderExpanded', $expandTabs);
                                     }}>
                                     <Icon
                                         icon={!$expandTabs ? IconChevronDown : IconChevronUp}
@@ -300,13 +301,13 @@
     </Container>
 
     <div class="databases-spreadsheet">
-        {#if hasColumns && hasValidColumns && $entityColumnSuggestions.force !== true}
+        {#if hasColumns && hasValidColumns && $tableColumnSuggestions.force !== true}
             {#if data.rows?.total}
                 <Divider />
                 <SpreadSheet {data} bind:showRowCreateSheet={$showRowCreateSheet} />
             {:else if $hasPageQueries}
                 <EmptySheet
-                    mode="records-filtered"
+                    mode="rows-filtered"
                     title="There are no rows that match your filters"
                     customColumns={createTableColumns(table.fields, selected)}>
                     {#snippet actions()}
@@ -326,12 +327,9 @@
                 </EmptySheet>
             {:else}
                 <EmptySheet
-                    mode="records"
+                    mode="rows"
                     showActions={$canWriteRows}
-                    customColumns={createTableColumns(table.fields, selected)}
-                    onOpenCreateColumn={() => {
-                        $showCreateColumnSheet.show = true;
-                    }}>
+                    customColumns={createTableColumns(table.fields, selected)}>
                     {#snippet actions()}
                         <EmptySheetCards
                             icon={IconPlus}
@@ -347,7 +345,6 @@
                             subtitle="Generate data for testing"
                             onClick={() => {
                                 $randomDataModalState.show = true;
-                                $randomDataModalState.managed = true;
                             }} />
                     {/snippet}
                 </EmptySheet>
@@ -355,13 +352,7 @@
         {:else if isCloud && canShowSuggestionsSheet}
             <SuggestionsEmptySheet userColumns={$tableColumns} userDataRows={data.rows?.rows} />
         {:else}
-            <EmptySheet
-                mode="records"
-                showActions={$canWriteTables}
-                title="You have no columns yet"
-                onOpenCreateColumn={() => {
-                    $showCreateColumnSheet.show = true;
-                }}>
+            <EmptySheet mode="rows" showActions={$canWriteTables} title="You have no columns yet">
                 {#snippet subtitle()}
                     {#if !isCloud}
                         <!-- shown on self-hosted -->
@@ -402,7 +393,6 @@
                         subtitle="Generate data for testing"
                         onClick={() => {
                             $randomDataModalState.show = true;
-                            $randomDataModalState.managed = true;
                         }} />
 
                     {#if isCloud}

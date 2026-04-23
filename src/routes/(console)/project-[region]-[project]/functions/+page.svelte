@@ -38,10 +38,9 @@
     let offset = $state(0);
 
     const createFunctionsUrl = $derived.by(() => {
-        return resolveRoute(
-            '/(console)/project-[region]-[project]/functions/create-function',
-            page.params
-        );
+        return resolveRoute('/(console)/project-[region]-[project]/functions/create-function', {
+            ...page.params
+        });
     });
 
     const isLimited = $derived(isServiceLimited('functions', $organization, data.functions.total));
@@ -173,7 +172,9 @@
         <EmptySearch hidePages bind:search={data.search} target="functions">
             <Button
                 secondary
-                href={resolveRoute('/(console)/project-[region]-[project]/functions', page.params)}>
+                href={resolveRoute('/(console)/project-[region]-[project]/functions', {
+                    ...page.params
+                })}>
                 Clear search
             </Button>
         </EmptySearch>

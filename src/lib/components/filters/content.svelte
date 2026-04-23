@@ -25,8 +25,7 @@
         columnId = $bindable(null),
         arrayValues = $bindable([]),
         operatorKey = $bindable(null),
-        singleCondition = false,
-        schema = true
+        singleCondition = false
     }: {
         // We cast to any to not cause type errors in the input components
         /* eslint  @typescript-eslint/no-explicit-any: 'off' */
@@ -37,40 +36,11 @@
         arrayValues?: string[];
         operatorKey?: string | null;
         singleCondition?: boolean;
-        schema?: boolean;
     } = $props();
 
-    const systemFieldColumns: Record<string, Column> = {
-        $id: { id: '$id', title: '$id', type: 'string' },
-        $createdAt: { id: '$createdAt', title: '$createdAt', type: 'datetime' },
-        $updatedAt: { id: '$updatedAt', title: '$updatedAt', type: 'datetime' }
-    };
-
-    const columnsArray = $derived($columns);
-    const isCustomAttribute = $derived(
-        !schema &&
-            columnId &&
-            !systemFieldColumns[columnId] &&
-            !columnsArray.find((c) => c.id === columnId)
-    );
-    const column = $derived.by(() => {
-        if (!schema && columnId) {
-            if (systemFieldColumns[columnId]) {
-                return systemFieldColumns[columnId];
-            }
-            const existingColumn = columnsArray.find((c) => c.id === columnId);
-            if (!existingColumn) {
-                return { id: columnId, title: columnId, type: 'string' } as Column;
-            }
-            return existingColumn;
-        }
-        return columnsArray.find((c) => c.id === columnId);
-    });
-
-    const operatorsForColumn = $derived.by(() => {
-        if (!schema && (!column || isCustomAttribute)) {
-            return Object.entries(operators).map(([k]) => ({ label: k, value: k }));
-        }
+    let columnsArray = $derived($columns);
+    let column = $derived(columnsArray.find((c) => c.id === columnId));
+    let operatorsForColumn = $derived.by(() => {
         if (!column?.type) return [];
         return Object.entries(operators)
             .filter(([, v]) => v.types.includes(column.type))
@@ -134,46 +104,16 @@
 
     const dispatch = createEventDispatcher<{ clear: void; apply: { applied: number } }>();
 
-    function coerceValueByOperatorType(value: any, operatorTypes: string[]): any {
-        if (typeof value !== 'string' || !value) return value;
-
-        if (operatorTypes.includes('integer') || operatorTypes.includes('double')) {
-            const numValue = Number(value);
-            if (!isNaN(numValue) && value.trim() !== '') {
-                return numValue;
-            }
-        } else if (operatorTypes.includes('boolean')) {
-            const lowerValue = value.toLowerCase().trim();
-            if (lowerValue === 'true' || lowerValue === '1') {
-                return true;
-            } else if (lowerValue === 'false' || lowerValue === '0') {
-                return false;
-            }
-        }
-
-        return value;
-    }
-
     function addFilterAndReset() {
-        const columnsWithVirtual =
-            column && !columnsArray.find((c) => c.id === columnId)
-                ? [...columnsArray, column]
-                : columnsArray;
-
         // For distance operators, pass the distance as a separate parameter
         if (isDistanceOperator && distanceValue !== null && value !== null) {
-            addFilter(columnsWithVirtual, columnId, operatorKey, value, arrayValues, distanceValue);
+            addFilter(columnsArray, columnId, operatorKey, value, arrayValues, distanceValue);
         } else {
-            let preparedValue = value;
-
-            if (column?.type === 'datetime' && typeof value === 'string' && value) {
-                preparedValue = new Date(value).toISOString();
-            } else if (!schema) {
-                const operatorTypes = operator?.types || [];
-                preparedValue = coerceValueByOperatorType(value, operatorTypes);
-            }
-
-            addFilter(columnsWithVirtual, columnId, operatorKey, preparedValue, arrayValues);
+            const preparedValue =
+                column?.type === 'datetime' && typeof value === 'string' && value
+                    ? new Date(value).toISOString()
+                    : value;
+            addFilter(columnsArray, columnId, operatorKey, preparedValue, arrayValues);
         }
 
         columnId = null;
@@ -195,23 +135,19 @@
             addFilterAndReset();
         }}>
         <Layout.Stack gap="s" direction="row" alignItems="flex-start">
-            {#if schema}
-                <InputSelect
-                    id="column"
-                    options={columnOptions}
-                    placeholder="Select column"
-                    bind:value={columnId} />
-            {:else}
-                <InputText id="column" placeholder="Enter attribute name" bind:value={columnId} />
-            {/if}
+            <InputSelect
+                id="column"
+                options={columnOptions}
+                placeholder="Select column"
+                bind:value={columnId} />
             <InputSelect
                 id="operator"
-                disabled={!column && schema}
+                disabled={!column}
                 options={operatorsForColumn}
                 placeholder="Select operator"
                 bind:value={operatorKey} />
         </Layout.Stack>
-        {#if (column || (!schema && columnId)) && operator && !operator?.hideInput}
+        {#if column && operator && !operator?.hideInput}
             {#if column?.array}
                 {#if column.format === 'enum'}
                     <InputSelectCheckbox
@@ -229,15 +165,15 @@
                 {/if}
             {:else}
                 <ul class="u-margin-block-start-8">
-                    {#if column?.format === 'enum'}
+                    {#if column.format === 'enum'}
                         <InputSelect
                             id="value"
                             bind:value
                             placeholder="Select value"
                             options={enumOptions} />
-                    {:else if column?.type === 'integer' || column?.type === 'double'}
+                    {:else if column.type === 'integer' || column.type === 'double'}
                         <InputNumber id="value" bind:value placeholder="Enter value" />
-                    {:else if column?.type === 'boolean'}
+                    {:else if column.type === 'boolean'}
                         <InputSelect
                             id="value"
                             placeholder="Select a value"
@@ -247,11 +183,11 @@
                                 { label: 'False', value: false }
                             ]}
                             bind:value />
-                    {:else if column?.type === 'datetime'}
+                    {:else if column.type === 'datetime'}
                         {#key value}
                             <InputDateTime id="value" bind:value step={60} type="datetime-local" />
                         {/key}
-                    {:else if column?.type === 'point' || column?.type === 'linestring' || column?.type === 'polygon'}
+                    {:else if column.type === 'point' || column.type === 'linestring' || column.type === 'polygon'}
                         <InputPoint
                             values={value || [0, 0]}
                             onChangePoint={(index, newValue) => {

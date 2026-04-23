@@ -11,7 +11,6 @@
     export let helper: string | undefined = undefined;
     export let pattern: string | undefined = undefined;
     export let leadingIcon: ComponentType | undefined = undefined;
-    export let max: number | undefined = undefined;
 
     let value = '';
     let error: string;
@@ -31,29 +30,13 @@
     $: if (value) {
         error = null;
     }
-
-    $: {
-        // filter out empty or whitespace-only tags
-        const cleaned = tags.filter((tag) => tag.trim().length > 0);
-        if (cleaned.length !== tags.length) {
-            tags = cleaned;
-        }
-    }
-
-    $: if (max !== undefined && tags.length > max) {
-        error = `Maximum ${max} fields allowed`;
-    } else if (max === undefined || tags.length <= max) {
-        error = null;
-    }
-
-    $: isDisabled = disabled || (max !== undefined && tags.length >= max);
 </script>
 
 <Input.Tags
     {label}
     {id}
     {placeholder}
-    disabled={isDisabled}
+    {disabled}
     {pattern}
     {required}
     {leadingIcon}
@@ -61,11 +44,3 @@
     helper={error || helper}
     on:invalid={handleInvalid}
     state={error ? 'error' : 'default'}><slot name="info" slot="info" /></Input.Tags>
-
-<style>
-    /* hotfix due to root styles increasing block-size */
-    :global(.tag) {
-        border: none;
-        block-size: unset;
-    }
-</style>

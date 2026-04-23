@@ -17,13 +17,13 @@
 
     const { data }: PageProps = $props();
 
-    const { databaseSdk, terminology } = getTerminologies();
+    const { terminology } = getTerminologies();
     const entityTitle = terminology.entity.title;
     const entityLower = terminology.entity.lower;
 
     /**
      * init update because `getContext`
-     * doesn't work on TypeScript context!
+     * doesn't work on typescript context!
      */
     tableViewColumns.update((columns) => {
         /* $id */
@@ -32,22 +32,8 @@
     });
 
     function getImageRoute(type: 'light' | 'dark'): string {
-        return withPath(
-            resolveRoute('/'),
-            `/images/databases/empty-${terminology.type}-${type}.svg`
-        );
+        return withPath(resolveRoute('/'), `/images/empty-database-${type}.svg`);
     }
-
-    const emptyPageText = $derived.by(() => {
-        switch (terminology.type) {
-            default:
-            case 'legacy':
-            case 'tablesdb':
-                return `Create, organize, and query structured data with ${entityTitle.plural}.`;
-            case 'documentsdb':
-                return `Store, manage, and query unstructured data with ${entityTitle.plural}.`;
-        }
-    });
 </script>
 
 <Container databasesMainScreen>
@@ -67,7 +53,7 @@
             {#if $canWriteTables}
                 <Button event="create_table" on:click={() => ($showCreateEntity = true)}>
                     <Icon icon={IconPlus} slot="start" size="s" />
-                    Create {entityLower.singular}
+                    Create table
                 </Button>
             {/if}
         </Layout.Stack>
@@ -77,7 +63,7 @@
         {#if data.view === 'grid'}
             <Grid {data} {terminology} bind:showCreate={$showCreateEntity} />
         {:else}
-            <Table {terminology} {databaseSdk} entities={data.entities} />
+            <Table {data} {terminology} />
         {/if}
 
         <PaginationWithLimit
@@ -97,36 +83,28 @@
         </EmptySearch>
     {:else}
         <Card.Base padding="none">
-            <div class="empty-container">
-                <Empty
-                    src={getImageRoute($app.themeInUse)}
-                    title="Create your first {entityLower.singular}">
-                    <span slot="description">{emptyPageText}</span>
+            <Empty
+                src={getImageRoute($app.themeInUse)}
+                title="Create your first {entityLower.singular}">
+                <span slot="description">
+                    Create, organize, and query structured data with {entityTitle.plural}.
+                </span>
 
-                    <span slot="actions">
-                        <Button
-                            external
-                            href="https://appwrite.io/docs/products/databases/databases"
-                            text
-                            event="empty_documentation"
-                            ariaLabel="create {entityLower.singular}">Documentation</Button>
+                <span slot="actions">
+                    <Button
+                        external
+                        href="https://appwrite.io/docs/products/databases/databases"
+                        text
+                        event="empty_documentation"
+                        ariaLabel="create {entityLower.singular}">Documentation</Button>
 
-                        {#if $canWriteTables}
-                            <Button secondary on:click={() => ($showCreateEntity = true)}>
-                                Create {entityLower.singular}
-                            </Button>
-                        {/if}
-                    </span>
-                </Empty>
-            </div>
+                    {#if $canWriteTables}
+                        <Button secondary on:click={() => ($showCreateEntity = true)}>
+                            Create {entityLower.singular}
+                        </Button>
+                    {/if}
+                </span>
+            </Empty>
         </Card.Base>
     {/if}
 </Container>
-
-<style lang="scss">
-    /* temporary */
-    .empty-container :global(img) {
-        height: auto;
-        border-radius: unset;
-    }
-</style>

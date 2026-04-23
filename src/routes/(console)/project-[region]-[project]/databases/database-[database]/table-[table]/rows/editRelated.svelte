@@ -8,10 +8,9 @@
     import { type Models, Query } from '@appwrite.io/console';
     import { Dependencies } from '$lib/constants';
     import { invalidate } from '$app/navigation';
-    import { PROHIBITED_ROW_KEYS } from '../store';
-    import { type Columns, buildWildcardEntitiesQuery } from '$database/store';
+    import { type Columns, PROHIBITED_ROW_KEYS } from '../store';
     import RelatedRowColumns from './relatedRowColumns.svelte';
-    import { isRelationship, isRelationshipToMany } from './store';
+    import { buildWildcardColumnsQuery, isRelationship, isRelationshipToMany } from './store';
     import { Accordion, Layout, Skeleton } from '@appwrite.io/pink-svelte';
     import { deepClone } from '$lib/helpers/object';
     import { preferences } from '$lib/stores/preferences';
@@ -71,7 +70,7 @@
                         databaseId,
                         tableId: tableId,
                         rowId: rows as string,
-                        queries: buildWildcardEntitiesQuery(relatedTable)
+                        queries: buildWildcardColumnsQuery(relatedTable)
                     });
 
                 fetchedRows = [fetchedRow];
@@ -140,7 +139,7 @@
                                     queries: [
                                         Query.equal('$id', rowIds),
                                         Query.limit(rowIds.length),
-                                        ...buildWildcardEntitiesQuery(rowTable)
+                                        ...buildWildcardColumnsQuery(rowTable)
                                     ]
                                 });
                             return response.rows;

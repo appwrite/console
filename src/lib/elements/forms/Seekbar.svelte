@@ -16,7 +16,6 @@
         snapThreshold = 3,
         disabled = false,
         id = ID.unique(),
-        extraBlockStart = false,
         onchange
     }: {
         min?: number;
@@ -30,7 +29,6 @@
         snapThreshold?: number;
         disabled?: boolean;
         id?: string;
-        extraBlockStart?: boolean;
         onchange?: (value: number) => void;
     } = $props();
 
@@ -166,12 +164,7 @@
 </script>
 
 <div class="seekbar">
-    <div
-        class="track"
-        class:extra-space={extraBlockStart}
-        role="presentation"
-        bind:this={trackRef}
-        onclick={handleTrackClick}>
+    <div class="track" role="presentation" bind:this={trackRef} onclick={handleTrackClick}>
         {#if maxAllowed < max}
             <div
                 class="disabled-area"
@@ -245,13 +238,12 @@
     }
 
     .breakpoints {
+        position: absolute;
+        top: calc(1.25rem + var(--seekbar-height) + 8px);
         left: 0;
         right: 0;
         height: 12px;
-        position: absolute;
-        margin-inline: 1px;
         pointer-events: none;
-        top: calc(1.25rem + var(--seekbar-height) + 8px);
     }
 
     .breakpoint {
@@ -273,10 +265,6 @@
         background-color: var(--seekbar-track-color);
         border-radius: var(--seekbar-track-radius);
         cursor: pointer;
-    }
-
-    .extra-space {
-        margin-block-start: 2px;
     }
 
     .disabled-area {
