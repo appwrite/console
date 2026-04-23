@@ -65,16 +65,14 @@
                     eventType = Submit.EmailUpdateVerificationTemplate;
                     break;
             }
-            // TODO: fix TemplateType and TemplateLocale typing once SDK is updated
-            await sdk.forConsole.projects.updateEmailTemplate({
-                projectId: project.$id,
-                type: $emailTemplate.type as EmailTemplateType,
+            await sdk.forProject(project.region, project.$id).project.updateEmailTemplate({
+                templateId: $emailTemplate.type as EmailTemplateType,
                 locale: $emailTemplate.locale as EmailTemplateLocale,
                 subject: $emailTemplate.subject || undefined,
                 message: $emailTemplate.message || undefined,
                 senderName: $emailTemplate.senderName || undefined,
                 senderEmail: $emailTemplate.senderEmail || undefined,
-                replyTo: $emailTemplate.replyTo || undefined
+                replyToEmail: $emailTemplate.replyTo || undefined
             });
 
             $baseEmailTemplate = {

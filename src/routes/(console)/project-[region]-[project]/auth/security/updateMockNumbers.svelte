@@ -24,10 +24,14 @@
         project: Models.Project;
     } = $props();
 
-    let numbers: Models.MockNumber[] = $state(project?.authMockNumbers ?? []);
+    type MockNumberForm = Pick<Models.MockNumber, 'number' | 'otp'>;
+
+    let numbers: MockNumberForm[] = $state(project?.authMockNumbers ?? []);
     let lastProjectId: string = $state(project?.$id ?? null);
 
-    const initialNumbers = $derived(project.authMockNumbers?.map((n) => ({ ...n })) ?? []);
+    const initialNumbers = $derived(
+        project.authMockNumbers?.map(({ number, otp }) => ({ number, otp })) ?? []
+    );
 
     const isSubmitDisabled = $derived(JSON.stringify(numbers) === JSON.stringify(initialNumbers));
 
@@ -51,16 +55,33 @@
         const id = project?.$id ?? null;
         if (id && id !== lastProjectId) {
             lastProjectId = id;
-            numbers = project?.authMockNumbers ?? [];
+            numbers = project?.authMockNumbers?.map(({ number, otp }) => ({ number, otp })) ?? [];
         }
     });
 
     async function updateMockNumbers() {
         try {
-            await sdk.forConsole.projects.updateMockNumbers({
-                projectId: project.$id,
-                numbers
-            });
+            const projectSdk = sdk.forProject(project.region, project.$id).project;
+            const nextByNumber = new Map(numbers.map((number) => [number.number, number]));
+            const initialByNumber = new Map(
+                initialNumbers.map((number) => [number.number, number])
+            );
+
+            await Promise.all([
+                ...initialNumbers
+                    .filter((number) => !nextByNumber.has(number.number))
+                    .map((number) => projectSdk.deleteMockPhone({ number: number.number })),
+                ...numbers.map((number) => {
+                    const initial = initialByNumber.get(number.number);
+                    if (!initial) {
+                        return projectSdk.createMockPhone(number);
+                    }
+                    if (initial.otp !== number.otp) {
+                        return projectSdk.updateMockPhone(number);
+                    }
+                    return Promise.resolve();
+                })
+            ]);
 
             await invalidate(Dependencies.PROJECT);
 
@@ -72,8 +93,8 @@
         }
     }
 
-    function addPhoneNumber(number: Models.MockNumber) {
-        numbers = [...numbers, { phone: number.phone, otp: number.otp }];
+    function addPhoneNumber(number: MockNumberForm) {
+        numbers = [...numbers, { number: number.number, otp: number.otp }];
     }
 
     function deletePhoneNumber(index: number) {
@@ -163,7 +184,7 @@
                     <Layout.Stack direction="row" alignItems="flex-end">
                         <InputPhone
                             id={`key-${index}`}
-                            bind:value={number.phone}
+                            bind:value={number.number}
                             placeholder="Enter phone number"
                             label={index === 0 ? 'Phone number' : undefined}
                             minlength={9}
@@ -172,7 +193,7 @@
                             <Tooltip slot="end">
                                 <Input.Action
                                     icon={IconRefresh}
-                                    on:click={() => (number.phone = generateNumber())} />
+                                    on:click={() => (number.number = generateNumber())} />
                                 <span slot="tooltip">Regenerate</span>
                             </Tooltip>
                         </InputPhone>
@@ -211,7 +232,7 @@
                             secondary
                             on:click={() =>
                                 addPhoneNumber({
-                                    phone: generateNumber(),
+                                    number: generateNumber(),
                                     otp: generateOTP()
                                 })}
                             disabled={numbers.length >= 10}>
@@ -224,7 +245,7 @@
                 <Empty
                     on:click={() => {
                         addPhoneNumber({
-                            phone: generateNumber(),
+                            number: generateNumber(),
                             otp: generateOTP()
                         });
                     }}>Generate number</Empty>

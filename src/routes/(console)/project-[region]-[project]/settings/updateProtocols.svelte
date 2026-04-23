@@ -43,7 +43,7 @@
         apiProtocolUpdates.add(protocol.method);
 
         try {
-            await sdk.forProject($project.region, $project.$id).project.updateProtocolStatus({
+            await sdk.forProject($project.region, $project.$id).project.updateProtocol({
                 protocolId: protocol.method,
                 enabled: protocol.value
             });
@@ -78,7 +78,7 @@
             const projectSdk = sdk.forProject($project.region, $project.$id);
             for (const protocol of get(protocols).list) {
                 if (protocol.value === status) continue;
-                await projectSdk.project.updateProtocolStatus({
+                await projectSdk.project.updateProtocol({
                     protocolId: protocol.method,
                     enabled: status
                 });

@@ -1,25 +1,26 @@
 <script module lang="ts">
-    import {
-        EmailTemplateLocale,
-        EmailTemplateType,
-        SmsTemplateLocale,
-        SmsTemplateType
-    } from '@appwrite.io/console';
+    import { EmailTemplateLocale, EmailTemplateType, type Models } from '@appwrite.io/console';
 
     import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
+    import type { EmailTemplateForm, SmsTemplateForm } from './store';
+
+    type SmsTemplateProjectSdk = {
+        getSMSTemplate(params: { templateId: string; locale: string }): Promise<SmsTemplateForm>;
+    };
 
     export async function loadEmailTemplate(
+        region: string,
         projectId: string,
         type: EmailTemplateType,
         locale: EmailTemplateLocale
-    ) {
+    ): Promise<EmailTemplateForm> {
         try {
-            return await sdk.forConsole.projects.getEmailTemplate({
-                projectId,
-                type: type,
-                locale: locale
+            const template = await sdk.forProject(region, projectId).project.getEmailTemplate({
+                templateId: type,
+                locale
             });
+            return normalizeEmailTemplate(template, type);
         } catch (e) {
             addNotification({
                 type: 'error',
@@ -27,15 +28,18 @@
             });
         }
     }
+
     export async function loadSmsTemplate(
+        region: string,
         projectId: string,
-        type: SmsTemplateType,
-        locale: SmsTemplateLocale
-    ) {
+        type: string,
+        locale: string
+    ): Promise<SmsTemplateForm> {
         try {
-            return await sdk.forConsole.projects.getSMSTemplate({
-                projectId,
-                type,
+            const project = sdk.forProject(region, projectId)
+                .project as unknown as SmsTemplateProjectSdk;
+            return await project.getSMSTemplate({
+                templateId: type,
                 locale
             });
         } catch (e) {
@@ -44,6 +48,18 @@
                 message: e.message
             });
         }
+    }
+
+    function normalizeEmailTemplate(
+        template: Models.EmailTemplate,
+        type: EmailTemplateType
+    ): EmailTemplateForm {
+        return {
+            ...template,
+            type,
+            templateId: template.templateId ?? type,
+            replyTo: template.replyToEmail
+        };
     }
 </script>
 
@@ -75,7 +91,12 @@
         templateType = type;
         isTemplateLoading = true;
 
-        $emailTemplate = await loadEmailTemplate(page.params.project, type, EmailTemplateLocale.En);
+        $emailTemplate = await loadEmailTemplate(
+            page.params.region,
+            page.params.project,
+            type,
+            EmailTemplateLocale.En
+        );
         $baseEmailTemplate = { ...$emailTemplate };
 
         isTemplateLoading = false;

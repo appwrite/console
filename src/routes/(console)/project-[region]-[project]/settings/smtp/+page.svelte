@@ -12,7 +12,7 @@
     import { resolve } from '$app/paths';
     import deepEqual from 'deep-equal';
     import { currentPlan } from '$lib/stores/organization';
-    import { type SMTPSecure } from '@appwrite.io/console';
+    import { type Secure } from '@appwrite.io/console';
     import InputSelect from '$lib/elements/forms/inputSelect.svelte';
     import { getChangePlanUrl } from '$lib/stores/billing';
     import { Link, Selector, Alert } from '@appwrite.io/pink-svelte';
@@ -60,7 +60,7 @@
                 enabled: project.smtpEnabled,
                 senderName: project.smtpSenderName,
                 senderEmail: project.smtpSenderEmail,
-                replyTo: project.smtpReplyTo,
+                replyTo: project.smtpReplyToEmail,
                 host: project.smtpHost,
                 port: project.smtpPort,
                 username: project.smtpUsername,
@@ -72,17 +72,16 @@
 
     async function updateSmtp() {
         try {
-            await sdk.forConsole.projects.updateSMTP({
-                projectId: project.$id,
+            await sdk.forProject(project.region, project.$id).project.updateSMTP({
                 enabled,
                 senderName: senderName || undefined,
                 senderEmail: senderEmail || undefined,
-                replyTo: replyTo || undefined,
+                replyToEmail: replyTo || undefined,
                 host: host || undefined,
                 port: port || undefined,
                 username: username || undefined,
                 password: password || undefined,
-                secure: secure ? (secure as SMTPSecure) : undefined
+                secure: secure ? (secure as Secure) : undefined
             });
 
             invalidate(Dependencies.PROJECT);
@@ -104,7 +103,7 @@
         enabled = project.smtpEnabled ?? false;
         senderName = project.smtpSenderName;
         senderEmail = project.smtpSenderEmail;
-        replyTo = project.smtpReplyTo;
+        replyTo = project.smtpReplyToEmail;
         host = project.smtpHost;
         port = project.smtpPort;
         username = project.smtpUsername;

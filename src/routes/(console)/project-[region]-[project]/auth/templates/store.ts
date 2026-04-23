@@ -1,5 +1,5 @@
 import { writable } from 'svelte/store';
-import { EmailTemplateType, type Models } from '@appwrite.io/console';
+import { EmailTemplateType, type EmailTemplateLocale, type Models } from '@appwrite.io/console';
 
 // component imports
 import Email2FaTemplate from './email2FATemplate.svelte';
@@ -10,33 +10,52 @@ import EmailOtpSessionTemplate from './emailOtpSessionTemplate.svelte';
 import EmailVerificationTemplate from './emailVerificationTemplate.svelte';
 import EmailSessionAlertTemplate from './emailSessionAlertTemplate.svelte';
 
-export const emailTemplate = writable<Models.EmailTemplate>({
+export type EmailTemplateForm = Models.EmailTemplate & {
+    type: EmailTemplateType | null;
+    templateId: EmailTemplateType | string | null;
+    locale: EmailTemplateLocale | string | null;
+    replyTo: string | null;
+};
+
+export type SmsTemplateForm = {
+    type: string | null;
+    locale: string | null;
+    message: string | null;
+};
+
+export const emailTemplate = writable<EmailTemplateForm>({
+    templateId: null,
     type: null,
     locale: null,
     message: null,
     senderName: '',
     senderEmail: null,
     replyTo: null,
+    replyToEmail: null,
+    replyToName: null,
     subject: null
 });
 
-export const baseEmailTemplate = writable<Models.EmailTemplate>({
+export const baseEmailTemplate = writable<EmailTemplateForm>({
+    templateId: null,
     type: null,
     locale: null,
     message: null,
     senderName: null,
     senderEmail: null,
     replyTo: null,
+    replyToEmail: null,
+    replyToName: null,
     subject: null
 });
 
-export const smsTemplate = writable<Models.SmsTemplate>({
+export const smsTemplate = writable<SmsTemplateForm>({
     type: null,
     locale: null,
     message: null
 });
 
-export const baseSmsTemplate = writable<Models.SmsTemplate>({
+export const baseSmsTemplate = writable<SmsTemplateForm>({
     type: null,
     locale: null,
     message: null

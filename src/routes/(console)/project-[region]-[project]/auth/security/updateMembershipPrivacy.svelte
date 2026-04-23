@@ -21,12 +21,13 @@
 
     async function updateMembershipsPrivacy() {
         try {
-            await sdk.forConsole.projects.updateMembershipsPrivacy({
-                projectId: project.$id,
-                userName: authMembershipsUserName,
-                userEmail: authMembershipsUserEmail,
-                mfa: authMembershipsMfa
-            });
+            await sdk
+                .forProject(project.region, project.$id)
+                .project.updateMembershipPrivacyPolicy({
+                    userName: authMembershipsUserName,
+                    userEmail: authMembershipsUserEmail,
+                    userMFA: authMembershipsMfa
+                });
             await invalidate(Dependencies.PROJECT);
             addNotification({
                 type: 'success',
