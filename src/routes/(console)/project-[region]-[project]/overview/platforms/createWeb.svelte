@@ -494,7 +494,7 @@ APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.project).c
 
     .frameworks {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
         gap: var(--gap-l, 16px);
     }
 </style>
