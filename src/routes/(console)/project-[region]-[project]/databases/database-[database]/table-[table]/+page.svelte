@@ -8,7 +8,7 @@
     import { Container } from '$lib/layout';
     import { preferences } from '$lib/stores/preferences';
     import { canWriteTables, canWriteRows } from '$lib/stores/roles';
-    import { Icon, Layout, Divider, Tooltip, Typography, Link } from '@appwrite.io/pink-svelte';
+    import { Dialog, Icon, Layout, Divider, Selector, Tooltip, Typography, Link } from '@appwrite.io/pink-svelte';
     import type { PageData } from './$types';
     import {
         tableColumns,
@@ -44,6 +44,7 @@
     import { EmptySheet, EmptySheetCards, type Field } from '$database/(entity)';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
+
     import {
         Empty as SuggestionsEmptySheet,
         tableColumnSuggestions,
@@ -57,6 +58,11 @@
 
     let isRefreshing = false;
     let showImportCSV = false;
+    let showImportOptions = false;
+    let importOverwrite = false;
+    let importSkip = false;
+    let pendingFile: Models.File | null = null;
+    let pendingLocalFile = false;
 
     // todo: might need a type fix here.
     const filterColumns = writable<Column[]>([]);
@@ -108,17 +114,30 @@
 
     $: disableButton = canShowSuggestionsSheet;
 
-    async function onSelect(file: Models.File, localFile = false) {
+    function onSelect(file: Models.File, localFile = false) {
+        pendingFile = file;
+        pendingLocalFile = localFile;
+        importOverwrite = false;
+        importSkip = false;
+        showImportOptions = true;
+    }
+
+    async function startImport() {
+        if (!pendingFile) return;
+
+        showImportOptions = false;
         $isCsvImportInProgress = true;
 
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
                 .migrations.createCSVImport({
-                    bucketId: file.bucketId,
-                    fileId: file.$id,
+                    bucketId: pendingFile.bucketId,
+                    fileId: pendingFile.$id,
                     resourceId: `${page.params.database}:${page.params.table}`,
-                    internalFile: localFile
+                    internalFile: pendingLocalFile,
+                    overwrite: importOverwrite,
+                    skip: importSkip
                 });
 
             addNotification({
@@ -135,6 +154,7 @@
             });
         } finally {
             $isCsvImportInProgress = false;
+            pendingFile = null;
         }
     }
 
@@ -423,6 +443,40 @@
             imageWidth: 32
         }} />
 {/if}
+
+<Dialog title="Import options" bind:open={showImportOptions}>
+    <Layout.Stack gap="l">
+        <Typography.Text variant="m-400">
+            Choose how to handle documents that already exist in this table.
+        </Typography.Text>
+        <Layout.Stack gap="m">
+            <Selector.Checkbox
+                size="s"
+                checked={importOverwrite}
+                on:change={(e) => {
+                    importOverwrite = e.detail;
+                    if (e.detail) importSkip = false;
+                }}
+                label="Overwrite existing documents"
+                description="Documents with matching IDs will be updated with the imported data." />
+            <Selector.Checkbox
+                size="s"
+                checked={importSkip}
+                on:change={(e) => {
+                    importSkip = e.detail;
+                    if (e.detail) importOverwrite = false;
+                }}
+                label="Skip existing documents"
+                description="Documents with matching IDs will be silently skipped." />
+        </Layout.Stack>
+    </Layout.Stack>
+    <svelte:fragment slot="footer">
+        <Layout.Stack direction="row" gap="s" justifyContent="flex-end">
+            <Button text on:click={() => (showImportOptions = false)}>Cancel</Button>
+            <Button on:click={startImport}>Start import</Button>
+        </Layout.Stack>
+    </svelte:fragment>
+</Dialog>
 
 <CreateRow
     {table}
