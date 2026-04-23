@@ -14,13 +14,6 @@ export type EmailTemplateForm = Models.EmailTemplate & {
     type: EmailTemplateType | null;
     templateId: EmailTemplateType | string | null;
     locale: EmailTemplateLocale | string | null;
-    replyTo: string | null;
-};
-
-export type SmsTemplateForm = {
-    type: string | null;
-    locale: string | null;
-    message: string | null;
 };
 
 export const emailTemplate = writable<EmailTemplateForm>({
@@ -30,7 +23,6 @@ export const emailTemplate = writable<EmailTemplateForm>({
     message: null,
     senderName: '',
     senderEmail: null,
-    replyTo: null,
     replyToEmail: null,
     replyToName: null,
     subject: null
@@ -43,22 +35,9 @@ export const baseEmailTemplate = writable<EmailTemplateForm>({
     message: null,
     senderName: null,
     senderEmail: null,
-    replyTo: null,
     replyToEmail: null,
     replyToName: null,
     subject: null
-});
-
-export const smsTemplate = writable<SmsTemplateForm>({
-    type: null,
-    locale: null,
-    message: null
-});
-
-export const baseSmsTemplate = writable<SmsTemplateForm>({
-    type: null,
-    locale: null,
-    message: null
 });
 
 export const templates = [

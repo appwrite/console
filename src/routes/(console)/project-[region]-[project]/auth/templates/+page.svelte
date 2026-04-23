@@ -9,14 +9,14 @@
         region: string,
         projectId: string,
         type: EmailTemplateType,
-        locale: EmailTemplateLocale
+        locale: EmailTemplateLocale = EmailTemplateLocale.En
     ): Promise<EmailTemplateForm> {
         try {
             const template = await sdk.forProject(region, projectId).project.getEmailTemplate({
                 templateId: type,
                 locale
             });
-            return normalizeEmailTemplate(template, type);
+            return normalizeEmailTemplate(template, type, locale);
         } catch (e) {
             addNotification({
                 type: 'error',
@@ -27,13 +27,14 @@
 
     function normalizeEmailTemplate(
         template: Models.EmailTemplate,
-        type: EmailTemplateType
+        type: EmailTemplateType,
+        locale: EmailTemplateLocale = EmailTemplateLocale.En
     ): EmailTemplateForm {
         return {
             ...template,
             type,
             templateId: template.templateId ?? type,
-            replyTo: template.replyToEmail
+            locale: template.locale ?? locale
         };
     }
 </script>

@@ -25,7 +25,8 @@
 
     let enabled: boolean = $state(false);
 
-    let replyTo: string = $state('');
+    let replyToEmail: string = $state('');
+    let replyToName: string = $state('');
     let senderName: string = $state('');
     let senderEmail: string = $state('');
 
@@ -49,7 +50,8 @@
                 enabled,
                 senderName,
                 senderEmail,
-                replyTo,
+                replyToEmail,
+                replyToName,
                 host,
                 port: port ?? '',
                 username,
@@ -60,7 +62,8 @@
                 enabled: project.smtpEnabled,
                 senderName: project.smtpSenderName,
                 senderEmail: project.smtpSenderEmail,
-                replyTo: project.smtpReplyToEmail,
+                replyToEmail: project.smtpReplyToEmail,
+                replyToName: project.smtpReplyToName,
                 host: project.smtpHost,
                 port: project.smtpPort,
                 username: project.smtpUsername,
@@ -76,7 +79,8 @@
                 enabled,
                 senderName: senderName || undefined,
                 senderEmail: senderEmail || undefined,
-                replyToEmail: replyTo || undefined,
+                replyToEmail: replyToEmail || undefined,
+                replyToName: replyToName || undefined,
                 host: host || undefined,
                 port: port || undefined,
                 username: username || undefined,
@@ -103,7 +107,8 @@
         enabled = project.smtpEnabled ?? false;
         senderName = project.smtpSenderName;
         senderEmail = project.smtpSenderEmail;
-        replyTo = project.smtpReplyToEmail;
+        replyToEmail = project.smtpReplyToEmail;
+        replyToName = project.smtpReplyToName;
         host = project.smtpHost;
         port = project.smtpPort;
         username = project.smtpUsername;
@@ -115,7 +120,8 @@
         if (!enabled) {
             senderName = '';
             senderEmail = '';
-            replyTo = '';
+            replyToEmail = '';
+            replyToName = '';
             host = '';
             port = null;
             username = '';
@@ -173,10 +179,15 @@
                             required
                             placeholder="user@example.io" />
                         <InputEmail
-                            id="replyTo"
-                            label="Reply to"
-                            bind:value={replyTo}
+                            id="replyToEmail"
+                            label="Reply to email"
+                            bind:value={replyToEmail}
                             placeholder="user@example.io" />
+                        <InputText
+                            id="replyToName"
+                            label="Reply to name"
+                            bind:value={replyToName}
+                            placeholder="Enter reply to name" />
                         <InputText
                             id="serverHost"
                             label="Server host"
