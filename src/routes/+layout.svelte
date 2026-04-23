@@ -13,7 +13,11 @@
     import { sdk } from '$lib/stores/sdk';
     import { user } from '$lib/stores/user';
     import { loading } from '$routes/store';
-    import { restoreImpersonation } from '$lib/appwrite/impersonation';
+    import {
+        impersonationRevision,
+        readImpersonationTargetUserId,
+        restoreImpersonation
+    } from '$lib/appwrite/impersonation';
     import { headerAlert } from '$lib/stores/headerAlert';
     import ImpersonationBanner from '$lib/components/impersonation/banner.svelte';
     import { Root } from '@appwrite.io/pink-svelte';
@@ -37,7 +41,7 @@
         headerAlert.add({
             id: 'impersonation',
             component: ImpersonationBanner,
-            show: true,
+            show: !!readImpersonationTargetUserId(),
             importance: 100 // highest priority — always visible when active
         });
 
@@ -128,6 +132,11 @@
             trackPageView(navigation.to.route.id);
         }
     });
+
+    $: if (browser) {
+        void $impersonationRevision;
+        headerAlert.updateShow('impersonation', !!readImpersonationTargetUserId());
+    }
 
     $: {
         if (browser) {
