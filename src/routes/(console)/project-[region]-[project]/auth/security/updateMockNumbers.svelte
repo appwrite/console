@@ -83,13 +83,13 @@
                 })
             ]);
 
-            await invalidate(Dependencies.PROJECT);
-
             addNotification({ type: 'success', message: 'Mock phone numbers have been updated' });
             trackEvent(Submit.AuthMockNumbersUpdate);
         } catch (error) {
             addNotification({ type: 'error', message: error.message });
             trackError(error, Submit.AuthMockNumbersUpdate);
+        } finally {
+            await invalidate(Dependencies.PROJECT);
         }
     }
 
