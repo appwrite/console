@@ -29,8 +29,8 @@
     function setNavigationHeight() {
         const alertHeight = container ? container.getBoundingClientRect().height : 0;
         const header: HTMLHeadingElement = document.querySelector('main > header');
-        const sidebar: HTMLElement = document.querySelector('main > div > nav');
-        const contentSection: HTMLElement = document.querySelector('main > div > section');
+        const sidebar: HTMLElement = document.querySelector('main nav');
+        const contentSection: HTMLElement = document.querySelector('main .main-content');
 
         if (alertHeight) {
             // for sidebar and sub-navigation!
