@@ -3,6 +3,77 @@ import type { Column } from '$lib/helpers/types';
 import { IconChartBar, IconCloudUpload, IconCog } from '@appwrite.io/pink-icons-svelte';
 import { resolveRoute, withPath } from '$lib/stores/navigation';
 import type { Page } from '@sveltejs/kit';
+import { type Models, Query } from '@appwrite.io/console';
+import type { Entity, Field } from '$database/(entity)';
+import { isRelationship } from '$database/table-[table]/rows/store';
+import type { TagValue } from '$lib/components/filters/store';
+import type { SortDirection } from '$lib/components';
+import { entityColumnSuggestions } from '$database/(suggestions)';
+
+export type Columns =
+    | Models.ColumnBoolean
+    | Models.ColumnEmail
+    | Models.ColumnEnum
+    | Models.ColumnFloat
+    | Models.ColumnInteger
+    | Models.ColumnIp
+    | Models.ColumnString
+    | Models.ColumnText
+    | Models.ColumnMediumtext
+    | Models.ColumnLongtext
+    | Models.ColumnVarchar
+    | Models.ColumnUrl
+    | Models.ColumnPoint
+    | Models.ColumnLine
+    | Models.ColumnPolygon
+    | (Models.ColumnRelationship & { default?: never });
+
+export type Attributes =
+    | Models.AttributeBoolean
+    | Models.AttributeEmail
+    | Models.AttributeEnum
+    | Models.AttributeFloat
+    | Models.AttributeInteger
+    | Models.AttributeIp
+    | Models.AttributeString
+    | Models.AttributeText
+    | Models.AttributeMediumtext
+    | Models.AttributeLongtext
+    | Models.AttributeVarchar
+    | Models.AttributeUrl
+    | Models.AttributePoint
+    | Models.AttributeLine
+    | Models.AttributePolygon
+    | (Models.AttributeRelationship & { default?: never });
+
+export type Collection = Omit<Models.Collection, 'attributes'> & {
+    attributes: Array<Attributes>;
+};
+
+export type Table = Omit<Models.Table, 'columns'> & {
+    columns: Array<Columns>;
+};
+
+export type SortState = {
+    column?: string;
+    direction: SortDirection;
+};
+
+export type RandomDataSchema = {
+    show: boolean;
+    value: number;
+    columns?: boolean;
+    managed: boolean;
+    onSubmit?: () => Promise<void> | void;
+};
+
+/**
+ * adding a lot of fake data will trigger the realtime below
+ * and will keep invalidating the `Dependencies.ENTITY` making a lot of API noise!
+ */
+export const isWaterfallFromFaker = writable(false);
+
+export const expandTabs = writable(null);
 
 export const showCreateEntity = writable(false);
 
@@ -36,6 +107,36 @@ export const databaseSubNavigationItems = [
     { title: 'Settings', href: 'settings', icon: IconCog }
 ];
 
+export const randomDataModalState = writable<RandomDataSchema>({
+    show: false,
+    value: 25, // initial value!
+    managed: true // true means don't use the one in database/+layout.svelte
+});
+
+export const spreadsheetLoading = writable(false);
+
+export const spreadsheetRenderKey = writable('initial');
+
+export function resetSampleFieldsConfig() {
+    spreadsheetLoading.set(false);
+    isWaterfallFromFaker.set(false);
+
+    randomDataModalState.update((state) => ({
+        ...state,
+        value: 25,
+        show: false
+    }));
+
+    // Reset suggestion state
+    entityColumnSuggestions.set({
+        thinking: false,
+        entity: null,
+        enabled: false,
+        context: null,
+        force: false
+    });
+}
+
 export function buildEntityRoute(page: Page, entityType: string, entityId: string): string {
     return withPath(
         resolveRoute(
@@ -44,4 +145,53 @@ export function buildEntityRoute(page: Page, entityType: string, entityId: strin
         ),
         `/${entityType}-${entityId}`
     );
+}
+
+/**
+ * Returns select queries for all main and related fields in an `Entity`.
+ */
+export function buildWildcardEntitiesQuery(entity: Entity | null = null): string[] {
+    return [
+        ...(entity?.fields
+            ?.filter((field: Field) => field.status === 'available' && isRelationship(field))
+            ?.map((field: Field) => Query.select([`${field.key}.*`])) ?? []),
+
+        Query.select(['*'])
+    ];
+}
+
+export function extractSortFromQueries(parsedQueries: Map<TagValue, string>) {
+    for (const [tagValue, queryString] of parsedQueries.entries()) {
+        if (queryString.includes('orderAsc') || queryString.includes('orderDesc')) {
+            const isAsc = queryString.includes('orderAsc');
+            return {
+                column: tagValue.value,
+                direction: isAsc ? 'asc' : 'desc'
+            };
+        }
+    }
+
+    return { column: null, direction: 'default' };
+}
+
+export function buildGridQueries(
+    limit: number,
+    offset: number,
+    parsedQueries: Map<TagValue, string>,
+    table: Entity
+) {
+    const hasOrderQuery = Array.from(parsedQueries.values()).some(
+        (q) => q.includes('orderAsc') || q.includes('orderDesc')
+    );
+
+    const queryArray = [Query.limit(limit), Query.offset(offset)];
+
+    // don't override if there's a user created sort!
+    if (!hasOrderQuery) {
+        queryArray.push(Query.orderDesc(''));
+    }
+
+    queryArray.push(...parsedQueries.values(), ...buildWildcardEntitiesQuery(table));
+
+    return queryArray;
 }
