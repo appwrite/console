@@ -28,6 +28,7 @@
     export let enableApply = false;
     export let quickFilters = false;
     export let analyticsSource = '';
+    export let schema = true;
     let displayQuickFilters = quickFilters;
 
     const dispatch = createEventDispatcher();
@@ -86,11 +87,26 @@
                 value ||
                 arrayValues.length)
         ) {
+            const columnsWithVirtual =
+                !schema && selectedColumn && !$columns.find((c) => c.id === selectedColumn)
+                    ? [
+                          ...$columns,
+                          { id: selectedColumn, title: selectedColumn, type: 'string' as const }
+                      ]
+                    : $columns;
+
             // For distance operators, pass the distance as a separate parameter
             if (isDistanceOperator && distanceValue !== null && value !== null) {
-                addFilter($columns, selectedColumn, operatorKey, value, arrayValues, distanceValue);
+                addFilter(
+                    columnsWithVirtual,
+                    selectedColumn,
+                    operatorKey,
+                    value,
+                    arrayValues,
+                    distanceValue
+                );
             } else {
-                addFilter($columns, selectedColumn, operatorKey, value, arrayValues);
+                addFilter(columnsWithVirtual, selectedColumn, operatorKey, value, arrayValues);
             }
             selectedColumn = null;
             value = null;
@@ -186,6 +202,7 @@
                                 bind:distanceValue
                                 bind:arrayValues
                                 {columns}
+                                {schema}
                                 {singleCondition}
                                 on:apply={afterApply}
                                 on:clear={() => (filtersAppliedCount = 0)} />
@@ -243,6 +260,7 @@
         {:else}
             <Content
                 {columns}
+                {schema}
                 bind:columnId={selectedColumn}
                 bind:operatorKey
                 bind:value

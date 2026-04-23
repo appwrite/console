@@ -212,7 +212,8 @@
                     </span>
                     <Layout.Stack gap="none">
                         <Typography.Text variant="m-600"
-                            >Project settings are not imported</Typography.Text>
+                            >Project settings are not imported
+                        </Typography.Text>
                         You will need to set service and project settings manually.
                     </Layout.Stack>
                 </Layout.Stack>
@@ -224,7 +225,8 @@
                     </span>
                     <Layout.Stack gap="none">
                         <Typography.Text variant="m-600"
-                            >Keep your organization plan's limits in mind</Typography.Text>
+                            >Keep your organization plan's limits in mind
+                        </Typography.Text>
                         Make sure to have enough storage in your organization plan when importing files.
                     </Layout.Stack>
                 </Layout.Stack>
@@ -262,9 +264,12 @@
             variant="secondary"
             on:click={() => {
                 showExitModal = true;
-            }}>Cancel</Button.Button>
+            }}
+            >Cancel
+        </Button.Button>
 
         <Button.Button variant="primary" disabled={!isFinalsButtonEnabled} on:click={onFinish}
-            >Create</Button.Button>
+            >Create
+        </Button.Button>
     </svelte:fragment>
 </Wizard>

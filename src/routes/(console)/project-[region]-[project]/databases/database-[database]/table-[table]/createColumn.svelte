@@ -6,20 +6,24 @@
     import { InputSelect, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { option, getSupportedColumns, type Option } from './columns/store';
+    import {
+        option,
+        getSupportedColumns,
+        type Option
+    } from '$database/table-[table]/columns/store';
     import type { Column } from '$lib/helpers/types';
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
     import { preferences } from '$lib/stores/preferences';
     import { onMount } from 'svelte';
 
-    import { showColumnsSuggestionsModal } from '../(suggestions)/store';
-    import IconAINotification from '../(suggestions)/icon/aiNotification.svelte';
+    import { showColumnsSuggestionsModal } from '$database/(suggestions)/store';
+    import IconAINotification from '$database/(suggestions)/icon/aiNotification.svelte';
+    import { type Columns } from '$database/store';
     import {
-        type Columns,
         type ColumnDirection,
         showCreateColumnSheet,
         INTERNAL_ACTIONS_COLUMN_ID
-    } from './store';
+    } from '$database/table-[table]/store';
     import { isCloud } from '$lib/system';
     import { slide } from 'svelte/transition';
 

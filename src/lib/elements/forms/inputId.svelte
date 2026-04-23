@@ -5,6 +5,7 @@
     export let value = '';
     export let autofocus = true;
     export let required = false;
+    export let disabled = false;
     export let leadingIcon: ComponentType | undefined = undefined;
 
     let error = false;
@@ -25,6 +26,7 @@
     {autofocus}
     {required}
     {leadingIcon}
+    {disabled}
     id="id"
     placeholder="Enter ID"
     maxlength={36}
