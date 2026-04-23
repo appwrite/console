@@ -51,7 +51,10 @@
     import type { Models } from '@appwrite.io/console';
     import { isProjectBlocked as getIsProjectBlocked } from '$lib/helpers/project';
     import ImpersonationPicker from '$lib/components/impersonation/picker.svelte';
-    import { readImpersonationTargetUserId } from '$lib/appwrite/impersonation';
+    import {
+        readImpersonationTargetUserId,
+        impersonationRevision
+    } from '$lib/appwrite/impersonation';
     import { IconEye } from '@appwrite.io/pink-icons-svelte';
 
     let showSupport = false;
@@ -114,11 +117,16 @@
     $: currentOrg = organizations.find((org) => org.isSelected);
     $: isProjectBlocked = getIsProjectBlocked(currentProject);
 
+    let canImpersonate = false;
+
     // Show impersonation picker when the operator has the capability or impersonation is active.
-    $: canImpersonate =
-        $user?.impersonator === true ||
-        !!$user?.impersonatorUserId ||
-        !!readImpersonationTargetUserId();
+    $: {
+        void $impersonationRevision;
+        canImpersonate =
+            $user?.impersonator === true ||
+            !!$user?.impersonatorUserId ||
+            !!readImpersonationTargetUserId();
+    }
 
     let showImpersonationPicker = false;
 

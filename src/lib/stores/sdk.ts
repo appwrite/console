@@ -68,6 +68,7 @@ function createConsoleSdk(client: Client) {
 const endpoint = getApiEndpoint();
 
 const clientConsole = new Client();
+const clientConsoleOperator = new Client();
 const scopedConsoleClient = new Client();
 
 const clientProject = new Client();
@@ -76,6 +77,7 @@ const clientRealtime = new Client();
 if (!building) {
     scopedConsoleClient.setProject('console');
     clientConsole.setEndpoint(endpoint).setProject('console');
+    clientConsoleOperator.setEndpoint(endpoint).setProject('console');
 
     clientProject.setEndpoint(endpoint).setMode('admin');
     clientRealtime.setEndpoint(endpoint).setProject('console');
@@ -145,6 +147,10 @@ export const realtime = {
 
 export const sdk = {
     forConsole: createConsoleSdk(clientConsole),
+    // Operator-only console client. It is intentionally not registered with the
+    // impersonation module so admin actions like switching targets stay scoped
+    // to the real operator session.
+    forConsoleAsOperator: createConsoleSdk(clientConsoleOperator),
 
     forConsoleIn(region: string) {
         const regionAwareEndpoint = getApiEndpoint(region);

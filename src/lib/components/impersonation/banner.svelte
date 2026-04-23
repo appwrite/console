@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { goto, invalidate } from '$app/navigation';
+    import { goto } from '$app/navigation';
     import { base } from '$app/paths';
-    import { Dependencies } from '$lib/constants';
+    import { tick } from 'svelte';
     import { Button } from '$lib/elements/forms';
     import { HeaderAlert } from '$lib/layout';
     import {
@@ -45,9 +45,8 @@
 
     async function exit() {
         stopImpersonation();
-        await invalidate(Dependencies.ACCOUNT);
-        await invalidate(Dependencies.ORGANIZATIONS);
-        await goto(base);
+        await tick();
+        await goto(base, { invalidateAll: true });
     }
 </script>
 

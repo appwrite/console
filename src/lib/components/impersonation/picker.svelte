@@ -1,17 +1,17 @@
 <script lang="ts">
-    import { goto, invalidate } from '$app/navigation';
-    import { base } from '$app/paths';
+    import { goto } from '$app/navigation';
+    import { base, resolve } from '$app/paths';
     import { Query, type Models } from '@appwrite.io/console';
     import { Layout, Modal, Typography, Icon, Spinner, Tag } from '@appwrite.io/pink-svelte';
     import { IconDuplicate, IconSearch } from '@appwrite.io/pink-icons-svelte';
-    import { Dependencies } from '$lib/constants';
     import { sdk } from '$lib/stores/sdk';
     import { user } from '$lib/stores/user';
     import { AvatarInitials, Copy } from '$lib/components';
     import {
         readOperatorSnapshot,
         startImpersonation,
-        readImpersonationTargetUserId
+        readImpersonationTargetUserId,
+        impersonationRevision
     } from '$lib/appwrite/impersonation';
     import type { OperatorSnapshot, TargetSnapshot } from '$lib/appwrite/impersonation';
 
@@ -20,7 +20,15 @@
     const RECENTS_KEY_PREFIX = 'console.impersonation.recents.';
     const MAX_RECENTS = 5;
 
-    type RecentTarget = { $id: string; name: string; email: string };
+    type ImpersonationTarget = {
+        $id: string;
+        name: string;
+        email: string;
+        prefs?: {
+            organization?: string;
+        };
+    };
+    type RecentTarget = ImpersonationTarget;
 
     function recentsKey(): string | null {
         const op = readOperatorSnapshot();
@@ -38,12 +46,19 @@
         }
     }
 
-    function saveRecent(target: { $id: string; name: string; email: string }) {
+    function saveRecent(target: ImpersonationTarget) {
         const key = recentsKey();
         if (!key) return;
         const existing = readRecents().filter((r) => r.$id !== target.$id);
         const updated: RecentTarget[] = [
-            { $id: target.$id, name: target.name, email: target.email },
+            {
+                $id: target.$id,
+                name: target.name,
+                email: target.email,
+                prefs: {
+                    organization: target.prefs?.organization
+                }
+            },
             ...existing
         ].slice(0, MAX_RECENTS);
         localStorage.setItem(key, JSON.stringify(updated));
@@ -54,6 +69,8 @@
     let loading = false;
     let debounceTimer: ReturnType<typeof setTimeout>;
     let recents: RecentTarget[] = [];
+    let operatorId = readOperatorSnapshot()?.$id ?? null;
+    let impersonatingId = readImpersonationTargetUserId();
 
     $: if (show) {
         recents = readRecents();
@@ -71,7 +88,7 @@
         }
         loading = true;
         try {
-            const response = await sdk.forConsole.users.list({
+            const response = await sdk.forConsoleAsOperator.users.list({
                 queries: [
                     Query.or([
                         Query.startsWith('name', prefix),
@@ -95,8 +112,12 @@
     $: debounce(() => fetchUsers(search));
 
     $: activeAccountId = $user?.$id;
-    $: operatorId = readOperatorSnapshot()?.$id ?? null;
-    $: impersonatingId = readImpersonationTargetUserId();
+    $: {
+        void $impersonationRevision;
+        void $user;
+        operatorId = readOperatorSnapshot()?.$id ?? null;
+        impersonatingId = readImpersonationTargetUserId();
+    }
 
     function isDisabled(id: string): boolean {
         return id === activeAccountId || (!!operatorId && id === operatorId);
@@ -108,7 +129,15 @@
         return '';
     }
 
-    async function selectUser(target: { $id: string; name: string; email: string }) {
+    function getTargetPath(target: ImpersonationTarget): string {
+        if (!target.prefs?.organization) return base;
+
+        return resolve('/(console)/organization-[organization]', {
+            organization: target.prefs.organization
+        });
+    }
+
+    async function selectUser(target: ImpersonationTarget) {
         if (isDisabled(target.$id)) return;
 
         const existingOperator = readOperatorSnapshot();
@@ -130,9 +159,7 @@
         results = [];
         show = false;
 
-        await invalidate(Dependencies.ACCOUNT);
-        await invalidate(Dependencies.ORGANIZATIONS);
-        await goto(base);
+        await goto(getTargetPath(target), { invalidateAll: true });
     }
 
     function displayName(u: { name: string; email: string; $id: string }): string {
