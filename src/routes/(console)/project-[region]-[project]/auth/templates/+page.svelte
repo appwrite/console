@@ -3,11 +3,7 @@
 
     import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
-    import type { EmailTemplateForm, SmsTemplateForm } from './store';
-
-    type SmsTemplateProjectSdk = {
-        getSMSTemplate(params: { templateId: string; locale: string }): Promise<SmsTemplateForm>;
-    };
+    import type { EmailTemplateForm } from './store';
 
     export async function loadEmailTemplate(
         region: string,
@@ -21,27 +17,6 @@
                 locale
             });
             return normalizeEmailTemplate(template, type);
-        } catch (e) {
-            addNotification({
-                type: 'error',
-                message: e.message
-            });
-        }
-    }
-
-    export async function loadSmsTemplate(
-        region: string,
-        projectId: string,
-        type: string,
-        locale: string
-    ): Promise<SmsTemplateForm> {
-        try {
-            const project = sdk.forProject(region, projectId)
-                .project as unknown as SmsTemplateProjectSdk;
-            return await project.getSMSTemplate({
-                templateId: type,
-                locale
-            });
         } catch (e) {
             addNotification({
                 type: 'error',

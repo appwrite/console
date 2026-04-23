@@ -32,7 +32,7 @@
     async function updateLimit() {
         try {
             await sdk.forProject(project.region, project.$id).project.updateUserLimitPolicy({
-                total: (isLimited ? newLimit : null) as unknown as number
+                total: isLimited ? newLimit : 0
             });
             await invalidate(Dependencies.PROJECT);
             addNotification({
