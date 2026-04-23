@@ -24,10 +24,9 @@
 
     async function authUpdate(box: AuthMethod) {
         try {
-            await sdk.forConsole.projects.updateAuthStatus({
-                projectId: project.$id,
-                method: box.method,
-                status: box.value
+            await sdk.forProject(project.region, project.$id).project.updateAuthMethod({
+                methodId: box.method,
+                enabled: box.value
             });
             addNotification({
                 type: 'success',
