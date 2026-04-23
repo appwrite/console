@@ -32,15 +32,15 @@
     // Effective user: always from the stored target snapshot (written at pick-time from
     // the search result, so it's always the correct selected user identity).
     $: effectiveLabel = targetSnapshot
-        ? (targetSnapshot.name || targetSnapshot.email || targetSnapshot.$id)
+        ? targetSnapshot.name || targetSnapshot.email || targetSnapshot.$id
         : $user?.impersonatorUserId
-          ? ($user?.name || $user?.email || $user?.$id)
-          : targetId ?? 'unknown';
+          ? $user?.name || $user?.email || $user?.$id
+          : (targetId ?? 'unknown');
 
     // Operator: always from the stored operator snapshot (written at pick-time from $user,
     // which is the real operator session before the header is applied).
     $: operatorLabel = operatorSnapshot
-        ? (operatorSnapshot.name || operatorSnapshot.email || operatorSnapshot.$id)
+        ? operatorSnapshot.name || operatorSnapshot.email || operatorSnapshot.$id
         : ($user?.impersonatorUserId ?? 'operator');
 
     async function exit() {

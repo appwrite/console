@@ -180,7 +180,7 @@
             <Typography.Text variant="m-500">Recent</Typography.Text>
         {/if}
 
-        {#each (listToShow.length ? listToShow : showRecents ? recents : []) as item (item.$id)}
+        {#each listToShow.length ? listToShow : showRecents ? recents : [] as item (item.$id)}
             {@const disabled = isDisabled(item.$id)}
             {@const label = disabledLabel(item.$id)}
             {@const active = item.$id === impersonatingId}

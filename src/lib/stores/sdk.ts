@@ -80,7 +80,12 @@ if (!building) {
     clientProject.setEndpoint(endpoint).setMode('admin');
     clientRealtime.setEndpoint(endpoint).setProject('console');
 
-    registerImpersonationClients([clientConsole, scopedConsoleClient, clientProject, clientRealtime]);
+    registerImpersonationClients([
+        clientConsole,
+        scopedConsoleClient,
+        clientProject,
+        clientRealtime
+    ]);
 }
 
 const sdkForProject = {

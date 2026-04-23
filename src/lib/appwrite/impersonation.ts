@@ -54,10 +54,7 @@ export function clearImpersonation(): void {
     }
 }
 
-export function persistImpersonation(
-    target: TargetSnapshot,
-    operator: OperatorSnapshot
-): void {
+export function persistImpersonation(target: TargetSnapshot, operator: OperatorSnapshot): void {
     sessionStorage.setItem(KEY_TARGET_USER_ID, target.$id);
     sessionStorage.setItem(KEY_TARGET, JSON.stringify(target));
     sessionStorage.setItem(KEY_OPERATOR, JSON.stringify(operator));
