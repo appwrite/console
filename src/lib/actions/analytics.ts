@@ -156,6 +156,7 @@ export enum Click {
     DatabaseDatabaseDelete = 'click_database_delete',
     DatabaseImportCsv = 'click_database_import_csv',
     DatabaseExportCsv = 'click_database_export_csv',
+    DatabaseImportJson = 'click_database_import_json',
     DomainCreateClick = 'click_domain_create',
     DomainDeleteClick = 'click_domain_delete',
     DomainRetryDomainVerificationClick = 'click_domain_retry_domain_verification',
@@ -284,6 +285,7 @@ export enum Submit {
     DatabaseUpdateName = 'submit_database_update_name',
     DatabaseImportCsv = 'submit_database_import_csv',
     DatabaseExportCsv = 'submit_database_export_csv',
+    DatabaseImportJSON = 'submit_database_import_json',
     DatabaseBackupDelete = 'submit_database_backup_delete',
     DatabaseBackupPolicyCreate = 'submit_database_backup_policy_create',
 
@@ -297,6 +299,11 @@ export enum Submit {
     RowUpdate = 'submit_row_update',
     RowUpdatePermissions = 'submit_row_update_permissions',
 
+    DocumentCreate = 'submit_document_create',
+    DocumentDelete = 'submit_document_delete',
+    DocumentUpdate = 'submit_document_update',
+    DocumentUpdatePermissions = 'submit_document_update_permissions',
+
     IndexCreate = 'submit_index_create',
     IndexDelete = 'submit_index_delete',
 
@@ -307,6 +314,14 @@ export enum Submit {
     TableUpdateSecurity = 'submit_table_update_security',
     TableUpdateEnabled = 'submit_table_update_enabled',
     TableUpdateDisplayNames = 'submit_table_update_display_names',
+
+    CollectionCreate = 'submit_collection_create',
+    CollectionDelete = 'submit_collection_delete',
+    CollectionUpdateName = 'submit_collection_update_name',
+    CollectionUpdatePermissions = 'submit_collection_update_permissions',
+    CollectionUpdateSecurity = 'submit_collection_update_security',
+    CollectionUpdateEnabled = 'submit_collection_update_enabled',
+    CollectionUpdateDisplayNames = 'submit_collection_update_display_names',
 
     FunctionCreate = 'submit_function_create',
     FunctionDelete = 'submit_function_delete',
@@ -321,6 +336,7 @@ export enum Submit {
     FunctionUpdateScopes = 'submit_function_key_update_scopes',
     FunctionUpdateRuntime = 'submit_function_update_runtime',
     FunctionUpdateBuildCommand = 'submit_function_update_build_command',
+    FunctionUpdateDeploymentRetention = 'submit_function_update_deployment_retention',
     FunctionConnectRepo = 'submit_function_connect_repo',
     FunctionDisconnectRepo = 'submit_function_disconnect_repo',
     FunctionRedeploy = 'submit_function_redeploy',
@@ -443,6 +459,7 @@ export enum Submit {
     SiteUpdateScopes = 'submit_site_key_update_scopes',
     SiteUpdateBuildSettings = 'submit_site_update_build_settings',
     SiteUpdateResourceLimits = 'submit_site_update_resource_limits',
+    SiteUpdateDeploymentRetention = 'submit_site_update_deployment_retention',
     SiteUpdateSinglePageApplication = 'submit_site_update_single_page_application',
     SiteConnectRepo = 'submit_site_connect_repo',
     SiteRedeploy = 'submit_site_redeploy',

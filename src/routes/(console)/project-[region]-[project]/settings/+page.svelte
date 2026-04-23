@@ -1,5 +1,6 @@
 <script lang="ts">
     import { sdk } from '$lib/stores/sdk';
+    import { ID } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { project } from '../store';
@@ -19,7 +20,6 @@
     import UpdateLabels from './updateLabels.svelte';
     import PremiumGeoDB from './premiumGeoDB.svelte';
     import { isCloud } from '$lib/system';
-    import { ID } from '@appwrite.io/console';
 
     export let data;
 

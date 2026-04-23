@@ -3,7 +3,7 @@
     import { ActionMenu, Icon, Popover } from '@appwrite.io/pink-svelte';
     import { getSupportedColumns, type Option } from './store';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
-    import { isCsvImportInProgress } from '../store';
+    import { isTablesCsvImportInProgress } from '../store';
     import { CsvDisabled } from '$database/(entity)';
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
 
@@ -13,7 +13,7 @@
     $: options = getSupportedColumns($regionalConsoleVariables);
 </script>
 
-{#if $isCsvImportInProgress}
+{#if $isTablesCsvImportInProgress}
     <CsvDisabled>
         <Button size="s" disabled>
             <Icon icon={IconPlus} slot="start" size="s" />
