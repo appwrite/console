@@ -4,7 +4,6 @@
 
     export let value = '';
     export let autofocus = true;
-    export let disabled = false;
     export let leadingIcon: ComponentType | undefined = undefined;
 
     let error = false;
@@ -25,7 +24,6 @@
     {pattern}
     {autofocus}
     {leadingIcon}
-    {disabled}
     id="id"
     placeholder="Enter ID"
     maxlength={36}

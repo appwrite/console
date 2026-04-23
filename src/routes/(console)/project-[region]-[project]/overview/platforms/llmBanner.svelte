@@ -1,7 +1,15 @@
 <script lang="ts">
     import { copy } from '$lib/helpers/copy';
     import { Button } from '$lib/elements/forms';
-    import { ActionMenu, Alert, Icon, Layout, Popover, Typography } from '@appwrite.io/pink-svelte';
+    import {
+        ActionMenu,
+        Alert,
+        Icon,
+        Layout,
+        Popover,
+        Typography,
+        Button as PinkButton
+    } from '@appwrite.io/pink-svelte';
     import { IconChevronDown, IconChevronUp, IconLovable } from '@appwrite.io/pink-icons-svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { buildPlatformConfig, generatePromptFromConfig, type LLMPromptConfig } from './store';
@@ -154,7 +162,7 @@
                         {/each}
                     </ActionMenu.Root>
                 </svelte:fragment>
-                <Layout.Stack direction="row" gap="none" alignItems="center">
+                <PinkButton.Split>
                     <Button
                         secondary
                         size="s"
@@ -173,7 +181,7 @@
                             <Icon icon={showing ? IconChevronUp : IconChevronDown} />
                         </Button>
                     {/if}
-                </Layout.Stack>
+                </PinkButton.Split>
             </Popover>
         </Layout.Stack>
     </Alert.Inline>

@@ -18,7 +18,7 @@
     let error = '';
 
     onMount(async () => {
-        labels = [...(($project as { labels?: string[] }).labels ?? [])];
+        labels = [...$project.labels];
     });
 
     async function updateLabels() {
@@ -40,9 +40,7 @@
         }
     }
 
-    $: isDisabled =
-        !!error ||
-        !symmetricDifference(labels, ($project as { labels?: string[] }).labels ?? []).length;
+    $: isDisabled = !!error || !symmetricDifference(labels, $project.labels).length;
 
     $: if (labels) {
         const invalidLabels = [];

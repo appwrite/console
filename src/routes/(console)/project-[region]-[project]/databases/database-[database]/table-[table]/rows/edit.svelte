@@ -8,13 +8,17 @@
     import type { Models } from '@appwrite.io/console';
     import { Dependencies } from '$lib/constants';
     import { invalidate } from '$app/navigation';
-    import { PROHIBITED_ROW_KEYS } from '../store';
+    import { type Columns, PROHIBITED_ROW_KEYS } from '../store';
     import ColumnItem from './columns/columnItem.svelte';
-    import { isRelationship, isRelationshipToMany, isSpatialType } from './store';
+    import {
+        buildWildcardColumnsQuery,
+        isRelationship,
+        isRelationshipToMany,
+        isSpatialType
+    } from './store';
     import { Layout, Skeleton } from '@appwrite.io/pink-svelte';
     import { deepClone } from '$lib/helpers/object';
     import { type Entity, toRelationalField } from '$database/(entity)';
-    import { type Columns, buildWildcardEntitiesQuery } from '$database/store';
     import deepEqual from 'deep-equal';
     import { onMount } from 'svelte';
 
@@ -64,7 +68,7 @@
                 databaseId: table.databaseId,
                 tableId: table.$id,
                 rowId,
-                queries: buildWildcardEntitiesQuery(table)
+                queries: buildWildcardColumnsQuery(table)
             });
         } catch (error) {
             addNotification({

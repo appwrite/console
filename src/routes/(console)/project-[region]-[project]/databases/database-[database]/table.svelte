@@ -11,31 +11,28 @@
     import { Dependencies } from '$lib/constants';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
     import { canWriteTables } from '$lib/stores/roles';
+    import { sdk } from '$lib/stores/sdk';
+    import type { PageData } from './$types';
     import { Table } from '@appwrite.io/pink-svelte';
     import { tableViewColumns, buildEntityRoute } from './store';
     import { subNavigation } from '$lib/stores/database';
-    import {
-        type DatabaseSdkResult,
-        type EntityList,
-        type TerminologyResult
-    } from '$database/(entity)';
+    import { type TerminologyResult } from '$database/(entity)';
 
     const {
-        entities,
-        terminology,
-        databaseSdk
+        data,
+        terminology
     }: {
-        entities: EntityList;
+        data: PageData;
         terminology: TerminologyResult;
-        databaseSdk: DatabaseSdkResult;
     } = $props();
 
     const entitySingular = $derived(terminology.entity.lower.singular);
+
     async function onDelete(batchDelete: DeleteOperation): Promise<DeleteOperationState> {
-        const result = await batchDelete((entityId) =>
-            databaseSdk.deleteEntity({
+        const result = await batchDelete((tableId) =>
+            sdk.forProject(page.params.region, page.params.project).tablesDB.deleteTable({
                 databaseId: page.params.database,
-                entityId
+                tableId
             })
         );
 
@@ -66,7 +63,7 @@
     {/snippet}
 
     {#snippet children(root)}
-        {#each entities.entities as entity (entity.$id)}
+        {#each data.entities.entities as entity (entity.$id)}
             <Table.Row.Link
                 {root}
                 id={entity.$id}

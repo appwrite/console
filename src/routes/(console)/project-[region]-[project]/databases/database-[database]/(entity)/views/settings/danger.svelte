@@ -40,7 +40,7 @@
 
         // clear out!
         await Promise.all([
-            preferences.deleteEntityDetails($organization.$id, entity.$id),
+            preferences.deleteTableDetails($organization.$id, entity.$id),
             navigate(
                 '/(console)/project-[region]-[project]/databases/database-[database]',
                 page.params

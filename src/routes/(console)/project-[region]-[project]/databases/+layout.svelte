@@ -8,7 +8,9 @@
     let { children } = $props();
 
     const databasesProjectRoute = $derived.by(() => {
-        return resolveRoute('/(console)/project-[region]-[project]/databases', page.params);
+        return resolveRoute('/(console)/project-[region]-[project]/databases', {
+            ...page.params
+        });
     });
 
     $effect(() => {

@@ -6,7 +6,7 @@
     import Input from './input.svelte';
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
-    import { entityColumnSuggestions } from './store';
+    import { tableColumnSuggestions } from './store';
 
     let {
         show = $bindable(false)
@@ -19,17 +19,17 @@
     function resetSuggestionsStore() {
         show = false;
 
-        $entityColumnSuggestions.entity = null;
-        $entityColumnSuggestions.context = null;
+        $tableColumnSuggestions.table = null;
+        $tableColumnSuggestions.context = null;
 
-        $entityColumnSuggestions.force = false;
-        $entityColumnSuggestions.enabled = false;
-        $entityColumnSuggestions.thinking = false;
+        $tableColumnSuggestions.force = false;
+        $tableColumnSuggestions.enabled = false;
+        $tableColumnSuggestions.thinking = false;
     }
 
     async function triggerColumnSuggestions() {
         // set table info. first!
-        $entityColumnSuggestions.entity = {
+        $tableColumnSuggestions.table = {
             id: page.params.table,
             name: page.data.table?.name ?? 'Table'
         };
@@ -48,8 +48,8 @@
             );
         }
 
-        $entityColumnSuggestions.force = true;
-        $entityColumnSuggestions.enabled = true;
+        $tableColumnSuggestions.force = true;
+        $tableColumnSuggestions.enabled = true;
 
         show = false;
     }

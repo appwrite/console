@@ -12,9 +12,7 @@
         id = $bindable(null),
         autofocus = true,
         isProject = false,
-        required = true,
-        syncFrom = undefined,
-        disabled = false
+        required = true
     }: {
         show: boolean;
         name: string;
@@ -22,28 +20,7 @@
         autofocus?: boolean;
         isProject?: boolean;
         required?: boolean;
-        disabled?: boolean;
-        syncFrom?: string | undefined;
     } = $props();
-
-    let touchedId = $state(false);
-
-    function toIdFormat(str: string): string {
-        return str
-            .toLowerCase()
-            .replace(/[^a-z0-9\-_. ]+/g, '')
-            .replace(/ /g, '_')
-            .replace(/^-+/, '')
-            .replace(/\.+$/, '')
-            .replace(/_{2,}/g, '_')
-            .slice(0, 36); // max length
-    }
-
-    function handleInput() {
-        if (!touchedId) {
-            touchedId = true;
-        }
-    }
 
     $effect(() => {
         if (!show) {
@@ -58,21 +35,6 @@
     $effect(() => {
         if (show) {
             trackEvent(Click.ShowCustomIdClick);
-        }
-    });
-
-    $effect(() => {
-        if (syncFrom && !touchedId) {
-            const newId = toIdFormat(syncFrom);
-            if (id !== newId) {
-                id = newId;
-            }
-        }
-    });
-
-    $effect(() => {
-        if (!show) {
-            touchedId = false;
         }
     });
 </script>
@@ -99,9 +61,9 @@
                 <Divider />
             </span>
             {#if isProject}
-                <InputProjectId {disabled} on:input={handleInput} bind:value={id} {autofocus} />
+                <InputProjectId on:input bind:value={id} {autofocus} />
             {:else}
-                <InputId {disabled} {required} on:input={handleInput} bind:value={id} {autofocus} />
+                <InputId {required} on:input bind:value={id} {autofocus} />
             {/if}
         </Layout.Stack>
     </Card.Base>

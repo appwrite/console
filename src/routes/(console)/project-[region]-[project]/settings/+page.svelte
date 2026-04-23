@@ -1,6 +1,5 @@
 <script lang="ts">
     import { sdk } from '$lib/stores/sdk';
-    import { ID } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { project } from '../store';
@@ -18,6 +17,7 @@
     import UpdateVariables from '../updateVariables.svelte';
     import { page } from '$app/state';
     import UpdateLabels from './updateLabels.svelte';
+    import { ID } from '@appwrite.io/console';
 
     export let data;
 

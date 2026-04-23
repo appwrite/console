@@ -28,7 +28,6 @@
     import { getChangePlanUrl } from '$lib/stores/billing';
 
     export let isShowing: boolean;
-    export let disabled: boolean = false;
     export let isFromBackupsTab: boolean = false;
     export let title: string | undefined = undefined;
     export let subtitle: string | undefined = undefined;
@@ -102,8 +101,8 @@
         showCustomPolicy = false;
     };
 
-    const markPolicyChecked = (event: CustomEvent<boolean>, policy: UserBackupPolicy) => {
-        const isChecked = event.detail;
+    const markPolicyChecked = (event: CustomEvent, policy: UserBackupPolicy) => {
+        const isChecked = event.detail as boolean;
         presetPolicies.update((all) => {
             return all.map((p) => {
                 if (p.label === policy.label) {
@@ -134,10 +133,6 @@
         );
     };
 
-    const getPolicyById = (id: string) => {
-        return $presetPolicies.find((p) => p.id === id);
-    };
-
     $: if (showCustomPolicy) {
         customPolicySection?.scrollIntoView({ behavior: 'auto' });
     }
@@ -146,7 +141,6 @@
         resetFormVariables();
         showCustomPolicy = false;
         listOfCustomPolicies = [];
-        selectedPolicyGroup = null;
         presetPolicies.update((all) =>
             all.map((policy) => {
                 policy.checked = false;
@@ -179,40 +173,6 @@
         value: freq,
         label: freq.charAt(0).toUpperCase() + freq.slice(1)
     }));
-
-    let selectedPolicyGroup: null | string = null;
-    $: if (selectedPolicyGroup) {
-        if (selectedPolicyGroup === 'custom') {
-            if (listOfCustomPolicies.length === 0) {
-                showCustomPolicy = true;
-            }
-
-            presetPolicies.update((policies) => {
-                return policies.map((policy) => ({
-                    ...policy,
-                    checked: false
-                }));
-            });
-        } else if (selectedPolicyGroup !== 'custom') {
-            listOfCustomPolicies = [];
-            showCustomPolicy = false;
-
-            presetPolicies.update((policies) => {
-                return policies.map((policy) => ({
-                    ...policy,
-                    checked: selectedPolicyGroup !== 'none' && policy.id === selectedPolicyGroup
-                }));
-            });
-        }
-    }
-
-    $: filteredPresetPolicies = $presetPolicies.filter((policy) => {
-        if (isFromBackupsTab) {
-            return policy.id !== 'none';
-        } else {
-            return policy.id !== 'hourly';
-        }
-    });
 </script>
 
 <div class="u-flex-vertical u-gap-16">
@@ -236,7 +196,7 @@
 
     <!-- because we show a set of pre-defined ones -->
     {#if $currentPlan?.backupPolicies === 1}
-        {@const dailyPolicy = getPolicyById('dank')}
+        {@const dailyPolicy = $presetPolicies[1]}
 
         {#if isFromBackupsTab}
             <Layout.Stack gap="m">
@@ -261,7 +221,6 @@
         {:else}
             <Layout.Stack gap="m">
                 <InputSwitch
-                    {disabled}
                     id="daily_backup"
                     label="Daily backups"
                     on:change={(event) => markPolicyChecked(event, dailyPolicy)}>
@@ -281,65 +240,25 @@
     {:else}
         <!-- show 2 preset and create custom policy button on Scale & up -->
         <Layout.Stack gap="m">
-            <Layout.Grid columns={isFromBackupsTab ? 2 : 3} columnsS={1}>
-                {#if isFromBackupsTab}
-                    {#each filteredPresetPolicies as policy, index (index)}
-                        <label for={index.toString()} class="card preset-label-card is-allow-focus">
-                            <Layout.Stack gap="s" direction="row">
-                                <InputCheckbox
-                                    id={index.toString()}
-                                    on:change={(event) => markPolicyChecked(event, policy)} />
+            <div class="grid-1-1 u-gap-12">
+                {#each $presetPolicies as policy, index (index)}
+                    <label for={index.toString()} class="card preset-label-card is-allow-focus">
+                        <Layout.Stack gap="s" direction="row">
+                            <InputCheckbox
+                                id={index.toString()}
+                                on:change={(event) => markPolicyChecked(event, policy)} />
 
-                                <Layout.Stack gap="xxs">
-                                    <Typography.Text variant="m-600"
-                                        >{policy.label}</Typography.Text>
-                                    {policy.description}
-                                </Layout.Stack>
+                            <Layout.Stack gap="xxs">
+                                <Typography.Text variant="m-600">{policy.label}</Typography.Text>
+                                {policy.description}
                             </Layout.Stack>
-                        </label>
-                    {/each}
-                {:else}
-                    {@const none = getPolicyById('none')}
-                    {@const dailPreset = getPolicyById('daily')}
-                    <Card.Selector
-                        variant="secondary"
-                        imageRadius="s"
-                        id={dailPreset.id}
-                        name={dailPreset.id}
-                        value={dailPreset.id}
-                        title="Backup every 24 hours"
-                        bind:group={selectedPolicyGroup}>
-                        One backup every 24 hours, retained for 30 days
-                    </Card.Selector>
-
-                    <!-- custom policy card selector -->
-                    <Card.Selector
-                        variant="secondary"
-                        imageRadius="s"
-                        id="custom"
-                        name="custom"
-                        value="custom"
-                        title="Custom policy"
-                        bind:group={selectedPolicyGroup}>
-                        Define your own schedule and retention
-                    </Card.Selector>
-
-                    <!-- none option -->
-                    <Card.Selector
-                        variant="secondary"
-                        imageRadius="s"
-                        id={none.id}
-                        name={none.id}
-                        value={none.id}
-                        title={none.label}
-                        bind:group={selectedPolicyGroup}>
-                        {none.description}
-                    </Card.Selector>
-                {/if}
-            </Layout.Grid>
+                        </Layout.Stack>
+                    </label>
+                {/each}
+            </div>
 
             {#if listOfCustomPolicies.length}
-                <Layout.Stack gap="s" inline>
+                <Layout.Stack gap="s">
                     {#each listOfCustomPolicies as policy}
                         <Card.Base padding="s">
                             <Layout.Stack gap="xs">
@@ -557,10 +476,6 @@
                                         policyInEdit = false;
                                         showCustomPolicy = false;
 
-                                        if (selectedPolicyGroup === 'custom') {
-                                            selectedPolicyGroup = null;
-                                        }
-
                                         if (policyBeingEdited) {
                                             listOfCustomPolicies = [
                                                 ...listOfCustomPolicies,
@@ -593,7 +508,7 @@
                         </div>
                     </div>
                 </Card.Base>
-            {:else if isFromBackupsTab}
+            {:else}
                 <div class="custom-policy-wrapper u-padding-inline-4 u-width-full-line">
                     <Button
                         size="s"
@@ -601,18 +516,6 @@
                         class="u-underline"
                         on:click={() => (showCustomPolicy = true)}
                         >Create custom policy
-                    </Button>
-                </div>
-            {/if}
-
-            {#if listOfCustomPolicies.length && !isFromBackupsTab && !showCustomPolicy && !policyInEdit}
-                <div class="custom-policy-wrapper u-padding-inline-4 u-width-full-line">
-                    <Button
-                        size="s"
-                        extraCompact
-                        class="u-underline"
-                        on:click={() => (showCustomPolicy = true)}
-                        >Add more custom policies
                     </Button>
                 </div>
             {/if}

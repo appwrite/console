@@ -6,7 +6,6 @@
     import { canWriteDatabases } from '$lib/stores/roles';
     import { resolveRoute, withPath } from '$lib/stores/navigation';
     import { useTerminology } from '$database/(entity)';
-    import { isSmallViewport } from '$lib/stores/viewport';
 
     const terminology = useTerminology(page);
     const baseDatabasePath = resolveRoute(
@@ -48,13 +47,11 @@
             }
         ].filter((tab) => !tab.disabled)
     );
-
-    const responsiveInlineStart = $derived($isSmallViewport ? '0' : '-2.5rem');
 </script>
 
 <Cover databasesMainScreen>
     <svelte:fragment slot="header">
-        <CoverTitle href={baseDatabasesPath} style="margin-inline-start: {responsiveInlineStart};">
+        <CoverTitle href={baseDatabasesPath} style="margin-inline-start: -2.5rem;">
             {database?.name}
         </CoverTitle>
 

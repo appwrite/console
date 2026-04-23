@@ -18,9 +18,11 @@
     import { isRelationship, isSpatialType, isTextType } from '../rows/store';
     import {
         columns,
+        type Columns,
         type ColumnsWidth,
         indexes,
-        isTablesCsvImportInProgress,
+        isCsvImportInProgress,
+        isWaterfallFromFaker,
         reorderItems,
         showCreateIndexSheet
     } from '../store';
@@ -59,7 +61,6 @@
     import { realtime } from '$lib/stores/sdk';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import { type Columns, isWaterfallFromFaker } from '$database/store';
 
     const {
         data
@@ -360,7 +361,7 @@
             <Button
                 size="s"
                 secondary
-                disabled={$isTablesCsvImportInProgress}
+                disabled={$isCsvImportInProgress}
                 on:click={() => ($showCreateColumnSheet.show = true)}
                 event="create_attribute">
                 <Icon icon={IconPlus} slot="start" size="s" />
@@ -544,7 +545,7 @@
                         {/if}
                     </Spreadsheet.Cell>
                     <Spreadsheet.Cell column="actions" {root} isEditable={false}>
-                        {#if $isTablesCsvImportInProgress}
+                        {#if $isCsvImportInProgress}
                             <CsvDisabled>
                                 <Button disabled text icon ariaLabel="more options">
                                     <Icon icon={IconDotsHorizontal} size="s" />

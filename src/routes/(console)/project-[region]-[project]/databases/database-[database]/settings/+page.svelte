@@ -35,7 +35,7 @@
 
     async function loadEntityCount() {
         const { total } = await databaseSdk.listEntities({
-            databaseId: page.params.database,
+            databaseId: database.$id,
             queries: [Query.limit(1)]
         });
 

@@ -4,15 +4,14 @@
     import { Modal, CustomId } from '$lib/components';
     import { subNavigation } from '$lib/stores/database';
     import { ID } from '@appwrite.io/console';
-    import { Button, InputNumber, InputText } from '$lib/elements/forms';
+    import { Button, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import {
         Input as SuggestionsInput,
-        entityColumnSuggestions
+        tableColumnSuggestions
     } from '$database/(suggestions)/index';
 
-    import { getTerminologies, DEFAULT_VECTOR_DIMENSION } from '$database/(entity)';
-    import { resetSampleFieldsConfig } from '$database/store';
+    import { getTerminologies } from '../helpers';
 
     let {
         show = $bindable(false),
@@ -21,7 +20,7 @@
     }: {
         show: boolean;
         useSuggestions?: boolean;
-        onCreateEntity: (id: string, name: string, dimension?: number) => Promise<void>;
+        onCreateEntity: (id: string, name: string) => Promise<void>;
     } = $props();
 
     const { analytics, terminology } = getTerminologies();
@@ -29,26 +28,25 @@
     const lower = terminology.entity.lower.singular;
     const title = terminology.entity.title.singular;
     const analyticsCreateSubmit = analytics.submit.entity('Create');
-    const isVectorsDb = terminology.type === 'vectorsdb';
 
     // example - `table-[table]`, `collection-[collection]`
     const isOnEntitiesPage = $derived(page.route?.id.endsWith(`${lower}-[${lower}]`));
 
     let name = $state('');
     let id = $state(null);
-    let dimension = $state(DEFAULT_VECTOR_DIMENSION);
     let error = $state(null);
+    let touchedId = $state(false);
     let creatingEntity = $state(false);
 
     function enableThinkingModeForSuggestions(id: string, name: string) {
         if (!useSuggestions) return;
 
-        if ($entityColumnSuggestions.enabled) {
+        if ($tableColumnSuggestions.enabled) {
             // if enabled, trigger thinking mode!
-            entityColumnSuggestions.update((store) => ({
+            tableColumnSuggestions.update((store) => ({
                 ...store,
                 thinking: true,
-                entity: {
+                table: {
                     id,
                     name
                 }
@@ -66,7 +64,7 @@
             enableThinkingModeForSuggestions(finalId, name);
 
             // create entity.
-            await onCreateEntity(finalId, name, isVectorsDb ? dimension : undefined);
+            await onCreateEntity(finalId, name);
 
             // cleanup
             updateAndCleanup();
@@ -75,7 +73,6 @@
             trackError(e, analyticsCreateSubmit);
         } finally {
             creatingEntity = false;
-            resetSampleFieldsConfig();
         }
     }
 
@@ -94,19 +91,35 @@
         show = false;
     }
 
+    function toIdFormat(str: string): string {
+        return str
+            .toLowerCase()
+            .replace(/[^a-z0-9\-_. ]+/g, '')
+            .replace(/ /g, '_')
+            .replace(/^-+/, '')
+            .replace(/\.+$/, '')
+            .replace(/_{2,}/g, '_')
+            .slice(0, 36); // max length
+    }
+
     $effect(() => {
+        if (!touchedId && name) {
+            id = toIdFormat(name);
+        }
+
         if (!show) {
             id = null;
             error = null;
+            touchedId = false;
         }
     });
 
     $effect(() => {
         // reset is OK here, we don't have to check for entity type!
-        if (show && isOnEntitiesPage && $entityColumnSuggestions.entity) {
-            entityColumnSuggestions.update((store) => ({
+        if (show && isOnEntitiesPage && $tableColumnSuggestions.table) {
+            tableColumnSuggestions.update((store) => ({
                 ...store,
-                entity: null
+                table: null
             }));
         }
     });
@@ -119,22 +132,27 @@
         placeholder="Enter {lower} name"
         bind:value={name}
         autofocus
-        required />
+        required
+        on:input={() => {
+            if (!touchedId) {
+                id = toIdFormat(name);
+            }
+        }} />
 
-    <CustomId show bind:id required={false} autofocus={false} name={title} syncFrom={name} />
-
-    {#if isVectorsDb}
-        <InputNumber
-            id="dimension"
-            label="Vector dimension"
-            bind:value={dimension}
-            min={1}
-            max={4096}
-            required />
-    {/if}
+    <CustomId
+        show
+        bind:id
+        required={false}
+        autofocus={false}
+        name={title}
+        on:input={() => {
+            if (!touchedId) {
+                touchedId = true;
+            }
+        }} />
 
     {#if useSuggestions}
-        <SuggestionsInput showSampleCountPicker={!terminology.schema} />
+        <SuggestionsInput />
     {/if}
 
     <svelte:fragment slot="footer">
