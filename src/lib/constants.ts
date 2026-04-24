@@ -339,6 +339,18 @@ export const scopes: ScopeDefinition[] = [
         icon: 'lightning-bolt'
     },
     {
+        scope: 'rules.read',
+        description: "Access to read your project's proxy rules",
+        category: 'Other',
+        icon: 'globe'
+    },
+    {
+        scope: 'rules.write',
+        description: "Access to create, update, and delete your project's proxy rules",
+        category: 'Other',
+        icon: 'globe'
+    },
+    {
         scope: 'execution.read',
         description: "Access to read your project's execution logs",
         category: 'Functions',
