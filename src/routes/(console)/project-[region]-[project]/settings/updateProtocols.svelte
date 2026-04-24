@@ -207,7 +207,7 @@
 
 <style>
     .protocols-list {
-        max-width: 36rem;
+        width: 100%;
     }
 
     .protocol-toolbar {
