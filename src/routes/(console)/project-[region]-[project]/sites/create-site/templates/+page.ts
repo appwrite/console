@@ -36,11 +36,13 @@ export const load = async ({ url, params }) => {
         'Lynx',
         'Angular',
         'Analog',
-        'Vite',
-        'Other'
+        'Vite'
     ];
 
     const frameworks = Array.from(frameworksSet).sort((a, b) => {
+        // 'Other' always sorts last, regardless of any other framework's position.
+        if (a === 'Other') return 1;
+        if (b === 'Other') return -1;
         const aIndex = frameworkOrder.indexOf(a);
         const bIndex = frameworkOrder.indexOf(b);
         if (aIndex === -1 && bIndex === -1) return a.localeCompare(b);
