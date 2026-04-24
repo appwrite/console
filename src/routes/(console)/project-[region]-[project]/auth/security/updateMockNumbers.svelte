@@ -1,12 +1,11 @@
 <script lang="ts">
     import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid } from '$lib/components';
+    import Confirm from '$lib/components/confirm.svelte';
     import { InputPhone, InputOTP, Button } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
     import { getChangePlanUrl } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
-    import { invalidate } from '$app/navigation';
-    import { Dependencies } from '$lib/constants';
     import { currentPlan } from '$lib/stores/organization';
     import { isCloud, isSelfHosted } from '$lib/system';
     import MockNumbersLight from './mock-numbers-light.png';
@@ -15,7 +14,7 @@
     import { app } from '$lib/stores/app';
     import Empty from '$lib/components/empty.svelte';
     import type { Models } from '@appwrite.io/console';
-    import { Icon, Input, Layout, Link, Tooltip } from '@appwrite.io/pink-svelte';
+    import { Icon, Input, Layout, Link, Spinner, Tooltip } from '@appwrite.io/pink-svelte';
     import { IconPlus, IconRefresh, IconTrash } from '@appwrite.io/pink-icons-svelte';
 
     const {
@@ -25,13 +24,20 @@
     } = $props();
 
     type MockNumberForm = Pick<Models.MockNumber, 'number' | 'otp'> & {
+        draftId?: string;
         initialNumber?: string;
         initialOtp?: string;
     };
 
-    let numbers: MockNumberForm[] = $state(getMockNumberRows(project?.authMockNumbers ?? []));
-    let lastProjectId: string = $state(project?.$id ?? null);
+    let savedNumbers: MockNumberForm[] = $state([]);
+    let draftNumbers: MockNumberForm[] = $state([]);
+    let isLoadingMockNumbers = $state(false);
+    let lastProjectId: string | null = $state(null);
     let pendingRow: string | null = $state(null);
+    let showDeleteConfirm = $state(false);
+    let deleteTargetIndex: number | null = $state(null);
+    let deleteError: string | null = $state(null);
+    let draftIdCounter = $state(0);
 
     const isComponentDisabled = $derived(
         isSelfHosted || (isCloud && !$currentPlan.supportsMockNumbers)
@@ -53,7 +59,7 @@
         const id = project?.$id ?? null;
         if (id && id !== lastProjectId) {
             lastProjectId = id;
-            numbers = getMockNumberRows(project?.authMockNumbers ?? []);
+            void loadMockNumbers();
         }
     });
 
@@ -66,8 +72,38 @@
         }));
     }
 
-    function getRowKey(number: MockNumberForm, index: number) {
-        return number.initialNumber ?? `new-${index}`;
+    async function loadMockNumbers() {
+        try {
+            if (savedNumbers.length === 0) {
+                isLoadingMockNumbers = true;
+            }
+            const response = await sdk
+                .forProject(project.region, project.$id)
+                .project.listMockPhones({});
+            savedNumbers = getMockNumberRows(response.mockNumbers ?? []);
+        } catch (error) {
+            addNotification({ type: 'error', message: error.message });
+            trackError(error, Submit.AuthMockNumbersUpdate);
+        } finally {
+            isLoadingMockNumbers = false;
+        }
+    }
+
+    function getSavedRowKey(number: MockNumberForm, index: number) {
+        return number.initialNumber ?? number.number ?? `saved-${index}`;
+    }
+
+    function createDraftNumber(): MockNumberForm {
+        draftIdCounter += 1;
+        return {
+            draftId: `draft-${draftIdCounter}`,
+            number: generateNumber(),
+            otp: generateOTP()
+        };
+    }
+
+    function getDraftRowKey(number: MockNumberForm, index: number) {
+        return number.draftId ?? `draft-${index}`;
     }
 
     function isSaved(number: MockNumberForm) {
@@ -83,40 +119,36 @@
     }
 
     function isChanged(number: MockNumberForm) {
-        return !isSaved(number) || number.otp !== number.initialOtp;
-    }
-
-    function setRow(index: number, number: Models.MockNumber) {
-        numbers = numbers.map((row, rowIndex) =>
-            rowIndex === index
-                ? {
-                      number: number.number,
-                      otp: number.otp,
-                      initialNumber: number.number,
-                      initialOtp: number.otp
-                  }
-                : row
+        return (
+            !isSaved(number) ||
+            number.number !== number.initialNumber ||
+            number.otp !== number.initialOtp
         );
     }
 
+    function setDraftRow(index: number, nextValue: MockNumberForm) {
+        draftNumbers = draftNumbers.map((row, rowIndex) => (rowIndex === index ? nextValue : row));
+    }
+
     async function createPhoneNumber(number: MockNumberForm, index: number) {
-        const rowKey = getRowKey(number, index);
+        const rowKey = getDraftRowKey(number, index);
         try {
             const projectSdk = sdk.forProject(project.region, project.$id).project;
             pendingRow = rowKey;
-            const mockNumber = await projectSdk.createMockPhone({
+            await projectSdk.createMockPhone({
                 number: number.number,
                 otp: number.otp
             });
 
-            setRow(index, mockNumber);
+            pendingRow = null;
+            draftNumbers = draftNumbers.filter((_, rowIndex) => rowIndex !== index);
+            await loadMockNumbers();
             addNotification({ type: 'success', message: 'Mock phone numbers have been updated' });
             trackEvent(Submit.AuthMockNumbersUpdate);
         } catch (error) {
             addNotification({ type: 'error', message: error.message });
             trackError(error, Submit.AuthMockNumbersUpdate);
         } finally {
-            await invalidate(Dependencies.PROJECT);
             pendingRow = null;
         }
     }
@@ -124,53 +156,52 @@
     async function updatePhoneNumber(number: MockNumberForm, index: number) {
         if (!number.initialNumber) return;
 
-        const rowKey = getRowKey(number, index);
+        const rowKey = getSavedRowKey(number, index);
         try {
             const projectSdk = sdk.forProject(project.region, project.$id).project;
             pendingRow = rowKey;
-            const mockNumber = await projectSdk.updateMockPhone({
+            await projectSdk.updateMockPhone({
                 number: number.initialNumber,
                 otp: number.otp
             });
 
-            setRow(index, mockNumber);
+            await loadMockNumbers();
             addNotification({ type: 'success', message: 'Mock phone numbers have been updated' });
             trackEvent(Submit.AuthMockNumbersUpdate);
         } catch (error) {
             addNotification({ type: 'error', message: error.message });
             trackError(error, Submit.AuthMockNumbersUpdate);
         } finally {
-            await invalidate(Dependencies.PROJECT);
             pendingRow = null;
         }
     }
 
     async function deletePhoneNumber(number: MockNumberForm, index: number) {
         if (!number.initialNumber) {
-            numbers = numbers.filter((_, rowIndex) => rowIndex !== index);
+            draftNumbers = draftNumbers.filter((_, rowIndex) => rowIndex !== index);
             return;
         }
 
-        const rowKey = getRowKey(number, index);
+        const rowKey = getSavedRowKey(number, index);
         try {
             const projectSdk = sdk.forProject(project.region, project.$id).project;
             pendingRow = rowKey;
             await projectSdk.deleteMockPhone({ number: number.initialNumber });
 
-            numbers = numbers.filter((_, rowIndex) => rowIndex !== index);
+            savedNumbers = savedNumbers.filter((row) => row.initialNumber !== number.initialNumber);
+            await loadMockNumbers();
             addNotification({ type: 'success', message: 'Mock phone number has been deleted' });
             trackEvent(Submit.AuthMockNumbersUpdate);
         } catch (error) {
-            addNotification({ type: 'error', message: error.message });
+            deleteError = error.message;
             trackError(error, Submit.AuthMockNumbersUpdate);
         } finally {
-            await invalidate(Dependencies.PROJECT);
             pendingRow = null;
         }
     }
 
-    function addPhoneNumber(number: MockNumberForm) {
-        numbers = [...numbers, { number: number.number, otp: number.otp }];
+    function addPhoneNumber() {
+        draftNumbers = [...draftNumbers, createDraftNumber()];
     }
 
     function generateNumber(): string {
@@ -183,6 +214,38 @@
 
     function generateOTP(): string {
         return String(Math.floor(100000 + Math.random() * 900000));
+    }
+
+    function getDeleteTargetRow() {
+        return deleteTargetIndex === null ? null : (savedNumbers[deleteTargetIndex] ?? null);
+    }
+
+    function isDeletePending() {
+        const row = getDeleteTargetRow();
+        return (
+            row !== null &&
+            deleteTargetIndex !== null &&
+            pendingRow === getSavedRowKey(row, deleteTargetIndex)
+        );
+    }
+
+    function promptDelete(index: number) {
+        deleteTargetIndex = index;
+        deleteError = null;
+        showDeleteConfirm = true;
+    }
+
+    async function confirmDeletePhoneNumber() {
+        const row = getDeleteTargetRow();
+        if (row === null || deleteTargetIndex === null) return;
+
+        deleteError = null;
+        await deletePhoneNumber(row, deleteTargetIndex);
+
+        if (!deleteError) {
+            showDeleteConfirm = false;
+            deleteTargetIndex = null;
+        }
     }
 </script>
 
@@ -250,12 +313,16 @@
                         }}>{cta}</Button>
                 </svelte:fragment>
             </EmptyCardImageCloud>
-        {:else if numbers?.length > 0}
-            {#each numbers as number, index}
+        {:else if isLoadingMockNumbers}
+            <Layout.Stack direction="row" justifyContent="center">
+                <Spinner />
+            </Layout.Stack>
+        {:else if savedNumbers.length > 0 || draftNumbers.length > 0}
+            {#each savedNumbers as number, index (getSavedRowKey(number, index))}
                 <Layout.Stack direction="row" alignItems="flex-end">
                     <Layout.Stack direction="row" alignItems="flex-end" gap="xs">
                         <InputPhone
-                            id={`key-${index}`}
+                            id={`saved-key-${index}`}
                             bind:value={number.number}
                             placeholder="Enter phone number"
                             label={index === 0 ? 'Phone number' : undefined}
@@ -263,22 +330,10 @@
                             maxlength={16}
                             disabled={isSaved(number)}
                             required />
-                        {#if !isSaved(number)}
-                            <Tooltip>
-                                <Button
-                                    icon
-                                    compact
-                                    ariaLabel="Regenerate phone number"
-                                    on:click={() => (number.number = generateNumber())}>
-                                    <Icon icon={IconRefresh} size="s" />
-                                </Button>
-                                <span slot="tooltip">Regenerate</span>
-                            </Tooltip>
-                        {/if}
                     </Layout.Stack>
                     <Layout.Stack direction="row" alignItems="flex-end" gap="xs">
                         <InputOTP
-                            id={`value-${index}`}
+                            id={`saved-value-${index}`}
                             bind:value={number.otp}
                             placeholder="Enter value"
                             label={index === 0 ? 'Verification code' : undefined}
@@ -298,56 +353,123 @@
                                 compact
                                 disabled={!isChanged(number) ||
                                     !isValid(number) ||
-                                    pendingRow === getRowKey(number, index)}
+                                    pendingRow === getSavedRowKey(number, index)}
                                 on:click={() => updatePhoneNumber(number, index)}>
-                                Update
-                            </Button>
-                        {:else}
-                            <Button
-                                compact
-                                disabled={!isValid(number) ||
-                                    pendingRow === getRowKey(number, index)}
-                                on:click={() => createPhoneNumber(number, index)}>
-                                Create
+                                Save
                             </Button>
                         {/if}
                         <Button
                             icon
-                            compact
-                            danger={isSaved(number)}
-                            disabled={pendingRow === getRowKey(number, index)}
+                            text
+                            disabled={pendingRow === getSavedRowKey(number, index)}
                             ariaLabel="Delete mock phone number"
-                            on:click={() => {
-                                deletePhoneNumber(number, index);
-                            }}>
+                            on:click={() => promptDelete(index)}>
                             <Icon icon={IconTrash} size="s" />
                         </Button>
+                        {#if pendingRow === getSavedRowKey(number, index)}
+                            <span style:opacity="0.75">
+                                <Spinner size="s" />
+                            </span>
+                        {/if}
                     </Layout.Stack>
                 </Layout.Stack>
             {/each}
-            {#if numbers?.length < 10}
+            {#each draftNumbers as number, index (getDraftRowKey(number, index))}
+                <Layout.Stack direction="row" alignItems="flex-end">
+                    <Layout.Stack direction="row" alignItems="flex-end" gap="xs">
+                        <InputPhone
+                            id={`draft-key-${index}`}
+                            bind:value={number.number}
+                            placeholder="Enter phone number"
+                            label={savedNumbers.length === 0 && index === 0
+                                ? 'Phone number'
+                                : undefined}
+                            minlength={9}
+                            maxlength={16}
+                            required>
+                            <Tooltip slot="end">
+                                <Input.Action
+                                    icon={IconRefresh}
+                                    on:click={() =>
+                                        setDraftRow(index, {
+                                            ...number,
+                                            number: generateNumber()
+                                        })} />
+                                <span slot="tooltip">Regenerate</span>
+                            </Tooltip>
+                        </InputPhone>
+                    </Layout.Stack>
+                    <Layout.Stack direction="row" alignItems="flex-end" gap="xs">
+                        <InputOTP
+                            id={`draft-value-${index}`}
+                            bind:value={number.otp}
+                            placeholder="Enter value"
+                            label={savedNumbers.length === 0 && index === 0
+                                ? 'Verification code'
+                                : undefined}
+                            maxlength={6}
+                            pattern={'^[0-9]{6}$'}
+                            patternError="The value must contain 6 digits"
+                            required>
+                            <Tooltip slot="end">
+                                <Input.Action
+                                    icon={IconRefresh}
+                                    on:click={() =>
+                                        setDraftRow(index, { ...number, otp: generateOTP() })} />
+                                <span slot="tooltip">Regenerate</span>
+                            </Tooltip>
+                        </InputOTP>
+                        <Button
+                            compact
+                            disabled={!isValid(number) ||
+                                pendingRow === getDraftRowKey(number, index)}
+                            on:click={() => createPhoneNumber(number, index)}>
+                            Save
+                        </Button>
+                        <Button
+                            icon
+                            text
+                            disabled={pendingRow === getDraftRowKey(number, index)}
+                            ariaLabel="Delete mock phone number"
+                            on:click={() => deletePhoneNumber(number, index)}>
+                            <Icon icon={IconTrash} size="s" />
+                        </Button>
+                        {#if pendingRow === getDraftRowKey(number, index)}
+                            <span style:opacity="0.75">
+                                <Spinner size="s" />
+                            </span>
+                        {/if}
+                    </Layout.Stack>
+                </Layout.Stack>
+            {/each}
+            {#if savedNumbers.length + draftNumbers.length < 10}
                 <div>
                     <Button
                         secondary
-                        on:click={() =>
-                            addPhoneNumber({
-                                number: generateNumber(),
-                                otp: generateOTP()
-                            })}
-                        disabled={numbers.length >= 10}>
+                        on:click={addPhoneNumber}
+                        disabled={savedNumbers.length + draftNumbers.length >= 10}>
                         <Icon icon={IconPlus} slot="start" size="s" />
                         Add number
                     </Button>
                 </div>
             {/if}
         {:else}
-            <Empty
-                on:click={() => {
-                    addPhoneNumber({
-                        number: generateNumber(),
-                        otp: generateOTP()
-                    });
-                }}>Generate number</Empty>
+            <Empty on:click={addPhoneNumber}>Add a number</Empty>
         {/if}
     </svelte:fragment>
 </CardGrid>
+
+<Confirm
+    bind:open={showDeleteConfirm}
+    bind:error={deleteError}
+    title="Delete mock phone number"
+    action="Delete"
+    submissionLoader
+    disabled={isDeletePending()}
+    onSubmit={confirmDeletePhoneNumber}>
+    {#if getDeleteTargetRow()}
+        <p>
+            Are you sure you want to delete <b>{getDeleteTargetRow()?.initialNumber}</b>?
+        </p>
+    {/if}
+</Confirm>
