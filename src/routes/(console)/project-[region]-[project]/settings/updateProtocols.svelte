@@ -155,7 +155,9 @@
                         disabled={shouldDisableDisableAllButton}>Disable all</Button>
                 </Layout.Stack>
             </div>
-            <Divider />
+            <div class="protocol-toolbar-divider">
+                <Divider />
+            </div>
             <div class="protocol-list-content">
                 <Layout.Stack gap="xs">
                     {#each $protocols.list as protocol, index}
@@ -207,7 +209,12 @@
 
 <style>
     .protocols-list {
+        width: 100%;
+    }
+
+    .protocol-list-content {
         max-width: 36rem;
+        padding-top: var(--space-6);
     }
 
     .protocol-toolbar {
@@ -218,10 +225,6 @@
 
     .protocol-row {
         width: 100%;
-    }
-
-    .protocol-list-content {
-        padding-top: var(--space-6);
     }
 
     .protocol-control {

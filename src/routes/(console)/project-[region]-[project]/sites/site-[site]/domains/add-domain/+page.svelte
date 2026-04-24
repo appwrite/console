@@ -139,6 +139,7 @@
                 timeout: data.site.timeout,
                 installCommand: data.site.installCommand,
                 buildCommand: data.site.buildCommand,
+                startCommand: data.site.startCommand,
                 outputDirectory: data.site.outputDirectory,
                 buildRuntime: data.site.buildRuntime as BuildRuntime,
                 adapter: data.site.adapter as Adapter,

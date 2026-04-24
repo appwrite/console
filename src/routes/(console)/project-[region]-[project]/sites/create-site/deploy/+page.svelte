@@ -27,6 +27,7 @@
     import { writable } from 'svelte/store';
     import { getLatestTag } from '$lib/helpers/github';
     import Link from '$lib/elements/link.svelte';
+    import type { FrameworkAdapterWithStartCommand } from '$lib/stores/sites';
 
     let {
         data
@@ -45,6 +46,7 @@
     let domain = $state('');
     let rootDir = $state(data.repository?.rootDirectory || '');
     let buildCommand = $state('');
+    let startCommand = $state('');
     let installCommand = $state('');
     let outputDirectory = $state('');
     let domainIsValid = $state(false);
@@ -87,6 +89,7 @@
                 const adapter = fw.adapters[0];
                 installCommand = adapter.installCommand || '';
                 buildCommand = adapter.buildCommand || '';
+                startCommand = (adapter as FrameworkAdapterWithStartCommand).startCommand || '';
                 outputDirectory = adapter.outputDirectory || '';
             }
         }
@@ -103,10 +106,11 @@
         // Build configuration - use from URL params or defaults
         installCommand = page.url.searchParams.get('install') || '';
         buildCommand = page.url.searchParams.get('build') || '';
+        startCommand = page.url.searchParams.get('start') || '';
         outputDirectory = page.url.searchParams.get('output') || '';
 
         // Check if custom commands were provided via URL
-        hasCustomCommands = !!(installCommand || buildCommand || outputDirectory);
+        hasCustomCommands = !!(installCommand || buildCommand || startCommand || outputDirectory);
 
         // If no custom commands, auto-fill from framework defaults
         if (!hasCustomCommands && data.frameworks) {
@@ -115,6 +119,7 @@
                 const adapter = fw.adapters[0];
                 installCommand = adapter.installCommand || '';
                 buildCommand = adapter.buildCommand || '';
+                startCommand = (adapter as FrameworkAdapterWithStartCommand).startCommand || '';
                 outputDirectory = adapter.outputDirectory || '';
             }
         }
@@ -145,6 +150,7 @@
                 buildRuntime: selectedFramework.buildRuntime,
                 installCommand: installCommand || undefined,
                 buildCommand: buildCommand || undefined,
+                startCommand: startCommand || undefined,
                 outputDirectory: outputDirectory || undefined,
                 adapter: framework === Framework.Other ? Adapter.Static : undefined,
                 providerSilentMode: false
@@ -272,6 +278,10 @@
                         label="Build command"
                         placeholder={buildCommand || 'npm run build'}
                         bind:value={buildCommand} />
+                    <Input.Text
+                        label="Start command"
+                        placeholder={startCommand || 'npm run start'}
+                        bind:value={startCommand} />
                     <Input.Text
                         label="Output directory"
                         placeholder={outputDirectory || 'dist'}
