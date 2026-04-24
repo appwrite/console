@@ -36,6 +36,23 @@
     let scheduledAt: string;
 
     async function create() {
+        const isDraft = draft;
+        draft = false;
+
+        const trimmedTitle = title?.trim() ?? '';
+        const trimmedBody = body?.trim() ?? '';
+
+        if (!isDraft && (!trimmedTitle || !trimmedBody)) {
+            addNotification({
+                type: 'error',
+                message: 'Title and message body cannot be empty.'
+            });
+            return;
+        }
+
+        if (title !== undefined) title = trimmedTitle;
+        if (body !== undefined) body = trimmedBody;
+
         try {
             const messageId = id || ID.unique();
             const fileCompoundId = file ? `${file.bucketId}:${file.$id}` : undefined;
@@ -56,7 +73,7 @@
                     targets,
                     data: customData,
                     image: fileCompoundId,
-                    draft,
+                    draft: isDraft,
                     scheduledAt
                 });
 
