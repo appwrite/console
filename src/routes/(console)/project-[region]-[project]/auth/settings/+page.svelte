@@ -82,7 +82,9 @@
         }
     }
 
-    async function toggleAllAuthMethods(status: boolean) {
+    async function toggleAllAuthMethods(status: boolean | null) {
+        if (status === null) return;
+
         isUpdatingAllAuthMethods = true;
 
         try {
@@ -113,6 +115,7 @@
             });
             trackError(error, Submit.AuthStatusUpdate);
         } finally {
+            await invalidate(Dependencies.PROJECT);
             isUpdatingAllAuthMethods = false;
             showUpdateAuthMethodsDialog = false;
             updateAuthMethodsEnabledMode = null;

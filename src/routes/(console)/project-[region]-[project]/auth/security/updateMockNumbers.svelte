@@ -24,6 +24,7 @@
     } = $props();
 
     type MockNumberForm = Pick<Models.MockNumber, 'number' | 'otp'> & {
+        draftId?: string;
         initialNumber?: string;
         initialOtp?: string;
     };
@@ -36,6 +37,7 @@
     let showDeleteConfirm = $state(false);
     let deleteTargetIndex: number | null = $state(null);
     let deleteError: string | null = $state(null);
+    let draftIdCounter = $state(0);
 
     const isComponentDisabled = $derived(
         isSelfHosted || (isCloud && !$currentPlan.supportsMockNumbers)
@@ -91,8 +93,17 @@
         return number.initialNumber ?? number.number ?? `saved-${index}`;
     }
 
-    function getDraftRowKey(index: number) {
-        return `draft-${index}`;
+    function createDraftNumber(): MockNumberForm {
+        draftIdCounter += 1;
+        return {
+            draftId: `draft-${draftIdCounter}`,
+            number: generateNumber(),
+            otp: generateOTP()
+        };
+    }
+
+    function getDraftRowKey(number: MockNumberForm, index: number) {
+        return number.draftId ?? `draft-${index}`;
     }
 
     function isSaved(number: MockNumberForm) {
@@ -115,25 +126,12 @@
         );
     }
 
-    function setSavedRow(initialNumber: string, mockNumber: Models.MockNumber) {
-        savedNumbers = savedNumbers.map((row) =>
-            row.initialNumber === initialNumber
-                ? {
-                      number: mockNumber.number,
-                      otp: mockNumber.otp,
-                      initialNumber: mockNumber.number,
-                      initialOtp: mockNumber.otp
-                  }
-                : row
-        );
-    }
-
     function setDraftRow(index: number, nextValue: MockNumberForm) {
         draftNumbers = draftNumbers.map((row, rowIndex) => (rowIndex === index ? nextValue : row));
     }
 
     async function createPhoneNumber(number: MockNumberForm, index: number) {
-        const rowKey = getDraftRowKey(index);
+        const rowKey = getDraftRowKey(number, index);
         try {
             const projectSdk = sdk.forProject(project.region, project.$id).project;
             pendingRow = rowKey;
@@ -142,6 +140,7 @@
                 otp: number.otp
             });
 
+            pendingRow = null;
             draftNumbers = draftNumbers.filter((_, rowIndex) => rowIndex !== index);
             await loadMockNumbers();
             addNotification({ type: 'success', message: 'Mock phone numbers have been updated' });
@@ -161,12 +160,11 @@
         try {
             const projectSdk = sdk.forProject(project.region, project.$id).project;
             pendingRow = rowKey;
-            const mockNumber = await projectSdk.updateMockPhone({
+            await projectSdk.updateMockPhone({
                 number: number.initialNumber,
                 otp: number.otp
             });
 
-            setSavedRow(number.initialNumber, mockNumber);
             await loadMockNumbers();
             addNotification({ type: 'success', message: 'Mock phone numbers have been updated' });
             trackEvent(Submit.AuthMockNumbersUpdate);
@@ -203,13 +201,7 @@
     }
 
     function addPhoneNumber() {
-        draftNumbers = [
-            ...draftNumbers,
-            {
-                number: generateNumber(),
-                otp: generateOTP()
-            }
-        ];
+        draftNumbers = [...draftNumbers, createDraftNumber()];
     }
 
     function generateNumber(): string {
@@ -247,6 +239,7 @@
         const row = getDeleteTargetRow();
         if (row === null || deleteTargetIndex === null) return;
 
+        deleteError = null;
         await deletePhoneNumber(row, deleteTargetIndex);
 
         if (!deleteError) {
@@ -381,7 +374,7 @@
                     </Layout.Stack>
                 </Layout.Stack>
             {/each}
-            {#each draftNumbers as number, index (getDraftRowKey(index))}
+            {#each draftNumbers as number, index (getDraftRowKey(number, index))}
                 <Layout.Stack direction="row" alignItems="flex-end">
                     <Layout.Stack direction="row" alignItems="flex-end" gap="xs">
                         <InputPhone
@@ -428,19 +421,20 @@
                         </InputOTP>
                         <Button
                             compact
-                            disabled={!isValid(number) || pendingRow === getDraftRowKey(index)}
+                            disabled={!isValid(number) ||
+                                pendingRow === getDraftRowKey(number, index)}
                             on:click={() => createPhoneNumber(number, index)}>
                             Save
                         </Button>
                         <Button
                             icon
                             text
-                            disabled={pendingRow === getDraftRowKey(index)}
+                            disabled={pendingRow === getDraftRowKey(number, index)}
                             ariaLabel="Delete mock phone number"
                             on:click={() => deletePhoneNumber(number, index)}>
                             <Icon icon={IconTrash} size="s" />
                         </Button>
-                        {#if pendingRow === getDraftRowKey(index)}
+                        {#if pendingRow === getDraftRowKey(number, index)}
                             <span style:opacity="0.75">
                                 <Spinner size="s" />
                             </span>
