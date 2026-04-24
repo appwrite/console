@@ -1,7 +1,7 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { page } from '$app/state';
-    import { Avatar, CardGrid, PaginationInline } from '$lib/components';
+    import { Avatar, CardGrid, PaginationInline, Id } from '$lib/components';
     import { Button as FormButton } from '$lib/elements/forms';
     import { getApiEndpoint } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
@@ -100,11 +100,13 @@
                     let:root
                     columns={[
                         { id: 'owner', width: { min: 150, max: 500 } },
+                        { id: 'installationId', width: { min: 200, max: 400 } },
                         { id: 'updated', width: { min: 150, max: 500 } },
                         { id: 'actions', width: 60 }
                     ]}>
                     <svelte:fragment slot="header" let:root>
                         <Table.Header.Cell column="owner" {root}>Owner</Table.Header.Cell>
+                        <Table.Header.Cell column="installationId" {root}>Installation ID</Table.Header.Cell>
                         <Table.Header.Cell column="updated" {root}>Updated</Table.Header.Cell>
                         <Table.Header.Cell column="actions" {root} />
                     </svelte:fragment>
@@ -121,6 +123,11 @@
                                         {installation.organization}
                                     </Link>
                                 </Layout.Stack>
+                            </Table.Cell>
+                            <Table.Cell column="installationId" {root}>
+                                <Id value={installation.$id}>
+                                    {installation.$id}
+                                </Id>
                             </Table.Cell>
                             <Table.Cell column="updated" {root}>
                                 <DualTimeView time={installation.$updatedAt} />
