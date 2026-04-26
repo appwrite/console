@@ -30,8 +30,18 @@ function createHeaderAlertStore() {
                 }
             });
         },
+        updateShow: (id: string, show: boolean) => {
+            update((n) => {
+                const component = n.components.find((c) => c.id === id);
+                if (!component || component.show === show) return n;
+
+                component.show = show;
+                n.components = [...n.components];
+                return n;
+            });
+        },
         get: (): HeaderAlert => {
-            //return highest importance component
+            // return highest importance visible component
             let component = {
                 id: '',
                 show: false,
@@ -40,7 +50,7 @@ function createHeaderAlertStore() {
             };
             update((n) => {
                 n.components.forEach((c) => {
-                    if (c.importance > component.importance) {
+                    if (c.show && c.importance > component.importance) {
                         component = c;
                     }
                 });

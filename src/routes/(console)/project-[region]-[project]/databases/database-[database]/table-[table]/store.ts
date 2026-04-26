@@ -12,6 +12,8 @@ export const indexes = derived(page, ($page) => $page.data.table.indexes as Mode
 
 export const tableColumns = writable<Column[]>([]);
 
+export const INTERNAL_ACTIONS_COLUMN_ID = '$actions';
+
 export const isTablesCsvImportInProgress = writable(false);
 
 export const columnsOrder = writable<string[]>([]);

@@ -42,7 +42,7 @@
         apiServiceUpdates.add(service.method);
 
         try {
-            await sdk.forProject($project.region, $project.$id).project.updateServiceStatus({
+            await sdk.forProject($project.region, $project.$id).project.updateService({
                 serviceId: service.method,
                 enabled: service.value
             });
@@ -77,7 +77,7 @@
             const projectSdk = sdk.forProject($project.region, $project.$id);
             for (const s of get(services).list) {
                 if (s.value === status) continue;
-                await projectSdk.project.updateServiceStatus({
+                await projectSdk.project.updateService({
                     serviceId: s.method,
                     enabled: status
                 });
