@@ -305,7 +305,7 @@
                     calculateTrialDay(org);
                 }
             }
-            $activeHeaderAlert = headerAlert.get();
+            $activeHeaderAlert = headerAlert.getExcluding('impersonation');
         }
     }
 
@@ -318,7 +318,7 @@
     $registerSearchers(orgSearcher, projectsSearcher);
 
     afterUpdate(() => {
-        $activeHeaderAlert = headerAlert.get();
+        $activeHeaderAlert = headerAlert.getExcluding('impersonation');
     });
 </script>
 

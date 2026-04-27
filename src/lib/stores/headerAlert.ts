@@ -57,6 +57,24 @@ function createHeaderAlertStore() {
                 return n;
             });
             return component as HeaderAlert;
+        },
+        getExcluding: (excludeId: string): HeaderAlert => {
+            // return highest importance visible component, excluding a specific id
+            let component = {
+                id: '',
+                show: false,
+                component: null,
+                importance: 0
+            };
+            update((n) => {
+                n.components.forEach((c) => {
+                    if (c.show && c.id !== excludeId && c.importance > component.importance) {
+                        component = c;
+                    }
+                });
+                return n;
+            });
+            return component as HeaderAlert;
         }
     };
 }

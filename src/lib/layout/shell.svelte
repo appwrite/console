@@ -3,6 +3,12 @@
     import { Navbar, Sidebar } from '$lib/components';
     import { isNewWizardStatusOpen, wizard } from '$lib/stores/wizard';
     import { activeHeaderAlert } from '$routes/(console)/store';
+    import AlertStack from './alertStack.svelte';
+    import ImpersonationBanner from '$lib/components/impersonation/banner.svelte';
+    import {
+        impersonationRevision,
+        readImpersonationTargetUserId
+    } from '$lib/appwrite/impersonation';
     import { onMount, setContext } from 'svelte';
     import { writable } from 'svelte/store';
     import { showSubNavigation, showOnboardingAnimation } from '$lib/stores/layout';
@@ -27,6 +33,13 @@
     export let selectedProject: Models.Project = null;
 
     $: activeProject = selectedProject && page.params.project ? selectedProject : null;
+
+    let isImpersonating = !!readImpersonationTargetUserId();
+    $: {
+        void $impersonationRevision;
+        isImpersonating = !!readImpersonationTargetUserId();
+    }
+    $: hasAnyAlert = isImpersonating || !!$activeHeaderAlert?.show;
 
     // variables
     let yOnMenuOpen: number;
@@ -214,16 +227,23 @@
 
 <svelte:body use:style={$bodyStyle} />
 
-{#if $activeHeaderAlert?.show && !$isNewWizardStatusOpen}
-    <svelte:component this={$activeHeaderAlert.component} />
+{#if hasAnyAlert && !$isNewWizardStatusOpen}
+    <AlertStack>
+        {#if isImpersonating}
+            <ImpersonationBanner />
+        {/if}
+        {#if $activeHeaderAlert?.show}
+            <svelte:component this={$activeHeaderAlert.component} />
+        {/if}
+    </AlertStack>
 {/if}
 
 <main
-    class:has-alert={$activeHeaderAlert?.show}
+    class:has-alert={hasAnyAlert}
     class:is-open={$showSubNavigation}
     class:is-sidebar-open={$isSidebarOpen}
     class:u-hide={$wizard.show || $wizard.cover}
-    class:is-fixed-layout={$activeHeaderAlert?.show}
+    class:is-fixed-layout={hasAnyAlert}
     class:no-header={!showHeader || $showOnboardingAnimation}
     style:--p-side-size={sideSize}>
     {#if showHeader && !$showOnboardingAnimation}

@@ -5,7 +5,7 @@
 </script>
 
 <script lang="ts">
-    import { onDestroy, onMount } from 'svelte';
+    import { getContext, onDestroy, onMount } from 'svelte';
     import { isTabletViewport } from '$lib/stores/viewport';
     import { createEventDispatcher } from 'svelte';
     import { Button } from '$lib/elements/forms';
@@ -16,6 +16,9 @@
     export let title: string;
     export let type: 'info' | 'success' | 'warning' | 'error' | 'default' = 'info';
     export let dismissible = false;
+
+    // When inside an AlertStack, layout management is handled by the stack wrapper
+    const isInStack: boolean = getContext('isInAlertStack') ?? false;
 
     /**
      * This is needed because when the
@@ -57,28 +60,33 @@
     }
 
     onMount(() => {
-        if (container) {
+        if (!isInStack && container) {
             resizeObserver = new ResizeObserver(setNavigationHeight);
             resizeObserver.observe(container);
         }
     });
 
     onDestroy(() => {
-        container = null;
-        setNavigationHeight();
+        if (!isInStack) {
+            container = null;
+            setNavigationHeight();
 
-        // remove observer!
-        if (resizeObserver) {
-            resizeObserver.disconnect();
+            // remove observer!
+            if (resizeObserver) {
+                resizeObserver.disconnect();
+            }
         }
     });
 
-    afterNavigate(() => setNavigationHeight());
+    afterNavigate(() => {
+        if (!isInStack) setNavigationHeight();
+    });
 </script>
 
 <section
     bind:this={container}
     class="alert is-action is-action-and-top-sticky u-sep-block-end"
+    class:in-stack={isInStack}
     class:is-success={type === 'success'}
     class:is-warning={type === 'warning'}
     class:is-danger={type === 'error'}
@@ -123,6 +131,11 @@
         top: 0;
         width: 100%;
         z-index: 100;
+    }
+
+    .alert.in-stack {
+        position: static;
+        z-index: unset;
     }
 
     .alert-content {
