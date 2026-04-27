@@ -11,6 +11,7 @@
     import { tablesSearcher } from '$lib/commandCenter/searchers';
     import { Dependencies } from '$lib/constants';
     import { showCreateEntity, randomDataModalState, resetSampleFieldsConfig } from './store';
+    import { entityColumnSuggestions } from './(suggestions)/store';
     import { TablesPanel } from '$lib/commandCenter/panels';
     import { canWriteTables, canWriteDatabases } from '$lib/stores/roles';
     import { showCreateBackup, showCreatePolicy } from './backups/store';
@@ -25,6 +26,7 @@
     import type { Snippet } from 'svelte';
     import { Input as SuggestionsInput } from '$database/(suggestions)/index';
     import { Modal } from '$lib/components';
+    import { subNavigation } from '$lib/stores/database';
 
     let {
         children
@@ -42,6 +44,7 @@
     $registerSearchers(tablesSearcher);
 
     async function createEntity(entityId: string, name: string, dimension?: number) {
+        const shouldSuggestColumns = $entityColumnSuggestions.enabled;
         const entity = await databaseSdk.createEntity({
             databaseId,
             entityId,
@@ -50,6 +53,7 @@
         });
 
         await invalidate(Dependencies.DATABASE);
+        await invalidate(Dependencies.TABLES);
         await goto(
             withPath(
                 resolveRoute(
@@ -59,6 +63,21 @@
                 `/${terminology.entity.lower.singular}-${entity.$id}`
             )
         );
+
+        subNavigation.update();
+
+        if (shouldSuggestColumns) {
+            entityColumnSuggestions.update((store) => ({
+                ...store,
+                enabled: true,
+                thinking: true,
+                force: true,
+                entity: {
+                    id: entity.$id,
+                    name: entity.name
+                }
+            }));
+        }
 
     }
 

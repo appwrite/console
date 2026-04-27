@@ -27,6 +27,7 @@
     import { Query } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { subNavigation } from '$lib/stores/database';
+    import { sleep } from '$lib/helpers/promises';
     import {
         type Entity,
         type EntityList,
@@ -83,6 +84,26 @@
                 databaseId: page.params.database,
                 queries: [Query.orderDesc(''), Query.limit(100)]
             });
+
+            const currentEntityId = page.params[entityTypeSingular];
+
+            if (
+                currentEntityId &&
+                !entities.entities.some((entity: Entity) => entity.$id === currentEntityId)
+            ) {
+                for (let attempt = 0; attempt < 3; attempt++) {
+                    await sleep(250);
+
+                    entities = await databaseSdk.listEntities({
+                        databaseId: page.params.database,
+                        queries: [Query.orderDesc(''), Query.limit(100)]
+                    });
+
+                    if (entities.entities.some((entity: Entity) => entity.$id === currentEntityId)) {
+                        break;
+                    }
+                }
+            }
         } finally {
             loading = false;
         }
