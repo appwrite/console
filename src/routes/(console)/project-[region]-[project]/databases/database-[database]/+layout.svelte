@@ -64,7 +64,13 @@
             )
         );
 
-        subNavigation.update();
+        subNavigation.update({
+            type: 'entity-created',
+            entity: {
+                $id: entity.$id,
+                name: entity.name
+            }
+        });
 
         if (shouldSuggestColumns) {
             entityColumnSuggestions.update((store) => ({
