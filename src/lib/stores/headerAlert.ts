@@ -1,5 +1,5 @@
 import type { Component } from 'svelte';
-import { writable } from 'svelte/store';
+import { get as getStore, writable } from 'svelte/store';
 
 export type HeaderAlert = {
     id: string;
@@ -13,13 +13,11 @@ export type HeaderAlertStore = {
 };
 
 function createHeaderAlertStore() {
-    const { subscribe, update, set } = writable<HeaderAlertStore>({
-        components: []
-    });
+    const store = writable<HeaderAlertStore>({ components: [] });
+    const { subscribe, update } = store;
 
     return {
         subscribe,
-        set,
         add: (component: HeaderAlert) => {
             update((n) => {
                 if (n.components.some((c) => c.id === component.id)) return n;
@@ -42,19 +40,21 @@ function createHeaderAlertStore() {
         },
         get: (): HeaderAlert => {
             // return highest importance visible component
-            let component = {
-                id: '',
-                show: false,
-                component: null,
-                importance: 0
-            };
-            update((n) => {
-                n.components.forEach((c) => {
-                    if (c.show && c.importance > component.importance) {
-                        component = c;
-                    }
-                });
-                return n;
+            let component = { id: '', show: false, component: null, importance: 0 };
+            getStore(store).components.forEach((c) => {
+                if (c.show && c.importance > component.importance) {
+                    component = c;
+                }
+            });
+            return component as HeaderAlert;
+        },
+        getExcluding: (excludeId: string): HeaderAlert => {
+            // return highest importance visible component, excluding a specific id
+            let component = { id: '', show: false, component: null, importance: 0 };
+            getStore(store).components.forEach((c) => {
+                if (c.show && c.id !== excludeId && c.importance > component.importance) {
+                    component = c;
+                }
             });
             return component as HeaderAlert;
         }
