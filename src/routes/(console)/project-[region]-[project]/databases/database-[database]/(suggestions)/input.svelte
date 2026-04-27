@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { onMount } from 'svelte';
     import { isCloud } from '$lib/system';
     import IconAI from './icon/ai.svelte';
     import { slide } from 'svelte/transition';
@@ -20,12 +19,6 @@
         context?: 'suggestions' | 'data';
         showSampleCountPicker?: boolean;
     } = $props();
-
-    onMount(() => {
-        if (featureActive) {
-            $entityColumnSuggestions.enabled = true;
-        }
-    });
 
     const featureActive = $derived(isCloud);
     const { terminology } = getTerminologies();
