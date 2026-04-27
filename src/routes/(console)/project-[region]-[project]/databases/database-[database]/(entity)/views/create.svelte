@@ -108,7 +108,7 @@
 
     $effect(() => {
         // reset is OK here, we don't have to check for entity type!
-        if (show && isOnEntitiesPage && $entityColumnSuggestions.entity) {
+        if (show && !creatingEntity && isOnEntitiesPage && $entityColumnSuggestions.entity) {
             entityColumnSuggestions.update((store) => ({
                 ...store,
                 entity: null
