@@ -16,7 +16,7 @@
         if (alertHeight) {
             bannerSpacing.set(`${alertHeight}px`);
         } else {
-            bannerSpacing.set(undefined);
+            bannerSpacing.set(null);
         }
 
         const header: HTMLHeadingElement = document.querySelector('main > header');

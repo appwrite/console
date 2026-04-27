@@ -229,9 +229,8 @@
 
 {#if hasAnyAlert && !$isNewWizardStatusOpen}
     <AlertStack>
-        {#if isImpersonating}
-            <ImpersonationBanner />
-        {/if}
+        <!-- ImpersonationBanner self-manages its own visibility via its internal {#if isImpersonating} guard -->
+        <ImpersonationBanner />
         {#if $activeHeaderAlert?.show}
             <svelte:component this={$activeHeaderAlert.component} />
         {/if}

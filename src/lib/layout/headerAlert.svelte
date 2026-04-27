@@ -39,7 +39,7 @@
             // for sidebar and sub-navigation!
             bannerSpacing.set(`${alertHeight}px`);
         } else {
-            bannerSpacing.set(undefined);
+            bannerSpacing.set(null);
         }
 
         if (header) {
