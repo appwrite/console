@@ -10,6 +10,7 @@
     import { Alert } from '@appwrite.io/pink-svelte';
 
     const projectId = page.params.project;
+    const region = page.params.region;
 
     export let provider: Models.AuthProvider;
     export let show = false;
@@ -29,7 +30,7 @@
     });
 
     const update = async () => {
-        const result = await updateOAuth({ projectId, provider, secret, appId, enabled });
+        const result = await updateOAuth({ region, projectId, provider, secret, appId, enabled });
 
         if (result.status === 'error') {
             error = result.message;

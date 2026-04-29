@@ -3,11 +3,11 @@
     import { CopyInput, Modal } from '$lib/components';
     import { Button, InputPassword, InputSwitch, InputText } from '$lib/elements/forms';
     import { oAuthProviders, type Provider } from '$lib/stores/oauth-providers';
+    import { getApiEndpoint } from '$lib/stores/sdk';
+    import type { Models } from '@appwrite.io/console';
+    import { Alert, Link } from '@appwrite.io/pink-svelte';
     import { onMount } from 'svelte';
     import { updateOAuth } from '../updateOAuth';
-    import type { Models } from '@appwrite.io/console';
-    import { Link, Alert } from '@appwrite.io/pink-svelte';
-    import { getApiEndpoint } from '$lib/stores/sdk';
 
     const projectId = page.params.project;
     const region = page.params.region;
@@ -19,13 +19,18 @@
     let enabled: boolean = null;
     let clientSecret: string = null;
     let endpoint: string = null;
+    let realmName: string = null;
     let error: string;
     let oAuthProvider: Provider;
 
     onMount(() => {
         appId ??= provider.appId;
         enabled ??= provider.enabled;
-        if (provider.secret) ({ clientSecret, endpoint } = JSON.parse(provider.secret));
+
+        if (provider.secret) {
+            ({ clientSecret, endpoint, realmName } = JSON.parse(provider.secret));
+        }
+
         oAuthProvider = oAuthProviders[provider.key];
     });
 
@@ -40,32 +45,48 @@
     };
 
     $: secret =
-        clientSecret && endpoint ? JSON.stringify({ clientSecret, endpoint }) : provider.secret;
+        clientSecret && endpoint && realmName
+            ? JSON.stringify({ clientSecret, endpoint, realmName })
+            : provider.secret;
 </script>
 
 <Modal {error} bind:show onSubmit={update} on:close title={`${provider.name} OAuth2 settings`}>
     <p slot="description">
         To use {provider.name} authentication in your application, first fill in this form. For more info
         you can
-        <Link.Anchor href={oAuthProvider?.docs} target="_blank" rel="noopener noreferrer"
-            >visit the docs.</Link.Anchor>
+        <Link.Anchor
+            class="link"
+            href={oAuthProvider?.docs}
+            target="_blank"
+            rel="noopener noreferrer">visit the docs.</Link.Anchor>
     </p>
     <InputSwitch id="state" bind:value={enabled} label={enabled ? 'Enabled' : 'Disabled'} />
     <InputText
-        id="appID"
-        label="App ID"
+        id="client-id"
+        label="Client ID"
         autofocus={true}
-        placeholder="Enter ID"
+        placeholder="Enter Client ID"
         bind:value={appId}
         required />
     <InputPassword
-        id="secret"
-        label="App Secret"
-        placeholder="Enter App Secret"
+        id="client-secret"
+        label="Client Secret"
+        placeholder="Enter Client Secret"
         minlength={0}
         bind:value={clientSecret}
         required />
-    <InputText id="endpoint" label="Endpoint" placeholder="Your endpoint" bind:value={endpoint} />
+    <InputText
+        id="endpoint"
+        label="Keycloak Domain"
+        placeholder="keycloak.example.com"
+        bind:value={endpoint}
+        required />
+    <InputText
+        id="realm-name"
+        label="Realm Name"
+        placeholder="appwrite-realm"
+        bind:value={realmName}
+        required />
     <Alert.Inline status="info">
         To complete set up, add this OAuth2 redirect URI to your {provider.name} app configuration.
     </Alert.Inline>
@@ -77,6 +98,8 @@
         <Button
             disabled={!appId ||
                 !clientSecret ||
+                !endpoint ||
+                !realmName ||
                 (secret === provider.secret &&
                     enabled === provider.enabled &&
                     appId === provider.appId)}

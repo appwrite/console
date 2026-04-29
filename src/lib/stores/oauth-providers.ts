@@ -2,8 +2,10 @@ import type { Component } from 'svelte';
 import Apple from '$routes/(console)/project-[region]-[project]/auth/(providers)/appleOAuth.svelte';
 import Auth0 from '$routes/(console)/project-[region]-[project]/auth/(providers)/auth0OAuth.svelte';
 import Authentik from '$routes/(console)/project-[region]-[project]/auth/(providers)/authentikOAuth.svelte';
+import FusionAuth from '$routes/(console)/project-[region]-[project]/auth/(providers)/fusionauthOAuth.svelte';
 import GitLab from '$routes/(console)/project-[region]-[project]/auth/(providers)/gitlabOAuth.svelte';
 import Google from '$routes/(console)/project-[region]-[project]/auth/(providers)/googleOAuth.svelte';
+import Keycloak from '$routes/(console)/project-[region]-[project]/auth/(providers)/keycloakOAuth.svelte';
 import Main from '$routes/(console)/project-[region]-[project]/auth/(providers)/mainOAuth.svelte';
 import Microsoft from '$routes/(console)/project-[region]-[project]/auth/(providers)/microsoftOAuth.svelte';
 import Oidc from '$routes/(console)/project-[region]-[project]/auth/(providers)/oidcOAuth.svelte';
@@ -108,6 +110,12 @@ export const oAuthProviders: Record<string, Provider> = {
         docs: 'https://www.figma.com/developers/api#access-tokens',
         component: Main
     },
+    fusionauth: {
+        name: 'FusionAuth',
+        icon: 'fusionauth',
+        docs: 'https://fusionauth.io/docs/apis/identity-providers/oauth2',
+        component: FusionAuth
+    },
     github: {
         name: 'GitHub',
         icon: 'github',
@@ -139,6 +147,18 @@ export const oAuthProviders: Record<string, Provider> = {
         docs: 'https://support.google.com/googleapi/answer/6158849',
         component: Google,
         internal: true
+    },
+    keycloak: {
+        name: 'Keycloak',
+        icon: 'keycloak',
+        docs: 'https://www.keycloak.org/securing-apps/oidc-layers',
+        component: Keycloak
+    },
+    kick: {
+        name: 'Kick',
+        icon: 'kick',
+        docs: 'https://docs.kick.com/getting-started/using-the-api',
+        component: Main
     },
     linkedin: {
         name: 'LinkedIn',

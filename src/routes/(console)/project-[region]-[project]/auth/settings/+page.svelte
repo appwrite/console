@@ -152,7 +152,11 @@
                 Enable the authentication methods you wish to use.
                 <svelte:fragment slot="aside">
                     <Layout.Stack gap="m" class="auth-methods-list">
-                        <Layout.Stack direction="row" alignItems="center" gap="s">
+                        <Layout.Stack
+                            direction="row"
+                            alignItems="center"
+                            gap="s"
+                            class="auth-methods-actions">
                             <Button
                                 extraCompact
                                 on:click={() => {
@@ -172,10 +176,10 @@
                                 disabled={shouldDisableDisableAllButton}>Disable all</Button>
                         </Layout.Stack>
                         <Layout.Stack gap="l">
-                            <Divider />
-                            <Layout.Stack direction="row" wrap="wrap">
+                            <Divider class="auth-methods-divider" />
+                            <div class="auth-methods-grid">
                                 {#each $authMethods.list as box}
-                                    <span style:flex-basis="30%">
+                                    <div class="auth-method-item">
                                         <Layout.Stack direction="row" alignItems="center">
                                             <InputSwitch
                                                 label={box.label}
@@ -190,9 +194,9 @@
                                                 </span>
                                             {/if}
                                         </Layout.Stack>
-                                    </span>
+                                    </div>
                                 {/each}
-                            </Layout.Stack>
+                            </div>
                         </Layout.Stack>
                     </Layout.Stack>
                 </svelte:fragment>
@@ -271,3 +275,23 @@
         </Layout.Stack>
     </svelte:fragment>
 </Dialog>
+
+<style>
+    .auth-methods-grid {
+        display: grid;
+        gap: var(--space-6) var(--space-8);
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        width: 100%;
+    }
+
+    .auth-method-item {
+        min-width: 0;
+    }
+
+
+    @media (max-width: 768px) {
+        .auth-methods-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
