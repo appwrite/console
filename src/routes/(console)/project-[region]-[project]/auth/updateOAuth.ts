@@ -46,7 +46,7 @@ async function updateProjectOAuth({ region, projectId, provider, appId, secret, 
                 serviceId: appId || undefined,
                 keyId: parsedSecret.keyId || undefined,
                 teamId: parsedSecret.teamId || undefined,
-                p8File: parsedSecret.p8 || undefined,
+                p8File: parsedSecret.p8File || undefined,
                 enabled
             });
         case OAuthProvider.Auth0:
@@ -145,7 +145,7 @@ async function updateProjectOAuth({ region, projectId, provider, appId, secret, 
         case OAuthProvider.Gitlab:
             return projectSdk.updateOAuth2Gitlab({
                 applicationId: appId || undefined,
-                secret: parsedSecret.clientSecret || undefined,
+                secret: parsedSecret.secret || undefined,
                 endpoint: parsedSecret.endpoint || undefined,
                 enabled
             });

@@ -186,7 +186,7 @@ export const oAuthProviders: Record<string, Provider> = {
         docs: 'https://developer.paypal.com/docs/api/overview/',
         component: Main
     },
-    paypalsandbox: {
+    paypalSandbox: {
         name: 'Paypal Sandbox',
         icon: 'paypal',
         docs: 'https://developer.paypal.com/docs/api/overview/',
