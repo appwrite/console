@@ -14,6 +14,7 @@
     import { get } from 'svelte/store';
 
     import { SvelteSet } from 'svelte/reactivity';
+    import { canWriteProjects } from '$lib/stores/roles';
 
     let isUpdatingAllServices = $state(false);
     let showUpdateServiceDialog = $state(false);
@@ -137,20 +138,25 @@
                 <Button
                     extraCompact
                     on:click={() => {
+                        if (!$canWriteProjects) return;
                         showUpdateServiceDialog = true;
                         updateServicesEnabledMode = true;
                     }}
-                    disabled={shouldDisableEnableAllButton}>Enable all</Button>
+                    disabled={!$canWriteProjects || shouldDisableEnableAllButton}
+                    >Enable all</Button>
                 <span style:height="20px">
                     <Divider vertical />
                 </span>
                 <Button
                     extraCompact
                     on:click={() => {
+                        if (!$canWriteProjects) return;
                         showUpdateServiceDialog = true;
                         updateServicesEnabledMode = false;
                     }}
-                    disabled={shouldDisableDisableAllButton}>Disable all</Button>
+                    disabled={!$canWriteProjects || shouldDisableDisableAllButton}>
+                    Disable all
+                </Button>
             </Layout.Stack>
             <Layout.Stack gap="l">
                 <Divider />
@@ -163,7 +169,8 @@
                                     label={service.label}
                                     bind:value={service.value}
                                     on:change={() => serviceUpdate(service)}
-                                    disabled={apiServiceUpdates.has(service.method)} />
+                                    disabled={!$canWriteProjects ||
+                                        apiServiceUpdates.has(service.method)} />
 
                                 {#if apiServiceUpdates.has(service.method)}
                                     <span style:opacity="0.75">
@@ -188,7 +195,7 @@
             <Button
                 secondary
                 submissionLoader
-                disabled={isUpdatingAllServices}
+                disabled={!$canWriteProjects || isUpdatingAllServices}
                 forceShowLoader={isUpdatingAllServices}
                 on:click={() => toggleAllServices(updateServicesEnabledMode)}>
                 {dialogDetails.actionButton}

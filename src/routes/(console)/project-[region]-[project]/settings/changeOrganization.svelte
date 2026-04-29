@@ -4,6 +4,7 @@
     import { organizationList } from '$lib/stores/organization';
     import { project } from '../store';
     import TransferProjectModal from './transferProjectModal.svelte';
+    import { canWriteProjects } from '$lib/stores/roles';
 
     let teamId: string;
     let showTransfer = false;
@@ -18,6 +19,7 @@
             id="organization"
             placeholder="Select destination"
             label="Move to"
+            disabled={!$canWriteProjects}
             bind:value={teamId}
             options={$organizationList.teams
                 .filter((team) => team.$id !== $project.teamId)
@@ -30,7 +32,7 @@
     <svelte:fragment slot="actions">
         <Button
             secondary
-            disabled={teamId === $project.teamId || !teamId}
+            disabled={!$canWriteProjects || teamId === $project.teamId || !teamId}
             on:click={() => (showTransfer = true)}>Move</Button>
     </svelte:fragment>
 </CardGrid>
