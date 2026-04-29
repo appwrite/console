@@ -61,7 +61,8 @@
     {onDelete}>
     {#snippet header(root)}
         {#each $tableViewColumns as { id, title } (id)}
-            <Table.Header.Cell column={id} {root}>{title}</Table.Header.Cell>
+            {@const safeId = id === 'actions' ? '__actions' : id}
+            <Table.Header.Cell column={safeId} {root}>{title}</Table.Header.Cell>
         {/each}
     {/snippet}
 
@@ -72,7 +73,8 @@
                 id={entity.$id}
                 href={buildEntityRoute(page, entitySingular, entity.$id)}>
                 {#each $tableViewColumns as column}
-                    <Table.Cell column={column.id} {root}>
+                    {@const safeId = column.id === 'actions' ? '__actions' : column.id}
+                    <Table.Cell column={safeId} {root}>
                         {#if column.id === '$id'}
                             {#key $tableViewColumns}
                                 <Id value={entity.$id}>{entity.$id}</Id>
