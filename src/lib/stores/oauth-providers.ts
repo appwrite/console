@@ -268,12 +268,6 @@ export const oAuthProviders: Record<string, Provider> = {
         docs: 'https://developer.yahoo.com/oauth2/guide/flows_authcode/',
         component: Main
     },
-    yammer: {
-        name: 'Yammer',
-        icon: 'yammer',
-        docs: 'https://developer.yammer.com/docs/oauth-2',
-        component: Main
-    },
     yandex: {
         name: 'Yandex',
         icon: 'yandex',
