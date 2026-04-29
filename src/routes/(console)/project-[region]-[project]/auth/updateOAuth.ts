@@ -44,8 +44,8 @@ async function updateProjectOAuth({ region, projectId, provider, appId, secret, 
         case OAuthProvider.Apple:
             return projectSdk.updateOAuth2Apple({
                 serviceId: appId || undefined,
-                keyId: parsedSecret.keyID || undefined,
-                teamId: parsedSecret.teamID || undefined,
+                keyId: parsedSecret.keyId || undefined,
+                teamId: parsedSecret.teamId || undefined,
                 p8File: parsedSecret.p8 || undefined,
                 enabled
             });
@@ -53,12 +53,12 @@ async function updateProjectOAuth({ region, projectId, provider, appId, secret, 
             return projectSdk.updateOAuth2Auth0({
                 clientId: appId || undefined,
                 clientSecret: parsedSecret.clientSecret || undefined,
-                endpoint: parsedSecret.auth0Domain || undefined,
+                endpoint: parsedSecret.endpoint || undefined,
                 enabled
             });
         case OAuthProvider.Authentik:
             return projectSdk.updateOAuth2Authentik({
-                endpoint: parsedSecret.authentikDomain || '',
+                endpoint: parsedSecret.endpoint || '',
                 clientId: appId || undefined,
                 clientSecret: parsedSecret.clientSecret || undefined,
                 enabled
@@ -177,9 +177,9 @@ async function updateProjectOAuth({ region, projectId, provider, appId, secret, 
             });
         case OAuthProvider.Microsoft:
             return projectSdk.updateOAuth2Microsoft({
-                tenant: parsedSecret.tenantID || 'common',
+                tenant: parsedSecret.tenant || 'common',
                 applicationId: appId || undefined,
-                applicationSecret: parsedSecret.clientSecret || undefined,
+                applicationSecret: parsedSecret.applicationSecret || undefined,
                 enabled
             });
         case OAuthProvider.Notion:
@@ -192,17 +192,17 @@ async function updateProjectOAuth({ region, projectId, provider, appId, secret, 
             return projectSdk.updateOAuth2Oidc({
                 clientId: appId || undefined,
                 clientSecret: parsedSecret.clientSecret || undefined,
-                wellKnownURL: parsedSecret.wellKnownEndpoint || undefined,
-                authorizationURL: parsedSecret.authorizationEndpoint || undefined,
-                tokenUrl: parsedSecret.tokenEndpoint || undefined,
-                userInfoUrl: parsedSecret.userinfoEndpoint || undefined,
+                wellKnownURL: parsedSecret.wellKnownURL || undefined,
+                authorizationURL: parsedSecret.authorizationURL || undefined,
+                tokenUrl: parsedSecret.tokenUrl || undefined,
+                userInfoUrl: parsedSecret.userInfoUrl || undefined,
                 enabled
             });
         case OAuthProvider.Okta:
             return projectSdk.updateOAuth2Okta({
                 clientId: appId || undefined,
                 clientSecret: parsedSecret.clientSecret || undefined,
-                domain: parsedSecret.oktaDomain || undefined,
+                domain: parsedSecret.domain || undefined,
                 authorizationServerId: parsedSecret.authorizationServerId || undefined,
                 enabled
             });
