@@ -41,6 +41,7 @@
     import { Confirm } from '$lib/components';
     import { resolveRoute, withPath } from '$lib/stores/navigation';
     import { isSmallViewport } from '$lib/stores/viewport';
+    import Container from '$lib/layout/container.svelte';
 
     export let project: Models.Project;
     export let variableList: Models.VariableList;
@@ -460,6 +461,7 @@
                         </p>
                     </Alert.Inline>
                 {/if}
+                <Container disableMarginBlock>
                 <Table.Root class="responsive-table" columns={variableColumns} let:root>
                     <svelte:fragment slot="header" let:root>
                         <Table.Header.Cell column="key" {root}>Key</Table.Header.Cell>
@@ -564,7 +566,7 @@
                             </Table.Cell>
                         </Table.Row.Base>
                     {/each}
-                </Table.Root>
+                </Table.Root></Container>
                 {#if sum > (backendPagination ? variablesLimit : limit)}
                     <Layout.Stack direction="row" justifyContent="space-between">
                         <p class="text">Total variables: {sum}</p>
