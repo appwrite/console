@@ -30,7 +30,7 @@
         try {
             const { $id, secret } = await sdk
                 .forProject(page.params.region, page.params.project)
-                .project.createStandardKey({
+                .project.createKey({
                     keyId: ID.unique(),
                     name,
                     scopes,

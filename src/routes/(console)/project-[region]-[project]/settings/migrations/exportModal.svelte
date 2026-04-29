@@ -90,7 +90,7 @@
         // Create API key
         const { secret } = await sdk
             .forProject(page.params.region, page.params.project)
-            .project.createStandardKey({
+            .project.createKey({
                 keyId: ID.unique(),
                 name: `[AUTO-GENERATED] Migration ${new Date().toISOString()}`,
                 scopes: [
@@ -107,7 +107,7 @@
                     Scopes.FilesRead,
                     Scopes.BucketsRead,
                     Scopes.FunctionsRead,
-                    Scopes.ExecutionRead,
+                    Scopes.ExecutionsRead,
                     Scopes.SitesRead,
                     Scopes.ProvidersRead,
                     Scopes.TopicsRead,
