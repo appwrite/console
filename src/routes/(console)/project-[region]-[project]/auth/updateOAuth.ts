@@ -30,14 +30,7 @@ function parseSecret(secret: string) {
     }
 }
 
-async function updateProjectOAuth({
-    region,
-    projectId,
-    provider,
-    appId,
-    secret,
-    enabled
-}: Args) {
+async function updateProjectOAuth({ region, projectId, provider, appId, secret, enabled }: Args) {
     const projectSdk = sdk.forProject(region, projectId).project;
     const parsedSecret = parseSecret(secret);
 

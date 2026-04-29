@@ -95,9 +95,7 @@
 
                 return {
                     projectId,
-                    promise: sdk
-                        .forProject(projectToDelete.region, projectId)
-                        .project.delete()
+                    promise: sdk.forProject(projectToDelete.region, projectId).project.delete()
                 };
             });
 

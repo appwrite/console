@@ -43,7 +43,8 @@
         }
     };
 
-    $: secret = clientSecret && endpoint ? JSON.stringify({ clientSecret, endpoint }) : provider.secret;
+    $: secret =
+        clientSecret && endpoint ? JSON.stringify({ clientSecret, endpoint }) : provider.secret;
 </script>
 
 <Modal {error} bind:show onSubmit={update} on:close title={`${provider.name} OAuth2 settings`}>
