@@ -30,6 +30,7 @@
     let { data }: PageProps = $props();
     /** Must stay derived from `data` so OAuth/auth toggles reflect `invalidate(Dependencies.PROJECT)` without a full reload. */
     const project = $derived(data.project);
+    const resolvedOAuthProviders = $derived(data.oauthProviders);
 
     let showProvider = $state(false);
     let selectedProvider: Models.AuthProvider | null = $state(null);
@@ -204,8 +205,8 @@
             <Layout.Stack>
                 <Typography.Title size="s">OAuth2 Providers</Typography.Title>
                 <ul class="grid-box" style:--grid-gap="1rem" style:--grid-item-size="15rem">
-                    {#each project.oAuthProviders
-                        .filter((p) => p.name !== 'Mock')
+                    {#each resolvedOAuthProviders
+                        .filter((p) => p.key !== 'mock' && p.name !== 'Mock')
                         .sort( (a, b) => (a.enabled === b.enabled ? 0 : a.enabled ? -1 : 1) ) as provider}
                         {@const oAuthProvider = oAuthProviders[provider.key]}
                         {#if oAuthProvider && !oAuthProvider.internal}

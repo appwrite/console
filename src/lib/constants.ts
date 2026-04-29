@@ -112,8 +112,8 @@ export const defaultScopes: string[] = [
     'projects.write',
     'locale.read',
     'avatars.read',
-    'execution.read',
-    'execution.write',
+    'executions.read',
+    'executions.write',
     'targets.read',
     'targets.write',
     'subscribers.write',
@@ -339,16 +339,30 @@ export const scopes: ScopeDefinition[] = [
         icon: 'lightning-bolt'
     },
     {
-        scope: 'execution.read',
+        scope: 'executions.read',
         description: "Access to read your project's execution logs",
         category: 'Functions',
         icon: 'lightning-bolt'
     },
     {
-        scope: 'execution.write',
+        scope: 'executions.write',
         description: "Access to execute your project's functions",
         category: 'Functions',
         icon: 'lightning-bolt'
+    },
+    {
+        scope: 'execution.read',
+        description: "Access to read your project's execution logs",
+        category: 'Functions',
+        icon: 'lightning-bolt',
+        deprecated: true
+    },
+    {
+        scope: 'execution.write',
+        description: "Access to execute your project's functions",
+        category: 'Functions',
+        icon: 'lightning-bolt',
+        deprecated: true
     },
     {
         scope: 'targets.read',

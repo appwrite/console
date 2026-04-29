@@ -1,15 +1,5 @@
 import type { Component } from 'svelte';
-import Apple from '$routes/(console)/project-[region]-[project]/auth/(providers)/appleOAuth.svelte';
-import Auth0 from '$routes/(console)/project-[region]-[project]/auth/(providers)/auth0OAuth.svelte';
-import Authentik from '$routes/(console)/project-[region]-[project]/auth/(providers)/authentikOAuth.svelte';
-import FusionAuth from '$routes/(console)/project-[region]-[project]/auth/(providers)/fusionauthOAuth.svelte';
-import GitLab from '$routes/(console)/project-[region]-[project]/auth/(providers)/gitlabOAuth.svelte';
-import Google from '$routes/(console)/project-[region]-[project]/auth/(providers)/googleOAuth.svelte';
-import Keycloak from '$routes/(console)/project-[region]-[project]/auth/(providers)/keycloakOAuth.svelte';
 import Main from '$routes/(console)/project-[region]-[project]/auth/(providers)/mainOAuth.svelte';
-import Microsoft from '$routes/(console)/project-[region]-[project]/auth/(providers)/microsoftOAuth.svelte';
-import Oidc from '$routes/(console)/project-[region]-[project]/auth/(providers)/oidcOAuth.svelte';
-import Okta from '$routes/(console)/project-[region]-[project]/auth/(providers)/oktaOAuth.svelte';
 
 export type Provider = {
     name: string;
@@ -30,19 +20,19 @@ export const oAuthProviders: Record<string, Provider> = {
         name: 'Apple',
         icon: 'apple',
         docs: 'https://developer.apple.com/sign-in-with-apple/',
-        component: Apple
+        component: Main
     },
     auth0: {
         name: 'Auth0',
         icon: 'auth0',
         docs: 'https://auth0.com/developers',
-        component: Auth0
+        component: Main
     },
     authentik: {
         name: 'Authentik',
         icon: 'authentik',
         docs: 'https://goauthentik.io/integrations/sources/oauth/',
-        component: Authentik
+        component: Main
     },
     autodesk: {
         name: 'Autodesk',
@@ -114,7 +104,7 @@ export const oAuthProviders: Record<string, Provider> = {
         name: 'FusionAuth',
         icon: 'fusionauth',
         docs: 'https://fusionauth.io/docs/apis/identity-providers/oauth2',
-        component: FusionAuth
+        component: Main
     },
     github: {
         name: 'GitHub',
@@ -133,26 +123,26 @@ export const oAuthProviders: Record<string, Provider> = {
         name: 'GitLab',
         icon: 'gitlab',
         docs: 'https://docs.gitlab.com/ee/api/',
-        component: GitLab
+        component: Main
     },
     google: {
         name: 'Google',
         icon: 'google',
         docs: 'https://support.google.com/googleapi/answer/6158849',
-        component: Google
+        component: Main
     },
     googleImagine: {
         name: 'Google',
         icon: 'google',
         docs: 'https://support.google.com/googleapi/answer/6158849',
-        component: Google,
+        component: Main,
         internal: true
     },
     keycloak: {
         name: 'Keycloak',
         icon: 'keycloak',
         docs: 'https://www.keycloak.org/securing-apps/oidc-layers',
-        component: Keycloak
+        component: Main
     },
     kick: {
         name: 'Kick',
@@ -170,7 +160,7 @@ export const oAuthProviders: Record<string, Provider> = {
         name: 'Microsoft',
         icon: 'microsoft',
         docs: 'https://developer.microsoft.com/en-us/',
-        component: Microsoft
+        component: Main
     },
     notion: {
         name: 'Notion',
@@ -182,13 +172,13 @@ export const oAuthProviders: Record<string, Provider> = {
         name: 'OIDC',
         icon: 'oidc',
         docs: 'https://openid.net/connect/faq/',
-        component: Oidc
+        component: Main
     },
     okta: {
         name: 'Okta',
         icon: 'okta',
         docs: 'https://developer.okta.com',
-        component: Okta
+        component: Main
     },
     paypal: {
         name: 'Paypal',
