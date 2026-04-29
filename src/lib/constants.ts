@@ -500,6 +500,30 @@ export const scopes: ScopeDefinition[] = [
         description: "Access to create, update, and delete your project's API keys",
         category: 'Other',
         icon: 'globe'
+    },
+    {
+        scope: 'project.read',
+        description: "Access to read your project's information",
+        category: 'Other',
+        icon: 'globe'
+    },
+    {
+        scope: 'project.write',
+        description: "Access to update your project's information",
+        category: 'Other',
+        icon: 'globe'
+    },
+    {
+        scope: 'platforms.read',
+        description: "Access to read your project's platforms",
+        category: 'Other',
+        icon: 'globe'
+    },
+    {
+        scope: 'platforms.write',
+        description: "Access to create, update, and delete your project's platforms",
+        category: 'Other',
+        icon: 'globe'
     }
 ];
 
