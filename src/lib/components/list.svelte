@@ -9,7 +9,7 @@
 </ul>
 
 <style>
-    .list {
+    ul.list {
         gap: 0.25rem;
     }
 </style>
