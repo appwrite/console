@@ -6,11 +6,12 @@ import type { PageLoad } from './$types';
 export const load: PageLoad = async ({ depends, url, params }) => {
     depends(Dependencies.PROJECT_VARIABLES);
     depends(Dependencies.PROJECT_INSTALLATIONS);
+
     const limit = PAGE_LIMIT;
     const offset = Number(url.searchParams.get('offset') ?? 0);
     const variablesOffset = Number(url.searchParams.get('variablesOffset') ?? 0);
     const projectSdk = sdk.forProject(params.region, params.project);
-    const [variables, installations] = await Promise.all([
+    const [variablesResult, installationsResult] = await Promise.allSettled([
         projectSdk.projectApi.listVariables({
             queries: [Query.limit(limit), Query.offset(variablesOffset)]
         }),
@@ -18,6 +19,22 @@ export const load: PageLoad = async ({ depends, url, params }) => {
             queries: [Query.limit(limit), Query.offset(offset)]
         })
     ]);
+
+    const variables =
+        variablesResult.status === 'fulfilled'
+            ? variablesResult.value
+            : {
+                  total: 0,
+                  variables: []
+              };
+
+    const installations =
+        installationsResult.status === 'fulfilled'
+            ? installationsResult.value
+            : {
+                  total: 0,
+                  installations: []
+              };
 
     return {
         limit,

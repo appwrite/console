@@ -11,6 +11,7 @@
     import { project, projectRegion } from '../store';
     import { organization } from '$lib/stores/organization';
     import { Dependencies } from '$lib/constants';
+    import { canWriteProjects } from '$lib/stores/roles';
     let error: string;
     let showDelete = false;
     let name: string = null;
@@ -59,7 +60,9 @@
     </svelte:fragment>
 
     <svelte:fragment slot="actions">
-        <Button secondary on:click={() => (showDelete = true)}>Delete</Button>
+        <Button secondary disabled={!$canWriteProjects} on:click={() => (showDelete = true)}>
+            Delete
+        </Button>
     </svelte:fragment>
 </CardGrid>
 

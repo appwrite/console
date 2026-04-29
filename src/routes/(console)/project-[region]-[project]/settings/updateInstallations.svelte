@@ -30,6 +30,7 @@
     import type { ComponentType } from 'svelte';
     import { Link } from '$lib/elements';
     import { regionalConsoleVariables, mcpTools } from '../store';
+    import { canWriteProjects } from '$lib/stores/roles';
 
     export let total: number;
     export let limit: number;
@@ -87,6 +88,7 @@
                 <div class="installations-action-row">
                     <FormButton
                         secondary
+                        disabled={!$canWriteProjects}
                         href={configureGitHub()}
                         on:click={() => {
                             trackEvent(Click.SettingsInstallProviderClick);
@@ -131,6 +133,7 @@
                                         type="button"
                                         class="button is-text is-only-icon"
                                         aria-label="more options"
+                                        disabled={!$canWriteProjects}
                                         on:click={toggle}>
                                         <span class="icon-dots-horizontal" aria-hidden="true"
                                         ></span>
@@ -186,7 +189,11 @@
                     title="No installation was added to the project yet"
                     description="Add an installation to connect repositories">
                     <svelte:fragment slot="actions">
-                        <FormButton secondary href={configureGitHub()} external>
+                        <FormButton
+                            secondary
+                            disabled={!$canWriteProjects}
+                            href={configureGitHub()}
+                            external>
                             <Icon icon={IconGithub} size="s" slot="start" />
                             Connect to GitHub
                         </FormButton>

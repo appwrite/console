@@ -18,14 +18,12 @@
     import UpdateVariables from '../updateVariables.svelte';
     import { page } from '$app/state';
     import UpdateLabels from './updateLabels.svelte';
+    import type { PageData } from './$types';
+    import { Alert } from '@appwrite.io/pink-svelte';
 
-    export let data;
-
-    let teamId: string = null;
+    let { data }: { data: PageData } = $props();
 
     onMount(() => {
-        teamId ??= $project.teamId;
-
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
 
@@ -87,25 +85,31 @@
 
 <Container>
     {#if $project}
-        {#if $canWriteProjects}
-            <UpdateName />
-            <UpdateLabels />
-            <UpdateProtocols />
-            <UpdateServices />
-            <UpdateInstallations {...data.installations} limit={data.limit} offset={data.offset} />
-            <UpdateVariables
-                {sdkCreateVariable}
-                {sdkUpdateVariable}
-                {sdkDeleteVariable}
-                isGlobal
-                variableList={data.variables}
-                backendPagination
-                variablesOffset={data.variablesOffset}
-                variablesLimit={data.limit}
-                project={data.project}
-                analyticsSource="project_settings" />
-            <ChangeOrganization />
-            <DeleteProject />
+        {#if !$canWriteProjects}
+            <Alert.Inline status="info" title="Read-only project settings">
+                You can open this settings area, but editing project-level settings requires the
+                <code>projects.write</code> scope.
+            </Alert.Inline>
         {/if}
+
+        <UpdateName />
+        <UpdateLabels />
+        <UpdateProtocols />
+        <UpdateServices />
+        <UpdateInstallations {...data.installations} limit={data.limit} offset={data.offset} />
+        <UpdateVariables
+            {sdkCreateVariable}
+            {sdkUpdateVariable}
+            {sdkDeleteVariable}
+            disabled={!$canWriteProjects}
+            isGlobal
+            variableList={data.variables}
+            backendPagination
+            variablesOffset={data.variablesOffset}
+            variablesLimit={data.limit}
+            project={data.project}
+            analyticsSource="project_settings" />
+        <ChangeOrganization />
+        <DeleteProject />
     {/if}
 </Container>

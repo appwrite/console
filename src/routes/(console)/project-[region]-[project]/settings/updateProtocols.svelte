@@ -13,6 +13,7 @@
     import { SvelteSet } from 'svelte/reactivity';
     import { ProtocolId } from '@appwrite.io/console';
     import { get } from 'svelte/store';
+    import { canWriteProjects } from '$lib/stores/roles';
 
     let isUpdatingAllProtocols = $state(false);
     let showUpdateProtocolDialog = $state(false);
@@ -139,20 +140,26 @@
                     <Button
                         extraCompact
                         on:click={() => {
+                            if (!$canWriteProjects) return;
                             showUpdateProtocolDialog = true;
                             updateProtocolsEnabledMode = true;
                         }}
-                        disabled={shouldDisableEnableAllButton}>Enable all</Button>
+                        disabled={!$canWriteProjects || shouldDisableEnableAllButton}>
+                        Enable all
+                    </Button>
                     <span style:height="20px">
                         <Divider vertical />
                     </span>
                     <Button
                         extraCompact
                         on:click={() => {
+                            if (!$canWriteProjects) return;
                             showUpdateProtocolDialog = true;
                             updateProtocolsEnabledMode = false;
                         }}
-                        disabled={shouldDisableDisableAllButton}>Disable all</Button>
+                        disabled={!$canWriteProjects || shouldDisableDisableAllButton}>
+                        Disable all
+                    </Button>
                 </Layout.Stack>
             </div>
             <Divider />
@@ -167,7 +174,8 @@
                                     description={protocolDescriptions[protocol.method]}
                                     bind:value={protocol.value}
                                     on:change={() => protocolUpdate(protocol)}
-                                    disabled={apiProtocolUpdates.has(protocol.method)} />
+                                    disabled={!$canWriteProjects ||
+                                        apiProtocolUpdates.has(protocol.method)} />
 
                                 {#if apiProtocolUpdates.has(protocol.method)}
                                     <span class="protocol-spinner">
@@ -196,7 +204,7 @@
             <Button
                 secondary
                 submissionLoader
-                disabled={isUpdatingAllProtocols}
+                disabled={!$canWriteProjects || isUpdatingAllProtocols}
                 forceShowLoader={isUpdatingAllProtocols}
                 on:click={() => toggleAllProtocols(updateProtocolsEnabledMode)}>
                 {dialogDetails.actionButton}
