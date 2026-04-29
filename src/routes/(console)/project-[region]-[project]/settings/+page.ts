@@ -3,6 +3,11 @@ import { sdk } from '$lib/stores/sdk';
 import { Query } from '@appwrite.io/console';
 import type { PageLoad } from './$types';
 
+function isReadonlySettingsPermissionError(error: unknown): boolean {
+    const code = (error as { code?: number } | null)?.code;
+    return code === 401 || code === 403;
+}
+
 export const load: PageLoad = async ({ depends, url, params }) => {
     depends(Dependencies.PROJECT_VARIABLES);
     depends(Dependencies.PROJECT_INSTALLATIONS);
@@ -23,18 +28,34 @@ export const load: PageLoad = async ({ depends, url, params }) => {
     const variables =
         variablesResult.status === 'fulfilled'
             ? variablesResult.value
-            : {
-                  total: 0,
-                  variables: []
-              };
+            : (() => {
+                  // Read-only users can be blocked from write-adjacent settings APIs.
+                  // Only silence those permission errors so genuine load failures still surface.
+                  if (!isReadonlySettingsPermissionError(variablesResult.reason)) {
+                      throw variablesResult.reason;
+                  }
+
+                  return {
+                      total: 0,
+                      variables: []
+                  };
+              })();
 
     const installations =
         installationsResult.status === 'fulfilled'
             ? installationsResult.value
-            : {
-                  total: 0,
-                  installations: []
-              };
+            : (() => {
+                  // Read-only users can be blocked from write-adjacent settings APIs.
+                  // Only silence those permission errors so genuine load failures still surface.
+                  if (!isReadonlySettingsPermissionError(installationsResult.reason)) {
+                      throw installationsResult.reason;
+                  }
+
+                  return {
+                      total: 0,
+                      installations: []
+                  };
+              })();
 
     return {
         limit,
