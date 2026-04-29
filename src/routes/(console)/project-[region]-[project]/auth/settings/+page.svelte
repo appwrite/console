@@ -30,6 +30,7 @@
     let { data }: PageProps = $props();
     /** Must stay derived from `data` so OAuth/auth toggles reflect `invalidate(Dependencies.PROJECT)` without a full reload. */
     const project = $derived(data.project);
+    const resolvedOAuthProviders = $derived(data.oauthProviders);
 
     let showProvider = $state(false);
     let selectedProvider: Models.AuthProvider | null = $state(null);
@@ -152,7 +153,11 @@
                 Enable the authentication methods you wish to use.
                 <svelte:fragment slot="aside">
                     <Layout.Stack gap="m" class="auth-methods-list">
-                        <Layout.Stack direction="row" alignItems="center" gap="s">
+                        <Layout.Stack
+                            direction="row"
+                            alignItems="center"
+                            gap="s"
+                            class="auth-methods-actions">
                             <Button
                                 extraCompact
                                 on:click={() => {
@@ -172,10 +177,10 @@
                                 disabled={shouldDisableDisableAllButton}>Disable all</Button>
                         </Layout.Stack>
                         <Layout.Stack gap="l">
-                            <Divider />
-                            <Layout.Stack direction="row" wrap="wrap">
+                            <Divider class="auth-methods-divider" />
+                            <div class="auth-methods-grid">
                                 {#each $authMethods.list as box}
-                                    <span style:flex-basis="30%">
+                                    <div class="auth-method-item">
                                         <Layout.Stack direction="row" alignItems="center">
                                             <InputSwitch
                                                 label={box.label}
@@ -190,9 +195,9 @@
                                                 </span>
                                             {/if}
                                         </Layout.Stack>
-                                    </span>
+                                    </div>
                                 {/each}
-                            </Layout.Stack>
+                            </div>
                         </Layout.Stack>
                     </Layout.Stack>
                 </svelte:fragment>
@@ -200,8 +205,8 @@
             <Layout.Stack>
                 <Typography.Title size="s">OAuth2 Providers</Typography.Title>
                 <ul class="grid-box" style:--grid-gap="1rem" style:--grid-item-size="15rem">
-                    {#each project.oAuthProviders
-                        .filter((p) => p.name !== 'Mock')
+                    {#each resolvedOAuthProviders
+                        .filter((p) => p.key !== 'mock' && p.name !== 'Mock')
                         .sort( (a, b) => (a.enabled === b.enabled ? 0 : a.enabled ? -1 : 1) ) as provider}
                         {@const oAuthProvider = oAuthProviders[provider.key]}
                         {#if oAuthProvider && !oAuthProvider.internal}
@@ -271,3 +276,22 @@
         </Layout.Stack>
     </svelte:fragment>
 </Dialog>
+
+<style>
+    .auth-methods-grid {
+        display: grid;
+        gap: var(--space-6) var(--space-8);
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        width: 100%;
+    }
+
+    .auth-method-item {
+        min-width: 0;
+    }
+
+    @media (max-width: 768px) {
+        .auth-methods-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
