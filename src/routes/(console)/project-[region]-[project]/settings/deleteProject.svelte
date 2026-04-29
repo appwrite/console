@@ -32,9 +32,7 @@
     const handleDelete = async () => {
         try {
             // send the project to correct region pool for deletion!
-            await sdk.forConsoleIn($project.region).projects.delete({
-                projectId: $project.$id
-            });
+            await sdk.forProject($project.region, $project.$id).project.delete();
             await finishAndRedirect();
         } catch (e) {
             error = e.message;
