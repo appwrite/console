@@ -33,13 +33,16 @@
     export let parameters: ConsoleModels.ConsoleOAuth2ProviderParameter[] = [];
 
     let enabled: boolean = provider.enabled;
-    let appId: string = provider.appId || null;
-    let providerKeyId = (provider as Models.AuthProvider & { keyId?: string })?.keyId || null;
+    let appId: string | null = null;
+    let providerKeyId: string | null = null;
     let fieldValues: Record<string, string | null> = {};
-    let showSecretInput =
-        !provider.appId || (provider.key === OAuthProvider.Apple && !providerKeyId);
+    let showSecretInput = false;
     let p8PasteMode: Record<string, boolean> = {};
     let error: string;
+    let initializedProvider: Models.AuthProvider | null = null;
+    let initialEnabled = false;
+    let initialAppId: string | null = null;
+    let initialDetailValues: Record<string, string> = {};
 
     $: appIdParam = parameters.length >= 1 ? parameters[0] : null;
     $: additionalParams = parameters.slice(1);
@@ -58,24 +61,34 @@
         return value !== null && value !== '';
     });
     $: hasDetailChanges = detailParams.some((param) => {
-        const value = fieldValues[param.$id];
-        return value !== null && value !== '';
+        return normalizeFieldValue(fieldValues[param.$id]) !== (initialDetailValues[param.$id] ?? '');
     });
     $: nothingChanged =
-        enabled === provider?.enabled &&
-        appId === provider?.appId &&
+        enabled === initialEnabled &&
+        normalizeFieldValue(appId) === normalizeFieldValue(initialAppId) &&
         !hasSecretInput &&
         !hasDetailChanges;
     $: oAuthProvider = oAuthProviders[provider.key];
     $: secretCardTitle =
         secretParams.length === 1 ? primaryName(secretParams[0]?.name ?? '') : 'Credentials';
 
-    $: {
-        for (const param of additionalParams) {
-            if (!(param.$id in fieldValues)) {
-                fieldValues[param.$id] = getInitialFieldValue(param.$id);
-            }
-        }
+    $: if (provider && provider !== initializedProvider) {
+        initializedProvider = provider;
+        initialEnabled = provider.enabled;
+        initialAppId = getInitialAppId();
+        providerKeyId = getInitialFieldValue('keyId');
+        initialDetailValues = Object.fromEntries(
+            detailParams.map((param) => [param.$id, getInitialFieldValue(param.$id) ?? ''])
+        );
+        enabled = initialEnabled;
+        appId = initialAppId;
+        fieldValues = Object.fromEntries(
+            additionalParams.map((param) => [param.$id, getInitialFieldValue(param.$id)])
+        );
+        p8PasteMode = {};
+        showSecretInput =
+            !appId || (provider.key === OAuthProvider.Apple && !providerKeyId);
+        error = undefined;
     }
 
     function primaryName(name: string): string {
@@ -95,6 +108,29 @@
     function getInitialFieldValue(id: string): string | null {
         const value = (provider as Record<string, unknown>)[id];
         return typeof value === 'string' ? value : null;
+    }
+
+    function getInitialAppId(): string | null {
+        const raw = provider as Record<string, unknown>;
+        const value =
+            raw['clientId'] ??
+            raw['appId'] ??
+            raw['oauthClientId'] ??
+            raw['oauth2ClientId'] ??
+            raw['applicationId'] ??
+            raw['serviceId'] ??
+            raw['apiKey'] ??
+            raw['publicKey'] ??
+            raw['appKey'] ??
+            raw['keyString'] ??
+            raw['customerKey'] ??
+            raw['key'];
+
+        return typeof value === 'string' ? value : null;
+    }
+
+    function normalizeFieldValue(value: string | null | undefined): string {
+        return value ?? '';
     }
 
     function isPasswordParam(id: string): boolean {
