@@ -33,13 +33,14 @@
     import { symmetricDifference } from '$lib/helpers/array';
     import { cloudOnlyBackupScopes, type ScopeDefinition } from '$lib/constants';
     import { sdk } from '$lib/stores/sdk';
-    import { Accordion, Badge, Divider, Layout, Selector } from '@appwrite.io/pink-svelte';
+    import { Accordion, Alert, Badge, Divider, Layout, Selector } from '@appwrite.io/pink-svelte';
     import type { Scopes } from '@appwrite.io/console';
 
     let { scopes = $bindable([]) }: { scopes: Scopes[] } = $props();
 
     let allScopesList: ScopeDefinition[] = $state([]);
     let mounted = $state(false);
+    let loadError: string | null = $state(null);
 
     enum Category {
         Auth = 'Auth',
@@ -92,19 +93,24 @@
     });
 
     onMount(async () => {
-        const result = await sdk.forConsole.console.listProjectScopes();
-        allScopesList = result.scopes.map((s) => ({
-            scope: s.$id,
-            description: s.description,
-            category: s.category,
-            deprecated: s.deprecated,
-            icon: ''
-        }));
+        try {
+            const result = await sdk.forConsole.console.listProjectScopes();
+            allScopesList = result.scopes.map((s) => ({
+                scope: s.$id,
+                description: s.description,
+                category: s.category,
+                deprecated: s.deprecated,
+                icon: ''
+            }));
 
-        for (const s of filteredScopes) {
-            activeScopes[s.scope] = scopes.includes(s.scope as Scopes);
+            for (const s of filteredScopes) {
+                activeScopes[s.scope] = scopes.includes(s.scope as Scopes);
+            }
+        } catch (e) {
+            loadError = e?.message ?? 'Failed to load available scopes.';
+        } finally {
+            mounted = true;
         }
-        mounted = true;
     });
 
     function selectAll() {
@@ -152,6 +158,9 @@
 </script>
 
 <Layout.Stack>
+    {#if loadError}
+        <Alert.Inline status="error" title="Failed to load scopes">{loadError}</Alert.Inline>
+    {/if}
     <Layout.Stack direction="row" alignItems="center" gap="s">
         <Button compact on:click={selectAll}>Select all</Button>
         <span style:height="20px">
