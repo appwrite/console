@@ -59,6 +59,7 @@
     async function createEntity() {
         error = null;
         creatingEntity = true;
+        let createdEntity = false;
         try {
             const finalId = id || ID.unique();
 
@@ -67,6 +68,7 @@
 
             // create entity.
             await onCreateEntity(finalId, name, isVectorsDb ? dimension : undefined);
+            createdEntity = true;
 
             // cleanup
             updateAndCleanup();
@@ -75,7 +77,10 @@
             trackError(e, analyticsCreateSubmit);
         } finally {
             creatingEntity = false;
-            resetSampleFieldsConfig();
+
+            if (!createdEntity || !$entityColumnSuggestions.enabled) {
+                resetSampleFieldsConfig();
+            }
         }
     }
 
@@ -103,7 +108,7 @@
 
     $effect(() => {
         // reset is OK here, we don't have to check for entity type!
-        if (show && isOnEntitiesPage && $entityColumnSuggestions.entity) {
+        if (show && !creatingEntity && isOnEntitiesPage && $entityColumnSuggestions.entity) {
             entityColumnSuggestions.update((store) => ({
                 ...store,
                 entity: null
