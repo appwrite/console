@@ -61,7 +61,9 @@
         return value !== null && value !== '';
     });
     $: hasDetailChanges = detailParams.some((param) => {
-        return normalizeFieldValue(fieldValues[param.$id]) !== (initialDetailValues[param.$id] ?? '');
+        return (
+            normalizeFieldValue(fieldValues[param.$id]) !== (initialDetailValues[param.$id] ?? '')
+        );
     });
     $: nothingChanged =
         enabled === initialEnabled &&
@@ -86,8 +88,7 @@
             additionalParams.map((param) => [param.$id, getInitialFieldValue(param.$id)])
         );
         p8PasteMode = {};
-        showSecretInput =
-            !appId || (provider.key === OAuthProvider.Apple && !providerKeyId);
+        showSecretInput = !appId || (provider.key === OAuthProvider.Apple && !providerKeyId);
         error = undefined;
     }
 
