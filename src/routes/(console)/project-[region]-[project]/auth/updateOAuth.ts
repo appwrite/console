@@ -10,7 +10,7 @@ type Args = {
     region: string;
     projectId: string;
     provider: Models.AuthProvider;
-    appId: string;
+    appId: string | null;
     secret: string;
     details: Record<string, string>;
     enabled: boolean;
@@ -43,18 +43,19 @@ async function updateProjectOAuth({
     const projectSdk = sdk.forProject(region, projectId).project;
     const parsedSecret = parseSecret(secret);
 
+    const getAppId = (): string => appId ?? '';
     const getDetail = (key: string): string => details[key] ?? '';
 
     switch (provider.key) {
         case OAuthProvider.Amazon:
             return projectSdk.updateOAuth2Amazon({
-                clientId: appId || undefined,
+                clientId: getAppId(),
                 clientSecret: secret || undefined,
                 enabled
             });
         case OAuthProvider.Apple:
             return projectSdk.updateOAuth2Apple({
-                serviceId: appId || undefined,
+                serviceId: getAppId(),
                 keyId: getDetail('keyId'),
                 teamId: getDetail('teamId'),
                 p8File: parsedSecret.p8File || undefined,
@@ -62,7 +63,7 @@ async function updateProjectOAuth({
             });
         case OAuthProvider.Auth0:
             return projectSdk.updateOAuth2Auth0({
-                clientId: appId || undefined,
+                clientId: getAppId(),
                 clientSecret: parsedSecret.clientSecret || undefined,
                 endpoint: getDetail('endpoint'),
                 enabled
@@ -70,99 +71,99 @@ async function updateProjectOAuth({
         case OAuthProvider.Authentik:
             return projectSdk.updateOAuth2Authentik({
                 endpoint: getDetail('endpoint'),
-                clientId: appId || undefined,
+                clientId: getAppId(),
                 clientSecret: parsedSecret.clientSecret || undefined,
                 enabled
             });
         case OAuthProvider.Autodesk:
             return projectSdk.updateOAuth2Autodesk({
-                clientId: appId || undefined,
+                clientId: getAppId(),
                 clientSecret: secret || undefined,
                 enabled
             });
         case OAuthProvider.Bitbucket:
             return projectSdk.updateOAuth2Bitbucket({
-                key: appId || undefined,
+                key: getAppId(),
                 secret: secret || undefined,
                 enabled
             });
         case OAuthProvider.Bitly:
             return projectSdk.updateOAuth2Bitly({
-                clientId: appId || undefined,
+                clientId: getAppId(),
                 clientSecret: secret || undefined,
                 enabled
             });
         case OAuthProvider.Box:
             return projectSdk.updateOAuth2Box({
-                clientId: appId || undefined,
+                clientId: getAppId(),
                 clientSecret: secret || undefined,
                 enabled
             });
         case OAuthProvider.Dailymotion:
             return projectSdk.updateOAuth2Dailymotion({
-                apiKey: appId || undefined,
+                apiKey: getAppId(),
                 apiSecret: secret || undefined,
                 enabled
             });
         case OAuthProvider.Discord:
             return projectSdk.updateOAuth2Discord({
-                clientId: appId || undefined,
+                clientId: getAppId(),
                 clientSecret: secret || undefined,
                 enabled
             });
         case OAuthProvider.Disqus:
             return projectSdk.updateOAuth2Disqus({
-                publicKey: appId || undefined,
+                publicKey: getAppId(),
                 secretKey: secret || undefined,
                 enabled
             });
         case OAuthProvider.Dropbox:
             return projectSdk.updateOAuth2Dropbox({
-                appKey: appId || undefined,
+                appKey: getAppId(),
                 appSecret: secret || undefined,
                 enabled
             });
         case OAuthProvider.Etsy:
             return projectSdk.updateOAuth2Etsy({
-                keyString: appId || undefined,
+                keyString: getAppId(),
                 sharedSecret: secret || undefined,
                 enabled
             });
         case OAuthProvider.Facebook:
             return projectSdk.updateOAuth2Facebook({
-                appId: appId || undefined,
+                appId: getAppId(),
                 appSecret: secret || undefined,
                 enabled
             });
         case OAuthProvider.Figma:
             return projectSdk.updateOAuth2Figma({
-                clientId: appId || undefined,
+                clientId: getAppId(),
                 clientSecret: secret || undefined,
                 enabled
             });
         case OAuthProvider.Fusionauth:
             return projectSdk.updateOAuth2FusionAuth({
                 endpoint: getDetail('endpoint'),
-                clientId: appId || undefined,
+                clientId: getAppId(),
                 clientSecret: parsedSecret.clientSecret || undefined,
                 enabled
             });
         case OAuthProvider.Github:
             return projectSdk.updateOAuth2GitHub({
-                clientId: appId || undefined,
+                clientId: getAppId(),
                 clientSecret: secret || undefined,
                 enabled
             });
         case OAuthProvider.Gitlab:
             return projectSdk.updateOAuth2Gitlab({
-                applicationId: appId || undefined,
+                applicationId: getAppId(),
                 secret: parsedSecret.secret || undefined,
                 endpoint: getDetail('endpoint'),
                 enabled
             });
         case OAuthProvider.Google:
             return projectSdk.updateOAuth2Google({
-                clientId: appId || undefined,
+                clientId: getAppId(),
                 clientSecret: secret || undefined,
                 enabled
             });
@@ -170,38 +171,38 @@ async function updateProjectOAuth({
             return projectSdk.updateOAuth2Keycloak({
                 endpoint: getDetail('endpoint'),
                 realmName: getDetail('realmName'),
-                clientId: appId || undefined,
+                clientId: getAppId(),
                 clientSecret: parsedSecret.clientSecret || undefined,
                 enabled
             });
         case OAuthProvider.Kick:
             return projectSdk.updateOAuth2Kick({
-                clientId: appId || undefined,
+                clientId: getAppId(),
                 clientSecret: secret || undefined,
                 enabled
             });
         case OAuthProvider.Linkedin:
             return projectSdk.updateOAuth2Linkedin({
-                clientId: appId || undefined,
+                clientId: getAppId(),
                 primaryClientSecret: secret || undefined,
                 enabled
             });
         case OAuthProvider.Microsoft:
             return projectSdk.updateOAuth2Microsoft({
                 tenant: getDetail('tenant'),
-                applicationId: appId || undefined,
+                applicationId: getAppId(),
                 applicationSecret: parsedSecret.applicationSecret || undefined,
                 enabled
             });
         case OAuthProvider.Notion:
             return projectSdk.updateOAuth2Notion({
-                oauthClientId: appId || undefined,
+                oauthClientId: getAppId(),
                 oauthClientSecret: secret || undefined,
                 enabled
             });
         case OAuthProvider.Oidc:
             return projectSdk.updateOAuth2Oidc({
-                clientId: appId || undefined,
+                clientId: getAppId(),
                 clientSecret: parsedSecret.clientSecret || undefined,
                 wellKnownURL: getDetail('wellKnownURL'),
                 authorizationURL: getDetail('authorizationURL'),
@@ -211,7 +212,7 @@ async function updateProjectOAuth({
             });
         case OAuthProvider.Okta:
             return projectSdk.updateOAuth2Okta({
-                clientId: appId || undefined,
+                clientId: getAppId(),
                 clientSecret: parsedSecret.clientSecret || undefined,
                 domain: getDetail('domain'),
                 authorizationServerId: getDetail('authorizationServerId'),
@@ -219,97 +220,97 @@ async function updateProjectOAuth({
             });
         case OAuthProvider.Paypal:
             return projectSdk.updateOAuth2Paypal({
-                clientId: appId || undefined,
+                clientId: getAppId(),
                 secretKey: secret || undefined,
                 enabled
             });
         case OAuthProvider.PaypalSandbox:
             return projectSdk.updateOAuth2PaypalSandbox({
-                clientId: appId || undefined,
+                clientId: getAppId(),
                 secretKey: secret || undefined,
                 enabled
             });
         case OAuthProvider.Podio:
             return projectSdk.updateOAuth2Podio({
-                clientId: appId || undefined,
+                clientId: getAppId(),
                 clientSecret: secret || undefined,
                 enabled
             });
         case OAuthProvider.Salesforce:
             return projectSdk.updateOAuth2Salesforce({
-                customerKey: appId || undefined,
+                customerKey: getAppId(),
                 customerSecret: secret || undefined,
                 enabled
             });
         case OAuthProvider.Slack:
             return projectSdk.updateOAuth2Slack({
-                clientId: appId || undefined,
+                clientId: getAppId(),
                 clientSecret: secret || undefined,
                 enabled
             });
         case OAuthProvider.Spotify:
             return projectSdk.updateOAuth2Spotify({
-                clientId: appId || undefined,
+                clientId: getAppId(),
                 clientSecret: secret || undefined,
                 enabled
             });
         case OAuthProvider.Stripe:
             return projectSdk.updateOAuth2Stripe({
-                clientId: appId || undefined,
+                clientId: getAppId(),
                 apiSecretKey: secret || undefined,
                 enabled
             });
         case OAuthProvider.Tradeshift:
             return projectSdk.updateOAuth2Tradeshift({
-                oauth2ClientId: appId || undefined,
+                oauth2ClientId: getAppId(),
                 oauth2ClientSecret: secret || undefined,
                 enabled
             });
         case OAuthProvider.TradeshiftBox:
             return projectSdk.updateOAuth2TradeshiftSandbox({
-                oauth2ClientId: appId || undefined,
+                oauth2ClientId: getAppId(),
                 oauth2ClientSecret: secret || undefined,
                 enabled
             });
         case OAuthProvider.Twitch:
             return projectSdk.updateOAuth2Twitch({
-                clientId: appId || undefined,
+                clientId: getAppId(),
                 clientSecret: secret || undefined,
                 enabled
             });
         case OAuthProvider.Wordpress:
             return projectSdk.updateOAuth2WordPress({
-                clientId: appId || undefined,
+                clientId: getAppId(),
                 clientSecret: secret || undefined,
                 enabled
             });
         case OAuthProvider.X:
             return projectSdk.updateOAuth2X({
-                customerKey: appId || undefined,
+                customerKey: getAppId(),
                 secretKey: secret || undefined,
                 enabled
             });
         case OAuthProvider.Yahoo:
             return projectSdk.updateOAuth2Yahoo({
-                clientId: appId || undefined,
+                clientId: getAppId(),
                 clientSecret: secret || undefined,
                 enabled
             });
         case OAuthProvider.Yandex:
             return projectSdk.updateOAuth2Yandex({
-                clientId: appId || undefined,
+                clientId: getAppId(),
                 clientSecret: secret || undefined,
                 enabled
             });
         case OAuthProvider.Zoho:
             return projectSdk.updateOAuth2Zoho({
-                clientId: appId || undefined,
+                clientId: getAppId(),
                 clientSecret: secret || undefined,
                 enabled
             });
         case OAuthProvider.Zoom:
             return projectSdk.updateOAuth2Zoom({
-                clientId: appId || undefined,
+                clientId: getAppId(),
                 clientSecret: secret || undefined,
                 enabled
             });
