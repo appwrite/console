@@ -12,6 +12,7 @@ type Args = {
     provider: Models.AuthProvider;
     appId: string;
     secret: string;
+    details: Record<string, string>;
     enabled: boolean;
 };
 
@@ -30,9 +31,19 @@ function parseSecret(secret: string) {
     }
 }
 
-async function updateProjectOAuth({ region, projectId, provider, appId, secret, enabled }: Args) {
+async function updateProjectOAuth({
+    region,
+    projectId,
+    provider,
+    appId,
+    secret,
+    details,
+    enabled
+}: Args) {
     const projectSdk = sdk.forProject(region, projectId).project;
     const parsedSecret = parseSecret(secret);
+
+    const getDetail = (key: string): string => details[key] ?? '';
 
     switch (provider.key) {
         case OAuthProvider.Amazon:
@@ -44,8 +55,8 @@ async function updateProjectOAuth({ region, projectId, provider, appId, secret, 
         case OAuthProvider.Apple:
             return projectSdk.updateOAuth2Apple({
                 serviceId: appId || undefined,
-                keyId: parsedSecret.keyId || undefined,
-                teamId: parsedSecret.teamId || undefined,
+                keyId: getDetail('keyId'),
+                teamId: getDetail('teamId'),
                 p8File: parsedSecret.p8File || undefined,
                 enabled
             });
@@ -53,12 +64,12 @@ async function updateProjectOAuth({ region, projectId, provider, appId, secret, 
             return projectSdk.updateOAuth2Auth0({
                 clientId: appId || undefined,
                 clientSecret: parsedSecret.clientSecret || undefined,
-                endpoint: parsedSecret.endpoint || undefined,
+                endpoint: getDetail('endpoint'),
                 enabled
             });
         case OAuthProvider.Authentik:
             return projectSdk.updateOAuth2Authentik({
-                endpoint: parsedSecret.endpoint || '',
+                endpoint: getDetail('endpoint'),
                 clientId: appId || undefined,
                 clientSecret: parsedSecret.clientSecret || undefined,
                 enabled
@@ -131,7 +142,7 @@ async function updateProjectOAuth({ region, projectId, provider, appId, secret, 
             });
         case OAuthProvider.Fusionauth:
             return projectSdk.updateOAuth2FusionAuth({
-                endpoint: parsedSecret.endpoint || '',
+                endpoint: getDetail('endpoint'),
                 clientId: appId || undefined,
                 clientSecret: parsedSecret.clientSecret || undefined,
                 enabled
@@ -146,7 +157,7 @@ async function updateProjectOAuth({ region, projectId, provider, appId, secret, 
             return projectSdk.updateOAuth2Gitlab({
                 applicationId: appId || undefined,
                 secret: parsedSecret.secret || undefined,
-                endpoint: parsedSecret.endpoint || undefined,
+                endpoint: getDetail('endpoint'),
                 enabled
             });
         case OAuthProvider.Google:
@@ -157,8 +168,8 @@ async function updateProjectOAuth({ region, projectId, provider, appId, secret, 
             });
         case OAuthProvider.Keycloak:
             return projectSdk.updateOAuth2Keycloak({
-                endpoint: parsedSecret.endpoint || '',
-                realmName: parsedSecret.realmName || '',
+                endpoint: getDetail('endpoint'),
+                realmName: getDetail('realmName'),
                 clientId: appId || undefined,
                 clientSecret: parsedSecret.clientSecret || undefined,
                 enabled
@@ -177,7 +188,7 @@ async function updateProjectOAuth({ region, projectId, provider, appId, secret, 
             });
         case OAuthProvider.Microsoft:
             return projectSdk.updateOAuth2Microsoft({
-                tenant: parsedSecret.tenant || 'common',
+                tenant: getDetail('tenant'),
                 applicationId: appId || undefined,
                 applicationSecret: parsedSecret.applicationSecret || undefined,
                 enabled
@@ -192,18 +203,18 @@ async function updateProjectOAuth({ region, projectId, provider, appId, secret, 
             return projectSdk.updateOAuth2Oidc({
                 clientId: appId || undefined,
                 clientSecret: parsedSecret.clientSecret || undefined,
-                wellKnownURL: parsedSecret.wellKnownURL || undefined,
-                authorizationURL: parsedSecret.authorizationURL || undefined,
-                tokenUrl: parsedSecret.tokenUrl || undefined,
-                userInfoUrl: parsedSecret.userInfoUrl || undefined,
+                wellKnownURL: getDetail('wellKnownURL'),
+                authorizationURL: getDetail('authorizationURL'),
+                tokenUrl: getDetail('tokenUrl'),
+                userInfoUrl: getDetail('userInfoUrl'),
                 enabled
             });
         case OAuthProvider.Okta:
             return projectSdk.updateOAuth2Okta({
                 clientId: appId || undefined,
                 clientSecret: parsedSecret.clientSecret || undefined,
-                domain: parsedSecret.domain || undefined,
-                authorizationServerId: parsedSecret.authorizationServerId || undefined,
+                domain: getDetail('domain'),
+                authorizationServerId: getDetail('authorizationServerId'),
                 enabled
             });
         case OAuthProvider.Paypal:
@@ -313,6 +324,7 @@ export async function updateOAuth({
     provider,
     appId,
     secret,
+    details,
     enabled
 }: Args): Promise<Return> {
     try {
@@ -320,7 +332,7 @@ export async function updateOAuth({
             throw new Error(`Invalid OAuth2 provider: ${provider.key}`);
         }
 
-        await updateProjectOAuth({ region, projectId, provider, appId, secret, enabled });
+        await updateProjectOAuth({ region, projectId, provider, appId, secret, details, enabled });
         await invalidate(Dependencies.PROJECT);
 
         addNotification({

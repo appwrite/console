@@ -39,6 +39,7 @@ export const load: PageLoad = async ({ depends, params }) => {
         .map((p) => {
             const raw = p as unknown as Record<string, unknown>;
             return {
+                ...raw,
                 key: p.$id,
                 name: oAuthProviders[p.$id]?.name ?? p.$id,
                 appId: extractAppId(raw),

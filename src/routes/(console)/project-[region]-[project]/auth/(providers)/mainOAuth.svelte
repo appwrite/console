@@ -9,9 +9,10 @@
         InputTextarea
     } from '$lib/elements/forms';
     import { updateOAuth } from '../updateOAuth';
-    import type { Models, Models as ConsoleModels } from '@appwrite.io/console';
+    import { OAuthProvider, type Models, type Models as ConsoleModels } from '@appwrite.io/console';
     import { oAuthProviders } from '$lib/stores/oauth-providers';
     import {
+        Accordion,
         Alert,
         Card,
         Divider,
@@ -31,28 +32,69 @@
     export let show = false;
     export let parameters: ConsoleModels.ConsoleOAuth2ProviderParameter[] = [];
 
-    $: appIdParam = parameters.length >= 1 ? parameters[0] : null;
-    $: secretParams = parameters.slice(1);
-
     let enabled: boolean = provider.enabled;
     let appId: string = provider.appId || null;
-    /** Values for all non-appId parameters, keyed by parameter.$id */
-    let secretValues: Record<string, string | null> = {};
-    let showSecretInput = !provider.appId;
+    let providerKeyId = (provider as Models.AuthProvider & { keyId?: string })?.keyId || null;
+    let fieldValues: Record<string, string | null> = {};
+    let showSecretInput =
+        !provider.appId || (provider.key === OAuthProvider.Apple && !providerKeyId);
+    let p8PasteMode: Record<string, boolean> = {};
+    let error: string;
+
+    $: appIdParam = parameters.length >= 1 ? parameters[0] : null;
+    $: additionalParams = parameters.slice(1);
+    $: detailParams = additionalParams.filter((param) => !isSecretParam(param.$id));
+    $: secretParams = additionalParams.filter((param) => isSecretParam(param.$id));
+    $: basicDetailParams =
+        provider?.key === OAuthProvider.Oidc
+            ? detailParams.filter((param) => !isOidcAdvancedParam(param.$id))
+            : detailParams;
+    $: advancedDetailParams =
+        provider?.key === OAuthProvider.Oidc
+            ? detailParams.filter((param) => isOidcAdvancedParam(param.$id))
+            : [];
+    $: hasSecretInput = secretParams.some((param) => {
+        const value = fieldValues[param.$id];
+        return value !== null && value !== '';
+    });
+    $: hasDetailChanges = detailParams.some((param) => {
+        const value = fieldValues[param.$id];
+        return value !== null && value !== '';
+    });
+    $: nothingChanged =
+        enabled === provider?.enabled &&
+        appId === provider?.appId &&
+        !hasSecretInput &&
+        !hasDetailChanges;
+    $: oAuthProvider = oAuthProviders[provider.key];
+    $: secretCardTitle =
+        secretParams.length === 1 ? primaryName(secretParams[0]?.name ?? '') : 'Credentials';
 
     $: {
-        for (const p of secretParams) {
-            if (!(p.$id in secretValues)) {
-                secretValues[p.$id] = null;
+        for (const param of additionalParams) {
+            if (!(param.$id in fieldValues)) {
+                fieldValues[param.$id] = getInitialFieldValue(param.$id);
             }
         }
     }
 
-    $: oAuthProvider = oAuthProviders[provider.key];
-
-    /** Take only the primary name before any " or " / ", or " alternatives. */
     function primaryName(name: string): string {
-        return name.split(/,?\s+or\s+/i)[0].trim();
+        return name.trim();
+    }
+
+    function helperText(hint?: string | null): string | undefined {
+        const value = hint?.trim();
+
+        if (!value || /^example of wrong value:/i.test(value)) {
+            return undefined;
+        }
+
+        return value;
+    }
+
+    function getInitialFieldValue(id: string): string | null {
+        const value = (provider as Record<string, unknown>)[id];
+        return typeof value === 'string' ? value : null;
     }
 
     function isPasswordParam(id: string): boolean {
@@ -63,32 +105,53 @@
         return id === 'p8File' || id === 'p8' || id.toLowerCase().includes('p8file');
     }
 
-    let p8PasteMode: Record<string, boolean> = {};
+    function isSecretParam(id: string): boolean {
+        return isPasswordParam(id) || isP8Param(id);
+    }
+
+    function isOidcAdvancedParam(id: string): boolean {
+        return id === 'authorizationURL' || id === 'tokenUrl' || id === 'userInfoUrl';
+    }
 
     async function handleP8FileUpload(id: string, event: Event) {
         const input = event.target as HTMLInputElement;
         const file = input.files?.[0];
         if (!file) return;
-        secretValues[id] = await file.text();
+
+        fieldValues[id] = await file.text();
         input.value = '';
     }
 
-    /** Build the secret string to pass to updateOAuth. */
     function buildSecret(): string | null {
-        const entries = secretParams
-            .map((p) => [p.$id, secretValues[p.$id]] as [string, string | null])
-            .filter(([, v]) => v !== null && v !== '');
+        const entries = secretParams.flatMap((param) => {
+            const value = fieldValues[param.$id];
+
+            if (value === null || value === '') {
+                return [];
+            }
+
+            return [[param.$id, value] as [string, string]];
+        });
 
         if (entries.length === 0) return null;
         if (secretParams.length === 1) return entries[0]?.[1] ?? null;
+
         return JSON.stringify(Object.fromEntries(entries));
     }
 
-    $: hasSecretInput = Object.values(secretValues).some((v) => v !== null && v !== '');
-    $: nothingChanged =
-        enabled === provider?.enabled && appId === provider?.appId && !hasSecretInput;
+    function buildDetails(): Record<string, string> {
+        return Object.fromEntries(
+            detailParams.map((param) => [param.$id, fieldValues[param.$id] ?? ''])
+        );
+    }
 
-    let error: string;
+    function resetWriteOnlyInputs() {
+        showSecretInput = false;
+
+        for (const param of secretParams) {
+            fieldValues[param.$id] = null;
+        }
+    }
 
     const update = async () => {
         const result = await updateOAuth({
@@ -97,6 +160,7 @@
             provider,
             appId,
             secret: buildSecret(),
+            details: buildDetails(),
             enabled
         });
 
@@ -107,8 +171,7 @@
         }
     };
 
-    $: secretCardTitle =
-        secretParams.length === 1 ? primaryName(secretParams[0]?.name ?? '') : 'Credentials';
+    // @todo Revisit explicit secret-clearing UX later today. For now, credentials remain update-only.
 </script>
 
 <Modal {error} bind:show onSubmit={update} on:close title={`${provider.name} OAuth2 settings`}>
@@ -130,8 +193,32 @@
             label={primaryName(appIdParam.name)}
             autofocus={true}
             placeholder={appIdParam.example || ''}
-            helper={appIdParam.hint || undefined}
+            helper={helperText(appIdParam.hint)}
             bind:value={appId} />
+    {/if}
+
+    {#each basicDetailParams as param}
+        <InputText
+            id={param.$id}
+            label={primaryName(param.name)}
+            placeholder={param.example || ''}
+            helper={helperText(param.hint)}
+            bind:value={fieldValues[param.$id]} />
+    {/each}
+
+    {#if advancedDetailParams.length > 0}
+        <Accordion title="Advanced" badge="Optional" hideDivider>
+            <Layout.Stack gap="l">
+                {#each advancedDetailParams as param}
+                    <InputText
+                        id={param.$id}
+                        label={primaryName(param.name)}
+                        placeholder={param.example || ''}
+                        helper={helperText(param.hint)}
+                        bind:value={fieldValues[param.$id]} />
+                {/each}
+            </Layout.Stack>
+        </Accordion>
     {/if}
 
     {#if secretParams.length > 0}
@@ -153,14 +240,7 @@
                             justifyContent="space-between"
                             alignContent="center">
                             <Typography.Text variant="m-600">{secretCardTitle}</Typography.Text>
-                            <Button
-                                extraCompact
-                                on:click={() => {
-                                    showSecretInput = false;
-                                    for (const p of secretParams) {
-                                        secretValues[p.$id] = null;
-                                    }
-                                }}>
+                            <Button extraCompact on:click={resetWriteOnlyInputs}>
                                 <Icon icon={IconX} size="s" />
                             </Button>
                         </Layout.Stack>
@@ -179,46 +259,46 @@
                     <Layout.Stack>
                         {#each secretParams as param}
                             {#if isP8Param(param.$id)}
-                                <div>
-                                    <Layout.Stack
-                                        direction="row"
-                                        justifyContent="space-between"
-                                        alignItems="center">
+                                <div class="p8-field">
+                                    <div class="p8-field-header">
                                         <Typography.Text variant="m-400"
                                             >{primaryName(param.name)}</Typography.Text>
-                                        <Button
-                                            text
-                                            extraCompact
-                                            on:click={() =>
-                                                (p8PasteMode[param.$id] = !p8PasteMode[param.$id])}>
-                                            {p8PasteMode[param.$id]
-                                                ? 'Upload file instead'
-                                                : 'Paste instead'}
-                                        </Button>
-                                    </Layout.Stack>
+                                        <div class="p8-field-controls">
+                                            <Button
+                                                text
+                                                extraCompact
+                                                on:click={() =>
+                                                    (p8PasteMode[param.$id] =
+                                                        !p8PasteMode[param.$id])}>
+                                                {p8PasteMode[param.$id]
+                                                    ? 'Upload file instead'
+                                                    : 'Paste instead'}
+                                            </Button>
+                                        </div>
+                                    </div>
                                     {#if p8PasteMode[param.$id]}
                                         <InputTextarea
                                             id={param.$id}
                                             label=""
                                             placeholder={'-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----'}
-                                            helper={param.hint || undefined}
-                                            bind:value={secretValues[param.$id]} />
+                                            helper={helperText(param.hint)}
+                                            bind:value={fieldValues[param.$id]} />
                                     {:else}
                                         <label
                                             class="p8-upload-zone"
-                                            class:has-file={!!secretValues[param.$id]}
+                                            class:has-file={!!fieldValues[param.$id]}
                                             for="p8-file-{param.$id}">
-                                            {#if secretValues[param.$id]}
+                                            {#if fieldValues[param.$id]}
                                                 <Icon icon={IconDocument} size="s" />
                                                 <Typography.Text
                                                     >File loaded — click to replace</Typography.Text>
                                                 <Button
                                                     text
                                                     extraCompact
-                                                    on:click={(e) => {
-                                                        e.preventDefault();
-                                                        e.stopPropagation();
-                                                        secretValues[param.$id] = null;
+                                                    on:click={(event) => {
+                                                        event.preventDefault();
+                                                        event.stopPropagation();
+                                                        fieldValues[param.$id] = null;
                                                     }}>
                                                     <Icon icon={IconX} size="s" />
                                                 </Button>
@@ -233,24 +313,18 @@
                                             type="file"
                                             accept=".p8"
                                             style="display:none"
-                                            on:change={(e) => handleP8FileUpload(param.$id, e)} />
+                                            on:change={(event) =>
+                                                handleP8FileUpload(param.$id, event)} />
                                     {/if}
                                 </div>
-                            {:else if isPasswordParam(param.$id)}
+                            {:else}
                                 <InputPassword
                                     id={param.$id}
                                     label={primaryName(param.name)}
                                     placeholder={param.example || ''}
-                                    helper={param.hint || undefined}
+                                    helper={helperText(param.hint)}
                                     minlength={0}
-                                    bind:value={secretValues[param.$id]} />
-                            {:else}
-                                <InputText
-                                    id={param.$id}
-                                    label={primaryName(param.name)}
-                                    placeholder={param.example || ''}
-                                    helper={param.hint || undefined}
-                                    bind:value={secretValues[param.$id]} />
+                                    bind:value={fieldValues[param.$id]} />
                             {/if}
                         {/each}
                     </Layout.Stack>
@@ -292,5 +366,27 @@
     .p8-upload-zone.has-file {
         border-style: solid;
         border-color: var(--border-neutral-primary);
+    }
+
+    .p8-field {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-3);
+    }
+
+    .p8-field-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--space-4);
+        min-width: 0;
+    }
+
+    .p8-field-controls {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-4);
+        min-width: 0;
+        flex-shrink: 0;
     }
 </style>
