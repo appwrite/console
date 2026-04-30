@@ -230,6 +230,7 @@
             autofocus={true}
             placeholder={appIdParam.example || ''}
             helper={helperText(appIdParam.hint)}
+            required={enabled && !!appIdParam.example}
             bind:value={appId} />
     {/if}
 
@@ -239,6 +240,7 @@
             label={primaryName(param.name)}
             placeholder={param.example || ''}
             helper={helperText(param.hint)}
+            required={enabled && !!param.example}
             bind:value={fieldValues[param.$id]} />
     {/each}
 
