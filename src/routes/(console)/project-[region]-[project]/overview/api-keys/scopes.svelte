@@ -106,10 +106,12 @@
             for (const s of filteredScopes) {
                 activeScopes[s.scope] = scopes.includes(s.scope as Scopes);
             }
+            mounted = true;
         } catch (e) {
             loadError = e?.message ?? 'Failed to load available scopes.';
-        } finally {
-            mounted = true;
+            // mounted intentionally stays false — the $effect guards on it,
+            // so leaving it false prevents activeScopes = {} from overwriting
+            // the parent-bound scopes prop with an empty array on fetch failure.
         }
     });
 
