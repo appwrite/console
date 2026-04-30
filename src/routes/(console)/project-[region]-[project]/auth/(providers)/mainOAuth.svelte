@@ -171,7 +171,6 @@
         });
 
         if (entries.length === 0) return null;
-        if (secretParams.length === 1) return entries[0]?.[1] ?? null;
 
         return JSON.stringify(Object.fromEntries(entries));
     }
