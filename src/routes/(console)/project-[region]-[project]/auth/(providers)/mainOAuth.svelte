@@ -21,7 +21,7 @@
         Tag,
         Typography
     } from '@appwrite.io/pink-svelte';
-    import { IconPencil, IconX } from '@appwrite.io/pink-icons-svelte';
+    import { IconDocument, IconPencil, IconUpload, IconX } from '@appwrite.io/pink-icons-svelte';
     import { getApiEndpoint } from '$lib/stores/sdk';
 
     const projectId = page.params.project;
@@ -59,8 +59,18 @@
         return id.toLowerCase().includes('secret');
     }
 
-    function isTextareaParam(id: string): boolean {
-        return id === 'p8' || id.toLowerCase().includes('p8file');
+    function isP8Param(id: string): boolean {
+        return id === 'p8File' || id === 'p8' || id.toLowerCase().includes('p8file');
+    }
+
+    let p8PasteMode: Record<string, boolean> = {};
+
+    async function handleP8FileUpload(id: string, event: Event) {
+        const input = event.target as HTMLInputElement;
+        const file = input.files?.[0];
+        if (!file) return;
+        secretValues[id] = await file.text();
+        input.value = '';
     }
 
     /** Build the secret string to pass to updateOAuth. */
@@ -168,13 +178,64 @@
                     </span>
                     <Layout.Stack>
                         {#each secretParams as param}
-                            {#if isTextareaParam(param.$id)}
-                                <InputTextarea
-                                    id={param.$id}
-                                    label={primaryName(param.name)}
-                                    placeholder={param.example || ''}
-                                    helper={param.hint || undefined}
-                                    bind:value={secretValues[param.$id]} />
+                            {#if isP8Param(param.$id)}
+                                <div>
+                                    <Layout.Stack
+                                        direction="row"
+                                        justifyContent="space-between"
+                                        alignItems="center">
+                                        <Typography.Text variant="m-400"
+                                            >{primaryName(param.name)}</Typography.Text>
+                                        <Button
+                                            text
+                                            extraCompact
+                                            on:click={() =>
+                                                (p8PasteMode[param.$id] = !p8PasteMode[param.$id])}>
+                                            {p8PasteMode[param.$id]
+                                                ? 'Upload file instead'
+                                                : 'Paste instead'}
+                                        </Button>
+                                    </Layout.Stack>
+                                    {#if p8PasteMode[param.$id]}
+                                        <InputTextarea
+                                            id={param.$id}
+                                            label=""
+                                            placeholder={'-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----'}
+                                            helper={param.hint || undefined}
+                                            bind:value={secretValues[param.$id]} />
+                                    {:else}
+                                        <label
+                                            class="p8-upload-zone"
+                                            class:has-file={!!secretValues[param.$id]}
+                                            for="p8-file-{param.$id}">
+                                            {#if secretValues[param.$id]}
+                                                <Icon icon={IconDocument} size="s" />
+                                                <Typography.Text
+                                                    >File loaded — click to replace</Typography.Text>
+                                                <Button
+                                                    text
+                                                    extraCompact
+                                                    on:click={(e) => {
+                                                        e.preventDefault();
+                                                        e.stopPropagation();
+                                                        secretValues[param.$id] = null;
+                                                    }}>
+                                                    <Icon icon={IconX} size="s" />
+                                                </Button>
+                                            {:else}
+                                                <Icon icon={IconUpload} size="m" />
+                                                <Typography.Text
+                                                    >Click to upload .p8 file</Typography.Text>
+                                            {/if}
+                                        </label>
+                                        <input
+                                            id="p8-file-{param.$id}"
+                                            type="file"
+                                            accept=".p8"
+                                            style="display:none"
+                                            on:change={(e) => handleP8FileUpload(param.$id, e)} />
+                                    {/if}
+                                </div>
                             {:else if isPasswordParam(param.$id)}
                                 <InputPassword
                                     id={param.$id}
@@ -209,3 +270,27 @@
         <Button disabled={nothingChanged} submit>Update</Button>
     </svelte:fragment>
 </Modal>
+
+<style>
+    .p8-upload-zone {
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+        padding: var(--space-5) var(--space-6);
+        border: 1px dashed var(--border-neutral-secondary);
+        border-radius: var(--border-radius-small);
+        cursor: pointer;
+        background: var(--bgcolor-neutral-secondary);
+        transition: border-color 0.15s;
+        margin-top: var(--space-2);
+    }
+
+    .p8-upload-zone:hover {
+        border-color: var(--border-neutral-primary);
+    }
+
+    .p8-upload-zone.has-file {
+        border-style: solid;
+        border-color: var(--border-neutral-primary);
+    }
+</style>
