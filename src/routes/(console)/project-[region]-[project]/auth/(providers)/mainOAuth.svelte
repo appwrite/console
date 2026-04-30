@@ -98,7 +98,7 @@
     function helperText(hint?: string | null): string | undefined {
         const value = hint?.trim();
 
-        if (!value || /^example of wrong value:/i.test(value)) {
+        if (!value) {
             return undefined;
         }
 
