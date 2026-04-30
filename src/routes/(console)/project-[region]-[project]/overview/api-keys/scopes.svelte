@@ -1,8 +1,9 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
     const compatPairs = [
         { newer: 'tables.', legacy: 'collections.' },
         { newer: 'columns.', legacy: 'attributes.' },
-        { newer: 'rows.', legacy: 'documents.' }
+        { newer: 'rows.', legacy: 'documents.' },
+        { newer: 'executions.', legacy: 'execution.' }
     ] as const;
 
     export function getEffectiveScopes(scopes: string[]): string[] {
@@ -30,28 +31,16 @@
     import { isCloud } from '$lib/system';
     import { Button } from '$lib/elements/forms';
     import { symmetricDifference } from '$lib/helpers/array';
-    import { scopes as allScopes, cloudOnlyBackupScopes } from '$lib/constants';
-    import { Accordion, Badge, Divider, Layout, Selector } from '@appwrite.io/pink-svelte';
+    import { cloudOnlyBackupScopes, type ScopeDefinition } from '$lib/constants';
+    import { sdk } from '$lib/stores/sdk';
+    import { Accordion, Alert, Badge, Divider, Layout, Selector } from '@appwrite.io/pink-svelte';
     import type { Scopes } from '@appwrite.io/console';
 
-    export let scopes: Scopes[];
+    let { scopes = $bindable([]) }: { scopes: Scopes[] } = $props();
 
-    // insert cloud-only scopes right after databases.write
-    const databasesWriteIndex = allScopes.findIndex((s) => s.scope === 'databases.write');
-    const filteredScopes =
-        isCloud && databasesWriteIndex !== -1
-            ? [
-                  ...allScopes.slice(0, databasesWriteIndex + 1),
-                  ...cloudOnlyBackupScopes,
-                  ...allScopes.slice(databasesWriteIndex + 1)
-              ]
-            : allScopes;
-
-    // include all scopes
-    const scopeCatalog = new Set([
-        ...allScopes.map((s) => s.scope),
-        ...(isCloud ? cloudOnlyBackupScopes.map((s) => s.scope) : [])
-    ]);
+    let allScopesList: ScopeDefinition[] = $state([]);
+    let mounted = $state(false);
+    let loadError: string | null = $state(null);
 
     enum Category {
         Auth = 'Auth',
@@ -73,21 +62,57 @@
         Category.Other
     ];
 
-    let mounted = false;
+    const filteredScopes = $derived.by(() => {
+        const databasesWriteIndex = allScopesList.findIndex((s) => s.scope === 'databases.write');
+        if (isCloud && databasesWriteIndex !== -1) {
+            return [
+                ...allScopesList.slice(0, databasesWriteIndex + 1),
+                ...cloudOnlyBackupScopes,
+                ...allScopesList.slice(databasesWriteIndex + 1)
+            ];
+        }
+        return allScopesList;
+    });
 
-    const activeScopes = filteredScopes.reduce((prev, next) => {
-        prev[next.scope] = false;
-        return prev;
-    }, {});
+    const scopeCatalog = $derived(
+        new Set([
+            ...filteredScopes.map((s) => s.scope),
+            ...(isCloud ? cloudOnlyBackupScopes.map((s) => s.scope) : [])
+        ])
+    );
 
-    onMount(() => {
-        scopes.forEach((scope) => {
-            if (scope in activeScopes) {
-                activeScopes[scope] = true;
+    let activeScopes: Record<string, boolean> = $state({});
+
+    $effect(() => {
+        if (mounted) {
+            const newScopes = generateSyncedScopes(activeScopes);
+            if (symmetricDifference(scopes, newScopes).length) {
+                scopes = newScopes;
             }
-        });
+        }
+    });
 
-        mounted = true;
+    onMount(async () => {
+        try {
+            const result = await sdk.forConsole.console.listProjectScopes();
+            allScopesList = result.scopes.map((s) => ({
+                scope: s.$id,
+                description: s.description,
+                category: s.category,
+                deprecated: s.deprecated,
+                icon: ''
+            }));
+
+            for (const s of filteredScopes) {
+                activeScopes[s.scope] = scopes.includes(s.scope as Scopes);
+            }
+            mounted = true;
+        } catch (e) {
+            loadError = e?.message ?? 'Failed to load available scopes.';
+            // mounted intentionally stays false — the $effect guards on it,
+            // so leaving it false prevents activeScopes = {} from overwriting
+            // the parent-bound scopes prop with an empty array on fetch failure.
+        }
     });
 
     function selectAll() {
@@ -118,10 +143,11 @@
     }
 
     function onCategoryChange(event: CustomEvent<boolean | 'indeterminate'>, category: Category) {
-        if (event.detail === 'indeterminate') return;
+        const { detail } = event;
+        if (detail === 'indeterminate') return;
         filteredScopes.forEach((s) => {
             if (s.category === category && !s.deprecated) {
-                activeScopes[s.scope] = event.detail;
+                activeScopes[s.scope] = detail;
             }
         });
     }
@@ -131,19 +157,12 @@
             .filter(([scope, isActive]) => isActive && scopeCatalog.has(scope))
             .map(([scope]) => scope as Scopes);
     }
-
-    $: {
-        if (mounted) {
-            const newScopes = generateSyncedScopes(activeScopes);
-
-            if (symmetricDifference(scopes, newScopes).length) {
-                scopes = newScopes;
-            }
-        }
-    }
 </script>
 
 <Layout.Stack>
+    {#if loadError}
+        <Alert.Inline status="error" title="Failed to load scopes">{loadError}</Alert.Inline>
+    {/if}
     <Layout.Stack direction="row" alignItems="center" gap="s">
         <Button compact on:click={selectAll}>Select all</Button>
         <span style:height="20px">
