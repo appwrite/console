@@ -31,6 +31,7 @@
     /** Must stay derived from `data` so OAuth/auth toggles reflect `invalidate(Dependencies.PROJECT)` without a full reload. */
     const project = $derived(data.project);
     const resolvedOAuthProviders = $derived(data.oauthProviders);
+    const consoleParamsMap = $derived(data.consoleParamsMap);
 
     let showProvider = $state(false);
     let selectedProvider: Models.AuthProvider | null = $state(null);
@@ -253,6 +254,7 @@
     <OAuthProvider
         bind:provider={selectedProvider}
         bind:show={showProvider}
+        parameters={consoleParamsMap.get(selectedProvider.key) ?? []}
         onclose={() => {
             selectedProvider = null;
             showProvider = false;
