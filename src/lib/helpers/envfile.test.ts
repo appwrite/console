@@ -30,10 +30,24 @@ describe('parse', () => {
         });
     });
 
+    it('preserves quotes inside values', () => {
+        expect(parse("AUTHOR=O'Brien\nMESSAGE=Say \"hello\"")).toEqual({
+            AUTHOR: "O'Brien",
+            MESSAGE: 'Say "hello"'
+        });
+    });
+
     it('keeps equals signs and colons inside values', () => {
         expect(parse('DATABASE_URL=mysql://user:pass@example.com/db\nTOKEN=abc=123')).toEqual({
             DATABASE_URL: 'mysql://user:pass@example.com/db',
             TOKEN: 'abc=123'
+        });
+    });
+
+    it('parses files with CRLF line endings', () => {
+        expect(parse('NAME=Appwrite\r\nMESSAGE=Hello world\r\n')).toEqual({
+            NAME: 'Appwrite',
+            MESSAGE: 'Hello world'
         });
     });
 

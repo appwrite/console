@@ -9,7 +9,7 @@ export function parse(src: string): Data {
         const match = line.match(/^([^=:#]+?)[=:](.*)/);
         if (match) {
             const key = match[1].trim();
-            const value = match[2].trim().replace(/['"]+/g, '');
+            const value = match[2].trim().replace(/^(['"])(.*)\1$/, '$2');
             result[key] = value;
         }
     }
