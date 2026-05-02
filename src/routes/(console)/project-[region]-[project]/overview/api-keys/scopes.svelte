@@ -31,10 +31,19 @@
     import { isCloud } from '$lib/system';
     import { Button } from '$lib/elements/forms';
     import { symmetricDifference } from '$lib/helpers/array';
-    import { cloudOnlyBackupScopes, type ScopeDefinition } from '$lib/constants';
+    import {
+        cloudOnlyBackupScopes,
+        extraProjectScopeFallbacks,
+        scopes as scopeFallbackCatalog,
+        type ScopeDefinition
+    } from '$lib/constants';
+    import type { Models } from '@appwrite.io/console';
     import { sdk } from '$lib/stores/sdk';
     import { Accordion, Alert, Badge, Divider, Layout, Selector } from '@appwrite.io/pink-svelte';
     import type { Scopes } from '@appwrite.io/console';
+
+    /** IDs injected after `databases.write` on cloud — strip from API merge to avoid duplicates. */
+    const cloudBackupScopeIds = new Set(cloudOnlyBackupScopes.map((s) => s.scope));
 
     let { scopes = $bindable([]) }: { scopes: Scopes[] } = $props();
 
@@ -62,24 +71,114 @@
         Category.Other
     ];
 
+    const SCOPE_CATEGORY_ALIASES: Record<string, Category> = {
+        databases: Category.Database,
+        database: Category.Database,
+        authentication: Category.Auth,
+        authentications: Category.Auth,
+        auth: Category.Auth,
+        user: Category.Auth,
+        users: Category.Auth,
+        storage: Category.Storage,
+        storages: Category.Storage,
+        function: Category.Functions,
+        functions: Category.Functions,
+        messaging: Category.Messaging,
+        message: Category.Messaging,
+        site: Category.Sites,
+        sites: Category.Sites,
+        scheduled: Category.Functions,
+        schedules: Category.Functions,
+        platform: Category.Other,
+        platforms: Category.Other,
+        misc: Category.Other,
+        miscellaneous: Category.Other,
+        general: Category.Other,
+        billing: Category.Other,
+        assistant: Category.Other,
+        console: Category.Other
+    };
+
+    function normalizeScopeCategory(raw: string): Category {
+        const trimmed = raw.trim();
+        if ((Object.values(Category) as string[]).includes(trimmed)) {
+            return trimmed as Category;
+        }
+        return SCOPE_CATEGORY_ALIASES[trimmed.toLowerCase()] ?? Category.Other;
+    }
+
+    function mergeScopesFromApi(apiScopes: Models.ConsoleKeyScope[]): ScopeDefinition[] {
+        const apiById = new Map(apiScopes.map((s) => [s.$id, s]));
+        const merged: ScopeDefinition[] = [];
+        const seen = new Set<string>();
+
+        const catalog = [...scopeFallbackCatalog, ...extraProjectScopeFallbacks];
+
+        for (const fallback of catalog) {
+            if (seen.has(fallback.scope)) continue;
+            seen.add(fallback.scope);
+            const api = apiById.get(fallback.scope);
+            merged.push({
+                scope: fallback.scope,
+                description: api?.description ?? fallback.description,
+                category: normalizeScopeCategory(api?.category ?? fallback.category),
+                deprecated: api?.deprecated ?? fallback.deprecated ?? false,
+                icon: fallback.icon
+            });
+        }
+
+        for (const s of apiScopes) {
+            if (seen.has(s.$id)) continue;
+            if (isCloud && cloudBackupScopeIds.has(s.$id)) continue;
+            seen.add(s.$id);
+            merged.push({
+                scope: s.$id,
+                description: s.description,
+                category: normalizeScopeCategory(s.category),
+                deprecated: s.deprecated,
+                icon: ''
+            });
+        }
+
+        return merged;
+    }
+
+    function dedupeScopesOrdered(list: ScopeDefinition[]): ScopeDefinition[] {
+        const seen = new Set<string>();
+        const out: ScopeDefinition[] = [];
+        for (const s of list) {
+            if (seen.has(s.scope)) continue;
+            seen.add(s.scope);
+            out.push(s);
+        }
+        return out;
+    }
+
+    /** Non-deprecated first, then alphabetical — keeps legacy scopes (e.g. execution.*) at the end. */
+    function sortScopesForDisplay(list: ScopeDefinition[]): ScopeDefinition[] {
+        return [...list].sort((a, b) => {
+            if (!!a.deprecated !== !!b.deprecated) return a.deprecated ? 1 : -1;
+            return a.scope.localeCompare(b.scope);
+        });
+    }
+
     const filteredScopes = $derived.by(() => {
-        const databasesWriteIndex = allScopesList.findIndex((s) => s.scope === 'databases.write');
+        let base =
+            isCloud && allScopesList.length
+                ? allScopesList.filter((s) => !cloudBackupScopeIds.has(s.scope))
+                : allScopesList;
+        const databasesWriteIndex = base.findIndex((s) => s.scope === 'databases.write');
         if (isCloud && databasesWriteIndex !== -1) {
-            return [
-                ...allScopesList.slice(0, databasesWriteIndex + 1),
+            base = [
+                ...base.slice(0, databasesWriteIndex + 1),
                 ...cloudOnlyBackupScopes,
-                ...allScopesList.slice(databasesWriteIndex + 1)
+                ...base.slice(databasesWriteIndex + 1)
             ];
         }
-        return allScopesList;
+        return dedupeScopesOrdered(base);
     });
 
-    const scopeCatalog = $derived(
-        new Set([
-            ...filteredScopes.map((s) => s.scope),
-            ...(isCloud ? cloudOnlyBackupScopes.map((s) => s.scope) : [])
-        ])
-    );
+    const scopeCatalog = $derived(new Set(filteredScopes.map((s) => s.scope)));
 
     let activeScopes: Record<string, boolean> = $state({});
 
@@ -95,13 +194,7 @@
     onMount(async () => {
         try {
             const result = await sdk.forConsole.console.listProjectScopes();
-            allScopesList = result.scopes.map((s) => ({
-                scope: s.$id,
-                description: s.description,
-                category: s.category,
-                deprecated: s.deprecated,
-                icon: ''
-            }));
+            allScopesList = mergeScopesFromApi(result.scopes);
 
             for (const s of filteredScopes) {
                 activeScopes[s.scope] = scopes.includes(s.scope as Scopes);
@@ -187,7 +280,7 @@
                 {checked}
                 on:change={(event) => onCategoryChange(event, category)}>
                 <Layout.Stack>
-                    {#each filteredScopes.filter((s) => s.category === category) as scope}
+                    {#each sortScopesForDisplay(filteredScopes.filter((s) => s.category === category)) as scope}
                         <Layout.Stack direction="row" alignItems="center" gap="s">
                             <Selector.Checkbox
                                 size="s"

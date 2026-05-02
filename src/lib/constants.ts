@@ -529,6 +529,158 @@ export const scopes: ScopeDefinition[] = [
     }
 ];
 
+/**
+ * Scopes exposed by the Console SDK / server that are not listed in {@link scopes} above.
+ * Used as a fallback when `listProjectScopes` omits entries so API keys and function scopes
+ * stay selectable in the Console UI.
+ */
+export const extraProjectScopeFallbacks: ScopeDefinition[] = [
+    {
+        scope: 'account',
+        description: 'Access to the Account service for the current session',
+        category: 'Auth',
+        icon: 'user-group'
+    },
+    {
+        scope: 'sessions.read',
+        description: "Access to read your project's user sessions",
+        category: 'Auth',
+        icon: 'user-group'
+    },
+    {
+        scope: 'platforms.read',
+        description: "Access to read your project's platforms",
+        category: 'Other',
+        icon: 'globe'
+    },
+    {
+        scope: 'platforms.write',
+        description: "Access to create, update, and delete your project's platforms",
+        category: 'Other',
+        icon: 'globe'
+    },
+    {
+        scope: 'mocks.read',
+        description: "Access to read your project's mock numbers",
+        category: 'Other',
+        icon: 'globe'
+    },
+    {
+        scope: 'mocks.write',
+        description: "Access to create, update, and delete your project's mock numbers",
+        category: 'Other',
+        icon: 'globe'
+    },
+    {
+        scope: 'templates.read',
+        description: 'Access to read function templates',
+        category: 'Functions',
+        icon: 'lightning-bolt'
+    },
+    {
+        scope: 'templates.write',
+        description: 'Access to create, update, and delete function templates',
+        category: 'Functions',
+        icon: 'lightning-bolt'
+    },
+    {
+        scope: 'oauth2.read',
+        description: 'Access to read OAuth2 credentials and providers',
+        category: 'Other',
+        icon: 'globe'
+    },
+    {
+        scope: 'oauth2.write',
+        description: 'Access to create, update, and delete OAuth2 credentials',
+        category: 'Other',
+        icon: 'globe'
+    },
+    {
+        scope: 'schedules.read',
+        description: "Access to read your project's scheduled function executions",
+        category: 'Functions',
+        icon: 'lightning-bolt'
+    },
+    {
+        scope: 'schedules.write',
+        description: "Access to create, update, and delete your project's scheduled executions",
+        category: 'Functions',
+        icon: 'lightning-bolt'
+    },
+    {
+        scope: 'vcs.read',
+        description: "Access to read your project's VCS repositories",
+        category: 'Other',
+        icon: 'globe'
+    },
+    {
+        scope: 'vcs.write',
+        description: "Access to create, update, and delete your project's VCS repositories",
+        category: 'Other',
+        icon: 'globe'
+    },
+    {
+        scope: 'rules.read',
+        description: "Access to read your project's proxy rules",
+        category: 'Other',
+        icon: 'globe'
+    },
+    {
+        scope: 'rules.write',
+        description: "Access to create, update, and delete your project's proxy rules",
+        category: 'Other',
+        icon: 'globe'
+    },
+    {
+        scope: 'domains.read',
+        description: "Access to read your project's custom domains",
+        category: 'Functions',
+        icon: 'lightning-bolt'
+    },
+    {
+        scope: 'domains.write',
+        description: "Access to create, update, and delete your project's custom domains",
+        category: 'Functions',
+        icon: 'lightning-bolt'
+    },
+    {
+        scope: 'events.read',
+        description: "Access to read your project's platform events",
+        category: 'Functions',
+        icon: 'lightning-bolt'
+    },
+    {
+        scope: 'projects.read',
+        description: 'Access to read your organization projects',
+        category: 'Other',
+        icon: 'globe'
+    },
+    {
+        scope: 'projects.write',
+        description: 'Access to create, update, and delete your organization projects',
+        category: 'Other',
+        icon: 'globe'
+    },
+    {
+        scope: 'devKeys.read',
+        description: "Access to read your project's dev keys",
+        category: 'Other',
+        icon: 'globe'
+    },
+    {
+        scope: 'devKeys.write',
+        description: "Access to create, update, and delete your project's dev keys",
+        category: 'Other',
+        icon: 'globe'
+    },
+    {
+        scope: 'assistant.read',
+        description: 'Access to read the Assistant service',
+        category: 'Other',
+        icon: 'globe'
+    }
+];
+
 export const cloudOnlyBackupScopes: ScopeDefinition[] = [
     {
         scope: 'policies.read',
