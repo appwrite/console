@@ -84,7 +84,10 @@
         if (isCloud && databasesWriteIndex !== -1) {
             return [
                 ...allScopesList.slice(0, databasesWriteIndex + 1),
-                ...cloudOnlyBackupScopes,
+                ...cloudOnlyBackupScopes.map((scope) => ({
+                    ...scope,
+                    category: normalizeCategory(scope.category)
+                })),
                 ...allScopesList.slice(databasesWriteIndex + 1)
             ];
         }
