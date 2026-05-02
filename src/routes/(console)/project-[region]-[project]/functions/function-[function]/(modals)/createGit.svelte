@@ -75,6 +75,20 @@
     async function createDeployment() {
         try {
             if (!$func?.providerRepositoryId) {
+                const branchList = await sdk
+                    .forProject(page.params.region, page.params.project)
+                    .vcs.listRepositoryBranches({
+                        installationId: $installation.$id,
+                        providerRepositoryId: selectedRepository
+                    });
+                const sorted = sortBranches(branchList.branches);
+                const nextBranch =
+                    sorted.find((item) => item.name === branch)?.name ??
+                    sorted.find((item) => item.name === 'main' || item.name === 'master')?.name ??
+                    sorted[0]?.name ??
+                    branch ??
+                    'main';
+
                 await sdk.forProject(page.params.region, page.params.project).functions.update({
                     functionId: $func.$id,
                     name: $func.name,
@@ -90,7 +104,10 @@
                     scopes: ($func.scopes as Scopes[]) || undefined,
                     installationId: $installation.$id || undefined,
                     providerRepositoryId: selectedRepository || undefined,
-                    providerBranch: branch || undefined
+                    providerBranch: nextBranch,
+                    providerSilentMode: $func.providerSilentMode ?? undefined,
+                    providerRootDirectory: $func.providerRootDirectory ?? undefined,
+                    buildSpecification: $func.buildSpecification || undefined
                 });
             }
             if (commit) {
