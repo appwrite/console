@@ -31,7 +31,11 @@
     import { isCloud } from '$lib/system';
     import { Button } from '$lib/elements/forms';
     import { symmetricDifference } from '$lib/helpers/array';
-    import { cloudOnlyBackupScopes, type ScopeDefinition } from '$lib/constants';
+    import {
+        cloudOnlyBackupScopes,
+        scopes as localScopes,
+        type ScopeDefinition
+    } from '$lib/constants';
     import { sdk } from '$lib/stores/sdk';
     import { Accordion, Alert, Badge, Divider, Layout, Selector } from '@appwrite.io/pink-svelte';
     import type { Scopes } from '@appwrite.io/console';
@@ -41,37 +45,66 @@
     let allScopesList: ScopeDefinition[] = $state([]);
     let mounted = $state(false);
     let loadError: string | null = $state(null);
+    const effectiveScopes = $derived(getEffectiveScopes(scopes));
+
+    const categoryAliasMap: Record<string, string> = {
+        Database: 'Databases'
+    };
 
     enum Category {
+        Project = 'Project',
         Auth = 'Auth',
-        Database = 'Database',
+        Databases = 'Databases',
         Functions = 'Functions',
         Messaging = 'Messaging',
         Sites = 'Sites',
         Storage = 'Storage',
+        Domains = 'Domains',
         Other = 'Other'
     }
 
-    const categories = [
+    const categoryOrder = [
+        Category.Project,
         Category.Auth,
-        Category.Database,
+        Category.Databases,
         Category.Functions,
         Category.Storage,
         Category.Messaging,
         Category.Sites,
+        Category.Domains,
         Category.Other
     ];
+
+    function normalizeCategory(category: string): string {
+        return categoryAliasMap[category] ?? category;
+    }
 
     const filteredScopes = $derived.by(() => {
         const databasesWriteIndex = allScopesList.findIndex((s) => s.scope === 'databases.write');
         if (isCloud && databasesWriteIndex !== -1) {
             return [
                 ...allScopesList.slice(0, databasesWriteIndex + 1),
-                ...cloudOnlyBackupScopes,
+                ...cloudOnlyBackupScopes.map((scope) => ({
+                    ...scope,
+                    category: normalizeCategory(scope.category)
+                })),
                 ...allScopesList.slice(databasesWriteIndex + 1)
             ];
         }
         return allScopesList;
+    });
+
+    const categories = $derived.by(() => {
+        const availableCategories = new Set(
+            filteredScopes.map((scope) => normalizeCategory(scope.category))
+        );
+
+        return [
+            ...categoryOrder.filter((category) => availableCategories.has(category)),
+            ...Array.from(availableCategories).filter(
+                (category) => !categoryOrder.includes(category as Category)
+            )
+        ];
     });
 
     const scopeCatalog = $derived(
@@ -95,16 +128,29 @@
     onMount(async () => {
         try {
             const result = await sdk.forConsole.console.listProjectScopes();
-            allScopesList = result.scopes.map((s) => ({
-                scope: s.$id,
-                description: s.description,
-                category: s.category,
-                deprecated: s.deprecated,
-                icon: ''
-            }));
+            const scopesById = new Map<string, ScopeDefinition>();
+
+            for (const scope of localScopes) {
+                scopesById.set(scope.scope, {
+                    ...scope,
+                    category: normalizeCategory(scope.category)
+                });
+            }
+
+            for (const scope of result.scopes) {
+                scopesById.set(scope.$id, {
+                    scope: scope.$id,
+                    description: scope.description,
+                    category: normalizeCategory(scope.category),
+                    deprecated: scope.deprecated,
+                    icon: ''
+                });
+            }
+
+            allScopesList = Array.from(scopesById.values());
 
             for (const s of filteredScopes) {
-                activeScopes[s.scope] = scopes.includes(s.scope as Scopes);
+                activeScopes[s.scope] = effectiveScopes.includes(s.scope);
             }
             mounted = true;
         } catch (e) {
@@ -129,8 +175,9 @@
 
     function categoryState(category: string, s: string[]): boolean | 'indeterminate' {
         const scopesByCategory = filteredScopes.filter((n) => n.category === category);
+        const scopeSet = new Set(getEffectiveScopes(s));
         const activeInCategory = scopesByCategory.filter((scopeItem) =>
-            s.includes(scopeItem.scope as Scopes)
+            scopeSet.has(scopeItem.scope)
         );
 
         if (activeInCategory.length === 0) {
@@ -142,7 +189,7 @@
         return 'indeterminate';
     }
 
-    function onCategoryChange(event: CustomEvent<boolean | 'indeterminate'>, category: Category) {
+    function onCategoryChange(event: CustomEvent<boolean | 'indeterminate'>, category: string) {
         const { detail } = event;
         if (detail === 'indeterminate') return;
         filteredScopes.forEach((s) => {
@@ -177,7 +224,7 @@
             {@const checked = categoryState(category, scopes)}
             {@const isLastItem = index === categories.length - 1}
             {@const scopesLength = filteredScopes.filter(
-                (n) => n.category === category && scopes.includes(n.scope as Scopes)
+                (n) => n.category === category && effectiveScopes.includes(n.scope)
             ).length}
             <Accordion
                 selectable
