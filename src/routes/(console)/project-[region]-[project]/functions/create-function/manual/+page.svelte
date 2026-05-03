@@ -32,7 +32,7 @@
     const runtimeOptions = data.runtimesList.runtimes.map((runtime) => {
         const { $id: value, name, version, key } = runtime;
         const label = `${name} - ${version}`;
-        const iconName = getIconFromRuntime(key);
+        const iconName = getIconFromRuntime(key) ?? 'empty';
         const iconSrc = iconFor(iconName, 'color');
         const leadingHtml = `<img src='${iconSrc}' alt='${iconName}' style='inline-size: var(--icon-size-m)' />`;
 
