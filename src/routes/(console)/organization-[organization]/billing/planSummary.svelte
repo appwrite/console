@@ -157,10 +157,6 @@
 
         const maxBytes = maxGB * 1000 * 1000 * 1000;
         const percentage = Math.min((totalBytes / maxBytes) * 100, 100);
-        // Backend rolls realtimeBytes into totalBytes for billed orgs, so realtime
-        // is a slice of the total. A handful of legacy orgs still have realtime
-        // tracked separately (not billed yet) — for them realtime > total. In that
-        // case skip the breakdown and render the bandwidth as a single segment.
         const showRealtimeSegment = realtimeBytes > 0 && realtimeBytes <= totalBytes;
         const realtimePortion = showRealtimeSegment ? realtimeBytes : 0;
         const regularPortion = Math.max(0, totalBytes - realtimePortion);
@@ -336,9 +332,6 @@
             const storage = getResource(resources, 'storage');
             const authPhone = getResource(resources, 'authPhone');
 
-            // Backend already rolls realtimeBandwidth value + amount into bandwidth;
-            // use the bandwidth resource directly and pass realtime only as a slice
-            // for the progress segment, never as an additive total.
             const bandwidthValue = bandwidth?.value || 0;
             const realtimeBandwidthValue = realtimeBandwidth?.value || 0;
 
@@ -376,10 +369,6 @@
                         maxFactory: ({ planLimit, hasLimit }) =>
                             hasLimit ? (planLimit || 0) * 1000 * 1000 * 1000 : null
                     }),
-                    // Legacy orgs still track realtime bandwidth separately (not yet
-                    // rolled into the bandwidth resource). Surface it as its own row
-                    // so the value is visible even though it can't fit as a slice
-                    // of the bandwidth bar.
                     ...(realtimeBandwidthValue > bandwidthValue
                         ? [
                               createRow({
