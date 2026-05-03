@@ -149,17 +149,20 @@
     }
 
     function createBandwidthProgressData(
-        regularBytes: number,
+        totalBytes: number,
         realtimeBytes: number,
         maxGB: number
     ): Array<{ size: number; color: string; tooltip?: { title: string; label: string } }> {
         if (maxGB <= 0) return [];
 
         const maxBytes = maxGB * 1000 * 1000 * 1000;
-        const total = regularBytes + realtimeBytes;
-        const percentage = Math.min((total / maxBytes) * 100, 100);
-        const regularSize = humanFileSize(regularBytes);
-        const realtimeSize = humanFileSize(realtimeBytes);
+        const percentage = Math.min((totalBytes / maxBytes) * 100, 100);
+        // Backend already rolls realtimeBytes into totalBytes; carve the realtime
+        // slice out of the total instead of summing them. Clamp in case of dirty data.
+        const realtimePortion = Math.max(0, Math.min(realtimeBytes, totalBytes));
+        const regularPortion = Math.max(0, totalBytes - realtimePortion);
+        const regularSize = humanFileSize(regularPortion);
+        const realtimeSize = humanFileSize(realtimePortion);
 
         const segments: Array<{
             size: number;
@@ -167,9 +170,9 @@
             tooltip?: { title: string; label: string };
         }> = [];
 
-        if (regularBytes > 0) {
+        if (regularPortion > 0) {
             segments.push({
-                size: regularBytes,
+                size: regularPortion,
                 color: 'var(--bgcolor-neutral-invert)',
                 tooltip: {
                     title: `${percentage.toFixed(0)}% used`,
@@ -178,9 +181,9 @@
             });
         }
 
-        if (realtimeBytes > 0) {
+        if (realtimePortion > 0) {
             segments.push({
-                size: realtimeBytes,
+                size: realtimePortion,
                 color: 'var(--bgcolor-neutral-invert-weak)',
                 tooltip: {
                     title: 'Realtime bandwidth',
@@ -330,11 +333,11 @@
             const storage = getResource(resources, 'storage');
             const authPhone = getResource(resources, 'authPhone');
 
+            // Backend already rolls realtimeBandwidth value + amount into bandwidth;
+            // use the bandwidth resource directly and pass realtime only as a slice
+            // for the progress segment, never as an additive total.
             const bandwidthValue = bandwidth?.value || 0;
             const realtimeBandwidthValue = realtimeBandwidth?.value || 0;
-            const combinedBandwidthValue = bandwidthValue + realtimeBandwidthValue;
-            const combinedBandwidthAmount =
-                (bandwidth?.amount || 0) + (realtimeBandwidth?.amount || 0);
 
             return {
                 id: `project-${projectData.$id}`,
@@ -353,16 +356,16 @@
                         label: 'Bandwidth',
                         resource: bandwidth,
                         planLimit: currentPlan?.bandwidth,
-                        usageFormatter: ({ planLimit, hasLimit }) =>
+                        usageFormatter: ({ value, planLimit, hasLimit }) =>
                             formatBandwidthUsage(
-                                combinedBandwidthValue,
+                                value,
                                 hasLimit ? (planLimit ?? undefined) : undefined
                             ),
-                        priceFormatter: () => formatCurrency(combinedBandwidthAmount),
-                        progressFactory: ({ planLimit, hasLimit }) =>
+                        priceFormatter: ({ amount }) => formatCurrency(amount),
+                        progressFactory: ({ value, planLimit, hasLimit }) =>
                             hasLimit
                                 ? createBandwidthProgressData(
-                                      bandwidthValue,
+                                      value,
                                       realtimeBandwidthValue,
                                       planLimit || 0
                                   )
