@@ -376,6 +376,25 @@
                         maxFactory: ({ planLimit, hasLimit }) =>
                             hasLimit ? (planLimit || 0) * 1000 * 1000 * 1000 : null
                     }),
+                    // Legacy orgs still track realtime bandwidth separately (not yet
+                    // rolled into the bandwidth resource). Surface it as its own row
+                    // so the value is visible even though it can't fit as a slice
+                    // of the bandwidth bar.
+                    ...(realtimeBandwidthValue > bandwidthValue
+                        ? [
+                              createRow({
+                                  id: 'realtime-bandwidth',
+                                  label: 'Realtime bandwidth',
+                                  resource: realtimeBandwidth,
+                                  usageFormatter: ({ value }) => {
+                                      const size = humanFileSize(value);
+                                      return `${size.value} ${size.unit}`;
+                                  },
+                                  priceFormatter: ({ amount }) => formatCurrency(amount),
+                                  includeProgress: false
+                              })
+                          ]
+                        : []),
                     // standard resources (numeric)
                     createResourceRow(
                         'users',
