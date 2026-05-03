@@ -157,9 +157,12 @@
 
         const maxBytes = maxGB * 1000 * 1000 * 1000;
         const percentage = Math.min((totalBytes / maxBytes) * 100, 100);
-        // Backend already rolls realtimeBytes into totalBytes; carve the realtime
-        // slice out of the total instead of summing them. Clamp in case of dirty data.
-        const realtimePortion = Math.max(0, Math.min(realtimeBytes, totalBytes));
+        // Backend rolls realtimeBytes into totalBytes for billed orgs, so realtime
+        // is a slice of the total. A handful of legacy orgs still have realtime
+        // tracked separately (not billed yet) — for them realtime > total. In that
+        // case skip the breakdown and render the bandwidth as a single segment.
+        const showRealtimeSegment = realtimeBytes > 0 && realtimeBytes <= totalBytes;
+        const realtimePortion = showRealtimeSegment ? realtimeBytes : 0;
         const regularPortion = Math.max(0, totalBytes - realtimePortion);
         const regularSize = humanFileSize(regularPortion);
         const realtimeSize = humanFileSize(realtimePortion);
