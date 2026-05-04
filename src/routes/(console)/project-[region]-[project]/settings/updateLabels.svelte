@@ -11,6 +11,7 @@
     import { project } from '../store';
     import { Tag, Input, Layout, Icon } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { canWriteProjects } from '$lib/stores/roles';
 
     const alphaNumericRegExp = /^[a-zA-Z0-9]+$/;
     let suggestedLabels = ['live', 'stage', 'internal'];
@@ -18,7 +19,7 @@
     let error = '';
 
     onMount(async () => {
-        labels = [...$project.labels];
+        labels = [...(($project as { labels?: string[] }).labels ?? [])];
     });
 
     async function updateLabels() {
@@ -40,7 +41,9 @@
         }
     }
 
-    $: isDisabled = !!error || !symmetricDifference(labels, $project.labels).length;
+    $: isDisabled =
+        !!error ||
+        !symmetricDifference(labels, ($project as { labels?: string[] }).labels ?? []).length;
 
     $: if (labels) {
         const invalidLabels = [];
@@ -71,6 +74,7 @@
                         id="project-labels"
                         label="Labels"
                         placeholder="Select or type project labels"
+                        disabled={!$canWriteProjects}
                         bind:tags={labels} />
                 {/key}
                 <Layout.Stack direction="row">
@@ -79,6 +83,8 @@
                             size="s"
                             selected={labels.includes(suggestedLabel)}
                             on:click={() => {
+                                if (!$canWriteProjects) return;
+
                                 if (!labels.includes(suggestedLabel)) {
                                     labels = [...labels, suggestedLabel];
                                 } else {
@@ -96,7 +102,7 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={isDisabled} submit>Update</Button>
+            <Button disabled={!$canWriteProjects || isDisabled} submit>Update</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>

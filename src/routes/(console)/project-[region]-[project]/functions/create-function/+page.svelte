@@ -21,6 +21,7 @@
     import Wizard from '$lib/layout/wizard.svelte';
     import { Link } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
+    import { getIconFromRuntime } from '$lib/stores/runtimes';
     import { regionalConsoleVariables } from '../../store';
 
     export let data;
@@ -36,17 +37,17 @@
 
     const starterTemplate = data.templates.find((template) => template.id === 'starter');
 
-    const baseRuntimesList = [
-        ...new Map(
-            data.runtimesList.runtimes.map((runtime) => {
-                const base = runtime.name.split('-')[0];
-                return [base, runtime];
-            })
-        ).values()
-    ];
+    const latestRuntimesByKey = new Map<string, Models.Runtime>();
+    for (const runtime of data.runtimesList.runtimes) {
+        latestRuntimesByKey.set(runtime.key, runtime);
+    }
 
-    const starterTemplateRuntimes = starterTemplate.runtimes.filter((r) =>
-        baseRuntimesList.some((base) => base.$id === r.name)
+    const starterTemplateRuntimeIds = new Set<string>(
+        starterTemplate?.runtimes.map((runtime) => runtime.name) ?? []
+    );
+
+    const starterTemplateRuntimes = [...latestRuntimesByKey.values()].filter((runtime) =>
+        starterTemplateRuntimeIds.has(runtime.$id)
     );
 
     function connect(e: Models.ProviderRepository) {
@@ -131,11 +132,8 @@
                 <Layout.Stack gap="xl">
                     <Typography.Title size="s">Quick start</Typography.Title>
                     <Layout.Grid columnsXXS={1} columnsXS={2} columnsS={3} columns={4} gap="s">
-                        {#each starterTemplateRuntimes.slice(0, 6) as template}
-                            {@const iconName = template.name.split('-')[0]}
-                            {@const runtimeDetail = baseRuntimesList.find(
-                                (runtime) => runtime.$id === template.name
-                            )}
+                        {#each starterTemplateRuntimes as runtime}
+                            {@const iconName = getIconFromRuntime(runtime.key)}
                             <Card.Link
                                 variant="secondary"
                                 radius="s"
@@ -144,7 +142,7 @@
                                     trackEvent('click_connect_template', {
                                         from: 'cover',
                                         template: starterTemplate.id,
-                                        runtime: template.name
+                                        runtime: runtime.$id
                                     });
                                 }}
                                 href={resolveRoute(
@@ -153,14 +151,16 @@
                                         ...page.params,
                                         template: starterTemplate.id
                                     }
-                                ) + `?runtime=${runtimeDetail.$id}`}>
+                                ) + `?runtime=${runtime.$id}`}>
                                 <Layout.Stack direction="row" gap="s" alignItems="center">
-                                    <Avatar size="xs" alt={template.name} empty={!template.name}>
-                                        <SvgIcon name={iconName} iconSize="small" />
+                                    <Avatar size="xs" alt={runtime.name} empty={!iconName}>
+                                        {#if iconName}
+                                            <SvgIcon name={iconName} iconSize="small" />
+                                        {/if}
                                     </Avatar>
                                     <Typography.Text color="--fgcolor-neutral-primary">
                                         <Layout.Stack direction="row" gap="xs" alignItems="center">
-                                            {runtimeDetail?.name}
+                                            {runtime.name}
                                             <!--{#if runtimeDetail?.name?.toLowerCase() === 'deno'}-->
                                             <!--    <Badge-->
                                             <!--        variant="secondary"-->

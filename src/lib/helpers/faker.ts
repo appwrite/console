@@ -84,18 +84,41 @@ export async function generateFields(
     }
 }
 
+function generateDefaultRecord(
+    id: string
+): Record<
+    string,
+    string | number | boolean | Array<string | number | boolean | NestedNumberArray>
+> {
+    return {
+        $id: id,
+        name: faker.person.fullName(),
+        email: faker.internet.email(),
+        age: faker.number.int({ min: 18, max: 80 }),
+        city: faker.location.city(),
+        description: faker.lorem.sentence(),
+        active: faker.datatype.boolean(),
+        location: [faker.location.longitude(), faker.location.latitude()],
+        route: Array.from({ length: 5 }, () => [
+            faker.location.longitude(),
+            faker.location.latitude()
+        ])
+    };
+}
+
 export function generateFakeRecords(
-    fields: Field[],
-    count: number
+    count: number,
+    field?: Field[]
 ): {
     ids: string[];
     rows: Models.Row[];
 } {
     if (count <= 0) return { ids: [], rows: [] };
 
-    const filteredColumns = fields.filter(
-        (col) => col.type !== 'relationship' && col.status === 'available'
-    );
+    const filteredColumns =
+        field?.filter(
+            (column) => column.type !== 'relationship' && column.status === 'available'
+        ) ?? [];
 
     const ids: string[] = [];
     const rows: Models.Row[] = [];
@@ -104,35 +127,21 @@ export function generateFakeRecords(
         const id = ID.unique();
         ids.push(id);
 
-        let row: Record<
+        let record: Record<
             string,
             string | number | boolean | Array<string | number | boolean | NestedNumberArray>
-        > = {
-            $id: id
-        };
+        >;
 
         if (filteredColumns.length === 0) {
-            row = {
-                $id: id,
-                name: faker.person.fullName(),
-                email: faker.internet.email(),
-                age: faker.number.int({ min: 18, max: 80 }),
-                city: faker.location.city(),
-                description: faker.lorem.sentence(),
-                active: faker.datatype.boolean(),
-                location: [faker.location.longitude(), faker.location.latitude()],
-                route: Array.from({ length: 5 }, () => [
-                    faker.location.longitude(),
-                    faker.location.latitude()
-                ])
-            };
+            record = generateDefaultRecord(id);
         } else {
+            record = { $id: id };
             for (const column of filteredColumns) {
-                row[column.key] = generateValueForField(column);
+                record[column.key] = generateValueForField(column);
             }
         }
 
-        rows.push(row as unknown as Models.Row);
+        rows.push(record as Models.Row);
     }
 
     return { ids, rows };
@@ -168,8 +177,8 @@ function generateValueForField(
         const items: Array<string | number | NestedNumberArray | boolean> = [];
 
         for (let i = 0; i < arraySize; i++) {
-            const itemAttribute = { ...field, array: false };
-            const item = generateSingleValue(itemAttribute);
+            const itemField = { ...field, array: false };
+            const item = generateSingleValue(itemField);
             if (item !== null) {
                 items.push(item);
             }

@@ -19,12 +19,14 @@
         titleBadge = null,
         topAction = null,
         topEndActions = null,
+        noContentPadding = false,
         ...restProps
     }: {
         show: boolean;
         title: string;
         titleBadge?: string;
         closeOnBlur?: boolean;
+        noContentPadding?: boolean;
         topAction?:
             | {
                   text: string;
@@ -62,7 +64,7 @@
     beforeNavigate(() => (show = false));
 </script>
 
-<div class="sheet-container" data-side-sheet-visible={show} {...restProps}>
+<div class="sheet-container" class:noContentPadding data-side-sheet-visible={show} {...restProps}>
     <Sheet bind:open={show} {closeOnBlur}>
         <div slot="header" style:width="100%">
             <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
@@ -185,6 +187,10 @@
                  */
                 padding-bottom: 15rem;
             }
+        }
+
+        &.noContentPadding :global(section) {
+            padding: unset !important;
         }
     }
 

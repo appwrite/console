@@ -19,6 +19,7 @@
     import UpdateRepository from './updateRepository.svelte';
     import UpdateBuildCommand from './updateBuildCommand.svelte';
     import UpdateResourceLimits from './updateResourceLimits.svelte';
+    import UpdateDeploymentRetention from './updateDeploymentRetention.svelte';
     import { isCloud } from '$lib/system';
     import UpdateVariables from '$routes/(console)/project-[region]-[project]/updateVariables.svelte';
     import { page } from '$app/state';
@@ -108,6 +109,7 @@
         project={data.project}
         analyticsSource="function_settings" />
     <UpdateBuildCommand func={data.function} />
+    <UpdateDeploymentRetention func={data.function} />
 
     <UpdatePermissions />
     {#if isCloud}

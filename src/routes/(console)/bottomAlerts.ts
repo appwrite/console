@@ -1,32 +1,33 @@
 import { isCloud } from '$lib/system';
 import { isSameDay } from '$lib/helpers/date';
 import { type BottomModalAlertItem, showBottomModalAlert } from '$lib/stores/bottom-alerts';
-import ClaudeCodePlugin from '$lib/images/promos/claude-code-plugin.png';
+import TerraformProvider from '$lib/images/promos/terraform-provider.png';
 
 const listOfPromotions: BottomModalAlertItem[] = [];
 
 if (isCloud) {
-    const claudePluginPromo: BottomModalAlertItem = {
-        id: 'modal:claude_plugin_announcement',
+    const terraformProviderPromo: BottomModalAlertItem = {
+        id: 'modal:terraform_provider_announcement',
         src: {
-            dark: ClaudeCodePlugin,
-            light: ClaudeCodePlugin
+            dark: TerraformProvider,
+            light: TerraformProvider
         },
-        title: 'Announcing the Appwrite Claude plugin',
-        message: 'Build, manage, and ship Appwrite projects without leaving Claude Code.',
+        title: 'Introducing Terraform support for Appwrite projects',
+        message:
+            'Manage your entire Appwrite project as code with the official Terraform provider.',
         plan: 'free',
         importance: 8,
         scope: 'everywhere',
         cta: {
             text: 'Read announcement',
-            link: () => 'https://appwrite.io/blog/post/announcing-appwrite-claude-code-plugin',
+            link: () => 'https://appwrite.io/blog/post/introducing-terraform-provider-for-appwrite',
             external: true,
             hideOnClick: true,
             skipUpgradeRedirect: true
         },
         show: true
     };
-    listOfPromotions.push(claudePluginPromo);
+    listOfPromotions.push(terraformProviderPromo);
 }
 
 export function addBottomModalAlerts() {

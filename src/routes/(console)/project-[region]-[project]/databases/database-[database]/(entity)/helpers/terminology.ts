@@ -1,27 +1,48 @@
 import type { Page } from '@sveltejs/kit';
 
 import { capitalize, plural } from '$lib/helpers/string';
-import { AppwriteException, type Models } from '@appwrite.io/console';
-import type { Attributes, Columns, Table } from '$database/table-[table]/store';
+import { AppwriteException, type TablesDBIndexType, type Models } from '@appwrite.io/console';
+import type { Attributes, Collection, Columns, Table } from '$database/store';
 import type { Term, TerminologyResult, TerminologyShape } from '$database/(entity)/helpers/types';
 
-export type DatabaseType = Models.Database['type'];
+type BaseTerminology = typeof baseTerminology;
+type ImplementedDBTypes = Omit<BaseTerminology, 'legacy'>;
 
-export type Entity = Partial<Models.Collection | Table> & {
+/* manual type for the time being because vectorsdb is pending */
+export type DatabaseType = 'legacy' | 'tablesdb' | 'documentsdb' | 'vectorsdb';
+export type CollectionDatabaseType = Extract<DatabaseType, 'documentsdb' | 'vectorsdb'>;
+
+export const DEFAULT_VECTOR_DIMENSION = 768;
+
+export type RecordType = ImplementedDBTypes[keyof ImplementedDBTypes]['record'];
+
+export type Entity = Partial<Collection | Table> & {
+    schema: boolean;
     indexes?: Index[];
     fields?: (Attributes | Columns)[];
     recordSecurity?: Models.Collection['documentSecurity'] | Models.Table['rowSecurity'];
+    dimension?: number;
 };
 
 export type Field = Partial<Attributes> | Partial<Columns>;
 
+export type Record = Partial<Models.Document | Models.Row> & {
+    entityId?: Models.Document['$collectionId'] | Models.Row['$tableId'];
+};
+
 export type Index = Partial<Models.Index | Models.ColumnIndex> & {
     fields: Models.Index['attributes'] | Models.ColumnIndex['columns'];
+    type: string;
 };
 
 export type EntityList = {
     total: number;
     entities: Entity[];
+};
+
+export type RecordList = {
+    total: number;
+    records: Record[];
 };
 
 export const baseTerminology = {
@@ -45,7 +66,11 @@ export const baseTerminology = {
         field: 'attribute',
         record: 'document'
     },
-    vectorsdb: {}
+    vectorsdb: {
+        entity: 'collection',
+        field: 'attribute',
+        record: 'document'
+    }
 } as const;
 
 const createTerm = (singular: string, pluralForm: string): Term => {
@@ -75,17 +100,20 @@ const terminologyData = Object.fromEntries(
     ])
 );
 
-const toIndex = (index: Models.Index | Models.ColumnIndex): Index => ({
-    ...index,
-    fields: (index as Models.Index).attributes ?? (index as Models.ColumnIndex).columns ?? []
-});
+export function toSupportiveIndex(index: Models.Index | Models.ColumnIndex): Index {
+    return {
+        ...index,
+        type: index.type as TablesDBIndexType,
+        fields: (index as Models.Index).attributes ?? (index as Models.ColumnIndex).columns ?? []
+    };
+}
 
 /**
  * Transforms a raw `Collection` / `Table` model to normalized `Entity`.
  */
 export function toSupportiveEntity(raw: Models.Collection | Models.Table): Entity {
     const isTable = 'columns' in raw;
-    const indexes = raw.indexes?.map(toIndex) ?? [];
+    const indexes = raw.indexes?.map(toSupportiveIndex) ?? [];
 
     const fields = isTable ? raw.columns : raw.attributes;
     const recordSecurity = isTable ? raw.rowSecurity : raw.documentSecurity;
@@ -94,12 +122,29 @@ export function toSupportiveEntity(raw: Models.Collection | Models.Table): Entit
         ...raw,
         fields,
         recordSecurity,
-        indexes
+        indexes,
+        schema: !isTable /* not table, so considering schema less */
     } as Entity;
 }
 
 export function toRelationalField(raw: Field): Columns {
     return raw as Columns;
+}
+
+export function toSupportiveRecord(raw: Record | Models.Document | Models.Row): Record {
+    const isRow = '$tableId' in raw;
+    const isRecord = 'entityId' in raw;
+
+    if (isRecord && raw.entityId) {
+        return raw as Record;
+    }
+
+    const entityId = isRow ? (raw as Models.Row).$tableId : (raw as Models.Document).$collectionId;
+
+    return {
+        ...raw,
+        entityId
+    } as Record;
 }
 
 /**
@@ -117,8 +162,11 @@ export function useTerminology(pageOrType: Page | DatabaseType): TerminologyResu
     }
 
     const dbTerminologies = terminologyData[type] || {};
+    const strictSchema = type === 'legacy' || type === 'tablesdb';
+
     return {
         type,
+        schema: strictSchema,
         source: dbTerminologies,
         field: dbTerminologies.field,
         record: dbTerminologies.record,

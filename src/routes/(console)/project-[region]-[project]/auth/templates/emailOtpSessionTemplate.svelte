@@ -22,6 +22,7 @@
         }, 1000);
         try {
             const template = await loadEmailTemplate(
+                project.region,
                 project.$id,
                 EmailTemplateType.OtpSession,
                 locale

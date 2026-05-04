@@ -12,7 +12,7 @@
     import { resolve } from '$app/paths';
     import deepEqual from 'deep-equal';
     import { currentPlan } from '$lib/stores/organization';
-    import { type SMTPSecure } from '@appwrite.io/console';
+    import { type Secure } from '@appwrite.io/console';
     import InputSelect from '$lib/elements/forms/inputSelect.svelte';
     import { getChangePlanUrl } from '$lib/stores/billing';
     import { Link, Selector, Alert } from '@appwrite.io/pink-svelte';
@@ -25,7 +25,8 @@
 
     let enabled: boolean = $state(false);
 
-    let replyTo: string = $state('');
+    let replyToEmail: string = $state('');
+    let replyToName: string = $state('');
     let senderName: string = $state('');
     let senderEmail: string = $state('');
 
@@ -49,7 +50,8 @@
                 enabled,
                 senderName,
                 senderEmail,
-                replyTo,
+                replyToEmail,
+                replyToName,
                 host,
                 port: port ?? '',
                 username,
@@ -60,7 +62,8 @@
                 enabled: project.smtpEnabled,
                 senderName: project.smtpSenderName,
                 senderEmail: project.smtpSenderEmail,
-                replyTo: project.smtpReplyTo,
+                replyToEmail: project.smtpReplyToEmail,
+                replyToName: project.smtpReplyToName,
                 host: project.smtpHost,
                 port: project.smtpPort,
                 username: project.smtpUsername,
@@ -72,17 +75,17 @@
 
     async function updateSmtp() {
         try {
-            await sdk.forConsole.projects.updateSMTP({
-                projectId: project.$id,
+            await sdk.forProject(project.region, project.$id).project.updateSMTP({
                 enabled,
                 senderName: senderName || undefined,
                 senderEmail: senderEmail || undefined,
-                replyTo: replyTo || undefined,
+                replyToEmail: replyToEmail || undefined,
+                replyToName: replyToName || undefined,
                 host: host || undefined,
                 port: port || undefined,
                 username: username || undefined,
                 password: password || undefined,
-                secure: secure ? (secure as SMTPSecure) : undefined
+                secure: secure ? (secure as Secure) : undefined
             });
 
             invalidate(Dependencies.PROJECT);
@@ -104,7 +107,8 @@
         enabled = project.smtpEnabled ?? false;
         senderName = project.smtpSenderName;
         senderEmail = project.smtpSenderEmail;
-        replyTo = project.smtpReplyTo;
+        replyToEmail = project.smtpReplyToEmail;
+        replyToName = project.smtpReplyToName;
         host = project.smtpHost;
         port = project.smtpPort;
         username = project.smtpUsername;
@@ -116,7 +120,8 @@
         if (!enabled) {
             senderName = '';
             senderEmail = '';
-            replyTo = '';
+            replyToEmail = '';
+            replyToName = '';
             host = '';
             port = null;
             username = '';
@@ -174,10 +179,15 @@
                             required
                             placeholder="user@example.io" />
                         <InputEmail
-                            id="replyTo"
-                            label="Reply to"
-                            bind:value={replyTo}
+                            id="replyToEmail"
+                            label="Reply to email"
+                            bind:value={replyToEmail}
                             placeholder="user@example.io" />
+                        <InputText
+                            id="replyToName"
+                            label="Reply to name"
+                            bind:value={replyToName}
+                            placeholder="Enter reply to name" />
                         <InputText
                             id="serverHost"
                             label="Server host"

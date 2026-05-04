@@ -50,6 +50,9 @@ export enum Dependencies {
     TABLE = 'dependency:table',
     ROW = 'dependency:row',
     ROWS = 'dependency:rows',
+    COLLECTION = 'dependency:collection',
+    DOCUMENT = 'dependency:document',
+    DOCUMENTS = 'dependency:documents',
     BUCKET = 'dependency:bucket',
     FILE = 'dependency:file',
     FILE_TOKENS = 'dependency:file_tokens',
@@ -109,8 +112,8 @@ export const defaultScopes: string[] = [
     'projects.write',
     'locale.read',
     'avatars.read',
-    'execution.read',
-    'execution.write',
+    'executions.read',
+    'executions.write',
     'targets.read',
     'targets.write',
     'subscribers.write',
@@ -336,16 +339,30 @@ export const scopes: ScopeDefinition[] = [
         icon: 'lightning-bolt'
     },
     {
-        scope: 'execution.read',
+        scope: 'executions.read',
         description: "Access to read your project's execution logs",
         category: 'Functions',
         icon: 'lightning-bolt'
     },
     {
-        scope: 'execution.write',
+        scope: 'executions.write',
         description: "Access to execute your project's functions",
         category: 'Functions',
         icon: 'lightning-bolt'
+    },
+    {
+        scope: 'execution.read',
+        description: "Access to read your project's execution logs",
+        category: 'Functions',
+        icon: 'lightning-bolt',
+        deprecated: true
+    },
+    {
+        scope: 'execution.write',
+        description: "Access to execute your project's functions",
+        category: 'Functions',
+        icon: 'lightning-bolt',
+        deprecated: true
     },
     {
         scope: 'targets.read',
@@ -495,6 +512,18 @@ export const scopes: ScopeDefinition[] = [
     {
         scope: 'keys.write',
         description: "Access to create, update, and delete your project's API keys",
+        category: 'Other',
+        icon: 'globe'
+    },
+    {
+        scope: 'project.read',
+        description: "Access to read your project's information",
+        category: 'Other',
+        icon: 'globe'
+    },
+    {
+        scope: 'project.write',
+        description: "Access to update your project's information",
         category: 'Other',
         icon: 'globe'
     }

@@ -9,7 +9,7 @@
         type MigrationResource,
         providerResources,
         resourcesToMigrationForm,
-        ResourceType
+        MigrationResources
     } from '$lib/stores/migration';
     import { Button } from '$lib/elements/forms';
     import { wizard } from '$lib/stores/wizard';
@@ -97,24 +97,27 @@
 
     const shouldRenderGroup = (groupKey: string): boolean => {
         if (groupKey === 'storage') {
-            return resources.includes(ResourceType.Bucket) && resources.includes(ResourceType.File);
+            return (
+                resources.includes(MigrationResources.Bucket) &&
+                resources.includes(MigrationResources.File)
+            );
         }
 
         if (groupKey === 'functions') {
-            return resources.includes(ResourceType.Function);
+            return resources.includes(MigrationResources.Function);
         }
 
         if (groupKey === 'sites') {
-            return resources.includes(ResourceType.Site);
+            return resources.includes(MigrationResources.Site);
         }
 
         if (groupKey === 'messaging') {
-            return resources.includes(ResourceType.Provider);
+            return resources.includes(MigrationResources.Provider);
         }
 
         const groupToResource: Record<string, MigrationResource> = {
-            users: ResourceType.User,
-            databases: ResourceType.Database
+            users: MigrationResources.User,
+            databases: MigrationResources.Database
         };
         const resource = groupToResource[groupKey];
         return resource ? resources.includes(resource) : false;
@@ -140,7 +143,7 @@
 
 <Layout.Stack gap="l">
     {#if error}
-        <Alert.Inline status="error" title="Couldn’t load resources">
+        <Alert.Inline status="error" title="Couldn't load resources">
             {#if migrationType === 'provider'}
                 Please double-check your credentials from the previous step and try again.
             {:else}
