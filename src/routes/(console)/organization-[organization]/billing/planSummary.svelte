@@ -148,6 +148,52 @@
         ];
     }
 
+    function createBandwidthProgressData(
+        totalBytes: number,
+        realtimeBytes: number,
+        maxGB: number
+    ): Array<{ size: number; color: string; tooltip?: { title: string; label: string } }> {
+        if (maxGB <= 0) return [];
+
+        const maxBytes = maxGB * 1000 * 1000 * 1000;
+        const percentage = Math.min((totalBytes / maxBytes) * 100, 100);
+        const showRealtimeSegment = realtimeBytes > 0 && realtimeBytes <= totalBytes;
+        const realtimePortion = showRealtimeSegment ? realtimeBytes : 0;
+        const regularPortion = Math.max(0, totalBytes - realtimePortion);
+        const regularSize = humanFileSize(regularPortion);
+        const realtimeSize = humanFileSize(realtimePortion);
+
+        const segments: Array<{
+            size: number;
+            color: string;
+            tooltip?: { title: string; label: string };
+        }> = [];
+
+        if (regularPortion > 0) {
+            segments.push({
+                size: regularPortion,
+                color: 'var(--bgcolor-neutral-invert)',
+                tooltip: {
+                    title: `${percentage.toFixed(0)}% used`,
+                    label: `Bandwidth: ${regularSize.value} ${regularSize.unit}`
+                }
+            });
+        }
+
+        if (realtimePortion > 0) {
+            segments.push({
+                size: realtimePortion,
+                color: 'var(--bgcolor-neutral-invert-weak)',
+                tooltip: {
+                    title: 'Realtime bandwidth',
+                    label: `${realtimeSize.value} ${realtimeSize.unit}`
+                }
+            });
+        }
+
+        return segments;
+    }
+
     function getResource(resources: Array<Models.UsageResources> | undefined, resourceId: string) {
         return resources?.find((resource) => resource.resourceId === resourceId);
     }
@@ -278,8 +324,12 @@
         const projects = (currentAggregation?.breakdown || []).map((projectData) => {
             const resources = projectData.resources || [];
             const bandwidth = getResource(resources, 'bandwidth');
+            const realtimeBandwidth = getResource(resources, 'realtimeBandwidth');
             const storage = getResource(resources, 'storage');
             const authPhone = getResource(resources, 'authPhone');
+
+            const bandwidthValue = bandwidth?.value || 0;
+            const realtimeBandwidthValue = realtimeBandwidth?.value || 0;
 
             return {
                 id: `project-${projectData.$id}`,
@@ -305,10 +355,31 @@
                             ),
                         priceFormatter: ({ amount }) => formatCurrency(amount),
                         progressFactory: ({ value, planLimit, hasLimit }) =>
-                            hasLimit ? createStorageProgressData(value, planLimit || 0) : [],
+                            hasLimit
+                                ? createBandwidthProgressData(
+                                      value,
+                                      realtimeBandwidthValue,
+                                      planLimit || 0
+                                  )
+                                : [],
                         maxFactory: ({ planLimit, hasLimit }) =>
                             hasLimit ? (planLimit || 0) * 1000 * 1000 * 1000 : null
                     }),
+                    ...(realtimeBandwidthValue > bandwidthValue
+                        ? [
+                              createRow({
+                                  id: 'realtime-bandwidth',
+                                  label: 'Realtime bandwidth',
+                                  resource: realtimeBandwidth,
+                                  usageFormatter: ({ value }) => {
+                                      const size = humanFileSize(value);
+                                      return `${size.value} ${size.unit}`;
+                                  },
+                                  priceFormatter: ({ amount }) => formatCurrency(amount),
+                                  includeProgress: false
+                              })
+                          ]
+                        : []),
                     // standard resources (numeric)
                     createResourceRow(
                         'users',
@@ -379,15 +450,6 @@
                         getResource(resources, 'realtimeMessages'),
                         currentPlan?.realtimeMessages
                     ),
-                    createRow({
-                        id: 'realtime-bandwidth',
-                        label: 'Realtime bandwidth',
-                        resource: getResource(resources, 'realtimeBandwidth'),
-                        usageFormatter: ({ value }) =>
-                            humanFileSize(value).value + humanFileSize(value).unit,
-                        priceFormatter: ({ amount }) => formatCurrency(amount),
-                        includeProgress: false
-                    }),
                     createRow({
                         id: 'sms',
                         label: 'Phone OTP',

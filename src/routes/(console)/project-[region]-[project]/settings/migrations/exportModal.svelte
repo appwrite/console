@@ -107,7 +107,7 @@
                     Scopes.FilesRead,
                     Scopes.BucketsRead,
                     Scopes.FunctionsRead,
-                    Scopes.ExecutionRead,
+                    Scopes.ExecutionsRead,
                     Scopes.SitesRead,
                     Scopes.ProvidersRead,
                     Scopes.TopicsRead,
