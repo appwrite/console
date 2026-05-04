@@ -33,10 +33,11 @@
     let fallback = $state(site?.fallbackFile);
     let adapter: Adapter = $state(site.adapter as Adapter);
 
-    let selectedFramework: Models.Framework = $derived(
+    let selectedFramework = $state(
         frameworks.find((framework) => framework.key === site.framework)
     );
     let showFallback = $derived(adapter === Adapter.Static);
+    let lastFrameworkAdapterKey = $state('');
 
     let isUntouched = $derived(
         installCommand === site?.installCommand &&
@@ -53,21 +54,11 @@
     );
 
     $effect(() => {
-        if (adapter) {
-            const data = selectedFramework.adapters.find(
-                (a) => a.key === adapter
-            ) as FrameworkAdapterWithStartCommand;
-            if (data) {
-                installCommand = data.installCommand;
-                buildCommand = data.buildCommand;
-                startCommand = data.startCommand;
-                outputDirectory = data.outputDirectory;
-                fallback = data.fallbackFile;
-            }
-        }
-    });
+        if (!selectedFramework) return;
 
-    $effect(() => {
+        const frameworkAdapterKey = `${selectedFramework.key}:${adapter ?? ''}`;
+        const hasFrameworkSelectionChanged = frameworkAdapterKey !== lastFrameworkAdapterKey;
+
         if (selectedFramework?.key !== site.framework) {
             // Update adapter
             const singleAdapter = selectedFramework?.adapters?.length <= 1;
@@ -92,14 +83,19 @@
             outputDirectory = data.outputDirectory;
             adapter = data.key as Adapter;
             fallback = data.fallbackFile;
-        } else {
+        } else if (hasFrameworkSelectionChanged) {
+            const data = (selectedFramework.adapters.find((a) => a.key === adapter) ??
+                selectedFramework.adapters[0]) as FrameworkAdapterWithStartCommand;
+
             adapter = site.adapter as Adapter;
             installCommand = site?.installCommand ?? frameworkAdapterData.installCommand;
             buildCommand = site?.buildCommand ?? frameworkAdapterData.buildCommand;
             startCommand = site?.startCommand ?? frameworkAdapterData.startCommand;
             outputDirectory = site?.outputDirectory ?? frameworkAdapterData.outputDirectory;
-            fallback = site?.fallbackFile ?? frameworkAdapterData.fallbackFile;
+            fallback = site?.fallbackFile ?? data.fallbackFile;
         }
+
+        lastFrameworkAdapterKey = `${selectedFramework.key}:${adapter ?? ''}`;
     });
 
     $effect(() => {
