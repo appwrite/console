@@ -19,7 +19,11 @@
     import Configuration from './configuration.svelte';
     import { getIconFromRuntime } from '$lib/stores/runtimes';
     import { regionalConsoleVariables } from '../../../store';
-    import { InvalidFileType, removeFile } from '$lib/helpers/files';
+    import {
+        getInvalidDeploymentArchiveReason,
+        InvalidFileType,
+        removeFile
+    } from '$lib/helpers/files';
     import { isCloud } from '$lib/system';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { currentPlan } from '$lib/stores/organization';
@@ -108,7 +112,9 @@
             });
 
             await promise;
-            const upload = $uploader.files.find((f) => f.resourceId === func.$id);
+            const upload = $uploader.files.find(
+                (f) => f.resourceId === func.$id && f.kind === 'function-deployment'
+            );
 
             if (upload?.status === 'success') {
                 const deploymentId = upload.$id;
@@ -126,9 +132,11 @@
 
             invalidate(Dependencies.FUNCTION);
         } catch (e) {
-            const upload = $uploader.files.find((f) => f.resourceId === func?.$id);
+            const upload = $uploader.files.find(
+                (f) => f.resourceId === func?.$id && f.kind === 'function-deployment'
+            );
             if (upload) {
-                uploader.removeFromQueue(upload.$id);
+                uploader.removeFromQueue(upload.clientId);
             }
             addNotification({
                 type: 'error',
@@ -155,6 +163,15 @@
                 type: 'error',
                 message: 'Invalid file'
             });
+        }
+    }
+
+    $: if (files?.length) {
+        const reason = getInvalidDeploymentArchiveReason(files, maxSize);
+
+        if (reason) {
+            files = undefined;
+            handleInvalid(new CustomEvent('invalid', { detail: { reason } }));
         }
     }
 
@@ -198,7 +215,7 @@
                 <Upload.Dropzone
                     bind:files
                     title="Upload function"
-                    extensions={['gz', 'tar']}
+                    extensions={['gz']}
                     {maxSize}
                     required
                     on:invalid={handleInvalid}>

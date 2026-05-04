@@ -80,6 +80,29 @@ export async function gzipUpload(files: FileList) {
     return uploadFile;
 }
 
+export function isTarGzFile(file: File) {
+    return file.name.toLowerCase().endsWith('.tar.gz');
+}
+
+export function getInvalidDeploymentArchiveReason(
+    files: FileList | File[] | null | undefined,
+    maxSize?: number
+) {
+    if (!files) return null;
+
+    const normalizedFiles = Array.from(files);
+
+    if (!normalizedFiles.length) return null;
+    if (maxSize && normalizedFiles.some((file) => file.size > maxSize)) {
+        return InvalidFileType.SIZE;
+    }
+    if (normalizedFiles.some((file) => !isTarGzFile(file))) {
+        return InvalidFileType.EXTENSION;
+    }
+
+    return null;
+}
+
 export function removeFile(file: File, files: FileList) {
     const filteredFiles = Array.from(files).filter((f) => f.name !== file.name);
     const dataTransfer = new DataTransfer();

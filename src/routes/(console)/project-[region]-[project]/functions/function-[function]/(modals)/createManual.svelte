@@ -4,7 +4,11 @@
     import { Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
-    import { InvalidFileType, removeFile } from '$lib/helpers/files';
+    import {
+        getInvalidDeploymentArchiveReason,
+        InvalidFileType,
+        removeFile
+    } from '$lib/helpers/files';
     import { addNotification } from '$lib/stores/notifications';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { Icon, Layout, Tooltip, Typography, Upload } from '@appwrite.io/pink-svelte';
@@ -60,6 +64,15 @@
         }
     }
 
+    $: if (files?.length) {
+        const reason = getInvalidDeploymentArchiveReason(files, maxSize);
+
+        if (reason) {
+            files = undefined;
+            handleInvalid(new CustomEvent('invalid', { detail: { reason } }));
+        }
+    }
+
     $: filesList = files?.length
         ? Array.from(files).map((f) => {
               return {
@@ -80,7 +93,7 @@
             Upload a tar.gz file containing your function source code
         </Typography.Text>
         <Upload.Dropzone
-            extensions={['gz', 'tar']}
+            extensions={['gz']}
             bind:files
             {maxSize}
             required
