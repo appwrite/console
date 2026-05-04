@@ -37,7 +37,15 @@
         type ScopeDefinition
     } from '$lib/constants';
     import { sdk } from '$lib/stores/sdk';
-    import { Accordion, Alert, Badge, Divider, Layout, Selector } from '@appwrite.io/pink-svelte';
+    import {
+        Accordion,
+        Alert,
+        Badge,
+        Divider,
+        Layout,
+        Selector,
+        Typography
+    } from '@appwrite.io/pink-svelte';
     import type { Scopes } from '@appwrite.io/console';
 
     let { scopes = $bindable([]) }: { scopes: Scopes[] } = $props();
@@ -51,68 +59,51 @@
         Database: 'Databases'
     };
 
-    enum Category {
-        Project = 'Project',
-        Auth = 'Auth',
-        Databases = 'Databases',
-        Functions = 'Functions',
-        Messaging = 'Messaging',
-        Sites = 'Sites',
-        Storage = 'Storage',
-        Domains = 'Domains',
-        Other = 'Other'
-    }
-
-    const categoryOrder = [
-        Category.Project,
-        Category.Auth,
-        Category.Databases,
-        Category.Functions,
-        Category.Storage,
-        Category.Messaging,
-        Category.Sites,
-        Category.Domains,
-        Category.Other
-    ];
-
     function normalizeCategory(category: string): string {
         return categoryAliasMap[category] ?? category;
     }
 
     const filteredScopes = $derived.by(() => {
+        const scopesById = new Map(allScopesList.map((scope) => [scope.scope, scope]));
+
         const databasesWriteIndex = allScopesList.findIndex((s) => s.scope === 'databases.write');
         if (isCloud && databasesWriteIndex !== -1) {
+            const normalizedBackupScopes = cloudOnlyBackupScopes.map((scope) => ({
+                ...scope,
+                category: normalizeCategory(scope.category)
+            }));
+            const backupScopeIds = new Set(normalizedBackupScopes.map((scope) => scope.scope));
+
+            for (const scope of normalizedBackupScopes) {
+                if (!scopesById.has(scope.scope)) {
+                    scopesById.set(scope.scope, scope);
+                }
+            }
+
+            const mergedScopes = Array.from(scopesById.values());
+            const nonBackupScopes = mergedScopes.filter(
+                (scope) => !backupScopeIds.has(scope.scope)
+            );
+            const mergedDatabasesWriteIndex = nonBackupScopes.findIndex(
+                (s) => s.scope === 'databases.write'
+            );
+
             return [
-                ...allScopesList.slice(0, databasesWriteIndex + 1),
-                ...cloudOnlyBackupScopes.map((scope) => ({
-                    ...scope,
-                    category: normalizeCategory(scope.category)
-                })),
-                ...allScopesList.slice(databasesWriteIndex + 1)
+                ...nonBackupScopes.slice(0, mergedDatabasesWriteIndex + 1),
+                ...normalizedBackupScopes.map((scope) => scopesById.get(scope.scope) ?? scope),
+                ...nonBackupScopes.slice(mergedDatabasesWriteIndex + 1)
             ];
         }
         return allScopesList;
     });
 
     const categories = $derived.by(() => {
-        const availableCategories = new Set(
-            filteredScopes.map((scope) => normalizeCategory(scope.category))
+        return Array.from(
+            new Set(filteredScopes.map((scope) => normalizeCategory(scope.category)))
         );
-
-        return [
-            ...categoryOrder.filter((category) => availableCategories.has(category)),
-            ...Array.from(availableCategories).filter(
-                (category) => !categoryOrder.includes(category as Category)
-            )
-        ];
     });
 
-    const scopeCatalog = $derived(
-        new Set([
-            ...filteredScopes.map((s) => s.scope),
-            ...(isCloud ? cloudOnlyBackupScopes.map((s) => s.scope) : [])
-        ])
-    );
+    const scopeCatalog = $derived(new Set(filteredScopes.map((s) => s.scope)));
 
     let activeScopes: Record<string, boolean> = $state({});
 
@@ -130,13 +121,6 @@
             const result = await sdk.forConsole.console.listProjectScopes();
             const scopesById = new Map<string, ScopeDefinition>();
 
-            for (const scope of localScopes) {
-                scopesById.set(scope.scope, {
-                    ...scope,
-                    category: normalizeCategory(scope.category)
-                });
-            }
-
             for (const scope of result.scopes) {
                 scopesById.set(scope.$id, {
                     scope: scope.$id,
@@ -145,6 +129,15 @@
                     deprecated: scope.deprecated,
                     icon: ''
                 });
+            }
+
+            for (const scope of localScopes) {
+                if (!scopesById.has(scope.scope)) {
+                    scopesById.set(scope.scope, {
+                        ...scope,
+                        category: normalizeCategory(scope.category)
+                    });
+                }
             }
 
             allScopesList = Array.from(scopesById.values());
@@ -235,16 +228,36 @@
                 on:change={(event) => onCategoryChange(event, category)}>
                 <Layout.Stack>
                     {#each filteredScopes.filter((s) => s.category === category) as scope}
-                        <Layout.Stack direction="row" alignItems="center" gap="s">
+                        <Layout.Stack inline direction="row" alignItems="flex-start" gap="s">
                             <Selector.Checkbox
                                 size="s"
                                 id={scope.scope}
-                                label={`${scope.scope}${scope.deprecated ? ' (Deprecated)' : ''}`}
-                                description={scope.description}
                                 bind:checked={activeScopes[scope.scope]} />
-                            {#if scope.deprecated}
-                                <Badge size="xs" variant="secondary" content="Deprecated" />
-                            {/if}
+                            <Layout.Stack gap="xxs">
+                                <label for={scope.scope}>
+                                    <Layout.Stack gap="xxs">
+                                        <Layout.Stack
+                                            inline
+                                            direction="row"
+                                            alignItems="center"
+                                            gap="xxs">
+                                            <Typography.Text variant="m-500"
+                                                >{scope.scope}</Typography.Text>
+                                            {#if scope.deprecated}
+                                                <Badge
+                                                    size="xs"
+                                                    variant="secondary"
+                                                    content="Deprecated" />
+                                            {/if}
+                                        </Layout.Stack>
+                                        <Typography.Text
+                                            variant="m-400"
+                                            color="--fgcolor-neutral-tertiary">
+                                            {scope.description}
+                                        </Typography.Text>
+                                    </Layout.Stack>
+                                </label>
+                            </Layout.Stack>
                         </Layout.Stack>
                     {/each}
                 </Layout.Stack>
@@ -252,3 +265,9 @@
         {/each}
     </Layout.Stack>
 </Layout.Stack>
+
+<style>
+    label {
+        cursor: pointer;
+    }
+</style>
