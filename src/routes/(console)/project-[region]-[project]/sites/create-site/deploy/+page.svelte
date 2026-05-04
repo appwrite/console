@@ -82,6 +82,11 @@
         }))
     );
 
+    const primaryAdapter = $derived.by(
+        () => data.frameworks.frameworks.find((f) => f.key === framework)?.adapters?.[0]
+    );
+    const shouldShowStartCommand = $derived(primaryAdapter?.key === Adapter.Ssr);
+
     $effect(() => {
         if (framework && data.frameworks && !hasCustomCommands) {
             const fw = data.frameworks.frameworks.find((f) => f.key === framework);
@@ -150,7 +155,7 @@
                 buildRuntime: selectedFramework.buildRuntime,
                 installCommand: installCommand || undefined,
                 buildCommand: buildCommand || undefined,
-                startCommand: startCommand || undefined,
+                startCommand: shouldShowStartCommand ? startCommand || undefined : undefined,
                 outputDirectory: outputDirectory || undefined,
                 adapter: framework === Framework.Other ? Adapter.Static : undefined,
                 providerSilentMode: false
@@ -278,10 +283,12 @@
                         label="Build command"
                         placeholder={buildCommand || 'npm run build'}
                         bind:value={buildCommand} />
-                    <Input.Text
-                        label="Start command"
-                        placeholder={startCommand || 'npm run start'}
-                        bind:value={startCommand} />
+                    {#if shouldShowStartCommand}
+                        <Input.Text
+                            label="Start command"
+                            placeholder={startCommand || 'npm run start'}
+                            bind:value={startCommand} />
+                    {/if}
                     <Input.Text
                         label="Output directory"
                         placeholder={outputDirectory || 'dist'}
