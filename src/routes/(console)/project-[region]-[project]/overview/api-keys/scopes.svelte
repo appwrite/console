@@ -51,30 +51,6 @@
         Database: 'Databases'
     };
 
-    enum Category {
-        Project = 'Project',
-        Auth = 'Auth',
-        Databases = 'Databases',
-        Functions = 'Functions',
-        Messaging = 'Messaging',
-        Sites = 'Sites',
-        Storage = 'Storage',
-        Domains = 'Domains',
-        Other = 'Other'
-    }
-
-    const categoryOrder = [
-        Category.Project,
-        Category.Auth,
-        Category.Databases,
-        Category.Functions,
-        Category.Storage,
-        Category.Messaging,
-        Category.Sites,
-        Category.Domains,
-        Category.Other
-    ];
-
     function normalizeCategory(category: string): string {
         return categoryAliasMap[category] ?? category;
     }
@@ -95,16 +71,9 @@
     });
 
     const categories = $derived.by(() => {
-        const availableCategories = new Set(
-            filteredScopes.map((scope) => normalizeCategory(scope.category))
+        return Array.from(
+            new Set(filteredScopes.map((scope) => normalizeCategory(scope.category)))
         );
-
-        return [
-            ...categoryOrder.filter((category) => availableCategories.has(category)),
-            ...Array.from(availableCategories).filter(
-                (category) => !categoryOrder.includes(category as Category)
-            )
-        ];
     });
 
     const scopeCatalog = $derived(
@@ -130,13 +99,6 @@
             const result = await sdk.forConsole.console.listProjectScopes();
             const scopesById = new Map<string, ScopeDefinition>();
 
-            for (const scope of localScopes) {
-                scopesById.set(scope.scope, {
-                    ...scope,
-                    category: normalizeCategory(scope.category)
-                });
-            }
-
             for (const scope of result.scopes) {
                 scopesById.set(scope.$id, {
                     scope: scope.$id,
@@ -145,6 +107,15 @@
                     deprecated: scope.deprecated,
                     icon: ''
                 });
+            }
+
+            for (const scope of localScopes) {
+                if (!scopesById.has(scope.scope)) {
+                    scopesById.set(scope.scope, {
+                        ...scope,
+                        category: normalizeCategory(scope.category)
+                    });
+                }
             }
 
             allScopesList = Array.from(scopesById.values());
