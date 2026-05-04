@@ -31,6 +31,16 @@ export const load: PageLoad = async ({ parent, url }) => {
     const envParam = url.searchParams.get('env');
     const envKeys = envParam ? envParam.split(',').map((key: string) => key.trim()) : [];
 
+    // Get available runtimes
+    const runtimesList = await sdk.forConsole.functions.listRuntimes();
+
+    const runtimeOption = runtimesList.runtimes.find((option) => option.$id === runtime);
+    const runtimeId = runtimeOption?.$id ?? runtimesList.runtimes[0]?.$id;
+
+    if (!runtimeId) {
+        redirect(302, base + '/');
+    }
+
     const deploymentData: {
         type: 'repo';
         repository: {
@@ -48,11 +58,8 @@ export const load: PageLoad = async ({ parent, url }) => {
             rootDirectory: null
         },
         name: name || '',
-        runtime: runtime || 'node-18.0'
+        runtime: runtimeId
     };
-
-    // Get available runtimes
-    const runtimesList = await sdk.forConsole.functions.listRuntimes();
 
     const info = getRepositoryInfo(repository);
     if (!info) {
