@@ -86,13 +86,21 @@
         } else if (hasFrameworkSelectionChanged) {
             const data = (selectedFramework.adapters.find((a) => a.key === adapter) ??
                 selectedFramework.adapters[0]) as FrameworkAdapterWithStartCommand;
+            const isOriginalAdapter = adapter === site.adapter;
 
-            adapter = site.adapter as Adapter;
-            installCommand = site?.installCommand ?? frameworkAdapterData.installCommand;
-            buildCommand = site?.buildCommand ?? frameworkAdapterData.buildCommand;
-            startCommand = site?.startCommand ?? frameworkAdapterData.startCommand;
-            outputDirectory = site?.outputDirectory ?? frameworkAdapterData.outputDirectory;
-            fallback = site?.fallbackFile ?? data.fallbackFile;
+            installCommand = isOriginalAdapter
+                ? site?.installCommand ?? frameworkAdapterData.installCommand
+                : data.installCommand;
+            buildCommand = isOriginalAdapter
+                ? site?.buildCommand ?? frameworkAdapterData.buildCommand
+                : data.buildCommand;
+            startCommand = isOriginalAdapter
+                ? site?.startCommand ?? frameworkAdapterData.startCommand
+                : data.startCommand;
+            outputDirectory = isOriginalAdapter
+                ? site?.outputDirectory ?? frameworkAdapterData.outputDirectory
+                : data.outputDirectory;
+            fallback = isOriginalAdapter ? site?.fallbackFile ?? data.fallbackFile : data.fallbackFile;
         }
 
         lastFrameworkAdapterKey = `${selectedFramework.key}:${adapter ?? ''}`;
