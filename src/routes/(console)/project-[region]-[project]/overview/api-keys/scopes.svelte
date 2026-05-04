@@ -234,18 +234,29 @@
                                 id={scope.scope}
                                 bind:checked={activeScopes[scope.scope]} />
                             <Layout.Stack gap="xxs">
-                                <Layout.Stack inline direction="row" alignItems="center" gap="xxs">
-                                    <label for={scope.scope}>
-                                        <Typography.Text variant="m-500"
-                                            >{scope.scope}</Typography.Text>
-                                    </label>
-                                    {#if scope.deprecated}
-                                        <Badge size="xs" variant="secondary" content="Deprecated" />
-                                    {/if}
-                                </Layout.Stack>
-                                <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
-                                    {scope.description}
-                                </Typography.Text>
+                                <label for={scope.scope}>
+                                    <Layout.Stack gap="xxs">
+                                        <Layout.Stack
+                                            inline
+                                            direction="row"
+                                            alignItems="center"
+                                            gap="xxs">
+                                            <Typography.Text variant="m-500"
+                                                >{scope.scope}</Typography.Text>
+                                            {#if scope.deprecated}
+                                                <Badge
+                                                    size="xs"
+                                                    variant="secondary"
+                                                    content="Deprecated" />
+                                            {/if}
+                                        </Layout.Stack>
+                                        <Typography.Text
+                                            variant="m-400"
+                                            color="--fgcolor-neutral-tertiary">
+                                            {scope.description}
+                                        </Typography.Text>
+                                    </Layout.Stack>
+                                </label>
                             </Layout.Stack>
                         </Layout.Stack>
                     {/each}
