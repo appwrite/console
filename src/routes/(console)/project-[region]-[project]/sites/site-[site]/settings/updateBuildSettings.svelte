@@ -89,18 +89,20 @@
             const isOriginalAdapter = adapter === site.adapter;
 
             installCommand = isOriginalAdapter
-                ? site?.installCommand ?? frameworkAdapterData.installCommand
+                ? (site?.installCommand ?? frameworkAdapterData.installCommand)
                 : data.installCommand;
             buildCommand = isOriginalAdapter
-                ? site?.buildCommand ?? frameworkAdapterData.buildCommand
+                ? (site?.buildCommand ?? frameworkAdapterData.buildCommand)
                 : data.buildCommand;
             startCommand = isOriginalAdapter
-                ? site?.startCommand ?? frameworkAdapterData.startCommand
+                ? (site?.startCommand ?? frameworkAdapterData.startCommand)
                 : data.startCommand;
             outputDirectory = isOriginalAdapter
-                ? site?.outputDirectory ?? frameworkAdapterData.outputDirectory
+                ? (site?.outputDirectory ?? frameworkAdapterData.outputDirectory)
                 : data.outputDirectory;
-            fallback = isOriginalAdapter ? site?.fallbackFile ?? data.fallbackFile : data.fallbackFile;
+            fallback = isOriginalAdapter
+                ? (site?.fallbackFile ?? data.fallbackFile)
+                : data.fallbackFile;
         }
 
         lastFrameworkAdapterKey = `${selectedFramework.key}:${adapter ?? ''}`;
