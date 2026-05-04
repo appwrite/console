@@ -13,7 +13,7 @@
         path={`${base}/project-${page.params.region}-${page.params.project}/sites/usage`}
         countMetadata={{
             legend: 'Sites',
-            title: 'Total sites'
+            title: 'Total site Deployments'
         }}
         {total}
         {count} />
