@@ -37,7 +37,15 @@
         type ScopeDefinition
     } from '$lib/constants';
     import { sdk } from '$lib/stores/sdk';
-    import { Accordion, Alert, Badge, Divider, Layout, Selector } from '@appwrite.io/pink-svelte';
+    import {
+        Accordion,
+        Alert,
+        Badge,
+        Divider,
+        Layout,
+        Selector,
+        Typography
+    } from '@appwrite.io/pink-svelte';
     import type { Scopes } from '@appwrite.io/console';
 
     let { scopes = $bindable([]) }: { scopes: Scopes[] } = $props();
@@ -220,16 +228,25 @@
                 on:change={(event) => onCategoryChange(event, category)}>
                 <Layout.Stack>
                     {#each filteredScopes.filter((s) => s.category === category) as scope}
-                        <Layout.Stack inline direction="row" alignItems="center" gap="xxs">
+                        <Layout.Stack inline direction="row" alignItems="flex-start" gap="s">
                             <Selector.Checkbox
                                 size="s"
                                 id={scope.scope}
-                                label={scope.scope}
-                                description={scope.description}
                                 bind:checked={activeScopes[scope.scope]} />
-                            {#if scope.deprecated}
-                                <Badge size="xs" variant="secondary" content="Deprecated" />
-                            {/if}
+                            <Layout.Stack gap="xxs">
+                                <Layout.Stack inline direction="row" alignItems="center" gap="xxs">
+                                    <label for={scope.scope}>
+                                        <Typography.Text variant="m-500"
+                                            >{scope.scope}</Typography.Text>
+                                    </label>
+                                    {#if scope.deprecated}
+                                        <Badge size="xs" variant="secondary" content="Deprecated" />
+                                    {/if}
+                                </Layout.Stack>
+                                <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
+                                    {scope.description}
+                                </Typography.Text>
+                            </Layout.Stack>
                         </Layout.Stack>
                     {/each}
                 </Layout.Stack>
@@ -237,3 +254,9 @@
         {/each}
     </Layout.Stack>
 </Layout.Stack>
+
+<style>
+    label {
+        cursor: pointer;
+    }
+</style>
