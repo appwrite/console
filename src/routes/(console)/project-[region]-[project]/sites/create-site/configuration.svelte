@@ -22,19 +22,15 @@
     export let outputDirectory = '';
 
     let frameworkId = selectedFramework.key;
+    let lastAdapterDefaultsKey = '';
 
-    $: if (!installCommand || !buildCommand || !startCommand || !outputDirectory) {
-        installCommand ||= adapterData?.installCommand;
-        buildCommand ||= adapterData?.buildCommand;
-        startCommand ||= adapterData?.startCommand;
-        outputDirectory ||= adapterData?.outputDirectory;
-    }
-
-    $: if (frameworkData) {
-        installCommand = adapterData?.installCommand;
-        buildCommand = adapterData?.buildCommand;
-        startCommand = adapterData?.startCommand;
-        outputDirectory = adapterData?.outputDirectory;
+    $: adapterDefaultsKey = `${frameworkData?.key ?? ''}:${adapterData?.key ?? ''}`;
+    $: if (frameworkData && adapterDefaultsKey !== lastAdapterDefaultsKey) {
+        installCommand = adapterData?.installCommand ?? '';
+        buildCommand = adapterData?.buildCommand ?? '';
+        startCommand = adapterData?.startCommand ?? '';
+        outputDirectory = adapterData?.outputDirectory ?? '';
+        lastAdapterDefaultsKey = adapterDefaultsKey;
     }
 </script>
 
