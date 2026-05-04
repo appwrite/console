@@ -1,5 +1,24 @@
 <script lang="ts">
-    import { Container } from '$lib/layout';
+    import { Container, UsageMultiple } from '$lib/layout';
+
+    export let data;
+
+    $: reads = data.databaseReads;
+    $: readsTotal = data.databaseReadsTotal;
+
+    $: writes = data.databaseWrites;
+    $: writesTotal = data.databaseWritesTotal;
 </script>
 
-<Container></Container>
+<Container databasesMainScreen>
+    <UsageMultiple
+        title="Reads and writes"
+        showHeader={false}
+        total={[readsTotal, writesTotal]}
+        count={[reads, writes]}
+        legendNumberFormat="abbreviate"
+        legendData={[
+            { name: 'Reads', value: readsTotal },
+            { name: 'Writes', value: writesTotal }
+        ]} />
+</Container>

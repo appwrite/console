@@ -14,6 +14,12 @@
             title: 'Databases',
             event: 'databases',
             hasChildren: true
+        },
+        {
+            href: `${path}/usage`,
+            title: 'Usage',
+            event: 'usage',
+            hasChildren: true
         }
     ];
 </script>
