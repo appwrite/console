@@ -16,7 +16,11 @@
     import Configuration from '../configuration.svelte';
     import { regionalConsoleVariables } from '../../../store';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
-    import { InvalidFileType, removeFile } from '$lib/helpers/files';
+    import {
+        getInvalidDeploymentArchiveReason,
+        InvalidFileType,
+        removeFile
+    } from '$lib/helpers/files';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { isCloud } from '$lib/system';
     import { currentPlan } from '$lib/stores/organization';
@@ -101,7 +105,6 @@
                 code: files[0],
                 buildCommand: buildCommand || undefined,
                 installCommand: installCommand || undefined,
-                startCommand: startCommand || undefined,
                 outputDirectory: outputDirectory || undefined
             });
 
@@ -115,7 +118,9 @@
             });
 
             await promise;
-            const upload = $uploader.files.find((f) => f.resourceId === site.$id);
+            const upload = $uploader.files.find(
+                (f) => f.resourceId === site.$id && f.kind === 'site-deployment'
+            );
 
             if (upload?.status === 'success') {
                 const deploymentId = upload.$id;
@@ -129,9 +134,11 @@
                 await goto(`${resolvedPath}?site=${site.$id}&deployment=${deploymentId}`);
             }
         } catch (e) {
-            const upload = $uploader.files.find((f) => f.resourceId === site?.$id);
+            const upload = $uploader.files.find(
+                (f) => f.resourceId === site?.$id && f.kind === 'site-deployment'
+            );
             if (upload) {
-                uploader.removeFromQueue(upload.$id);
+                uploader.removeFromQueue(upload.clientId);
             }
             addNotification({
                 type: 'error',
@@ -145,17 +152,7 @@
         let reason = e.detail?.reason ?? '';
 
         if (!reason) {
-            const nativeEvent = e.detail as Event | undefined;
-            const input = (nativeEvent?.currentTarget ?? nativeEvent?.target) as
-                | HTMLInputElement
-                | undefined;
-            const pickedFiles = Array.from(input?.files ?? []);
-
-            if (pickedFiles.some((file) => file.size > maxSize)) {
-                reason = InvalidFileType.SIZE;
-            } else if (pickedFiles.some((file) => !file.name.toLowerCase().endsWith('.tar.gz'))) {
-                reason = InvalidFileType.EXTENSION;
-            }
+            reason = getInvalidDeploymentArchiveReason(files, maxSize) ?? '';
         }
 
         if (reason === InvalidFileType.EXTENSION) {
@@ -173,6 +170,15 @@
                 type: 'error',
                 message: 'Invalid file'
             });
+        }
+    }
+
+    $: if (files?.length) {
+        const reason = getInvalidDeploymentArchiveReason(files, maxSize);
+
+        if (reason) {
+            files = undefined;
+            handleInvalid(new CustomEvent('invalid', { detail: { reason } }));
         }
     }
 
@@ -205,7 +211,7 @@
                     Upload a tar.gz containing your site source code
                 </Typography.Text>
                 <Upload.Dropzone
-                    extensions={['gz', 'tar']}
+                    extensions={['gz']}
                     bind:files
                     {maxSize}
                     required
