@@ -28,7 +28,7 @@
 
 <Container>
     <Layout.Stack gap="l">
-        {#if count}
+        {#if count.length}
             <Usage
                 path={`${base}/project-${page.params.region}-${page.params.project}/functions/function-${page.params.function}/usage`}
                 countMetadata={{
