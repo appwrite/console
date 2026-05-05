@@ -156,7 +156,7 @@
         } else if (reason === InvalidFileType.SIZE) {
             addNotification({
                 type: 'error',
-                message: 'File size exceeds 10MB'
+                message: `File size exceeds ${readableMaxSize.value}${readableMaxSize.unit}`
             });
         } else {
             addNotification({
@@ -188,9 +188,9 @@
         : [];
 
     $: maxSize =
-        isCloud && $currentPlan
+        isCloud && $currentPlan?.deploymentSize
             ? $currentPlan.deploymentSize * 1000000
-            : $regionalConsoleVariables._APP_COMPUTE_SIZE_LIMIT; // already in MB
+            : $regionalConsoleVariables._APP_COMPUTE_SIZE_LIMIT;
 
     $: readableMaxSize = humanFileSize(maxSize);
 </script>
