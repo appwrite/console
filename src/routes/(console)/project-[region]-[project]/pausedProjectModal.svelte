@@ -104,22 +104,35 @@
     </Layout.Stack>
 
     <svelte:fragment slot="footer">
-        <Layout.Stack direction="row" justifyContent="space-between">
-            <Button text disabled={loading} on:click={handleBackToOrganization}>
-                Back to organization
-            </Button>
-            <Layout.Stack direction="row" justifyContent="flex-end">
-                <Button secondary disabled={loading} on:click={handleResume}>
+        {#if $isSmallViewport}
+            <Layout.Stack gap="xs">
+                <Button disabled={loading} fullWidth on:click={handleResume}>
                     {#if loading}
                         Restoring...
                     {:else}
                         Restore project
                     {/if}
                 </Button>
-                {#if !$isSmallViewport}
-                    <Button disabled={loading} on:click={handleUpgrade}>Upgrade</Button>
-                {/if}
+                <Button text disabled={loading} fullWidth on:click={handleBackToOrganization}>
+                    Go to organization
+                </Button>
             </Layout.Stack>
-        </Layout.Stack>
+        {:else}
+            <Layout.Stack direction="row" justifyContent="space-between">
+                <Button text disabled={loading} on:click={handleBackToOrganization}>
+                    Back to organization
+                </Button>
+                <Layout.Stack direction="row" justifyContent="flex-end">
+                    <Button secondary disabled={loading} on:click={handleResume}>
+                        {#if loading}
+                            Restoring...
+                        {:else}
+                            Restore project
+                        {/if}
+                    </Button>
+                    <Button disabled={loading} on:click={handleUpgrade}>Upgrade</Button>
+                </Layout.Stack>
+            </Layout.Stack>
+        {/if}
     </svelte:fragment>
 </Modal>

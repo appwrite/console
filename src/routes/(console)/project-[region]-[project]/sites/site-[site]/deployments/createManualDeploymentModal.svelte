@@ -26,9 +26,9 @@
     let error: string = '';
 
     $: maxSize =
-        isCloud && $currentPlan
+        isCloud && $currentPlan?.deploymentSize
             ? $currentPlan.deploymentSize * 1000000
-            : $consoleVariables._APP_COMPUTE_SIZE_LIMIT; // already in MB
+            : $consoleVariables._APP_COMPUTE_SIZE_LIMIT;
 
     $: readableMaxSize = humanFileSize(maxSize);
 
@@ -58,7 +58,7 @@
         if (reason === InvalidFileType.EXTENSION) {
             error = 'Only .tar.gz files allowed';
         } else if (reason === InvalidFileType.SIZE) {
-            error = 'File size exceeds 10MB';
+            error = `File size exceeds ${readableMaxSize.value}${readableMaxSize.unit}`;
         } else {
             error = 'Invalid file';
         }
