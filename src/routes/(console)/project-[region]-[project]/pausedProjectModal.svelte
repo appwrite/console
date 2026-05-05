@@ -75,9 +75,11 @@
         );
     }
 
-    const upgradeHref = resolve('/(console)/organization-[organization]/change-plan', {
-        organization: teamId
-    });
+    const upgradeHref = $derived(
+        resolve('/(console)/organization-[organization]/change-plan', {
+            organization: teamId
+        })
+    );
 </script>
 
 <Modal title="Project paused" bind:open={show} size="m" dismissible={false}>
