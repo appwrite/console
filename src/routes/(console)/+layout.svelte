@@ -322,7 +322,7 @@
 
     $registerSearchers(orgSearcher, projectsSearcher);
 
-    $: void $headerAlert, ($activeHeaderAlert = headerAlert.getExcluding('impersonation'));
+    $: (void $headerAlert, ($activeHeaderAlert = headerAlert.getExcluding('impersonation')));
 </script>
 
 <CommandCenter />
