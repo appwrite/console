@@ -31,6 +31,11 @@ export type Uploader = {
     groups: UploadGroups;
 };
 
+type UploadProgress = {
+    $id: string;
+    progress: number;
+};
+
 const temporaryStorage = (region: string, projectId: string) => {
     const clientProject = new Client().setMode('admin');
     const endpoint = getApiEndpoint(region);
@@ -210,7 +215,7 @@ const createUploader = () => {
         resourceId: string,
         name: string,
         size: number,
-        request: () => Promise<Models.Deployment>
+        request: (onProgress: (progress: UploadProgress) => void) => Promise<Models.Deployment>
     ) => {
         const newDeployment: UploaderFile = {
             $id: '',
@@ -226,7 +231,12 @@ const createUploader = () => {
         addFileToQueue(newDeployment);
 
         try {
-            const uploadedFile = await request();
+            const uploadedFile = await request((progress) => {
+                newDeployment.$id = progress.$id;
+                newDeployment.progress = progress.progress;
+                newDeployment.status = progress.progress === 100 ? 'success' : 'pending';
+                updateFile(newDeployment.clientId, newDeployment);
+            });
             newDeployment.$id = uploadedFile.$id;
             newDeployment.progress = 100;
             newDeployment.status = 'success';
@@ -262,13 +272,14 @@ const createUploader = () => {
             installCommand?: string;
             outputDirectory?: string;
         }) => {
-            return uploadDeployment('site-deployment', siteId, code.name, code.size, async () =>
+            return uploadDeployment('site-deployment', siteId, code.name, code.size, (onProgress) =>
                 temporarySites(page.params.region, page.params.project).createDeployment({
                     siteId,
                     code,
                     activate: true,
                     buildCommand,
                     installCommand,
+                    onProgress,
                     outputDirectory
                 })
             );
@@ -285,11 +296,12 @@ const createUploader = () => {
                 functionId,
                 code.name,
                 code.size,
-                async () =>
+                (onProgress) =>
                     temporaryFunctions(page.params.region, page.params.project).createDeployment({
                         functionId,
                         code,
-                        activate: true
+                        activate: true,
+                        onProgress
                     })
             );
         },

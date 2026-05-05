@@ -80,10 +80,6 @@ export async function gzipUpload(files: FileList) {
     return uploadFile;
 }
 
-export function isTarGzFile(file: File) {
-    return file.name.toLowerCase().endsWith('.tar.gz');
-}
-
 export function getInvalidDeploymentArchiveReason(
     files: FileList | File[] | null | undefined,
     maxSize?: number
@@ -93,10 +89,10 @@ export function getInvalidDeploymentArchiveReason(
     const normalizedFiles = Array.from(files);
 
     if (!normalizedFiles.length) return null;
-    if (maxSize && normalizedFiles.some((file) => file.size > maxSize)) {
+    if (maxSize !== undefined && normalizedFiles.some((file) => file.size > maxSize)) {
         return InvalidFileType.SIZE;
     }
-    if (normalizedFiles.some((file) => !isTarGzFile(file))) {
+    if (normalizedFiles.some((file) => !file.name.toLowerCase().endsWith('.tar.gz'))) {
         return InvalidFileType.EXTENSION;
     }
 
