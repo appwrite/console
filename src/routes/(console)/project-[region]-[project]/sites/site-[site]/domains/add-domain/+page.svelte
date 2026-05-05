@@ -29,6 +29,7 @@
     } from '$routes/(console)/project-[region]-[project]/store';
     import { isCloud } from '$lib/system';
     import { getApexDomain } from '$lib/helpers/tlds';
+    import { isProxyRuleVerified } from '$lib/components/domains/status';
 
     const routeBase = `${base}/project-${page.params.region}-${page.params.project}/sites/site-${page.params.site}/domains`;
 
@@ -110,7 +111,7 @@
 
             await invalidate(Dependencies.SITES_DOMAINS);
 
-            const verified = rule?.status !== 'created';
+            const verified = isProxyRuleVerified(rule?.status);
             if (verified) {
                 addNotification({
                     type: 'success',

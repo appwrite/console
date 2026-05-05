@@ -25,6 +25,7 @@
     import { isCloud } from '$lib/system';
     import { getApexDomain } from '$lib/helpers/tlds';
     import { resolveRoute } from '$lib/stores/navigation';
+    import { isProxyRuleVerified } from '$lib/components/domains/status';
 
     let { data } = $props();
 
@@ -108,7 +109,7 @@
 
             await invalidate(Dependencies.FUNCTION_DOMAINS);
 
-            const verified = rule?.status !== 'created';
+            const verified = isProxyRuleVerified(rule?.status);
             if (verified) {
                 addNotification({
                     type: 'success',
