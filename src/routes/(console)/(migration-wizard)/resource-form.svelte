@@ -140,7 +140,7 @@
             storage: 'bucket',
             sites: 'site',
             messaging: 'provider',
-            backups: 'backuppolicy'
+            backups: 'backup-policy'
         };
         return map[groupKey] || groupKey;
     };
