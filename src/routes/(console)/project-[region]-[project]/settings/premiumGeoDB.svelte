@@ -88,9 +88,9 @@
 
 <CardGrid>
     <svelte:fragment slot="title">Premium Geo DB</svelte:fragment>
-    Enrich session and request data with premium geolocation details such as timezone, postal code, ISP,
-    connection type, and organization. Useful for fine-grained analytics, fraud detection, and personalized
-    user experiences.
+    Know exactly where your users are and how they're connecting. Tailor pricing, currency and language
+    by region, meet local compliance requirements, and catch risky sign-ins before they cause damage —
+    all without writing a line of geo lookup code.
     <svelte:fragment slot="aside">
         <Box>
             <h6>
