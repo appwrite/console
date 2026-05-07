@@ -14,7 +14,9 @@ export async function enterCreditCard(page: Page) {
         state: 'visible'
     });
     await page.getByPlaceholder('cardholder').fill('Test User');
-    const stripe = page.frameLocator('[title="Secure payment input frame"]');
+    // Stripe.js mounts an extra hidden iframe with the same title for ACH bank search.
+    // Pick the first (visible) frame so locator queries don't hit strict-mode violations.
+    const stripe = page.frameLocator('[title="Secure payment input frame"]').first();
     await stripe.locator('id=Field-numberInput').fill('4242424242424242');
     await stripe.locator('id=Field-expiryInput').fill('1250');
     await stripe.locator('id=Field-cvcInput').fill('123');
