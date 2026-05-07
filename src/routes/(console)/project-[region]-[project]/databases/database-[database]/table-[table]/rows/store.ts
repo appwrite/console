@@ -7,7 +7,7 @@ type RowPrimitive = string | number | bigint | boolean | null | undefined;
 interface RowObject {
     [key: string]: RowValue;
 }
-type RowValue = RowPrimitive | RowValue[] | RowObject;
+export type RowValue = RowPrimitive | RowValue[] | RowObject;
 
 export function isRelationshipToMany(field: Field) {
     if (!field) return false;

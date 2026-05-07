@@ -13,10 +13,6 @@ export function isProxyRuleVerified(status: ProxyRuleStatusValue): boolean {
 }
 
 export function normalizeProxyRuleStatus(status: ProxyRuleStatusValue): ProxyRuleStatusValue {
-    if (status === ProxyRuleStatus.Created) {
-        return ProxyRuleStatus.Unverified;
-    }
-
     return status;
 }
 
