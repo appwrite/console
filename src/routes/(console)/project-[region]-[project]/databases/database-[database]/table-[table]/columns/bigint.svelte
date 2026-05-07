@@ -47,6 +47,7 @@
 </script>
 
 <script lang="ts">
+    import { untrack } from 'svelte';
     import { Layout } from '@appwrite.io/pink-svelte';
     import { InputNumber } from '$lib/elements/forms';
     import { createConservative } from '$lib/helpers/stores';
@@ -93,8 +94,11 @@
         listen(data);
     });
 
+    // untrack: handleDefaultState reads and writes data.default, which would make
+    // this effect depend on the state it writes and trigger an infinite update loop.
     $effect(() => {
-        handleDefaultState($required || $array);
+        const hideDefault = $required || $array;
+        untrack(() => handleDefaultState(hideDefault));
     });
 </script>
 
