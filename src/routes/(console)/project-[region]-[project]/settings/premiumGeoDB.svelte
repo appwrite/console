@@ -88,9 +88,9 @@
 
 <CardGrid>
     <svelte:fragment slot="title">Premium Geo DB</svelte:fragment>
-    Know exactly where your users are and how they're connecting. Tailor pricing, currency and language
-    by region, meet local compliance requirements, and catch risky sign-ins before they cause damage —
-    all without writing a line of geo lookup code.
+    Give your project richer location intelligence on every user. Tailor pricing by region, surface
+    the right currency and language, comply with local regulations, and spot suspicious sign-ins
+    before they cause damage — all without leaving Appwrite.
     <svelte:fragment slot="aside">
         <Box>
             <h6>
