@@ -34,7 +34,8 @@
         paginatedRows,
         paginatedRowsLoading,
         databaseRelatedRowSheetOptions,
-        rowPermissionSheet
+        rowPermissionSheet,
+        INTERNAL_ACTIONS_COLUMN_ID
     } from '$database/table-[table]/store';
     import { buildFieldUrl } from '$database/(entity)/helpers/navigation';
     import type { Column, ColumnType } from '$lib/helpers/types';
@@ -167,7 +168,7 @@
 
     function setupColumns() {
         const order = preferences.getColumnOrder(tableId);
-        const systemColumns = new Set(['$id', 'actions']);
+        const systemColumns = new Set(['$id', INTERNAL_ACTIONS_COLUMN_ID]);
 
         const validColumnKeys = new Set([
             ...$columns.map((col) => col.key),
@@ -209,6 +210,7 @@
 
     function makeTableColumns() {
         const selectedColumnsToHide = preferences.getCustomTableColumns(tableId);
+        const staticColumnIds = new Set(['$id', INTERNAL_ACTIONS_COLUMN_ID]);
 
         const baseColumns: Column[] = table.fields.map((field: Field) => {
             return {
@@ -263,7 +265,7 @@
                 hide: !!selectedColumnsToHide?.includes('$updatedAt')
             },
             {
-                id: 'actions',
+                id: INTERNAL_ACTIONS_COLUMN_ID,
                 title: '',
                 width: 40,
                 isAction: true,
@@ -279,7 +281,10 @@
         const fixedRightColumn = staticColumns[3];
 
         const reorderableColumns = [...baseColumns, staticColumns[1], staticColumns[2]];
-        const reorderedColumns = reorderItems(reorderableColumns, $columnsOrder);
+        const reorderedColumns = reorderItems(
+            reorderableColumns,
+            $columnsOrder.filter((columnId) => !staticColumnIds.has(columnId))
+        );
 
         const finalColumns = [fixedLeftColumn, ...reorderedColumns, fixedRightColumn];
 
@@ -883,7 +888,7 @@
             <svelte:fragment slot="header" let:root>
                 {#each $tableColumns as column (column.id)}
                     {#if column.isAction}
-                        <Spreadsheet.Header.Cell column="actions" {root}>
+                        <Spreadsheet.Header.Cell column={INTERNAL_ACTIONS_COLUMN_ID} {root}>
                             <Tooltip>
                                 <Button.Button
                                     icon
@@ -1040,7 +1045,7 @@
                                             showDatetime
                                             time={row[columnId]}
                                             canShowPopover={canShowDatetimePopover} />
-                                    {:else if columnId === 'actions'}
+                                    {:else if columnId === INTERNAL_ACTIONS_COLUMN_ID}
                                         <SpreadsheetOptions
                                             type="row"
                                             column={rowColumn}

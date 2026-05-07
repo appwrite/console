@@ -93,7 +93,7 @@
         return [...idColumn, ...columns.filter((column) => !column.isAction), ...systemColumns];
     }
 
-    $: selected = preferences.getCustomTableColumns(page.params.table);
+    $: selected = preferences.getCustomTableColumns(table.$id);
 
     $: if (table.fields) {
         const freshColumns = createTableColumns(table.fields, selected);
@@ -173,7 +173,7 @@
     onDestroy(() => ($showCreateColumnSheet.show = false));
 </script>
 
-{#key page.params.table}
+{#key table.$id}
     <Container expanded expandHeightButton style="background: var(--bgcolor-neutral-primary)">
         <Layout.Stack direction="column" gap="xl">
             <Layout.Stack direction="row" justifyContent="space-between">

@@ -14,6 +14,18 @@ export const backupsBannerId = 'banner:databaseBackups';
 
 export const showPolicyAlert = writable<boolean>(false);
 
+type SubNavigationEntity = {
+    $id: string;
+    name: string;
+};
+
+type SubNavigationEvent =
+    | {
+          type: 'entity-created';
+          entity: SubNavigationEntity;
+      }
+    | undefined;
+
 export async function checkForDatabaseBackupPolicies(
     region: string,
     projectId: string,
@@ -50,17 +62,17 @@ export async function checkForDatabaseBackupPolicies(
 }
 
 function createSubNavigationTrigger() {
-    const subscribers = new Set<() => void>();
+    const subscribers = new Set<(event?: SubNavigationEvent) => void>();
 
     return {
-        subscribe: (callback: () => void) => {
+        subscribe: (callback: (event?: SubNavigationEvent) => void) => {
             subscribers.add(callback);
             return () => {
                 subscribers.delete(callback);
             };
         },
-        update: () => {
-            subscribers.forEach((callback) => callback());
+        update: (event?: SubNavigationEvent) => {
+            subscribers.forEach((callback) => callback(event));
         }
     };
 }

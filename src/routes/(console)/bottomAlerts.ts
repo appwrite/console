@@ -1,32 +1,33 @@
 import { isCloud } from '$lib/system';
 import { isSameDay } from '$lib/helpers/date';
 import { type BottomModalAlertItem, showBottomModalAlert } from '$lib/stores/bottom-alerts';
-import WebhooksApi from '$lib/images/promos/webhooks-api.png';
+import TerraformProvider from '$lib/images/promos/terraform-provider.png';
 
 const listOfPromotions: BottomModalAlertItem[] = [];
 
 if (isCloud) {
-    const webhooksApiPromo: BottomModalAlertItem = {
-        id: 'modal:webhooks_api_announcement',
+    const terraformProviderPromo: BottomModalAlertItem = {
+        id: 'modal:terraform_provider_announcement',
         src: {
-            dark: WebhooksApi,
-            light: WebhooksApi
+            dark: TerraformProvider,
+            light: TerraformProvider
         },
-        title: 'Announcing the Webhooks API',
-        message: 'Manage webhooks programmatically with Server SDKs and API keys.',
+        title: 'Introducing Terraform support for Appwrite projects',
+        message:
+            'Manage your entire Appwrite project as code with the official Terraform provider.',
         plan: 'free',
         importance: 8,
         scope: 'everywhere',
         cta: {
             text: 'Read announcement',
-            link: () => 'https://appwrite.io/blog/post/announcing-webhooks-api',
+            link: () => 'https://appwrite.io/blog/post/introducing-terraform-provider-for-appwrite',
             external: true,
             hideOnClick: true,
             skipUpgradeRedirect: true
         },
         show: true
     };
-    listOfPromotions.push(webhooksApiPromo);
+    listOfPromotions.push(terraformProviderPromo);
 }
 
 export function addBottomModalAlerts() {

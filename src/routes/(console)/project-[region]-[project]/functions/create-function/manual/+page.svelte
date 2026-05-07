@@ -19,7 +19,11 @@
     import Configuration from './configuration.svelte';
     import { getIconFromRuntime } from '$lib/stores/runtimes';
     import { regionalConsoleVariables } from '../../../store';
-    import { InvalidFileType, removeFile } from '$lib/helpers/files';
+    import {
+        getInvalidDeploymentArchiveReason,
+        InvalidFileType,
+        removeFile
+    } from '$lib/helpers/files';
     import { isCloud } from '$lib/system';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { currentPlan } from '$lib/stores/organization';
@@ -32,7 +36,7 @@
     const runtimeOptions = data.runtimesList.runtimes.map((runtime) => {
         const { $id: value, name, version, key } = runtime;
         const label = `${name} - ${version}`;
-        const iconName = getIconFromRuntime(key);
+        const iconName = getIconFromRuntime(key) ?? 'empty';
         const iconSrc = iconFor(iconName, 'color');
         const leadingHtml = `<img src='${iconSrc}' alt='${iconName}' style='inline-size: var(--icon-size-m)' />`;
 
@@ -108,7 +112,9 @@
             });
 
             await promise;
-            const upload = $uploader.files.find((f) => f.resourceId === func.$id);
+            const upload = $uploader.files.find(
+                (f) => f.resourceId === func.$id && f.kind === 'function-deployment'
+            );
 
             if (upload?.status === 'success') {
                 const deploymentId = upload.$id;
@@ -126,9 +132,11 @@
 
             invalidate(Dependencies.FUNCTION);
         } catch (e) {
-            const upload = $uploader.files.find((f) => f.resourceId === func?.$id);
+            const upload = $uploader.files.find(
+                (f) => f.resourceId === func?.$id && f.kind === 'function-deployment'
+            );
             if (upload) {
-                uploader.removeFromQueue(upload.$id);
+                uploader.removeFromQueue(upload.clientId);
             }
             addNotification({
                 type: 'error',
@@ -148,13 +156,22 @@
         } else if (reason === InvalidFileType.SIZE) {
             addNotification({
                 type: 'error',
-                message: 'File size exceeds 10MB'
+                message: `File size exceeds ${readableMaxSize.value}${readableMaxSize.unit}`
             });
         } else {
             addNotification({
                 type: 'error',
                 message: 'Invalid file'
             });
+        }
+    }
+
+    $: if (files?.length) {
+        const reason = getInvalidDeploymentArchiveReason(files, maxSize);
+
+        if (reason) {
+            files = undefined;
+            handleInvalid(new CustomEvent('invalid', { detail: { reason } }));
         }
     }
 
@@ -171,9 +188,9 @@
         : [];
 
     $: maxSize =
-        isCloud && $currentPlan
+        isCloud && $currentPlan?.deploymentSize
             ? $currentPlan.deploymentSize * 1000000
-            : $regionalConsoleVariables._APP_COMPUTE_SIZE_LIMIT; // already in MB
+            : $regionalConsoleVariables._APP_COMPUTE_SIZE_LIMIT;
 
     $: readableMaxSize = humanFileSize(maxSize);
 </script>
@@ -198,7 +215,7 @@
                 <Upload.Dropzone
                     bind:files
                     title="Upload function"
-                    extensions={['gz', 'tar']}
+                    extensions={['gz']}
                     {maxSize}
                     required
                     on:invalid={handleInvalid}>

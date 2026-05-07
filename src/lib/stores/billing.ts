@@ -518,7 +518,7 @@ export async function checkPaymentAuthorizationRequired(org: Models.Organization
             importance: 8
         });
     }
-    activeHeaderAlert.set(headerAlert.get());
+    activeHeaderAlert.set(headerAlert.getExcluding('impersonation'));
 
     actionRequiredInvoices.set(invoices);
 }

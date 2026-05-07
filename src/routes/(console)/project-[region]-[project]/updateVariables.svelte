@@ -64,6 +64,7 @@
     export let backendPagination = false;
     export let variablesOffset = 0;
     export let variablesLimit = 10;
+    export let disabled = false;
 
     let selectedVar: Models.Variable = null;
     let showVariablesUpload = false;
@@ -400,7 +401,9 @@
                 <Layout.Stack direction="row" gap="s" wrap={$isSmallViewport ? 'wrap' : 'nowrap'}>
                     <Button
                         secondary
+                        {disabled}
                         on:mousedown={async () => {
+                            if (disabled) return;
                             await ensureAllVariablesLoaded();
                             showEditorModal = true;
                             trackEvent(Click.VariablesUpdateClick, { source: analyticsSource });
@@ -409,7 +412,9 @@
                     </Button>
                     <Button
                         secondary
+                        {disabled}
                         on:mousedown={async () => {
+                            if (disabled) return;
                             await ensureAllVariablesLoaded();
                             showVariablesUpload = true;
                             trackEvent(Click.VariablesUpdateClick, { source: analyticsSource });
@@ -420,7 +425,9 @@
                 {#if variableList.total}
                     <Button
                         secondary
+                        {disabled}
                         on:mousedown={() => {
+                            if (disabled) return;
                             showVariablesModal = true;
                             trackEvent(Click.VariablesCreateClick, { source: 'project_settings' });
                         }}>
@@ -500,8 +507,10 @@
                                     <Button
                                         text
                                         icon
+                                        {disabled}
                                         on:click={(e) => {
                                             e.preventDefault();
+                                            if (disabled) return;
                                             toggle(e);
                                         }}>
                                         <Icon size="s" icon={IconDotsHorizontal} />
@@ -573,7 +582,7 @@
                 {/if}
             </Layout.Stack>
         {:else}
-            <Empty on:click={() => (showVariablesModal = true)}>
+            <Empty {disabled} on:click={() => (showVariablesModal = true)}>
                 Create a {isGlobal ? 'global variable' : 'variable'} to get started
             </Empty>
         {/if}
