@@ -175,6 +175,14 @@
                     });
 
                     if (!outcome || outcome.status === 'error') {
+                        try {
+                            await sdk.forConsole.organizations.validatePayment({
+                                organizationId: org.organizationId,
+                                invites: []
+                            });
+                        } catch {
+                            // expected: backend throws BILLING_PAYMENT_FAILED after deleting the draft team
+                        }
                         return;
                     }
 

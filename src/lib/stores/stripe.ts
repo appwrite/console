@@ -200,11 +200,10 @@ export async function confirmPayment(config: {
     const { clientSecret, paymentMethodId, orgId, route, redirectIfRequired } = config;
 
     try {
-        const resolvedUrl = resolve('/(console)/organization-[organization]/billing', {
-            organization: orgId
-        });
-
-        const url = window.location.origin + (route ? route : resolvedUrl);
+        const url =
+            window.location.origin +
+            (route ??
+                resolve('/(console)/organization-[organization]/billing', { organization: orgId }));
 
         const paymentMethod = await sdk.forConsole.account.getPaymentMethod({ paymentMethodId });
 
@@ -252,16 +251,19 @@ export async function confirmPayment(config: {
             throw error.message;
         }
     } catch (e) {
+        const underlying =
+            typeof e === 'string' ? e : ((e as { message?: string })?.message ?? null);
         addNotification({
             title: 'Error',
             message:
+                underlying ??
                 'There was an error processing your payment, try again later. If the problem persists, please contact support.',
             type: 'error'
         });
         if (redirectIfRequired) {
             return {
                 status: 'error',
-                message: typeof e === 'string' ? e : (e?.message ?? 'Payment confirmation failed')
+                message: underlying ?? 'Payment confirmation failed'
             };
         }
     }
