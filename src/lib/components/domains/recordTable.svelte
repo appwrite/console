@@ -11,6 +11,7 @@
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
     import { getSubdomain } from '$lib/helpers/tlds';
     import { isCloud } from '$lib/system';
+    import { getProxyRuleStatusBadge } from './status';
 
     let {
         domain,
@@ -72,20 +73,13 @@
                 {domain}
             </Typography.Text>
             {#if verified !== undefined}
-                {#if ruleStatus === 'created'}
+                {@const statusBadge = getProxyRuleStatusBadge(ruleStatus)}
+                {#if statusBadge}
                     <Badge
                         variant="secondary"
-                        type="error"
+                        type={statusBadge.type}
                         size="xs"
-                        content="Verification failed" />
-                {:else if ruleStatus === 'verifying'}
-                    <Badge variant="secondary" size="xs" content="Generating certificate" />
-                {:else if ruleStatus === 'unverified'}
-                    <Badge
-                        variant="secondary"
-                        type="error"
-                        size="xs"
-                        content="Certificate generation failed" />
+                        content={statusBadge.content} />
                 {:else if verified === true}
                     <Badge variant="secondary" type="success" size="xs" content="Verified" />
                 {/if}
@@ -143,6 +137,8 @@
                     Since <Badge variant="secondary" size="s" content={domain} /> is an apex domain, CNAME
                     record is only supported by certain providers. If yours doesn't, please verify using
                     <Link variant="muted" on:click={onNavigateToNameservers}>nameservers</Link> instead.
+                    If you're using Cloudflare or another CDN, make sure the proxy is disabled (set to
+                    DNS only) for this record, since Appwrite serves your domain through its own CDN.
                 </Alert.Inline>
             {:else if aTabVisible || aaaaTabVisible}
                 <Alert.Inline>
@@ -155,7 +151,9 @@
                             >{/if}
                     {:else if aaaaTabVisible}
                         <Link variant="muted" on:click={onNavigateToAAAA}>AAAA record</Link>
-                    {/if} instead.
+                    {/if} instead. If you're using Cloudflare or another CDN, make sure the proxy is disabled
+                    (set to DNS only) for this record, since Appwrite serves your domain through its own
+                    CDN.
                 </Alert.Inline>
             {/if}
         {:else}

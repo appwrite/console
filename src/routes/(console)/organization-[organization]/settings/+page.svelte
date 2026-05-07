@@ -75,7 +75,7 @@
 
         {#if isCloud}
             <DownloadDPA />
-            <Baa locale={data.locale} countryList={data.countryList} />
+            <Baa addons={data.addons} addonPrice={data.addonPrice} />
             <Soc2 locale={data.locale} countryList={data.countryList} />
         {/if}
 

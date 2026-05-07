@@ -1,9 +1,9 @@
 import { writable } from 'svelte/store';
-import { type Models, AuthMethod as AuthMethodEnum } from '@appwrite.io/console';
+import { type Models, MethodId } from '@appwrite.io/console';
 
 export type AuthMethod = {
     label: string;
-    method: AuthMethodEnum;
+    method: MethodId;
     value: boolean | null;
 };
 
@@ -11,37 +11,37 @@ const setAuthMethod = (project: Models.Project): AuthMethod[] => {
     return [
         {
             label: 'Email/Password',
-            method: AuthMethodEnum.Emailpassword,
+            method: MethodId.Emailpassword,
             value: project?.authEmailPassword
         },
         {
             label: 'Phone',
-            method: AuthMethodEnum.Phone,
+            method: MethodId.Phone,
             value: project?.authPhone
         },
         {
             label: 'Magic URL',
-            method: AuthMethodEnum.Magicurl,
+            method: MethodId.Magicurl,
             value: project?.authUsersAuthMagicURL
         },
         {
             label: 'Email OTP',
-            method: AuthMethodEnum.Emailotp,
+            method: MethodId.Emailotp,
             value: project?.authEmailOtp
         },
         {
             label: 'Anonymous',
-            method: AuthMethodEnum.Anonymous,
+            method: MethodId.Anonymous,
             value: project?.authAnonymous
         },
         {
             label: 'Team Invites',
-            method: AuthMethodEnum.Invites,
+            method: MethodId.Invites,
             value: project?.authInvites
         },
         {
             label: 'JWT',
-            method: AuthMethodEnum.Jwt,
+            method: MethodId.Jwt,
             value: project?.authJWT
         }
     ];

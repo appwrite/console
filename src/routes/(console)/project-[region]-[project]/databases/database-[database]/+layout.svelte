@@ -29,6 +29,7 @@
     import { realtime } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { getProjectId } from '$lib/helpers/project';
+    import { subNavigation } from '$lib/stores/database';
 
     let {
         children
@@ -61,6 +62,7 @@
     }
 
     async function createEntity(entityId: string, name: string, dimension?: number) {
+        const shouldSuggestColumns = $entityColumnSuggestions.enabled;
         const entity = await databaseSdk.createEntity({
             databaseId,
             entityId,
@@ -69,6 +71,7 @@
         });
 
         await invalidate(Dependencies.DATABASE);
+        await invalidate(Dependencies.TABLES);
         await goto(
             withPath(
                 resolveRoute(
@@ -79,12 +82,26 @@
             )
         );
 
-        if ($entityColumnSuggestions.enabled) {
-            $randomDataModalState.columns = true;
-            await $randomDataModalState.onSubmit?.();
-        }
+        subNavigation.update({
+            type: 'entity-created',
+            entity: {
+                $id: entity.$id,
+                name: entity.name
+            }
+        });
 
-        resetSampleFieldsConfig();
+        if (shouldSuggestColumns) {
+            entityColumnSuggestions.update((store) => ({
+                ...store,
+                enabled: true,
+                thinking: true,
+                force: true,
+                entity: {
+                    id: entity.$id,
+                    name: entity.name
+                }
+            }));
+        }
     }
 
     $effect(() => {

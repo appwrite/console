@@ -6,8 +6,7 @@
     import { pageToOffset } from '$lib/helpers/load';
     import { Skeleton } from '@appwrite.io/pink-svelte';
     import { type Models, Query } from '@appwrite.io/console';
-    import { getTerminologies, type Record, toSupportiveRecord } from '$database/(entity)';
-    import { getCollectionService } from '$database/(entity)/helpers/sdk';
+    import { type Record, toSupportiveRecord } from '$database/(entity)';
 
     const {
         record
@@ -20,8 +19,6 @@
     let loading = $state(true);
     let recordActivityLogs = $state<Models.LogList | null>(null);
 
-    const { terminology } = getTerminologies();
-
     onMount(loadRecordLogs);
 
     async function loadRecordLogs(event?: CustomEvent<number>) {
@@ -33,28 +30,14 @@
 
         const { $databaseId: databaseId, entityId, $id: recordId } = toSupportiveRecord(record);
 
-        if (terminology.type === 'documentsdb' || terminology.type === 'vectorsdb') {
-            const collectionService = getCollectionService(
-                page.params.region,
-                page.params.project,
-                terminology.type
-            );
-            recordActivityLogs = await collectionService.listDocumentLogs({
+        recordActivityLogs = await sdk
+            .forProject(page.params.region, page.params.project)
+            .tablesDB.listRowLogs({
                 databaseId: databaseId,
-                collectionId: entityId,
-                documentId: recordId,
+                tableId: entityId,
+                rowId: recordId,
                 queries: [Query.limit(limit), Query.offset(offset)]
             });
-        } else {
-            recordActivityLogs = await sdk
-                .forProject(page.params.region, page.params.project)
-                .tablesDB.listRowLogs({
-                    databaseId: databaseId,
-                    tableId: entityId,
-                    rowId: recordId,
-                    queries: [Query.limit(limit), Query.offset(offset)]
-                });
-        }
 
         loading = false;
     }

@@ -1,4 +1,5 @@
 import { isMultiRegionSupported, VARS } from '$lib/system';
+import { registerImpersonationClients, restoreImpersonation } from '$lib/appwrite/impersonation';
 import {
     Account,
     Assistant,
@@ -29,21 +30,8 @@ import {
     Vcs,
     Webhooks
 } from '@appwrite.io/console';
+import { buildRegionalV1Endpoint } from '$lib/helpers/apiEndpoint';
 import { Sources } from '$lib/sdk/sources';
-import {
-    REGION_FRA,
-    REGION_NYC,
-    REGION_SYD,
-    REGION_SFO,
-    REGION_SGP,
-    REGION_TOR,
-    SUBDOMAIN_FRA,
-    SUBDOMAIN_NYC,
-    SUBDOMAIN_SFO,
-    SUBDOMAIN_SYD,
-    SUBDOMAIN_SGP,
-    SUBDOMAIN_TOR
-} from '$lib/constants';
 import { building } from '$app/environment';
 
 export function getApiEndpoint(region?: string): string {
@@ -51,36 +39,9 @@ export function getApiEndpoint(region?: string): string {
     const url = new URL(
         VARS.APPWRITE_ENDPOINT ? VARS.APPWRITE_ENDPOINT : globalThis?.location?.toString()
     );
-    const protocol = url.protocol;
-    const hostname = url.host; // "hostname:port" (or just "hostname" if no port)
 
-    // If instance supports multi-region, add the region subdomain.
-    let subdomain = isMultiRegionSupported(url) ? getSubdomain(region) : '';
-    if (subdomain && hostname.startsWith(subdomain)) {
-        subdomain = '';
-    }
-
-    return `${protocol}//${subdomain}${hostname}/v1`;
+    return buildRegionalV1Endpoint(url.protocol, url.host, region, isMultiRegionSupported(url));
 }
-
-const getSubdomain = (region?: string) => {
-    switch (region) {
-        case REGION_FRA:
-            return SUBDOMAIN_FRA;
-        case REGION_SYD:
-            return SUBDOMAIN_SYD;
-        case REGION_NYC:
-            return SUBDOMAIN_NYC;
-        case REGION_SFO:
-            return SUBDOMAIN_SFO;
-        case REGION_SGP:
-            return SUBDOMAIN_SGP;
-        case REGION_TOR:
-            return SUBDOMAIN_TOR;
-        default:
-            return '';
-    }
-};
 
 function createConsoleSdk(client: Client) {
     return {
@@ -108,6 +69,7 @@ function createConsoleSdk(client: Client) {
 const endpoint = getApiEndpoint();
 
 const clientConsole = new Client();
+const clientConsoleOperator = new Client();
 const scopedConsoleClient = new Client();
 
 const clientProject = new Client();
@@ -116,9 +78,18 @@ const clientRealtime = new Client();
 if (!building) {
     scopedConsoleClient.setProject('console');
     clientConsole.setEndpoint(endpoint).setProject('console');
+    clientConsoleOperator.setEndpoint(endpoint).setProject('console');
 
     clientProject.setEndpoint(endpoint).setMode('admin');
     clientRealtime.setEndpoint(endpoint).setProject('console');
+
+    registerImpersonationClients([
+        clientConsole,
+        scopedConsoleClient,
+        clientProject,
+        clientRealtime
+    ]);
+    restoreImpersonation();
 }
 
 const sdkForProject = {
@@ -180,6 +151,10 @@ export const realtime = {
 
 export const sdk = {
     forConsole: createConsoleSdk(clientConsole),
+    // Operator-only console client. It is intentionally not registered with the
+    // impersonation module so admin actions like switching targets stay scoped
+    // to the real operator session.
+    forConsoleAsOperator: createConsoleSdk(clientConsoleOperator),
 
     forConsoleIn(region: string) {
         const regionAwareEndpoint = getApiEndpoint(region);

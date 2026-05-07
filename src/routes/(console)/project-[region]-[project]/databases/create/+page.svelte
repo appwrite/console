@@ -28,12 +28,14 @@
 
     import type { PageProps } from './$types';
     import { createDatabaseStore } from './store';
-    import { databaseTypes } from '../store';
+    import { databaseTypes as allDatabaseTypes } from '../store';
     import { isTabletViewport } from '$lib/stores/viewport';
     import { filterRegions } from '$lib/helpers/regions';
-    import { regions as regionsStore } from '$lib/stores/organization';
+    import { regions as regionsStore, organization } from '$lib/stores/organization';
     import { backupRetainingOptions } from '$database/store';
     import PolicyPresets from '$database/backups/policyPresets.svelte';
+    import { flags } from '$lib/flags';
+    import { user } from '$lib/stores/user';
 
     const { data }: PageProps = $props();
 
@@ -52,6 +54,16 @@
 
     const isDark = $derived($app.themeInUse === 'dark');
     const backupsImg = $derived(isDark ? EmptyDarkMobile : EmptyLightMobile);
+
+    const isMultiDb = $derived(flags.multiDb({ account: $user, organization: $organization }));
+
+    const databaseTypes = $derived(
+        allDatabaseTypes.filter((db) => {
+            if (db.type === 'dedicateddb') return isCloud;
+            if (db.type === 'documentsdb' || db.type === 'vectorsdb') return isMultiDb;
+            return true;
+        })
+    );
 
     // Dedicated DB specific options
     const engineOptions = [
@@ -528,21 +540,19 @@
 {#snippet selectDatabaseType(disabled = false)}
     <Layout.Grid columns={databaseTypes.length} columnsS={2} columnsXS={1}>
         {#each databaseTypes as databaseType}
-            {#if databaseType.type !== 'dedicateddb' || isCloud}
-                <div class="card-selector">
-                    <Card.Selector
-                        {disabled}
-                        variant="secondary"
-                        bind:group={type}
-                        name={databaseType.type}
-                        id={databaseType.type}
-                        value={databaseType.type}
-                        title={databaseType.title}
-                        imageRadius="s">
-                        {databaseType.subtitle}
-                    </Card.Selector>
-                </div>
-            {/if}
+            <div class="card-selector">
+                <Card.Selector
+                    {disabled}
+                    variant="secondary"
+                    bind:group={type}
+                    name={databaseType.type}
+                    id={databaseType.type}
+                    value={databaseType.type}
+                    title={databaseType.title}
+                    imageRadius="s">
+                    {databaseType.subtitle}
+                </Card.Selector>
+            </div>
         {/each}
     </Layout.Grid>
 {/snippet}

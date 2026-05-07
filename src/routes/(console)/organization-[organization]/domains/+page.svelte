@@ -34,11 +34,11 @@
     import { View } from '$lib/helpers/load';
     import type { Models } from '@appwrite.io/console';
 
-    export let data;
+    let { data } = $props();
 
-    let showDelete = false;
-    let showRetry = false;
-    let selectedDomain: Models.Domain = null;
+    let showDelete = $state(false);
+    let showRetry = $state(false);
+    let selectedDomain = $state<Models.Domain | null>(null);
 
     const isDomainVerified = (domain: Models.Domain) => {
         return domain.nameservers.toLowerCase() === 'appwrite';

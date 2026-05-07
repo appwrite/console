@@ -23,7 +23,7 @@
     import { fade } from 'svelte/transition';
     import ConnectionLine from './components/ConnectionLine.svelte';
     import OnboardingPlatformCard from './components/OnboardingPlatformCard.svelte';
-    import { PlatformType } from '@appwrite.io/console';
+    import { ID } from '@appwrite.io/console';
     import { project } from '../../store';
     import { getCorrectTitle, type PlatformProps } from './store';
     import LlmBanner from './llmBanner.svelte';
@@ -117,12 +117,13 @@ const val APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject(page.params.region, page.
     async function createAndroidPlatform() {
         try {
             isCreatingPlatform = true;
-            await sdk.forConsole.projects.createPlatform({
-                projectId,
-                type: PlatformType.Android,
-                name: $createPlatform.name,
-                key: $createPlatform.key || undefined
-            });
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .project.createAndroidPlatform({
+                    platformId: ID.unique(),
+                    name: $createPlatform.name,
+                    applicationId: $createPlatform.key
+                });
 
             isPlatformCreated = true;
             trackEvent(Submit.PlatformCreate, {

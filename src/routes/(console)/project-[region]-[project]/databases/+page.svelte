@@ -1,10 +1,12 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { page } from '$app/state';
-    import { PaginationWithLimit } from '$lib/components';
+    import { Empty, PaginationWithLimit } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { Container, ResponsiveContainerHeader } from '$lib/layout';
+    import type { Models } from '@appwrite.io/console';
 
+    import Create from './create.svelte';
     import Grid from './grid.svelte';
     import Table from './table.svelte';
     import type { PageProps } from './$types';
@@ -23,10 +25,26 @@
     import { resolveRoute, withPath } from '$lib/stores/navigation';
     import EmptyDatabaseCloud from './empty.svelte';
     import { columns } from './store';
+    import { flags } from '$lib/flags';
+    import { user } from '$lib/stores/user';
+    import { project } from '../store';
 
     const { data }: PageProps = $props();
 
+    let showCreate = $state(false);
+
+    const isMultiDb = $derived(flags.multiDb({ account: $user, organization: $organization }));
     const isLimited = $derived(isServiceLimited('databases', $organization, data.databases.total));
+
+    async function handleCreate(event: CustomEvent<Models.Database>) {
+        showCreate = false;
+        await goto(
+            resolveRoute('/(console)/project-[region]-[project]/databases/database-[database]', {
+                ...page.params,
+                database: event.detail.$id
+            })
+        );
+    }
 
     async function goToCreateDatabaseWizard() {
         await goto(
@@ -34,12 +52,20 @@
         );
     }
 
+    function triggerCreate() {
+        if (isMultiDb) {
+            goToCreateDatabaseWizard();
+        } else {
+            showCreate = true;
+        }
+    }
+
     $effect(() => {
         $registerCommands([
             {
                 label: 'Create database',
                 callback: () => {
-                    goToCreateDatabaseWizard();
+                    triggerCreate();
                 },
                 keys: ['c'],
                 disabled: !$canWriteDatabases || isLimited,
@@ -52,34 +78,11 @@
 </script>
 
 <Container>
-    <ResponsiveContainerHeader
-        hasSearch
-        {columns}
-        view={data.view}
-        searchPlaceholder="Search by name or ID">
-        {#if $canWriteDatabases}
-            <Tooltip disabled={!isLimited} maxWidth={BODY_TOOLTIP_MAX_WIDTH}>
-                <div>
-                    <Button
-                        disabled={isLimited}
-                        event="create_database"
-                        on:click={goToCreateDatabaseWizard}>
-                        <Icon icon={IconPlus} slot="start" size="s" />
-                        Create database
-                    </Button>
-                </div>
-                <svelte:fragment slot="tooltip">
-                    <div style={BODY_TOOLTIP_WRAPPER_STYLE_PRELINE}>
-                        You have reached the maximum number of databases for your plan.
-                    </div>
-                </svelte:fragment>
-            </Tooltip>
-        {/if}
-    </ResponsiveContainerHeader>
+    {@render containerHeader()}
 
     {#if data.databases.total}
         {#if data.view === 'grid'}
-            <Grid {data} onCreateDatabaseClick={goToCreateDatabaseWizard} />
+            <Grid {data} onCreateDatabaseClick={triggerCreate} />
         {:else}
             <Table
                 entities={data.entities}
@@ -100,7 +103,7 @@
                 size="s"
                 secondary>Clear Search</Button>
         </EmptySearch>
-    {:else}
+    {:else if isMultiDb}
         <EmptyDatabaseCloud
             disabled={$canWriteDatabases}
             onDatabaseTypeSelected={async (type) => {
@@ -114,5 +117,37 @@
                     )
                 );
             }} />
+    {:else}
+        <Empty
+            single
+            target="database"
+            allowCreate={$canWriteDatabases}
+            on:click={() => (showCreate = true)} />
     {/if}
 </Container>
+
+<Create bind:showCreate project={$project} on:created={handleCreate} />
+
+{#snippet containerHeader()}
+    <ResponsiveContainerHeader
+        hasSearch
+        {columns}
+        view={data.view}
+        searchPlaceholder="Search by name or ID">
+        {#if $canWriteDatabases}
+            <Tooltip disabled={!isLimited} maxWidth={BODY_TOOLTIP_MAX_WIDTH}>
+                <div>
+                    <Button disabled={isLimited} event="create_database" on:click={triggerCreate}>
+                        <Icon icon={IconPlus} slot="start" size="s" />
+                        Create database
+                    </Button>
+                </div>
+                <svelte:fragment slot="tooltip">
+                    <div style={BODY_TOOLTIP_WRAPPER_STYLE_PRELINE}>
+                        You have reached the maximum number of databases for your plan.
+                    </div>
+                </svelte:fragment>
+            </Tooltip>
+        {/if}
+    </ResponsiveContainerHeader>
+{/snippet}

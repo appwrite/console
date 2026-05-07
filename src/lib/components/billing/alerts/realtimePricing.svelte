@@ -16,9 +16,14 @@
         }
     }
 
-    $: href = $currentPlan?.usagePerProject
-        ? `${base}/organization-${$organization.$id}/billing`
-        : `${base}/organization-${$organization.$id}/usage`;
+    // Guard org id: this reactive runs even when the {#if} below is false, so optional
+    // chaining on $currentPlan alone is not enough — $organization can be undefined.
+    $: orgId = $organization?.$id;
+    $: href = orgId
+        ? $currentPlan?.usagePerProject
+            ? `${base}/organization-${orgId}/billing`
+            : `${base}/organization-${orgId}/usage`
+        : '';
 </script>
 
 {#if $organization?.$id && !dismissed}

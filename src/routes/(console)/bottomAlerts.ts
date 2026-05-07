@@ -1,58 +1,37 @@
 import { isCloud } from '$lib/system';
 import { isSameDay } from '$lib/helpers/date';
-import Imagine from '$lib/components/promos/imagine.svelte';
-import {
-    type BottomModalAlertItem,
-    setMobileSingleAlertLayout,
-    showBottomModalAlert
-} from '$lib/stores/bottom-alerts';
-
-const SHOW_IMAGINE_PROMO = true;
+import { type BottomModalAlertItem, showBottomModalAlert } from '$lib/stores/bottom-alerts';
+import TerraformProvider from '$lib/images/promos/terraform-provider.png';
 
 const listOfPromotions: BottomModalAlertItem[] = [];
 
-if (isCloud && SHOW_IMAGINE_PROMO) {
-    const imaginePromo: BottomModalAlertItem = {
-        id: 'modal:imagine.dev',
-        backgroundComponent: Imagine,
-        title: 'Introducing Imagine',
-        message: 'The most complete AI builder to date',
+if (isCloud) {
+    const terraformProviderPromo: BottomModalAlertItem = {
+        id: 'modal:terraform_provider_announcement',
+        src: {
+            dark: TerraformProvider,
+            light: TerraformProvider
+        },
+        title: 'Introducing Terraform support for Appwrite projects',
+        message:
+            'Manage your entire Appwrite project as code with the official Terraform provider.',
+        plan: 'free',
         importance: 8,
         scope: 'everywhere',
-        plan: 'free',
         cta: {
-            text: 'Try it now',
-            color: {
-                light: '#FFFFFF',
-                dark: '#000000'
-            },
-            background: {
-                light: '#000000',
-                dark: '#FFFFFF'
-            },
-            backgroundHover: {
-                light: '#333333',
-                dark: '#CCCCCC'
-            },
-            link: () => 'https://imagine.dev',
+            text: 'Read announcement',
+            link: () => 'https://appwrite.io/blog/post/introducing-terraform-provider-for-appwrite',
             external: true,
-            hideOnClick: true
+            hideOnClick: true,
+            skipUpgradeRedirect: true
         },
         show: true
     };
-
-    listOfPromotions.push(imaginePromo);
+    listOfPromotions.push(terraformProviderPromo);
 }
 
 export function addBottomModalAlerts() {
     listOfPromotions.forEach((promotion) => showBottomModalAlert(promotion));
-
-    // only for imagine!
-    if (listOfPromotions.length > 0) {
-        const imaginePromo = listOfPromotions[0];
-        const { cta, title, message } = imaginePromo;
-        setMobileSingleAlertLayout({ enabled: true, cta, title, message });
-    }
 }
 
 // use this for time based promo handling

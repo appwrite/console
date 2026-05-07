@@ -11,6 +11,7 @@
     import { project } from '../store';
     import { Tag, Input, Layout, Icon } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { canWriteProjects } from '$lib/stores/roles';
 
     const alphaNumericRegExp = /^[a-zA-Z0-9]+$/;
     let suggestedLabels = ['live', 'stage', 'internal'];
@@ -21,22 +22,9 @@
         labels = [...(($project as { labels?: string[] }).labels ?? [])];
     });
 
-    async function updateProjectLabels(projectId: string, nextLabels: string[]) {
-        const client = sdk.forConsole.client;
-        const apiPath = `/projects/${projectId}/labels`;
-        const uri = new URL(client.config.endpoint + apiPath);
-
-        return client.call(
-            'put',
-            uri,
-            { 'content-type': 'application/json' },
-            { labels: nextLabels }
-        );
-    }
-
     async function updateLabels() {
         try {
-            await updateProjectLabels($project.$id, labels);
+            await sdk.forProject($project.region, $project.$id).project.updateLabels({ labels });
             await invalidate(Dependencies.PROJECT);
             isDisabled = true;
             addNotification({
@@ -86,6 +74,7 @@
                         id="project-labels"
                         label="Labels"
                         placeholder="Select or type project labels"
+                        disabled={!$canWriteProjects}
                         bind:tags={labels} />
                 {/key}
                 <Layout.Stack direction="row">
@@ -94,6 +83,8 @@
                             size="s"
                             selected={labels.includes(suggestedLabel)}
                             on:click={() => {
+                                if (!$canWriteProjects) return;
+
                                 if (!labels.includes(suggestedLabel)) {
                                     labels = [...labels, suggestedLabel];
                                 } else {
@@ -111,7 +102,7 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={isDisabled} submit>Update</Button>
+            <Button disabled={!$canWriteProjects || isDisabled} submit>Update</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>

@@ -13,11 +13,6 @@
             title: 'Sites',
             event: 'sites',
             hasChildren: true
-        },
-        {
-            href: `${path}/usage`,
-            title: 'Usage',
-            event: 'usage'
         }
     ];
 </script>
