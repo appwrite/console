@@ -211,6 +211,10 @@
         }
     }
 
+    const additionalInviteEmails = $derived(getAdditionalInvites());
+    const additionalInviteSignature = $derived(additionalInviteEmails.join(','));
+    const selectedCouponCode = $derived(selectedCoupon?.code ?? null);
+
     async function handleSubmit() {
         if (isDowngrade) {
             await downgrade();
@@ -375,7 +379,12 @@
 
     $: isUpgrade = selectedPlan.order > $currentPlan?.order;
     $: isDowngrade = selectedPlan.order < $currentPlan?.order;
-    $: if (data?.organization?.$id && selectedPlan?.$id) {
+    $: if (
+        data?.organization?.$id &&
+        selectedPlan?.$id &&
+        additionalInviteSignature !== undefined &&
+        selectedCouponCode !== undefined
+    ) {
         loadPlanChangeEstimate();
     }
 
@@ -383,7 +392,7 @@
         if ($organization?.billingPlanId === selectedPlan.$id) return true;
         if (isDowngrade && selectedPlan.group === BillingPlanGroup.Starter && data.hasFreeOrgs)
             return true;
-        if (isDowngrade && selectedPlan.$id !== $organization?.billingPlanId) {
+        if (isDowngrade) {
             if (isLoadingPlanEstimate) return true;
 
             const limits = getPlanChangeLimits();
@@ -561,7 +570,8 @@
                 bind:couponData={selectedCoupon}
                 bind:billingBudget
                 organizationId={data.organization.$id}
-                estimationOverride={planChangeEstimate} />
+                estimationOverride={planChangeEstimate}
+                preferExternalEstimate />
         {:else if isSelfService}
             <PlanComparisonBox downgrade={data.hasFreeOrgs ? false : isDowngrade} />
         {/if}

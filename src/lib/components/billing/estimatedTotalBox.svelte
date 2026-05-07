@@ -17,6 +17,7 @@
     export let isDowngrade = false;
     export let organizationId: string | undefined = undefined;
     export let estimationOverride: PlanChangeEstimate | null = null;
+    export let preferExternalEstimate = false;
 
     let budgetEnabled = false;
     let estimation: Models.Estimation | PlanChangeEstimate;
@@ -103,6 +104,8 @@
 
     $: if (estimationOverride) {
         estimation = estimationOverride;
+    } else if (preferExternalEstimate) {
+        estimation = undefined;
     } else if (organizationId) {
         getUpdatePlanEstimate(organizationId, billingPlan.$id, collaborators, couponData?.code);
     } else {

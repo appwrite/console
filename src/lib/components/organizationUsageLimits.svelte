@@ -64,7 +64,7 @@
                 ];
             }
 
-            return project.resources
+            return (project.resources ?? [])
                 .filter((resource) => resource.status !== 'compliant' || resource.excess > 0)
                 .map((resource) => ({
                     id: `${project.$id}-${resource.type}`,
