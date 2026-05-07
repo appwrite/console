@@ -52,7 +52,7 @@
                 id="storage"
                 label="Storage (GB)"
                 min={database.storage}
-                max={database.maxStorageGb || 1000}
+                max={database.storageMaxGb || 1000}
                 bind:value={storageGb}
                 required />
             {#if storageGb < database.storage}

@@ -17,7 +17,7 @@ Tracking file for all missing dedicated DB features in console vs cloud/edge/ddb
 - [x] `BackupStorageProvider` (s3, gcs, azure)
 - [x] `RestorationType` (backup, pitr)
 - [x] `RestorationStatusValue` (pending, running, completed, failed)
-- [x] `HASyncMode` (async, sync, quorum)
+- [x] `HighAvailabilitySyncMode` (async, sync, quorum)
 - [x] `ReplicaRole` (primary, standby, readReplica)
 - [x] `MaintenanceDay` (sun–sat)
 - [x] `DataResidency` (eu, us, apac, global)
@@ -31,7 +31,7 @@ Tracking file for all missing dedicated DB features in console vs cloud/edge/ddb
 
 ## 2. Properties on `DedicatedDatabase` Type — ALL DONE
 
-- [x] `projectId`, `externalIP`, `internalIP`, `lastActivityAt`, `idleUntil`, `networkPublicTcp`
+- [x] `projectId`, `externalIP`, `internalIP`, `lastAccessedAt`, `idleUntil`, `networkPublicTcp`
 - [x] `storageAutoscaling`, `storageAutoscalingMaxGb`, `storageAutoscalingThresholdPercent`
 - [x] `securityEncryptionAtRest`, `securityKeyManagement`, `securityKeyRotationDays`, `securityCMKKeyId`
 - [x] `securityAuditLogEnabled`, `securityLogRetentionDays`, `securityDataResidency`

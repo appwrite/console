@@ -35,7 +35,6 @@
         sqlApiAllowedStatements?: string[];
         maintenanceUpgradePolicy?: string;
         networkPublicTcp?: boolean;
-        internalIP?: string;
     };
 
     const {
@@ -54,7 +53,6 @@
         sqlApiAllowedStatements: [],
         maintenanceUpgradePolicy: 'manual',
         networkPublicTcp: false,
-        internalIP: '',
         pitrRetentionDays: 0,
         storageAutoscaling: false,
         storageAutoscalingThresholdPercent: 0,
@@ -432,16 +430,6 @@
                         {#if defaultDatabaseName}
                             <CopyInput label="Database" value={defaultDatabaseName} />
                         {/if}
-                        {#if database.externalIP || database.internalIP}
-                            <Layout.Grid columns={2} columnsS={1} gap="m">
-                                {#if database.externalIP}
-                                    <CopyInput label="External IP" value={database.externalIP} />
-                                {/if}
-                                {#if database.internalIP}
-                                    <CopyInput label="Internal IP" value={database.internalIP} />
-                                {/if}
-                            </Layout.Grid>
-                        {/if}
                     {:else}
                         <Layout.Stack gap="m">
                             <CopyInput label="Connection String" value={resolvedConnectionString} />
@@ -577,16 +565,16 @@
                             Replicas
                         </Typography.Caption>
                         <Typography.Text variant="m-500">
-                            {database.haReplicaCount}
+                            {database.highAvailabilityReplicaCount}
                         </Typography.Text>
                     </Layout.Stack>
-                    {#if database.haSyncMode}
+                    {#if database.highAvailabilitySyncMode}
                         <Layout.Stack gap="xxs">
                             <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
                                 Sync Mode
                             </Typography.Caption>
                             <Typography.Text variant="m-500">
-                                {capitalize(database.haSyncMode)}
+                                {capitalize(database.highAvailabilitySyncMode)}
                             </Typography.Text>
                         </Layout.Stack>
                     {/if}

@@ -8,7 +8,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import { HaSyncMode, type Models } from '@appwrite.io/console';
+    import { HighAvailabilitySyncMode, type Models } from '@appwrite.io/console';
     import { Badge, Layout } from '@appwrite.io/pink-svelte';
 
     let {
@@ -17,9 +17,9 @@
         database: Models.DedicatedDatabase;
     } = $props();
 
-    type HASyncMode = 'async' | 'sync' | 'quorum';
+    type HighAvailabilitySyncMode = 'async' | 'sync' | 'quorum';
 
-    const syncModeOptions: { value: HASyncMode; label: string }[] = [
+    const syncModeOptions: { value: HighAvailabilitySyncMode; label: string }[] = [
         { value: 'async', label: 'Asynchronous' },
         { value: 'sync', label: 'Synchronous' },
         { value: 'quorum', label: 'Quorum' }
@@ -29,12 +29,12 @@
     let isLoading = $state(true);
 
     let haEnabled: boolean = $state(database.highAvailability);
-    let replicaCount: number = $state(database.haReplicaCount);
-    let syncMode: HASyncMode = $state((database.haSyncMode ?? 'async') as HASyncMode);
+    let replicaCount: number = $state(database.highAvailabilityReplicaCount);
+    let syncMode: HighAvailabilitySyncMode = $state((database.highAvailabilitySyncMode ?? 'async') as HighAvailabilitySyncMode);
 
     let initialEnabled = $state(database.highAvailability);
-    let initialReplicaCount = $state(database.haReplicaCount);
-    let initialSyncMode: HASyncMode = $state((database.haSyncMode ?? 'async') as HASyncMode);
+    let initialReplicaCount = $state(database.highAvailabilityReplicaCount);
+    let initialSyncMode: HighAvailabilitySyncMode = $state((database.highAvailabilitySyncMode ?? 'async') as HighAvailabilitySyncMode);
 
     let showFailoverConfirm = $state(false);
     let isFailingOver = $state(false);
@@ -75,8 +75,8 @@
             await sdk.forProject(page.params.region, page.params.project).compute.updateDatabase({
                 databaseId: database.$id,
                 highAvailability: haEnabled,
-                haReplicaCount: replicaCount,
-                haSyncMode: syncMode as HaSyncMode
+                highAvailabilityReplicaCount: replicaCount,
+                highAvailabilitySyncMode: syncMode as HighAvailabilitySyncMode
             });
 
             initialEnabled = haEnabled;
