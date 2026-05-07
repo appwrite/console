@@ -31,8 +31,7 @@ export const load: PageLoad = async ({ depends, params, url, route, parent }) =>
             Query.orderDesc(''),
             Query.orderDesc('$updatedAt'),
             ...parsedQueries.values()
-        ],
-        search: search || undefined
+        ]
     });
 
     const organizationDomains = await fetchOrganizationDomainsForRules(
