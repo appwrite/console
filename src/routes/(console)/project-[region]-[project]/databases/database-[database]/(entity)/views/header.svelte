@@ -8,8 +8,8 @@
     import { type Entity, useTerminology } from '$database/(entity)';
     import { resolveRoute, withPath } from '$lib/stores/navigation';
 
+    import { expandTabs } from '$database/store';
     import { preferences } from '$lib/stores/preferences';
-    import { expandTabs } from '$database/table-[table]/store';
 
     interface EntityTab {
         href: string;
@@ -65,7 +65,7 @@
     $effect(() => {
         if (nonSheetPages) expandTabs.set(true);
         else {
-            expandTabs.set(preferences.getKey('tableHeaderExpanded', true));
+            expandTabs.set(preferences.getKey('entityHeaderExpanded', true));
         }
     });
 </script>

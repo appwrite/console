@@ -36,7 +36,8 @@
         IconSortDescending,
         IconTrash
     } from '@appwrite.io/pink-icons-svelte';
-    import { type Columns, databaseColumnSheetOptions } from './store';
+    import { databaseColumnSheetOptions } from './store';
+    import type { Columns } from '$database/store';
     import { isRelationship } from './rows/store';
 
     interface MenuItem {
@@ -196,11 +197,4 @@
 </Popover>
 
 <style>
-    .action-menu-root {
-        margin-inline-start: calc(var(--space-2) * -1);
-
-        & :global(:first-child) {
-            overflow: visible;
-        }
-    }
 </style>

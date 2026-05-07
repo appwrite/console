@@ -45,6 +45,15 @@
 
         return result;
     }
+
+    function getProviderMeta(providerId: string) {
+        const provider = oAuthProviders[providerId];
+
+        return {
+            icon: provider?.icon,
+            name: provider?.name ?? providerId
+        };
+    }
 </script>
 
 <MultiSelectionTable {columns} resource="identity" onDelete={handleDelete}>
@@ -66,16 +75,18 @@
                                 </Id>
                             {/key}
                         {:else if column.id === 'provider'}
-                            {@const provider = oAuthProviders[identity[column.id]]}
+                            {@const provider = getProviderMeta(identity[column.id])}
                             <div class="u-inline-flex u-cross-center u-gap-8">
-                                <div class="avatar is-size-small">
-                                    <img
-                                        style="--p-text-size: 1rem"
-                                        height="20"
-                                        width="20"
-                                        src={`${base}/icons/${$app.themeInUse}/color/${provider.icon}.svg`}
-                                        alt={provider.name} />
-                                </div>
+                                {#if provider.icon}
+                                    <div class="avatar is-size-small">
+                                        <img
+                                            style="--p-text-size: 1rem"
+                                            height="20"
+                                            width="20"
+                                            src={`${base}/icons/${$app.themeInUse}/color/${provider.icon}.svg`}
+                                            alt={provider.name} />
+                                    </div>
+                                {/if}
                                 {provider.name}
                             </div>
                         {:else if column.type === 'datetime'}

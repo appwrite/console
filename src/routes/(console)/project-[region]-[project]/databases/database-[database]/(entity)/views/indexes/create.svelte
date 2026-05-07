@@ -2,7 +2,7 @@
     import { TablesDBIndexType, OrderBy } from '@appwrite.io/console';
     export type CreateIndexesCallbackType = {
         key: string;
-        type: TablesDBIndexType;
+        type: string;
         fields: string[];
         lengths: (number | null)[];
         orders: OrderBy[];

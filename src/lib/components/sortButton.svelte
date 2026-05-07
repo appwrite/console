@@ -5,10 +5,10 @@
 <script lang="ts">
     import { Query } from '@appwrite.io/console';
     import { Button } from '$lib/elements/forms';
+    import type { Writable } from 'svelte/store';
+    import type { SortState } from '$database/store';
     import { Icon } from '@appwrite.io/pink-svelte';
     import { IconChevronDown, IconChevronUp, IconSelector } from '@appwrite.io/pink-icons-svelte';
-    import type { Writable } from 'svelte/store';
-    import type { SortState } from '$routes/(console)/project-[region]-[project]/databases/database-[database]/table-[table]/store';
 
     let {
         column,

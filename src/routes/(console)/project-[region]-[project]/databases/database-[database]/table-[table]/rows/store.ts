@@ -1,8 +1,7 @@
-import { page } from '$app/state';
+import type { Field } from '$database/(entity)';
 import type { Column } from '$lib/helpers/types';
-import type { Attributes, Columns } from '../store';
-import { type Models, Query } from '@appwrite.io/console';
-import type { Entity, Field } from '$database/(entity)';
+import { type Models } from '@appwrite.io/console';
+import type { Attributes, Columns } from '../../store';
 
 type RowPrimitive = string | number | bigint | boolean | null | undefined;
 interface RowObject {
@@ -88,21 +87,4 @@ export function buildPayload<T extends Record<string, RowValue>>(
     }
 
     return payload as T;
-}
-
-/**
- * Returns select queries for all main and related fields in an `Entity`.
- */
-export function buildWildcardColumnsQuery(entity: Entity | null = null): string[] {
-    return [
-        ...(entity?.fields
-            ?.filter((field) => field.status === 'available' && isRelationship(field))
-            ?.map((field) => Query.select([`${field.key}.*`])) ?? []),
-
-        Query.select(['*'])
-    ];
-}
-
-export function buildRowUrl(rowId: string) {
-    return `${page.url}/row-${rowId}`;
 }

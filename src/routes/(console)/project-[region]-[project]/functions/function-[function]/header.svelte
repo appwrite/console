@@ -31,7 +31,7 @@
         {
             href: `${path}/usage`,
             title: 'Usage',
-            event: 'sage',
+            event: 'usage',
             hasChildren: true
         },
         {

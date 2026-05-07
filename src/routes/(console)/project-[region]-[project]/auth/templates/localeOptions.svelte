@@ -18,5 +18,4 @@
     placeholder="Select a language"
     name="locale"
     bind:value
-    required
     {options} />

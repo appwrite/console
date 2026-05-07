@@ -1,4 +1,4 @@
-import type { Columns } from '../table-[table]/store';
+import type { Columns } from '$database/store';
 import type { RealtimeResponse } from '$lib/stores/sdk';
 
 export function setupColumnObserver() {
