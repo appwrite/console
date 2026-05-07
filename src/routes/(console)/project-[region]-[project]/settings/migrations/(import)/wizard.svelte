@@ -50,8 +50,13 @@
         try {
             const resources = migrationFormToResources($formData, $provider.provider);
 
+            // Gate onDuplicate to Fail when databases isn't selected. The radios
+            // are only shown when databases.root is checked, but the local value
+            // persists across toggles — without this gate, deselecting databases
+            // after picking Overwrite/Skip would silently apply that mode to
+            // other resource types (users, teams, functions, etc.) on submit.
             const importOptions = {
-                onDuplicate: importOnDuplicate
+                onDuplicate: $formData.databases.root ? importOnDuplicate : OnDuplicate.Fail
             };
 
             switch ($provider.provider) {
