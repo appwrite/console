@@ -153,6 +153,10 @@
     function getPlanChangeBlockingMessage(): string | null {
         const limits = getPlanChangeLimits();
 
+        if (isDowngrade && planEstimateError && !planChangeEstimate) {
+            return `We couldn't verify whether your organization meets the ${selectedPlan.name} plan limits. Please try again.`;
+        }
+
         if (!limits || limits.canChangePlan) {
             return null;
         }
@@ -211,9 +215,13 @@
         }
     }
 
-    const additionalInviteEmails = $derived(getAdditionalInvites());
-    const additionalInviteSignature = $derived(additionalInviteEmails.join(','));
-    const selectedCouponCode = $derived(selectedCoupon?.code ?? null);
+    let additionalInviteEmails: string[] = [];
+    let additionalInviteSignature = '';
+    let selectedCouponCode: string | null = null;
+
+    $: additionalInviteEmails = getAdditionalInvites();
+    $: additionalInviteSignature = additionalInviteEmails.join(',');
+    $: selectedCouponCode = selectedCoupon?.code ?? null;
 
     async function handleSubmit() {
         if (isDowngrade) {
@@ -394,6 +402,7 @@
             return true;
         if (isDowngrade) {
             if (isLoadingPlanEstimate) return true;
+            if (planEstimateError && !planChangeEstimate) return true;
 
             const limits = getPlanChangeLimits();
             if (limits && !limits.canChangePlan) return true;
