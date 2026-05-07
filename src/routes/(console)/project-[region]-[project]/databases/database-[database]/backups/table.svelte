@@ -99,6 +99,8 @@
                 return 'processing';
             case 'failed':
                 return 'failed';
+            // pink-svelte's Status union has no 'skipped' — fall back to the
+            // neutral 'waiting' visual and override the label below.
             case 'skipped':
                 return 'waiting';
             default:
