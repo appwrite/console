@@ -30,8 +30,7 @@ export const load = async ({ params, depends, url, route, parent }) => {
             Query.orderDesc(''),
             Query.orderDesc('$updatedAt'),
             ...parsedQueries.values()
-        ],
-        search: search || undefined
+        ]
     });
 
     const organizationDomains = await fetchOrganizationDomainsForRules(
