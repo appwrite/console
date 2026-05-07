@@ -14,13 +14,13 @@ export async function enterCreditCard(page: Page) {
         state: 'visible'
     });
     await page.getByPlaceholder('cardholder').fill('Test User');
-    // Stripe.js mounts an extra hidden iframe with the same title for ACH bank search.
-    // Pick the first (visible) frame so locator queries don't hit strict-mode violations.
+    // Stripe.js renamed the field ids from `Field-*` to `payment-*` and now
+    // mounts multiple iframes sharing the title; pick the first (visible) one.
     const stripe = page.frameLocator('[title="Secure payment input frame"]').first();
-    await stripe.locator('id=Field-numberInput').fill('4242424242424242');
-    await stripe.locator('id=Field-expiryInput').fill('1250');
-    await stripe.locator('id=Field-cvcInput').fill('123');
-    await stripe.locator('id=Field-countryInput').selectOption('DE');
+    await stripe.locator('id=payment-numberInput').fill('4242424242424242');
+    await stripe.locator('id=payment-expiryInput').fill('1250');
+    await stripe.locator('id=payment-cvcInput').fill('123');
+    await stripe.locator('id=payment-countryInput').selectOption('DE');
     await dialog.getByRole('button', { name: 'Add', exact: true }).click();
     await dialog.waitFor({
         state: 'hidden'
