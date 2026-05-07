@@ -8,7 +8,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import { HighAvailabilitySyncMode, type Models } from '@appwrite.io/console';
+    import { type Models } from '@appwrite.io/console';
     import { Badge, Layout } from '@appwrite.io/pink-svelte';
 
     let {
@@ -30,11 +30,15 @@
 
     let haEnabled: boolean = $state(database.highAvailability);
     let replicaCount: number = $state(database.highAvailabilityReplicaCount);
-    let syncMode: HighAvailabilitySyncMode = $state((database.highAvailabilitySyncMode ?? 'async') as HighAvailabilitySyncMode);
+    let syncMode: HighAvailabilitySyncMode = $state(
+        (database.highAvailabilitySyncMode ?? 'async') as HighAvailabilitySyncMode
+    );
 
     let initialEnabled = $state(database.highAvailability);
     let initialReplicaCount = $state(database.highAvailabilityReplicaCount);
-    let initialSyncMode: HighAvailabilitySyncMode = $state((database.highAvailabilitySyncMode ?? 'async') as HighAvailabilitySyncMode);
+    let initialSyncMode: HighAvailabilitySyncMode = $state(
+        (database.highAvailabilitySyncMode ?? 'async') as HighAvailabilitySyncMode
+    );
 
     let showFailoverConfirm = $state(false);
     let isFailingOver = $state(false);
