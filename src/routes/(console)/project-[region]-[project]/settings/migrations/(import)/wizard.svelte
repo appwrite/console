@@ -11,6 +11,7 @@
         AppwriteMigrationResource,
         FirebaseMigrationResource,
         NHostMigrationResource,
+        OnDuplicate,
         SupabaseMigrationResource
     } from '@appwrite.io/console';
     import { started } from '../stores';
@@ -39,8 +40,7 @@
     import { capitalize } from '$lib/helpers/string';
     import { page } from '$app/state';
 
-    let importOverwrite = false;
-    let importSkip = false;
+    let importOnDuplicate: OnDuplicate = OnDuplicate.Fail;
 
     const onExit = () => {
         resetImportStores();
@@ -51,8 +51,7 @@
             const resources = migrationFormToResources($formData, $provider.provider);
 
             const importOptions = {
-                overwrite: importOverwrite,
-                skip: importSkip
+                onDuplicate: importOnDuplicate
             };
 
             switch ($provider.provider) {
@@ -213,24 +212,39 @@
                 {#if $formData.databases.root}
                     <Fieldset legend="Import options">
                         <Layout.Stack gap="m">
-                            <Selector.Checkbox
+                            <Selector.Radio
                                 size="s"
-                                checked={importOverwrite}
-                                on:change={(e) => {
-                                    importOverwrite = e.detail;
-                                    if (e.detail) importSkip = false;
-                                }}
-                                label="Overwrite existing documents"
-                                description="Documents with matching IDs will be updated with the imported data." />
-                            <Selector.Checkbox
+                                bind:group={importOnDuplicate}
+                                name="importOnDuplicate"
+                                value={OnDuplicate.Fail}
+                                label="Fail on duplicate (default)">
+                                <svelte:fragment slot="description">
+                                    Migration aborts on the first existing resource (database,
+                                    table, column, index, or row).
+                                </svelte:fragment>
+                            </Selector.Radio>
+                            <Selector.Radio
                                 size="s"
-                                checked={importSkip}
-                                on:change={(e) => {
-                                    importSkip = e.detail;
-                                    if (e.detail) importOverwrite = false;
-                                }}
-                                label="Skip existing documents"
-                                description="Documents with matching IDs will be silently skipped." />
+                                bind:group={importOnDuplicate}
+                                name="importOnDuplicate"
+                                value={OnDuplicate.Skip}
+                                label="Skip existing resources">
+                                <svelte:fragment slot="description">
+                                    Existing resources are left untouched. Only resources missing on
+                                    the destination are created.
+                                </svelte:fragment>
+                            </Selector.Radio>
+                            <Selector.Radio
+                                size="s"
+                                bind:group={importOnDuplicate}
+                                name="importOnDuplicate"
+                                value={OnDuplicate.Overwrite}
+                                label="Overwrite existing resources">
+                                <svelte:fragment slot="description">
+                                    Existing resources are updated to match the source. Schema drift
+                                    and row data are both reconciled.
+                                </svelte:fragment>
+                            </Selector.Radio>
                         </Layout.Stack>
                     </Fieldset>
                 {/if}

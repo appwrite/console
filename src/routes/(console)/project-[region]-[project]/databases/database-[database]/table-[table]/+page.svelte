@@ -8,7 +8,16 @@
     import { Container } from '$lib/layout';
     import { preferences } from '$lib/stores/preferences';
     import { canWriteTables, canWriteRows } from '$lib/stores/roles';
-    import { Dialog, Icon, Layout, Divider, Selector, Tooltip, Typography, Link } from '@appwrite.io/pink-svelte';
+    import {
+        Dialog,
+        Icon,
+        Layout,
+        Divider,
+        Selector,
+        Tooltip,
+        Typography,
+        Link
+    } from '@appwrite.io/pink-svelte';
     import type { PageData } from './$types';
     import {
         tableColumns,
@@ -34,7 +43,7 @@
         IconUpload,
         IconDownload
     } from '@appwrite.io/pink-icons-svelte';
-    import type { Models } from '@appwrite.io/console';
+    import { OnDuplicate, type Models } from '@appwrite.io/console';
     import CreateRow from '$database/table-[table]/rows/create.svelte';
     import { onDestroy } from 'svelte';
     import { isCloud } from '$lib/system';
@@ -57,8 +66,7 @@
     let isRefreshing = false;
     let showImportCSV = false;
     let showImportOptions = false;
-    let importOverwrite = false;
-    let importSkip = false;
+    let importOnDuplicate: OnDuplicate = OnDuplicate.Fail;
     let pendingFile: Models.File | null = null;
     let pendingLocalFile = false;
 
@@ -115,8 +123,7 @@
     function onSelect(file: Models.File, localFile = false) {
         pendingFile = file;
         pendingLocalFile = localFile;
-        importOverwrite = false;
-        importSkip = false;
+        importOnDuplicate = OnDuplicate.Fail;
         showImportOptions = true;
     }
 
@@ -134,8 +141,7 @@
                     fileId: pendingFile.$id,
                     resourceId: `${page.params.database}:${page.params.table}`,
                     internalFile: pendingLocalFile,
-                    overwrite: importOverwrite,
-                    skip: importSkip
+                    onDuplicate: importOnDuplicate
                 });
 
             addNotification({
@@ -459,24 +465,36 @@
             Choose how to handle documents that already exist in this table.
         </Typography.Text>
         <Layout.Stack gap="m">
-            <Selector.Checkbox
+            <Selector.Radio
                 size="s"
-                checked={importOverwrite}
-                on:change={(e) => {
-                    importOverwrite = e.detail;
-                    if (e.detail) importSkip = false;
-                }}
-                label="Overwrite existing documents"
-                description="Documents with matching IDs will be updated with the imported data." />
-            <Selector.Checkbox
+                bind:group={importOnDuplicate}
+                name="importOnDuplicate"
+                value={OnDuplicate.Fail}
+                label="Fail on duplicate (default)">
+                <svelte:fragment slot="description">
+                    Migration aborts on the first row with a matching ID.
+                </svelte:fragment>
+            </Selector.Radio>
+            <Selector.Radio
                 size="s"
-                checked={importSkip}
-                on:change={(e) => {
-                    importSkip = e.detail;
-                    if (e.detail) importOverwrite = false;
-                }}
-                label="Skip existing documents"
-                description="Documents with matching IDs will be silently skipped." />
+                bind:group={importOnDuplicate}
+                name="importOnDuplicate"
+                value={OnDuplicate.Skip}
+                label="Skip existing documents">
+                <svelte:fragment slot="description">
+                    Documents with matching IDs will be silently skipped.
+                </svelte:fragment>
+            </Selector.Radio>
+            <Selector.Radio
+                size="s"
+                bind:group={importOnDuplicate}
+                name="importOnDuplicate"
+                value={OnDuplicate.Overwrite}
+                label="Overwrite existing documents">
+                <svelte:fragment slot="description">
+                    Documents with matching IDs will be updated with the imported data.
+                </svelte:fragment>
+            </Selector.Radio>
         </Layout.Stack>
     </Layout.Stack>
     <svelte:fragment slot="footer">
