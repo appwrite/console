@@ -128,7 +128,8 @@
                             <Button
                                 icon
                                 compact
-                                disabled={(!customData[index][0] || !customData[index][1]) && index === 0}
+                                disabled={(!customData[index][0] || !customData[index][1]) &&
+                                    index === 0}
                                 on:click={() => {
                                     if (customData.length === 1) {
                                         customData = [['', '']];
