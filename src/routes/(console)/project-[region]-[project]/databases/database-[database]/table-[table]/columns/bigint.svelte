@@ -1,47 +1,67 @@
 <script module lang="ts">
     import { page } from '$app/state';
+    import type { Columns } from '$database/store';
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
 
-    function normalizeBigInt(value) {
+    function normalizeBigInt(value, field: string) {
         if (value === undefined) return undefined;
         if (value === null) return null;
-        return BigInt(value);
+
+        if (typeof value === 'number') {
+            if (!Number.isFinite(value) || Number.isNaN(value)) {
+                throw new Error(`${field} must be a finite integer`);
+            }
+
+            if (!Number.isInteger(value)) {
+                throw new Error(`${field} must be an integer`);
+            }
+        }
+
+        try {
+            return BigInt(value);
+        } catch {
+            throw new Error(`${field} must be a valid integer`);
+        }
     }
 
     export async function submitBigInt(
         databaseId: string,
         tableId: string,
         key: string,
-        data: Partial<Models.ColumnBigint>
+        data: Partial<Columns>
     ) {
+        const bigintData = data as Partial<Models.ColumnBigint>;
+
         await sdk.forProject(page.params.region, page.params.project).tablesDB.createBigIntColumn({
             databaseId,
             tableId,
             key,
-            required: data.required,
-            min: data.min,
-            max: data.max,
-            xdefault: normalizeBigInt(data.default),
-            array: data.array
+            required: bigintData.required,
+            min: normalizeBigInt(bigintData.min, 'Min'),
+            max: normalizeBigInt(bigintData.max, 'Max'),
+            xdefault: normalizeBigInt(bigintData.default, 'Default value'),
+            array: bigintData.array
         });
     }
 
     export async function updateBigInt(
         databaseId: string,
         tableId: string,
-        data: Partial<Models.ColumnBigint>,
+        data: Partial<Columns>,
         originalKey?: string
     ) {
+        const bigintData = data as Partial<Models.ColumnBigint>;
+
         await sdk.forProject(page.params.region, page.params.project).tablesDB.updateBigIntColumn({
             databaseId,
             tableId,
             key: originalKey,
-            required: data.required,
-            xdefault: normalizeBigInt(data.default),
-            min: data.min,
-            max: data.max,
-            newKey: data.key !== originalKey ? data.key : undefined
+            required: bigintData.required,
+            xdefault: normalizeBigInt(bigintData.default, 'Default value'),
+            min: normalizeBigInt(bigintData.min, 'Min'),
+            max: normalizeBigInt(bigintData.max, 'Max'),
+            newKey: bigintData.key !== originalKey ? bigintData.key : undefined
         });
     }
 </script>
@@ -108,6 +128,7 @@
         label="Min"
         {disabled}
         placeholder="Enter size"
+        step={1}
         bind:value={data.min as number}
         required={editing} />
 
@@ -116,6 +137,7 @@
         label="Max"
         {disabled}
         placeholder="Enter size"
+        step={1}
         bind:value={data.max as number}
         required={editing} />
 </Layout.Stack>
@@ -124,6 +146,7 @@
     id="default"
     label="Default value"
     placeholder="Enter value"
+    step={1}
     min={data.min as number}
     max={data.max as number}
     bind:value={data.default as number}
