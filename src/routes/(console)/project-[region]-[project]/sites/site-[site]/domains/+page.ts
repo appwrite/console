@@ -29,6 +29,7 @@ export const load = async ({ params, depends, url, route, parent }) => {
             Query.offset(offset),
             Query.orderDesc(''),
             Query.orderDesc('$updatedAt'),
+            ...(search ? [Query.search('domain', search)] : []),
             ...parsedQueries.values()
         ]
     });
