@@ -22,7 +22,7 @@
     },
     "dependencies": {
         "@ai-sdk/svelte": "^1.1.24",
-        "@appwrite.io/console": "https://pkg.pr.new/appwrite-labs/cloud/@appwrite.io/console@8836b0c",
+        "@appwrite.io/console": "1.9.0",
         "@appwrite.io/pink-icons": "0.25.0",
         "@appwrite.io/pink-icons-svelte": "^2.0.0-RC.1",
         "@appwrite.io/pink-legacy": "^1.0.3",
@@ -51,7 +51,7 @@
         "@eslint/js": "^9.24.0",
         "@melt-ui/pp": "^0.3.2",
         "@melt-ui/svelte": "^0.86.5",
-        "@playwright/test": "^1.51.1",
+        "@playwright/test": "^1.58.2",
         "@sveltejs/adapter-static": "^3.0.8",
         "@sveltejs/kit": "^2.20.2",
         "@sveltejs/vite-plugin-svelte": "^5.0.3",
@@ -92,7 +92,33 @@
             "@sentry/cli",
             "esbuild",
             "svelte-preprocess"
-        ]
+        ],
+        "auditConfig": {
+            "ignoreGhsas": [
+                "GHSA-j62c-4x62-9r35",
+                "GHSA-2crg-3p73-43xp"
+            ]
+        },
+        "overrides": {
+            "@sveltejs/kit": "2.20.2",
+            "devalue": "^5.6.2",
+            "flatted": "^3.4.2",
+            "form-data": "^4.0.4",
+            "immutable": "^5.1.5",
+            "lodash": "^4.18.0",
+            "minimatch@>=9.0.0 <9.0.7": "^9.0.7",
+            "minimatch@>=8.0.0 <8.0.6": "^8.0.6",
+            "minimatch@<3.1.4": "^3.1.4",
+            "picomatch@<2.3.2": "^2.3.2",
+            "picomatch@>=4.0.0 <4.0.4": "^4.0.4",
+            "playwright": "^1.55.1",
+            "rollup": "^4.59.0",
+            "seroval": "^1.4.1",
+            "vite@>=6.0.0 <6.4.2": "^6.4.2"
+        },
+        "patchedDependencies": {
+            "@appwrite.io/console@1.9.0": "patches/@appwrite.io__console@1.9.0.patch"
+        }
     },
     "packageManager": "pnpm@10.7.0+sha512.6b865ad4b62a1d9842b61d674a393903b871d9244954f652b8842c2b553c72176b278f64c463e52d40fff8aba385c235c8c9ecf5cc7de4fd78b8bb6d49633ab6"
 }

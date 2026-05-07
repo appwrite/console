@@ -1,0 +1,13 @@
+diff --git a/types/services/vcs.d.ts b/types/services/vcs.d.ts
+index ae73556b3b4a6e7e133ce6c9e5cb7faa0e41f8b1..4c92d9bcb4f4f1a3205100f40fdc402ddf6e1911 100644
+--- a/types/services/vcs.d.ts
++++ b/types/services/vcs.d.ts
+@@ -64,7 +64,7 @@ export declare class Vcs {
+      * @throws {AppwriteException}
+      * @returns {Promise<Models.VcsContentList>}
+      */
+-    getRepositoryContents(installationId: string, providerRepositoryId: string, providerRootDirectory?: string): Promise<Models.VcsContentList>;
++    getRepositoryContents(installationId: string, providerRepositoryId: string, providerRootDirectory?: string, providerReference?: string): Promise<Models.VcsContentList>;
+     /**
+      * Authorize and create deployments for a GitHub pull request in your project. This endpoint allows external contributions by creating deployments from pull requests, enabling preview environments for code review. The pull request must be open and not previously authorized. The GitHub installation must be properly configured and have access to both the repository and pull request for this endpoint to work.
+      *
