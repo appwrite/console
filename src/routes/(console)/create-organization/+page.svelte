@@ -11,7 +11,8 @@
     import {
         billingIdToPlan,
         getBasePlanFromGroup,
-        isPaymentAuthenticationRequired
+        isPaymentAuthenticationRequired,
+        teamStatusUpgrading
     } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
@@ -106,11 +107,21 @@
             });
 
             if (!isPaymentAuthenticationRequired(org)) {
+                await invalidate(Dependencies.ACCOUNT);
                 await preloadAndNavigate(org.$id);
-                addNotification({
-                    type: 'success',
-                    message: `${org.name ?? 'Organization'} has been created`
-                });
+
+                if (org.status === teamStatusUpgrading) {
+                    addNotification({
+                        type: 'info',
+                        message:
+                            'Payment is processing — your plan will activate within a few minutes.'
+                    });
+                } else {
+                    addNotification({
+                        type: 'success',
+                        message: `${org.name ?? 'Organization'} has been created`
+                    });
+                }
             }
         } catch (e) {
             addNotification({
@@ -144,8 +155,8 @@
                 });
 
                 if (isPaymentAuthenticationRequired(org)) {
-                    let clientSecret = org.clientSecret;
-                    let params = new URLSearchParams();
+                    const clientSecret = org.clientSecret;
+                    const params = new URLSearchParams();
                     params.append('type', 'payment_confirmed');
                     params.append('id', org.organizationId);
                     for (const [key, value] of page.url.searchParams.entries()) {
@@ -156,11 +167,20 @@
                     params.append('invites', collaborators.join(','));
                     const resolvedUrl = resolve('/(console)/create-organization');
 
-                    await confirmPayment({
+                    const outcome = await confirmPayment({
                         clientSecret,
                         paymentMethodId,
-                        route: `${resolvedUrl}?${params}`
+                        route: `${resolvedUrl}?${params}`,
+                        redirectIfRequired: true
                     });
+
+                    if (!outcome || outcome.status === 'error') {
+                        return;
+                    }
+
+                    if (outcome.status === 'requires_action') {
+                        return;
+                    }
 
                     await validate(org.organizationId, collaborators);
                 }

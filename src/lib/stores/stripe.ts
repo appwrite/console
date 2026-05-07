@@ -186,13 +186,18 @@ export async function setPaymentMethod(providerMethodId: string, name: string, s
     }
 }
 
+export type ConfirmPaymentOutcome =
+    | { status: 'succeeded' | 'processing' | 'requires_action' }
+    | { status: 'error'; message: string };
+
 export async function confirmPayment(config: {
     clientSecret: string;
     paymentMethodId: string;
     orgId?: string;
     route?: string;
-}) {
-    const { clientSecret, paymentMethodId, orgId, route } = config;
+    redirectIfRequired?: boolean;
+}): Promise<ConfirmPaymentOutcome | undefined> {
+    const { clientSecret, paymentMethodId, orgId, route, redirectIfRequired } = config;
 
     try {
         const resolvedUrl = resolve('/(console)/organization-[organization]/billing', {
@@ -203,8 +208,40 @@ export async function confirmPayment(config: {
 
         const paymentMethod = await sdk.forConsole.account.getPaymentMethod({ paymentMethodId });
 
+        if (redirectIfRequired) {
+            const { paymentIntent, error } = await get(stripe).confirmPayment({
+                clientSecret,
+                confirmParams: {
+                    return_url: url,
+                    payment_method: paymentMethod.providerMethodId
+                },
+                redirect: 'if_required'
+            });
+
+            if (error) {
+                addNotification({
+                    title: 'Error',
+                    message:
+                        error.message ??
+                        'There was an error processing your payment, try again later. If the problem persists, please contact support.',
+                    type: 'error'
+                });
+                return { status: 'error', message: error.message ?? 'Payment confirmation failed' };
+            }
+
+            const status = paymentIntent?.status;
+            if (status === 'succeeded' || status === 'processing' || status === 'requires_action') {
+                return { status };
+            }
+
+            return {
+                status: 'error',
+                message: `Unexpected payment status: ${status ?? 'unknown'}`
+            };
+        }
+
         const { error } = await get(stripe).confirmPayment({
-            clientSecret: clientSecret,
+            clientSecret,
             confirmParams: {
                 return_url: url,
                 payment_method: paymentMethod.providerMethodId
@@ -221,6 +258,12 @@ export async function confirmPayment(config: {
                 'There was an error processing your payment, try again later. If the problem persists, please contact support.',
             type: 'error'
         });
+        if (redirectIfRequired) {
+            return {
+                status: 'error',
+                message: typeof e === 'string' ? e : (e?.message ?? 'Payment confirmation failed')
+            };
+        }
     }
 }
 
