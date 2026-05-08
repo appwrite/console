@@ -5,9 +5,6 @@
     import { IconArrowRight } from '@appwrite.io/pink-icons-svelte';
     import { Layout, Typography, Icon, Divider } from '@appwrite.io/pink-svelte';
 
-    /*import MongoDB from './(assets)/mongo-db.svg';
-    import MongoDBDark from './(assets)/dark/mongo-db.svg';*/
-
     import TablesDB from './(assets)/tables-db.svg';
     import TablesDBDark from './(assets)/dark/tables-db.svg';
 
@@ -17,8 +14,13 @@
     import VectorsDB from './(assets)/vectors-db.svg';
     import VectorsDBDark from './(assets)/dark/vectors-db.svg';
 
+    import DedicatedDB from './(assets)/dedicated-db.svg';
+    import DedicatedDBDark from './(assets)/dark/dedicated-db.svg';
+
+    import { isCloud } from '$lib/system';
     import { isSmallViewport } from '$lib/stores/viewport';
     import type { DatabaseType } from '$database/(entity)';
+    import { databaseTypes } from './store';
     import { flags } from '$lib/flags';
     import { user } from '$lib/stores/user';
     import { organization } from '$lib/stores/organization';
@@ -32,10 +34,13 @@
     } = $props();
 
     const isDark = $derived($app.themeInUse === 'dark');
-    /*const mongoDbImage = $derived(isDark ? MongoDBDark : MongoDB);*/
-    const tablesDbImage = $derived(isDark ? TablesDBDark : TablesDB);
-    const documentsDbImage = $derived(isDark ? DocumentsDBDark : DocumentsDB);
-    const vectorsDbImage = $derived(isDark ? VectorsDBDark : VectorsDB);
+
+    const images: Record<string, string> = $derived({
+        tablesdb: isDark ? TablesDBDark : TablesDB,
+        documentsdb: isDark ? DocumentsDBDark : DocumentsDB,
+        vectorsdb: isDark ? VectorsDBDark : VectorsDB,
+        dedicateddb: isDark ? DedicatedDBDark : DedicatedDB
+    });
 </script>
 
 {#if $isSmallViewport}
@@ -55,35 +60,21 @@
                 >Store, organize, and manage your app data</Typography.Text>
         </Layout.Stack>
 
-        <Layout.Grid columns={3} columnsS={2} columnsXS={1} gap="xl">
-            <!-- legacy, tablesDB -->
-            {@render databaseTypeCard({
-                type: 'tablesdb',
-                title: 'TablesDB',
-                subtitle:
-                    'Structure your data in rows and columns. Best for relational data and advanced querying.',
-                image: tablesDbImage
-            })}
-
-            {#if flags.multiDb({ account: $user, organization: $organization })}
-                <!-- documentsDB -->
+        {@const isMultiDb = flags.multiDb({ account: $user, organization: $organization })}
+        {@const visibleTypes = databaseTypes.filter((db) => {
+            if (db.type === 'dedicateddb') return isCloud;
+            if (db.type === 'documentsdb' || db.type === 'vectorsdb') return isMultiDb;
+            return true;
+        })}
+        <Layout.Grid columns={visibleTypes.length} columnsS={2} columnsXS={1} gap="xl">
+            {#each visibleTypes as db}
                 {@render databaseTypeCard({
-                    type: 'documentsdb',
-                    title: 'DocumentsDB',
-                    subtitle:
-                        'Store flexible data without a fixed schema. Best for unstructured data and simple querying.',
-                    image: documentsDbImage
+                    type: db.type,
+                    title: db.title,
+                    subtitle: db.subtitle,
+                    image: images[db.type]
                 })}
-
-                <!-- vectorsDB -->
-                {@render databaseTypeCard({
-                    type: 'vectorsdb',
-                    title: 'VectorsDB',
-                    subtitle:
-                        'Store data as vectors to find similar results. Best for semantic search and recommendations.',
-                    image: vectorsDbImage
-                })}
-            {/if}
+            {/each}
         </Layout.Grid>
     </Layout.Stack>
 {/snippet}

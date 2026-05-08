@@ -53,15 +53,23 @@
 
     async function handleExport() {
         try {
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .migrations.createJSONExport({
-                    resourceId: `${page.params.database}:${page.params.collection}`,
-                    filename: filename,
-                    columns: [],
-                    queries: exportWithFilters ? Array.from(localQueries.values()) : [],
-                    notify: true
-                });
+            await (
+                sdk.forProject(page.params.region, page.params.project).migrations as unknown as {
+                    createJSONExport: (params: {
+                        resourceId: string;
+                        filename: string;
+                        columns: string[];
+                        queries: string[];
+                        notify: boolean;
+                    }) => Promise<unknown>;
+                }
+            ).createJSONExport({
+                resourceId: `${page.params.database}:${page.params.collection}`,
+                filename: filename,
+                columns: [],
+                queries: exportWithFilters ? Array.from(localQueries.values()) : [],
+                notify: true
+            });
 
             addNotification({
                 type: 'success',

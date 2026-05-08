@@ -1,15 +1,14 @@
 import type { Page } from '@sveltejs/kit';
 
 import { capitalize, plural } from '$lib/helpers/string';
-import { AppwriteException, type TablesDBIndexType, type Models } from '@appwrite.io/console';
+import { type TablesDBIndexType, type Models } from '@appwrite.io/console';
 import type { Attributes, Collection, Columns, Table } from '$database/store';
 import type { Term, TerminologyResult, TerminologyShape } from '$database/(entity)/helpers/types';
 
 type BaseTerminology = typeof baseTerminology;
 type ImplementedDBTypes = Omit<BaseTerminology, 'legacy'>;
 
-/* manual type for the time being because vectorsdb is pending */
-export type DatabaseType = 'legacy' | 'tablesdb' | 'documentsdb' | 'vectorsdb';
+export type DatabaseType = 'legacy' | 'tablesdb' | 'documentsdb' | 'vectorsdb' | 'dedicateddb';
 export type CollectionDatabaseType = Extract<DatabaseType, 'documentsdb' | 'vectorsdb'>;
 
 export const DEFAULT_VECTOR_DIMENSION = 768;
@@ -70,6 +69,11 @@ export const baseTerminology = {
         entity: 'collection',
         field: 'attribute',
         record: 'document'
+    },
+    dedicateddb: {
+        entity: 'table',
+        field: 'column',
+        record: 'row'
     }
 } as const;
 
@@ -158,7 +162,7 @@ export function useTerminology(pageOrType: Page | DatabaseType): TerminologyResu
             : pageOrType;
     if (!type) {
         // strict check because this should always be available!
-        throw new AppwriteException('Database type is required', 500);
+        throw new Error('Database type is required for terminology lookup');
     }
 
     const dbTerminologies = terminologyData[type] || {};

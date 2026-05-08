@@ -10,7 +10,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { oAuthProviders } from '$lib/stores/oauth-providers';
     import { sdk } from '$lib/stores/sdk';
-    import { MethodId, type Models } from '@appwrite.io/console';
+    import { AuthMethod as MethodId, type Models } from '@appwrite.io/console';
     import { base } from '$app/paths';
     import {
         Avatar,

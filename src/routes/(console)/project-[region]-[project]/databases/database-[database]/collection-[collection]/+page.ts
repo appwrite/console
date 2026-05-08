@@ -3,7 +3,7 @@ import { getLimit, getPage, getQuery, getView, pageToOffset, View } from '$lib/h
 import type { PageLoad } from './$types';
 import { queries, queryParamToMap } from '$lib/components/filters';
 import { buildGridQueries, extractSortFromQueries } from '$database/store';
-import { getCollectionService } from '$database/(entity)';
+import { getCollectionService, type DatabaseType } from '$database/(entity)';
 
 export const load: PageLoad = async ({ params, depends, url, route, parent }) => {
     const { collection, database } = await parent();
@@ -20,7 +20,11 @@ export const load: PageLoad = async ({ params, depends, url, route, parent }) =>
     queries.set(parsedQueries);
 
     const currentSort = extractSortFromQueries(parsedQueries);
-    const collectionSdk = getCollectionService(params.region, params.project, database.type);
+    const collectionSdk = getCollectionService(
+        params.region,
+        params.project,
+        database.type as DatabaseType
+    );
 
     return {
         offset,

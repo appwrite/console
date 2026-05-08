@@ -1,0 +1,157 @@
+- generic [active] [ref=e8]:
+      - generic [ref=e9]:
+            - generic [ref=e51]:
+                  - generic [ref=e52]: 
+                  - generic [ref=e53]:
+                        - heading "Realtime pricing enforcement starting April 30th" [level=6] [ref=e54]
+                        - paragraph [ref=e55]: Starting April 30th, realtime usage (connections, messages, and bandwidth) will be charged based on your plan's rates. Review your usage to avoid unexpected charges.
+                  - generic [ref=e56]:
+                        - link "View usage" [ref=e57] [cursor=pointer]:
+                              - /url: /console/organization-69cbc92d00163e3adfee/usage
+                              - generic [ref=e58]: View usage
+                        - button [ref=e59] [cursor=pointer]:
+                              - img [ref=e62]
+            - main [ref=e64]:
+                  - generic [ref=e65]:
+                        - generic [ref=e66]:
+                              - link "Logo Appwrite" [ref=e67] [cursor=pointer]:
+                                    - /url: /console/organization-69cbc92d00163e3adfee
+                                    - img "Logo Appwrite" [ref=e68]
+                              - menubar [ref=e69]:
+                                    - text: /
+                                    - menuitem "Open organizations tab" [ref=e70] [cursor=pointer]:
+                                          - generic [ref=e71]: Personal projects
+                                          - generic [ref=e73]: Free
+                                          - img [ref=e75]
+                        - generic [ref=e78]:
+                              - generic [ref=e79]:
+                                    - link "Upgrade" [ref=e80] [cursor=pointer]:
+                                          - /url: /console/organization-69cbc92d00163e3adfee/change-plan
+                                    - button "Feedback" [ref=e82] [cursor=pointer]
+                                    - button "Support" [ref=e84] [cursor=pointer]
+                              - note [ref=e86]:
+                                    - button "Toggle Command Center" [ref=e87] [cursor=pointer]:
+                                          - img [ref=e89]
+                              - button [ref=e92] [cursor=pointer]
+                  - generic [ref=e94]:
+                        - generic [ref=e97]:
+                              - generic [ref=e98]:
+                                    - generic [ref=e99]:
+                                          - heading "Personal projects" [level=1] [ref=e100]
+                                          - generic [ref=e101]: Free
+                                          - button [ref=e102] [cursor=pointer]:
+                                                - img [ref=e104]
+                                    - note [ref=e108]:
+                                          - generic [ref=e109]:
+                                                - button "Invite" [disabled]:
+                                                      - generic:
+                                                            - generic:
+                                                                  - img
+                                                      - text: Invite
+                              - tablist [ref=e111]:
+                                    - tab "Projects" [ref=e112] [cursor=pointer]
+                                    - tab "Domains" [ref=e113] [cursor=pointer]
+                                    - tab "Members" [ref=e114] [cursor=pointer]
+                                    - tab "Usage" [ref=e115] [cursor=pointer]
+                                    - tab "Billing" [ref=e116] [cursor=pointer]
+                                    - tab "Settings" [ref=e117] [cursor=pointer]
+                        - generic [ref=e120]:
+                              - generic [ref=e121]:
+                                    - generic [ref=e125]:
+                                          - img [ref=e127]
+                                          - textbox "Search by name, label, or ID" [ref=e129]
+                                    - button "Create project" [ref=e130] [cursor=pointer]:
+                                          - img [ref=e133]
+                                          - text: Create project
+                              - article [ref=e135]:
+                                    - generic [ref=e136]:
+                                          - img [ref=e139]
+                                          - generic [ref=e142]:
+                                                - generic [ref=e143]:
+                                                      - paragraph [ref=e146]: Your Free plan includes up to 2 projects and limited resources. Upgrade to unlock more capacity and features.
+                                                      - link "Upgrade to Pro" [ref=e148] [cursor=pointer]:
+                                                            - /url: /console/organization-69cbc92d00163e3adfee/change-plan
+                                                - button [ref=e149] [cursor=pointer]:
+                                                      - img [ref=e152]
+                              - list [ref=e154]:
+                                    - link "No apps New Project Frankfurt" [ref=e155] [cursor=pointer]:
+                                          - /url: /console/project-fra-69cbc93700226e89fffb/overview/platforms
+                                          - generic [ref=e156]:
+                                                - generic [ref=e158]:
+                                                      - generic [ref=e159]: No apps
+                                                      - heading "New Project" [level=4] [ref=e160]
+                                                - paragraph [ref=e165]: Frankfurt
+                                    - button "create" [ref=e166] [cursor=pointer]:
+                                          - generic [ref=e167]:
+                                                - img [ref=e170]
+                                                - paragraph [ref=e172]:
+                                                      - paragraph [ref=e173]: Create a new project
+                              - generic [ref=e174]:
+                                    - generic [ref=e175]:
+                                          - generic [ref=e176]:
+                                                - textbox: '6'
+                                                - combobox "6" [ref=e177]:
+                                                      - generic [ref=e178]:
+                                                            - generic [ref=e179]: '6'
+                                                            - img [ref=e181]
+                                          - paragraph [ref=e183]: 'Projects per page. Total: 1'
+                                    - navigation [ref=e184]:
+                                          - link "Prev" [disabled]:
+                                                - /url: ''
+                                                - generic:
+                                                      - generic:
+                                                            - img
+                                                - generic: Prev
+                                          - link "1" [ref=e185] [cursor=pointer]:
+                                                - /url: http://localhost:3001/console/organization-69cbc92d00163e3adfee?page=1
+                                                - generic [ref=e186]: '1'
+                                          - link "Next" [disabled]:
+                                                - /url: ''
+                                                - generic: Next
+                                                - generic:
+                                                      - generic:
+                                                            - img
+                        - generic [ref=e187]:
+                              - separator [ref=e188]
+                              - generic [ref=e189]:
+                                    - generic [ref=e190]:
+                                          - generic [ref=e191]: ⓒ 2026 Appwrite. All rights reserved.
+                                          - separator [ref=e193]
+                                          - generic [ref=e194]:
+                                                - link "Appwrite on Github" [ref=e195] [cursor=pointer]:
+                                                      - /url: https://github.com/appwrite/appwrite
+                                                      - img [ref=e197]
+                                                - link "Appwrite on Discord" [ref=e199] [cursor=pointer]:
+                                                      - /url: https://appwrite.io/discord
+                                                      - img [ref=e201]
+                                    - generic [ref=e203]:
+                                          - generic [ref=e204]: Generally Available
+                                          - img [ref=e206]
+                                          - link "Docs" [ref=e208] [cursor=pointer]:
+                                                - /url: https://appwrite.io/docs
+                                                - generic [ref=e209]: Docs
+                                          - separator [ref=e211]
+                                          - link "Terms" [ref=e212] [cursor=pointer]:
+                                                - /url: https://appwrite.io/terms
+                                                - generic [ref=e213]: Terms
+                                          - separator [ref=e215]
+                                          - link "Privacy" [ref=e216] [cursor=pointer]:
+                                                - /url: https://appwrite.io/privacy
+                                                - generic [ref=e217]: Privacy
+                                          - separator [ref=e219]
+                                          - link "Cookies" [ref=e220] [cursor=pointer]:
+                                                - /url: https://appwrite.io/cookies
+                                                - generic [ref=e221]: Cookies
+            - article [ref=e224]:
+                  - button "Close modal" [ref=e225] [cursor=pointer]:
+                        - img [ref=e226]
+                  - generic [ref=e228]:
+                        - img "Imagine" [ref=e233]
+                        - generic [ref=e234]:
+                              - paragraph [ref=e235]: Introducing Imagine
+                              - generic [ref=e236]: The most complete AI builder to date
+                        - button "Try it now" [ref=e239] [cursor=pointer]:
+                              - generic [ref=e240]: Try it now
+            - text: 
+            - generic [ref=e49]: Organizations - Appwrite
+      - img "Appwrite Logo"

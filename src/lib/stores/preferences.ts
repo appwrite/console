@@ -218,14 +218,11 @@ function createPreferences() {
             }),
 
         // `databaseType` fallback for legacy cases.
-        deleteEntityDetails: async (
-            orgId: string,
-            entityId: string,
-            databaseType: string = 'tables'
-        ) => {
+        deleteEntityDetails: async (orgId: string, entityId: string, databaseType?: string) => {
+            const dbType = databaseType ?? 'tables';
             // remove from account preferences
             const removeCustomTableColumns = updateAndSync((n) => {
-                n = ensureObjectProperty(n, databaseType);
+                n = ensureObjectProperty(n, dbType);
                 delete n.tables[entityId];
                 return n;
             });
@@ -235,9 +232,9 @@ function createPreferences() {
             delete teamPreferences?.columnWidths?.[entityId + '#columns'];
             delete teamPreferences?.columnWidths?.[entityId + '#indexes'];
 
-            if (teamPreferences.displayNames?.[databaseType]?.[entityId]) {
+            if (teamPreferences.displayNames?.[dbType]?.[entityId]) {
                 // new structure
-                delete teamPreferences?.displayNames?.[databaseType]?.[entityId];
+                delete teamPreferences?.displayNames?.[dbType]?.[entityId];
             } else {
                 // legacy structure
                 delete teamPreferences?.displayNames?.[entityId];
@@ -253,9 +250,9 @@ function createPreferences() {
 
         loadTeamPrefs: loadTeamPreferences,
 
-        getDisplayNames: (entityId: string, databaseType: string = null) => {
+        getDisplayNames: (entityId: string, databaseType?: string) => {
             let names = teamPreferences?.displayNames?.[entityId];
-            if (databaseType) {
+            if (databaseType != null) {
                 names = teamPreferences?.displayNames?.[databaseType]?.[entityId];
             }
 
@@ -266,10 +263,10 @@ function createPreferences() {
             orgId: string,
             entityId: string,
             displayNames: TeamPreferences['names'],
-            databaseType: string = null
+            databaseType?: string
         ) => {
             teamPreferences = ensureObjectProperty(teamPreferences, 'displayNames');
-            if (!databaseType) {
+            if (databaseType == null) {
                 // legacy!
                 teamPreferences.displayNames[entityId] = displayNames;
             } else {

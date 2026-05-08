@@ -3,6 +3,7 @@
     import type { PageProps } from './$types';
     import {
         type CreateIndexesCallbackType,
+        type DatabaseType,
         Indexes,
         EmptySheet,
         EmptySheetCards,
@@ -15,7 +16,11 @@
 
     let createIndexRef: CreateIndexForm;
 
-    const databaseSdk = useDatabaseSdk(page.params.region, page.params.project, data.database.type);
+    const databaseSdk = useDatabaseSdk(
+        page.params.region,
+        page.params.project,
+        data.database.type as DatabaseType
+    );
 
     async function onCreateIndex(index: CreateIndexesCallbackType) {
         await databaseSdk.createIndex({
@@ -53,7 +58,7 @@
     {/snippet}
 
     {#snippet emptyIndexesSheetView(toggle)}
-        <EmptySheet mode="indexes" type={data.database.type}>
+        <EmptySheet mode="indexes" type={data.database.type as DatabaseType}>
             {#snippet actions()}
                 <EmptySheetCards
                     icon={IconPlus}

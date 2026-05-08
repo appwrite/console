@@ -26,6 +26,9 @@
     import type { Snippet } from 'svelte';
     import { Input as SuggestionsInput } from '$database/(suggestions)/index';
     import { Modal } from '$lib/components';
+    import { realtime } from '$lib/stores/sdk';
+    import { onMount } from 'svelte';
+    import { getProjectId } from '$lib/helpers/project';
     import { subNavigation } from '$lib/stores/database';
 
     let {
@@ -34,14 +37,29 @@
         children: Snippet;
     } = $props();
 
-    const project = page.params.project;
-    const databaseId = page.params.database;
+    const project = $derived(page.params.project);
+    const databaseId = $derived(page.params.database);
 
     const { databaseSdk, terminology } = getTerminologies();
 
+    const isDedicatedType = terminology.type === 'dedicateddb';
+
     $noWidthTransition = true;
 
-    $registerSearchers(tablesSearcher);
+    onMount(() => {
+        if (!isDedicatedType) return;
+        return realtime.forProject(page.params.region, ['project', 'console'], (response) => {
+            if (!response.channels.includes(`projects.${getProjectId()}`)) return;
+            if (response.events.some((e: string) => e.includes('databases'))) {
+                invalidate(Dependencies.DATABASE);
+            }
+        });
+    });
+
+    // Only register table searcher for non-dedicated databases
+    if (!isDedicatedType) {
+        $registerSearchers(tablesSearcher);
+    }
 
     async function createEntity(entityId: string, name: string, dimension?: number) {
         const shouldSuggestColumns = $entityColumnSuggestions.enabled;
@@ -210,7 +228,10 @@
 
 {@render children()}
 
-<CreateEntity bind:show={$showCreateEntity} onCreateEntity={createEntity} />
+<!-- Only show entity creation dialog for non-dedicated databases -->
+{#if !isDedicatedType}
+    <CreateEntity bind:show={$showCreateEntity} onCreateEntity={createEntity} />
+{/if}
 
 {#if !$randomDataModalState.managed}
     <Modal title="Generate sample data" bind:show={$randomDataModalState.show}>

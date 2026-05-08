@@ -20,7 +20,8 @@ const config: PlaywrightTestConfig = {
                 'pk_test_51LT5nsGYD1ySxNCyd7b304wPD8Y1XKKWR6hqo6cu3GIRwgvcVNzoZv4vKt5DfYXL1gRGw4JOqE19afwkJYJq1g3K004eVfpdWn'
         },
         command: 'bun run build && bun run preview',
-        port: 4173
+        port: 4173,
+        reuseExistingServer: true
     }
 };
 

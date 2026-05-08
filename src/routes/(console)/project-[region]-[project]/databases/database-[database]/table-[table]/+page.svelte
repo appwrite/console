@@ -216,7 +216,6 @@
                                     on:click={() => (showImportCSV = true)}>
                                     <Icon icon={IconUpload} size="s" />
                                 </Button>
-
                                 <svelte:fragment slot="tooltip">Import CSV</svelte:fragment>
                             </Tooltip>
 

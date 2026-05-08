@@ -986,10 +986,36 @@
             suggestedObject[attr] = suggestedDefaults?.[attr] ?? '';
         }
 
-        // Merge with existing data (keeping system fields)
+        // System fields that should not be overwritten via spread
+        const SYSTEM_FIELDS = [
+            '$id',
+            '$createdAt',
+            '$updatedAt',
+            '$permissions',
+            '$collectionId',
+            '$databaseId'
+        ];
+
+        // Sanitize data to prevent system field injection
+        const existingData = (
+            typeof data === 'object' && data !== null && !Array.isArray(data) ? data : {}
+        ) as JsonObject;
+        const sanitizedData = Object.fromEntries(
+            Object.entries(existingData).filter(([key]) => !SYSTEM_FIELDS.includes(key))
+        );
+
+        // Merge sanitized data with suggested attributes, then restore system fields
         const updatedData = {
-            ...(typeof data === 'object' && data !== null && !Array.isArray(data) ? data : {}),
-            ...suggestedObject
+            ...sanitizedData,
+            ...suggestedObject,
+            // Restore original system fields
+            ...(existingData['$id'] !== undefined && { $id: existingData['$id'] }),
+            ...(existingData['$createdAt'] !== undefined && {
+                $createdAt: existingData['$createdAt']
+            }),
+            ...(existingData['$updatedAt'] !== undefined && {
+                $updatedAt: existingData['$updatedAt']
+            })
         };
 
         // Update the data

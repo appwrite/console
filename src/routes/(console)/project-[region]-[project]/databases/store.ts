@@ -23,8 +23,49 @@ export const columns = writable<Column[]>(
           ]
 );
 
-export function getDatabaseTypeTitle(database: Models.Database) {
+const allDatabaseTypes: Array<{
+    type: DatabaseType;
+    title: string;
+    subtitle: string;
+    cloudOnly?: boolean;
+}> = [
+    {
+        type: 'dedicateddb',
+        title: 'DedicatedDB',
+        subtitle:
+            'Always-on dedicated instances with high availability. Best for production workloads.',
+        cloudOnly: true
+    },
+    {
+        type: 'tablesdb',
+        title: 'TablesDB',
+        subtitle:
+            'Structure your data in rows and columns. Best for relational data and advanced querying.'
+    },
+    {
+        type: 'documentsdb',
+        title: 'DocumentsDB',
+        subtitle:
+            'Store flexible data without a fixed schema. Best for unstructured data and simple querying.'
+    },
+    {
+        type: 'vectorsdb',
+        title: 'VectorsDB',
+        subtitle:
+            'Store data as vectors to find similar results. Best for semantic search and recommendations.'
+    }
+];
+
+export const databaseTypes = allDatabaseTypes.filter((db) => !db.cloudOnly || isCloud);
+
+export function getDatabaseTypeTitle(database: Models.Database & { engine?: string }) {
     switch (database.type as DatabaseType) {
+        case 'dedicateddb': {
+            const engine = database.engine || 'postgres';
+            const engineName =
+                engine === 'postgres' ? 'PostgreSQL' : engine === 'mysql' ? 'MySQL' : engine;
+            return `Dedicated ${engineName}`;
+        }
         default:
         case 'legacy':
         case 'tablesdb':

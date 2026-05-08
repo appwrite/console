@@ -53,6 +53,7 @@
         RecordActivity,
         useDatabaseSdk,
         DEFAULT_VECTOR_DIMENSION,
+        type DatabaseType,
         type Field,
         type Index
     } from '$database/(entity)';
@@ -212,7 +213,7 @@
         const databaseSdk = useDatabaseSdk(
             page.params.region,
             page.params.project,
-            data.database.type
+            data.database.type as DatabaseType
         );
 
         await databaseSdk.createIndex({

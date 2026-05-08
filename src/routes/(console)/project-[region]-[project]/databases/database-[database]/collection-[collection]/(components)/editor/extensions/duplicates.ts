@@ -10,7 +10,9 @@ type Options = {
     maxDocLength?: number;
 };
 
+/** Time budget for duplicate detection in milliseconds. 200ms balances responsiveness with thoroughness. */
 const DEFAULT_TIME_BUDGET_MS = 200;
+/** Check time budget every N nodes. 200 balances accuracy with overhead of time checks. */
 const CHECK_BUDGET_EVERY = 200;
 
 function normalizeKey(raw: string): string {

@@ -17,22 +17,41 @@ import {
     toSupportiveIndex
 } from './terminology';
 
-import type {
-    Models,
-    OrderBy,
-    TablesDBIndexType,
-    DocumentsDBIndexType,
-    VectorsDBIndexType
+import {
+    Backend,
+    Engine,
+    Region,
+    type DatabasesIndexType,
+    type Models,
+    type OrderBy,
+    type TablesDBIndexType
 } from '@appwrite.io/console';
+
+export type DedicatedDatabaseParams = {
+    databaseId: string;
+    name: string;
+    enabled?: boolean;
+    engine?: Engine;
+    region?: string;
+    tier?: string;
+    highAvailability?: boolean;
+    backupEnabled?: boolean;
+    backupSchedule?: string;
+    backupRetentionDays?: number;
+    backupPitr?: boolean;
+    pitrRetentionDays?: number;
+};
 
 export type DatabaseSdkResult = {
     create: (
         type: DatabaseType,
-        params: {
-            databaseId: string;
-            name: string;
-            enabled?: boolean;
-        }
+        params:
+            | {
+                  databaseId: string;
+                  name: string;
+                  enabled?: boolean;
+              }
+            | DedicatedDatabaseParams
     ) => Promise<Models.Database>;
     list: (params: { queries?: string[]; search?: string }) => Promise<Models.DatabaseList>;
     createEntity: (params: {
@@ -137,25 +156,46 @@ export function getCollectionService(region: string, project: string, type: Data
     }
 }
 
+export function useDatabaseSdkFromPage(
+    page: Page,
+    terminology: TerminologyResult
+): DatabaseSdkResult {
+    const region = page?.params?.region || '';
+    const project = page?.params?.project || '';
+    return buildDatabaseSdk(region, project, terminology.type);
+}
+
+export function useDatabaseSdkFromParams(
+    region: string,
+    project: string,
+    databaseType: DatabaseType
+): DatabaseSdkResult {
+    return buildDatabaseSdk(region, project, databaseType);
+}
+
 export function useDatabaseSdk(
     regionOrPage: string | Page,
     projectOrTerminology: string | TerminologyResult,
-    databaseType?: DatabaseType /* nullable for use at top `databases` level */
+    databaseType?: DatabaseType
 ): DatabaseSdkResult {
-    let region: string;
-    let project: string;
-    let type: DatabaseType;
-
     if (typeof regionOrPage === 'object' && typeof projectOrTerminology === 'object') {
-        type = projectOrTerminology.type;
-        region = regionOrPage?.params?.region || '';
-        project = regionOrPage?.params?.project || '';
-    } else {
-        type = databaseType!;
-        region = regionOrPage as string;
-        project = projectOrTerminology as string;
+        return useDatabaseSdkFromPage(regionOrPage, projectOrTerminology);
     }
+    return useDatabaseSdkFromParams(
+        regionOrPage as string,
+        projectOrTerminology as string,
+        databaseType
+    );
+}
 
+type DedicatedDatabaseMapped = Models.Database & {
+    engine: string;
+    status: string;
+    tier: string;
+    region: string;
+};
+
+function buildDatabaseSdk(region: string, project: string, type: DatabaseType): DatabaseSdkResult {
     const baseSdk = sdk.forProject(region, project);
 
     return {
@@ -171,31 +211,97 @@ export function useDatabaseSdk(
                 case 'vectorsdb': {
                     return await baseSdk.vectorsDB.create(params);
                 }
+                case 'dedicateddb': {
+                    const dedicatedParams = params as DedicatedDatabaseParams;
+                    return (await baseSdk.compute.createDatabase({
+                        databaseId: dedicatedParams.databaseId,
+                        name: dedicatedParams.name,
+                        backend: Backend.Edge,
+                        engine: dedicatedParams.engine ?? Engine.Postgres,
+                        region: dedicatedParams.region as Region,
+                        tier: dedicatedParams.tier,
+                        highAvailability: dedicatedParams.highAvailability,
+                        backupEnabled: dedicatedParams.backupEnabled,
+                        backupCron: dedicatedParams.backupSchedule,
+                        backupRetentionDays: dedicatedParams.backupRetentionDays,
+                        backupPitr: dedicatedParams.backupPitr,
+                        pitrRetentionDays: dedicatedParams.pitrRetentionDays
+                    })) as unknown as Models.Database;
+                }
                 default:
                     throw new Error('Unknown database type');
             }
         },
 
+        // Pagination is per-backend, not aggregate across all backends.
         async list(params): Promise<Models.DatabaseList> {
+            const emptyDatabaseList: Models.DatabaseList = { total: 0, databases: [] };
+            const emptyDedicatedList: Models.DedicatedDatabaseList = {
+                total: 0,
+                databases: []
+            };
+
             const isMultiDb = flags.multiDb({
                 account: get(user),
                 organization: get(organization)
             });
 
-            const calls: Array<Promise<Models.DatabaseList>> = [baseSdk.tablesDB.list(params)];
-            if (isMultiDb) {
-                calls.push(baseSdk.documentsDB.list(params), baseSdk.vectorsDB.list(params));
-            }
+            const [tablesSettled, documentsSettled, vectorsSettled, dedicatedSettled] =
+                await Promise.allSettled([
+                    baseSdk.tablesDB.list(params),
+                    isMultiDb
+                        ? baseSdk.documentsDB.list(params)
+                        : Promise.resolve(emptyDatabaseList),
+                    isMultiDb ? baseSdk.vectorsDB.list(params) : Promise.resolve(emptyDatabaseList),
+                    baseSdk.compute.listDatabases({
+                        queries: params.queries,
+                        search: params.search
+                    })
+                ]);
 
-            const results = await Promise.all(calls);
+            const tablesResult =
+                tablesSettled.status === 'fulfilled' ? tablesSettled.value : emptyDatabaseList;
+            const documentsResult =
+                documentsSettled.status === 'fulfilled'
+                    ? documentsSettled.value
+                    : emptyDatabaseList;
+            const vectorsResult =
+                vectorsSettled.status === 'fulfilled' ? vectorsSettled.value : emptyDatabaseList;
+            const dedicatedResult =
+                dedicatedSettled.status === 'fulfilled'
+                    ? dedicatedSettled.value
+                    : emptyDedicatedList;
 
-            return results.reduce(
-                (acc, curr) => ({
-                    total: acc.total + curr.total,
-                    databases: [...acc.databases, ...curr.databases]
-                }),
-                { total: 0, databases: [] as Models.Database[] }
-            );
+            const dedicatedAsDatabases: DedicatedDatabaseMapped[] = (
+                dedicatedResult.databases ?? []
+            ).map((database) => ({
+                $id: database.$id,
+                $createdAt: database.$createdAt,
+                $updatedAt: database.$updatedAt,
+                name: database.name,
+                enabled: database.status === 'ready' || database.status === 'active',
+                type: database.type as Models.Database['type'],
+                policies: [],
+                archives: [],
+                engine: database.engine,
+                status: database.status,
+                tier: database.tier,
+                region: database.region
+            }));
+
+            return {
+                total:
+                    tablesResult.total +
+                    documentsResult.total +
+                    vectorsResult.total +
+                    (dedicatedResult.total ?? 0),
+                databases: [
+                    ...tablesResult.databases,
+                    ...documentsResult.databases,
+                    ...vectorsResult.databases,
+                    ...dedicatedAsDatabases
+                ]
+            };
         },
 
         async createEntity(params) {
@@ -208,6 +314,8 @@ export function useDatabaseSdk(
                     });
                     return toSupportiveEntity(table);
                 }
+                case 'dedicateddb':
+                    throw new Error('DedicatedDB does not support entity creation via Appwrite');
                 case 'documentsdb': {
                     const table = await baseSdk.documentsDB.createCollection({
                         ...params,
@@ -217,11 +325,12 @@ export function useDatabaseSdk(
                     return toSupportiveEntity(table);
                 }
                 case 'vectorsdb': {
-                    const collection = await baseSdk.vectorsDB.createCollection({
+                    const collectionParams = {
                         ...params,
                         dimension: params.dimension,
                         collectionId: params.entityId
-                    });
+                    };
+                    const collection = await baseSdk.vectorsDB.createCollection(collectionParams);
 
                     return toSupportiveEntity(collection);
                 }
@@ -236,6 +345,9 @@ export function useDatabaseSdk(
                 case 'tablesdb': {
                     const { total, tables } = await baseSdk.tablesDB.listTables(params);
                     return { total, entities: tables.map(toSupportiveEntity) };
+                }
+                case 'dedicateddb': {
+                    return { total: 0, entities: [] };
                 }
                 case 'documentsdb': {
                     const { total, collections } =
@@ -261,6 +373,8 @@ export function useDatabaseSdk(
                     });
                     return toSupportiveEntity(table);
                 }
+                case 'dedicateddb':
+                    throw new Error('DedicatedDB does not support entity retrieval via Appwrite');
                 case 'documentsdb': {
                     const collection = await baseSdk.documentsDB.getCollection({
                         databaseId: params.databaseId,
@@ -282,13 +396,16 @@ export function useDatabaseSdk(
             }
         },
 
-        async delete(params) {
+        async delete(params): Promise<{}> {
             switch (type ?? params.databaseType) {
                 case 'legacy': /* databases api */
                 case 'tablesdb':
                     return await baseSdk.tablesDB.delete(params);
                 case 'documentsdb':
                     return await baseSdk.documentsDB.delete(params);
+                case 'dedicateddb':
+                    await baseSdk.compute.deleteDatabase(params);
+                    return {};
                 case 'vectorsdb':
                     return await baseSdk.vectorsDB.delete(params);
                 default:
@@ -304,6 +421,8 @@ export function useDatabaseSdk(
                         databaseId: params.databaseId,
                         tableId: params.entityId
                     });
+                case 'dedicateddb':
+                    throw new Error('DedicatedDB does not support entity deletion via Appwrite');
                 case 'documentsdb':
                     return await baseSdk.documentsDB.deleteCollection({
                         databaseId: params.databaseId,
@@ -333,6 +452,8 @@ export function useDatabaseSdk(
                             enabled: params.enabled
                         })
                     );
+                case 'dedicateddb':
+                    throw new Error('DedicatedDB does not support entity updates via Appwrite');
                 case 'documentsdb':
                     return toSupportiveEntity(
                         await baseSdk.documentsDB.updateCollection({
@@ -371,6 +492,8 @@ export function useDatabaseSdk(
                         data: params.data,
                         permissions: params.permissions
                     });
+                case 'dedicateddb':
+                    throw new Error('DedicatedDB does not support record creation via Appwrite');
                 case 'documentsdb':
                     return await baseSdk.documentsDB.createDocument({
                         databaseId: params.databaseId,
@@ -404,6 +527,8 @@ export function useDatabaseSdk(
                         data: params.data,
                         permissions: params.permissions
                     });
+                case 'dedicateddb':
+                    throw new Error('DedicatedDB does not support record updates via Appwrite');
                 case 'documentsdb':
                     return await baseSdk.documentsDB.upsertDocument({
                         databaseId: params.databaseId,
@@ -436,6 +561,8 @@ export function useDatabaseSdk(
                         rowId: params.recordId,
                         permissions: params.permissions
                     });
+                case 'dedicateddb':
+                    throw new Error('DedicatedDB does not support permission updates via Appwrite');
                 case 'documentsdb':
                     return await baseSdk.documentsDB.upsertDocument({
                         databaseId: params.databaseId,
@@ -467,6 +594,8 @@ export function useDatabaseSdk(
                     });
                     return toSupportiveRecord(row);
                 }
+                case 'dedicateddb':
+                    throw new Error('DedicatedDB does not support record deletion via Appwrite');
                 case 'documentsdb': {
                     const document = await baseSdk.documentsDB.deleteDocument({
                         databaseId: params.databaseId,
@@ -504,6 +633,10 @@ export function useDatabaseSdk(
                     });
                     return { total, records: rows.map(toSupportiveRecord) };
                 }
+                case 'dedicateddb':
+                    throw new Error(
+                        'DedicatedDB does not support bulk record deletion via Appwrite'
+                    );
                 case 'documentsdb': {
                     const { total, documents } = await baseSdk.documentsDB.deleteDocuments({
                         databaseId: params.databaseId,
@@ -541,12 +674,14 @@ export function useDatabaseSdk(
                     });
                     return toSupportiveIndex(index);
                 }
+                case 'dedicateddb':
+                    throw new Error('DedicatedDB does not support index creation via Appwrite');
                 case 'documentsdb': {
                     const index = await baseSdk.documentsDB.createIndex({
                         databaseId: params.databaseId,
                         collectionId: params.entityId,
                         key: params.key,
-                        type: params.type as DocumentsDBIndexType,
+                        type: params.type as DatabasesIndexType,
                         attributes: params.attributes,
                         lengths: params.lengths,
                         orders: params.orders
@@ -558,7 +693,7 @@ export function useDatabaseSdk(
                         databaseId: params.databaseId,
                         collectionId: params.entityId,
                         key: params.key,
-                        type: params.type as VectorsDBIndexType,
+                        type: params.type as DatabasesIndexType,
                         attributes: params.attributes,
                         lengths: params.lengths,
                         orders: params.orders
@@ -580,6 +715,8 @@ export function useDatabaseSdk(
                         tableId: params.entityId,
                         key: params.key
                     });
+                case 'dedicateddb':
+                    throw new Error('DedicatedDB does not support index deletion via Appwrite');
                 case 'documentsdb':
                     return await baseSdk.documentsDB.deleteIndex({
                         databaseId: params.databaseId,

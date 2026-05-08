@@ -1,36 +1,48 @@
 <script lang="ts">
     import { Wizard } from '$lib/layout';
     import { writable } from 'svelte/store';
-    import { Form, InputText, Button } from '$lib/elements/forms';
-    import { Alert, Card, Fieldset, Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { Form, InputText, InputSelect, InputCheckbox, Button } from '$lib/elements/forms';
+    import { Alert, Card, Divider, Fieldset, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { resolveRoute } from '$lib/stores/navigation';
     import { afterNavigate, goto } from '$app/navigation';
     import { CustomId } from '$lib/components';
     import { page } from '$app/state';
     import { addNotification } from '$lib/stores/notifications';
-    import { BackupServices, ID, type Models } from '@appwrite.io/console';
-    import { type DatabaseType, useDatabaseSdk } from '$database/(entity)';
+    import { BackupServices, Engine, ID, type Models } from '@appwrite.io/console';
+    import {
+        type DatabaseType,
+        type DedicatedDatabaseParams,
+        useDatabaseSdk
+    } from '$database/(entity)';
     import { isCloud } from '$lib/system';
     import { getChangePlanUrl } from '$lib/stores/billing';
+    import { formatCurrency } from '$lib/helpers/numbers';
     import { currentPlan } from '$lib/stores/organization';
     import EmptyDarkMobile from '$lib/images/backups/upgrade/backups-mobile-dark.png';
     import EmptyLightMobile from '$lib/images/backups/upgrade/backups-mobile-light.png';
     import { app } from '$lib/stores/app';
     import { sdk } from '$lib/stores/sdk';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import CreatePolicy from '$database/backups/createPolicy.svelte';
     import { cronExpression, type UserBackupPolicy } from '$lib/helpers/backups';
 
     import type { PageProps } from './$types';
     import { createDatabaseStore } from './store';
+    import { databaseTypes as allDatabaseTypes } from '../store';
     import { isTabletViewport } from '$lib/stores/viewport';
+    import { filterRegions } from '$lib/helpers/regions';
+    import { regions as regionsStore, organization } from '$lib/stores/organization';
+    import { backupRetainingOptions } from '$database/store';
+    import PolicyPresets from '$database/backups/policyPresets.svelte';
     import { flags } from '$lib/flags';
     import { user } from '$lib/stores/user';
-    import { organization } from '$lib/stores/organization';
 
     const { data }: PageProps = $props();
 
     let formComponent: Form;
+
+    const params = page.url.searchParams;
+    const typeFromParams: DatabaseType | null = params.get('type') as DatabaseType | null;
 
     let showCreatePolicies = $state(false);
     let totalPolicies: UserBackupPolicy[] = $state([]);
@@ -38,43 +50,132 @@
     let showExitModal = $state(false);
     let isSubmitting = $state(writable(false));
     let previousPage: string = $state(resolveRoute('/'));
-
-    const typeFromParams = page.url.searchParams.get('type') ?? (null as DatabaseType);
-    let type = $state(typeFromParams ?? 'tablesdb') as DatabaseType;
+    let type = $state(typeFromParams ?? (isCloud ? 'dedicateddb' : 'tablesdb')) as DatabaseType;
 
     const isDark = $derived($app.themeInUse === 'dark');
     const backupsImg = $derived(isDark ? EmptyDarkMobile : EmptyLightMobile);
 
     const isMultiDb = $derived(flags.multiDb({ account: $user, organization: $organization }));
 
-    const databaseTypes: Array<{
-        type: DatabaseType;
-        title: string;
-        subtitle: string;
-    }> = $derived([
+    const databaseTypes = $derived(
+        allDatabaseTypes.filter((db) => {
+            if (db.type === 'dedicateddb') return isCloud;
+            if (db.type === 'documentsdb' || db.type === 'vectorsdb') return isMultiDb;
+            return true;
+        })
+    );
+
+    // Dedicated DB specific options
+    const engineOptions = [
+        { value: 'postgres', label: 'PostgreSQL' },
+        { value: 'mysql', label: 'MySQL' },
+        { value: 'mariadb', label: 'MariaDB' },
+        { value: 'mongodb', label: 'MongoDB' }
+    ];
+
+    const regionOptions = $derived(filterRegions($regionsStore.regions || []));
+
+    const tiers: Record<string, { label: string; price: number }> = {
+        free: { label: 'Free - 0.125 vCPU, 128MB RAM', price: 0 },
+        's-1vcpu-1gb': { label: 'Starter - 1 vCPU, 1GB RAM', price: 15 },
+        's-2vcpu-2gb': { label: 'Standard - 2 vCPU, 2GB RAM', price: 30 },
+        's-2vcpu-4gb': { label: 'Standard Plus - 2 vCPU, 4GB RAM', price: 60 },
+        's-4vcpu-8gb': { label: 'Professional - 4 vCPU, 8GB RAM', price: 100 },
+        's-4vcpu-16gb': { label: 'Business - 4 vCPU, 16GB RAM', price: 190 },
+        's-4vcpu-32gb': { label: 'Business Plus - 4 vCPU, 32GB RAM', price: 370 },
+        's-8vcpu-32gb': { label: 'Enterprise - 8 vCPU, 32GB RAM', price: 620 },
+        's-8vcpu-64gb': { label: 'Enterprise Plus - 8 vCPU, 64GB RAM', price: 860 }
+    };
+
+    const tierOptions = Object.entries(tiers).map(([value, { label, price }]) => ({
+        value,
+        label: `${label} - $${price}/mo`
+    }));
+
+    // State for dedicated options (pre-populated from URL params)
+    let selectedEngine = $state<Engine>((params.get('engine') as Engine) ?? Engine.Postgres);
+    let selectedRegion = $state<string | null>(params.get('region') ?? null);
+    let selectedTier = $state(params.get('tier') ?? 'free');
+
+    // Set default region when regions load
+    $effect(() => {
+        if (!selectedRegion && regionOptions.length > 0) {
+            const firstEnabled = regionOptions.find((r) => !r.disabled);
+            selectedRegion = firstEnabled?.value ?? regionOptions[0].value;
+        }
+    });
+    let highAvailability = $state(params.get('ha') === 'true');
+
+    // Helper to check database type capabilities
+    const showRegionSelect = $derived(type === 'dedicateddb');
+    const showTierSelect = $derived(type === 'dedicateddb');
+    const showEngineSelect = $derived(type === 'dedicateddb');
+    const isFreeTier = $derived(selectedTier === 'free');
+
+    const tierPrice = $derived(tiers[selectedTier]?.price ?? 0);
+    const estimatedMonthly = $derived(tierPrice * (highAvailability ? 2 : 1));
+
+    // Backup system varies by database type
+    const backupSystem = $derived.by(() => {
+        switch (type) {
+            case 'tablesdb':
+            case 'documentsdb':
+                return 'appwrite';
+            case 'dedicateddb':
+                return 'dedicated';
+            default:
+                return 'appwrite';
+        }
+    });
+
+    // DedicatedDB backup options
+    const dedicatedBackupPresets = [
         {
-            type: 'tablesdb' as DatabaseType,
-            title: 'TablesDB',
-            subtitle:
-                'Structure your data in rows and columns. Best for relational data and advanced querying.'
+            id: 'daily',
+            label: 'Daily',
+            description: 'Backup every day, retained for 7 days',
+            schedule: '0 0 * * *',
+            retained: 7
         },
-        ...(isMultiDb
-            ? [
-                  {
-                      type: 'documentsdb' as DatabaseType,
-                      title: 'DocumentsDB',
-                      subtitle:
-                          'Store flexible data without a fixed schema. Best for unstructured data and simple querying.'
-                  },
-                  {
-                      type: 'vectorsdb' as DatabaseType,
-                      title: 'VectorsDB',
-                      subtitle:
-                          'Store data as vectors to find similar results. Best for semantic search and recommendations.'
-                  }
-              ]
-            : [])
-    ]);
+        {
+            id: 'hourly',
+            label: 'Hourly',
+            description: 'Backup every hour, retained for 24 hours',
+            schedule: '0 * * * *',
+            retained: 1
+        },
+        {
+            id: 'none',
+            label: 'No backup',
+            description: 'Skip backups. You can change this later'
+        }
+    ];
+
+    let selectedBackupPolicy = $state<string>(params.get('backup') ?? 'daily');
+    let backupRetentionDays = $state(Number(params.get('retention')) || 7);
+    let backupPitr = $state(params.get('pitr') === 'true');
+
+    // Free tier disables HA, backups, and PITR
+    $effect(() => {
+        if (isFreeTier) {
+            highAvailability = false;
+            selectedBackupPolicy = 'none';
+            backupPitr = false;
+        }
+    });
+    let pitrRetentionDays = $state(7);
+
+    // Derive backup settings from selected policy
+    const backupEnabled = $derived(selectedBackupPolicy !== 'none');
+    const selectedBackupSchedule = $derived.by(() => {
+        const policy = dedicatedBackupPresets.find((p) => p.id === selectedBackupPolicy);
+        return policy?.schedule ?? '0 0 * * *';
+    });
+
+    // Filter retention options (exclude Forever and Custom for dedicated DBs)
+    const dedicatedRetentionOptions = backupRetainingOptions.filter(
+        (opt) => opt.value > 0 && opt.value <= 365
+    );
 
     afterNavigate(({ from }) => (previousPage = from?.url?.pathname || previousPage));
 
@@ -138,12 +239,27 @@
             let database: Models.Database;
             const databaseSdk = useDatabaseSdk(page.params.region, page.params.project);
 
-            database = await databaseSdk.create(type, {
-                databaseId,
-                name: $createDatabaseStore.name
-            });
-
-            await createPolicies(database.$id);
+            if (type === 'dedicateddb') {
+                database = await databaseSdk.create(type, {
+                    databaseId,
+                    name: $createDatabaseStore.name,
+                    engine: selectedEngine,
+                    region: selectedRegion,
+                    tier: selectedTier,
+                    highAvailability,
+                    backupEnabled,
+                    backupSchedule: backupEnabled ? selectedBackupSchedule : undefined,
+                    backupRetentionDays: backupEnabled ? backupRetentionDays : undefined,
+                    backupPitr: backupEnabled ? backupPitr : undefined,
+                    pitrRetentionDays: backupEnabled && backupPitr ? pitrRetentionDays : undefined
+                } as DedicatedDatabaseParams);
+            } else {
+                database = await databaseSdk.create(type, {
+                    databaseId,
+                    name: $createDatabaseStore.name
+                });
+                await createPolicies(database.$id);
+            }
 
             addNotification({
                 type: 'success',
@@ -167,6 +283,7 @@
                 type: 'error',
                 message: error.message
             });
+            trackError(error, Submit.DatabaseCreate);
         }
     }
 
@@ -214,11 +331,90 @@
                 </Layout.Stack>
             </Fieldset>
 
+            {#if showRegionSelect}
+                <Fieldset legend="Configuration">
+                    <Layout.Stack direction="column" gap="l">
+                        {#if showEngineSelect}
+                            <InputSelect
+                                id="engine"
+                                label="Database Engine"
+                                bind:value={selectedEngine}
+                                options={engineOptions} />
+                        {/if}
+
+                        <InputSelect
+                            id="region"
+                            label="Region"
+                            bind:value={selectedRegion}
+                            options={regionOptions} />
+
+                        {#if showTierSelect}
+                            <InputSelect
+                                id="tier"
+                                label="Resource Tier"
+                                bind:value={selectedTier}
+                                options={tierOptions} />
+
+                            <InputCheckbox
+                                id="ha"
+                                label="Enable High Availability"
+                                bind:checked={highAvailability}
+                                disabled={isFreeTier}
+                                description={isFreeTier
+                                    ? 'Upgrade to a paid tier to enable high availability'
+                                    : 'Deploy a standby replica for automatic failover (doubles cost)'} />
+                        {/if}
+                    </Layout.Stack>
+                </Fieldset>
+
+                <Fieldset legend="Estimated cost">
+                    <Card.Base padding="s">
+                        <Layout.Stack>
+                            <Layout.Stack direction="row" justifyContent="space-between">
+                                <Typography.Text variant="m-400">
+                                    {tiers[selectedTier]?.label ?? 'Database'}
+                                </Typography.Text>
+                                <Typography.Text variant="m-400">
+                                    {formatCurrency(tierPrice)}/mo
+                                </Typography.Text>
+                            </Layout.Stack>
+                            {#if highAvailability}
+                                <Layout.Stack direction="row" justifyContent="space-between">
+                                    <Typography.Text variant="m-400">
+                                        High availability replica
+                                    </Typography.Text>
+                                    <Typography.Text variant="m-400">
+                                        {formatCurrency(tierPrice)}/mo
+                                    </Typography.Text>
+                                </Layout.Stack>
+                            {/if}
+
+                            <Divider />
+                            <Layout.Stack direction="row" justifyContent="space-between">
+                                <Typography.Text>Estimated total</Typography.Text>
+                                <Typography.Text>
+                                    {formatCurrency(estimatedMonthly)}/mo
+                                </Typography.Text>
+                            </Layout.Stack>
+
+                            <Typography.Text>
+                                You'll be charged <b>{formatCurrency(estimatedMonthly)}</b> every 30 days.
+                                Costs may vary with storage and network usage.
+                            </Typography.Text>
+                        </Layout.Stack>
+                    </Card.Base>
+                </Fieldset>
+            {/if}
+
             <Fieldset legend="Backups">
-                {#if isCloud}
-                    {@render cloudBackupOptions($isSubmitting)}
-                {:else}
-                    {@render selfHostedBackupOptions()}
+                {#if backupSystem === 'appwrite'}
+                    {#if isCloud}
+                        {@render cloudBackupOptions($isSubmitting)}
+                    {:else}
+                        {@render selfHostedBackupOptions()}
+                    {/if}
+                {:else if backupSystem === 'dedicated'}
+                    {@render dedicatedBackupOptions()}
                 {/if}
             </Fieldset>
         </Layout.Stack>
@@ -233,7 +429,7 @@
             disabled={$isSubmitting}
             forceShowLoader={$isSubmitting}
             on:click={() => formComponent.triggerSubmit()}>
-            Create
+            {type === 'dedicateddb' ? `Create - ${formatCurrency(estimatedMonthly)}/mo` : 'Create'}
         </Button>
     </svelte:fragment>
 </Wizard>
@@ -290,8 +486,59 @@
     </Layout.Stack>
 {/snippet}
 
+{#snippet dedicatedBackupOptions()}
+    <Layout.Stack gap="l">
+        {#if isFreeTier}
+            <Alert.Inline status="info" title="Backups unavailable on free tier">
+                Upgrade to a paid tier to enable automatic backups and point-in-time recovery.
+            </Alert.Inline>
+        {:else}
+            <PolicyPresets
+                policies={dedicatedBackupPresets}
+                bind:selected={selectedBackupPolicy}
+                columns={3} />
+
+            {#if backupEnabled}
+                <InputSelect
+                    id="backupRetention"
+                    label="Retention period"
+                    bind:value={backupRetentionDays}
+                    options={dedicatedRetentionOptions} />
+
+                <InputCheckbox
+                    id="backupPitr"
+                    label="Enable Point-in-Time Recovery (PITR)"
+                    bind:checked={backupPitr}
+                    description="Restore your database to any point within the retention window" />
+
+                {#if backupPitr}
+                    <InputSelect
+                        id="pitrRetention"
+                        label="PITR retention window"
+                        bind:value={pitrRetentionDays}
+                        options={[
+                            { value: 1, label: '1 day' },
+                            { value: 3, label: '3 days' },
+                            { value: 7, label: '7 days' },
+                            { value: 14, label: '14 days' },
+                            { value: 21, label: '21 days' },
+                            { value: 28, label: '28 days' },
+                            { value: 35, label: '35 days (max)' }
+                        ]} />
+
+                    <Alert.Inline status="info" title="Point-in-Time Recovery">
+                        PITR allows you to restore your database to any point within the {pitrRetentionDays}-day
+                        retention window using WAL archiving. This provides more granular recovery
+                        options but increases storage usage.
+                    </Alert.Inline>
+                {/if}
+            {/if}
+        {/if}
+    </Layout.Stack>
+{/snippet}
+
 {#snippet selectDatabaseType(disabled = false)}
-    <Layout.Grid columns={3} columnsS={1}>
+    <Layout.Grid columns={databaseTypes.length} columnsS={2} columnsXS={1}>
         {#each databaseTypes as databaseType}
             <div class="card-selector">
                 <Card.Selector

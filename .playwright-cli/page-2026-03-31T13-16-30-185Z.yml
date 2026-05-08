@@ -1,0 +1,49 @@
+- generic [ref=e8]:
+      - generic [ref=e9]:
+            - main [ref=e124]:
+                  - generic [ref=e125]:
+                        - generic [ref=e126]:
+                              - link "Logo Appwrite" [ref=e127] [cursor=pointer]:
+                                    - /url: /console/organization-69cbc92d00163e3adfee
+                                    - img "Logo Appwrite" [ref=e128]
+                              - menubar [ref=e129]:
+                                    - text: /
+                                    - menuitem "Open organizations tab" [ref=e130] [cursor=pointer]:
+                                          - generic [ref=e131]: Personal projects
+                                          - generic [ref=e133]: Free
+                                          - img [ref=e135]
+                        - generic [ref=e138]:
+                              - generic [ref=e139]:
+                                    - link "Upgrade" [ref=e140] [cursor=pointer]:
+                                          - /url: /console/organization-69cbc92d00163e3adfee/change-plan
+                                    - button "Feedback" [ref=e142] [cursor=pointer]
+                                    - button "Support" [ref=e144] [cursor=pointer]
+                              - note [ref=e146]:
+                                    - button "Toggle Command Center" [ref=e147] [cursor=pointer]:
+                                          - img [ref=e149]
+                              - button [ref=e152] [cursor=pointer]
+                  - generic [ref=e155]:
+                        - img "Appwrite Logo" [ref=e156]
+                        - generic [ref=e159]:
+                              - heading "Create your project" [level=2] [ref=e160]
+                              - generic [ref=e162]:
+                                    - generic [ref=e163]:
+                                          - generic [ref=e164]:
+                                                - generic [ref=e165]: Name
+                                                - textbox "Project name" [active] [ref=e167]: New Project
+                                          - button "Project ID" [ref=e169] [cursor=pointer]:
+                                                - img [ref=e172]
+                                                - text: Project ID
+                                    - generic [ref=e174]:
+                                          - generic [ref=e175]:
+                                                - generic [ref=e176]: Region
+                                                - textbox: fra
+                                                - combobox [ref=e177]:
+                                                      - generic [ref=e178]:
+                                                            - img "Region flag" [ref=e179]
+                                                            - generic [ref=e180]: Frankfurt
+                                                            - img [ref=e182]
+                                          - paragraph [ref=e184]: Region cannot be changed after creation
+                              - button "Create" [ref=e186] [cursor=pointer]
+            - generic [ref=e49]: Create project - Appwrite
+      - img "Appwrite Logo"

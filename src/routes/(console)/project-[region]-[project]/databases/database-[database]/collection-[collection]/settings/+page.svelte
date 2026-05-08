@@ -7,7 +7,8 @@
         UpdatePermissions,
         UpdateSecurity,
         UpdateStatus,
-        useDatabaseSdk
+        useDatabaseSdk,
+        type DatabaseType
     } from '$database/(entity)';
     import type { PageProps } from './$types';
     import DisplayName from './displayName.svelte';
@@ -17,7 +18,11 @@
 
     const collection = $derived(data.collection);
 
-    const databaseSdk = useDatabaseSdk(page.params.region, page.params.project, data.database.type);
+    const databaseSdk = useDatabaseSdk(
+        page.params.region,
+        page.params.project,
+        data.database.type as DatabaseType
+    );
 
     const entityParams = $derived({
         databaseId: page.params.database,

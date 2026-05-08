@@ -30,7 +30,7 @@
     import { invalidate } from '$app/navigation';
     import { hash } from '$lib/helpers/string';
     import { Dependencies } from '$lib/constants';
-    import { EmptySheet, EmptySheetCards } from '$database/(entity)';
+    import { EmptySheet, EmptySheetCards, type DatabaseType } from '$database/(entity)';
     import {
         isCollectionsJsonImportInProgress,
         noSqlDocument,
@@ -78,14 +78,21 @@
         $isCollectionsJsonImportInProgress = true;
 
         try {
-            await sdk
-                .forProject(page.params.region, page.params.project)
-                .migrations.createJSONImport({
-                    bucketId: file.bucketId,
-                    fileId: file.$id,
-                    resourceId: `${page.params.database}:${page.params.collection}`,
-                    internalFile: localFile
-                });
+            await (
+                sdk.forProject(page.params.region, page.params.project).migrations as unknown as {
+                    createJSONImport: (params: {
+                        bucketId: string;
+                        fileId: string;
+                        resourceId: string;
+                        internalFile: boolean;
+                    }) => Promise<unknown>;
+                }
+            ).createJSONImport({
+                bucketId: file.bucketId,
+                fileId: file.$id,
+                resourceId: `${page.params.database}:${page.params.collection}`,
+                internalFile: localFile
+            });
 
             addNotification({
                 type: 'success',
@@ -304,7 +311,10 @@
                 {/snippet}
             </EmptySheet>
         {:else}
-            <EmptySheet mode="records" type={data.database.type} showActions={$canWriteRows}>
+            <EmptySheet
+                mode="records"
+                type={data.database.type as DatabaseType}
+                showActions={$canWriteRows}>
                 {#snippet actions()}
                     <EmptySheetCards
                         icon={IconViewBoards}

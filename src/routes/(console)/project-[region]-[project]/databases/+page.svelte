@@ -8,13 +8,12 @@
 
     import Create from './create.svelte';
     import Grid from './grid.svelte';
-    import { columns } from './store';
     import Table from './table.svelte';
     import type { PageProps } from './$types';
-    import { Icon, Tooltip } from '@appwrite.io/pink-svelte';
     import { registerCommands } from '$lib/commandCenter';
     import { canWriteDatabases } from '$lib/stores/roles';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { Icon, Tooltip } from '@appwrite.io/pink-svelte';
     import EmptySearch from '$lib/components/emptySearch.svelte';
     import { isServiceLimited } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
@@ -25,6 +24,7 @@
 
     import { resolveRoute, withPath } from '$lib/stores/navigation';
     import EmptyDatabaseCloud from './empty.svelte';
+    import { columns } from './store';
     import { flags } from '$lib/flags';
     import { user } from '$lib/stores/user';
     import { project } from '../store';
