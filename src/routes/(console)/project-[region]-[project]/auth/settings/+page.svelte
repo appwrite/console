@@ -10,7 +10,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { oAuthProviders } from '$lib/stores/oauth-providers';
     import { sdk } from '$lib/stores/sdk';
-    import { MethodId, type Models } from '@appwrite.io/console';
+    import { AuthMethod, type Models } from '@appwrite.io/console';
     import { base } from '$app/paths';
     import {
         Avatar,
@@ -38,7 +38,7 @@
     let isUpdatingAllAuthMethods = $state(false);
     let showUpdateAuthMethodsDialog = $state(false);
     let updateAuthMethodsEnabledMode = $state<boolean | null>(null);
-    let apiAuthMethodUpdates = new SvelteSet<MethodId>();
+    let apiAuthMethodUpdates = new SvelteSet<AuthMethod>();
 
     const isAnyAuthMethodUpdating = $derived(apiAuthMethodUpdates.size > 0);
     const isAnyUpdateInProgress = $derived(isUpdatingAllAuthMethods || isAnyAuthMethodUpdating);
