@@ -190,6 +190,7 @@
                         .forProject(page.params.region, page.params.project)
                         .functions.createVariable({
                             functionId: func.$id,
+                            variableId: ID.unique(),
                             key: variable.name,
                             value: variable.value,
                             secret: variable?.secret ?? false

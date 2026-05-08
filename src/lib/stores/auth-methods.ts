@@ -1,5 +1,5 @@
 import { writable } from 'svelte/store';
-import { type Models, MethodId } from '@appwrite.io/console';
+import { type Models, AuthMethod as MethodId } from '@appwrite.io/console';
 
 export type AuthMethod = {
     label: string;

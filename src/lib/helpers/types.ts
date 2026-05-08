@@ -32,6 +32,7 @@ const columnTypes = [
     'text',
     'mediumtext',
     'longtext',
+    'bigint',
     'integer',
     'double',
     'boolean',
