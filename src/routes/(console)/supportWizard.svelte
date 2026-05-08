@@ -4,7 +4,6 @@
         Icon,
         Input,
         Layout,
-        Popover,
         Tag,
         Typography,
         Card,
@@ -15,7 +14,6 @@
     import { sdk } from '$lib/stores/sdk';
     import {
         Form,
-        InputSelect,
         InputText,
         InputTextarea,
         Button
@@ -33,7 +31,7 @@
     import { user } from '$lib/stores/user';
     import { wizard } from '$lib/stores/wizard';
     import { VARS } from '$lib/system';
-    import { IconCheckCircle, IconXCircle, IconInfo } from '@appwrite.io/pink-icons-svelte';
+    import { IconCheckCircle, IconXCircle } from '@appwrite.io/pink-icons-svelte';
     import { removeFile } from '$lib/helpers/files';
 
     let projectOptions = $state<Array<{ value: string; label: string }>>([]);
@@ -79,15 +77,6 @@
         ]
     };
 
-    // Severity options
-    const severityOptions = [
-        { value: 'critical', label: 'Critical' },
-        { value: 'high', label: 'High' },
-        { value: 'medium', label: 'Medium' },
-        { value: 'low', label: 'Low' },
-        { value: 'question', label: 'Question' }
-    ];
-
     onMount(async () => {
         // Filter projects by organization ID using server-side queries
         const projectList = await sdk.forConsole.projects.list({
@@ -108,7 +97,6 @@
             subject: null,
             category: 'technical',
             topic: undefined,
-            severity: 'question',
             file: null
         };
     });
@@ -142,7 +130,6 @@
                 category: $supportData.category,
                 orgId: $organization?.$id ?? '',
                 projectId: $supportData?.project ?? '',
-                severity: $supportData?.severity ?? '',
                 billingPlan: $organization?.billingPlanId ?? ''
             })
         );
@@ -179,7 +166,6 @@
             subject: null,
             category: 'technical',
             topic: undefined,
-            severity: undefined,
             file: null,
             project: null
         };
@@ -208,35 +194,6 @@
         `${utcWeekDayToLocaleWeekDay(workTimings.startDay, workTimings.start)} - ${utcWeekDayToLocaleWeekDay(workTimings.endDay, workTimings.end)}`
     );
 </script>
-
-{#snippet severityPopover()}
-    <Popover let:toggle>
-        <Button extraCompact size="s" on:click={toggle}>
-            <Icon size="s" icon={IconInfo} />
-        </Button>
-        <div slot="tooltip" style="max-width: 400px;">
-            <Layout.Stack gap="s">
-                <Typography.Text>
-                    <b>Critical:</b> System is down or a critical component is non-functional, causing
-                    a complete stoppage of work or significant business impact.
-                </Typography.Text>
-                <Typography.Text>
-                    <b>High:</b> Major functionality is impaired, but a workaround is available, or a
-                    critical component is significantly degraded.
-                </Typography.Text>
-                <Typography.Text>
-                    <b>Medium:</b> Minor functionality is impaired without significant business impact.
-                </Typography.Text>
-                <Typography.Text>
-                    <b>Low:</b> Issue has minor impact on business operations; workaround is not necessary.
-                </Typography.Text>
-                <Typography.Text>
-                    <b>Question:</b> Requests for information, general guidance, or feature requests.
-                </Typography.Text>
-            </Layout.Stack>
-        </div>
-    </Popover>
-{/snippet}
 
 <Wizard title="Contact us" confirmExit={true}>
     <Form onSubmit={handleSubmit}>
@@ -279,17 +236,6 @@
                 options={projectOptions ?? []}
                 bind:value={$supportData.project}
                 placeholder="Select project" />
-            <InputSelect
-                id="severity"
-                label="Severity"
-                options={severityOptions}
-                bind:value={$supportData.severity}
-                required
-                placeholder="Select severity">
-                <div slot="info">
-                    {@render severityPopover()}
-                </div>
-            </InputSelect>
             <InputText
                 id="subject"
                 label="Subject"
