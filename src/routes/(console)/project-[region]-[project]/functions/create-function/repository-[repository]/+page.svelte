@@ -132,6 +132,7 @@
             const promises = variables.map((variable) =>
                 sdk.forProject(page.params.region, page.params.project).functions.createVariable({
                     functionId: func.$id,
+                    variableId: ID.unique(),
                     key: variable.key,
                     value: variable.value,
                     secret: variable?.secret ?? false

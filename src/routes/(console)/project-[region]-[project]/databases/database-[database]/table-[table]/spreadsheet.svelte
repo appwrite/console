@@ -15,6 +15,7 @@
     import {
         isRelationship,
         isRelationshipToMany,
+        buildPayload,
         isSpatialType,
         isTextType
     } from '$database/table-[table]/rows/store';
@@ -359,6 +360,7 @@
         switch (type) {
             case 'string':
                 return IconText;
+            case 'bigint':
             case 'double':
             case 'integer':
                 return IconHashtag;
@@ -683,11 +685,13 @@
 
     async function updateRowContents(row: Models.Row) {
         try {
+            const payload = buildPayload(table.fields, row);
+
             await sdk.forProject(page.params.region, page.params.project).tablesDB.updateRow({
                 databaseId,
                 tableId: table.$id,
                 rowId: row.$id,
-                data: row,
+                data: payload,
                 permissions: row.$permissions
             });
 

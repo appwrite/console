@@ -24,6 +24,7 @@
     import UpdateVariables from '$routes/(console)/project-[region]-[project]/updateVariables.svelte';
     import { page } from '$app/state';
     import { Link } from '$lib/elements';
+    import { ID } from '@appwrite.io/console';
 
     export let data;
     let showAlert = true;
@@ -31,6 +32,7 @@
     const sdkCreateVariable = async (key: string, value: string, secret?: boolean) => {
         await sdk.forProject(page.params.region, page.params.project).functions.createVariable({
             functionId: data.function.$id,
+            variableId: ID.unique(),
             key,
             value,
             secret

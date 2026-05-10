@@ -14,7 +14,8 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { tick } from 'svelte';
-    import { isRelationship, isRelationshipToMany } from './store';
+    import { isRelationship, isRelationshipToMany, buildPayload } from './store';
+    import type { RowValue } from './store';
     import { hash } from '$lib/helpers/string';
 
     type CreateRow = {
@@ -70,7 +71,7 @@
     function prepareRowPayload(createRowObject: CreateRow): object {
         const { row, columns } = createRowObject;
 
-        const payload = structuredClone(row);
+        const payload = structuredClone(row) as Record<string, RowValue>;
 
         for (const column of columns) {
             if (isRelationship(column) && !isRelationshipToMany(column)) {
@@ -79,7 +80,13 @@
 
                 if (value && typeof value === 'object') {
                     if (Array.isArray(value)) {
-                        payload[key] = value.map((item) => item?.$id).filter(Boolean);
+                        payload[key] = value
+                            .map((item) =>
+                                item && typeof item === 'object' && '$id' in item
+                                    ? (item.$id as string)
+                                    : null
+                            )
+                            .filter(Boolean);
                     } else {
                         payload[key] = (value as { $id: string })['$id'];
                     }
@@ -87,7 +94,7 @@
             }
         }
 
-        return payload;
+        return buildPayload(columns, payload);
     }
 
     async function create(): Promise<boolean> {

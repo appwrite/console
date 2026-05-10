@@ -142,23 +142,24 @@
                         routing.
                     </Typography.Text>
                     <Layout.Stack gap="s">
-                        {#each $data as [key, value], index}
+                        {#each $data as _, index (index)}
                             <Layout.Stack direction="row" alignItems="flex-end">
                                 <InputText
                                     id={`key-${index}`}
-                                    bind:value={key}
+                                    bind:value={$data[index][0]}
                                     placeholder="Enter key"
                                     label={index === 0 ? 'Key' : undefined} />
                                 <Layout.Stack direction="row" alignItems="flex-end" gap="xs">
                                     <InputText
                                         id={`value-${index}`}
-                                        bind:value
+                                        bind:value={$data[index][1]}
                                         placeholder="Enter value"
                                         label={index === 0 ? 'Value' : undefined} />
                                     <Button
                                         icon
                                         compact
-                                        disabled={(!key || !value) && index === 0}
+                                        disabled={(!$data[index][0] || !$data[index][1]) &&
+                                            index === 0}
                                         on:click={() => {
                                             if (index === 0 && $data?.length === 1) {
                                                 $data = [['', '']];
