@@ -8,8 +8,8 @@ export type SupportData = {
 };
 
 export const supportData = writable<SupportData>({
-    message: '',
-    subject: '',
+    message: null,
+    subject: null,
     file: null
 });
 
