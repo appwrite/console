@@ -198,8 +198,15 @@
         ) {
             const stringColumn = column as Models.ColumnString;
             return { display: `Size: ${stringColumn.size}` };
-        } else if (column.type === 'integer' || column.type === 'double') {
-            const numbersColumn = column as Models.ColumnInteger | Models.ColumnFloat;
+        } else if (
+            column.type === 'bigint' ||
+            column.type === 'integer' ||
+            column.type === 'double'
+        ) {
+            const numbersColumn = column as
+                | Models.ColumnBigint
+                | Models.ColumnInteger
+                | Models.ColumnFloat;
             const { min, max } = numbersColumn;
 
             const isMinBigInt = typeof min === 'bigint';

@@ -18,6 +18,7 @@
         checkForMarkedForDeletion,
         checkForMissingPaymentMethod,
         checkForNewDevUpgradePro,
+        checkForUpgradingStatus,
         checkForUsageLimit,
         checkPaymentAuthorizationRequired,
         paymentExpired,
@@ -295,6 +296,7 @@
             checkForEnterpriseTrial(org);
             await checkForUsageLimit(org);
             checkForMarkedForDeletion(org);
+            checkForUpgradingStatus(org);
             await checkForNewDevUpgradePro(org);
 
             if (org?.billingPlanDetails.requiresPaymentMethod) {
