@@ -1,23 +1,10 @@
 <script lang="ts">
     import { Wizard } from '$lib/layout';
-    import {
-        Icon,
-        Input,
-        Layout,
-        Tag,
-        Typography,
-        Card,
-        Upload
-    } from '@appwrite.io/pink-svelte';
+    import { Icon, Input, Layout, Tag, Typography, Card, Upload } from '@appwrite.io/pink-svelte';
     import { supportData, isSupportOnline } from './wizard/support/store';
     import { onMount, onDestroy } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
-    import {
-        Form,
-        InputText,
-        InputTextarea,
-        Button
-    } from '$lib/elements/forms/index.js';
+    import { Form, InputText, InputTextarea, Button } from '$lib/elements/forms/index.js';
     import { Query } from '@appwrite.io/console';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import {
