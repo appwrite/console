@@ -8,6 +8,7 @@
     import UpdateSessionsLimit from './updateSessionsLimit.svelte';
     import PasswordPolicies from './passwordPolicies.svelte';
     import SessionSecurity from './sessionSecurity.svelte';
+    import UpdateSignupEmailSecurity from './updateSignupEmailSecurity.svelte';
 
     let { data }: PageProps = $props();
 </script>
@@ -17,6 +18,7 @@
     <UpdateSessionLength project={data.project} />
     <UpdateSessionsLimit project={data.project} />
     <PasswordPolicies project={data.project} />
+    <UpdateSignupEmailSecurity project={data.project} />
     <SessionSecurity project={data.project} />
     <UpdateMockNumbers project={data.project} />
     <UpdateMembershipPrivacy project={data.project} />
