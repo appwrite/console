@@ -160,12 +160,48 @@
                 const settingsUrl = resolve('/(console)/organization-[organization]/settings', {
                     organization: $organization.$id
                 });
-                await confirmPayment({
+                const outcome = await confirmPayment({
                     clientSecret: paymentAuth.clientSecret,
                     paymentMethodId: $organization.paymentMethodId,
                     orgId: $organization.$id,
-                    route: `${settingsUrl}?type=confirm-addon&addonId=${paymentAuth.addonId}`
+                    route: `${settingsUrl}?type=confirm-addon&addonId=${paymentAuth.addonId}`,
+                    redirectIfRequired: true
                 });
+
+                if (!outcome || outcome.status === 'error') {
+                    trackError(
+                        new Error(outcome?.status === 'error' ? outcome.message : 'Payment failed'),
+                        Submit.BAAAddonEnable
+                    );
+                    return;
+                }
+
+                if (outcome.status === 'requires_action') {
+                    return;
+                }
+
+                await sdk.forConsole.organizations.confirmAddonPayment({
+                    organizationId: $organization.$id,
+                    addonId: paymentAuth.addonId
+                });
+
+                await Promise.all([
+                    invalidate(Dependencies.ADDONS),
+                    invalidate(Dependencies.ORGANIZATION)
+                ]);
+
+                if (outcome.status === 'processing') {
+                    addNotification({
+                        message: "BAA addon payment is processing — we'll activate it shortly.",
+                        type: 'info'
+                    });
+                } else {
+                    addNotification({
+                        message: 'BAA addon has been enabled',
+                        type: 'success'
+                    });
+                }
+                trackEvent(Submit.BAAAddonEnable);
                 return;
             }
 

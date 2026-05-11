@@ -16,12 +16,17 @@
     import Configuration from '../configuration.svelte';
     import { regionalConsoleVariables } from '../../../store';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
-    import { InvalidFileType, removeFile } from '$lib/helpers/files';
+    import {
+        getInvalidDeploymentArchiveReason,
+        InvalidFileType,
+        removeFile
+    } from '$lib/helpers/files';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { isCloud } from '$lib/system';
     import { currentPlan } from '$lib/stores/organization';
     import Domain from '../domain.svelte';
     import { uploader } from '$lib/stores/uploader';
+    import type { FrameworkAdapterWithStartCommand } from '$lib/stores/sites';
 
     export let data;
     let showExitModal = false;
@@ -36,17 +41,18 @@
     let framework: Models.Framework =
         data.frameworks.frameworks?.find((f) => f.key === 'other') ??
         data.frameworks.frameworks?.[0];
-    let adapter = framework?.adapters[0];
+    let adapter = framework?.adapters[0] as FrameworkAdapterWithStartCommand;
     let installCommand = adapter?.installCommand;
     let buildCommand = adapter?.buildCommand;
+    let startCommand = adapter?.startCommand;
     let outputDirectory = adapter?.outputDirectory;
     let variables: Partial<Models.Variable>[] = [];
     let files: FileList;
 
     $: maxSize =
-        isCloud && $currentPlan
+        isCloud && $currentPlan?.deploymentSize
             ? $currentPlan.deploymentSize * 1000000
-            : $regionalConsoleVariables._APP_COMPUTE_SIZE_LIMIT; // already in MB
+            : $regionalConsoleVariables._APP_COMPUTE_SIZE_LIMIT;
 
     $: readableMaxSize = humanFileSize(maxSize);
 
@@ -73,6 +79,7 @@
                 buildRuntime,
                 installCommand: installCommand || undefined,
                 buildCommand: buildCommand || undefined,
+                startCommand: startCommand || undefined,
                 outputDirectory: outputDirectory || undefined
             });
 
@@ -86,6 +93,7 @@
             const promises = variables.map((variable) =>
                 sdk.forProject(page.params.region, page.params.project).sites.createVariable({
                     siteId: site.$id,
+                    variableId: ID.unique(),
                     key: variable.key,
                     value: variable.value,
                     secret: variable?.secret ?? false
@@ -111,7 +119,9 @@
             });
 
             await promise;
-            const upload = $uploader.files.find((f) => f.resourceId === site.$id);
+            const upload = $uploader.files.find(
+                (f) => f.resourceId === site.$id && f.kind === 'site-deployment'
+            );
 
             if (upload?.status === 'success') {
                 const deploymentId = upload.$id;
@@ -125,9 +135,11 @@
                 await goto(`${resolvedPath}?site=${site.$id}&deployment=${deploymentId}`);
             }
         } catch (e) {
-            const upload = $uploader.files.find((f) => f.resourceId === site?.$id);
+            const upload = $uploader.files.find(
+                (f) => f.resourceId === site?.$id && f.kind === 'site-deployment'
+            );
             if (upload) {
-                uploader.removeFromQueue(upload.$id);
+                uploader.removeFromQueue(upload.clientId);
             }
             addNotification({
                 type: 'error',
@@ -141,17 +153,7 @@
         let reason = e.detail?.reason ?? '';
 
         if (!reason) {
-            const nativeEvent = e.detail as Event | undefined;
-            const input = (nativeEvent?.currentTarget ?? nativeEvent?.target) as
-                | HTMLInputElement
-                | undefined;
-            const pickedFiles = Array.from(input?.files ?? []);
-
-            if (pickedFiles.some((file) => file.size > maxSize)) {
-                reason = InvalidFileType.SIZE;
-            } else if (pickedFiles.some((file) => !file.name.toLowerCase().endsWith('.tar.gz'))) {
-                reason = InvalidFileType.EXTENSION;
-            }
+            reason = getInvalidDeploymentArchiveReason(files, maxSize) ?? '';
         }
 
         if (reason === InvalidFileType.EXTENSION) {
@@ -169,6 +171,15 @@
                 type: 'error',
                 message: 'Invalid file'
             });
+        }
+    }
+
+    $: if (files?.length) {
+        const reason = getInvalidDeploymentArchiveReason(files, maxSize);
+
+        if (reason) {
+            files = undefined;
+            handleInvalid(new CustomEvent('invalid', { detail: { reason } }));
         }
     }
 
@@ -201,7 +212,7 @@
                     Upload a tar.gz containing your site source code
                 </Typography.Text>
                 <Upload.Dropzone
-                    extensions={['gz', 'tar']}
+                    extensions={['gz']}
                     bind:files
                     {maxSize}
                     required
@@ -243,6 +254,7 @@
             <Configuration
                 bind:installCommand
                 bind:buildCommand
+                bind:startCommand
                 bind:outputDirectory
                 bind:selectedFramework={framework}
                 bind:variables

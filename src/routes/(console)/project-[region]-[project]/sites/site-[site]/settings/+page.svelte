@@ -17,12 +17,14 @@
     import UpdateVariables from '$routes/(console)/project-[region]-[project]/updateVariables.svelte';
     import UpdateLogging from './updateLogging.svelte';
     import UpdateDeploymentRetention from './updateDeploymentRetention.svelte';
+    import { ID } from '@appwrite.io/console';
 
     export let data;
 
     const sdkCreateVariable = async (key: string, value: string, secret: boolean) => {
         await sdk.forProject(page.params.region, page.params.project).sites.createVariable({
             siteId: page.params.site,
+            variableId: ID.unique(),
             key,
             value,
             secret

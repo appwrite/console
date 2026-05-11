@@ -10,7 +10,7 @@
     import { invalidate } from '$app/navigation';
     import { PROHIBITED_ROW_KEYS } from '../store';
     import ColumnItem from './columns/columnItem.svelte';
-    import { isRelationship, isRelationshipToMany, isSpatialType } from './store';
+    import { isRelationship, isRelationshipToMany, isSpatialType, buildPayload } from './store';
     import { Layout, Skeleton } from '@appwrite.io/pink-svelte';
     import { deepClone } from '$lib/helpers/object';
     import { type Entity, toRelationalField } from '$database/(entity)';
@@ -138,11 +138,13 @@
         if (!row || !work) return;
 
         try {
+            const payload = buildPayload(table.fields, $work);
+
             await sdk.forProject(page.params.region, page.params.project).tablesDB.updateRow({
                 databaseId: table.databaseId,
                 tableId: table.$id,
                 rowId: row.$id,
-                data: $work,
+                data: payload,
                 permissions: $work.$permissions
             });
 

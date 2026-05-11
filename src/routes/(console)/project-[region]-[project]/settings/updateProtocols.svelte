@@ -162,7 +162,9 @@
                     </Button>
                 </Layout.Stack>
             </div>
-            <Divider />
+            <div class="protocol-toolbar-divider">
+                <Divider />
+            </div>
             <div class="protocol-list-content">
                 <Layout.Stack gap="xs">
                     {#each $protocols.list as protocol, index}
@@ -218,6 +220,11 @@
         width: 100%;
     }
 
+    .protocol-list-content {
+        max-width: 36rem;
+        padding-top: var(--space-6);
+    }
+
     .protocol-toolbar {
         display: flex;
         justify-content: flex-end;
@@ -226,10 +233,6 @@
 
     .protocol-row {
         width: 100%;
-    }
-
-    .protocol-list-content {
-        padding-top: var(--space-6);
     }
 
     .protocol-control {

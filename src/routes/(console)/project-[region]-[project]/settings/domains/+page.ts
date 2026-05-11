@@ -24,9 +24,9 @@ export const load: PageLoad = async ({ depends, url, route, params, parent }) =>
         queries: [
             Query.equal('type', RuleType.API),
             Query.equal('trigger', RuleTrigger.MANUAL),
+            ...(search ? [Query.search('domain', search)] : []),
             Query.orderDesc('$updatedAt')
-        ],
-        search: search || undefined
+        ]
     });
 
     const organizationDomains = await fetchOrganizationDomainsForRules(rules, organization.$id);

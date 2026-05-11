@@ -162,7 +162,10 @@
         return uploader.subscribe(() => {
             isUploading = $uploader.files.some(
                 (file) =>
-                    file.status !== 'success' && file.progress < 100 && file.status !== 'failed'
+                    file.kind === 'storage' &&
+                    file.status !== 'success' &&
+                    file.progress < 100 &&
+                    file.status !== 'failed'
             );
         });
     });
