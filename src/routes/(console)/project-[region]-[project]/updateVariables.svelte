@@ -100,13 +100,15 @@
         }
 
         return {
-            total,
+            total: variables.length,
             variables
         };
     }
 
     async function ensureAllVariablesLoaded() {
-        if (fullVariableList && fullVariableList.total === variableList.total) return;
+        if (fullVariableList && fullVariableList.variables.length >= variableList.variables.length) {
+            return;
+        }
 
         fullVariableList = await loadAllVariables();
     }
@@ -338,7 +340,7 @@
         previousVariableList = variableList;
     }
 
-    $: if (fullVariableList && fullVariableList.total !== variableList.total) {
+    $: if (fullVariableList && fullVariableList.variables.length < variableList.variables.length) {
         fullVariableList = undefined;
     }
 
@@ -346,6 +348,7 @@
     $: displayedVariables = backendPagination
         ? variableList.variables
         : variableList.variables.slice(offset, offset + limit);
+    $: variableCount = backendPagination ? variableList.total : variableList.variables.length;
 
     $: hasConflictOnPage = globalVariableList
         ? displayedVariables.filter((variable) => {
@@ -422,7 +425,7 @@
                         <Icon slot="start" icon={IconUpload} /> Import .env
                     </Button>
                 </Layout.Stack>
-                {#if variableList.total}
+                {#if variableCount}
                     <Button
                         secondary
                         {disabled}
@@ -436,7 +439,7 @@
                 {/if}
             </Layout.Stack>
         </Layout.Stack>
-        {@const sum = variableList.total}
+        {@const sum = variableCount}
         {#if sum}
             <Layout.Stack gap="l">
                 {#if conflictVariables.length > 0}
