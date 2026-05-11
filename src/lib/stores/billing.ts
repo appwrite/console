@@ -8,6 +8,7 @@ import MarkedForDeletion from '$lib/components/billing/alerts/markedForDeletion.
 import MissingPaymentMethod from '$lib/components/billing/alerts/missingPaymentMethod.svelte';
 import newDevUpgradePro from '$lib/components/billing/alerts/newDevUpgradePro.svelte';
 import PaymentAuthRequired from '$lib/components/billing/alerts/paymentAuthRequired.svelte';
+import PaymentProcessing from '$lib/components/billing/alerts/paymentProcessing.svelte';
 
 import { NEW_DEV_PRO_UPGRADE_COUPON } from '$lib/constants';
 import { cachedStore } from '$lib/helpers/cache';
@@ -57,6 +58,7 @@ export const roles = [
 ];
 
 export const teamStatusReadonly = 'readonly';
+export const teamStatusUpgrading = 'upgrading';
 export const billingLimitOutstandingInvoice = 'outstanding_invoice';
 
 export const paymentMethods = derived(
@@ -583,6 +585,17 @@ export function checkForMarkedForDeletion(org: Models.Organization) {
             component: MarkedForDeletion,
             show: true,
             importance: 10
+        });
+    }
+}
+
+export function checkForUpgradingStatus(org: Models.Organization) {
+    if (org?.status === teamStatusUpgrading) {
+        headerAlert.add({
+            id: 'paymentProcessing',
+            component: PaymentProcessing,
+            show: true,
+            importance: 5
         });
     }
 }
