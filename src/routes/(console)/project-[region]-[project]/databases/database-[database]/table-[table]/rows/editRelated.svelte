@@ -11,7 +11,7 @@
     import { PROHIBITED_ROW_KEYS } from '../store';
     import { type Columns, buildWildcardEntitiesQuery } from '$database/store';
     import RelatedRowColumns from './relatedRowColumns.svelte';
-    import { isRelationship, isRelationshipToMany } from './store';
+    import { isRelationship, isRelationshipToMany, buildPayload } from './store';
     import { Accordion, Layout, Skeleton } from '@appwrite.io/pink-svelte';
     import { deepClone } from '$lib/helpers/object';
     import { preferences } from '$lib/stores/preferences';
@@ -254,11 +254,12 @@
                 const work = workData.get(rowId);
 
                 const workValue = get(work);
+                const payload = buildPayload(relatedTable.fields, workValue);
                 await sdk.forProject(page.params.region, page.params.project).tablesDB.updateRow({
                     databaseId,
                     tableId: relatedTable.$id,
                     rowId: rowId,
-                    data: workValue,
+                    data: payload,
                     permissions: workValue.$permissions
                 });
 
@@ -272,13 +273,14 @@
                     if (!work) return;
 
                     const workValue = get(work);
+                    const payload = buildPayload(relatedTable.fields, workValue);
                     return sdk
                         .forProject(page.params.region, page.params.project)
                         .tablesDB.updateRow({
                             databaseId,
                             tableId: relatedTable.$id,
                             rowId: row.$id,
-                            data: workValue,
+                            data: payload,
                             permissions: workValue.$permissions
                         });
                 });

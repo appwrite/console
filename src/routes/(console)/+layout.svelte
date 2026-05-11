@@ -18,6 +18,7 @@
         checkForMarkedForDeletion,
         checkForMissingPaymentMethod,
         checkForNewDevUpgradePro,
+        checkForUpgradingStatus,
         checkForUsageLimit,
         checkPaymentAuthorizationRequired,
         paymentExpired,
@@ -296,6 +297,8 @@
             currentOrganizationId = org.$id;
             checkForEnterpriseTrial(org);
             checkForMarkedForDeletion(org);
+            checkForUpgradingStatus(org);
+            await checkForNewDevUpgradePro(org);
 
             const billingChecks: Promise<unknown>[] = [
                 checkForUsageLimit(org),

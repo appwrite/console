@@ -218,8 +218,8 @@ async function updateProjectOAuth({
                 clientSecret: getSecret('clientSecret'),
                 wellKnownURL: getDetail('wellKnownURL'),
                 authorizationURL: getDetail('authorizationURL'),
-                tokenUrl: getDetail('tokenUrl'),
-                userInfoUrl: getDetail('userInfoUrl'),
+                tokenURL: getDetail('tokenUrl'),
+                userInfoURL: getDetail('userInfoUrl'),
                 enabled
             });
         case OAuthProvider.Okta:

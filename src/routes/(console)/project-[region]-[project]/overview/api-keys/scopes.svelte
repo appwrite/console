@@ -186,7 +186,7 @@
         const { detail } = event;
         if (detail === 'indeterminate') return;
         filteredScopes.forEach((s) => {
-            if (s.category === category && !s.deprecated) {
+            if (s.category === category) {
                 activeScopes[s.scope] = detail;
             }
         });
@@ -217,7 +217,7 @@
             {@const checked = categoryState(category, scopes)}
             {@const isLastItem = index === categories.length - 1}
             {@const scopesLength = filteredScopes.filter(
-                (n) => n.category === category && effectiveScopes.includes(n.scope)
+                (n) => n.category === category && activeScopes[n.scope]
             ).length}
             <Accordion
                 selectable
