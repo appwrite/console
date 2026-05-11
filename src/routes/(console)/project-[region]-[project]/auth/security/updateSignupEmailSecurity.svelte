@@ -31,20 +31,29 @@
     });
 
     async function updateSignupEmailSecurity() {
+        let currentSubmit = Submit.AuthCanonicalEmailsUpdate;
+        let hasAppliedServerChange = false;
+
         try {
             const projectSdk = sdk.forProject(project.region, project.$id).project;
 
+            currentSubmit = Submit.AuthCanonicalEmailsUpdate;
             await projectSdk.updateCanonicalEmails({
                 enabled: authCanonicalEmails
             });
+            hasAppliedServerChange = true;
 
+            currentSubmit = Submit.AuthDisposableEmailsUpdate;
             await projectSdk.updateDisposableEmails({
                 enabled: authDisposableEmails
             });
+            hasAppliedServerChange = true;
 
+            currentSubmit = Submit.AuthFreeEmailsUpdate;
             await projectSdk.updateFreeEmails({
                 enabled: authFreeEmails
             });
+            hasAppliedServerChange = true;
 
             await invalidate(Dependencies.PROJECT);
 
@@ -56,11 +65,15 @@
             trackEvent(Submit.AuthDisposableEmailsUpdate);
             trackEvent(Submit.AuthFreeEmailsUpdate);
         } catch (error) {
+            if (hasAppliedServerChange) {
+                await invalidate(Dependencies.PROJECT);
+            }
+
             addNotification({
                 type: 'error',
                 message: error.message
             });
-            trackError(error, Submit.AuthCanonicalEmailsUpdate);
+            trackError(error, currentSubmit);
         }
     }
 </script>
