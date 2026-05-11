@@ -106,7 +106,10 @@
     }
 
     async function ensureAllVariablesLoaded() {
-        if (fullVariableList && fullVariableList.variables.length >= variableList.variables.length) {
+        if (
+            fullVariableList &&
+            fullVariableList.variables.length >= variableList.variables.length
+        ) {
             return;
         }
 
