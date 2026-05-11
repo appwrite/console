@@ -6,7 +6,7 @@
     import { Button, Form, InputSwitch } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { Typography } from '@appwrite.io/pink-svelte';
+    import { Layout, Typography } from '@appwrite.io/pink-svelte';
     import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
 
@@ -80,7 +80,7 @@
 
 <Form onSubmit={updateSignupEmailSecurity}>
     <CardGrid gap="xxl">
-        <svelte:fragment slot="title">Email policy</svelte:fragment>
+        <svelte:fragment slot="title">Email policies</svelte:fragment>
         Control which email addresses can be used for signups and email updates. This does not affect
         existing sign-ins.
         <svelte:fragment slot="aside">
@@ -89,10 +89,15 @@
                 id="authFreeEmails"
                 label="Block free email addresses">
                 <svelte:fragment slot="description">
-                    <Typography.Text>
-                        Reject signups and email updates that use free email providers instead of a
-                        custom domain.
-                    </Typography.Text>
+                    <Layout.Stack gap="s">
+                        <Typography.Text
+                            >Only allow email addresses from custom domains.</Typography.Text>
+                        <Typography.Text>
+                            Examples: <Typography.Code>gmail.com</Typography.Code>, <Typography.Code
+                                >yahoo.com</Typography.Code
+                            >, <Typography.Code>outlook.com</Typography.Code>
+                        </Typography.Text>
+                    </Layout.Stack>
                 </svelte:fragment>
             </InputSwitch>
 
@@ -101,10 +106,15 @@
                 id="authCanonicalEmails"
                 label="Require canonical email addresses">
                 <svelte:fragment slot="description">
-                    <Typography.Text>
-                        Reject signups and email updates that use aliases, tags, or
-                        provider-specific email variations.
-                    </Typography.Text>
+                    <Layout.Stack gap="s">
+                        <Typography.Text>
+                            Disallow aliases, tags, and provider-specific email variations.
+                        </Typography.Text>
+                        <Typography.Text>
+                            Examples: <Typography.Code>jane+team@gmail.com</Typography.Code>, <Typography.Code
+                                >jane.smith@gmail.com</Typography.Code>
+                        </Typography.Text>
+                    </Layout.Stack>
                 </svelte:fragment>
             </InputSwitch>
 
@@ -113,10 +123,14 @@
                 id="authDisposableEmails"
                 label="Block disposable email addresses">
                 <svelte:fragment slot="description">
-                    <Typography.Text>
-                        Reject signups and email updates that use known temporary or disposable
-                        email domains.
-                    </Typography.Text>
+                    <Layout.Stack gap="s">
+                        <Typography.Text
+                            >Disallow temporary and disposable email providers.</Typography.Text>
+                        <Typography.Text>
+                            Examples: <Typography.Code>mailinator.com</Typography.Code>, <Typography.Code
+                                >10minutemail.com</Typography.Code>
+                        </Typography.Text>
+                    </Layout.Stack>
                 </svelte:fragment>
             </InputSwitch>
         </svelte:fragment>
