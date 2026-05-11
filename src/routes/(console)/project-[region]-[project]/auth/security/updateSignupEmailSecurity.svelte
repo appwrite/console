@@ -80,15 +80,17 @@
 
 <Form onSubmit={updateSignupEmailSecurity}>
     <CardGrid gap="xxl">
-        <svelte:fragment slot="title">Signup email security</svelte:fragment>
+        <svelte:fragment slot="title">Email policy</svelte:fragment>
+        Control which email addresses can be used for signups and email updates. This does not affect
+        existing sign-ins.
         <svelte:fragment slot="aside">
             <InputSwitch
                 bind:value={authFreeEmails}
                 id="authFreeEmails"
-                label="Free email protection">
+                label="Block free email addresses">
                 <svelte:fragment slot="description">
                     <Typography.Text>
-                        Block signups and email updates that use free email providers instead of a
+                        Reject signups and email updates that use free email providers instead of a
                         custom domain.
                     </Typography.Text>
                 </svelte:fragment>
@@ -97,11 +99,11 @@
             <InputSwitch
                 bind:value={authCanonicalEmails}
                 id="authCanonicalEmails"
-                label="Canonical emails">
+                label="Require canonical email addresses">
                 <svelte:fragment slot="description">
                     <Typography.Text>
-                        Require canonical email addresses by rejecting alias subaddresses and emails
-                        with suffixes during signup and email updates.
+                        Reject signups and email updates that use aliases, tags, or
+                        provider-specific email variations.
                     </Typography.Text>
                 </svelte:fragment>
             </InputSwitch>
@@ -109,11 +111,11 @@
             <InputSwitch
                 bind:value={authDisposableEmails}
                 id="authDisposableEmails"
-                label="Disposable email protection">
+                label="Block disposable email addresses">
                 <svelte:fragment slot="description">
                     <Typography.Text>
-                        Block signups and email updates that use known temporary or disposable email
-                        domains.
+                        Reject signups and email updates that use known temporary or disposable
+                        email domains.
                     </Typography.Text>
                 </svelte:fragment>
             </InputSwitch>
