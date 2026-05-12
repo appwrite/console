@@ -46,11 +46,9 @@
         Selector,
         Typography
     } from '@appwrite.io/pink-svelte';
-    import type { ProjectKeyScopes, Scopes } from '@appwrite.io/console';
+    import type { ProjectKeyScopes } from '@appwrite.io/console';
 
-    type ScopeValue = ProjectKeyScopes | Scopes;
-
-    let { scopes = $bindable([]) }: { scopes: ScopeValue[] } = $props();
+    let { scopes = $bindable([]) }: { scopes: ProjectKeyScopes[] } = $props();
 
     let allScopesList: ScopeDefinition[] = $state([]);
     let mounted = $state(false);
@@ -194,10 +192,10 @@
         });
     }
 
-    function generateSyncedScopes(activeScopesObj: Record<string, boolean>): Scopes[] {
+    function generateSyncedScopes(activeScopesObj: Record<string, boolean>): ProjectKeyScopes[] {
         return Object.entries(activeScopesObj)
             .filter(([scope, isActive]) => isActive && scopeCatalog.has(scope))
-            .map(([scope]) => scope as Scopes);
+            .map(([scope]) => scope as ProjectKeyScopes);
     }
 </script>
 
