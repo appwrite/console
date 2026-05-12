@@ -99,9 +99,20 @@
                 return 'processing';
             case 'failed':
                 return 'failed';
+            // pink-svelte's Status union has no 'skipped' — fall back to the
+            // neutral 'waiting' visual and override the label below.
+            case 'skipped':
+                return 'waiting';
             default:
                 return 'waiting';
         }
+    }
+
+    function getBackupStatusLabel(backup: Models.BackupArchive): string {
+        if (backup.status === 'skipped') {
+            return 'Skipped';
+        }
+        return capitalize(getBackupStatus(backup));
     }
 
     async function deleteSingleBackup(archiveId: string) {
@@ -231,7 +242,7 @@
                 </Table.Cell>
                 <Table.Cell column="status" {root}>
                     {@const backupStatus = getBackupStatus(backup)}
-                    <Status status={backupStatus} label={capitalize(backupStatus)} />
+                    <Status status={backupStatus} label={getBackupStatusLabel(backup)} />
                     <!--{#if backup.status === 'Failed'}-->
                     <!--    <span class="u-underline">Get support</span>-->
                     <!--{/if}-->
