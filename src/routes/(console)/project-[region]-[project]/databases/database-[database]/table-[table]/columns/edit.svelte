@@ -122,14 +122,7 @@
 {#if isModal}
     <Modal {error} bind:show={showEdit} onSubmit={submit} {title}>
         <svelte:fragment slot="title">
-            <div class="u-flex u-cross-center u-gap-8">
-                {option?.name}
-                {#if option?.type === 'relationship'}
-                    <div class="tag eyebrow-heading-3">
-                        <span class="text u-x-small">Experimental</span>
-                    </div>
-                {/if}
-            </div>
+            {option?.name}
         </svelte:fragment>
 
         {#if selectedColumn}
