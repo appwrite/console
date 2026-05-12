@@ -34,7 +34,6 @@
         "deep-equal": "^2.2.3",
         "echarts": "^5.6.0",
         "flatted": "^3.4.2",
-        "@appwrite.io/console": "https://pkg.vc/-/@appwrite/@appwrite.io/console@7789ae4",
         "ignore": "^6.0.2",
         "json5": "^2.2.3",
         "nanoid": "^5.1.7",
