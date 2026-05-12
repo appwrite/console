@@ -1,11 +1,13 @@
 <script lang="ts">
+    import { onMount } from 'svelte';
     import { Box, CardGrid } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { getChangePlanUrl, plansInfo } from '$lib/stores/billing';
     import { currentPlan, organization } from '$lib/stores/organization';
     import { page } from '$app/state';
     import { get } from 'svelte/store';
-    import { invalidate } from '$app/navigation';
+    import { goto, invalidate } from '$app/navigation';
+    import { resolve } from '$app/paths';
     import { Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
@@ -21,7 +23,7 @@
     let showEnable = false;
     let showDisable = false;
     let reEnabling = false;
-    let cancelling = false;
+    let refreshing = false;
 
     $: planSupportsPremiumGeoDB = $currentPlan?.supportedAddons?.premiumGeoDB === true;
     $: canUpgradeToPremiumGeoDB =
@@ -45,22 +47,90 @@
         return false;
     }
 
-    async function handleCancelAndRetry() {
-        cancelling = true;
+    onMount(async () => {
+        if (page.url.searchParams.get('type') === 'confirm-addon') {
+            let addonId = page.url.searchParams.get('addonId');
+
+            // Fall back to listing pending addons if addonId is missing
+            if (!addonId || addonId === 'undefined') {
+                try {
+                    const addonList = await sdk
+                        .forConsoleIn(page.params.region)
+                        .projects.listAddons({ projectId: page.params.project });
+                    const pending = addonList.addons.find(
+                        (a) => a.key === 'premiumGeoDB' && a.status === 'pending'
+                    );
+                    addonId = pending?.$id ?? null;
+                } catch (e) {
+                    addNotification({
+                        message:
+                            e?.message ??
+                            'Unable to verify Premium Geo DB addon status. Please retry.',
+                        type: 'error'
+                    });
+                    addonId = null;
+                }
+            }
+
+            if (addonId) {
+                await confirmAddon(addonId);
+            }
+
+            const settingsUrl = resolve('/(console)/project-[region]-[project]/settings', {
+                region: page.params.region,
+                project: page.params.project
+            });
+            await goto(settingsUrl, { replaceState: true });
+        }
+    });
+
+    async function confirmAddon(addonId: string) {
         try {
-            await sdk.forConsoleIn(page.params.region).projects.deleteAddon({
+            await sdk.forConsoleIn(page.params.region).projects.confirmAddonPayment({
                 projectId: page.params.project,
-                addonId: premiumGeoDBAddon.$id
+                addonId
             });
-            await invalidate(Dependencies.ADDONS);
-            showEnable = true;
-        } catch (e) {
+            await Promise.all([invalidate(Dependencies.ADDONS), invalidate(Dependencies.PROJECT)]);
             addNotification({
-                message: e.message,
-                type: 'error'
+                message: 'Premium Geo DB addon has been enabled',
+                type: 'success'
             });
+        } catch (e) {
+            // Webhook may have already activated it — sync state and assume success
+            if (e?.type === 'addon_not_found' || e?.code === 404) {
+                await Promise.all([
+                    invalidate(Dependencies.ADDONS),
+                    invalidate(Dependencies.PROJECT)
+                ]);
+                addNotification({
+                    message: 'Premium Geo DB addon has been enabled',
+                    type: 'success'
+                });
+            } else if (e?.code === 402) {
+                // Payment failed — the backend has cleaned up; offer to retry from scratch
+                await invalidate(Dependencies.ADDONS);
+                addNotification({
+                    message:
+                        e?.message ??
+                        'Payment could not be authorized. Please try enabling the addon again.',
+                    type: 'error'
+                });
+            } else {
+                addNotification({
+                    message: e.message,
+                    type: 'error'
+                });
+            }
+        }
+    }
+
+    async function handleRefresh() {
+        if (!premiumGeoDBAddon) return;
+        refreshing = true;
+        try {
+            await confirmAddon(premiumGeoDBAddon.$id);
         } finally {
-            cancelling = false;
+            refreshing = false;
         }
     }
 
@@ -88,9 +158,9 @@
 
 <CardGrid>
     <svelte:fragment slot="title">Premium Geo DB</svelte:fragment>
-    Give your project richer location intelligence on every user. Tailor pricing by region, surface
-    the right currency and language, comply with local regulations, and spot suspicious sign-ins
-    before they cause damage — all without leaving Appwrite.
+    Give your project richer location intelligence on every user. Tailor pricing by region, surface the
+    right currency and language, comply with local regulations, and spot suspicious sign-ins before they
+    cause damage — all without leaving Appwrite.
     <svelte:fragment slot="aside">
         <Box>
             <h6>
@@ -116,15 +186,15 @@
                     <Badge variant="secondary" type="warning" content="Payment pending" />
                 </div>
                 <p class="text u-margin-block-start-8">
-                    A payment is awaiting confirmation. If the payment was interrupted, you can
-                    cancel and retry.
+                    A payment is awaiting confirmation. If you've completed authentication, click
+                    refresh to check the payment status.
                 </p>
                 <Button
                     secondary
                     class="u-margin-block-start-16"
-                    disabled={cancelling}
-                    on:click={handleCancelAndRetry}>
-                    <span class="text">Cancel & retry</span>
+                    disabled={refreshing}
+                    on:click={handleRefresh}>
+                    <span class="text">Refresh</span>
                 </Button>
             {:else if isActive}
                 <div class="u-flex u-cross-center u-gap-8 u-margin-block-start-8">
