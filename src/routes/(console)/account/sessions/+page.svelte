@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { page as pageStore } from '$app/stores';
+    import { page as pageStore } from '$lib/stores/page';
     import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
     import { Submit, trackEvent } from '$lib/actions/analytics';

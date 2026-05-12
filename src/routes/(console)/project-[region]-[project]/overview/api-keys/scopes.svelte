@@ -46,9 +46,11 @@
         Selector,
         Typography
     } from '@appwrite.io/pink-svelte';
-    import type { Scopes } from '@appwrite.io/console';
+    import type { ProjectKeyScopes, Scopes } from '@appwrite.io/console';
 
-    let { scopes = $bindable([]) }: { scopes: Scopes[] } = $props();
+    type ScopeValue = ProjectKeyScopes | Scopes;
+
+    let { scopes = $bindable([]) }: { scopes: ScopeValue[] } = $props();
 
     let allScopesList: ScopeDefinition[] = $state([]);
     let mounted = $state(false);

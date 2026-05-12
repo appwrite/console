@@ -7,4 +7,4 @@
     <title>Console - Appwrite</title>
 </svelte:head>
 
-<Onboard platforms={page.data.project.platforms} pingCount={page.data.project.pingCount} />
+<Onboard platforms={page.data.platforms.platforms} pingCount={page.data.project.pingCount} />

@@ -1,5 +1,5 @@
 import { derived, get, writable } from 'svelte/store';
-import { page } from '$app/stores';
+import { page } from '$lib/stores/page';
 import { type Models, Query } from '@appwrite.io/console';
 import { sdk } from '$lib/stores/sdk';
 import { headerAlert } from '$lib/stores/headerAlert';

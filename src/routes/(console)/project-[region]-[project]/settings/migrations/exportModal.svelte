@@ -10,7 +10,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { user } from '$lib/stores/user';
     import { organization } from '$lib/stores/organization';
-    import { ID, Scopes } from '@appwrite.io/console';
+    import { ID, ProjectKeyScopes as Scopes } from '@appwrite.io/console';
 
     export let show = false;
 

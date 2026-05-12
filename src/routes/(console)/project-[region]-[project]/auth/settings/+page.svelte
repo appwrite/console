@@ -10,7 +10,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { oAuthProviders } from '$lib/stores/oauth-providers';
     import { sdk } from '$lib/stores/sdk';
-    import { AuthMethod as MethodId, type Models } from '@appwrite.io/console';
+    import { ProjectAuthMethodId as MethodId } from '@appwrite.io/console';
     import { base } from '$app/paths';
     import {
         Avatar,
@@ -24,6 +24,7 @@
     } from '@appwrite.io/pink-svelte';
     import { Dependencies } from '$lib/constants';
     import type { PageProps } from './$types';
+    import type { AuthProvider } from '../updateOAuth';
     import { SvelteSet } from 'svelte/reactivity';
     import { get } from 'svelte/store';
 
@@ -34,7 +35,7 @@
     const consoleParamsMap = $derived(data.consoleParamsMap);
 
     let showProvider = $state(false);
-    let selectedProvider: Models.AuthProvider | null = $state(null);
+    let selectedProvider: AuthProvider | null = $state(null);
     let isUpdatingAllAuthMethods = $state(false);
     let showUpdateAuthMethodsDialog = $state(false);
     let updateAuthMethodsEnabledMode = $state<boolean | null>(null);

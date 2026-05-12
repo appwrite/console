@@ -1,4 +1,4 @@
-import { page } from '$app/stores';
+import { page } from '$lib/stores/page';
 import type { Column } from '$lib/helpers/types';
 import type { SortState } from '$database/store';
 import { derived, writable } from 'svelte/store';

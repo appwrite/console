@@ -1,4 +1,4 @@
-import { Query } from '@appwrite.io/console';
+import { Query, type Models } from '@appwrite.io/console';
 import { isCloud } from '$lib/system';
 import { sdk } from '$lib/stores/sdk';
 import { getLimit, getPage, getSearch, pageToOffset } from '$lib/helpers/load';
@@ -46,6 +46,9 @@ export const load: PageLoad = async ({ params, url, route, depends, parent }) =>
     // set `default` if no region!
     for (const project of activeProjects.projects) {
         project.region ??= 'default';
+        (project as Models.Project & { platforms: Array<{ type: string }> }).platforms = (
+            await sdk.forProject(project.region, project.$id).project.listPlatforms()
+        ).platforms;
     }
 
     return {

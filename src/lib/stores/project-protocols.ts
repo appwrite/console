@@ -1,28 +1,32 @@
 import { writable } from 'svelte/store';
-import { ProtocolId, type Models } from '@appwrite.io/console';
+import { ProjectProtocolId as ProjectProtocolId, type Models } from '@appwrite.io/console';
 
 export type Protocol = {
     label: string;
-    method: ProtocolId;
+    method: ProjectProtocolId;
     value: boolean | null;
 };
 
 function projectProtocolRows(project: Models.Project | null): Protocol[] {
+    const protocols = new Map(
+        project?.protocols?.map((protocol) => [protocol.$id, protocol.enabled])
+    );
+
     return [
         {
             label: 'REST',
-            method: ProtocolId.Rest,
-            value: project?.protocolStatusForRest ?? null
+            method: ProjectProtocolId.Rest,
+            value: protocols.get(ProjectProtocolId.Rest) ?? null
         },
         {
             label: 'GraphQL',
-            method: ProtocolId.Graphql,
-            value: project?.protocolStatusForGraphql ?? null
+            method: ProjectProtocolId.Graphql,
+            value: protocols.get(ProjectProtocolId.Graphql) ?? null
         },
         {
             label: 'WebSocket',
-            method: ProtocolId.Websocket,
-            value: project?.protocolStatusForWebsocket ?? null
+            method: ProjectProtocolId.Websocket,
+            value: protocols.get(ProjectProtocolId.Websocket) ?? null
         }
     ];
 }

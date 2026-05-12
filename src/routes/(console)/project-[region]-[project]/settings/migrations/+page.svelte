@@ -14,7 +14,7 @@
     import Details from './details.svelte';
     import ExportModal from './exportModal.svelte';
     import { readOnly } from '$lib/stores/billing';
-    import { ID, Scopes, type Models } from '@appwrite.io/console';
+    import { ID, ProjectKeyScopes as Scopes, type Models } from '@appwrite.io/console';
     import { canWriteProjects } from '$lib/stores/roles';
     import {
         IconCloud,

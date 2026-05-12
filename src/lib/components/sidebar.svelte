@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { page } from '$app/stores';
+    import { page } from '$lib/stores/page';
     import { app } from '$lib/stores/app';
     import { fade } from 'svelte/transition';
     import {

@@ -1,8 +1,9 @@
 import { Dependencies } from '$lib/constants';
 import { oAuthProviders } from '$lib/stores/oauth-providers';
 import { sdk } from '$lib/stores/sdk';
-import type { Models, Models as ConsoleModels } from '@appwrite.io/console';
+import type { Models as ConsoleModels } from '@appwrite.io/console';
 import type { PageLoad } from './$types';
+import type { AuthProvider } from '../updateOAuth';
 
 /** Extract the appId equivalent from a typed OAuth2 provider model. */
 function extractAppId(p: Record<string, unknown>): string {
@@ -34,12 +35,13 @@ export const load: PageLoad = async ({ depends, params }) => {
         consoleParamsMap.set(cp.$id, cp.parameters ?? []);
     }
 
-    const oauthProviders: Models.AuthProvider[] = providerList.providers
+    const oauthProviders: AuthProvider[] = providerList.providers
         .filter((p) => p.$id !== 'mock')
         .map((p) => {
             const raw = p as unknown as Record<string, unknown>;
             return {
                 ...raw,
+                $id: p.$id,
                 key: p.$id,
                 name: oAuthProviders[p.$id]?.name ?? p.$id,
                 appId: extractAppId(raw),

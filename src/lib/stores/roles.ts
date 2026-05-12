@@ -1,4 +1,4 @@
-import { page } from '$app/stores';
+import { page } from '$lib/stores/page';
 import { derived } from 'svelte/store';
 
 export const roles = derived(page, ($page) => ($page.data?.roles ?? []) as string[]);

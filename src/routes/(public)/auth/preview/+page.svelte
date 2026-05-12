@@ -12,7 +12,7 @@
         const origin = params.get('origin');
         const path = params.get('path');
         try {
-            await sdk.forConsole.projects.get({ projectId });
+            await sdk.forProject('default', projectId).project.get();
             const jwt = await sdk.forConsole.account.createJWT();
             window.location.href = `${origin}/_appwrite/authorize?jwt=${jwt.jwt}&path=${path}`;
         } catch {

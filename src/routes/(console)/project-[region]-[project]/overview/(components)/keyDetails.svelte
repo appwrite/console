@@ -12,7 +12,7 @@
     import { project } from '../../store';
     import Delete from './delete.svelte';
     import UpdateExpirationDate from './updateExpirationDate.svelte';
-    import type { Models, Scopes as ScopesType } from '@appwrite.io/console';
+    import type { Models, ProjectKeyScopes as ScopesType } from '@appwrite.io/console';
     import { symmetricDifference } from '$lib/helpers/array';
     import Scopes from '../api-keys/scopes.svelte';
     import { InteractiveText, Layout, Typography } from '@appwrite.io/pink-svelte';

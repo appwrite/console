@@ -4,12 +4,21 @@ import { Dependencies } from '$lib/constants';
 import { isValueOfStringEnum } from '$lib/helpers/types';
 import { addNotification } from '$lib/stores/notifications';
 import { sdk } from '$lib/stores/sdk';
-import { OAuthProvider, type Models } from '@appwrite.io/console';
+import { OAuthProvider } from '@appwrite.io/console';
+
+export type AuthProvider = {
+    $id: string;
+    key: string;
+    name: string;
+    appId: string;
+    secret: string;
+    enabled: boolean;
+} & Record<string, unknown>;
 
 type Args = {
     region: string;
     projectId: string;
-    provider: Models.AuthProvider;
+    provider: AuthProvider;
     appId: string | null;
     secret: string;
     details: Record<string, string>;

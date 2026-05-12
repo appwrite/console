@@ -7,14 +7,18 @@
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Layout, Card } from '@appwrite.io/pink-svelte';
-    import { EmailTemplateLocale, EmailTemplateType, type Models } from '@appwrite.io/console';
+    import {
+        ProjectEmailTemplateLocale,
+        ProjectEmailTemplateId,
+        type Models
+    } from '@appwrite.io/console';
 
     export let loading = false;
     export let project: Models.Project;
     export let localeCodes: Models.LocaleCode[];
 
     let isUpdating = false;
-    let locale = EmailTemplateLocale.En;
+    let locale = ProjectEmailTemplateLocale.En;
 
     async function onLocaleChange() {
         const timeout = setTimeout(() => {
@@ -24,12 +28,15 @@
             const template = await loadEmailTemplate(
                 project.region,
                 project.$id,
-                EmailTemplateType.Verification,
+                ProjectEmailTemplateId.Verification,
                 locale
             );
             emailTemplate.set(template);
             $baseEmailTemplate = { ...$emailTemplate };
-            trackEvent(Submit.EmailChangeLocale, { locale, type: EmailTemplateType.Verification });
+            trackEvent(Submit.EmailChangeLocale, {
+                locale,
+                type: ProjectEmailTemplateId.Verification
+            });
         } catch (error) {
             trackError(error, Submit.EmailChangeLocale);
             addNotification({

@@ -9,7 +9,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { Alert } from '@appwrite.io/pink-svelte';
     import { ExpirationInput } from '$lib/components';
-    import type { Models, Scopes } from '@appwrite.io/console';
+    import type { Models, ProjectKeyScopes } from '@appwrite.io/console';
     import { page } from '$app/state';
 
     export let keyType: 'api' | 'dev' = 'api';
@@ -31,7 +31,7 @@
                 await sdk.forProject(page.params.region, page.params.project).project.updateKey({
                     keyId: key.$id,
                     name: key.name,
-                    scopes: (key as Models.Key).scopes as Scopes[],
+                    scopes: (key as Models.Key).scopes as ProjectKeyScopes[],
                     expire: expiration
                 });
             } else {

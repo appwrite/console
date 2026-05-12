@@ -19,7 +19,8 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
     const { plansInfo, organizations, preferences: prefs } = await parent();
     depends(Dependencies.PROJECT);
 
-    const project = await sdk.forConsole.projects.get({ projectId: params.project });
+    const projectSdk = sdk.forProject(params.region, params.project).project;
+    const project = await projectSdk.get();
     if (project.status !== 'active' && project.status !== 'paused') {
         // project isn't active, redirect back to organizations page
         redirect(
@@ -40,20 +41,25 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
     // organization can be null if not in the filtered list!
     const includedInBasePlans = plansInfo.has(organization?.billingPlanId);
 
-    const [org, rawRegionalConsoleVariables, rolesResult] = await Promise.all([
-        !organization
-            ? // TODO: @itznotabug - teams.get with Models.Organization?
-              (sdk.forConsole.teams.get({ teamId: project.teamId }) as Promise<Models.Organization>)
-            : organization,
-        sdk.forConsoleIn(project.region).console.variables(),
-        isCloud
-            ? sdk.forConsole.organizations.getScopes({
-                  organizationId: project.teamId
-              })
-            : null,
+    const [org, rawRegionalConsoleVariables, rolesResult, , platformList, keyList] =
+        await Promise.all([
+            !organization
+                ? // TODO: @itznotabug - teams.get with Models.Organization?
+                  (sdk.forConsole.teams.get({
+                      teamId: project.teamId
+                  }) as Promise<Models.Organization>)
+                : organization,
+            sdk.forConsoleIn(project.region).console.variables(),
+            isCloud
+                ? sdk.forConsole.organizations.getScopes({
+                      organizationId: project.teamId
+                  })
+                : null,
 
-        loadAvailableRegions(project.teamId)
-    ]);
+            loadAvailableRegions(project.teamId),
+            projectSdk.listPlatforms(),
+            projectSdk.listKeys()
+        ]);
 
     const regionalConsoleVariables = normalizeConsoleVariables(rawRegionalConsoleVariables);
 
@@ -122,6 +128,8 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
 
     return {
         project,
+        platforms: platformList,
+        keys: keyList,
         organization,
         regionalConsoleVariables,
         roles,

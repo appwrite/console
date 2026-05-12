@@ -1,5 +1,5 @@
 import { resolve } from '$app/paths';
-import { page } from '$app/stores';
+import { page } from '$lib/stores/page';
 import { goto } from '$app/navigation';
 import { browser } from '$app/environment';
 import { Click, trackEvent } from '$lib/actions/analytics';

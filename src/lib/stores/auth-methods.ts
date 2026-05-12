@@ -1,5 +1,5 @@
 import { writable } from 'svelte/store';
-import { type Models, AuthMethod as MethodId } from '@appwrite.io/console';
+import { type Models, ProjectAuthMethodId as MethodId } from '@appwrite.io/console';
 
 export type AuthMethod = {
     label: string;
@@ -8,41 +8,45 @@ export type AuthMethod = {
 };
 
 const setAuthMethod = (project: Models.Project): AuthMethod[] => {
+    const authMethods = new Map(
+        project?.authMethods?.map((method) => [method.$id, method.enabled])
+    );
+
     return [
         {
             label: 'Email/Password',
             method: MethodId.Emailpassword,
-            value: project?.authEmailPassword
+            value: authMethods.get(MethodId.Emailpassword) ?? null
         },
         {
             label: 'Phone',
             method: MethodId.Phone,
-            value: project?.authPhone
+            value: authMethods.get(MethodId.Phone) ?? null
         },
         {
             label: 'Magic URL',
             method: MethodId.Magicurl,
-            value: project?.authUsersAuthMagicURL
+            value: authMethods.get(MethodId.Magicurl) ?? null
         },
         {
             label: 'Email OTP',
             method: MethodId.Emailotp,
-            value: project?.authEmailOtp
+            value: authMethods.get(MethodId.Emailotp) ?? null
         },
         {
             label: 'Anonymous',
             method: MethodId.Anonymous,
-            value: project?.authAnonymous
+            value: authMethods.get(MethodId.Anonymous) ?? null
         },
         {
             label: 'Team Invites',
             method: MethodId.Invites,
-            value: project?.authInvites
+            value: authMethods.get(MethodId.Invites) ?? null
         },
         {
             label: 'JWT',
             method: MethodId.Jwt,
-            value: project?.authJWT
+            value: authMethods.get(MethodId.Jwt) ?? null
         }
     ];
 };

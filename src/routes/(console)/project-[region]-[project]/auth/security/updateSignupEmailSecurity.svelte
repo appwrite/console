@@ -10,7 +10,13 @@
     import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
 
-    let { project }: { project: Models.Project } = $props();
+    type SignupEmailSecurityProject = Models.Project & {
+        authCanonicalEmails?: boolean;
+        authDisposableEmails?: boolean;
+        authFreeEmails?: boolean;
+    };
+
+    let { project }: { project: SignupEmailSecurityProject } = $props();
 
     let authCanonicalEmails = $state(false);
     let authDisposableEmails = $state(false);
@@ -38,19 +44,19 @@
             const projectSdk = sdk.forProject(project.region, project.$id).project;
 
             currentSubmit = Submit.AuthCanonicalEmailsUpdate;
-            await projectSdk.updateCanonicalEmails({
+            await projectSdk.updateDenyAliasedEmailPolicy({
                 enabled: authCanonicalEmails
             });
             hasAppliedServerChange = true;
 
             currentSubmit = Submit.AuthDisposableEmailsUpdate;
-            await projectSdk.updateDisposableEmails({
+            await projectSdk.updateDenyDisposableEmailPolicy({
                 enabled: authDisposableEmails
             });
             hasAppliedServerChange = true;
 
             currentSubmit = Submit.AuthFreeEmailsUpdate;
-            await projectSdk.updateFreeEmails({
+            await projectSdk.updateDenyFreeEmailPolicy({
                 enabled: authFreeEmails
             });
             hasAppliedServerChange = true;

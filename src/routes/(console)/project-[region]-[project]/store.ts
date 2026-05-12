@@ -2,7 +2,7 @@ import type { Models } from '@appwrite.io/console';
 import type { BarSeriesOption } from 'echarts/charts';
 import { derived, get, writable } from 'svelte/store';
 import { regions } from '$lib/stores/organization';
-import { page } from '$app/stores';
+import { page } from '$lib/stores/page';
 import CursorIcon from './overview/components/CursorIcon.svelte';
 import ClaudeIcon from './overview/components/ClaudeIcon.svelte';
 import VSCodeIcon from './overview/components/VSCodeIcon.svelte';
@@ -22,8 +22,8 @@ export const projectRegion = derived(project, ($project) => {
 });
 
 export const onboarding = derived(
-    project,
-    ($project) => $project?.platforms?.length === 0 && $project?.keys?.length === 0
+    page,
+    ($page) => $page.data.platforms?.total === 0 && $page.data.keys?.total === 0
 );
 
 /**

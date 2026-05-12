@@ -1,5 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
+    import { goto } from '$app/navigation';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import CreateProject from './createProject.svelte';
@@ -51,6 +52,7 @@
     let freePlanAlertDismissed = $state(false);
 
     let searchQuery: SearchQuery | null = $state(null);
+    let handledCreateProjectQuery = $state(false);
     const educationProgramId = 'github-student-developer';
 
     const isEducationProgram = $derived(data.program?.$id === educationProgramId);
@@ -88,6 +90,21 @@
         if (isCloud) showCreateProjectCloud = true;
         else showCreate = true;
     }
+
+    $effect(() => {
+        if (handledCreateProjectQuery || !page.url.searchParams.has('create-project')) return;
+
+        handledCreateProjectQuery = true;
+        handleCreateProject();
+
+        const url = new URL(page.url);
+        url.searchParams.delete('create-project');
+        void goto(`${url.pathname}${url.search}${url.hash}`, {
+            replaceState: true,
+            noScroll: true,
+            keepFocus: true
+        });
+    });
 
     function getIconForPlatform(platform: string): ComponentType {
         switch (platform) {
@@ -233,13 +250,16 @@
             offset={data.offset}
             on:click={handleCreateProject}>
             {#each data.projects.projects as project}
+                {@const projectPlatforms =
+                    (project as Models.Project & { platforms: Array<{ type: string }> })
+                        .platforms ?? []}
                 {@const platforms = filterPlatforms(
-                    project.platforms.map((platform) => getPlatformInfo(platform.type))
+                    projectPlatforms.map((platform) => getPlatformInfo(platform.type))
                 )}
                 <GridItem1
                     href={`${base}/project-${project.region}-${project.$id}/overview/platforms`}>
                     <svelte:fragment slot="eyebrow">
-                        {project?.platforms?.length ? project?.platforms?.length : 'No'} apps
+                        {projectPlatforms.length ? projectPlatforms.length : 'No'} apps
                     </svelte:fragment>
                     <svelte:fragment slot="title">
                         {project.name}
