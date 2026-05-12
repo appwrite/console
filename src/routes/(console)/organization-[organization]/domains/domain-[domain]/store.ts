@@ -1,4 +1,4 @@
-import { page } from '$lib/stores/page';
+import { page } from '$app/stores';
 import type { Column } from '$lib/helpers/types';
 import type { Models } from '@appwrite.io/console';
 import { derived, writable } from 'svelte/store';

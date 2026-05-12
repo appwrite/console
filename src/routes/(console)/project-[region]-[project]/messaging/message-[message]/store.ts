@@ -1,5 +1,5 @@
 import { derived } from 'svelte/store';
-import { page } from '$lib/stores/page';
+import { page } from '$app/stores';
 import type { Models } from '@appwrite.io/console';
 
 export const message = derived(

@@ -2,7 +2,7 @@ import type { Models } from '@appwrite.io/console';
 import type { BarSeriesOption } from 'echarts/charts';
 import { derived, get, writable } from 'svelte/store';
 import { regions } from '$lib/stores/organization';
-import { page } from '$lib/stores/page';
+import { page } from '$app/stores';
 import CursorIcon from './overview/components/CursorIcon.svelte';
 import ClaudeIcon from './overview/components/ClaudeIcon.svelte';
 import VSCodeIcon from './overview/components/VSCodeIcon.svelte';

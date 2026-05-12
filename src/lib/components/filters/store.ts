@@ -1,5 +1,5 @@
 import { goto } from '$app/navigation';
-import { page } from '$lib/stores/page';
+import { page } from '$app/stores';
 import deepEqual from 'deep-equal';
 import { Query } from '@appwrite.io/console';
 import { toLocaleDateTime } from '$lib/helpers/date';

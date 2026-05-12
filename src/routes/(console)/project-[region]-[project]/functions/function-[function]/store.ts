@@ -2,7 +2,7 @@ import { derived, get, writable, type Writable } from 'svelte/store';
 import { DeploymentDownloadType, type Models } from '@appwrite.io/console';
 import type { Column } from '$lib/helpers/types';
 import { sdk } from '$lib/stores/sdk';
-import { page } from '$lib/stores/page';
+import { page } from '$app/stores';
 
 export const func = derived(page, ($page) => $page.data.function as Models.Function);
 export const deploymentList = derived(

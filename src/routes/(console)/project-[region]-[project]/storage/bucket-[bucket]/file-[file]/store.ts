@@ -1,5 +1,5 @@
 import { derived, writable } from 'svelte/store';
-import { page } from '$lib/stores/page';
+import { page } from '$app/stores';
 import type { Models } from '@appwrite.io/console';
 import type { Column } from '$lib/helpers/types';
 

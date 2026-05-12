@@ -1,4 +1,4 @@
-import { page } from '$lib/stores/page';
+import { page } from '$app/stores';
 import { sdk } from '$lib/stores/sdk';
 import { isCloud } from '$lib/system';
 import { derived, writable } from 'svelte/store';

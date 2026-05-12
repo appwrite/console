@@ -21,7 +21,7 @@
     import { hasOnboardingDismissed } from '$lib/helpers/onboarding';
     import { isSidebarOpen, noWidthTransition } from '$lib/stores/sidebar';
     import { page } from '$app/state';
-    import { page as pageStore } from '$lib/stores/page';
+    import { page as pageStore } from '$app/stores';
     import { BillingPlanGroup, type Models } from '@appwrite.io/console';
     import { getSidebarState, isInDatabasesRoute, updateSidebarState } from '$lib/helpers/sidebar';
     import { isTabletViewport } from '$lib/stores/viewport';
