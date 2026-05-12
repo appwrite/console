@@ -60,8 +60,13 @@
         secret?: boolean
     ) => Promise<unknown>;
     export let sdkDeleteVariable: (variableId: string) => Promise<unknown>;
+    export let sdkListVariables: (queries: string[]) => Promise<Models.VariableList> = (queries) =>
+        sdk.forProject(page.params.region, page.params.project).projectApi.listVariables({
+            queries
+        });
     export let product: 'function' | 'site' = 'function';
     export let backendPagination = false;
+    export let reloadPageOnPagination = true;
     export let variablesOffset = 0;
     export let variablesLimit = 10;
     export let disabled = false;
@@ -76,20 +81,21 @@
     let showDeleteModal = false;
     let deleteError: string;
     let fullVariableList: Models.VariableList | undefined = allVariableList;
+    let pagedVariableList: Models.VariableList = variableList;
     let previousVariableList = variableList;
     let offset = 0;
     const limit = 10;
 
     async function loadAllVariables() {
-        const projectSdk = sdk.forProject(page.params.region, page.params.project);
-        const variables = [...variableList.variables];
-        let nextOffset = variables.length;
+        const variables = backendPagination ? [] : [...variableList.variables];
+        let nextOffset = backendPagination ? 0 : variables.length;
         let total = variableList.total;
 
         while (nextOffset < total) {
-            const response = await projectSdk.projectApi.listVariables({
-                queries: [Query.limit(variablesLimit), Query.offset(nextOffset)]
-            });
+            const response = await sdkListVariables([
+                Query.limit(variablesLimit),
+                Query.offset(nextOffset)
+            ]);
 
             total = response.total;
 
@@ -106,7 +112,11 @@
     }
 
     async function ensureAllVariablesLoaded() {
-        if (fullVariableList && fullVariableList.total === variableList.total) return;
+        const total = backendPagination ? variableList.total : variableList.variables.length;
+
+        if (fullVariableList && fullVariableList.variables.length >= total) {
+            return;
+        }
 
         fullVariableList = await loadAllVariables();
     }
@@ -321,31 +331,35 @@
         }
     }
 
-    $: conflictVariables = globalVariableList
-        ? globalVariableList.variables.filter((globalVariable) => {
-              return variableList.variables.find((variable) => {
-                  return variable.key === globalVariable.key;
-              });
-          })
-        : [];
-
     $: if (allVariableList && fullVariableList !== allVariableList) {
         fullVariableList = allVariableList;
     }
 
     $: if (variableList !== previousVariableList) {
+        pagedVariableList = variableList;
+        if (backendPagination && !reloadPageOnPagination) {
+            variablesOffset = 0;
+        }
         fullVariableList = undefined;
         previousVariableList = variableList;
     }
 
-    $: if (fullVariableList && fullVariableList.total !== variableList.total) {
+    $: if (fullVariableList && fullVariableList.total < variableList.total) {
         fullVariableList = undefined;
     }
 
     $: editorVariableList = fullVariableList ?? allVariableList ?? variableList;
     $: displayedVariables = backendPagination
-        ? variableList.variables
+        ? pagedVariableList.variables
         : variableList.variables.slice(offset, offset + limit);
+    $: variableCount = backendPagination ? pagedVariableList.total : variableList.total;
+    $: conflictVariables = globalVariableList
+        ? globalVariableList.variables.filter((globalVariable) => {
+              return displayedVariables.find((variable) => {
+                  return variable.key === globalVariable.key;
+              });
+          })
+        : [];
 
     $: hasConflictOnPage = globalVariableList
         ? displayedVariables.filter((variable) => {
@@ -368,6 +382,14 @@
           ];
 
     async function handleVariablesPageChange() {
+        if (!reloadPageOnPagination) {
+            pagedVariableList = await sdkListVariables([
+                Query.limit(variablesLimit),
+                Query.offset(variablesOffset)
+            ]);
+            return;
+        }
+
         const nextUrl = new URL(page.url);
 
         nextUrl.searchParams.set('variablesOffset', String(variablesOffset));
@@ -422,7 +444,7 @@
                         <Icon slot="start" icon={IconUpload} /> Import .env
                     </Button>
                 </Layout.Stack>
-                {#if variableList.total}
+                {#if variableCount}
                     <Button
                         secondary
                         {disabled}
@@ -436,7 +458,7 @@
                 {/if}
             </Layout.Stack>
         </Layout.Stack>
-        {@const sum = variableList.total}
+        {@const sum = variableCount}
         {#if sum}
             <Layout.Stack gap="l">
                 {#if conflictVariables.length > 0}

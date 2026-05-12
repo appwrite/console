@@ -1,18 +1,26 @@
 import { sdk } from '$lib/stores/sdk';
-import { Dependencies } from '$lib/constants';
+import { Dependencies, PAGE_LIMIT } from '$lib/constants';
 import { isCloud } from '$lib/system';
+import { Query } from '@appwrite.io/console';
+
+const VARIABLES_LIMIT = 100;
 
 export const load = async ({ params, depends, parent }) => {
     depends(Dependencies.VARIABLES);
     depends(Dependencies.SITE);
+    const limit = PAGE_LIMIT;
+    const variablesOffset = 0;
     const { site } = await parent();
 
     const [globalVariables, variables, frameworks, installations, specificationsList] =
         await Promise.all([
-            sdk.forProject(params.region, params.project).projectApi.listVariables(),
-            sdk
-                .forProject(params.region, params.project)
-                .sites.listVariables({ siteId: params.site }),
+            sdk.forProject(params.region, params.project).projectApi.listVariables({
+                queries: [Query.limit(VARIABLES_LIMIT)]
+            }),
+            sdk.forProject(params.region, params.project).sites.listVariables({
+                siteId: params.site,
+                queries: [Query.limit(limit), Query.offset(variablesOffset)]
+            }),
             sdk.forProject(params.region, params.project).sites.listFrameworks(),
             sdk.forProject(params.region, params.project).vcs.listInstallations(),
             isCloud
@@ -51,6 +59,8 @@ export const load = async ({ params, depends, parent }) => {
         frameworks,
         variables,
         globalVariables,
+        limit,
+        variablesOffset,
         installations,
         specificationsList
     };
