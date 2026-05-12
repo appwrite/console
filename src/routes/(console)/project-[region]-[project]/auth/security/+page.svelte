@@ -22,7 +22,11 @@
         dictionaryPolicy={data.passwordDictionaryPolicy}
         historyPolicy={data.passwordHistoryPolicy}
         personalDataPolicy={data.passwordPersonalDataPolicy} />
-    <UpdateSignupEmailSecurity project={data.project} />
+    <UpdateSignupEmailSecurity
+        project={data.project}
+        denyAliasedEmailPolicy={data.denyAliasedEmailPolicy}
+        denyDisposableEmailPolicy={data.denyDisposableEmailPolicy}
+        denyFreeEmailPolicy={data.denyFreeEmailPolicy} />
     <SessionSecurity
         project={data.project}
         sessionAlertPolicy={data.sessionAlertPolicy}

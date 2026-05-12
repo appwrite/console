@@ -3,6 +3,17 @@ import { sdk } from '$lib/stores/sdk';
 import { ProjectPolicyId, type Models } from '@appwrite.io/console';
 import type { PageLoad } from './$types';
 
+type EnabledPolicy = {
+    $id: string;
+    enabled: boolean;
+};
+
+const ProjectEmailPolicyId = {
+    DenyAliasedEmail: 'deny-aliased-email',
+    DenyDisposableEmail: 'deny-disposable-email',
+    DenyFreeEmail: 'deny-free-email'
+} as const;
+
 export const load: PageLoad = async ({ depends, params }) => {
     depends(Dependencies.PROJECT);
 
@@ -16,7 +27,10 @@ export const load: PageLoad = async ({ depends, params }) => {
         sessionDurationPolicy,
         sessionInvalidationPolicy,
         sessionLimitPolicy,
-        userLimitPolicy
+        userLimitPolicy,
+        denyAliasedEmailPolicy,
+        denyDisposableEmailPolicy,
+        denyFreeEmailPolicy
     ] = await Promise.all([
         projectSdk.getPolicy({ policyId: ProjectPolicyId.Membershipprivacy }),
         projectSdk.getPolicy({ policyId: ProjectPolicyId.Passworddictionary }),
@@ -26,7 +40,16 @@ export const load: PageLoad = async ({ depends, params }) => {
         projectSdk.getPolicy({ policyId: ProjectPolicyId.Sessionduration }),
         projectSdk.getPolicy({ policyId: ProjectPolicyId.Sessioninvalidation }),
         projectSdk.getPolicy({ policyId: ProjectPolicyId.Sessionlimit }),
-        projectSdk.getPolicy({ policyId: ProjectPolicyId.Userlimit })
+        projectSdk.getPolicy({ policyId: ProjectPolicyId.Userlimit }),
+        projectSdk.getPolicy({
+            policyId: ProjectEmailPolicyId.DenyAliasedEmail as ProjectPolicyId
+        }),
+        projectSdk.getPolicy({
+            policyId: ProjectEmailPolicyId.DenyDisposableEmail as ProjectPolicyId
+        }),
+        projectSdk.getPolicy({
+            policyId: ProjectEmailPolicyId.DenyFreeEmail as ProjectPolicyId
+        })
     ]);
 
     return {
@@ -38,6 +61,9 @@ export const load: PageLoad = async ({ depends, params }) => {
         sessionDurationPolicy: sessionDurationPolicy as Models.PolicySessionDuration,
         sessionInvalidationPolicy: sessionInvalidationPolicy as Models.PolicySessionInvalidation,
         sessionLimitPolicy: sessionLimitPolicy as Models.PolicySessionLimit,
-        userLimitPolicy: userLimitPolicy as Models.PolicyUserLimit
+        userLimitPolicy: userLimitPolicy as Models.PolicyUserLimit,
+        denyAliasedEmailPolicy: denyAliasedEmailPolicy as EnabledPolicy,
+        denyDisposableEmailPolicy: denyDisposableEmailPolicy as EnabledPolicy,
+        denyFreeEmailPolicy: denyFreeEmailPolicy as EnabledPolicy
     };
 };

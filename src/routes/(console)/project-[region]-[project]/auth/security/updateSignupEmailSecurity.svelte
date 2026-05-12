@@ -10,28 +10,37 @@
     import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
 
-    type SignupEmailSecurityProject = Models.Project & {
-        authCanonicalEmails?: boolean;
-        authDisposableEmails?: boolean;
-        authFreeEmails?: boolean;
+    type EnabledPolicy = {
+        $id: string;
+        enabled: boolean;
     };
 
-    let { project }: { project: SignupEmailSecurityProject } = $props();
+    let {
+        project,
+        denyAliasedEmailPolicy,
+        denyDisposableEmailPolicy,
+        denyFreeEmailPolicy
+    }: {
+        project: Models.Project;
+        denyAliasedEmailPolicy: EnabledPolicy;
+        denyDisposableEmailPolicy: EnabledPolicy;
+        denyFreeEmailPolicy: EnabledPolicy;
+    } = $props();
 
     let authCanonicalEmails = $state(false);
     let authDisposableEmails = $state(false);
     let authFreeEmails = $state(false);
 
     onMount(() => {
-        authCanonicalEmails = project?.authCanonicalEmails ?? false;
-        authDisposableEmails = project?.authDisposableEmails ?? false;
-        authFreeEmails = project?.authFreeEmails ?? false;
+        authCanonicalEmails = denyAliasedEmailPolicy.enabled;
+        authDisposableEmails = denyDisposableEmailPolicy.enabled;
+        authFreeEmails = denyFreeEmailPolicy.enabled;
     });
 
     const hasChanges = $derived.by(() => {
-        const canonicalChanged = authCanonicalEmails !== (project?.authCanonicalEmails ?? false);
-        const disposableChanged = authDisposableEmails !== (project?.authDisposableEmails ?? false);
-        const freeChanged = authFreeEmails !== (project?.authFreeEmails ?? false);
+        const canonicalChanged = authCanonicalEmails !== denyAliasedEmailPolicy.enabled;
+        const disposableChanged = authDisposableEmails !== denyDisposableEmailPolicy.enabled;
+        const freeChanged = authFreeEmails !== denyFreeEmailPolicy.enabled;
 
         return canonicalChanged || disposableChanged || freeChanged;
     });
