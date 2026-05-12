@@ -3,7 +3,7 @@ import { isCloud } from '$lib/system';
 import type { LayoutLoad } from './$types';
 import type { Account } from '$lib/stores/user';
 import { Dependencies } from '$lib/constants';
-import { Platform, Query, type Models } from '@appwrite.io/console';
+import { Platform, type Models } from '@appwrite.io/console';
 import { makePlansMap } from '$lib/helpers/billing';
 import { plansInfo as plansInfoStore } from '$lib/stores/billing';
 import { normalizeConsoleVariables } from '$lib/helpers/domains';
@@ -54,7 +54,6 @@ export const load: LayoutLoad = async ({ depends, parent, url }) => {
             currentOrgId: undefined,
             organizations,
             consoleVariables,
-            allProjectsCount: 0,
             plansInfo: plansInfo ?? null,
             version: versionData?.version ?? null
         };
@@ -107,28 +106,6 @@ export const load: LayoutLoad = async ({ depends, parent, url }) => {
         preferences.organization ??
         (organizations.teams.length > 0 ? organizations.teams[0].$id : undefined);
 
-    // Load projects for the current organization if one is selected
-    let projectsCount = 0;
-    if (currentOrgId) {
-        try {
-            projectsCount = (
-                await sdk.forConsole.projects.list({
-                    queries: [
-                        Query.equal('teamId', currentOrgId),
-                        Query.limit(1),
-                        Query.select(['$id'])
-                    ]
-                })
-            ).total;
-        } catch (e) {
-            if (shouldRedirectToVerifyEmail(e)) {
-                redirect(303, verifyEmailUrl);
-            }
-
-            projectsCount = 0;
-        }
-    }
-
     // just in case!
     plansInfoStore.set(fallbackPlansInfoArray);
 
@@ -139,7 +116,6 @@ export const load: LayoutLoad = async ({ depends, parent, url }) => {
         currentOrgId,
         organizations,
         consoleVariables,
-        allProjectsCount: projectsCount,
         plansInfo: fallbackPlansInfoArray,
         version: versionData?.version ?? null
     };

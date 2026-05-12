@@ -8,7 +8,7 @@
     import { database, checkForDatabaseBackupPolicies } from '$lib/stores/database';
     import { newOrgModal, organization } from '$lib/stores/organization';
     import { wizard } from '$lib/stores/wizard';
-    import { afterUpdate, onMount } from 'svelte';
+    import { onMount } from 'svelte';
     import { loading } from '$routes/store';
     import { requestedMigration } from '../store';
     import Create from './createOrganization.svelte';
@@ -281,10 +281,12 @@
         }
     }
 
-    database.subscribe(async (database) => {
-        if (!database || !page.params.region || !page.params.project) return;
-        // the component checks `isCloud` internally.
-        await checkForDatabaseBackupPolicies(page.params.region, page.params.project, database);
+    onMount(() => {
+        return database.subscribe(async (database) => {
+            if (!database || !page.params.region || !page.params.project) return;
+            // the component checks `isCloud` internally.
+            await checkForDatabaseBackupPolicies(page.params.region, page.params.project, database);
+        });
     });
 
     let currentOrganizationId = null;
@@ -294,19 +296,23 @@
         if (isCloud) {
             currentOrganizationId = org.$id;
             checkForEnterpriseTrial(org);
-            await checkForUsageLimit(org);
             checkForMarkedForDeletion(org);
             checkForUpgradingStatus(org);
             await checkForNewDevUpgradePro(org);
 
-            if (org?.billingPlanDetails.requiresPaymentMethod) {
-                await paymentExpired(org);
-                await checkPaymentAuthorizationRequired(org);
+            const billingChecks: Promise<unknown>[] = [
+                checkForUsageLimit(org),
+                checkForNewDevUpgradePro(org)
+            ];
 
+            if (org?.billingPlanDetails.requiresPaymentMethod) {
+                billingChecks.push(paymentExpired(org), checkPaymentAuthorizationRequired(org));
                 if (org?.billingTrialDays) {
                     calculateTrialDay(org);
                 }
             }
+
+            await Promise.all(billingChecks);
             $activeHeaderAlert = headerAlert.getExcluding('impersonation');
         }
     }
@@ -319,9 +325,7 @@
 
     $registerSearchers(orgSearcher, projectsSearcher);
 
-    afterUpdate(() => {
-        $activeHeaderAlert = headerAlert.getExcluding('impersonation');
-    });
+    $: (void $headerAlert, ($activeHeaderAlert = headerAlert.getExcluding('impersonation')));
 </script>
 
 <CommandCenter />

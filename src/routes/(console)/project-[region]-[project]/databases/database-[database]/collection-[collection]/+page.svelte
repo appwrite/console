@@ -5,7 +5,15 @@
     import type { Column, ColumnType } from '$lib/helpers/types';
     import { Container } from '$lib/layout';
     import { preferences } from '$lib/stores/preferences';
-    import { Icon, Layout, Divider, Tooltip } from '@appwrite.io/pink-svelte';
+    import {
+        Icon,
+        Layout,
+        Divider,
+        Tooltip,
+        Selector,
+        Typography,
+        Dialog
+    } from '@appwrite.io/pink-svelte';
     import type { PageProps } from './$types';
     import FilePicker from '$lib/components/filePicker.svelte';
     import { page } from '$app/state';
@@ -21,7 +29,7 @@
         IconUpload,
         IconDownload
     } from '@appwrite.io/pink-icons-svelte';
-    import { type Models } from '@appwrite.io/console';
+    import { OnDuplicate, type Models } from '@appwrite.io/console';
     import { sdk } from '$lib/stores/sdk';
     import { goto } from '$app/navigation';
     import { resolve } from '$app/paths';
@@ -49,7 +57,11 @@
 
     let isRefreshing = $state(false);
     let showImportJson = $state(false);
+    let showImportOptions = $state(false);
     let showCustomColumnsModal = $state(false);
+    let importOnDuplicate: OnDuplicate = $state(OnDuplicate.Fail);
+    let pendingFile: Models.File | null = $state(null);
+    let pendingLocalFile = $state(false);
 
     let columnsError: string = $state(null);
     let spreadsheet: SpreadSheet | null = $state(null);
@@ -74,17 +86,28 @@
         return queryParam ? `${url}?query=${encodeURIComponent(queryParam)}` : url;
     }
 
-    async function onSelect(file: Models.File, localFile = false) {
+    function onSelect(file: Models.File, localFile = false) {
+        pendingFile = file;
+        pendingLocalFile = localFile;
+        importOnDuplicate = OnDuplicate.Fail;
+        showImportOptions = true;
+    }
+
+    async function startImport() {
+        if (!pendingFile) return;
+
+        showImportOptions = false;
         $isCollectionsJsonImportInProgress = true;
 
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
                 .migrations.createJSONImport({
-                    bucketId: file.bucketId,
-                    fileId: file.$id,
+                    bucketId: pendingFile.bucketId,
+                    fileId: pendingFile.$id,
                     resourceId: `${page.params.database}:${page.params.collection}`,
-                    internalFile: localFile
+                    internalFile: pendingLocalFile,
+                    onDuplicate: importOnDuplicate
                 });
 
             addNotification({
@@ -101,6 +124,7 @@
             });
         } finally {
             $isCollectionsJsonImportInProgress = false;
+            pendingFile = null;
         }
     }
 
@@ -342,6 +366,52 @@
             imageWidth: 32
         }} />
 {/if}
+
+<Dialog title="Import options" bind:open={showImportOptions}>
+    <Layout.Stack gap="l">
+        <Typography.Text variant="m-400">
+            Choose how to handle documents that already exist in this collection.
+        </Typography.Text>
+        <Layout.Stack gap="m">
+            <Selector.Radio
+                size="s"
+                bind:group={importOnDuplicate}
+                name="importOnDuplicate"
+                value={OnDuplicate.Fail}
+                label="Fail on duplicate (default)">
+                <svelte:fragment slot="description">
+                    Import aborts on the first document with a matching ID.
+                </svelte:fragment>
+            </Selector.Radio>
+            <Selector.Radio
+                size="s"
+                bind:group={importOnDuplicate}
+                name="importOnDuplicate"
+                value={OnDuplicate.Skip}
+                label="Skip existing documents">
+                <svelte:fragment slot="description">
+                    Documents with matching IDs will be silently skipped.
+                </svelte:fragment>
+            </Selector.Radio>
+            <Selector.Radio
+                size="s"
+                bind:group={importOnDuplicate}
+                name="importOnDuplicate"
+                value={OnDuplicate.Overwrite}
+                label="Overwrite existing documents">
+                <svelte:fragment slot="description">
+                    Documents with matching IDs will be updated with the imported data.
+                </svelte:fragment>
+            </Selector.Radio>
+        </Layout.Stack>
+    </Layout.Stack>
+    <svelte:fragment slot="footer">
+        <Layout.Stack direction="row" gap="s" justifyContent="flex-end">
+            <Button text on:click={() => (showImportOptions = false)}>Cancel</Button>
+            <Button on:click={startImport}>Start import</Button>
+        </Layout.Stack>
+    </svelte:fragment>
+</Dialog>
 
 <Modal
     title="Custom columns"

@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Wizard } from '$lib/layout';
-    import { Icon, Input, Layout, Tag, Typography, Card, Upload } from '@appwrite.io/pink-svelte';
+    import { Icon, Input, Layout, Typography, Card, Upload } from '@appwrite.io/pink-svelte';
     import { supportData, isSupportOnline } from './wizard/support/store';
     import { onMount, onDestroy } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
@@ -24,46 +24,6 @@
     let projectOptions = $state<Array<{ value: string; label: string }>>([]);
     let files = $state<FileList | null>(null);
 
-    // Category options with display names
-    const categories = [
-        { value: 'general', label: 'General' },
-        { value: 'billing', label: 'Billing' },
-        { value: 'technical', label: 'Technical' }
-    ];
-
-    // Topic options based on category
-    const topicsByCategory = {
-        general: [
-            'Security',
-            'Compliance',
-            'Performance',
-            'Account',
-            'Project',
-            'Regions',
-            'Other'
-        ],
-        billing: ['Invoice', 'Plans', 'Payment methods', 'Downgrade', 'Refund', 'Usage', 'Other'],
-        technical: [
-            'Auth',
-            'Databases',
-            'Storage',
-            'Functions',
-            'Realtime',
-            'Messaging',
-            'Migrations',
-            'Webhooks',
-            'SDKs',
-            'Console',
-            'Backups',
-            'Blocked project',
-            'Domains',
-            'Outage',
-            'Platforms',
-            'Sites',
-            'Other'
-        ]
-    };
-
     onMount(async () => {
         // Filter projects by organization ID using server-side queries
         const projectList = await sdk.forConsole.projects.list({
@@ -82,39 +42,20 @@
         $supportData = {
             message: null,
             subject: null,
-            category: 'technical',
-            topic: undefined,
             file: null
         };
     });
 
-    // Update topic options when category changes
-    const topicOptions = $derived(
-        ($supportData.category ? topicsByCategory[$supportData.category] || [] : []).map(
-            (topic) => ({
-                value: topic.toLowerCase().trim().replace(/\s+/g, '-'),
-                label: topic
-            })
-        )
-    );
-
     async function handleSubmit() {
-        // Create category-topic tag
-        const categoryTopicTag = $supportData.topic
-            ? `${$supportData.category}-${$supportData.topic}`.toLowerCase()
-            : $supportData.category.toLowerCase();
-
         const formData = new FormData();
         formData.append('email', $user.email);
-        formData.append('subject', $supportData.subject);
+        formData.append('subject', $supportData.subject ?? '');
         formData.append('firstName', ($user?.name || 'Unknown').slice(0, 40));
-        formData.append('message', $supportData.message);
+        formData.append('message', $supportData.message ?? '');
         formData.append('tags[]', 'cloud');
-        formData.append('tags[]', categoryTopicTag);
         formData.append(
             'metaFields',
             JSON.stringify({
-                category: $supportData.category,
                 orgId: $organization?.$id ?? '',
                 projectId: $supportData?.project ?? '',
                 billingPlan: $organization?.billingPlanId ?? ''
@@ -151,8 +92,6 @@
         $supportData = {
             message: null,
             subject: null,
-            category: 'technical',
-            topic: undefined,
             file: null,
             project: null
         };
@@ -190,33 +129,6 @@
                     >Please describe your request in detail. If applicable, include steps for
                     reproduction of any in-app issues.</Typography.Text>
             </Layout.Stack>
-            <Layout.Stack gap="s">
-                <Typography.Text color="--fgcolor-neutral-secondary"
-                    >Choose a category</Typography.Text>
-                <Layout.Stack gap="s" direction="row">
-                    {#each categories as category}
-                        <Tag
-                            on:click={() => {
-                                if ($supportData.category !== category.value) {
-                                    $supportData.topic = undefined;
-                                }
-                                $supportData.category = category.value;
-                            }}
-                            selected={$supportData.category === category.value}
-                            >{category.label}</Tag>
-                    {/each}
-                </Layout.Stack>
-            </Layout.Stack>
-            {#if topicOptions.length > 0}
-                {#key $supportData.category}
-                    <Input.ComboBox
-                        id="topic"
-                        label="Choose a topic"
-                        placeholder="Select topic"
-                        bind:value={$supportData.topic}
-                        options={topicOptions} />
-                {/key}
-            {/if}
             <Input.ComboBox
                 id="project"
                 label="Choose a project"

@@ -51,6 +51,12 @@
         await Promise.all([invalidate(Dependencies.VARIABLES), invalidate(Dependencies.SITE)]);
     };
 
+    const sdkListVariables = async (queries: string[]) =>
+        sdk.forProject(page.params.region, page.params.project).sites.listVariables({
+            siteId: page.params.site,
+            queries
+        });
+
     onMount(async () => {
         if (
             page.url.searchParams.has('newInstallation') &&
@@ -75,9 +81,14 @@
         {sdkCreateVariable}
         {sdkUpdateVariable}
         {sdkDeleteVariable}
+        {sdkListVariables}
         isGlobal={false}
         globalVariableList={data.globalVariables}
         variableList={data.variables}
+        backendPagination
+        reloadPageOnPagination={false}
+        variablesOffset={data.variablesOffset}
+        variablesLimit={data.limit}
         project={data.project}
         product="site"
         analyticsSource="site_settings" />
