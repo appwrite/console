@@ -43,13 +43,22 @@ export const load: PageLoad = async ({ params, url, route, depends, parent }) =>
         ]
     });
 
-    // set `default` if no region!
-    for (const project of activeProjects.projects) {
-        project.region ??= 'default';
-        (project as Models.Project & { platforms: Array<{ type: string }> }).platforms = (
-            await sdk.forProject(project.region, project.$id).project.listPlatforms()
-        ).platforms;
-    }
+    await Promise.all(
+        activeProjects.projects.map(async (project) => {
+            project.region ??= 'default';
+            const platformList = await sdk
+                .forProject(project.region, project.$id)
+                .project.listPlatforms({ queries: [Query.limit(3)] });
+            (
+                project as Models.Project & {
+                    platforms: Array<{ type: string }>;
+                    platformsTotal: number;
+                }
+            ).platforms = platformList.platforms;
+            (project as Models.Project & { platformsTotal: number }).platformsTotal =
+                platformList.total;
+        })
+    );
 
     return {
         limit,

@@ -8,7 +8,7 @@ import { get } from 'svelte/store';
 import { headerAlert } from '$lib/stores/headerAlert';
 import PaymentFailed from '$lib/components/billing/alerts/paymentFailed.svelte';
 import { loadAvailableRegions } from '$routes/(console)/regions';
-import { type Models, Platform } from '@appwrite.io/console';
+import { Query, type Models, Platform } from '@appwrite.io/console';
 import { redirect } from '@sveltejs/kit';
 import { resolve } from '$app/paths';
 import { generateFingerprintToken } from '$lib/helpers/fingerprint';
@@ -57,8 +57,8 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
                 : null,
 
             loadAvailableRegions(project.teamId),
-            projectSdk.listPlatforms(),
-            projectSdk.listKeys()
+            projectSdk.listPlatforms({ queries: [Query.limit(1)] }),
+            projectSdk.listKeys({ queries: [Query.limit(1)] })
         ]);
 
     const regionalConsoleVariables = normalizeConsoleVariables(rawRegionalConsoleVariables);

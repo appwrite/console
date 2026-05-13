@@ -2,7 +2,7 @@
     import { base } from '$app/paths';
     import { page } from '$app/state';
     import { goto } from '$app/navigation';
-    import { Empty, MultiSelectionTable } from '$lib/components';
+    import { Empty, MultiSelectionTable, PaginationWithLimit } from '$lib/components';
     import { canWriteKeys } from '$lib/stores/roles';
     import type { Models } from '@appwrite.io/console';
     import { diffDays } from '$lib/helpers/date';
@@ -14,10 +14,14 @@
 
     let {
         keyType = 'api',
-        keys
+        keys,
+        limit,
+        offset
     }: {
         keyType?: 'api' | 'dev';
         keys: Models.KeyList | Models.DevKeyList;
+        limit?: number;
+        offset?: number;
     } = $props();
 
     let selectedKeys = $state([]);
@@ -116,6 +120,13 @@
             {/each}
         {/snippet}
     </MultiSelectionTable>
+    {#if limit !== undefined && offset !== undefined}
+        <PaginationWithLimit
+            name={`${capitalize(label)} keys`}
+            {limit}
+            {offset}
+            total={keys.total} />
+    {/if}
 {:else}
     <Empty
         single

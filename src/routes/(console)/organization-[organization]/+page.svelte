@@ -251,15 +251,22 @@
             on:click={handleCreateProject}>
             {#each data.projects.projects as project}
                 {@const projectPlatforms =
-                    (project as Models.Project & { platforms: Array<{ type: string }> })
-                        .platforms ?? []}
+                    (
+                        project as Models.Project & {
+                            platforms: Array<{ type: string }>;
+                            platformsTotal?: number;
+                        }
+                    ).platforms ?? []}
+                {@const platformsTotal =
+                    (project as Models.Project & { platformsTotal?: number }).platformsTotal ??
+                    projectPlatforms.length}
                 {@const platforms = filterPlatforms(
                     projectPlatforms.map((platform) => getPlatformInfo(platform.type))
                 )}
                 <GridItem1
                     href={`${base}/project-${project.region}-${project.$id}/overview/platforms`}>
                     <svelte:fragment slot="eyebrow">
-                        {projectPlatforms.length ? projectPlatforms.length : 'No'} apps
+                        {platformsTotal ? platformsTotal : 'No'} apps
                     </svelte:fragment>
                     <svelte:fragment slot="title">
                         {project.name}
@@ -284,10 +291,10 @@
                         </Badge>
                     {/each}
 
-                    {#if platforms.length > 3}
+                    {#if platformsTotal > 2}
                         <Badge
                             variant="secondary"
-                            content={`+${platforms.length - 2}`}
+                            content={`+${platformsTotal - 2}`}
                             style="width: max-content;" />
                     {/if}
 
