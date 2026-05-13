@@ -10,7 +10,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { user } from '$lib/stores/user';
     import { organization } from '$lib/stores/organization';
-    import { ID, ProjectKeyScopes as Scopes } from '@appwrite.io/console';
+    import { ID, ProjectKeyScopes } from '@appwrite.io/console';
 
     export let show = false;
 
@@ -94,28 +94,28 @@
                 keyId: ID.unique(),
                 name: `[AUTO-GENERATED] Migration ${new Date().toISOString()}`,
                 scopes: [
-                    Scopes.UsersRead,
-                    Scopes.TeamsRead,
-                    Scopes.DatabasesRead,
-                    Scopes.CollectionsRead /* legacy */,
-                    Scopes.AttributesRead /* legacy */,
-                    Scopes.IndexesRead,
-                    Scopes.DocumentsRead /* legacy */,
-                    Scopes.TablesRead,
-                    Scopes.ColumnsRead,
-                    Scopes.RowsRead,
-                    Scopes.FilesRead,
-                    Scopes.BucketsRead,
-                    Scopes.FunctionsRead,
-                    Scopes.ExecutionsRead,
-                    Scopes.SitesRead,
-                    Scopes.ProvidersRead,
-                    Scopes.TopicsRead,
-                    Scopes.SubscribersRead,
-                    Scopes.MessagesRead,
-                    Scopes.LocaleRead,
-                    Scopes.AvatarsRead,
-                    Scopes.HealthRead
+                    ProjectKeyScopes.UsersRead,
+                    ProjectKeyScopes.TeamsRead,
+                    ProjectKeyScopes.DatabasesRead,
+                    ProjectKeyScopes.CollectionsRead /* legacy */,
+                    ProjectKeyScopes.AttributesRead /* legacy */,
+                    ProjectKeyScopes.IndexesRead,
+                    ProjectKeyScopes.DocumentsRead /* legacy */,
+                    ProjectKeyScopes.TablesRead,
+                    ProjectKeyScopes.ColumnsRead,
+                    ProjectKeyScopes.RowsRead,
+                    ProjectKeyScopes.FilesRead,
+                    ProjectKeyScopes.BucketsRead,
+                    ProjectKeyScopes.FunctionsRead,
+                    ProjectKeyScopes.ExecutionsRead,
+                    ProjectKeyScopes.SitesRead,
+                    ProjectKeyScopes.ProvidersRead,
+                    ProjectKeyScopes.TopicsRead,
+                    ProjectKeyScopes.SubscribersRead,
+                    ProjectKeyScopes.MessagesRead,
+                    ProjectKeyScopes.LocaleRead,
+                    ProjectKeyScopes.AvatarsRead,
+                    ProjectKeyScopes.HealthRead
                 ]
             });
 

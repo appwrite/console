@@ -41,7 +41,7 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
     // organization can be null if not in the filtered list!
     const includedInBasePlans = plansInfo.has(organization?.billingPlanId);
 
-    const [org, rawRegionalConsoleVariables, rolesResult, , platformList, keyList] =
+    const [org, rawRegionalConsoleVariables, rolesResult, platformList, keyList] =
         await Promise.all([
             !organization
                 ? // TODO: @itznotabug - teams.get with Models.Organization?
@@ -55,10 +55,9 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
                       organizationId: project.teamId
                   })
                 : null,
-
-            loadAvailableRegions(project.teamId),
             projectSdk.listPlatforms({ queries: [Query.limit(1)] }),
-            projectSdk.listKeys({ queries: [Query.limit(1)] })
+            projectSdk.listKeys({ queries: [Query.limit(1)] }),
+            loadAvailableRegions(project.teamId)
         ]);
 
     const regionalConsoleVariables = normalizeConsoleVariables(rawRegionalConsoleVariables);

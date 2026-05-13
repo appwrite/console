@@ -12,16 +12,16 @@
     import { project } from '../../store';
     import Delete from './delete.svelte';
     import UpdateExpirationDate from './updateExpirationDate.svelte';
-    import type { Models, ProjectKeyScopes as ScopesType } from '@appwrite.io/console';
+    import type { Models, ProjectKeyScopes } from '@appwrite.io/console';
     import { symmetricDifference } from '$lib/helpers/array';
-    import Scopes from '../api-keys/scopes.svelte';
+    import ScopesSelector from '../api-keys/scopes.svelte';
     import { InteractiveText, Layout, Typography } from '@appwrite.io/pink-svelte';
 
     export let key: Models.DevKey | Models.Key;
     export let keyType: 'api' | 'dev' = 'api';
 
     let name: string = null;
-    let scopes: ScopesType[] = null;
+    let scopes: ProjectKeyScopes[] = null;
 
     let showDelete = false;
     const isApiKey = keyType === 'api';
@@ -32,7 +32,7 @@
     onMount(() => {
         name ??= key.name;
         if (isApiKey) {
-            scopes ??= (key as Models.Key).scopes as ScopesType[];
+            scopes ??= (key as Models.Key).scopes as ProjectKeyScopes[];
         }
     });
 
@@ -166,7 +166,7 @@
                 to allow only the permissions you need to meet your project goals.
                 <svelte:fragment slot="aside">
                     {#if scopes !== null}
-                        <Scopes bind:scopes />
+                        <ScopesSelector bind:scopes />
                     {/if}
                 </svelte:fragment>
 
