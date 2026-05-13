@@ -8,7 +8,6 @@
     import { sdk } from '$lib/stores/sdk';
     import { Layout, Typography } from '@appwrite.io/pink-svelte';
     import type { Models } from '@appwrite.io/console';
-    import { onMount } from 'svelte';
 
     type EnabledPolicy = {
         $id: string;
@@ -27,20 +26,22 @@
         denyFreeEmailPolicy: EnabledPolicy;
     } = $props();
 
-    let authAliasedEmails = $state(false);
-    let authDisposableEmails = $state(false);
-    let authFreeEmails = $state(false);
+    const getInitialAliasedEmails = () => denyAliasedEmailPolicy.enabled;
+    const getInitialDisposableEmails = () => denyDisposableEmailPolicy.enabled;
+    const getInitialFreeEmails = () => denyFreeEmailPolicy.enabled;
 
-    onMount(() => {
-        authAliasedEmails = denyAliasedEmailPolicy.enabled;
-        authDisposableEmails = denyDisposableEmailPolicy.enabled;
-        authFreeEmails = denyFreeEmailPolicy.enabled;
-    });
+    let savedAliasedEmails = $state(getInitialAliasedEmails());
+    let savedDisposableEmails = $state(getInitialDisposableEmails());
+    let savedFreeEmails = $state(getInitialFreeEmails());
+
+    let authAliasedEmails = $state(getInitialAliasedEmails());
+    let authDisposableEmails = $state(getInitialDisposableEmails());
+    let authFreeEmails = $state(getInitialFreeEmails());
 
     const hasChanges = $derived.by(() => {
-        const aliasedChanged = authAliasedEmails !== denyAliasedEmailPolicy.enabled;
-        const disposableChanged = authDisposableEmails !== denyDisposableEmailPolicy.enabled;
-        const freeChanged = authFreeEmails !== denyFreeEmailPolicy.enabled;
+        const aliasedChanged = authAliasedEmails !== savedAliasedEmails;
+        const disposableChanged = authDisposableEmails !== savedDisposableEmails;
+        const freeChanged = authFreeEmails !== savedFreeEmails;
 
         return aliasedChanged || disposableChanged || freeChanged;
     });
@@ -52,7 +53,7 @@
         try {
             const projectSdk = sdk.forProject(project.region, project.$id).project;
 
-            if (authAliasedEmails !== denyAliasedEmailPolicy.enabled) {
+            if (authAliasedEmails !== savedAliasedEmails) {
                 currentSubmit = Submit.AuthAliasedEmailsUpdate;
                 await projectSdk.updateDenyAliasedEmailPolicy({
                     enabled: authAliasedEmails
@@ -61,7 +62,7 @@
                 trackEvent(Submit.AuthAliasedEmailsUpdate);
             }
 
-            if (authDisposableEmails !== denyDisposableEmailPolicy.enabled) {
+            if (authDisposableEmails !== savedDisposableEmails) {
                 currentSubmit = Submit.AuthDisposableEmailsUpdate;
                 await projectSdk.updateDenyDisposableEmailPolicy({
                     enabled: authDisposableEmails
@@ -70,7 +71,7 @@
                 trackEvent(Submit.AuthDisposableEmailsUpdate);
             }
 
-            if (authFreeEmails !== denyFreeEmailPolicy.enabled) {
+            if (authFreeEmails !== savedFreeEmails) {
                 currentSubmit = Submit.AuthFreeEmailsUpdate;
                 await projectSdk.updateDenyFreeEmailPolicy({
                     enabled: authFreeEmails
@@ -79,6 +80,9 @@
                 trackEvent(Submit.AuthFreeEmailsUpdate);
             }
 
+            savedAliasedEmails = authAliasedEmails;
+            savedDisposableEmails = authDisposableEmails;
+            savedFreeEmails = authFreeEmails;
             await invalidate(Dependencies.PROJECT);
 
             addNotification({
