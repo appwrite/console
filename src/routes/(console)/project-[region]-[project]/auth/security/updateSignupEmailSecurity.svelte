@@ -27,34 +27,34 @@
         denyFreeEmailPolicy: EnabledPolicy;
     } = $props();
 
-    let authCanonicalEmails = $state(false);
+    let authAliasedEmails = $state(false);
     let authDisposableEmails = $state(false);
     let authFreeEmails = $state(false);
 
     onMount(() => {
-        authCanonicalEmails = denyAliasedEmailPolicy.enabled;
+        authAliasedEmails = denyAliasedEmailPolicy.enabled;
         authDisposableEmails = denyDisposableEmailPolicy.enabled;
         authFreeEmails = denyFreeEmailPolicy.enabled;
     });
 
     const hasChanges = $derived.by(() => {
-        const canonicalChanged = authCanonicalEmails !== denyAliasedEmailPolicy.enabled;
+        const aliasedChanged = authAliasedEmails !== denyAliasedEmailPolicy.enabled;
         const disposableChanged = authDisposableEmails !== denyDisposableEmailPolicy.enabled;
         const freeChanged = authFreeEmails !== denyFreeEmailPolicy.enabled;
 
-        return canonicalChanged || disposableChanged || freeChanged;
+        return aliasedChanged || disposableChanged || freeChanged;
     });
 
     async function updateSignupEmailSecurity() {
-        let currentSubmit = Submit.AuthCanonicalEmailsUpdate;
+        let currentSubmit = Submit.AuthAliasedEmailsUpdate;
         let hasAppliedServerChange = false;
 
         try {
             const projectSdk = sdk.forProject(project.region, project.$id).project;
 
-            currentSubmit = Submit.AuthCanonicalEmailsUpdate;
+            currentSubmit = Submit.AuthAliasedEmailsUpdate;
             await projectSdk.updateDenyAliasedEmailPolicy({
-                enabled: authCanonicalEmails
+                enabled: authAliasedEmails
             });
             hasAppliedServerChange = true;
 
@@ -76,7 +76,7 @@
                 type: 'success',
                 message: 'Updated signup email security settings.'
             });
-            trackEvent(Submit.AuthCanonicalEmailsUpdate);
+            trackEvent(Submit.AuthAliasedEmailsUpdate);
             trackEvent(Submit.AuthDisposableEmailsUpdate);
             trackEvent(Submit.AuthFreeEmailsUpdate);
         } catch (error) {
@@ -117,9 +117,9 @@
             </InputSwitch>
 
             <InputSwitch
-                bind:value={authCanonicalEmails}
-                id="authCanonicalEmails"
-                label="Require canonical email addresses">
+                bind:value={authAliasedEmails}
+                id="authAliasedEmails"
+                label="Block aliased email addresses">
                 <svelte:fragment slot="description">
                     <Layout.Stack gap="s">
                         <Typography.Text>
