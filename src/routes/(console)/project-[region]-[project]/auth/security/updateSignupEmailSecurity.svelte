@@ -107,7 +107,7 @@
     <CardGrid gap="xxl">
         <svelte:fragment slot="title">Email policies</svelte:fragment>
         Control which email addresses can be used for user creation and email updates. This does not affect
-        session creation.
+        session creation (sign in)
         <svelte:fragment slot="aside">
             <InputSwitch bind:value={authFreeEmails} id="authFreeEmails" label="Deny free emails">
                 <svelte:fragment slot="description">
