@@ -14,56 +14,52 @@ const ProjectEmailPolicyId = {
     DenyFreeEmail: 'deny-free-email'
 } as const;
 
+type ProjectPolicy = Models.PolicyList['policies'][number] | EnabledPolicy;
+type EmailPolicyId = (typeof ProjectEmailPolicyId)[keyof typeof ProjectEmailPolicyId];
+
+const getDefaultEnabledPolicy = (policyId: EmailPolicyId): EnabledPolicy => ({
+    $id: policyId,
+    enabled: false
+});
+
 export const load: PageLoad = async ({ depends, params }) => {
     depends(Dependencies.PROJECT);
 
-    const projectSdk = sdk.forProject(params.region, params.project).project;
-    const [
-        membershipPrivacyPolicy,
-        passwordDictionaryPolicy,
-        passwordHistoryPolicy,
-        passwordPersonalDataPolicy,
-        sessionAlertPolicy,
-        sessionDurationPolicy,
-        sessionInvalidationPolicy,
-        sessionLimitPolicy,
-        userLimitPolicy,
-        denyAliasedEmailPolicy,
-        denyDisposableEmailPolicy,
-        denyFreeEmailPolicy
-    ] = await Promise.all([
-        projectSdk.getPolicy({ policyId: ProjectPolicyId.Membershipprivacy }),
-        projectSdk.getPolicy({ policyId: ProjectPolicyId.Passworddictionary }),
-        projectSdk.getPolicy({ policyId: ProjectPolicyId.Passwordhistory }),
-        projectSdk.getPolicy({ policyId: ProjectPolicyId.Passwordpersonaldata }),
-        projectSdk.getPolicy({ policyId: ProjectPolicyId.Sessionalert }),
-        projectSdk.getPolicy({ policyId: ProjectPolicyId.Sessionduration }),
-        projectSdk.getPolicy({ policyId: ProjectPolicyId.Sessioninvalidation }),
-        projectSdk.getPolicy({ policyId: ProjectPolicyId.Sessionlimit }),
-        projectSdk.getPolicy({ policyId: ProjectPolicyId.Userlimit }),
-        projectSdk.getPolicy({
-            policyId: ProjectEmailPolicyId.DenyAliasedEmail as ProjectPolicyId
-        }),
-        projectSdk.getPolicy({
-            policyId: ProjectEmailPolicyId.DenyDisposableEmail as ProjectPolicyId
-        }),
-        projectSdk.getPolicy({
-            policyId: ProjectEmailPolicyId.DenyFreeEmail as ProjectPolicyId
-        })
-    ]);
+    const { policies } = await sdk.forProject(params.region, params.project).project.listPolicies();
+    const policiesById = Object.fromEntries(
+        (policies as ProjectPolicy[]).map((policy) => [policy.$id, policy])
+    ) as Partial<Record<ProjectPolicyId | EmailPolicyId, ProjectPolicy>>;
 
     return {
-        membershipPrivacyPolicy: membershipPrivacyPolicy as Models.PolicyMembershipPrivacy,
-        passwordDictionaryPolicy: passwordDictionaryPolicy as Models.PolicyPasswordDictionary,
-        passwordHistoryPolicy: passwordHistoryPolicy as Models.PolicyPasswordHistory,
-        passwordPersonalDataPolicy: passwordPersonalDataPolicy as Models.PolicyPasswordPersonalData,
-        sessionAlertPolicy: sessionAlertPolicy as Models.PolicySessionAlert,
-        sessionDurationPolicy: sessionDurationPolicy as Models.PolicySessionDuration,
-        sessionInvalidationPolicy: sessionInvalidationPolicy as Models.PolicySessionInvalidation,
-        sessionLimitPolicy: sessionLimitPolicy as Models.PolicySessionLimit,
-        userLimitPolicy: userLimitPolicy as Models.PolicyUserLimit,
-        denyAliasedEmailPolicy: denyAliasedEmailPolicy as EnabledPolicy,
-        denyDisposableEmailPolicy: denyDisposableEmailPolicy as EnabledPolicy,
-        denyFreeEmailPolicy: denyFreeEmailPolicy as EnabledPolicy
+        membershipPrivacyPolicy: policiesById[
+            ProjectPolicyId.Membershipprivacy
+        ] as Models.PolicyMembershipPrivacy,
+        passwordDictionaryPolicy: policiesById[
+            ProjectPolicyId.Passworddictionary
+        ] as Models.PolicyPasswordDictionary,
+        passwordHistoryPolicy: policiesById[
+            ProjectPolicyId.Passwordhistory
+        ] as Models.PolicyPasswordHistory,
+        passwordPersonalDataPolicy: policiesById[
+            ProjectPolicyId.Passwordpersonaldata
+        ] as Models.PolicyPasswordPersonalData,
+        sessionAlertPolicy: policiesById[ProjectPolicyId.Sessionalert] as Models.PolicySessionAlert,
+        sessionDurationPolicy: policiesById[
+            ProjectPolicyId.Sessionduration
+        ] as Models.PolicySessionDuration,
+        sessionInvalidationPolicy: policiesById[
+            ProjectPolicyId.Sessioninvalidation
+        ] as Models.PolicySessionInvalidation,
+        sessionLimitPolicy: policiesById[ProjectPolicyId.Sessionlimit] as Models.PolicySessionLimit,
+        userLimitPolicy: policiesById[ProjectPolicyId.Userlimit] as Models.PolicyUserLimit,
+        denyAliasedEmailPolicy:
+            (policiesById[ProjectEmailPolicyId.DenyAliasedEmail] as EnabledPolicy) ??
+            getDefaultEnabledPolicy(ProjectEmailPolicyId.DenyAliasedEmail),
+        denyDisposableEmailPolicy:
+            (policiesById[ProjectEmailPolicyId.DenyDisposableEmail] as EnabledPolicy) ??
+            getDefaultEnabledPolicy(ProjectEmailPolicyId.DenyDisposableEmail),
+        denyFreeEmailPolicy:
+            (policiesById[ProjectEmailPolicyId.DenyFreeEmail] as EnabledPolicy) ??
+            getDefaultEnabledPolicy(ProjectEmailPolicyId.DenyFreeEmail)
     };
 };

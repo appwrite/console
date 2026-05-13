@@ -52,23 +52,32 @@
         try {
             const projectSdk = sdk.forProject(project.region, project.$id).project;
 
-            currentSubmit = Submit.AuthAliasedEmailsUpdate;
-            await projectSdk.updateDenyAliasedEmailPolicy({
-                enabled: authAliasedEmails
-            });
-            hasAppliedServerChange = true;
+            if (authAliasedEmails !== denyAliasedEmailPolicy.enabled) {
+                currentSubmit = Submit.AuthAliasedEmailsUpdate;
+                await projectSdk.updateDenyAliasedEmailPolicy({
+                    enabled: authAliasedEmails
+                });
+                hasAppliedServerChange = true;
+                trackEvent(Submit.AuthAliasedEmailsUpdate);
+            }
 
-            currentSubmit = Submit.AuthDisposableEmailsUpdate;
-            await projectSdk.updateDenyDisposableEmailPolicy({
-                enabled: authDisposableEmails
-            });
-            hasAppliedServerChange = true;
+            if (authDisposableEmails !== denyDisposableEmailPolicy.enabled) {
+                currentSubmit = Submit.AuthDisposableEmailsUpdate;
+                await projectSdk.updateDenyDisposableEmailPolicy({
+                    enabled: authDisposableEmails
+                });
+                hasAppliedServerChange = true;
+                trackEvent(Submit.AuthDisposableEmailsUpdate);
+            }
 
-            currentSubmit = Submit.AuthFreeEmailsUpdate;
-            await projectSdk.updateDenyFreeEmailPolicy({
-                enabled: authFreeEmails
-            });
-            hasAppliedServerChange = true;
+            if (authFreeEmails !== denyFreeEmailPolicy.enabled) {
+                currentSubmit = Submit.AuthFreeEmailsUpdate;
+                await projectSdk.updateDenyFreeEmailPolicy({
+                    enabled: authFreeEmails
+                });
+                hasAppliedServerChange = true;
+                trackEvent(Submit.AuthFreeEmailsUpdate);
+            }
 
             await invalidate(Dependencies.PROJECT);
 
@@ -76,9 +85,6 @@
                 type: 'success',
                 message: 'Updated signup email security settings.'
             });
-            trackEvent(Submit.AuthAliasedEmailsUpdate);
-            trackEvent(Submit.AuthDisposableEmailsUpdate);
-            trackEvent(Submit.AuthFreeEmailsUpdate);
         } catch (error) {
             if (hasAppliedServerChange) {
                 await invalidate(Dependencies.PROJECT);
