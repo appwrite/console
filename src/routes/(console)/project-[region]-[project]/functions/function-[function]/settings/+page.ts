@@ -1,9 +1,15 @@
 import { sdk } from '$lib/stores/sdk';
-import { Dependencies } from '$lib/constants';
+import { Dependencies, PAGE_LIMIT } from '$lib/constants';
+import { Query } from '@appwrite.io/console';
+
+const VARIABLES_LIMIT = 100;
 
 export const load = async ({ params, depends, parent }) => {
     depends(Dependencies.VARIABLES);
     depends(Dependencies.FUNCTION);
+
+    const limit = PAGE_LIMIT;
+    const variablesOffset = 0;
 
     const { runtimesList, specificationsList, function: fn } = await parent();
 
@@ -16,10 +22,13 @@ export const load = async ({ params, depends, parent }) => {
     }
 
     const [globalVariables, variables] = await Promise.all([
-        sdk.forProject(params.region, params.project).projectApi.listVariables(),
-        sdk
-            .forProject(params.region, params.project)
-            .functions.listVariables({ functionId: params.function })
+        sdk.forProject(params.region, params.project).projectApi.listVariables({
+            queries: [Query.limit(VARIABLES_LIMIT)]
+        }),
+        sdk.forProject(params.region, params.project).functions.listVariables({
+            functionId: params.function,
+            queries: [Query.limit(limit), Query.offset(variablesOffset)]
+        })
     ]);
 
     // Conflicting variables first
@@ -43,6 +52,8 @@ export const load = async ({ params, depends, parent }) => {
     return {
         variables,
         globalVariables,
+        limit,
+        variablesOffset,
         runtimesList,
         specificationsList,
         function: fn

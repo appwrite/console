@@ -62,6 +62,12 @@
             .functions.deleteVariable({ functionId: data.function.$id, variableId });
         await Promise.all([invalidate(Dependencies.VARIABLES), invalidate(Dependencies.FUNCTION)]);
     };
+
+    const sdkListVariables = async (queries: string[]) =>
+        sdk.forProject(page.params.region, page.params.project).functions.listVariables({
+            functionId: data.function.$id,
+            queries
+        });
 </script>
 
 <Container>
@@ -105,9 +111,14 @@
         {sdkCreateVariable}
         {sdkUpdateVariable}
         {sdkDeleteVariable}
+        {sdkListVariables}
         isGlobal={false}
         globalVariableList={data.globalVariables}
         variableList={data.variables}
+        backendPagination
+        reloadPageOnPagination={false}
+        variablesOffset={data.variablesOffset}
+        variablesLimit={data.limit}
         project={data.project}
         analyticsSource="function_settings" />
     <UpdateBuildCommand func={data.function} />
