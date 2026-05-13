@@ -86,7 +86,7 @@
     }
 
     function handleCreateProject() {
-        if (!$canWriteProjects) return;
+        if (projectCreationDisabled) return;
         if (isCloud) showCreateProjectCloud = true;
         else showCreate = true;
     }
