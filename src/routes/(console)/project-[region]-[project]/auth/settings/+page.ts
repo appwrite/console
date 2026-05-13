@@ -5,23 +5,6 @@ import type { Models as ConsoleModels } from '@appwrite.io/console';
 import type { PageLoad } from './$types';
 import type { AuthProvider } from '../updateOAuth';
 
-/** Extract the appId equivalent from a typed OAuth2 provider model. */
-function extractAppId(p: Record<string, unknown>): string {
-    return (p['clientId'] ??
-        p['appId'] ??
-        p['oauthClientId'] ??
-        p['oauth2ClientId'] ??
-        p['applicationId'] ??
-        p['serviceId'] ??
-        p['apiKey'] ??
-        p['publicKey'] ??
-        p['appKey'] ??
-        p['keyString'] ??
-        p['customerKey'] ??
-        p['key'] ??
-        '') as string;
-}
-
 export const load: PageLoad = async ({ depends, params }) => {
     depends(Dependencies.PROJECT);
 
@@ -37,18 +20,11 @@ export const load: PageLoad = async ({ depends, params }) => {
 
     const oauthProviders: AuthProvider[] = providerList.providers
         .filter((p) => p.$id !== 'mock')
-        .map((p) => {
-            const raw = p as unknown as Record<string, unknown>;
-            return {
-                ...raw,
-                $id: p.$id,
-                key: p.$id,
-                name: oAuthProviders[p.$id]?.name ?? p.$id,
-                appId: extractAppId(raw),
-                secret: '',
-                enabled: p.enabled
-            };
-        });
+        .map((p) => ({
+            ...p,
+            key: p.$id,
+            name: oAuthProviders[p.$id]?.name ?? p.$id
+        }));
 
     return { oauthProviders, consoleParamsMap };
 };
