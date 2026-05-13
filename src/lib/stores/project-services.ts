@@ -1,5 +1,5 @@
 import { writable } from 'svelte/store';
-import { ProjectServiceId as ProjectServiceId, type Models } from '@appwrite.io/console';
+import { ProjectServiceId, type Models } from '@appwrite.io/console';
 
 export type Service = {
     label: string;
