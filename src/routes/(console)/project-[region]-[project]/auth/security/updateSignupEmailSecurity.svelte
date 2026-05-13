@@ -106,21 +106,15 @@
 <Form onSubmit={updateSignupEmailSecurity}>
     <CardGrid gap="xxl">
         <svelte:fragment slot="title">Email policies</svelte:fragment>
-        Control which email addresses can be used for signups and email updates. This does not affect
-        existing sign-ins.
+        Control which email addresses can be used for user creation and email updates. This does not affect
+        session creation.
         <svelte:fragment slot="aside">
-            <InputSwitch
-                bind:value={authFreeEmails}
-                id="authFreeEmails"
-                label="Block free email addresses">
+            <InputSwitch bind:value={authFreeEmails} id="authFreeEmails" label="Deny free emails">
                 <svelte:fragment slot="description">
                     <Layout.Stack gap="s">
                         <Typography.Text
-                            >Only allow email addresses from custom domains.</Typography.Text>
-                        <Typography.Text>
-                            Examples: <Typography.Code>gmail.com</Typography.Code>, <Typography.Code
-                                >yahoo.com</Typography.Code
-                            >, <Typography.Code>outlook.com</Typography.Code>
+                            >Block email addresses of free email providers. For example: <Typography.Code
+                                >user@gmail.com</Typography.Code>
                         </Typography.Text>
                     </Layout.Stack>
                 </svelte:fragment>
@@ -129,15 +123,13 @@
             <InputSwitch
                 bind:value={authAliasedEmails}
                 id="authAliasedEmails"
-                label="Block aliased email addresses">
+                label="Deny aliased emails">
                 <svelte:fragment slot="description">
                     <Layout.Stack gap="s">
                         <Typography.Text>
-                            Disallow aliases, tags, and provider-specific email variations.
-                        </Typography.Text>
-                        <Typography.Text>
-                            Examples: <Typography.Code>jane+team@gmail.com</Typography.Code>, <Typography.Code
-                                >jane.smith@gmail.com</Typography.Code>
+                            Block emails with aliases, tags, subaddresses, or any other
+                            provider-specific email variations. For example: <Typography.Code
+                                >user+folder1@gmail.com</Typography.Code>
                         </Typography.Text>
                     </Layout.Stack>
                 </svelte:fragment>
@@ -146,14 +138,12 @@
             <InputSwitch
                 bind:value={authDisposableEmails}
                 id="authDisposableEmails"
-                label="Block disposable email addresses">
+                label="Deny disposable emails">
                 <svelte:fragment slot="description">
                     <Layout.Stack gap="s">
                         <Typography.Text
-                            >Disallow temporary and disposable email providers.</Typography.Text>
-                        <Typography.Text>
-                            Examples: <Typography.Code>mailinator.com</Typography.Code>, <Typography.Code
-                                >10minutemail.com</Typography.Code>
+                            >Block temporary and disposable email providers. For example: <Typography.Code
+                                >alex9734@mailinator.com</Typography.Code>
                         </Typography.Text>
                     </Layout.Stack>
                 </svelte:fragment>
