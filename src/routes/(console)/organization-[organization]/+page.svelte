@@ -250,16 +250,8 @@
             offset={data.offset}
             on:click={handleCreateProject}>
             {#each data.projects.projects as project}
-                {@const projectPlatforms =
-                    (
-                        project as Models.Project & {
-                            platforms: Array<{ type: string }>;
-                            platformsTotal?: number;
-                        }
-                    ).platforms ?? []}
-                {@const platformsTotal =
-                    (project as Models.Project & { platformsTotal?: number }).platformsTotal ??
-                    projectPlatforms.length}
+                {@const projectPlatforms = project.platforms}
+                {@const platformsTotal = project.platformsTotal}
                 {@const platforms = filterPlatforms(
                     projectPlatforms.map((platform) => getPlatformInfo(platform.type))
                 )}

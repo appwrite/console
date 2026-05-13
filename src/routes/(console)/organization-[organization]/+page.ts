@@ -1,4 +1,4 @@
-import { Query, type Models } from '@appwrite.io/console';
+import { Query } from '@appwrite.io/console';
 import { isCloud } from '$lib/system';
 import { sdk } from '$lib/stores/sdk';
 import { getLimit, getPage, getSearch, pageToOffset } from '$lib/helpers/load';
@@ -43,20 +43,18 @@ export const load: PageLoad = async ({ params, url, route, depends, parent }) =>
         ]
     });
 
-    await Promise.all(
+    const projects = await Promise.all(
         activeProjects.projects.map(async (project) => {
             project.region ??= 'default';
             const platformList = await sdk
                 .forProject(project.region, project.$id)
                 .project.listPlatforms({ queries: [Query.limit(3)] });
-            (
-                project as Models.Project & {
-                    platforms: Array<{ type: string }>;
-                    platformsTotal: number;
-                }
-            ).platforms = platformList.platforms;
-            (project as Models.Project & { platformsTotal: number }).platformsTotal =
-                platformList.total;
+
+            return {
+                ...project,
+                platforms: platformList.platforms,
+                platformsTotal: platformList.total
+            };
         })
     );
 
@@ -64,6 +62,9 @@ export const load: PageLoad = async ({ params, url, route, depends, parent }) =>
         limit,
         offset,
         search,
-        projects: activeProjects
+        projects: {
+            ...activeProjects,
+            projects
+        }
     };
 };
