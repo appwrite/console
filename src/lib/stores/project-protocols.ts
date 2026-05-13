@@ -1,5 +1,5 @@
 import { writable } from 'svelte/store';
-import { ProjectProtocolId as ProjectProtocolId, type Models } from '@appwrite.io/console';
+import { ProjectProtocolId, type Models } from '@appwrite.io/console';
 
 export type Protocol = {
     label: string;
