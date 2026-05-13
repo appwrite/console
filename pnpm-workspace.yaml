@@ -1,0 +1,5 @@
+allowBuilds:
+  '@parcel/watcher': false
+  '@sentry/cli': false
+  esbuild: false
+  svelte-preprocess: false
