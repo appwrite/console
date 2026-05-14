@@ -13,15 +13,18 @@ export type MigrationResource =
     | NHostMigrationResource
     | SupabaseMigrationResource
     | 'platform'
-    | 'api-key';
+    | 'api-key'
+    | 'project-variable';
 
 // Appwrite enum is the superset of all provider resources — used as a
 // provider-agnostic reference. The addResource guard filters by provider.
-// Platform and ApiKey are augmented locally until @appwrite.io/console SDK is regenerated against the new spec.
+// Platform, ApiKey and ProjectVariable are augmented locally until @appwrite.io/console
+// SDK is regenerated against the new spec.
 export const MigrationResources = {
     ...AppwriteMigrationResource,
     Platform: 'platform',
-    ApiKey: 'api-key'
+    ApiKey: 'api-key',
+    ProjectVariable: 'project-variable'
 } as const;
 
 type ProviderResourceMap = {
@@ -61,6 +64,9 @@ const initialFormData = {
     integrations: {
         root: false,
         apiKeys: false
+    },
+    settings: {
+        root: false
     }
 };
 
@@ -101,14 +107,16 @@ export const ResourcesFriendly = {
     message: { singular: 'Message', plural: 'Messages' },
     'backup-policy': { singular: 'Backup Policy', plural: 'Backup Policies' },
     platform: { singular: 'Platform', plural: 'Platforms' },
-    'api-key': { singular: 'API Key', plural: 'API Keys' }
+    'api-key': { singular: 'API Key', plural: 'API Keys' },
+    'project-variable': { singular: 'Project Variable', plural: 'Project Variables' }
 };
 
 export const providerResources: ProviderResourceMap = {
     appwrite: [
         ...Object.values(AppwriteMigrationResource),
         MigrationResources.Platform as AppwriteMigrationResource,
-        MigrationResources.ApiKey as AppwriteMigrationResource
+        MigrationResources.ApiKey as AppwriteMigrationResource,
+        MigrationResources.ProjectVariable as AppwriteMigrationResource
     ],
     supabase: Object.values(SupabaseMigrationResource),
     nhost: Object.values(NHostMigrationResource),
@@ -177,6 +185,9 @@ export const migrationFormToResources = <P extends Provider>(
         if (formData.integrations.apiKeys) {
             addResource(MigrationResources.ApiKey);
         }
+    }
+    if (formData.settings.root) {
+        addResource(MigrationResources.ProjectVariable);
     }
 
     return resources as ProviderResourceMap[P];
@@ -263,6 +274,9 @@ export const resourcesToMigrationForm = (resources: MigrationResource[]): Migrat
     if (resources.includes(MigrationResources.ApiKey)) {
         formData.integrations.root = true;
         formData.integrations.apiKeys = true;
+    }
+    if (resources.includes(MigrationResources.ProjectVariable)) {
+        formData.settings.root = true;
     }
 
     return formData;

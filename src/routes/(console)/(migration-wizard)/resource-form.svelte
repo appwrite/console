@@ -126,6 +126,10 @@
             );
         }
 
+        if (groupKey === 'settings') {
+            return resources.includes(MigrationResources.ProjectVariable);
+        }
+
         const groupToResource: Record<string, MigrationResource> = {
             users: MigrationResources.User,
             databases: MigrationResources.Database
@@ -148,7 +152,8 @@
             sites: 'site',
             messaging: 'provider',
             backups: 'backup-policy',
-            integrations: 'platform'
+            integrations: 'platform',
+            settings: 'project-variable'
         };
         return map[groupKey] || groupKey;
     };
