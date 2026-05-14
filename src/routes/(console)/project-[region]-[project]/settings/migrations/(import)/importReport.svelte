@@ -42,7 +42,8 @@
             apiKeys: 'Include API keys'
         },
         settings: {
-            root: 'Project variables'
+            root: 'Project variables',
+            webhooks: 'Include webhooks'
         }
     };
 
@@ -75,7 +76,8 @@
             apiKeys: 'Import all API keys with their scopes and expiration'
         },
         settings: {
-            root: 'Import all project-level variables (secret values are not exposed by the SDK and will be migrated empty)'
+            root: 'Import all project-level variables (secret values are not exposed by the SDK and will be migrated empty)',
+            webhooks: 'Import all webhooks (signing secrets are not exposed by the SDK; the destination regenerates a fresh signature key for each)'
         }
     };
 

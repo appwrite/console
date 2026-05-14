@@ -127,7 +127,10 @@
         }
 
         if (groupKey === 'settings') {
-            return resources.includes(MigrationResources.ProjectVariable);
+            return (
+                resources.includes(MigrationResources.ProjectVariable) ||
+                resources.includes(MigrationResources.Webhook)
+            );
         }
 
         const groupToResource: Record<string, MigrationResource> = {
