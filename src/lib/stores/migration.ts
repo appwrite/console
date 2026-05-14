@@ -14,17 +14,19 @@ export type MigrationResource =
     | SupabaseMigrationResource
     | 'platform'
     | 'api-key'
-    | 'project-variable';
+    | 'project-variable'
+    | 'webhook';
 
 // Appwrite enum is the superset of all provider resources — used as a
 // provider-agnostic reference. The addResource guard filters by provider.
-// Platform, ApiKey and ProjectVariable are augmented locally until @appwrite.io/console
-// SDK is regenerated against the new spec.
+// Platform, ApiKey, ProjectVariable and Webhook are augmented locally until
+// @appwrite.io/console SDK is regenerated against the new spec.
 export const MigrationResources = {
     ...AppwriteMigrationResource,
     Platform: 'platform',
     ApiKey: 'api-key',
-    ProjectVariable: 'project-variable'
+    ProjectVariable: 'project-variable',
+    Webhook: 'webhook'
 } as const;
 
 type ProviderResourceMap = {
@@ -66,7 +68,8 @@ const initialFormData = {
         apiKeys: false
     },
     settings: {
-        root: false
+        root: false,
+        webhooks: false
     }
 };
 
@@ -108,7 +111,8 @@ export const ResourcesFriendly = {
     'backup-policy': { singular: 'Backup Policy', plural: 'Backup Policies' },
     platform: { singular: 'Platform', plural: 'Platforms' },
     'api-key': { singular: 'API Key', plural: 'API Keys' },
-    'project-variable': { singular: 'Project Variable', plural: 'Project Variables' }
+    'project-variable': { singular: 'Project Variable', plural: 'Project Variables' },
+    webhook: { singular: 'Webhook', plural: 'Webhooks' }
 };
 
 export const providerResources: ProviderResourceMap = {
@@ -116,7 +120,8 @@ export const providerResources: ProviderResourceMap = {
         ...Object.values(AppwriteMigrationResource),
         MigrationResources.Platform as AppwriteMigrationResource,
         MigrationResources.ApiKey as AppwriteMigrationResource,
-        MigrationResources.ProjectVariable as AppwriteMigrationResource
+        MigrationResources.ProjectVariable as AppwriteMigrationResource,
+        MigrationResources.Webhook as AppwriteMigrationResource
     ],
     supabase: Object.values(SupabaseMigrationResource),
     nhost: Object.values(NHostMigrationResource),
@@ -188,6 +193,9 @@ export const migrationFormToResources = <P extends Provider>(
     }
     if (formData.settings.root) {
         addResource(MigrationResources.ProjectVariable);
+        if (formData.settings.webhooks) {
+            addResource(MigrationResources.Webhook);
+        }
     }
 
     return resources as ProviderResourceMap[P];
@@ -277,6 +285,10 @@ export const resourcesToMigrationForm = (resources: MigrationResource[]): Migrat
     }
     if (resources.includes(MigrationResources.ProjectVariable)) {
         formData.settings.root = true;
+    }
+    if (resources.includes(MigrationResources.Webhook)) {
+        formData.settings.root = true;
+        formData.settings.webhooks = true;
     }
 
     return formData;
