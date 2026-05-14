@@ -40,6 +40,9 @@
         integrations: {
             root: 'Platforms',
             apiKeys: 'Include API keys'
+        },
+        settings: {
+            root: 'Project variables'
         }
     };
 
@@ -70,6 +73,9 @@
         integrations: {
             root: 'Import all platforms (web, Flutter, iOS, Android, etc.)',
             apiKeys: 'Import all API keys with their scopes and expiration'
+        },
+        settings: {
+            root: 'Import all project-level variables (secret values are not exposed by the SDK and will be migrated empty)'
         }
     };
 
