@@ -8,7 +8,7 @@ import { get } from 'svelte/store';
 import { headerAlert } from '$lib/stores/headerAlert';
 import PaymentFailed from '$lib/components/billing/alerts/paymentFailed.svelte';
 import { loadAvailableRegions } from '$routes/(console)/regions';
-import { type Models, Platform } from '@appwrite.io/console';
+import { Query, type Models, Platform } from '@appwrite.io/console';
 import { redirect } from '@sveltejs/kit';
 import { resolve } from '$app/paths';
 import { generateFingerprintToken } from '$lib/helpers/fingerprint';
@@ -19,7 +19,8 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
     const { plansInfo, organizations, preferences: prefs } = await parent();
     depends(Dependencies.PROJECT);
 
-    const project = await sdk.forConsole.projects.get({ projectId: params.project });
+    const projectSdk = sdk.forProject(params.region, params.project).project;
+    const project = await projectSdk.get();
     if (project.status !== 'active' && project.status !== 'paused') {
         // project isn't active, redirect back to organizations page
         redirect(
@@ -40,20 +41,24 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
     // organization can be null if not in the filtered list!
     const includedInBasePlans = plansInfo.has(organization?.billingPlanId);
 
-    const [org, rawRegionalConsoleVariables, rolesResult] = await Promise.all([
-        !organization
-            ? // TODO: @itznotabug - teams.get with Models.Organization?
-              (sdk.forConsole.teams.get({ teamId: project.teamId }) as Promise<Models.Organization>)
-            : organization,
-        sdk.forConsoleIn(project.region).console.variables(),
-        isCloud
-            ? sdk.forConsole.organizations.getScopes({
-                  organizationId: project.teamId
-              })
-            : null,
-
-        loadAvailableRegions(project.teamId)
-    ]);
+    const [org, rawRegionalConsoleVariables, rolesResult, platformList, keyList] =
+        await Promise.all([
+            !organization
+                ? // TODO: @itznotabug - teams.get with Models.Organization?
+                  (sdk.forConsole.teams.get({
+                      teamId: project.teamId
+                  }) as Promise<Models.Organization>)
+                : organization,
+            sdk.forConsoleIn(project.region).console.variables(),
+            isCloud
+                ? sdk.forConsole.organizations.getScopes({
+                      organizationId: project.teamId
+                  })
+                : null,
+            projectSdk.listPlatforms({ queries: [Query.limit(1)] }),
+            projectSdk.listKeys({ queries: [Query.limit(1)] }),
+            loadAvailableRegions(project.teamId)
+        ]);
 
     const regionalConsoleVariables = normalizeConsoleVariables(rawRegionalConsoleVariables);
 
@@ -122,6 +127,8 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
 
     return {
         project,
+        platforms: platformList,
+        keys: keyList,
         organization,
         regionalConsoleVariables,
         roles,

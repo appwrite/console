@@ -12,7 +12,7 @@
     import { resolve } from '$app/paths';
     import deepEqual from 'deep-equal';
     import { currentPlan } from '$lib/stores/organization';
-    import { type Secure } from '@appwrite.io/console';
+    import { type ProjectSMTPSecure } from '@appwrite.io/console';
     import InputSelect from '$lib/elements/forms/inputSelect.svelte';
     import { getChangePlanUrl } from '$lib/stores/billing';
     import { Link, Selector, Alert } from '@appwrite.io/pink-svelte';
@@ -85,7 +85,7 @@
                 port: port || undefined,
                 username: username || undefined,
                 password: password || undefined,
-                secure: secure ? (secure as Secure) : undefined
+                secure: secure ? (secure as ProjectSMTPSecure) : undefined
             });
 
             invalidate(Dependencies.PROJECT);
@@ -212,7 +212,7 @@
                             placeholder="Enter password" />
                         <InputSelect
                             id="tls"
-                            label="Secure protocol"
+                            label="ProjectSMTPSecure protocol"
                             placeholder="Select protocol"
                             bind:value={secure}
                             {options} />

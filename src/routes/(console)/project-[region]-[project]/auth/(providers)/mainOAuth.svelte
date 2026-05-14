@@ -9,7 +9,8 @@
         InputTextarea
     } from '$lib/elements/forms';
     import { updateOAuth } from '../updateOAuth';
-    import { OAuthProvider, type Models, type Models as ConsoleModels } from '@appwrite.io/console';
+    import { OAuthProvider, type Models as ConsoleModels } from '@appwrite.io/console';
+    import type { AuthProvider } from '../updateOAuth';
     import { oAuthProviders } from '$lib/stores/oauth-providers';
     import {
         Accordion,
@@ -28,7 +29,7 @@
     const projectId = page.params.project;
     const region = page.params.region;
 
-    export let provider: Models.AuthProvider;
+    export let provider: AuthProvider;
     export let show = false;
     export let parameters: ConsoleModels.ConsoleOAuth2ProviderParameter[] = [];
 
@@ -39,7 +40,7 @@
     let showSecretInput = false;
     let p8PasteMode: Record<string, boolean> = {};
     let error: string;
-    let initializedProvider: Models.AuthProvider | null = null;
+    let initializedProvider: AuthProvider | null = null;
     let initialEnabled = false;
     let initialAppId: string | null = null;
     let initialDetailValues: Record<string, string> = {};

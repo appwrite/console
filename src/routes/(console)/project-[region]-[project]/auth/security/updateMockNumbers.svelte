@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { CardGrid } from '$lib/components';
+    import { CardGrid, PaginationInline } from '$lib/components';
     import Confirm from '$lib/components/confirm.svelte';
     import { InputPhone, InputOTP, Button } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
@@ -13,7 +13,7 @@
     import EmptyCardImageCloud from '$lib/components/emptyCardImageCloud.svelte';
     import { app } from '$lib/stores/app';
     import Empty from '$lib/components/empty.svelte';
-    import type { Models } from '@appwrite.io/console';
+    import { Query, type Models } from '@appwrite.io/console';
     import { Icon, Input, Layout, Link, Spinner, Tooltip } from '@appwrite.io/pink-svelte';
     import { IconPlus, IconRefresh, IconTrash } from '@appwrite.io/pink-icons-svelte';
 
@@ -32,6 +32,9 @@
     let savedNumbers: MockNumberForm[] = $state([]);
     let draftNumbers: MockNumberForm[] = $state([]);
     let isLoadingMockNumbers = $state(false);
+    let mockNumbersTotal = $state(0);
+    let mockNumbersOffset = $state(0);
+    const mockNumbersLimit = 10;
     let lastProjectId: string | null = $state(null);
     let pendingRow: string | null = $state(null);
     let showDeleteConfirm = $state(false);
@@ -79,7 +82,16 @@
             }
             const response = await sdk
                 .forProject(project.region, project.$id)
-                .project.listMockPhones({});
+                .project.listMockPhones({
+                    queries: [Query.limit(mockNumbersLimit), Query.offset(mockNumbersOffset)]
+                });
+            if (response.total > 0 && response.mockNumbers.length === 0 && mockNumbersOffset > 0) {
+                mockNumbersOffset =
+                    Math.floor((response.total - 1) / mockNumbersLimit) * mockNumbersLimit;
+                await loadMockNumbers();
+                return;
+            }
+            mockNumbersTotal = response.total;
             savedNumbers = getMockNumberRows(response.mockNumbers ?? []);
         } catch (error) {
             addNotification({ type: 'error', message: error.message });
@@ -381,7 +393,7 @@
                             id={`draft-key-${index}`}
                             bind:value={number.number}
                             placeholder="Enter phone number"
-                            label={savedNumbers.length === 0 && index === 0
+                            label={mockNumbersTotal === 0 && index === 0
                                 ? 'Phone number'
                                 : undefined}
                             minlength={9}
@@ -404,7 +416,7 @@
                             id={`draft-value-${index}`}
                             bind:value={number.otp}
                             placeholder="Enter value"
-                            label={savedNumbers.length === 0 && index === 0
+                            label={mockNumbersTotal === 0 && index === 0
                                 ? 'Verification code'
                                 : undefined}
                             maxlength={6}
@@ -442,16 +454,23 @@
                     </Layout.Stack>
                 </Layout.Stack>
             {/each}
-            {#if savedNumbers.length + draftNumbers.length < 10}
+            {#if mockNumbersTotal + draftNumbers.length < 10}
                 <div>
                     <Button
                         secondary
                         on:click={addPhoneNumber}
-                        disabled={savedNumbers.length + draftNumbers.length >= 10}>
+                        disabled={mockNumbersTotal + draftNumbers.length >= 10}>
                         <Icon icon={IconPlus} slot="start" size="s" />
                         Add number
                     </Button>
                 </div>
+            {/if}
+            {#if mockNumbersTotal > mockNumbersLimit}
+                <PaginationInline
+                    bind:offset={mockNumbersOffset}
+                    limit={mockNumbersLimit}
+                    total={mockNumbersTotal}
+                    on:change={loadMockNumbers} />
             {/if}
         {:else}
             <Empty on:click={addPhoneNumber}>Add a number</Empty>

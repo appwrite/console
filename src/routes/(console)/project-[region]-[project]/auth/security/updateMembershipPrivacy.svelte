@@ -10,23 +10,25 @@
     import type { Models } from '@appwrite.io/console';
 
     const {
-        project
+        project,
+        policy
     }: {
         project: Models.Project;
+        policy: Models.PolicyMembershipPrivacy;
     } = $props();
 
-    let authMembershipsMfa = $state(project?.authMembershipsMfa ?? true);
-    let authMembershipsUserId = $state(project?.authMembershipsUserId ?? true);
-    let authMembershipsUserName = $state(project?.authMembershipsUserName ?? true);
-    let authMembershipsUserEmail = $state(project?.authMembershipsUserEmail ?? true);
-    let authMembershipsUserPhone = $state(project?.authMembershipsUserPhone ?? true);
+    let authMembershipsMfa = $state(policy.userMFA);
+    let authMembershipsUserId = $state(policy.userId);
+    let authMembershipsUserName = $state(policy.userName);
+    let authMembershipsUserEmail = $state(policy.userEmail);
+    let authMembershipsUserPhone = $state(policy.userPhone);
 
     const isSubmitDisabled = $derived(
-        authMembershipsUserId === (project?.authMembershipsUserId ?? true) &&
-            authMembershipsUserName === (project?.authMembershipsUserName ?? true) &&
-            authMembershipsUserEmail === (project?.authMembershipsUserEmail ?? true) &&
-            authMembershipsUserPhone === (project?.authMembershipsUserPhone ?? true) &&
-            authMembershipsMfa === (project?.authMembershipsMfa ?? true)
+        authMembershipsUserId === policy.userId &&
+            authMembershipsUserName === policy.userName &&
+            authMembershipsUserEmail === policy.userEmail &&
+            authMembershipsUserPhone === policy.userPhone &&
+            authMembershipsMfa === policy.userMFA
     );
 
     async function updateMembershipsPrivacy() {

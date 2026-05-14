@@ -70,10 +70,11 @@
     function getProgressCard() {
         if (!activeProject || hasOnboardingDismissed(activeProject.$id, $user)) return undefined;
 
-        const { platforms, pingCount } = activeProject;
+        const platforms = page.data.platforms as Models.PlatformList | undefined;
+        const { pingCount } = activeProject;
         let percentage = 33;
 
-        if (platforms.length > 0 && pingCount === 0) {
+        if ((platforms?.total ?? 0) > 0 && pingCount === 0) {
             percentage = 66;
         } else if (pingCount > 0) {
             percentage = 100;

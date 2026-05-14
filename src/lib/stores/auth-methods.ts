@@ -1,48 +1,52 @@
 import { writable } from 'svelte/store';
-import { type Models, AuthMethod as MethodId } from '@appwrite.io/console';
+import { type Models, ProjectAuthMethodId } from '@appwrite.io/console';
 
 export type AuthMethod = {
     label: string;
-    method: MethodId;
+    method: ProjectAuthMethodId;
     value: boolean | null;
 };
 
 const setAuthMethod = (project: Models.Project): AuthMethod[] => {
+    const authMethods = new Map(
+        project?.authMethods?.map((method) => [method.$id, method.enabled])
+    );
+
     return [
         {
             label: 'Email/Password',
-            method: MethodId.Emailpassword,
-            value: project?.authEmailPassword
+            method: ProjectAuthMethodId.Emailpassword,
+            value: authMethods.get(ProjectAuthMethodId.Emailpassword) ?? null
         },
         {
             label: 'Phone',
-            method: MethodId.Phone,
-            value: project?.authPhone
+            method: ProjectAuthMethodId.Phone,
+            value: authMethods.get(ProjectAuthMethodId.Phone) ?? null
         },
         {
             label: 'Magic URL',
-            method: MethodId.Magicurl,
-            value: project?.authUsersAuthMagicURL
+            method: ProjectAuthMethodId.Magicurl,
+            value: authMethods.get(ProjectAuthMethodId.Magicurl) ?? null
         },
         {
             label: 'Email OTP',
-            method: MethodId.Emailotp,
-            value: project?.authEmailOtp
+            method: ProjectAuthMethodId.Emailotp,
+            value: authMethods.get(ProjectAuthMethodId.Emailotp) ?? null
         },
         {
             label: 'Anonymous',
-            method: MethodId.Anonymous,
-            value: project?.authAnonymous
+            method: ProjectAuthMethodId.Anonymous,
+            value: authMethods.get(ProjectAuthMethodId.Anonymous) ?? null
         },
         {
             label: 'Team Invites',
-            method: MethodId.Invites,
-            value: project?.authInvites
+            method: ProjectAuthMethodId.Invites,
+            value: authMethods.get(ProjectAuthMethodId.Invites) ?? null
         },
         {
             label: 'JWT',
-            method: MethodId.Jwt,
-            value: project?.authJWT
+            method: ProjectAuthMethodId.Jwt,
+            value: authMethods.get(ProjectAuthMethodId.Jwt) ?? null
         }
     ];
 };
