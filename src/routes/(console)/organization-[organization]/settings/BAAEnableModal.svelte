@@ -86,8 +86,8 @@
             By clicking <b>Accept & Enable</b>, the amount of
             <b>{formatCurrency(addonPrice.monthlyPrice)}</b> will be added to your subscription and
             your payment method will be charged
-            <b>{formatCurrency(addonPrice.proratedAmount)} immediately</b> for the remaining days in your
-            billing cycle.
+            <b>{formatCurrency(addonPrice.proratedAmount)} immediately</b> for the remaining days in
+            your billing cycle.
         </p>
         <p class="text u-margin-block-start-16">
             Your action confirms acceptance of Appwrite's

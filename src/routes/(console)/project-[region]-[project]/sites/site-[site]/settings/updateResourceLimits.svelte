@@ -84,8 +84,10 @@
 <Form onSubmit={updateResourceLimits}>
     <CardGrid>
         <svelte:fragment slot="title">Resource limits</svelte:fragment>
-        Define your site's compute specifications, including CPU and memory, to optimize performance for
-        your workloads. <Link href="https://appwrite.io/docs/advanced/platform/compute" external>
+        Define your site's compute specifications, including CPU and memory, to optimize performance
+        for your workloads. <Link
+            href="https://appwrite.io/docs/advanced/platform/compute"
+            external>
             Learn more
         </Link>.
         <svelte:fragment slot="aside">

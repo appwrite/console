@@ -134,16 +134,18 @@
         {#if variant === 'cname' && !subdomain}
             {#if isCloud}
                 <Alert.Inline>
-                    Since <Badge variant="secondary" size="s" content={domain} /> is an apex domain, CNAME
-                    record is only supported by certain providers. If yours doesn't, please verify using
+                    Since <Badge variant="secondary" size="s" content={domain} /> is an apex domain,
+                    CNAME record is only supported by certain providers. If yours doesn't, please verify
+                    using
                     <Link variant="muted" on:click={onNavigateToNameservers}>nameservers</Link> instead.
                     If you're using Cloudflare or another CDN, make sure the proxy is disabled (set to
                     DNS only) for this record, since Appwrite serves your domain through its own CDN.
                 </Alert.Inline>
             {:else if aTabVisible || aaaaTabVisible}
                 <Alert.Inline>
-                    Since <Badge variant="secondary" size="s" content={domain} /> is an apex domain, CNAME
-                    record is only supported by certain providers. If yours doesn't, please verify using
+                    Since <Badge variant="secondary" size="s" content={domain} /> is an apex domain,
+                    CNAME record is only supported by certain providers. If yours doesn't, please verify
+                    using
                     {#if aTabVisible}
                         <Link variant="muted" on:click={onNavigateToA}>A record</Link>
                         {#if aaaaTabVisible}
@@ -151,9 +153,9 @@
                             >{/if}
                     {:else if aaaaTabVisible}
                         <Link variant="muted" on:click={onNavigateToAAAA}>AAAA record</Link>
-                    {/if} instead. If you're using Cloudflare or another CDN, make sure the proxy is disabled
-                    (set to DNS only) for this record, since Appwrite serves your domain through its own
-                    CDN.
+                    {/if} instead. If you're using Cloudflare or another CDN, make sure the proxy is
+                    disabled (set to DNS only) for this record, since Appwrite serves your domain through
+                    its own CDN.
                 </Alert.Inline>
             {/if}
         {:else}
