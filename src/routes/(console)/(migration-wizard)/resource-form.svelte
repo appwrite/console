@@ -120,7 +120,10 @@
         }
 
         if (groupKey === 'integrations') {
-            return resources.includes(MigrationResources.Platform);
+            return (
+                resources.includes(MigrationResources.Platform) ||
+                resources.includes(MigrationResources.ApiKey)
+            );
         }
 
         const groupToResource: Record<string, MigrationResource> = {

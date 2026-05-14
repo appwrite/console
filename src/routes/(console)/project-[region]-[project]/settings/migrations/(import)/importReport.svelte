@@ -38,7 +38,8 @@
             root: 'Backup policies'
         },
         integrations: {
-            root: 'Platforms'
+            root: 'Platforms',
+            apiKeys: 'Include API keys'
         }
     };
 
@@ -67,7 +68,8 @@
             root: 'Import all backup policies'
         },
         integrations: {
-            root: 'Import all platforms (web, Flutter, iOS, Android, etc.)'
+            root: 'Import all platforms (web, Flutter, iOS, Android, etc.)',
+            apiKeys: 'Import all API keys with their scopes and expiration'
         }
     };
 
