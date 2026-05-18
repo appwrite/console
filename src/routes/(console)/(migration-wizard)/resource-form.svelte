@@ -123,6 +123,10 @@
             return resources.includes(MigrationResources.AuthMethods);
         }
 
+        if (groupKey === 'protocols') {
+            return resources.includes(MigrationResources.Protocols);
+        }
+
         if (groupKey === 'integrations') {
             return (
                 resources.includes(MigrationResources.Platform) ||
@@ -160,6 +164,7 @@
             messaging: 'provider',
             backups: 'backup-policy',
             authMethods: 'auth-methods',
+            protocols: 'protocols',
             integrations: 'platform',
             settings: 'project-variable'
         };

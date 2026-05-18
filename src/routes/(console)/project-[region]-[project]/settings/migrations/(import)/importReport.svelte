@@ -40,6 +40,9 @@
         authMethods: {
             root: 'Auth methods'
         },
+        protocols: {
+            root: 'Protocols'
+        },
         integrations: {
             root: 'Platforms',
             apiKeys: 'Include API keys'
@@ -76,6 +79,9 @@
         },
         authMethods: {
             root: 'Import the project auth method flags (email/password, magic URL, JWT, phone, etc.)'
+        },
+        protocols: {
+            root: 'Import the project protocol flags (REST / GraphQL / WebSocket)'
         },
         integrations: {
             root: 'Import all platforms (web, Flutter, iOS, Android, etc.)',
