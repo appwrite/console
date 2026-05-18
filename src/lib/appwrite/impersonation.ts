@@ -1,5 +1,5 @@
 import { derived, writable } from 'svelte/store';
-import { building } from '$app/environment';
+import { browser, building } from '$app/environment';
 
 const KEY_TARGET_USER_ID = 'console.impersonation.targetUserId';
 const KEY_OPERATOR = 'console.impersonation.operator';
@@ -16,6 +16,9 @@ export type TargetSnapshot = {
     name: string;
     email: string;
 };
+
+type ResourceUrl = string | URL;
+type ResourceQueryParams = Record<string, string | number | boolean | undefined>;
 
 /**
  * Incrementing revision triggers reactive re-fetches after impersonation changes.
@@ -67,7 +70,7 @@ export function clearPersistedImpersonation(): void {
 }
 
 export function readTargetSnapshot(): TargetSnapshot | null {
-    if (building) return null;
+    if (building || !browser) return null;
     const raw = sessionStorage.getItem(KEY_TARGET);
     if (!raw) return null;
     try {
@@ -78,15 +81,17 @@ export function readTargetSnapshot(): TargetSnapshot | null {
 }
 
 export function readImpersonationTargetUserId(): string | null {
-    if (building) return null;
+    if (building || !browser) return null;
     return sessionStorage.getItem(KEY_TARGET_USER_ID);
 }
 
 export function createImpersonatedResourceUrl(
-    url: string,
-    queryParams: Record<string, string | number | boolean | undefined> = {}
+    url: ResourceUrl,
+    queryParams: ResourceQueryParams = {}
 ): string {
-    const parsedUrl = new URL(url, globalThis.location?.origin);
+    const urlString = url.toString();
+    const baseUrl = browser ? window.location.origin : 'http://localhost';
+    const parsedUrl = new URL(urlString, baseUrl);
     const targetUserId = readImpersonationTargetUserId();
 
     for (const [key, value] of Object.entries(queryParams)) {
@@ -95,7 +100,13 @@ export function createImpersonatedResourceUrl(
         }
     }
 
-    if (!targetUserId) return parsedUrl.toString();
+    const isAbsoluteUrl = /^[a-zA-Z][a-zA-Z\d+\-.]*:/.test(urlString);
+    const serializedUrl =
+        !browser && !isAbsoluteUrl
+            ? `${parsedUrl.pathname}${parsedUrl.search}${parsedUrl.hash}`
+            : parsedUrl.toString();
+
+    if (!targetUserId) return serializedUrl;
 
     parsedUrl.searchParams.set('impersonateUserId', targetUserId);
 
@@ -104,11 +115,12 @@ export function createImpersonatedResourceUrl(
 
 export const impersonatedResourceUrl = derived(
     impersonationRevision,
-    () => createImpersonatedResourceUrl
+    () => (url: ResourceUrl, queryParams?: ResourceQueryParams) =>
+        createImpersonatedResourceUrl(url, queryParams)
 );
 
 export function readOperatorSnapshot(): OperatorSnapshot | null {
-    if (building) return null;
+    if (building || !browser) return null;
     const raw = sessionStorage.getItem(KEY_OPERATOR);
     if (!raw) return null;
     try {
