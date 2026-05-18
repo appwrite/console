@@ -131,6 +131,10 @@
             return resources.includes(MigrationResources.Labels);
         }
 
+        if (groupKey === 'services') {
+            return resources.includes(MigrationResources.Services);
+        }
+
         if (groupKey === 'integrations') {
             return (
                 resources.includes(MigrationResources.Platform) ||
@@ -170,6 +174,7 @@
             authMethods: 'auth-methods',
             protocols: 'protocols',
             labels: 'labels',
+            services: 'services',
             integrations: 'platform',
             settings: 'project-variable'
         };

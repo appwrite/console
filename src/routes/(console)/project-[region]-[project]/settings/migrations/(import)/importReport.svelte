@@ -46,6 +46,9 @@
         labels: {
             root: 'Project labels'
         },
+        services: {
+            root: 'Services'
+        },
         integrations: {
             root: 'Platforms',
             apiKeys: 'Include API keys'
@@ -88,6 +91,9 @@
         },
         labels: {
             root: 'Import the project-level RBAC label array'
+        },
+        services: {
+            root: 'Import the project service enable/disable flags (Account, Databases, Functions, GraphQL, etc.)'
         },
         integrations: {
             root: 'Import all platforms (web, Flutter, iOS, Android, etc.)',
