@@ -15,18 +15,20 @@ export type MigrationResource =
     | 'platform'
     | 'api-key'
     | 'project-variable'
-    | 'webhook';
+    | 'webhook'
+    | 'auth-methods';
 
 // Appwrite enum is the superset of all provider resources — used as a
 // provider-agnostic reference. The addResource guard filters by provider.
-// Platform, ApiKey, ProjectVariable and Webhook are augmented locally until
-// @appwrite.io/console SDK is regenerated against the new spec.
+// Platform, ApiKey, ProjectVariable, Webhook and AuthMethods are augmented
+// locally until @appwrite.io/console SDK is regenerated against the new spec.
 export const MigrationResources = {
     ...AppwriteMigrationResource,
     Platform: 'platform',
     ApiKey: 'api-key',
     ProjectVariable: 'project-variable',
-    Webhook: 'webhook'
+    Webhook: 'webhook',
+    AuthMethods: 'auth-methods'
 } as const;
 
 type ProviderResourceMap = {
@@ -61,6 +63,9 @@ const initialFormData = {
         messages: false
     },
     backups: {
+        root: false
+    },
+    authMethods: {
         root: false
     },
     integrations: {
@@ -112,12 +117,14 @@ export const ResourcesFriendly = {
     platform: { singular: 'Platform', plural: 'Platforms' },
     'api-key': { singular: 'API Key', plural: 'API Keys' },
     'project-variable': { singular: 'Project Variable', plural: 'Project Variables' },
-    webhook: { singular: 'Webhook', plural: 'Webhooks' }
+    webhook: { singular: 'Webhook', plural: 'Webhooks' },
+    'auth-methods': { singular: 'Auth method config', plural: 'Auth method config' }
 };
 
 export const providerResources: ProviderResourceMap = {
     appwrite: [
         ...Object.values(AppwriteMigrationResource),
+        MigrationResources.AuthMethods as AppwriteMigrationResource,
         MigrationResources.Platform as AppwriteMigrationResource,
         MigrationResources.ApiKey as AppwriteMigrationResource,
         MigrationResources.ProjectVariable as AppwriteMigrationResource,
@@ -184,6 +191,9 @@ export const migrationFormToResources = <P extends Provider>(
     }
     if (formData.backups.root) {
         addResource(MigrationResources.Backuppolicy);
+    }
+    if (formData.authMethods.root) {
+        addResource(MigrationResources.AuthMethods);
     }
     if (formData.integrations.root) {
         addResource(MigrationResources.Platform);
@@ -275,6 +285,9 @@ export const resourcesToMigrationForm = (resources: MigrationResource[]): Migrat
     }
     if (resources.includes(MigrationResources.Backuppolicy)) {
         formData.backups.root = true;
+    }
+    if (resources.includes(MigrationResources.AuthMethods)) {
+        formData.authMethods.root = true;
     }
     if (resources.includes(MigrationResources.Platform)) {
         formData.integrations.root = true;

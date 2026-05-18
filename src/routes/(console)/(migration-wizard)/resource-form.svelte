@@ -119,6 +119,10 @@
             return resources.includes(MigrationResources.Backuppolicy);
         }
 
+        if (groupKey === 'authMethods') {
+            return resources.includes(MigrationResources.AuthMethods);
+        }
+
         if (groupKey === 'integrations') {
             return (
                 resources.includes(MigrationResources.Platform) ||
@@ -155,6 +159,7 @@
             sites: 'site',
             messaging: 'provider',
             backups: 'backup-policy',
+            authMethods: 'auth-methods',
             integrations: 'platform',
             settings: 'project-variable'
         };

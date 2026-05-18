@@ -37,6 +37,9 @@
         backups: {
             root: 'Backup policies'
         },
+        authMethods: {
+            root: 'Auth methods'
+        },
         integrations: {
             root: 'Platforms',
             apiKeys: 'Include API keys'
@@ -71,13 +74,17 @@
         backups: {
             root: 'Import all backup policies'
         },
+        authMethods: {
+            root: 'Import the project auth method flags (email/password, magic URL, JWT, phone, etc.)'
+        },
         integrations: {
             root: 'Import all platforms (web, Flutter, iOS, Android, etc.)',
             apiKeys: 'Import all API keys with their scopes and expiration'
         },
         settings: {
             root: 'Import all project-level variables (secret values are not exposed by the SDK and will be migrated empty)',
-            webhooks: 'Import all webhooks (signing secrets are not exposed by the SDK; the destination regenerates a fresh signature key for each)'
+            webhooks:
+                'Import all webhooks (signing secrets are not exposed by the SDK; the destination regenerates a fresh signature key for each)'
         }
     };
 
