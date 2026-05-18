@@ -135,6 +135,10 @@
             return resources.includes(MigrationResources.Services);
         }
 
+        if (groupKey === 'policies') {
+            return resources.includes(MigrationResources.Policies);
+        }
+
         if (groupKey === 'integrations') {
             return (
                 resources.includes(MigrationResources.Platform) ||
@@ -175,6 +179,7 @@
             protocols: 'protocols',
             labels: 'labels',
             services: 'services',
+            policies: 'policies',
             integrations: 'platform',
             settings: 'project-variable'
         };

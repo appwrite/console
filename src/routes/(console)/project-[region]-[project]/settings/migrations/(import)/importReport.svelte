@@ -49,6 +49,9 @@
         services: {
             root: 'Services'
         },
+        policies: {
+            root: 'Security policies'
+        },
         integrations: {
             root: 'Platforms',
             apiKeys: 'Include API keys'
@@ -94,6 +97,9 @@
         },
         services: {
             root: 'Import the project service enable/disable flags (Account, Databases, Functions, GraphQL, etc.)'
+        },
+        policies: {
+            root: 'Import the project security policies (password rules, session behavior, user limits, membership privacy)'
         },
         integrations: {
             root: 'Import all platforms (web, Flutter, iOS, Android, etc.)',
