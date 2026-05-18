@@ -20,6 +20,8 @@
         lineNumbers,
         highlightActiveLine,
         highlightActiveLineGutter,
+        type Command,
+        type KeyBinding,
         type ViewUpdate
     } from '@codemirror/view';
     import { history, undo } from '@codemirror/commands';
@@ -147,6 +149,8 @@
 
     const wrapCompartment = new Compartment();
     const readOnlyCompartment = new Compartment();
+    const unfoldAllCommand: Command = (view) => unfoldAll(view as never);
+    const foldAllCommand: Command = (view) => foldAll(view as never);
 
     let tooltipMessage = $state('Copy document');
 
@@ -942,7 +946,7 @@
     // JSON5 linter using the parse cache; preserves errorInPlace behavior.
     async function json5Linter(view: EditorView): Promise<Diagnostic[]> {
         if (isUpdatingFromEditor) return [];
-        const result = await baseJson5Linter(view);
+        const result = await baseJson5Linter(view as never);
         if (!result.length) {
             errorMessage = null;
             return [];
@@ -1198,17 +1202,17 @@
                 {
                     key: 'Mod-=',
                     preventDefault: true,
-                    run: unfoldAll
+                    run: unfoldAllCommand
                 },
                 {
                     key: 'Mod-+',
                     preventDefault: true,
-                    run: unfoldAll
+                    run: unfoldAllCommand
                 },
                 {
                     key: 'Mod--',
                     preventDefault: true,
-                    run: foldAll
+                    run: foldAllCommand
                 },
                 {
                     key: 'Mod-a',
@@ -1244,7 +1248,7 @@
                     }
                 }
             ]),
-            keymap.of(secondaryKeymaps),
+            keymap.of(secondaryKeymaps as readonly KeyBinding[]),
             json5(),
             customSyntaxHighlighting,
             customTheme,

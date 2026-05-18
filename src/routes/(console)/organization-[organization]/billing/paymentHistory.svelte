@@ -9,6 +9,7 @@
     import { type Models, Query } from '@appwrite.io/console';
     import { trackEvent } from '$lib/actions/analytics';
     import { selectedInvoice, showRetryModal } from './store';
+    import { impersonatedResourceUrl } from '$lib/appwrite/impersonation';
     import {
         ActionMenu,
         Badge,
@@ -62,6 +63,12 @@
     function retryPayment(invoice: Models.Invoice) {
         $selectedInvoice = invoice;
         $showRetryModal = true;
+    }
+
+    function invoiceUrl(invoiceId: string, action: 'view' | 'download') {
+        return $impersonatedResourceUrl(
+            `${endpoint}/organizations/${page.params.organization}/invoices/${invoiceId}/${action}`
+        );
     }
 
     $effect(() => {
@@ -155,12 +162,12 @@
                                         <ActionMenu.Item.Anchor
                                             leadingIcon={IconExternalLink}
                                             external
-                                            href={`${endpoint}/organizations/${page.params.organization}/invoices/${invoice.$id}/view`}>
+                                            href={invoiceUrl(invoice.$id, 'view')}>
                                             View invoice
                                         </ActionMenu.Item.Anchor>
                                         <ActionMenu.Item.Anchor
                                             leadingIcon={IconDownload}
-                                            href={`${endpoint}/organizations/${page.params.organization}/invoices/${invoice.$id}/download`}>
+                                            href={invoiceUrl(invoice.$id, 'download')}>
                                             Download PDF
                                         </ActionMenu.Item.Anchor>
                                         {#if status === 'overdue' || status === 'failed' || status === 'abandoned'}

@@ -3,10 +3,17 @@
     import { page } from '$app/state';
     import { Button } from '$lib/elements/forms';
     import { HeaderAlert } from '$lib/layout';
+    import { impersonatedResourceUrl } from '$lib/appwrite/impersonation';
     import { actionRequiredInvoices, hideBillingHeaderRoutes } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { getApiEndpoint } from '$lib/stores/sdk';
     const endpoint = getApiEndpoint();
+
+    function invoiceUrl(invoiceId: string) {
+        return $impersonatedResourceUrl(
+            `${endpoint}/organizations/${$organization.$id}/invoices/${invoiceId}/view`
+        );
+    }
 </script>
 
 {#if $actionRequiredInvoices && $actionRequiredInvoices?.invoices?.length && !hideBillingHeaderRoutes.includes(page.url.pathname)}
@@ -14,9 +21,7 @@
         Please authorize your upcoming payment for {$organization.name}. Your bank requires this
         security measure to proceed with payment.
         <svelte:fragment slot="buttons">
-            <Button
-                text
-                href={`${endpoint}/organizations/${$organization.$id}/invoices/${$actionRequiredInvoices.invoices[0].$id}/view`}>
+            <Button text href={invoiceUrl($actionRequiredInvoices.invoices[0].$id)}>
                 View invoice
             </Button>
             <Button
