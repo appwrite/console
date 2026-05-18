@@ -1,4 +1,4 @@
-import { writable } from 'svelte/store';
+import { derived, writable } from 'svelte/store';
 import { building } from '$app/environment';
 
 const KEY_TARGET_USER_ID = 'console.impersonation.targetUserId';
@@ -81,6 +81,31 @@ export function readImpersonationTargetUserId(): string | null {
     if (building) return null;
     return sessionStorage.getItem(KEY_TARGET_USER_ID);
 }
+
+export function createImpersonatedResourceUrl(
+    url: string,
+    queryParams: Record<string, string | number | boolean | undefined> = {}
+): string {
+    const parsedUrl = new URL(url, globalThis.location?.origin);
+    const targetUserId = readImpersonationTargetUserId();
+
+    for (const [key, value] of Object.entries(queryParams)) {
+        if (value !== undefined) {
+            parsedUrl.searchParams.set(key, value.toString());
+        }
+    }
+
+    if (!targetUserId) return parsedUrl.toString();
+
+    parsedUrl.searchParams.set('impersonateUserId', targetUserId);
+
+    return parsedUrl.toString();
+}
+
+export const impersonatedResourceUrl = derived(
+    impersonationRevision,
+    () => createImpersonatedResourceUrl
+);
 
 export function readOperatorSnapshot(): OperatorSnapshot | null {
     if (building) return null;
