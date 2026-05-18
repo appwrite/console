@@ -9,7 +9,6 @@
     import { isSelfHosted } from '$lib/system';
     import {
         ActionMenu,
-        Alert,
         Card,
         Empty,
         Icon,
@@ -25,6 +24,7 @@
         IconPlus,
         IconXCircle
     } from '@appwrite.io/pink-icons-svelte';
+    import { GitHubAppMaker } from '$lib/components/git';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import type { ComponentType } from 'svelte';
@@ -172,16 +172,7 @@
                 {/if}
             </Layout.Stack>
         {:else if isSelfHosted && !isVcsEnabled}
-            <Alert.Inline status="info" title="Installing Git on a self-hosted instance">
-                Before installing Git in a locally hosted Appwrite project, ensure your environment
-                variables are configured.
-                <svelte:fragment slot="actions">
-                    <FormButton
-                        compact
-                        href="https://appwrite.io/docs/advanced/self-hosting/configuration/version-control"
-                        external>Learn more</FormButton>
-                </svelte:fragment>
-            </Alert.Inline>
+            <GitHubAppMaker />
         {:else}
             <Card.Base padding="none" border="dashed">
                 <Empty
