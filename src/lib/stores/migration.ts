@@ -17,12 +17,14 @@ export type MigrationResource =
     | 'project-variable'
     | 'webhook'
     | 'auth-methods'
-    | 'protocols';
+    | 'protocols'
+    | 'labels';
 
 // Appwrite enum is the superset of all provider resources — used as a
 // provider-agnostic reference. The addResource guard filters by provider.
-// Platform, ApiKey, ProjectVariable, Webhook, AuthMethods and Protocols are
-// augmented locally until @appwrite.io/console SDK is regenerated.
+// Project-level singleton resources (Platform, ApiKey, ProjectVariable,
+// Webhook, AuthMethods, Protocols, Labels) are augmented locally until
+// @appwrite.io/console SDK is regenerated.
 export const MigrationResources = {
     ...AppwriteMigrationResource,
     Platform: 'platform',
@@ -30,7 +32,8 @@ export const MigrationResources = {
     ProjectVariable: 'project-variable',
     Webhook: 'webhook',
     AuthMethods: 'auth-methods',
-    Protocols: 'protocols'
+    Protocols: 'protocols',
+    Labels: 'labels'
 } as const;
 
 type ProviderResourceMap = {
@@ -71,6 +74,9 @@ const initialFormData = {
         root: false
     },
     protocols: {
+        root: false
+    },
+    labels: {
         root: false
     },
     integrations: {
@@ -124,7 +130,8 @@ export const ResourcesFriendly = {
     'project-variable': { singular: 'Project Variable', plural: 'Project Variables' },
     webhook: { singular: 'Webhook', plural: 'Webhooks' },
     'auth-methods': { singular: 'Auth method config', plural: 'Auth method config' },
-    protocols: { singular: 'Protocol config', plural: 'Protocol config' }
+    protocols: { singular: 'Protocol config', plural: 'Protocol config' },
+    labels: { singular: 'Project labels', plural: 'Project labels' }
 };
 
 export const providerResources: ProviderResourceMap = {
@@ -132,6 +139,7 @@ export const providerResources: ProviderResourceMap = {
         ...Object.values(AppwriteMigrationResource),
         MigrationResources.AuthMethods as AppwriteMigrationResource,
         MigrationResources.Protocols as AppwriteMigrationResource,
+        MigrationResources.Labels as AppwriteMigrationResource,
         MigrationResources.Platform as AppwriteMigrationResource,
         MigrationResources.ApiKey as AppwriteMigrationResource,
         MigrationResources.ProjectVariable as AppwriteMigrationResource,
@@ -204,6 +212,9 @@ export const migrationFormToResources = <P extends Provider>(
     }
     if (formData.protocols.root) {
         addResource(MigrationResources.Protocols);
+    }
+    if (formData.labels.root) {
+        addResource(MigrationResources.Labels);
     }
     if (formData.integrations.root) {
         addResource(MigrationResources.Platform);
@@ -301,6 +312,9 @@ export const resourcesToMigrationForm = (resources: MigrationResource[]): Migrat
     }
     if (resources.includes(MigrationResources.Protocols)) {
         formData.protocols.root = true;
+    }
+    if (resources.includes(MigrationResources.Labels)) {
+        formData.labels.root = true;
     }
     if (resources.includes(MigrationResources.Platform)) {
         formData.integrations.root = true;

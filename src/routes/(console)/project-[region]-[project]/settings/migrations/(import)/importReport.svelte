@@ -43,6 +43,9 @@
         protocols: {
             root: 'Protocols'
         },
+        labels: {
+            root: 'Project labels'
+        },
         integrations: {
             root: 'Platforms',
             apiKeys: 'Include API keys'
@@ -82,6 +85,9 @@
         },
         protocols: {
             root: 'Import the project protocol flags (REST / GraphQL / WebSocket)'
+        },
+        labels: {
+            root: 'Import the project-level RBAC label array'
         },
         integrations: {
             root: 'Import all platforms (web, Flutter, iOS, Android, etc.)',
