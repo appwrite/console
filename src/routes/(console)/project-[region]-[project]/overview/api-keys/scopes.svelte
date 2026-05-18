@@ -120,12 +120,14 @@
         try {
             const result = await sdk.forConsole.console.listProjectScopes();
             const scopesById = new Map<string, ScopeDefinition>();
+            const localByScope = new Map(localScopes.map((s) => [s.scope, s]));
 
             for (const scope of result.scopes) {
+                const fallback = localByScope.get(scope.$id);
                 scopesById.set(scope.$id, {
                     scope: scope.$id,
                     description: scope.description,
-                    category: normalizeCategory(scope.category),
+                    category: normalizeCategory(scope.category || fallback?.category || ''),
                     deprecated: scope.deprecated,
                     icon: ''
                 });
