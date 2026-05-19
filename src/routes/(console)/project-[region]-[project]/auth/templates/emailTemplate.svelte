@@ -61,8 +61,8 @@
             await sdk.forProject(project.region, project.$id).project.updateEmailTemplate({
                 templateId: $emailTemplate.type as ProjectEmailTemplateId,
                 locale,
-                subject: $emailTemplate.subject || undefined,
-                message: $emailTemplate.message || undefined,
+                subject: $emailTemplate.subject ?? undefined,
+                message: $emailTemplate.message ?? undefined,
                 senderName: $emailTemplate.senderName ?? undefined,
                 senderEmail: $emailTemplate.senderEmail ?? undefined,
                 replyToEmail: $emailTemplate.replyToEmail ?? undefined,
