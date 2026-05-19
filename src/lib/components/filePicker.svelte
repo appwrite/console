@@ -36,6 +36,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { isCloud } from '$lib/system';
     import { currentPlan } from '$lib/stores/organization';
+    import { impersonatedResourceUrl } from '$lib/appwrite/impersonation';
 
     export let show: boolean;
     export let mimeTypeQuery: string = 'image/';
@@ -82,16 +83,14 @@
     }
 
     function getPreview(bucketId: string, fileId: string, size: number = 64) {
-        return (
-            sdk
-                .forProject(page.params.region, page.params.project)
-                .storage.getFilePreview({
-                    bucketId,
-                    fileId,
-                    width: size,
-                    height: size
-                })
-                .toString() + '&mode=admin'
+        return $impersonatedResourceUrl(
+            sdk.forProject(page.params.region, page.params.project).storage.getFilePreview({
+                bucketId,
+                fileId,
+                width: size,
+                height: size
+            }),
+            { mode: 'admin' }
         );
     }
 

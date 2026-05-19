@@ -5,7 +5,11 @@
     import { baseEmailTemplate, emailTemplate } from './store';
     import deepEqual from 'deep-equal';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { EmailTemplateLocale, type EmailTemplateType, type Models } from '@appwrite.io/console';
+    import {
+        ProjectEmailTemplateLocale,
+        type ProjectEmailTemplateId,
+        type Models
+    } from '@appwrite.io/console';
     import { Icon, Layout, Tooltip, Typography } from '@appwrite.io/pink-svelte';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import TemplateSkeleton from './templateSkeleton.svelte';
@@ -29,7 +33,8 @@
     const isButtonDisabled = $derived(deepEqual($emailTemplate, $baseEmailTemplate));
 
     async function saveEmailTemplate() {
-        const locale = ($emailTemplate.locale || EmailTemplateLocale.En) as EmailTemplateLocale;
+        const locale = ($emailTemplate.locale ||
+            ProjectEmailTemplateLocale.En) as ProjectEmailTemplateLocale;
 
         // TODO: uncomment after SDK is updated
         // if (!isValueOfStringEnum(TemplateType, $emailTemplate.type)) {
@@ -54,7 +59,7 @@
                     break;
             }
             await sdk.forProject(project.region, project.$id).project.updateEmailTemplate({
-                templateId: $emailTemplate.type as EmailTemplateType,
+                templateId: $emailTemplate.type as ProjectEmailTemplateId,
                 locale,
                 subject: $emailTemplate.subject || undefined,
                 message: $emailTemplate.message || undefined,

@@ -38,6 +38,7 @@
     import { ImageFormat, type Models } from '@appwrite.io/console';
     import { isSmallViewport } from '$lib/stores/viewport';
     import { Menu } from '$lib/components/menu';
+    import { impersonatedResourceUrl } from '$lib/appwrite/impersonation';
 
     let showFileAlert = true;
 
@@ -50,33 +51,39 @@
     let showCopyUrlModal = false;
     let selectedFileToken: Models.ResourceToken | null = null;
 
-    const getPreview = (fileId: string) =>
-        sdk
-            .forProject(page.params.region, page.params.project)
-            .storage.getFilePreview({
+    function getPreview(fileId: string) {
+        return $impersonatedResourceUrl(
+            sdk.forProject(page.params.region, page.params.project).storage.getFilePreview({
                 bucketId: $file.bucketId,
                 fileId,
                 width: 640,
                 height: 300,
                 output: ImageFormat.Avif
-            })
-            .toString() + '&mode=admin';
-    const getView = (fileId: string) =>
-        sdk
-            .forProject(page.params.region, page.params.project)
-            .storage.getFileView({ bucketId: $file.bucketId, fileId })
-            .toString() + '&mode=admin';
+            }),
+            { mode: 'admin' }
+        );
+    }
+
+    function getView(fileId: string) {
+        return $impersonatedResourceUrl(
+            sdk
+                .forProject(page.params.region, page.params.project)
+                .storage.getFileView({ bucketId: $file.bucketId, fileId }),
+            { mode: 'admin' }
+        );
+    }
 
     $: if (filePermissions) {
         arePermsDisabled = !symmetricDifference(filePermissions, $file.$permissions).length;
     }
 
     function downloadFile() {
-        return (
+        return $impersonatedResourceUrl(
             sdk
                 .forProject(page.params.region, page.params.project)
                 .storage.getFileDownload({ bucketId: $file.bucketId, fileId: $file.$id })
-                .toString() + '&mode=admin'
+                .toString(),
+            { mode: 'admin' }
         );
     }
 

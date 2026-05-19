@@ -14,7 +14,7 @@
     import Details from './details.svelte';
     import ExportModal from './exportModal.svelte';
     import { readOnly } from '$lib/stores/billing';
-    import { ID, Scopes, type Models } from '@appwrite.io/console';
+    import { ID, ProjectKeyScopes, type Models } from '@appwrite.io/console';
     import { canWriteProjects } from '$lib/stores/roles';
     import {
         IconCloud,
@@ -92,23 +92,23 @@
                 keyId: ID.unique(),
                 name: `[AUTO-GENERATED] Migration ${new Date().toISOString()}`,
                 scopes: [
-                    Scopes.UsersRead,
-                    Scopes.TeamsRead,
-                    Scopes.DatabasesRead,
-                    Scopes.CollectionsRead /* legacy */,
-                    Scopes.AttributesRead /* legacy */,
-                    Scopes.IndexesRead,
-                    Scopes.DocumentsRead /* legacy */,
-                    Scopes.TablesRead,
-                    Scopes.ColumnsRead,
-                    Scopes.RowsRead,
-                    Scopes.FilesRead,
-                    Scopes.BucketsRead,
-                    Scopes.FunctionsRead,
-                    Scopes.ExecutionsRead,
-                    Scopes.LocaleRead,
-                    Scopes.AvatarsRead,
-                    Scopes.HealthRead
+                    ProjectKeyScopes.UsersRead,
+                    ProjectKeyScopes.TeamsRead,
+                    ProjectKeyScopes.DatabasesRead,
+                    ProjectKeyScopes.CollectionsRead /* legacy */,
+                    ProjectKeyScopes.AttributesRead /* legacy */,
+                    ProjectKeyScopes.IndexesRead,
+                    ProjectKeyScopes.DocumentsRead /* legacy */,
+                    ProjectKeyScopes.TablesRead,
+                    ProjectKeyScopes.ColumnsRead,
+                    ProjectKeyScopes.RowsRead,
+                    ProjectKeyScopes.FilesRead,
+                    ProjectKeyScopes.BucketsRead,
+                    ProjectKeyScopes.FunctionsRead,
+                    ProjectKeyScopes.ExecutionsRead,
+                    ProjectKeyScopes.LocaleRead,
+                    ProjectKeyScopes.AvatarsRead,
+                    ProjectKeyScopes.HealthRead
                 ]
             });
 

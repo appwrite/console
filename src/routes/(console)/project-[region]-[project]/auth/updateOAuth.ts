@@ -4,14 +4,21 @@ import { Dependencies } from '$lib/constants';
 import { isValueOfStringEnum } from '$lib/helpers/types';
 import { addNotification } from '$lib/stores/notifications';
 import { sdk } from '$lib/stores/sdk';
-import { OAuthProvider, type Models } from '@appwrite.io/console';
+import { OAuthProvider, type Models as ConsoleModels } from '@appwrite.io/console';
+
+type ProjectOAuthProvider = ConsoleModels.OAuth2ProviderList['providers'][number];
+
+export type AuthProvider = ProjectOAuthProvider & {
+    key: ProjectOAuthProvider['$id'];
+    name: string;
+};
 
 type Args = {
     region: string;
     projectId: string;
-    provider: Models.AuthProvider;
+    provider: AuthProvider;
     appId: string | null;
-    secret: string;
+    secret: string | null;
     details: Record<string, string>;
     enabled: boolean;
 };
@@ -21,7 +28,7 @@ type Return = {
     message?: string;
 };
 
-function parseSecret(secret: string) {
+function parseSecret(secret: string | null) {
     if (!secret) return {};
 
     try {

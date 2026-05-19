@@ -22,8 +22,8 @@ export const projectRegion = derived(project, ($project) => {
 });
 
 export const onboarding = derived(
-    project,
-    ($project) => $project?.platforms?.length === 0 && $project?.keys?.length === 0
+    page,
+    ($page) => $page.data.platforms?.total === 0 && $page.data.keys?.total === 0
 );
 
 /**

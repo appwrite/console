@@ -25,7 +25,7 @@ jobs:
               id: playwright-cache
               with:
                   path: ~/.cache/ms-playwright
-                  key: ${{ runner.os }}-playwright-${{ hashFiles('**/pnpm-lock.yaml') }}
+                  key: ${{ runner.os }}-playwright-${{ hashFiles('**/bun.lock') }}
                   restore-keys: |
                       ${{ runner.os }}-playwright-
 
