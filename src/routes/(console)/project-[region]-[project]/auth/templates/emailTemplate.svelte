@@ -28,6 +28,7 @@
     } = $props();
 
     let eventType = $state(Submit.EmailUpdateInviteTemplate);
+    let isResetting = $state(false);
 
     const isSmtpEnabled = $derived(project?.smtpEnabled);
     const isButtonDisabled = $derived(deepEqual($emailTemplate, $baseEmailTemplate));
@@ -86,6 +87,32 @@
                 type: 'error',
                 message: e.message
             });
+        }
+    }
+
+    async function resetToDefault() {
+        const locale = ($emailTemplate.locale ||
+            ProjectEmailTemplateLocale.En) as ProjectEmailTemplateLocale;
+        isResetting = true;
+        try {
+            const defaults = await sdk.forConsole.console.getEmailTemplate({
+                templateId: $emailTemplate.type as ProjectEmailTemplateId,
+                locale
+            });
+            $emailTemplate = {
+                ...$emailTemplate,
+                subject: defaults.subject,
+                message: defaults.message,
+                senderName: defaults.senderName,
+                senderEmail: defaults.senderEmail,
+                replyToEmail: defaults.replyToEmail,
+                replyToName: defaults.replyToName
+            };
+            await saveEmailTemplate();
+        } catch (e) {
+            addNotification({ type: 'error', message: e.message });
+        } finally {
+            isResetting = false;
         }
     }
 </script>
@@ -162,6 +189,9 @@
         </Layout.Stack>
         <div class="u-sep-block-start u-margin-block-start-24"></div>
         <div class="u-flex u-gap-16 u-main-end u-margin-block-start-24">
+            <Button secondary disabled={isResetting || !isSmtpEnabled} on:click={resetToDefault}>
+                Reset to default
+            </Button>
             <Button submit disabled={isButtonDisabled}>Update</Button>
         </div>
     </Form>
