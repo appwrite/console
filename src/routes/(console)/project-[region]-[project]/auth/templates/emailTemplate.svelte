@@ -63,10 +63,10 @@
                 locale,
                 subject: $emailTemplate.subject || undefined,
                 message: $emailTemplate.message || undefined,
-                senderName: $emailTemplate.senderName || undefined,
-                senderEmail: $emailTemplate.senderEmail || undefined,
-                replyToEmail: $emailTemplate.replyToEmail || undefined,
-                replyToName: $emailTemplate.replyToName || undefined
+                senderName: $emailTemplate.senderName ?? undefined,
+                senderEmail: $emailTemplate.senderEmail ?? undefined,
+                replyToEmail: $emailTemplate.replyToEmail ?? undefined,
+                replyToName: $emailTemplate.replyToName ?? undefined
             });
 
             $baseEmailTemplate = {
@@ -114,13 +114,15 @@
                     bind:value={$emailTemplate.replyToEmail}
                     id="replyToEmail"
                     label="Reply to email"
-                    placeholder="noreply@appwrite.io" />
+                    placeholder="noreply@appwrite.io"
+                    disabled={!isSmtpEnabled} />
 
                 <InputText
                     bind:value={$emailTemplate.replyToName}
                     id="replyToName"
                     label="Reply to name"
-                    placeholder="Enter reply to name" />
+                    placeholder="Enter reply to name"
+                    disabled={!isSmtpEnabled} />
 
                 {#if children}
                     <p class="text">

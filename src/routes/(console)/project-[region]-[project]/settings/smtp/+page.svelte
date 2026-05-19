@@ -21,7 +21,7 @@
 
     const { data }: PageProps = $props();
 
-    const { project } = data;
+    const project = $derived(data.project);
 
     let enabled: boolean = $state(false);
 
@@ -44,31 +44,35 @@
         { value: '', label: 'None' }
     ];
 
+    function normalizeSecure(v: string): string {
+        return v === 'tls' || v === 'ssl' ? v : '';
+    }
+
     const isButtonDisabled = $derived.by(() => {
         return deepEqual(
             {
                 enabled,
-                senderName,
-                senderEmail,
-                replyToEmail,
-                replyToName,
-                host,
-                port: port ?? '',
-                username,
-                password,
+                senderName: senderName ?? '',
+                senderEmail: senderEmail ?? '',
+                replyToEmail: replyToEmail ?? '',
+                replyToName: replyToName ?? '',
+                host: host ?? '',
+                port: port ?? null,
+                username: username ?? '',
+                password: password ?? '',
                 secure
             },
             {
-                enabled: project.smtpEnabled,
-                senderName: project.smtpSenderName,
-                senderEmail: project.smtpSenderEmail,
-                replyToEmail: project.smtpReplyToEmail,
-                replyToName: project.smtpReplyToName,
-                host: project.smtpHost,
-                port: project.smtpPort,
-                username: project.smtpUsername,
-                password: project.smtpPassword,
-                secure: project.smtpSecure
+                enabled: project.smtpEnabled ?? false,
+                senderName: project.smtpSenderName ?? '',
+                senderEmail: project.smtpSenderEmail ?? '',
+                replyToEmail: project.smtpReplyToEmail ?? '',
+                replyToName: project.smtpReplyToName ?? '',
+                host: project.smtpHost ?? '',
+                port: project.smtpPort ?? null,
+                username: project.smtpUsername ?? '',
+                password: project.smtpPassword ?? '',
+                secure: normalizeSecure(project.smtpSecure ?? '')
             }
         );
     });
@@ -77,14 +81,14 @@
         try {
             await sdk.forProject(project.region, project.$id).project.updateSMTP({
                 enabled,
-                senderName: senderName || undefined,
-                senderEmail: senderEmail || undefined,
-                replyToEmail: replyToEmail || undefined,
-                replyToName: replyToName || undefined,
-                host: host || undefined,
-                port: port || undefined,
-                username: username || undefined,
-                password: password || undefined,
+                senderName: senderName ?? undefined,
+                senderEmail: senderEmail ?? undefined,
+                replyToEmail: replyToEmail ?? undefined,
+                replyToName: replyToName ?? undefined,
+                host: host ?? undefined,
+                port: port ?? undefined,
+                username: username ?? undefined,
+                password: password ?? undefined,
                 secure: secure ? (secure as ProjectSMTPSecure) : undefined
             });
 
@@ -105,29 +109,15 @@
 
     $effect(() => {
         enabled = project.smtpEnabled ?? false;
-        senderName = project.smtpSenderName;
-        senderEmail = project.smtpSenderEmail;
-        replyToEmail = project.smtpReplyToEmail;
-        replyToName = project.smtpReplyToName;
-        host = project.smtpHost;
-        port = project.smtpPort;
-        username = project.smtpUsername;
-        password = project.smtpPassword;
-        secure = project.smtpSecure === 'tls' ? 'tls' : project.smtpSecure === 'ssl' ? 'ssl' : '';
-    });
-
-    $effect(() => {
-        if (!enabled) {
-            senderName = '';
-            senderEmail = '';
-            replyToEmail = '';
-            replyToName = '';
-            host = '';
-            port = null;
-            username = '';
-            password = '';
-            secure = '';
-        }
+        senderName = project.smtpSenderName ?? '';
+        senderEmail = project.smtpSenderEmail ?? '';
+        replyToEmail = project.smtpReplyToEmail ?? '';
+        replyToName = project.smtpReplyToName ?? '';
+        host = project.smtpHost ?? '';
+        port = project.smtpPort ?? null;
+        username = project.smtpUsername ?? '';
+        password = project.smtpPassword ?? '';
+        secure = normalizeSecure(project.smtpSecure ?? '');
     });
 </script>
 
