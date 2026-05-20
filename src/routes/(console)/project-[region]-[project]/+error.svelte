@@ -31,10 +31,7 @@
                     <Typography.Title size="l" align="center">
                         Your organization has reached a billing limit
                     </Typography.Title>
-                    <Typography.Text align="center">
-                        Access to this resource has been blocked. Update your billing settings to
-                        restore access.
-                    </Typography.Text>
+                    <Typography.Text align="center">{page.error.message}</Typography.Text>
                 </Layout.Stack>
                 <div class="u-margin-block-start-16">
                     <Layout.Stack direction="row" gap="s" justifyContent="center">
