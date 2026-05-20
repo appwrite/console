@@ -1,20 +1,15 @@
 import { writable } from 'svelte/store';
 
 export type SupportData = {
-    message: string;
-    subject: string;
-    category: string;
-    topic?: string;
-    severity?: string;
+    message: string | null;
+    subject: string | null;
     file?: File | null;
-    project?: string;
+    project?: string | null;
 };
 
 export const supportData = writable<SupportData>({
-    message: '',
-    subject: '',
-    category: 'technical',
-    severity: 'question',
+    message: null,
+    subject: null,
     file: null
 });
 

@@ -11,6 +11,7 @@
         AppwriteMigrationResource,
         FirebaseMigrationResource,
         NHostMigrationResource,
+        OnDuplicate,
         SupabaseMigrationResource
     } from '@appwrite.io/console';
     import { started } from '../stores';
@@ -23,6 +24,7 @@
         Fieldset,
         Icon,
         Layout,
+        Selector,
         Typography
     } from '@appwrite.io/pink-svelte';
     import { Link } from '$lib/elements';
@@ -38,6 +40,8 @@
     import { capitalize } from '$lib/helpers/string';
     import { page } from '$app/state';
 
+    let importOnDuplicate: OnDuplicate = OnDuplicate.Fail;
+
     const onExit = () => {
         resetImportStores();
     };
@@ -45,6 +49,15 @@
     const onFinish = async () => {
         try {
             const resources = migrationFormToResources($formData, $provider.provider);
+
+            // Gate onDuplicate to Fail when databases isn't selected. The radios
+            // are only shown when databases.root is checked, but the local value
+            // persists across toggles — without this gate, deselecting databases
+            // after picking Overwrite/Skip would silently apply that mode to
+            // other resource types (users, teams, functions, etc.) on submit.
+            const importOptions = {
+                onDuplicate: $formData.databases.root ? importOnDuplicate : OnDuplicate.Fail
+            };
 
             switch ($provider.provider) {
                 case 'appwrite': {
@@ -54,7 +67,8 @@
                             resources: resources as AppwriteMigrationResource[],
                             endpoint: $provider.endpoint,
                             projectId: $provider.projectID,
-                            apiKey: $provider.apiKey
+                            apiKey: $provider.apiKey,
+                            ...importOptions
                         });
 
                     await invalidate(Dependencies.MIGRATIONS);
@@ -70,7 +84,8 @@
                             databaseHost: $provider.host,
                             username: $provider.username || 'postgres',
                             password: $provider.password,
-                            port: $provider.port || 5432
+                            port: $provider.port || 5432,
+                            ...importOptions
                         });
                     await invalidate(Dependencies.MIGRATIONS);
                     break;
@@ -80,7 +95,8 @@
                         .forProject(page.params.region, page.params.project)
                         .migrations.createFirebaseMigration({
                             resources: resources as FirebaseMigrationResource[],
-                            serviceAccount: $provider.serviceAccount
+                            serviceAccount: $provider.serviceAccount,
+                            ...importOptions
                         });
                     await invalidate(Dependencies.MIGRATIONS);
                     break;
@@ -95,7 +111,8 @@
                             adminSecret: $provider.adminSecret,
                             database: $provider.database || $provider.subdomain,
                             username: $provider.username || 'postgres',
-                            password: $provider.password
+                            password: $provider.password,
+                            ...importOptions
                         });
 
                     await invalidate(Dependencies.MIGRATIONS);
@@ -196,6 +213,46 @@
                             projectSdk={sdk.forProject(page.params.region, page.params.project)} />
                     </Layout.Stack>
                 </Fieldset>
+
+                {#if $formData.databases.root}
+                    <Fieldset legend="Import options">
+                        <Layout.Stack gap="m">
+                            <Selector.Radio
+                                size="s"
+                                bind:group={importOnDuplicate}
+                                name="importOnDuplicate"
+                                value={OnDuplicate.Fail}
+                                label="Fail on duplicate (default)">
+                                <svelte:fragment slot="description">
+                                    Migration aborts on the first existing resource (database,
+                                    table, column, index, or row).
+                                </svelte:fragment>
+                            </Selector.Radio>
+                            <Selector.Radio
+                                size="s"
+                                bind:group={importOnDuplicate}
+                                name="importOnDuplicate"
+                                value={OnDuplicate.Skip}
+                                label="Skip existing resources">
+                                <svelte:fragment slot="description">
+                                    Existing resources are left untouched. Only resources missing on
+                                    the destination are created.
+                                </svelte:fragment>
+                            </Selector.Radio>
+                            <Selector.Radio
+                                size="s"
+                                bind:group={importOnDuplicate}
+                                name="importOnDuplicate"
+                                value={OnDuplicate.Overwrite}
+                                label="Overwrite existing resources">
+                                <svelte:fragment slot="description">
+                                    Existing resources are updated to match the source. Schema drift
+                                    and row data are both reconciled.
+                                </svelte:fragment>
+                            </Selector.Radio>
+                        </Layout.Stack>
+                    </Fieldset>
+                {/if}
             {/if}
         </Layout.Stack>
     </Layout.Stack>
@@ -212,7 +269,8 @@
                     </span>
                     <Layout.Stack gap="none">
                         <Typography.Text variant="m-600"
-                            >Project settings are not imported</Typography.Text>
+                            >Project settings are not imported
+                        </Typography.Text>
                         You will need to set service and project settings manually.
                     </Layout.Stack>
                 </Layout.Stack>
@@ -224,7 +282,8 @@
                     </span>
                     <Layout.Stack gap="none">
                         <Typography.Text variant="m-600"
-                            >Keep your organization plan's limits in mind</Typography.Text>
+                            >Keep your organization plan's limits in mind
+                        </Typography.Text>
                         Make sure to have enough storage in your organization plan when importing files.
                     </Layout.Stack>
                 </Layout.Stack>
@@ -262,9 +321,12 @@
             variant="secondary"
             on:click={() => {
                 showExitModal = true;
-            }}>Cancel</Button.Button>
+            }}
+            >Cancel
+        </Button.Button>
 
         <Button.Button variant="primary" disabled={!isFinalsButtonEnabled} on:click={onFinish}
-            >Create</Button.Button>
+            >Create
+        </Button.Button>
     </svelte:fragment>
 </Wizard>

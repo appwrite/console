@@ -1,25 +1,10 @@
 <script lang="ts">
     import { Wizard } from '$lib/layout';
-    import {
-        Icon,
-        Input,
-        Layout,
-        Popover,
-        Tag,
-        Typography,
-        Card,
-        Upload
-    } from '@appwrite.io/pink-svelte';
+    import { Icon, Input, Layout, Typography, Card, Upload } from '@appwrite.io/pink-svelte';
     import { supportData, isSupportOnline } from './wizard/support/store';
     import { onMount, onDestroy } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
-    import {
-        Form,
-        InputSelect,
-        InputText,
-        InputTextarea,
-        Button
-    } from '$lib/elements/forms/index.js';
+    import { Form, InputText, InputTextarea, Button } from '$lib/elements/forms/index.js';
     import { Query } from '@appwrite.io/console';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import {
@@ -33,60 +18,11 @@
     import { user } from '$lib/stores/user';
     import { wizard } from '$lib/stores/wizard';
     import { VARS } from '$lib/system';
-    import { IconCheckCircle, IconXCircle, IconInfo } from '@appwrite.io/pink-icons-svelte';
+    import { IconCheckCircle, IconXCircle } from '@appwrite.io/pink-icons-svelte';
     import { removeFile } from '$lib/helpers/files';
 
     let projectOptions = $state<Array<{ value: string; label: string }>>([]);
     let files = $state<FileList | null>(null);
-
-    // Category options with display names
-    const categories = [
-        { value: 'general', label: 'General' },
-        { value: 'billing', label: 'Billing' },
-        { value: 'technical', label: 'Technical' }
-    ];
-
-    // Topic options based on category
-    const topicsByCategory = {
-        general: [
-            'Security',
-            'Compliance',
-            'Performance',
-            'Account',
-            'Project',
-            'Regions',
-            'Other'
-        ],
-        billing: ['Invoice', 'Plans', 'Payment methods', 'Downgrade', 'Refund', 'Usage', 'Other'],
-        technical: [
-            'Auth',
-            'Databases',
-            'Storage',
-            'Functions',
-            'Realtime',
-            'Messaging',
-            'Migrations',
-            'Webhooks',
-            'SDKs',
-            'Console',
-            'Backups',
-            'Blocked project',
-            'Domains',
-            'Outage',
-            'Platforms',
-            'Sites',
-            'Other'
-        ]
-    };
-
-    // Severity options
-    const severityOptions = [
-        { value: 'critical', label: 'Critical' },
-        { value: 'high', label: 'High' },
-        { value: 'medium', label: 'Medium' },
-        { value: 'low', label: 'Low' },
-        { value: 'question', label: 'Question' }
-    ];
 
     onMount(async () => {
         // Filter projects by organization ID using server-side queries
@@ -106,43 +42,22 @@
         $supportData = {
             message: null,
             subject: null,
-            category: 'technical',
-            topic: undefined,
-            severity: 'question',
             file: null
         };
     });
 
-    // Update topic options when category changes
-    const topicOptions = $derived(
-        ($supportData.category ? topicsByCategory[$supportData.category] || [] : []).map(
-            (topic) => ({
-                value: topic.toLowerCase().trim().replace(/\s+/g, '-'),
-                label: topic
-            })
-        )
-    );
-
     async function handleSubmit() {
-        // Create category-topic tag
-        const categoryTopicTag = $supportData.topic
-            ? `${$supportData.category}-${$supportData.topic}`.toLowerCase()
-            : $supportData.category.toLowerCase();
-
         const formData = new FormData();
         formData.append('email', $user.email);
-        formData.append('subject', $supportData.subject);
+        formData.append('subject', $supportData.subject ?? '');
         formData.append('firstName', ($user?.name || 'Unknown').slice(0, 40));
-        formData.append('message', $supportData.message);
+        formData.append('message', $supportData.message ?? '');
         formData.append('tags[]', 'cloud');
-        formData.append('tags[]', categoryTopicTag);
         formData.append(
             'metaFields',
             JSON.stringify({
-                category: $supportData.category,
                 orgId: $organization?.$id ?? '',
                 projectId: $supportData?.project ?? '',
-                severity: $supportData?.severity ?? '',
                 billingPlan: $organization?.billingPlanId ?? ''
             })
         );
@@ -177,9 +92,6 @@
         $supportData = {
             message: null,
             subject: null,
-            category: 'technical',
-            topic: undefined,
-            severity: undefined,
             file: null,
             project: null
         };
@@ -209,35 +121,6 @@
     );
 </script>
 
-{#snippet severityPopover()}
-    <Popover let:toggle>
-        <Button extraCompact size="s" on:click={toggle}>
-            <Icon size="s" icon={IconInfo} />
-        </Button>
-        <div slot="tooltip" style="max-width: 400px;">
-            <Layout.Stack gap="s">
-                <Typography.Text>
-                    <b>Critical:</b> System is down or a critical component is non-functional, causing
-                    a complete stoppage of work or significant business impact.
-                </Typography.Text>
-                <Typography.Text>
-                    <b>High:</b> Major functionality is impaired, but a workaround is available, or a
-                    critical component is significantly degraded.
-                </Typography.Text>
-                <Typography.Text>
-                    <b>Medium:</b> Minor functionality is impaired without significant business impact.
-                </Typography.Text>
-                <Typography.Text>
-                    <b>Low:</b> Issue has minor impact on business operations; workaround is not necessary.
-                </Typography.Text>
-                <Typography.Text>
-                    <b>Question:</b> Requests for information, general guidance, or feature requests.
-                </Typography.Text>
-            </Layout.Stack>
-        </div>
-    </Popover>
-{/snippet}
-
 <Wizard title="Contact us" confirmExit={true}>
     <Form onSubmit={handleSubmit}>
         <Layout.Stack gap="xl">
@@ -246,50 +129,12 @@
                     >Please describe your request in detail. If applicable, include steps for
                     reproduction of any in-app issues.</Typography.Text>
             </Layout.Stack>
-            <Layout.Stack gap="s">
-                <Typography.Text color="--fgcolor-neutral-secondary"
-                    >Choose a category</Typography.Text>
-                <Layout.Stack gap="s" direction="row">
-                    {#each categories as category}
-                        <Tag
-                            on:click={() => {
-                                if ($supportData.category !== category.value) {
-                                    $supportData.topic = undefined;
-                                }
-                                $supportData.category = category.value;
-                            }}
-                            selected={$supportData.category === category.value}
-                            >{category.label}</Tag>
-                    {/each}
-                </Layout.Stack>
-            </Layout.Stack>
-            {#if topicOptions.length > 0}
-                {#key $supportData.category}
-                    <Input.ComboBox
-                        id="topic"
-                        label="Choose a topic"
-                        placeholder="Select topic"
-                        bind:value={$supportData.topic}
-                        options={topicOptions} />
-                {/key}
-            {/if}
             <Input.ComboBox
                 id="project"
                 label="Choose a project"
                 options={projectOptions ?? []}
                 bind:value={$supportData.project}
                 placeholder="Select project" />
-            <InputSelect
-                id="severity"
-                label="Severity"
-                options={severityOptions}
-                bind:value={$supportData.severity}
-                required
-                placeholder="Select severity">
-                <div slot="info">
-                    {@render severityPopover()}
-                </div>
-            </InputSelect>
             <InputText
                 id="subject"
                 label="Subject"

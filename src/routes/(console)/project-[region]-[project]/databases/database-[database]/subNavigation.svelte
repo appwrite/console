@@ -90,7 +90,21 @@
 
     onMount(() => {
         loadEntities();
-        return subNavigation.subscribe(loadEntities);
+        return subNavigation.subscribe(async (event) => {
+            if (event?.type === 'entity-created') {
+                if (!entities.entities.some((entity: Entity) => entity.$id === event.entity.$id)) {
+                    entities = {
+                        total: entities.total + 1,
+                        entities: [...entities.entities, event.entity as Entity]
+                    };
+                }
+
+                loading = false;
+                return;
+            }
+
+            await loadEntities();
+        });
     });
 
     function onResize() {

@@ -59,13 +59,16 @@
         data.runtimesList?.runtimes?.map((r) => ({
             value: r.$id,
             label: `${r.name} - ${r.version}`,
-            leadingHtml: `<img src='${$iconPath(getIconFromRuntime(r.$id), 'color')}' style='inline-size: var(--icon-size-m)' />`
+            leadingHtml: `<img src='${$iconPath(getIconFromRuntime(r.key) ?? 'empty', 'color')}' style='inline-size: var(--icon-size-m)' />`
         })) || []
     );
 
     onMount(() => {
-        const runtimeParam = data.runtime || page.url.searchParams.get('runtime') || 'node-18.0';
-        runtime = runtimeParam as Runtime;
+        const runtimeParam = data.runtime || page.url.searchParams.get('runtime');
+        const runtimeOption = data.runtimesList.runtimes.find(
+            (runtime) => runtime.$id === runtimeParam
+        );
+        runtime = (runtimeOption?.$id ?? data.runtimesList.runtimes[0]?.$id) as Runtime;
 
         entrypoint = page.url.searchParams.get('entrypoint') || '';
 
@@ -118,6 +121,7 @@
             const promises = variables.map((variable) =>
                 sdk.forProject(page.params.region, page.params.project).functions.createVariable({
                     functionId: func.$id,
+                    variableId: ID.unique(),
                     key: variable.key,
                     value: variable.value,
                     secret: variable.secret

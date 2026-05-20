@@ -11,17 +11,18 @@
     import Button from '$lib/elements/forms/button.svelte';
     import { Dialog, Divider, Layout, Spinner } from '@appwrite.io/pink-svelte';
     import { SvelteSet } from 'svelte/reactivity';
-    import { ProtocolId } from '@appwrite.io/console';
+    import { ProjectProtocolId } from '@appwrite.io/console';
     import { get } from 'svelte/store';
+    import { canWriteProjects } from '$lib/stores/roles';
 
     let isUpdatingAllProtocols = $state(false);
     let showUpdateProtocolDialog = $state(false);
     let updateProtocolsEnabledMode = $state<boolean | null>(null);
-    let apiProtocolUpdates = new SvelteSet<ProtocolId>();
-    const protocolDescriptions: Record<ProtocolId, string> = {
-        [ProtocolId.Rest]: 'Standard HTTP API requests from client SDKs.',
-        [ProtocolId.Graphql]: 'GraphQL API access for queries and mutations.',
-        [ProtocolId.Websocket]: 'Realtime subscriptions over WebSocket connections.'
+    let apiProtocolUpdates = new SvelteSet<ProjectProtocolId>();
+    const protocolDescriptions: Record<ProjectProtocolId, string> = {
+        [ProjectProtocolId.Rest]: 'Standard HTTP API requests from client SDKs.',
+        [ProjectProtocolId.Graphql]: 'GraphQL API access for queries and mutations.',
+        [ProjectProtocolId.Websocket]: 'Realtime subscriptions over WebSocket connections.'
     };
     const isAnyProtocolUpdating = $derived(apiProtocolUpdates.size > 0);
     const isAnyUpdateInProgress = $derived(isUpdatingAllProtocols || isAnyProtocolUpdating);
@@ -43,7 +44,7 @@
         apiProtocolUpdates.add(protocol.method);
 
         try {
-            await sdk.forProject($project.region, $project.$id).project.updateProtocolStatus({
+            await sdk.forProject($project.region, $project.$id).project.updateProtocol({
                 protocolId: protocol.method,
                 enabled: protocol.value
             });
@@ -78,7 +79,7 @@
             const projectSdk = sdk.forProject($project.region, $project.$id);
             for (const protocol of get(protocols).list) {
                 if (protocol.value === status) continue;
-                await projectSdk.project.updateProtocolStatus({
+                await projectSdk.project.updateProtocol({
                     protocolId: protocol.method,
                     enabled: status
                 });
@@ -139,23 +140,31 @@
                     <Button
                         extraCompact
                         on:click={() => {
+                            if (!$canWriteProjects) return;
                             showUpdateProtocolDialog = true;
                             updateProtocolsEnabledMode = true;
                         }}
-                        disabled={shouldDisableEnableAllButton}>Enable all</Button>
+                        disabled={!$canWriteProjects || shouldDisableEnableAllButton}>
+                        Enable all
+                    </Button>
                     <span style:height="20px">
                         <Divider vertical />
                     </span>
                     <Button
                         extraCompact
                         on:click={() => {
+                            if (!$canWriteProjects) return;
                             showUpdateProtocolDialog = true;
                             updateProtocolsEnabledMode = false;
                         }}
-                        disabled={shouldDisableDisableAllButton}>Disable all</Button>
+                        disabled={!$canWriteProjects || shouldDisableDisableAllButton}>
+                        Disable all
+                    </Button>
                 </Layout.Stack>
             </div>
-            <Divider />
+            <div class="protocol-toolbar-divider">
+                <Divider />
+            </div>
             <div class="protocol-list-content">
                 <Layout.Stack gap="xs">
                     {#each $protocols.list as protocol, index}
@@ -167,7 +176,8 @@
                                     description={protocolDescriptions[protocol.method]}
                                     bind:value={protocol.value}
                                     on:change={() => protocolUpdate(protocol)}
-                                    disabled={apiProtocolUpdates.has(protocol.method)} />
+                                    disabled={!$canWriteProjects ||
+                                        apiProtocolUpdates.has(protocol.method)} />
 
                                 {#if apiProtocolUpdates.has(protocol.method)}
                                     <span class="protocol-spinner">
@@ -196,7 +206,7 @@
             <Button
                 secondary
                 submissionLoader
-                disabled={isUpdatingAllProtocols}
+                disabled={!$canWriteProjects || isUpdatingAllProtocols}
                 forceShowLoader={isUpdatingAllProtocols}
                 on:click={() => toggleAllProtocols(updateProtocolsEnabledMode)}>
                 {dialogDetails.actionButton}
@@ -207,7 +217,12 @@
 
 <style>
     .protocols-list {
+        width: 100%;
+    }
+
+    .protocol-list-content {
         max-width: 36rem;
+        padding-top: var(--space-6);
     }
 
     .protocol-toolbar {
@@ -218,10 +233,6 @@
 
     .protocol-row {
         width: 100%;
-    }
-
-    .protocol-list-content {
-        padding-top: var(--space-6);
     }
 
     .protocol-control {

@@ -1,12 +1,12 @@
 <script lang="ts">
+    import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Button } from '$lib/elements/forms';
-    import { currentPlan, organizationList } from '$lib/stores/organization';
+    import { currentPlan, organization, organizationList } from '$lib/stores/organization';
     import SupportWizard from '$routes/(console)/supportWizard.svelte';
     import { wizard } from '$lib/stores/wizard';
     import { Badge, Layout, Typography } from '@appwrite.io/pink-svelte';
     import type { Models } from '@appwrite.io/console';
-
     function contactSupport() {
         wizard.start(SupportWizard);
     }
@@ -16,9 +16,36 @@
     );
 
     $: hasPremiumSupport = $currentPlan?.premiumSupport ?? allOrgsHavePremiumSupport ?? false;
+
+    $: orgId = $organization?.$id;
+    $: billingUrl = orgId ? `${base}/organization-${orgId}/billing` : null;
+    $: isPaymentError = page.status === 402;
 </script>
 
-{#if page.error.type === 'general_resource_blocked'}
+{#if isPaymentError}
+    <section class="resource-blocked">
+        <div class="resource-blocked__content">
+            <Layout.Stack gap="s" alignItems="center">
+                <Badge type="error" variant="secondary" content="Billing limit reached" />
+                <Layout.Stack gap="xs" alignItems="center">
+                    <Typography.Title size="l" align="center">
+                        Your organization has reached a billing limit
+                    </Typography.Title>
+                    <Typography.Text align="center">{page.error.message}</Typography.Text>
+                </Layout.Stack>
+                <div class="u-margin-block-start-16">
+                    <Layout.Stack direction="row" gap="s" justifyContent="center">
+                        {#if billingUrl}
+                            <Button href={billingUrl}>Go to billing</Button>
+                        {/if}
+                        <Button secondary href="{base}/account/organizations"
+                            >Change organization</Button>
+                    </Layout.Stack>
+                </div>
+            </Layout.Stack>
+        </div>
+    </section>
+{:else if page.error.type === 'general_resource_blocked'}
     <section class="resource-blocked">
         <div class="resource-blocked__content">
             <Layout.Stack gap="s" alignItems="center">

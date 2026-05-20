@@ -37,7 +37,7 @@
         return {
             value: runtime.$id,
             label: `${runtime.name} - ${runtime.version}`,
-            leadingHtml: `<img src='${$iconPath(getIconFromRuntime(runtime.key), 'color')}' style='inline-size: var(--icon-size-m)' />`
+            leadingHtml: `<img src='${$iconPath(getIconFromRuntime(runtime.key) ?? 'empty', 'color')}' style='inline-size: var(--icon-size-m)' />`
         };
     });
 
@@ -132,6 +132,7 @@
             const promises = variables.map((variable) =>
                 sdk.forProject(page.params.region, page.params.project).functions.createVariable({
                     functionId: func.$id,
+                    variableId: ID.unique(),
                     key: variable.key,
                     value: variable.value,
                     secret: variable?.secret ?? false

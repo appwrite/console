@@ -1,4 +1,5 @@
 import { isMultiRegionSupported, VARS } from '$lib/system';
+import { registerImpersonationClients, restoreImpersonation } from '$lib/appwrite/impersonation';
 import {
     Account,
     Assistant,
@@ -23,10 +24,11 @@ import {
     Tokens,
     TablesDB,
     Domains,
+    DocumentsDB,
     Webhooks,
-    /*DocumentsDB,*/
     Realtime,
-    Organizations
+    Organizations,
+    VectorsDB
 } from '@appwrite.io/console';
 import { buildRegionalV1Endpoint } from '$lib/helpers/apiEndpoint';
 import { Sources } from '$lib/sdk/sources';
@@ -67,6 +69,7 @@ function createConsoleSdk(client: Client) {
 const endpoint = getApiEndpoint();
 
 const clientConsole = new Client();
+const clientConsoleOperator = new Client();
 const scopedConsoleClient = new Client();
 
 const clientProject = new Client();
@@ -75,9 +78,18 @@ const clientRealtime = new Client();
 if (!building) {
     scopedConsoleClient.setProject('console');
     clientConsole.setEndpoint(endpoint).setProject('console');
+    clientConsoleOperator.setEndpoint(endpoint).setProject('console');
 
     clientProject.setEndpoint(endpoint).setMode('admin');
     clientRealtime.setEndpoint(endpoint).setProject('console');
+
+    registerImpersonationClients([
+        clientConsole,
+        scopedConsoleClient,
+        clientProject,
+        clientRealtime
+    ]);
+    restoreImpersonation();
 }
 
 const sdkForProject = {
@@ -100,9 +112,10 @@ const sdkForProject = {
     migrations: new Migrations(clientProject),
     sites: new Sites(clientProject),
     tablesDB: new TablesDB(clientProject),
-    /*documentsDB: new DocumentsDB(clientProject),*/
-    console: new Console(clientProject), // for suggestions API
-    webhooks: new Webhooks(clientProject)
+    documentsDB: new DocumentsDB(clientProject),
+    vectorsDB: new VectorsDB(clientProject),
+    webhooks: new Webhooks(clientProject),
+    console: new Console(clientProject) // for suggestions API
 };
 
 export const realtime = {
@@ -137,6 +150,10 @@ export const realtime = {
 
 export const sdk = {
     forConsole: createConsoleSdk(clientConsole),
+    // Operator-only console client. It is intentionally not registered with the
+    // impersonation module so admin actions like switching targets stay scoped
+    // to the real operator session.
+    forConsoleAsOperator: createConsoleSdk(clientConsoleOperator),
 
     forConsoleIn(region: string) {
         const regionAwareEndpoint = getApiEndpoint(region);

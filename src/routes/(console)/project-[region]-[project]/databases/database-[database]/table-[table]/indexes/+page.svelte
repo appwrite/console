@@ -2,6 +2,7 @@
     import { page } from '$app/state';
     import { onDestroy } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
+    import type { TablesDBIndexType } from '@appwrite.io/console';
     import { isCloud } from '$lib/system';
     import type { PageProps } from './$types';
     import { canWriteTables } from '$lib/stores/roles';
@@ -30,7 +31,7 @@
         await tablesDB.createIndex({
             ...params,
             key: index.key,
-            type: index.type,
+            type: index.type as TablesDBIndexType,
             columns: index.fields,
             lengths: index.lengths,
             orders: index.orders

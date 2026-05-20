@@ -40,7 +40,8 @@
                 providerRepositoryId: '',
                 providerBranch: '',
                 providerSilentMode: true,
-                providerRootDirectory: ''
+                providerRootDirectory: '',
+                buildSpecification: $func.buildSpecification || undefined
             });
             await invalidate(Dependencies.FUNCTION);
             dispatch('success');

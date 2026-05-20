@@ -4,6 +4,7 @@ import Boolean, { submitBoolean, updateBoolean } from './boolean.svelte';
 import Email, { submitEmail, updateEmail } from './email.svelte';
 import Enum, { submitEnum, updateEnum } from './enum.svelte';
 import Float, { submitFloat, updateFloat } from './float.svelte';
+import BigInt, { submitBigInt, updateBigInt } from './bigint.svelte';
 import Integer, { submitInteger, updateInteger } from './integer.svelte';
 import Ip, { submitIp, updateIp } from './ip.svelte';
 import String, { submitString, updateString } from './string.svelte';
@@ -16,7 +17,7 @@ import Datetime, { submitDatetime, updateDatetime } from './datetime.svelte';
 import Point, { submitPoint, updatePoint } from './point.svelte';
 import Line, { submitLine, updateLine } from './line.svelte';
 import Polygon, { submitPolygon, updatePolygon } from './polygon.svelte';
-import type { Columns } from '../store';
+import type { Columns } from '$database/store';
 import type { Models } from '@appwrite.io/console';
 import Relationship, { submitRelationship, updateRelationship } from './relationship.svelte';
 import {
@@ -41,6 +42,7 @@ export type Option = {
         | 'Mediumtext'
         | 'Longtext'
         | 'Varchar'
+        | 'BigInt'
         | 'Integer'
         | 'Float'
         | 'Boolean'
@@ -62,6 +64,7 @@ export type Option = {
         | 'mediumtext'
         | 'longtext'
         | 'varchar'
+        | 'bigint'
         | 'integer'
         | 'double'
         | 'boolean'
@@ -124,6 +127,15 @@ export const columnOptions: Option[] = [
         create: submitVarchar,
         update: updateVarchar,
         icon: IconText
+    },
+    {
+        name: 'BigInt',
+        sentenceName: 'bigint',
+        component: BigInt,
+        type: 'bigint',
+        create: submitBigInt,
+        update: updateBigInt,
+        icon: IconHashtag
     },
     {
         name: 'Integer',

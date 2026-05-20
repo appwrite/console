@@ -8,17 +8,13 @@
     import type { Models } from '@appwrite.io/console';
     import { Dependencies } from '$lib/constants';
     import { invalidate } from '$app/navigation';
-    import { type Columns, PROHIBITED_ROW_KEYS } from '../store';
+    import { PROHIBITED_ROW_KEYS } from '../store';
     import ColumnItem from './columns/columnItem.svelte';
-    import {
-        buildWildcardColumnsQuery,
-        isRelationship,
-        isRelationshipToMany,
-        isSpatialType
-    } from './store';
+    import { isRelationship, isRelationshipToMany, isSpatialType, buildPayload } from './store';
     import { Layout, Skeleton } from '@appwrite.io/pink-svelte';
     import { deepClone } from '$lib/helpers/object';
     import { type Entity, toRelationalField } from '$database/(entity)';
+    import { type Columns, buildWildcardEntitiesQuery } from '$database/store';
     import deepEqual from 'deep-equal';
     import { onMount } from 'svelte';
 
@@ -68,7 +64,7 @@
                 databaseId: table.databaseId,
                 tableId: table.$id,
                 rowId,
-                queries: buildWildcardColumnsQuery(table)
+                queries: buildWildcardEntitiesQuery(table)
             });
         } catch (error) {
             addNotification({
@@ -142,11 +138,13 @@
         if (!row || !work) return;
 
         try {
+            const payload = buildPayload(table.fields, $work);
+
             await sdk.forProject(page.params.region, page.params.project).tablesDB.updateRow({
                 databaseId: table.databaseId,
                 tableId: table.$id,
                 rowId: row.$id,
-                data: $work,
+                data: payload,
                 permissions: $work.$permissions
             });
 

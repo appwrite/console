@@ -1,4 +1,5 @@
 import { getApiEndpoint, sdk } from '$lib/stores/sdk';
+import { createImpersonatedResourceUrl } from '$lib/appwrite/impersonation';
 import { redirect } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 
@@ -13,6 +14,8 @@ export const load: PageLoad = async ({ params }) => {
 
     return redirect(
         302,
-        `${endpoint}/organizations/${params.organization}/invoices/${invoice.$id}/view`
+        createImpersonatedResourceUrl(
+            `${endpoint}/organizations/${params.organization}/invoices/${invoice.$id}/view`
+        )
     );
 };

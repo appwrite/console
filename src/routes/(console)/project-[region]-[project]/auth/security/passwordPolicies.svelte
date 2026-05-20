@@ -11,9 +11,15 @@
     import { onMount } from 'svelte';
 
     let {
-        project
+        project,
+        dictionaryPolicy,
+        historyPolicy,
+        personalDataPolicy
     }: {
         project: Models.Project;
+        dictionaryPolicy: Models.PolicyPasswordDictionary;
+        historyPolicy: Models.PolicyPasswordHistory;
+        personalDataPolicy: Models.PolicyPasswordPersonalData;
     } = $props();
 
     let lastValidLimit = $state(5);
@@ -24,15 +30,15 @@
 
     onMount(() => {
         // update initial states here in onMount.
-        const historyValue = project.authPasswordHistory;
+        const historyValue = historyPolicy.total;
         if (historyValue && historyValue > 0) {
             passwordHistory = historyValue;
             lastValidLimit = historyValue;
         }
 
         passwordHistoryEnabled = (historyValue ?? 0) !== 0;
-        passwordDictionary = project.authPasswordDictionary ?? false;
-        authPersonalDataCheck = project.authPersonalDataCheck ?? false;
+        passwordDictionary = dictionaryPolicy.enabled;
+        authPersonalDataCheck = personalDataPolicy.enabled;
     });
 
     $effect(() => {
@@ -43,33 +49,28 @@
     });
 
     const hasChanges = $derived.by(() => {
-        const dictChanged = passwordDictionary !== (project.authPasswordDictionary ?? false);
-        const dataCheckChanged = authPersonalDataCheck !== (project.authPersonalDataCheck ?? false);
-        const historyChanged =
-            passwordHistoryEnabled !== ((project.authPasswordHistory ?? 0) !== 0);
+        const dictChanged = passwordDictionary !== dictionaryPolicy.enabled;
+        const dataCheckChanged = authPersonalDataCheck !== personalDataPolicy.enabled;
+        const historyChanged = passwordHistoryEnabled !== (historyPolicy.total !== 0);
         const limitChanged =
-            passwordHistoryEnabled &&
-            Number(passwordHistory) !== (project.authPasswordHistory ?? 0);
+            passwordHistoryEnabled && Number(passwordHistory) !== historyPolicy.total;
 
         return historyChanged || dictChanged || dataCheckChanged || limitChanged;
     });
 
     async function updatePasswordPolicies() {
         try {
-            const projectSdk = sdk.forConsole.projects;
+            const projectSdk = sdk.forProject(project.region, project.$id).project;
 
-            await projectSdk.updateAuthPasswordHistory({
-                projectId: project.$id,
-                limit: passwordHistoryEnabled ? passwordHistory : 0
+            await projectSdk.updatePasswordHistoryPolicy({
+                total: passwordHistoryEnabled ? passwordHistory : 0
             });
 
-            await projectSdk.updateAuthPasswordDictionary({
-                projectId: project.$id,
+            await projectSdk.updatePasswordDictionaryPolicy({
                 enabled: passwordDictionary
             });
 
-            await projectSdk.updatePersonalDataCheck({
-                projectId: project.$id,
+            await projectSdk.updatePasswordPersonalDataPolicy({
                 enabled: authPersonalDataCheck
             });
 

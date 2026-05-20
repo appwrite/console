@@ -6,7 +6,7 @@
     import ResourceForm from './resource-form.svelte';
     import { requestedMigration } from '$routes/store';
     import { formData, provider, selectedProject, selectedRegion } from '.';
-    import { ID, type Models, Query } from '@appwrite.io/console';
+    import { ID, type Models, Query, AppwriteMigrationResource } from '@appwrite.io/console';
     import { InputSelect, InputText } from '$lib/elements/forms';
     import {
         Button,
@@ -81,7 +81,7 @@
     }
 
     function getProjectName(): string {
-        return isExisting ? currentSelectedProject.name : newProjName || 'Appwrite project';
+        return isExisting ? currentSelectedProject.name : newProjName || 'New project';
     }
 
     async function createNewProject() {
@@ -114,7 +114,7 @@
 
         try {
             await projectSdkInstance.migrations.createAppwriteMigration({
-                resources,
+                resources: resources as AppwriteMigrationResource[],
                 endpoint: $provider.endpoint,
                 projectId: $provider.projectID,
                 apiKey: $provider.apiKey

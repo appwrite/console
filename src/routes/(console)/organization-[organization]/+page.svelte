@@ -1,5 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
+    import { goto } from '$app/navigation';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import CreateProject from './createProject.svelte';
@@ -51,6 +52,7 @@
     let freePlanAlertDismissed = $state(false);
 
     let searchQuery: SearchQuery | null = $state(null);
+    let handledCreateProjectQuery = $state(false);
     const educationProgramId = 'github-student-developer';
 
     const isEducationProgram = $derived(data.program?.$id === educationProgramId);
@@ -84,10 +86,25 @@
     }
 
     function handleCreateProject() {
-        if (!$canWriteProjects) return;
+        if (projectCreationDisabled) return;
         if (isCloud) showCreateProjectCloud = true;
         else showCreate = true;
     }
+
+    $effect(() => {
+        if (handledCreateProjectQuery || !page.url.searchParams.has('create-project')) return;
+
+        handledCreateProjectQuery = true;
+        handleCreateProject();
+
+        const url = new URL(page.url);
+        url.searchParams.delete('create-project');
+        void goto(`${url.pathname}${url.search}${url.hash}`, {
+            replaceState: true,
+            noScroll: true,
+            keepFocus: true
+        });
+    });
 
     function getIconForPlatform(platform: string): ComponentType {
         switch (platform) {
@@ -233,13 +250,15 @@
             offset={data.offset}
             on:click={handleCreateProject}>
             {#each data.projects.projects as project}
+                {@const projectPlatforms = project.platforms}
+                {@const platformsTotal = project.platformsTotal}
                 {@const platforms = filterPlatforms(
-                    project.platforms.map((platform) => getPlatformInfo(platform.type))
+                    projectPlatforms.map((platform) => getPlatformInfo(platform.type))
                 )}
                 <GridItem1
                     href={`${base}/project-${project.region}-${project.$id}/overview/platforms`}>
                     <svelte:fragment slot="eyebrow">
-                        {project?.platforms?.length ? project?.platforms?.length : 'No'} apps
+                        {platformsTotal ? platformsTotal : 'No'} apps
                     </svelte:fragment>
                     <svelte:fragment slot="title">
                         {project.name}
@@ -264,10 +283,10 @@
                         </Badge>
                     {/each}
 
-                    {#if platforms.length > 3}
+                    {#if platformsTotal > 2}
                         <Badge
                             variant="secondary"
-                            content={`+${platforms.length - 2}`}
+                            content={`+${platformsTotal - 2}`}
                             style="width: max-content;" />
                     {/if}
 

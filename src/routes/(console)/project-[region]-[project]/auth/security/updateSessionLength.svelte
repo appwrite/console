@@ -11,18 +11,19 @@
     import type { Models } from '@appwrite.io/console';
 
     let {
-        project
+        project,
+        policy
     }: {
         project: Models.Project;
+        policy: Models.PolicySessionDuration;
     } = $props();
 
-    const { value, unit, baseValue, units } = $derived(createTimeUnitPair(project?.authDuration));
+    const { value, unit, baseValue, units } = $derived(createTimeUnitPair(policy.duration));
     const options = $derived(units.map((v) => ({ label: v.name, value: v.name })));
 
     async function updateSessionLength() {
         try {
-            await sdk.forConsole.projects.updateAuthDuration({
-                projectId: project.$id,
+            await sdk.forProject(project.region, project.$id).project.updateSessionDurationPolicy({
                 duration: $baseValue
             });
             await invalidate(Dependencies.PROJECT);
@@ -52,7 +53,7 @@
         </Layout.Stack>
     </svelte:fragment>
     <svelte:fragment slot="actions">
-        <Button disabled={$baseValue === project.authDuration} on:click={updateSessionLength}>
+        <Button disabled={$baseValue === policy.duration} on:click={updateSessionLength}>
             Update
         </Button>
     </svelte:fragment>

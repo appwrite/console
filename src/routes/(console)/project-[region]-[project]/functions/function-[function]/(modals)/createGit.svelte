@@ -90,7 +90,10 @@
                     scopes: ($func.scopes as Scopes[]) || undefined,
                     installationId: $installation.$id || undefined,
                     providerRepositoryId: selectedRepository || undefined,
-                    providerBranch: branch || undefined
+                    providerBranch: branch || undefined,
+                    providerSilentMode: $func.providerSilentMode ?? undefined,
+                    providerRootDirectory: $func.providerRootDirectory ?? undefined,
+                    buildSpecification: $func.buildSpecification || undefined
                 });
             }
             if (commit) {

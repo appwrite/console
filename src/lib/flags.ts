@@ -5,7 +5,6 @@ import type { Models } from '@appwrite.io/console';
 // Parse feature flags from env as a string array (exact match only)
 const flagsRaw = (env.PUBLIC_CONSOLE_FEATURE_FLAGS ?? '').split(',');
 
-// @ts-expect-error: unused method!
 function isFlagEnabled(name: string) {
     // loose generic to allow safe access while retaining type safety
     return <T extends { account?: Account; organization?: Models.Organization }>(data: T) => {
@@ -19,4 +18,6 @@ function isFlagEnabled(name: string) {
     };
 }
 
-export const flags = {};
+export const flags = {
+    multiDb: isFlagEnabled('multi-db')
+};

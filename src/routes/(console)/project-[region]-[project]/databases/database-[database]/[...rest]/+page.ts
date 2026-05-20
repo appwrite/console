@@ -1,67 +1,45 @@
-import { base } from '$app/paths';
 import type { PageLoad } from './$types';
 import { redirect } from '@sveltejs/kit';
 import { AppwriteException } from '@appwrite.io/console';
 import { databaseRowSheetOptions } from '../table-[table]/store';
-
-const ROUTE_MAPPINGS: {
-    pattern: RegExp;
-    replacement?: string;
-    sheet?: boolean;
-}[] = [
-    // collection page redirect to table
-    { pattern: /^collection-([^/]+)/, replacement: 'table-$1' },
-
-    // document detail page redirect to their parent table
-    { pattern: /^document-([^/]+)/, sheet: true },
-
-    // attributes list page redirect to table columns
-    { pattern: /^attributes$/, replacement: 'columns' },
-
-    // New format routes,
-    { pattern: /^row-([^/]+)/, sheet: true }
-] as const;
-
-function isLegacyRoute(segments: string[]): boolean {
-    return segments.some((segment) =>
-        ROUTE_MAPPINGS.some((mapping) => mapping.pattern.test(segment))
-    );
-}
-
-function rewriteLegacySegments(segments: string[]): string[] {
-    return segments
-        .map((segment) => {
-            for (const mapping of ROUTE_MAPPINGS) {
-                if (mapping.pattern.test(segment)) {
-                    if (mapping.sheet) {
-                        const match = segment.match(mapping.pattern);
-                        if (match && match[1]) {
-                            databaseRowSheetOptions.update((options) => ({
-                                ...options,
-                                rowId: match[1],
-                                title: 'Update row'
-                            }));
-                        }
-                    }
-
-                    return !mapping.replacement
-                        ? null
-                        : segment.replace(mapping.pattern, mapping.replacement);
-                }
-            }
-            return segment;
-        })
-        .filter(Boolean);
-}
+import { noSqlDocument } from '../collection-[collection]/store';
+import { resolveRoute } from '$lib/stores/navigation';
 
 export const load: PageLoad = async ({ params, url }) => {
     const restSegments = params.rest ? params.rest.split('/').filter(Boolean) : [];
-    const baseUrl = `${base}/project-${params.region}-${params.project}/databases/database-${params.database}`;
+    const baseUrl = resolveRoute(
+        '/(console)/project-[region]-[project]/databases/database-[database]',
+        params
+    );
 
-    if (isLegacyRoute(restSegments)) {
-        const rewrittenSegments = rewriteLegacySegments(restSegments);
-        const newPath = `${baseUrl}/${rewrittenSegments.join('/')}`;
+    if (restSegments.length === 0) {
+        throw new AppwriteException('Not Found', 404);
+    }
 
+    const lastSegment = restSegments[restSegments.length - 1];
+
+    const rowMatch = lastSegment.match(/^row-([^/]+)$/);
+    if (rowMatch) {
+        const rowId = rowMatch[1];
+        databaseRowSheetOptions.update((options) => ({
+            ...options,
+            rowId,
+            show: true,
+            title: 'Update row'
+        }));
+
+        const parentSegments = restSegments.slice(0, -1);
+        const newPath = `${baseUrl}/${parentSegments.join('/')}`;
+        redirect(308, newPath + url.search);
+    }
+
+    const documentMatch = lastSegment.match(/^document-([^/]+)$/);
+    if (documentMatch) {
+        const documentId = documentMatch[1];
+        noSqlDocument.update({ documentId });
+
+        const parentSegments = restSegments.slice(0, -1);
+        const newPath = `${baseUrl}/${parentSegments.join('/')}`;
         redirect(308, newPath + url.search);
     }
 

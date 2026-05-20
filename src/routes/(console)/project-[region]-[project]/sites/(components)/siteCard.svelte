@@ -27,6 +27,7 @@
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
     import { regionalProtocol } from '$routes/(console)/project-[region]-[project]/store';
     import type { Snippet } from 'svelte';
+    import { impersonatedResourceUrl } from '$lib/appwrite/impersonation';
 
     let {
         site,
@@ -71,13 +72,15 @@
     }
 
     function getFilePreview(fileId: string) {
-        return sdk.forConsoleIn(page.params.region).storage.getFilePreview({
-            bucketId: 'screenshots',
-            fileId,
-            width: 1024,
-            height: 576,
-            output: ImageFormat.Avif
-        });
+        return $impersonatedResourceUrl(
+            sdk.forConsoleIn(page.params.region).storage.getFilePreview({
+                bucketId: 'screenshots',
+                fileId,
+                width: 1024,
+                height: 576,
+                output: ImageFormat.Avif
+            })
+        );
     }
 </script>
 

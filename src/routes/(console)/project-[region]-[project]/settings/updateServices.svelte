@@ -10,16 +10,17 @@
     import { project } from '../store';
     import Button from '$lib/elements/forms/button.svelte';
     import { Dialog, Divider, Layout, Spinner } from '@appwrite.io/pink-svelte';
-    import type { ServiceId } from '@appwrite.io/console';
+    import type { ProjectServiceId } from '@appwrite.io/console';
     import { get } from 'svelte/store';
 
     import { SvelteSet } from 'svelte/reactivity';
+    import { canWriteProjects } from '$lib/stores/roles';
 
     let isUpdatingAllServices = $state(false);
     let showUpdateServiceDialog = $state(false);
     let updateServicesEnabledMode = $state<boolean | null>(null);
 
-    let apiServiceUpdates = new SvelteSet<ServiceId>();
+    let apiServiceUpdates = new SvelteSet<ProjectServiceId>();
 
     const isAnyServiceUpdating = $derived(apiServiceUpdates.size > 0);
     const isAnyUpdateInProgress = $derived(isUpdatingAllServices || isAnyServiceUpdating);
@@ -42,7 +43,7 @@
         apiServiceUpdates.add(service.method);
 
         try {
-            await sdk.forProject($project.region, $project.$id).project.updateServiceStatus({
+            await sdk.forProject($project.region, $project.$id).project.updateService({
                 serviceId: service.method,
                 enabled: service.value
             });
@@ -77,7 +78,7 @@
             const projectSdk = sdk.forProject($project.region, $project.$id);
             for (const s of get(services).list) {
                 if (s.value === status) continue;
-                await projectSdk.project.updateServiceStatus({
+                await projectSdk.project.updateService({
                     serviceId: s.method,
                     enabled: status
                 });
@@ -137,20 +138,25 @@
                 <Button
                     extraCompact
                     on:click={() => {
+                        if (!$canWriteProjects) return;
                         showUpdateServiceDialog = true;
                         updateServicesEnabledMode = true;
                     }}
-                    disabled={shouldDisableEnableAllButton}>Enable all</Button>
+                    disabled={!$canWriteProjects || shouldDisableEnableAllButton}
+                    >Enable all</Button>
                 <span style:height="20px">
                     <Divider vertical />
                 </span>
                 <Button
                     extraCompact
                     on:click={() => {
+                        if (!$canWriteProjects) return;
                         showUpdateServiceDialog = true;
                         updateServicesEnabledMode = false;
                     }}
-                    disabled={shouldDisableDisableAllButton}>Disable all</Button>
+                    disabled={!$canWriteProjects || shouldDisableDisableAllButton}>
+                    Disable all
+                </Button>
             </Layout.Stack>
             <Layout.Stack gap="l">
                 <Divider />
@@ -163,7 +169,8 @@
                                     label={service.label}
                                     bind:value={service.value}
                                     on:change={() => serviceUpdate(service)}
-                                    disabled={apiServiceUpdates.has(service.method)} />
+                                    disabled={!$canWriteProjects ||
+                                        apiServiceUpdates.has(service.method)} />
 
                                 {#if apiServiceUpdates.has(service.method)}
                                     <span style:opacity="0.75">
@@ -188,7 +195,7 @@
             <Button
                 secondary
                 submissionLoader
-                disabled={isUpdatingAllServices}
+                disabled={!$canWriteProjects || isUpdatingAllServices}
                 forceShowLoader={isUpdatingAllServices}
                 on:click={() => toggleAllServices(updateServicesEnabledMode)}>
                 {dialogDetails.actionButton}

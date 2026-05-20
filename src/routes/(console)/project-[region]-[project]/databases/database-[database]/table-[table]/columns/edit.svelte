@@ -8,11 +8,12 @@
     import { Button, InputText } from '$lib/elements/forms';
     import deepEqual from 'deep-equal';
     import { addNotification } from '$lib/stores/notifications';
-    import { type Columns, columnsOrder, databaseColumnSheetOptions } from '../store';
+    import { columnsOrder, databaseColumnSheetOptions } from '../store';
     import { columnOptions, STRING_COLUMN_NAME, type Option } from './store';
     import { onMount } from 'svelte';
     import { Layout } from '@appwrite.io/pink-svelte';
     import { preferences } from '$lib/stores/preferences';
+    import type { Columns } from '$database/store';
 
     export let isModal = true;
     export let showEdit = false;
@@ -121,14 +122,7 @@
 {#if isModal}
     <Modal {error} bind:show={showEdit} onSubmit={submit} {title}>
         <svelte:fragment slot="title">
-            <div class="u-flex u-cross-center u-gap-8">
-                {option?.name}
-                {#if option?.type === 'relationship'}
-                    <div class="tag eyebrow-heading-3">
-                        <span class="text u-x-small">Experimental</span>
-                    </div>
-                {/if}
-            </div>
+            {option?.name}
         </svelte:fragment>
 
         {#if selectedColumn}
