@@ -24,10 +24,10 @@
     <section class="budget-error">
         <div class="budget-error__content">
             <Layout.Stack gap="s" alignItems="center">
-                <Badge type="error" variant="secondary" content="Budget limit reached" />
+                <Badge type="error" variant="secondary" content="Billing limit reached" />
                 <Layout.Stack gap="xs" alignItems="center">
                     <Typography.Title size="l" align="center">
-                        Your organization has reached its budget limit
+                        Your organization has reached a billing limit
                     </Typography.Title>
                     <Typography.Text align="center">
                         Access to resources has been blocked. Update your billing settings to
