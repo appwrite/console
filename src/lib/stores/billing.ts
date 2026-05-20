@@ -311,10 +311,10 @@ export function checkForUsageFees(plan: string | null | undefined, id: PlanServi
     } else return false;
 }
 
-export function checkForProjectLimitation(plan: string, id: PlanServices) {
+export function checkForProjectLimitation(plan: string | null | undefined, id: PlanServices) {
     if (id === 'members') {
         const billingPlan = billingIdToPlan(plan);
-        const hasUnlimitedProjects = billingPlan.projects === 0;
+        const hasUnlimitedProjects = billingPlan?.projects === 0;
 
         if (hasUnlimitedProjects) {
             return false; // No project limitation for members on Pro/Scale plans
