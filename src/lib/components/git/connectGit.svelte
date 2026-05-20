@@ -5,26 +5,24 @@
     import { IconGithub } from '@appwrite.io/pink-icons-svelte';
     import { Alert, Card, Empty, Icon, Layout } from '@appwrite.io/pink-svelte';
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
+    import { page } from '$app/state';
 
-    export let callbackState: Record<string, string> = null;
+    let { callbackState = null }: { callbackState?: Record<string, string> } = $props();
 
-    let isVcsEnabled = $regionalConsoleVariables?._APP_VCS_ENABLED === true;
+    const isVcsEnabled = $derived($regionalConsoleVariables?._APP_VCS_ENABLED === true);
+
+    const settingsUrl = $derived(
+        `/console/project-${page.params.region}-${page.params.project}/settings`
+    );
 </script>
 
 <Layout.Stack>
     {#if !isVcsEnabled && isSelfHosted}
-        <Alert.Inline status="info" title="Installing Git on a self-hosted instance ">
+        <Alert.Inline status="info" title="Set up Git for this instance">
             <Layout.Stack>
-                <p>
-                    Before installing Git in a locally hosted Appwrite project, ensure your
-                    environment variables are configured.
-                </p>
+                <p>Create a GitHub App to enable Git deployments on your self-hosted instance.</p>
                 <div>
-                    <Button
-                        compact
-                        external
-                        href="https://appwrite.io/docs/advanced/self-hosting/functions#git"
-                        >Learn more</Button>
+                    <Button compact href={settingsUrl}>Set up GitHub App</Button>
                 </div>
             </Layout.Stack>
         </Alert.Inline>
