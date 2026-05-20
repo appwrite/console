@@ -151,7 +151,11 @@ export function getBasePlanFromGroup(billingPlanGroup: BillingPlanGroup): Models
     return proPlans.sort((a, b) => a.order - b.order)[0];
 }
 
-export function billingIdToPlan(billingId: string): Models.BillingPlan | null {
+export function billingIdToPlan(billingId: string | null | undefined): Models.BillingPlan | null {
+    if (!billingId) {
+        return null;
+    }
+
     const plansInfoStore = getPlansInfoStore();
     if (plansInfoStore.has(billingId)) {
         return plansInfoStore.get(billingId);
@@ -287,9 +291,9 @@ export const actionRequiredInvoices = writable<Models.InvoiceList>(null);
 export const showUsageRatesModal = writable<boolean>(false);
 export const useNewPricingModal = derived(currentPlan, ($plan) => $plan?.usagePerProject === true);
 
-export function checkForUsageFees(plan: string, id: PlanServices) {
+export function checkForUsageFees(plan: string | null | undefined, id: PlanServices) {
     const billingPlan = billingIdToPlan(plan);
-    const supportsUsage = Object.keys(billingPlan.usage).length > 0;
+    const supportsUsage = Object.keys(billingPlan?.usage ?? {}).length > 0;
 
     if (supportsUsage) {
         switch (id) {
@@ -629,7 +633,7 @@ export async function checkForMissingPaymentMethod() {
 // Display upgrade banner for new users after 1 week for 30 days
 export async function checkForNewDevUpgradePro(org: Models.Organization) {
     // browser or plan check.
-    if (!browser || !org.billingPlanDetails.supportsCredits) return;
+    if (!browser || !org?.billingPlanDetails?.supportsCredits) return;
 
     // already dismissed by user!
     if (localStorage.getItem('newDevUpgradePro')) return;
@@ -640,6 +644,8 @@ export async function checkForNewDevUpgradePro(org: Models.Organization) {
 
     const now = new Date().getTime();
     const account = get(user);
+    if (!account?.$createdAt) return;
+
     const accountCreated = new Date(account.$createdAt).getTime();
     if (now - accountCreated < 1000 * 60 * 60 * 24 * 7) return;
 
