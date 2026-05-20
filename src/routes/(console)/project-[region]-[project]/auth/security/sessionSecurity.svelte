@@ -10,31 +10,37 @@
     import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
 
-    let { project }: { project: Models.Project } = $props();
+    let {
+        project,
+        sessionAlertPolicy,
+        sessionInvalidationPolicy
+    }: {
+        project: Models.Project;
+        sessionAlertPolicy: Models.PolicySessionAlert;
+        sessionInvalidationPolicy: Models.PolicySessionInvalidation;
+    } = $props();
 
     let authSessionAlerts = $state(false);
     let sessionInvalidation = $state(false);
 
     onMount(() => {
-        authSessionAlerts = project?.authSessionAlerts ?? false;
-        sessionInvalidation = project?.authInvalidateSessions ?? false;
+        authSessionAlerts = sessionAlertPolicy.enabled;
+        sessionInvalidation = sessionInvalidationPolicy.enabled;
     });
 
     const hasChanges = $derived.by(() => {
-        const alertsChanged = authSessionAlerts !== (project?.authSessionAlerts ?? false);
-        const invalidationChanged =
-            sessionInvalidation !== (project?.authInvalidateSessions ?? false);
+        const alertsChanged = authSessionAlerts !== sessionAlertPolicy.enabled;
+        const invalidationChanged = sessionInvalidation !== sessionInvalidationPolicy.enabled;
         return alertsChanged || invalidationChanged;
     });
 
     async function updateSessionSecurity() {
         try {
-            await sdk.forConsole.projects.updateSessionAlerts({
-                projectId: project.$id,
-                alerts: authSessionAlerts
+            const projectSdk = sdk.forProject(project.region, project.$id).project;
+            await projectSdk.updateSessionAlertPolicy({
+                enabled: authSessionAlerts
             });
-            await sdk.forConsole.projects.updateSessionInvalidation({
-                projectId: project.$id,
+            await projectSdk.updateSessionInvalidationPolicy({
                 enabled: sessionInvalidation
             });
 

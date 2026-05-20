@@ -60,10 +60,16 @@
         secret?: boolean
     ) => Promise<unknown>;
     export let sdkDeleteVariable: (variableId: string) => Promise<unknown>;
+    export let sdkListVariables: (queries: string[]) => Promise<Models.VariableList> = (queries) =>
+        sdk.forProject(page.params.region, page.params.project).projectApi.listVariables({
+            queries
+        });
     export let product: 'function' | 'site' = 'function';
     export let backendPagination = false;
+    export let reloadPageOnPagination = true;
     export let variablesOffset = 0;
     export let variablesLimit = 10;
+    export let disabled = false;
 
     let selectedVar: Models.Variable = null;
     let showVariablesUpload = false;
@@ -75,20 +81,21 @@
     let showDeleteModal = false;
     let deleteError: string;
     let fullVariableList: Models.VariableList | undefined = allVariableList;
+    let pagedVariableList: Models.VariableList = variableList;
     let previousVariableList = variableList;
     let offset = 0;
     const limit = 10;
 
     async function loadAllVariables() {
-        const projectSdk = sdk.forProject(page.params.region, page.params.project);
-        const variables = [...variableList.variables];
-        let nextOffset = variables.length;
+        const variables = backendPagination ? [] : [...variableList.variables];
+        let nextOffset = backendPagination ? 0 : variables.length;
         let total = variableList.total;
 
         while (nextOffset < total) {
-            const response = await projectSdk.projectApi.listVariables({
-                queries: [Query.limit(variablesLimit), Query.offset(nextOffset)]
-            });
+            const response = await sdkListVariables([
+                Query.limit(variablesLimit),
+                Query.offset(nextOffset)
+            ]);
 
             total = response.total;
 
@@ -105,7 +112,11 @@
     }
 
     async function ensureAllVariablesLoaded() {
-        if (fullVariableList && fullVariableList.total === variableList.total) return;
+        const total = backendPagination ? variableList.total : variableList.variables.length;
+
+        if (fullVariableList && fullVariableList.variables.length >= total) {
+            return;
+        }
 
         fullVariableList = await loadAllVariables();
     }
@@ -320,31 +331,35 @@
         }
     }
 
-    $: conflictVariables = globalVariableList
-        ? globalVariableList.variables.filter((globalVariable) => {
-              return variableList.variables.find((variable) => {
-                  return variable.key === globalVariable.key;
-              });
-          })
-        : [];
-
     $: if (allVariableList && fullVariableList !== allVariableList) {
         fullVariableList = allVariableList;
     }
 
     $: if (variableList !== previousVariableList) {
+        pagedVariableList = variableList;
+        if (backendPagination && !reloadPageOnPagination) {
+            variablesOffset = 0;
+        }
         fullVariableList = undefined;
         previousVariableList = variableList;
     }
 
-    $: if (fullVariableList && fullVariableList.total !== variableList.total) {
+    $: if (fullVariableList && fullVariableList.total < variableList.total) {
         fullVariableList = undefined;
     }
 
     $: editorVariableList = fullVariableList ?? allVariableList ?? variableList;
     $: displayedVariables = backendPagination
-        ? variableList.variables
+        ? pagedVariableList.variables
         : variableList.variables.slice(offset, offset + limit);
+    $: variableCount = backendPagination ? pagedVariableList.total : variableList.total;
+    $: conflictVariables = globalVariableList
+        ? globalVariableList.variables.filter((globalVariable) => {
+              return displayedVariables.find((variable) => {
+                  return variable.key === globalVariable.key;
+              });
+          })
+        : [];
 
     $: hasConflictOnPage = globalVariableList
         ? displayedVariables.filter((variable) => {
@@ -367,6 +382,14 @@
           ];
 
     async function handleVariablesPageChange() {
+        if (!reloadPageOnPagination) {
+            pagedVariableList = await sdkListVariables([
+                Query.limit(variablesLimit),
+                Query.offset(variablesOffset)
+            ]);
+            return;
+        }
+
         const nextUrl = new URL(page.url);
 
         nextUrl.searchParams.set('variablesOffset', String(variablesOffset));
@@ -388,9 +411,7 @@
         Set the environment variables or secret keys that will be passed to your {product}. Global
         variables can be found in <Link
             href={withPath(
-                resolveRoute('/(console)/project-[region]-[project]/settings', {
-                    ...page.params
-                }),
+                resolveRoute('/(console)/project-[region]-[project]/settings', page.params),
                 '#variables'
             )}>
             project settings</Link
@@ -402,7 +423,9 @@
                 <Layout.Stack direction="row" gap="s" wrap={$isSmallViewport ? 'wrap' : 'nowrap'}>
                     <Button
                         secondary
+                        {disabled}
                         on:mousedown={async () => {
+                            if (disabled) return;
                             await ensureAllVariablesLoaded();
                             showEditorModal = true;
                             trackEvent(Click.VariablesUpdateClick, { source: analyticsSource });
@@ -411,7 +434,9 @@
                     </Button>
                     <Button
                         secondary
+                        {disabled}
                         on:mousedown={async () => {
+                            if (disabled) return;
                             await ensureAllVariablesLoaded();
                             showVariablesUpload = true;
                             trackEvent(Click.VariablesUpdateClick, { source: analyticsSource });
@@ -419,10 +444,12 @@
                         <Icon slot="start" icon={IconUpload} /> Import .env
                     </Button>
                 </Layout.Stack>
-                {#if variableList.total}
+                {#if variableCount}
                     <Button
                         secondary
+                        {disabled}
                         on:mousedown={() => {
+                            if (disabled) return;
                             showVariablesModal = true;
                             trackEvent(Click.VariablesCreateClick, { source: 'project_settings' });
                         }}>
@@ -431,7 +458,7 @@
                 {/if}
             </Layout.Stack>
         </Layout.Stack>
-        {@const sum = variableList.total}
+        {@const sum = variableCount}
         {#if sum}
             <Layout.Stack gap="l">
                 {#if conflictVariables.length > 0}
@@ -446,9 +473,7 @@
                             <a
                                 href={resolveRoute(
                                     '/(console)/project-[region]-[project]/settings',
-                                    {
-                                        ...page.params
-                                    }
+                                    page.params
                                 )}
                                 title="Project settings"
                                 class="link">
@@ -504,8 +529,10 @@
                                     <Button
                                         text
                                         icon
+                                        {disabled}
                                         on:click={(e) => {
                                             e.preventDefault();
+                                            if (disabled) return;
                                             toggle(e);
                                         }}>
                                         <Icon size="s" icon={IconDotsHorizontal} />
@@ -577,7 +604,7 @@
                 {/if}
             </Layout.Stack>
         {:else}
-            <Empty on:click={() => (showVariablesModal = true)}>
+            <Empty {disabled} on:click={() => (showVariablesModal = true)}>
                 Create a {isGlobal ? 'global variable' : 'variable'} to get started
             </Empty>
         {/if}

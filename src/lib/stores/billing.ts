@@ -8,6 +8,7 @@ import MarkedForDeletion from '$lib/components/billing/alerts/markedForDeletion.
 import MissingPaymentMethod from '$lib/components/billing/alerts/missingPaymentMethod.svelte';
 import newDevUpgradePro from '$lib/components/billing/alerts/newDevUpgradePro.svelte';
 import PaymentAuthRequired from '$lib/components/billing/alerts/paymentAuthRequired.svelte';
+import PaymentProcessing from '$lib/components/billing/alerts/paymentProcessing.svelte';
 
 import { NEW_DEV_PRO_UPGRADE_COUPON } from '$lib/constants';
 import { cachedStore } from '$lib/helpers/cache';
@@ -57,6 +58,7 @@ export const roles = [
 ];
 
 export const teamStatusReadonly = 'readonly';
+export const teamStatusUpgrading = 'upgrading';
 export const billingLimitOutstandingInvoice = 'outstanding_invoice';
 
 export const paymentMethods = derived(
@@ -200,6 +202,7 @@ export type PlanServices =
     | 'bandwidthAddon'
     | 'buckets'
     | 'databases'
+    | 'domains'
     | 'executions'
     | 'executionsAddon'
     | 'fileSize'
@@ -316,6 +319,7 @@ export function checkForProjectLimitation(plan: string, id: PlanServices) {
 
     switch (id) {
         case 'databases':
+        case 'domains':
         case 'functions':
         case 'buckets':
         case 'members': // Only applies to Free plan now
@@ -516,7 +520,7 @@ export async function checkPaymentAuthorizationRequired(org: Models.Organization
             importance: 8
         });
     }
-    activeHeaderAlert.set(headerAlert.get());
+    activeHeaderAlert.set(headerAlert.getExcluding('impersonation'));
 
     actionRequiredInvoices.set(invoices);
 }
@@ -581,6 +585,17 @@ export function checkForMarkedForDeletion(org: Models.Organization) {
             component: MarkedForDeletion,
             show: true,
             importance: 10
+        });
+    }
+}
+
+export function checkForUpgradingStatus(org: Models.Organization) {
+    if (org?.status === teamStatusUpgrading) {
+        headerAlert.add({
+            id: 'paymentProcessing',
+            component: PaymentProcessing,
+            show: true,
+            importance: 5
         });
     }
 }

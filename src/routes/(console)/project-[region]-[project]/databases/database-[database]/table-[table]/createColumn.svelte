@@ -6,15 +6,24 @@
     import { InputSelect, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { option, getSupportedColumns, type Option } from './columns/store';
+    import {
+        option,
+        getSupportedColumns,
+        type Option
+    } from '$database/table-[table]/columns/store';
     import type { Column } from '$lib/helpers/types';
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
     import { preferences } from '$lib/stores/preferences';
     import { onMount } from 'svelte';
 
-    import { showColumnsSuggestionsModal } from '../(suggestions)/store';
-    import IconAINotification from '../(suggestions)/icon/aiNotification.svelte';
-    import { type Columns, type ColumnDirection, showCreateColumnSheet } from './store';
+    import { showColumnsSuggestionsModal } from '$database/(suggestions)/store';
+    import IconAINotification from '$database/(suggestions)/icon/aiNotification.svelte';
+    import { type Columns } from '$database/store';
+    import {
+        type ColumnDirection,
+        showCreateColumnSheet,
+        INTERNAL_ACTIONS_COLUMN_ID
+    } from '$database/table-[table]/store';
     import { isCloud } from '$lib/system';
     import { slide } from 'svelte/transition';
 
@@ -76,9 +85,9 @@
     function insertColumnInOrder() {
         if (!key) return;
 
-        const currentOrder = columnsOrder?.length
-            ? columnsOrder
-            : columns?.map((col) => col.id) || [];
+        const currentOrder = (
+            columnsOrder?.length ? columnsOrder : columns?.map((col) => col.id) || []
+        ).filter((columnId) => columnId !== '$id' && columnId !== INTERNAL_ACTIONS_COLUMN_ID);
 
         // if the length is empty,
         // means there's no ordering done.
@@ -88,12 +97,7 @@
         let newOrder: string[];
 
         if (!direction || !direction.neighbour) {
-            // Find the actions column position
-            const actionsIndex = currentOrder.indexOf('actions');
-            const beforeActionsOrder =
-                actionsIndex !== -1 ? currentOrder.slice(0, actionsIndex) : currentOrder;
-
-            const lastTwo = beforeActionsOrder.slice(-2);
+            const lastTwo = currentOrder.slice(-2);
             const hasTimestampColumnsAtEnd =
                 lastTwo.length === 2 &&
                 lastTwo.includes('$createdAt') &&
@@ -107,8 +111,7 @@
                     currentOrder.indexOf('$updatedAt')
                 );
             } else {
-                // Insert at the end, but before actions
-                insertIndex = actionsIndex !== -1 ? actionsIndex : currentOrder.length;
+                insertIndex = currentOrder.length;
             }
 
             newOrder = [
@@ -120,14 +123,7 @@
             const neighbourIndex = currentOrder.indexOf(direction.neighbour);
 
             if (neighbourIndex === -1) {
-                const actionsIndex = currentOrder.indexOf('actions');
-                const insertIndex = actionsIndex !== -1 ? actionsIndex : currentOrder.length;
-
-                newOrder = [
-                    ...currentOrder.slice(0, insertIndex),
-                    key,
-                    ...currentOrder.slice(insertIndex)
-                ];
+                newOrder = [...currentOrder, key];
             } else {
                 const insertIndex = direction.to === 'left' ? neighbourIndex : neighbourIndex + 1;
                 newOrder = [

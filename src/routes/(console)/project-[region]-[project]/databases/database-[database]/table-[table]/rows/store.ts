@@ -1,8 +1,13 @@
-import { page } from '$app/state';
+import type { Field } from '$database/(entity)';
 import type { Column } from '$lib/helpers/types';
-import type { Attributes, Columns } from '../store';
-import { type Models, Query } from '@appwrite.io/console';
-import type { Entity, Field } from '$database/(entity)';
+import { type Models } from '@appwrite.io/console';
+import type { Attributes, Columns } from '../../store';
+
+type RowPrimitive = string | number | bigint | boolean | null | undefined;
+interface RowObject {
+    [key: string]: RowValue;
+}
+export type RowValue = RowPrimitive | RowValue[] | RowObject;
 
 export function isRelationshipToMany(field: Field) {
     if (!field) return false;
@@ -52,19 +57,34 @@ export function isSpatialType(
     return spatialTypes.includes(field.type.toLowerCase());
 }
 
-/**
- * Returns select queries for all main and related fields in an `Entity`.
- */
-export function buildWildcardColumnsQuery(entity: Entity | null = null): string[] {
-    return [
-        ...(entity?.fields
-            ?.filter((field) => field.status === 'available' && isRelationship(field))
-            ?.map((field) => Query.select([`${field.key}.*`])) ?? []),
+function castBigIntValue(value: RowValue): RowValue {
+    if (value === null || value === undefined || value === '') {
+        return value;
+    }
 
-        Query.select(['*'])
-    ];
+    return String(value);
 }
 
-export function buildRowUrl(rowId: string) {
-    return `${page.url}/row-${rowId}`;
+export function buildPayload<T extends Record<string, RowValue>>(
+    fields: Field[] | undefined,
+    row: T
+): T {
+    const payload = structuredClone(row) as Record<string, RowValue>;
+
+    for (const field of fields ?? []) {
+        if (field.type !== 'bigint') {
+            continue;
+        }
+
+        const value = payload[field.key];
+
+        if (field.array && Array.isArray(value)) {
+            payload[field.key] = value.map((item) => castBigIntValue(item));
+            continue;
+        }
+
+        payload[field.key] = castBigIntValue(value);
+    }
+
+    return payload as T;
 }

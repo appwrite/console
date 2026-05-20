@@ -4,7 +4,7 @@
     import { Icon, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import Column from './column.svelte';
-    import type { Columns } from '../../store';
+    import type { Columns } from '$database/store';
     import { writable } from 'svelte/store';
 
     let {

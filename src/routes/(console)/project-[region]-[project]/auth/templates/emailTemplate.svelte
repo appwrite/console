@@ -2,13 +2,12 @@
     import { Button, Form, InputEmail, InputText, InputTextarea } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import ResetEmail from './resetEmail.svelte';
     import { baseEmailTemplate, emailTemplate } from './store';
     import deepEqual from 'deep-equal';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import {
-        type EmailTemplateLocale,
-        type EmailTemplateType,
+        ProjectEmailTemplateLocale,
+        type ProjectEmailTemplateId,
         type Models
     } from '@appwrite.io/console';
     import { Icon, Layout, Tooltip, Typography } from '@appwrite.io/pink-svelte';
@@ -28,20 +27,14 @@
         children: Snippet;
     } = $props();
 
-    let openResetModal = $state(false);
     let eventType = $state(Submit.EmailUpdateInviteTemplate);
 
     const isSmtpEnabled = $derived(project?.smtpEnabled);
     const isButtonDisabled = $derived(deepEqual($emailTemplate, $baseEmailTemplate));
 
     async function saveEmailTemplate() {
-        if (!$emailTemplate.locale) {
-            addNotification({
-                type: 'error',
-                message: 'Locale is required'
-            });
-            return;
-        }
+        const locale = ($emailTemplate.locale ||
+            ProjectEmailTemplateLocale.En) as ProjectEmailTemplateLocale;
 
         // TODO: uncomment after SDK is updated
         // if (!isValueOfStringEnum(TemplateType, $emailTemplate.type)) {
@@ -65,16 +58,15 @@
                     eventType = Submit.EmailUpdateVerificationTemplate;
                     break;
             }
-            // TODO: fix TemplateType and TemplateLocale typing once SDK is updated
-            await sdk.forConsole.projects.updateEmailTemplate({
-                projectId: project.$id,
-                type: $emailTemplate.type as EmailTemplateType,
-                locale: $emailTemplate.locale as EmailTemplateLocale,
+            await sdk.forProject(project.region, project.$id).project.updateEmailTemplate({
+                templateId: $emailTemplate.type as ProjectEmailTemplateId,
+                locale,
                 subject: $emailTemplate.subject || undefined,
                 message: $emailTemplate.message || undefined,
                 senderName: $emailTemplate.senderName || undefined,
                 senderEmail: $emailTemplate.senderEmail || undefined,
-                replyTo: $emailTemplate.replyTo || undefined
+                replyToEmail: $emailTemplate.replyToEmail || undefined,
+                replyToName: $emailTemplate.replyToName || undefined
             });
 
             $baseEmailTemplate = {
@@ -119,10 +111,16 @@
                     disabled={!isSmtpEnabled} />
 
                 <InputEmail
-                    bind:value={$emailTemplate.replyTo}
-                    id="replyTo"
-                    label="Reply to"
+                    bind:value={$emailTemplate.replyToEmail}
+                    id="replyToEmail"
+                    label="Reply to email"
                     placeholder="noreply@appwrite.io" />
+
+                <InputText
+                    bind:value={$emailTemplate.replyToName}
+                    id="replyToName"
+                    label="Reply to name"
+                    placeholder="Enter reply to name" />
 
                 {#if children}
                     <p class="text">
@@ -162,10 +160,7 @@
         </Layout.Stack>
         <div class="u-sep-block-start u-margin-block-start-24"></div>
         <div class="u-flex u-gap-16 u-main-end u-margin-block-start-24">
-            <Button on:click={() => (openResetModal = true)} text>Reset changes</Button>
             <Button submit disabled={isButtonDisabled}>Update</Button>
         </div>
     </Form>
 </div>
-
-<ResetEmail bind:show={openResetModal} {project} />

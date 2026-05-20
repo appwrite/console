@@ -3,9 +3,9 @@
     import Button from '$lib/elements/forms/button.svelte';
     import { Alert, Fieldset, Layout, Typography } from '@appwrite.io/pink-svelte';
 
-    export let httpUser: string;
-    export let httpPass: string;
-    export let security: boolean;
+    export let authUsername: string;
+    export let authPassword: string;
+    export let tls: boolean;
 </script>
 
 <Fieldset legend="Security">
@@ -13,10 +13,10 @@
         <Layout.Stack gap="s">
             <InputChoice
                 type="switchbox"
-                id="Security"
+                id="tls"
                 label="Certificate verification (SSL/TLS)"
-                bind:value={security} />
-            {#if !security}
+                bind:value={tls} />
+            {#if !tls}
                 <Alert.Inline
                     status="warning"
                     title="Untrusted or self-signed certificates may not be secure.">
@@ -34,13 +34,17 @@
                 <Typography.Text
                     >Use to secure your endpoint from untrusted sources.</Typography.Text>
             </div>
-            <InputText label="User" id="user" placeholder="Enter username" bind:value={httpUser} />
+            <InputText
+                label="User"
+                id="user"
+                placeholder="Enter username"
+                bind:value={authUsername} />
             <InputPassword
                 label="Password"
                 id="password"
                 placeholder="Enter password"
                 minlength={0}
-                bind:value={httpPass} />
+                bind:value={authPassword} />
         </Layout.Stack>
     </Layout.Stack>
 </Fieldset>

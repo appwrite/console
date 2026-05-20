@@ -47,13 +47,17 @@
         onCreateIndex,
         onDeleteIndexes,
         emptyIndexesSheetView,
-        emptyEntitiesSheetView
+        emptyEntitiesSheetView,
+        createIndexForm,
+        createIndexRef = $bindable()
     }: {
         entity: Entity;
         onCreateIndex: (index: CreateIndexesCallbackType) => Promise<void>;
         onDeleteIndexes: (indexKeys: string[]) => Promise<void>;
         emptyIndexesSheetView: Snippet<[() => void]>;
-        emptyEntitiesSheetView?: Snippet;
+        emptyEntitiesSheetView?: Snippet<[() => void]>;
+        createIndexForm?: Snippet;
+        createIndexRef?: { create: () => Promise<void> };
     } = $props();
 
     let showCreateIndex = $state(false);
@@ -119,9 +123,13 @@
         // example: documentsdb.*.collections.indexes.*
         // this is needed because `documentsdb` doesn't use `database` prefix don't exist
         const derivedEventsForIndex = `${terminology.type}.*.${terminology.entity.lower.plural}.*.indexes.*`;
+        const indexEvents =
+            terminology.type === 'documentsdb'
+                ? [derivedEventsForIndex]
+                : ['databases.*.tables.*.indexes.*', derivedEventsForIndex];
 
         return realtime.forProject(page.params.region, ['project', 'console'], (response) => {
-            if (response.events.includes(derivedEventsForIndex)) {
+            if (indexEvents.some((event) => response.events.includes(event))) {
                 invalidate(dependencies.entity.singular);
             }
         });
@@ -190,7 +198,7 @@
             <Button
                 secondary
                 event="create_index"
-                disabled={!entity.fields?.length}
+                disabled={!createIndexForm && !entity.fields?.length}
                 on:click={() => (showCreateIndex = true)}>
                 <Icon icon={IconPlus} slot="start" size="s" />
                 Create index
@@ -200,7 +208,7 @@
 </Container>
 
 <div class="databases-spreadsheet">
-    {#if entity.fields?.length}
+    {#if !terminology.schema || entity.fields?.length}
         {#if entity.indexes.length}
             <SpreadsheetContainer>
                 <Spreadsheet.Root
@@ -310,7 +318,7 @@
             {@render emptyIndexesSheetView(() => (showCreateIndex = true))}
         {/if}
     {:else}
-        {@render emptyEntitiesSheetView?.()}
+        {@render emptyEntitiesSheetView?.(() => (showCreateIndex = true))}
     {/if}
 
     {#if selectedIndexes.length > 0}
@@ -341,9 +349,14 @@
     bind:show={showCreateIndex}
     submit={{
         text: 'Create',
-        onClick: async () => await createIndex.create()
+        onClick: async () =>
+            createIndexForm ? await createIndexRef?.create() : await createIndex.create()
     }}>
-    <CreateIndex {entity} {onCreateIndex} {showCreateIndex} bind:this={createIndex} />
+    {#if createIndexForm}
+        {@render createIndexForm()}
+    {:else}
+        <CreateIndex {entity} {onCreateIndex} {showCreateIndex} bind:this={createIndex} />
+    {/if}
 </SideSheet>
 
 {#if selectedIndex}

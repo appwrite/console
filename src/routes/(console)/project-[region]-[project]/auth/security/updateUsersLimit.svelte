@@ -11,29 +11,27 @@
     import type { Models } from '@appwrite.io/console';
 
     let {
-        project
+        project,
+        policy
     }: {
         project: Models.Project;
+        policy: Models.PolicyUserLimit;
     } = $props();
 
     let maxUsersInputField: HTMLInputElement | null = $state(null);
 
-    let value = $state(project?.authLimit !== 0 ? 'limited' : 'unlimited');
-    let newLimit = $state(project?.authLimit !== 0 ? project?.authLimit : 100);
+    let value = $state(policy.total !== 0 ? 'limited' : 'unlimited');
+    let newLimit = $state(policy.total !== 0 ? policy.total : 100);
 
     const isLimited = $derived(value === 'limited');
     const btnDisabled = $derived.by(() => {
-        return (
-            (!isLimited && project?.authLimit === 0) ||
-            (isLimited && project?.authLimit === newLimit)
-        );
+        return (!isLimited && policy.total === 0) || (isLimited && policy.total === newLimit);
     });
 
     async function updateLimit() {
         try {
-            await sdk.forConsole.projects.updateAuthLimit({
-                projectId: project?.$id,
-                limit: isLimited ? newLimit : 0
+            await sdk.forProject(project.region, project.$id).project.updateUserLimitPolicy({
+                total: isLimited ? newLimit : 0
             });
             await invalidate(Dependencies.PROJECT);
             addNotification({

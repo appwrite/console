@@ -10,23 +10,38 @@
     import type { Models } from '@appwrite.io/console';
 
     const {
-        project
+        project,
+        policy
     }: {
         project: Models.Project;
+        policy: Models.PolicyMembershipPrivacy;
     } = $props();
 
-    let authMembershipsMfa = $state(project?.authMembershipsMfa ?? true);
-    let authMembershipsUserName = $state(project?.authMembershipsUserName ?? true);
-    let authMembershipsUserEmail = $state(project?.authMembershipsUserEmail ?? true);
+    let authMembershipsMfa = $state(policy.userMFA);
+    let authMembershipsUserId = $state(policy.userId);
+    let authMembershipsUserName = $state(policy.userName);
+    let authMembershipsUserEmail = $state(policy.userEmail);
+    let authMembershipsUserPhone = $state(policy.userPhone);
+
+    const isSubmitDisabled = $derived(
+        authMembershipsUserId === policy.userId &&
+            authMembershipsUserName === policy.userName &&
+            authMembershipsUserEmail === policy.userEmail &&
+            authMembershipsUserPhone === policy.userPhone &&
+            authMembershipsMfa === policy.userMFA
+    );
 
     async function updateMembershipsPrivacy() {
         try {
-            await sdk.forConsole.projects.updateMembershipsPrivacy({
-                projectId: project.$id,
-                userName: authMembershipsUserName,
-                userEmail: authMembershipsUserEmail,
-                mfa: authMembershipsMfa
-            });
+            await sdk
+                .forProject(project.region, project.$id)
+                .project.updateMembershipPrivacyPolicy({
+                    userId: authMembershipsUserId,
+                    userName: authMembershipsUserName,
+                    userEmail: authMembershipsUserEmail,
+                    userPhone: authMembershipsUserPhone,
+                    userMFA: authMembershipsMfa
+                });
             await invalidate(Dependencies.PROJECT);
             addNotification({
                 type: 'success',
@@ -49,6 +64,11 @@
         Set privacy preferences to manage which details team members can view about one another.
         <svelte:fragment slot="aside">
             <Selector.Checkbox
+                id="membershipsUserId"
+                label="User ID"
+                description="Display team members' user IDs to other team members"
+                bind:checked={authMembershipsUserId} />
+            <Selector.Checkbox
                 id="membershipsUserName"
                 label="Name"
                 description="Display team members' names to other team members"
@@ -59,17 +79,18 @@
                 description="Allow team members to view each other's email addresses"
                 bind:checked={authMembershipsUserEmail} />
             <Selector.Checkbox
+                id="membershipsUserPhone"
+                label="Phone"
+                description="Allow team members to view each other's phone numbers"
+                bind:checked={authMembershipsUserPhone} />
+            <Selector.Checkbox
                 id="membershipsMfa"
                 label="MFA status"
                 description="Show if team members have multi-factor authentication enabled"
                 bind:checked={authMembershipsMfa} />
         </svelte:fragment>
         <svelte:fragment slot="actions">
-            <Button
-                disabled={authMembershipsUserName === (project?.authMembershipsUserName ?? true) &&
-                    authMembershipsUserEmail === (project?.authMembershipsUserEmail ?? true) &&
-                    authMembershipsMfa === (project?.authMembershipsMfa ?? true)}
-                submit>Update</Button>
+            <Button disabled={isSubmitDisabled} submit>Update</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>

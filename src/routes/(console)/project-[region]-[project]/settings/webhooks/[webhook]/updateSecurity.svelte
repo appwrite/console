@@ -12,14 +12,14 @@
     import { Selector, Typography } from '@appwrite.io/pink-svelte';
 
     const projectId = page.params.project;
-    let httpUser: string = null;
-    let httpPass: string = null;
-    let security = false;
+    let authUsername: string = null;
+    let authPassword: string = null;
+    let tls = false;
 
     onMount(async () => {
-        httpUser ??= $webhook.httpUser;
-        httpPass ??= $webhook.httpPass;
-        security = $webhook.security;
+        authUsername ??= $webhook.authUsername;
+        authPassword ??= $webhook.authPassword;
+        tls = $webhook.tls;
     });
 
     async function updateSecurity() {
@@ -29,10 +29,10 @@
                 name: $webhook.name,
                 events: $webhook.events,
                 url: $webhook.url,
-                security,
+                tls,
                 enabled: true,
-                httpUser: httpUser || undefined,
-                httpPass: httpPass || undefined
+                authUsername: authUsername || undefined,
+                authPassword: authPassword || undefined
             });
             await invalidate(Dependencies.WEBHOOK);
             addNotification({
@@ -60,18 +60,22 @@
                 <Typography.Title size="s">HTTP Authentication</Typography.Title>
                 <p class="text">Use to secure your endpoint from untrusted sources.</p>
             </div>
-            <InputText label="User" id="user" placeholder="Enter username" bind:value={httpUser} />
+            <InputText
+                label="User"
+                id="user"
+                placeholder="Enter username"
+                bind:value={authUsername} />
             <InputPassword
                 label="Password"
                 id="password"
                 minlength={0}
                 placeholder="Enter password"
-                bind:value={httpPass} />
+                bind:value={authPassword} />
 
             <Selector.Checkbox
-                id="security"
+                id="tls"
                 label="Certificate verification (SSL/TLS)"
-                bind:checked={security}
+                bind:checked={tls}
                 description="Placeholder" />
             <!-- <span class="u-color-text-danger">Warning:</span> Untrusted or self-signed certificates
             may not be secure.
@@ -85,9 +89,9 @@
 
         <svelte:fragment slot="actions">
             <Button
-                disabled={httpUser === $webhook.httpUser &&
-                    httpPass === $webhook.httpPass &&
-                    security === $webhook.security}
+                disabled={authUsername === $webhook.authUsername &&
+                    authPassword === $webhook.authPassword &&
+                    tls === $webhook.tls}
                 submit>
                 Update
             </Button>

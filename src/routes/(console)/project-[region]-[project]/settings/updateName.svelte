@@ -58,22 +58,21 @@
         </Button>
     </svelte:fragment>
 </CardGrid>
-{#if $canWriteProjects}
-    <Form onSubmit={updateName}>
-        <CardGrid>
-            <svelte:fragment slot="title">Name</svelte:fragment>
-            <svelte:fragment slot="aside">
-                <InputText
-                    id="name"
-                    label="Name"
-                    bind:value={name}
-                    required
-                    placeholder="Enter name" />
-            </svelte:fragment>
+<Form onSubmit={updateName}>
+    <CardGrid>
+        <svelte:fragment slot="title">Name</svelte:fragment>
+        <svelte:fragment slot="aside">
+            <InputText
+                id="name"
+                label="Name"
+                bind:value={name}
+                required
+                disabled={!$canWriteProjects}
+                placeholder="Enter name" />
+        </svelte:fragment>
 
-            <svelte:fragment slot="actions">
-                <Button disabled={name === $project.name} submit>Update</Button>
-            </svelte:fragment>
-        </CardGrid>
-    </Form>
-{/if}
+        <svelte:fragment slot="actions">
+            <Button disabled={!$canWriteProjects || name === $project.name} submit>Update</Button>
+        </svelte:fragment>
+    </CardGrid>
+</Form>

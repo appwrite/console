@@ -11,7 +11,7 @@
     import { installation, repository } from '$lib/stores/vcs';
     import { Fieldset, Layout, Icon, Divider, Empty, Typography } from '@appwrite.io/pink-svelte';
     import { IconGithub } from '@appwrite.io/pink-icons-svelte';
-    import { onMount } from 'svelte';
+    import { onMount, untrack } from 'svelte';
     import { writable } from 'svelte/store';
     import ProductionBranch from '$lib/components/git/productionBranchFieldset.svelte';
     import Configuration from './configuration.svelte';
@@ -37,64 +37,83 @@
     import { Dependencies } from '$lib/constants';
     import { getIconFromRuntime } from '$lib/stores/runtimes';
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
+    import type { PageData } from './$types';
 
-    export let data;
+    let { data }: { data: PageData } = $props();
 
-    const specificationOptions = (data.specificationsList?.specifications ?? []).map((size) => ({
-        label:
-            `${size.cpus} CPU, ${size.memory} MB RAM` +
-            (!size.enabled ? ` (Upgrade to use this)` : ''),
-        value: size.slug,
-        disabled: !size.enabled
-    }));
+    const specificationOptions = $derived(
+        (data.specificationsList?.specifications ?? []).map((size) => ({
+            label:
+                `${size.cpus} CPU, ${size.memory} MB RAM` +
+                (!size.enabled ? ` (Upgrade to use this)` : ''),
+            value: size.slug,
+            disabled: !size.enabled
+        }))
+    );
 
-    let showExitModal = false;
-    let isCreatingRepository = false;
+    let showExitModal = $state(false);
+    let isCreatingRepository = $state(false);
 
-    let formComponent: Form;
-    let isSubmitting = writable(false);
+    let formComponent = $state<Form>();
+    let isSubmitting = $state(writable(false));
 
-    let name = data.template.name;
-    let id: string | null = null;
-    let runtime: Runtime;
-    let branch = 'main';
-    let rootDir = './';
-    let connectBehaviour: 'now' | 'later' = 'now';
-    let repositoryBehaviour: 'new' | 'existing' = 'new';
-    let repositoryName = undefined;
-    let repositoryPrivate = true;
-    let selectedInstallationId = '';
-    let selectedRepository = '';
-    let showConfig = false;
-    let silentMode = false;
-    let entrypoint = '';
-    let selectedScopes: Scopes[] = [];
-    let execute = true;
-    let variables: Partial<Models.TemplateVariable>[] = [];
-    let specification = specificationOptions[0]?.value || '';
+    let name = $state(untrack(() => data.template.name));
+    let id = $state<string | null>(null);
+    let runtime = $state<Runtime>();
+    let branch = $state('main');
+    let rootDir = $state('./');
+    let connectBehaviour = $state<'now' | 'later'>('now');
+    let repositoryBehaviour = $state<'new' | 'existing'>('new');
+    let repositoryName = $state<string | undefined>();
+    let repositoryPrivate = $state(true);
+    let selectedInstallationId = $state('');
+    let selectedRepository = $state<string | null>('');
+    let showConfig = $state(false);
+    let silentMode = $state(false);
+    let entrypoint = $state('');
+    let selectedScopes = $state<Scopes[]>([]);
+    let execute = $state(true);
+    let variables = $state<Partial<Models.TemplateVariable>[]>([]);
+    let specification = $state(untrack(() => specificationOptions[0]?.value || ''));
+
+    const availableRuntimes: Models.Runtime[] = $derived(
+        data.runtimesList.runtimes.filter((runtime) =>
+            data.template.runtimes.some((templateRuntime) => templateRuntime.name === runtime.$id)
+        )
+    );
+
+    function sortRuntimesByVersionDesc(a: Models.Runtime, b: Models.Runtime) {
+        return b.version.localeCompare(a.version, undefined, { numeric: true });
+    }
+
+    function selectInitialRuntime() {
+        const runtimeParam = page.url.searchParams.get('runtime');
+        const requestedRuntime = availableRuntimes.find((runtime) => runtime.$id === runtimeParam);
+
+        if (requestedRuntime) {
+            return requestedRuntime.$id as Runtime;
+        }
+
+        const runtimeById = new Map(
+            data.runtimesList.runtimes.map((runtime) => [runtime.$id, runtime])
+        );
+        const preferredRuntime = data.template.runtimes
+            .map((runtime) => runtimeById.get(runtime.name))
+            .find(Boolean);
+        const preferredRuntimes = preferredRuntime
+            ? availableRuntimes.filter((runtime) => runtime.key === preferredRuntime.key)
+            : [];
+        const runtimes = preferredRuntimes.length ? preferredRuntimes : availableRuntimes;
+
+        return [...runtimes].sort(sortRuntimesByVersionDesc)[0]?.$id as Runtime;
+    }
 
     onMount(async () => {
         if (!$installation?.$id) {
             $installation = data.installations.installations[0];
         }
         selectedInstallationId = $installation?.$id;
-        if (data.template.runtimes && data.template.runtimes.length > 0) {
-            const targetRuntime = data.template.runtimes[0].name;
-            const matchingRuntimes = Object.values(Runtime).filter((r) =>
-                r.startsWith(targetRuntime.split('-')[0])
-            );
-
-            matchingRuntimes.sort((a, b) => {
-                const versionA = a.split('-')[1];
-                const versionB = b.split('-')[1];
-                return versionB.localeCompare(versionA, undefined, { numeric: true });
-            });
-            if (page.url.searchParams.has('runtime')) {
-                runtime = page.url.searchParams.get('runtime') as Runtime;
-            } else {
-                runtime = matchingRuntimes[0] as Runtime;
-            }
-        }
+        runtime = selectInitialRuntime();
     });
 
     async function createRepository() {
@@ -171,6 +190,7 @@
                         .forProject(page.params.region, page.params.project)
                         .functions.createVariable({
                             functionId: func.$id,
+                            variableId: ID.unique(),
                             key: variable.name,
                             value: variable.value,
                             secret: variable?.secret ?? false
@@ -210,18 +230,18 @@
         }
     }
 
-    $: if (repositoryBehaviour === 'new') {
-        selectedInstallationId ??= $installation?.$id;
-        repositoryName ??= name.split(' ').join('-').toLowerCase();
-    }
+    $effect(() => {
+        if (repositoryBehaviour === 'new') {
+            selectedInstallationId ??= $installation?.$id;
+            repositoryName ??= name.split(' ').join('-').toLowerCase();
+        }
+    });
 
-    $: if (connectBehaviour === 'later') {
-        selectedRepository = null;
-    }
-
-    $: availableRuntimes = data.runtimesList.runtimes.filter((runtime) =>
-        data.template.runtimes.some((templateRuntime) => templateRuntime.name === runtime.$id)
-    );
+    $effect(() => {
+        if (connectBehaviour === 'later') {
+            selectedRepository = null;
+        }
+    });
 </script>
 
 <svelte:head>
@@ -259,7 +279,7 @@
                     return {
                         value: runtime.$id,
                         label: `${runtime.name} - ${runtime.version}`,
-                        leadingHtml: `<img src='${$iconPath(getIconFromRuntime(runtime.$id), 'color')}' style='inline-size: var(--icon-size-m)' />`
+                        leadingHtml: `<img src='${$iconPath(getIconFromRuntime(runtime.key) ?? 'empty', 'color')}' style='inline-size: var(--icon-size-m)' />`
                     };
                 })}
 

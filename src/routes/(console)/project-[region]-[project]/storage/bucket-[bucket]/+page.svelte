@@ -34,6 +34,7 @@
     import { isSmallViewport } from '$lib/stores/viewport';
     import { ID } from '@appwrite.io/console';
     import { addNotification } from '$lib/stores/notifications';
+    import { impersonatedResourceUrl } from '$lib/appwrite/impersonation';
     import type { PageProps } from './$types';
 
     const { data }: PageProps = $props();
@@ -44,17 +45,15 @@
     let isDragging = $state(false);
 
     function getPreview(fileId: string) {
-        return (
-            sdk
-                .forProject(page.params.region, page.params.project)
-                .storage.getFilePreview({
-                    bucketId: page.params.bucket,
-                    fileId,
-                    height: 128,
-                    width: 128,
-                    output: ImageFormat.Avif
-                })
-                .toString() + '&mode=admin'
+        return $impersonatedResourceUrl(
+            sdk.forProject(page.params.region, page.params.project).storage.getFilePreview({
+                bucketId: page.params.bucket,
+                fileId,
+                height: 128,
+                width: 128,
+                output: ImageFormat.Avif
+            }),
+            { mode: 'admin' }
         );
     }
 
@@ -162,7 +161,10 @@
         return uploader.subscribe(() => {
             isUploading = $uploader.files.some(
                 (file) =>
-                    file.status !== 'success' && file.progress < 100 && file.status !== 'failed'
+                    file.kind === 'storage' &&
+                    file.status !== 'success' &&
+                    file.progress < 100 &&
+                    file.status !== 'failed'
             );
         });
     });

@@ -12,7 +12,8 @@
     import {
         billingIdToPlan,
         getBasePlanFromGroup,
-        isPaymentAuthenticationRequired
+        isPaymentAuthenticationRequired,
+        teamStatusUpgrading
     } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { currentPlan, organization } from '$lib/stores/organization';
@@ -69,7 +70,11 @@
             ?.$id;
 
     afterNavigate(({ from }) => {
-        previousPage = from?.url?.pathname || previousPage;
+        if (from?.url) {
+            const search = from.url.search;
+            const pathname = from.url.pathname;
+            previousPage = search ? `${pathname}${search}` : pathname;
+        }
     });
 
     onMount(async () => {
@@ -216,10 +221,19 @@
                 await invalidate(Dependencies.ORGANIZATION);
 
                 await goto(previousPage);
-                addNotification({
-                    type: 'success',
-                    message: 'Your organization has been upgraded'
-                });
+
+                if (org.status === teamStatusUpgrading) {
+                    addNotification({
+                        type: 'info',
+                        message:
+                            'Payment is processing — your plan will activate within a few minutes.'
+                    });
+                } else {
+                    addNotification({
+                        type: 'success',
+                        message: 'Your organization has been upgraded'
+                    });
+                }
 
                 trackEvent(Submit.OrganizationUpgrade, {
                     plan: selectedPlan?.name
@@ -255,8 +269,8 @@
             });
 
             if (isPaymentAuthenticationRequired(org)) {
-                let clientSecret = org.clientSecret;
-                let params = new URLSearchParams();
+                const clientSecret = org.clientSecret;
+                const params = new URLSearchParams();
                 for (const [key, value] of page.url.searchParams.entries()) {
                     if (key !== 'type' && key !== 'id') {
                         params.append(key, value);
@@ -271,11 +285,29 @@
                     organization: org.organizationId
                 });
 
-                await confirmPayment({
+                const outcome = await confirmPayment({
                     clientSecret,
                     paymentMethodId,
-                    route: `${resolvedUrl}?${params.toString()}`
+                    route: `${resolvedUrl}?${params.toString()}`,
+                    redirectIfRequired: true
                 });
+
+                if (!outcome || outcome.status === 'error') {
+                    try {
+                        await sdk.forConsole.organizations.validatePayment({
+                            organizationId: org.organizationId,
+                            invites: []
+                        });
+                    } catch {
+                        // expected: backend throws BILLING_PAYMENT_FAILED and rolls back the upgrade
+                    }
+                    return;
+                }
+
+                if (outcome.status === 'requires_action') {
+                    return;
+                }
+
                 await validate(org.organizationId, collaborators);
             }
 

@@ -1,5 +1,6 @@
 <script lang="ts">
     import { sdk } from '$lib/stores/sdk';
+    import { ID } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { project } from '../store';
@@ -7,6 +8,7 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import UpdateName from './updateName.svelte';
+    import UpdateProtocols from './updateProtocols.svelte';
     import UpdateServices from './updateServices.svelte';
     import UpdateInstallations from './updateInstallations.svelte';
     import DeleteProject from './deleteProject.svelte';
@@ -16,15 +18,12 @@
     import UpdateVariables from '../updateVariables.svelte';
     import { page } from '$app/state';
     import UpdateLabels from './updateLabels.svelte';
-    import { ID } from '@appwrite.io/console';
+    import type { PageData } from './$types';
+    import { Alert } from '@appwrite.io/pink-svelte';
 
-    export let data;
-
-    let teamId: string = null;
+    let { data }: { data: PageData } = $props();
 
     onMount(() => {
-        teamId ??= $project.teamId;
-
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
 
@@ -86,24 +85,31 @@
 
 <Container>
     {#if $project}
-        {#if $canWriteProjects}
-            <UpdateName />
-            <UpdateLabels />
-            <UpdateServices />
-            <UpdateInstallations {...data.installations} limit={data.limit} offset={data.offset} />
-            <UpdateVariables
-                {sdkCreateVariable}
-                {sdkUpdateVariable}
-                {sdkDeleteVariable}
-                isGlobal
-                variableList={data.variables}
-                backendPagination
-                variablesOffset={data.variablesOffset}
-                variablesLimit={data.limit}
-                project={data.project}
-                analyticsSource="project_settings" />
-            <ChangeOrganization />
-            <DeleteProject />
+        {#if !$canWriteProjects}
+            <Alert.Inline status="info" title="Read-only project settings">
+                You can open this settings area, but editing project-level settings requires the
+                <code>projects.write</code> scope.
+            </Alert.Inline>
         {/if}
+
+        <UpdateName />
+        <UpdateLabels />
+        <UpdateProtocols />
+        <UpdateServices />
+        <UpdateInstallations {...data.installations} limit={data.limit} offset={data.offset} />
+        <UpdateVariables
+            {sdkCreateVariable}
+            {sdkUpdateVariable}
+            {sdkDeleteVariable}
+            disabled={!$canWriteProjects}
+            isGlobal
+            variableList={data.variables}
+            backendPagination
+            variablesOffset={data.variablesOffset}
+            variablesLimit={data.limit}
+            project={data.project}
+            analyticsSource="project_settings" />
+        <ChangeOrganization />
+        <DeleteProject />
     {/if}
 </Container>

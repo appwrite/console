@@ -10,18 +10,19 @@
     import type { Models } from '@appwrite.io/console';
 
     let {
-        project
+        project,
+        policy
     }: {
         project: Models.Project;
+        policy: Models.PolicySessionLimit;
     } = $props();
 
-    let maxSessions = $state(project?.authSessionsLimit);
+    let maxSessions = $state(policy.total);
 
     async function updateSessionsLimit() {
         try {
-            await sdk.forConsole.projects.updateAuthSessionsLimit({
-                projectId: project.$id,
-                limit: maxSessions
+            await sdk.forProject(project.region, project.$id).project.updateSessionLimitPolicy({
+                total: maxSessions
             });
             await invalidate(Dependencies.PROJECT);
 
@@ -55,7 +56,7 @@
                 bind:value={maxSessions} />
         </svelte:fragment>
         <svelte:fragment slot="actions">
-            <Button disabled={maxSessions === project?.authSessionsLimit} submit>Update</Button>
+            <Button disabled={maxSessions === policy.total} submit>Update</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>

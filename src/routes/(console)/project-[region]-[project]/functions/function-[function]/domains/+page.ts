@@ -30,9 +30,9 @@ export const load: PageLoad = async ({ depends, params, url, route, parent }) =>
             Query.offset(offset),
             Query.orderDesc(''),
             Query.orderDesc('$updatedAt'),
+            ...(search ? [Query.search('domain', search)] : []),
             ...parsedQueries.values()
-        ],
-        search: search || undefined
+        ]
     });
 
     const organizationDomains = await fetchOrganizationDomainsForRules(

@@ -14,6 +14,7 @@
     import { IconExclamation } from '@appwrite.io/pink-icons-svelte';
     import { Link } from '$lib/elements';
     import { getFrameworkIcon } from '$lib/stores/sites';
+    import { impersonatedResourceUrl } from '$lib/appwrite/impersonation';
 
     export let siteList: Models.SiteList;
 
@@ -33,13 +34,15 @@
     }
 
     function getFilePreview(fileId: string) {
-        return sdk.forConsoleIn(page.params.region).storage.getFilePreview({
-            bucketId: 'screenshots',
-            fileId,
-            width: 1024,
-            height: 576,
-            output: ImageFormat.Avif
-        });
+        return $impersonatedResourceUrl(
+            sdk.forConsoleIn(page.params.region).storage.getFilePreview({
+                bucketId: 'screenshots',
+                fileId,
+                width: 1024,
+                height: 576,
+                output: ImageFormat.Avif
+            })
+        );
     }
 </script>
 
