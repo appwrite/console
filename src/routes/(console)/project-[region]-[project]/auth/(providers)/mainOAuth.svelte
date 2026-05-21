@@ -245,21 +245,6 @@
             bind:value={fieldValues[param.$id]} />
     {/each}
 
-    {#if advancedDetailParams.length > 0}
-        <Accordion title="Advanced" badge="Optional" hideDivider>
-            <Layout.Stack gap="l">
-                {#each advancedDetailParams as param}
-                    <InputText
-                        id={param.$id}
-                        label={primaryName(param.name)}
-                        placeholder={param.example || ''}
-                        helper={helperText(param.hint)}
-                        bind:value={fieldValues[param.$id]} />
-                {/each}
-            </Layout.Stack>
-        </Accordion>
-    {/if}
-
     {#if secretParams.length > 0}
         {#if !showSecretInput}
             <div>
@@ -370,6 +355,21 @@
                 </Layout.Stack>
             </Card.Base>
         {/if}
+    {/if}
+
+    {#if advancedDetailParams.length > 0}
+        <Accordion title="Advanced" badge="Optional" hideDivider>
+            <Layout.Stack gap="l">
+                {#each advancedDetailParams as param}
+                    <InputText
+                        id={param.$id}
+                        label={primaryName(param.name)}
+                        placeholder={param.example || ''}
+                        helper={helperText(param.hint)}
+                        bind:value={fieldValues[param.$id]} />
+                {/each}
+            </Layout.Stack>
+        </Accordion>
     {/if}
 
     <Alert.Inline status="info">
