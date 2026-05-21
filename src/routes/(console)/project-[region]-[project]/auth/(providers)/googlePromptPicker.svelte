@@ -1,11 +1,13 @@
 <script lang="ts">
     import { ProjectOAuth2GooglePrompt } from '@appwrite.io/console';
     import { Layout, Tag, Typography } from '@appwrite.io/pink-svelte';
-    import { createEventDispatcher } from 'svelte';
 
-    export let value: ProjectOAuth2GooglePrompt[] = [];
+    type Props = {
+        value: ProjectOAuth2GooglePrompt[];
+        onchange?: (value: ProjectOAuth2GooglePrompt[]) => void;
+    };
 
-    const dispatch = createEventDispatcher<{ change: ProjectOAuth2GooglePrompt[] }>();
+    let { value = $bindable([]), onchange }: Props = $props();
 
     const options: { val: ProjectOAuth2GooglePrompt; label: string }[] = [
         { val: ProjectOAuth2GooglePrompt.None, label: 'None' },
@@ -23,7 +25,7 @@
                 : [...value.filter((v) => v !== ProjectOAuth2GooglePrompt.None), opt];
         }
         value = next;
-        dispatch('change', next);
+        onchange?.(next);
     }
 </script>
 
