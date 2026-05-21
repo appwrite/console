@@ -148,7 +148,7 @@
     }
 
     function isOidcAdvancedParam(id: string): boolean {
-        return id !== 'wellKnownURL' && id.toLowerCase().includes('url');
+        return id === 'authorizationURL' || id === 'tokenUrl' || id === 'userInfoUrl';
     }
 
     async function handleP8FileUpload(id: string, event: Event) {

@@ -20,9 +20,8 @@
     export let data;
 
     onMount(() => {
-        const oauthError = page.url.searchParams.get('message');
-        if (oauthError) {
-            addNotification({ type: 'error', message: oauthError });
+        if (page.url.searchParams.has('message')) {
+            addNotification({ type: 'error', message: 'OAuth authentication failed. Please try again.' });
         }
     });
 
