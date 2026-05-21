@@ -147,6 +147,10 @@
             return resources.includes(MigrationResources.Rule);
         }
 
+        if (groupKey === 'emailTemplates') {
+            return resources.includes(MigrationResources.EmailTemplate);
+        }
+
         if (groupKey === 'integrations') {
             return (
                 resources.includes(MigrationResources.Platform) ||
@@ -190,6 +194,7 @@
             policies: 'policies',
             smtp: 'smtp',
             customDomains: 'rule',
+            emailTemplates: 'email-template',
             integrations: 'platform',
             settings: 'project-variable'
         };

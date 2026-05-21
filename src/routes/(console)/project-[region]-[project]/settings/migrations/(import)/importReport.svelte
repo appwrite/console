@@ -58,6 +58,9 @@
         customDomains: {
             root: 'Custom domains'
         },
+        emailTemplates: {
+            root: 'Email templates'
+        },
         integrations: {
             root: 'Platforms',
             apiKeys: 'Include API keys'
@@ -112,6 +115,9 @@
         },
         customDomains: {
             root: 'Import manually-added custom-domain proxy rules (API, function, site, redirect). Auto-generated `.appwrite.network` rules are skipped — they are recreated by parent Function/Site migration.'
+        },
+        emailTemplates: {
+            root: 'Import custom email templates (verification, recovery, magic URL, OTP, MFA, session alerts, team invitations) per locale. Migrate SMTP first so the destination can send these emails.'
         },
         integrations: {
             root: 'Import all platforms (web, Flutter, iOS, Android, etc.)',

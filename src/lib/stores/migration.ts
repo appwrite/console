@@ -22,7 +22,8 @@ export type MigrationResource =
     | 'services'
     | 'policies'
     | 'smtp'
-    | 'rule';
+    | 'rule'
+    | 'email-template';
 
 // Appwrite enum is the superset of all provider resources — used as a
 // provider-agnostic reference. The addResource guard filters by provider.
@@ -41,7 +42,8 @@ export const MigrationResources = {
     Services: 'services',
     Policies: 'policies',
     SMTP: 'smtp',
-    Rule: 'rule'
+    Rule: 'rule',
+    EmailTemplate: 'email-template'
 } as const;
 
 type ProviderResourceMap = {
@@ -97,6 +99,9 @@ const initialFormData = {
         root: false
     },
     customDomains: {
+        root: false
+    },
+    emailTemplates: {
         root: false
     },
     integrations: {
@@ -155,7 +160,8 @@ export const ResourcesFriendly = {
     services: { singular: 'Services config', plural: 'Services config' },
     policies: { singular: 'Policies config', plural: 'Policies config' },
     smtp: { singular: 'SMTP config', plural: 'SMTP config' },
-    rule: { singular: 'Custom domain', plural: 'Custom domains' }
+    rule: { singular: 'Custom domain', plural: 'Custom domains' },
+    'email-template': { singular: 'Email template', plural: 'Email templates' }
 };
 
 export const providerResources: ProviderResourceMap = {
@@ -168,6 +174,7 @@ export const providerResources: ProviderResourceMap = {
         MigrationResources.Policies as AppwriteMigrationResource,
         MigrationResources.SMTP as AppwriteMigrationResource,
         MigrationResources.Rule as AppwriteMigrationResource,
+        MigrationResources.EmailTemplate as AppwriteMigrationResource,
         MigrationResources.Platform as AppwriteMigrationResource,
         MigrationResources.ApiKey as AppwriteMigrationResource,
         MigrationResources.ProjectVariable as AppwriteMigrationResource,
@@ -255,6 +262,9 @@ export const migrationFormToResources = <P extends Provider>(
     }
     if (formData.customDomains.root) {
         addResource(MigrationResources.Rule);
+    }
+    if (formData.emailTemplates.root) {
+        addResource(MigrationResources.EmailTemplate);
     }
     if (formData.integrations.root) {
         addResource(MigrationResources.Platform);
@@ -367,6 +377,9 @@ export const resourcesToMigrationForm = (resources: MigrationResource[]): Migrat
     }
     if (resources.includes(MigrationResources.Rule)) {
         formData.customDomains.root = true;
+    }
+    if (resources.includes(MigrationResources.EmailTemplate)) {
+        formData.emailTemplates.root = true;
     }
     if (resources.includes(MigrationResources.Platform)) {
         formData.integrations.root = true;
