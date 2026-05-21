@@ -139,6 +139,14 @@
             return resources.includes(MigrationResources.Policies);
         }
 
+        if (groupKey === 'smtp') {
+            return resources.includes(MigrationResources.SMTP);
+        }
+
+        if (groupKey === 'customDomains') {
+            return resources.includes(MigrationResources.Rule);
+        }
+
         if (groupKey === 'integrations') {
             return (
                 resources.includes(MigrationResources.Platform) ||
@@ -180,6 +188,8 @@
             labels: 'labels',
             services: 'services',
             policies: 'policies',
+            smtp: 'smtp',
+            customDomains: 'rule',
             integrations: 'platform',
             settings: 'project-variable'
         };

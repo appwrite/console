@@ -52,6 +52,12 @@
         policies: {
             root: 'Security policies'
         },
+        smtp: {
+            root: 'Custom SMTP'
+        },
+        customDomains: {
+            root: 'Custom domains'
+        },
         integrations: {
             root: 'Platforms',
             apiKeys: 'Include API keys'
@@ -100,6 +106,12 @@
         },
         policies: {
             root: 'Import the project security policies (password rules, session behavior, user limits, membership privacy)'
+        },
+        smtp: {
+            root: 'Import the project custom SMTP configuration (the password is not exposed by the SDK and stays on the destination)'
+        },
+        customDomains: {
+            root: 'Import manually-added custom-domain proxy rules (API, function, site, redirect). Auto-generated `.appwrite.network` rules are skipped — they are recreated by parent Function/Site migration.'
         },
         integrations: {
             root: 'Import all platforms (web, Flutter, iOS, Android, etc.)',

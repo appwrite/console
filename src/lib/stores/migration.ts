@@ -20,7 +20,9 @@ export type MigrationResource =
     | 'protocols'
     | 'labels'
     | 'services'
-    | 'policies';
+    | 'policies'
+    | 'smtp'
+    | 'rule';
 
 // Appwrite enum is the superset of all provider resources — used as a
 // provider-agnostic reference. The addResource guard filters by provider.
@@ -37,7 +39,9 @@ export const MigrationResources = {
     Protocols: 'protocols',
     Labels: 'labels',
     Services: 'services',
-    Policies: 'policies'
+    Policies: 'policies',
+    SMTP: 'smtp',
+    Rule: 'rule'
 } as const;
 
 type ProviderResourceMap = {
@@ -87,6 +91,12 @@ const initialFormData = {
         root: false
     },
     policies: {
+        root: false
+    },
+    smtp: {
+        root: false
+    },
+    customDomains: {
         root: false
     },
     integrations: {
@@ -143,7 +153,9 @@ export const ResourcesFriendly = {
     protocols: { singular: 'Protocol config', plural: 'Protocol config' },
     labels: { singular: 'Project labels', plural: 'Project labels' },
     services: { singular: 'Services config', plural: 'Services config' },
-    policies: { singular: 'Policies config', plural: 'Policies config' }
+    policies: { singular: 'Policies config', plural: 'Policies config' },
+    smtp: { singular: 'SMTP config', plural: 'SMTP config' },
+    rule: { singular: 'Custom domain', plural: 'Custom domains' }
 };
 
 export const providerResources: ProviderResourceMap = {
@@ -154,6 +166,8 @@ export const providerResources: ProviderResourceMap = {
         MigrationResources.Labels as AppwriteMigrationResource,
         MigrationResources.Services as AppwriteMigrationResource,
         MigrationResources.Policies as AppwriteMigrationResource,
+        MigrationResources.SMTP as AppwriteMigrationResource,
+        MigrationResources.Rule as AppwriteMigrationResource,
         MigrationResources.Platform as AppwriteMigrationResource,
         MigrationResources.ApiKey as AppwriteMigrationResource,
         MigrationResources.ProjectVariable as AppwriteMigrationResource,
@@ -235,6 +249,12 @@ export const migrationFormToResources = <P extends Provider>(
     }
     if (formData.policies.root) {
         addResource(MigrationResources.Policies);
+    }
+    if (formData.smtp.root) {
+        addResource(MigrationResources.SMTP);
+    }
+    if (formData.customDomains.root) {
+        addResource(MigrationResources.Rule);
     }
     if (formData.integrations.root) {
         addResource(MigrationResources.Platform);
@@ -341,6 +361,12 @@ export const resourcesToMigrationForm = (resources: MigrationResource[]): Migrat
     }
     if (resources.includes(MigrationResources.Policies)) {
         formData.policies.root = true;
+    }
+    if (resources.includes(MigrationResources.SMTP)) {
+        formData.smtp.root = true;
+    }
+    if (resources.includes(MigrationResources.Rule)) {
+        formData.customDomains.root = true;
     }
     if (resources.includes(MigrationResources.Platform)) {
         formData.integrations.root = true;
