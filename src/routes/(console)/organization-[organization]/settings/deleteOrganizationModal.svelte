@@ -14,7 +14,6 @@
     import { formatCurrency } from '$lib/helpers/numbers';
     import { billingIdToPlan } from '$lib/stores/billing';
     import { Table, Tabs, Alert } from '@appwrite.io/pink-svelte';
-    import DeleteOrganizationEstimation from './deleteOrganizationEstimation.svelte';
     import type { Models } from '@appwrite.io/console';
 
     export let showDelete = false;
@@ -23,7 +22,6 @@
     let error: string = null;
     let selectedTab = 'projects';
     let organizationName: string = null;
-    let estimation: Models.EstimationDeleteOrganization;
 
     async function deleteOrg() {
         try {
@@ -76,21 +74,6 @@
     $: if (!showDelete) {
         // reset on close.
         organizationName = '';
-    } else {
-        getEstimate();
-    }
-
-    async function getEstimate() {
-        if (isCloud) {
-            try {
-                error = '';
-                estimation = await sdk.forConsole.organizations.estimationDeleteOrganization({
-                    organizationId: $organization.$id
-                });
-            } catch (e) {
-                error = e.message;
-            }
-        }
     }
 </script>
 
@@ -114,60 +97,53 @@
             <b>This action is irreversible</b>.
         {/if}
     </p>
-    <!-- has estimation, has unpaid invoices, any of the invoices' gross amount is > 0   -->
-    {#if estimation && (estimation.unpaidInvoices.length > 0 || estimation.unpaidInvoices.some((invoice) => invoice.grossAmount > 0))}
-        <DeleteOrganizationEstimation {estimation} />
-    {:else}
-        {#if $projects.total > 0}
-            <Tabs.Root let:root stretch>
-                {#each tabs as { name, label, total }}
-                    <Tabs.Item.Button
-                        {root}
-                        on:click={() => (selectedTab = name)}
-                        active={selectedTab === name}>
-                        {label.desktop} ({total})
-                    </Tabs.Item.Button>
+    {#if $projects.total > 0}
+        <Tabs.Root let:root stretch>
+            {#each tabs as { name, label, total }}
+                <Tabs.Item.Button
+                    {root}
+                    on:click={() => (selectedTab = name)}
+                    active={selectedTab === name}>
+                    {label.desktop} ({total})
+                </Tabs.Item.Button>
+            {/each}
+        </Tabs.Root>
+        {#if selectedTab === 'projects'}
+            <Table.Root columns={[{ id: 'projects' }, { id: 'lastUpdated' }]} let:root>
+                <svelte:fragment slot="header" let:root>
+                    <Table.Header.Cell column="projects" {root}>Projects</Table.Header.Cell>
+                    <Table.Header.Cell column="lastUpdated" {root}>Last updated</Table.Header.Cell>
+                </svelte:fragment>
+                {#each $projects.projects as project}
+                    <Table.Row.Base {root}>
+                        <Table.Cell column="projects" {root}>{project.name}</Table.Cell>
+                        <Table.Cell column="lastUpdated" {root}
+                            >{toLocaleDate(project.$updatedAt)}</Table.Cell>
+                    </Table.Row.Base>
                 {/each}
-            </Tabs.Root>
-            {#if selectedTab === 'projects'}
-                <Table.Root columns={[{ id: 'projects' }, { id: 'lastUpdated' }]} let:root>
-                    <svelte:fragment slot="header" let:root>
-                        <Table.Header.Cell column="projects" {root}>Projects</Table.Header.Cell>
-                        <Table.Header.Cell column="lastUpdated" {root}
-                            >Last updated</Table.Header.Cell>
-                    </svelte:fragment>
-                    {#each $projects.projects as project}
-                        <Table.Row.Base {root}>
-                            <Table.Cell column="projects" {root}>{project.name}</Table.Cell>
-                            <Table.Cell column="lastUpdated" {root}
-                                >{toLocaleDate(project.$updatedAt)}</Table.Cell>
-                        </Table.Row.Base>
-                    {/each}
-                </Table.Root>
-            {:else}
-                <Table.Root columns={[{ id: 'member' }, { id: 'lastUpdated' }]} let:root>
-                    <svelte:fragment slot="header" let:root>
-                        <Table.Header.Cell column="member" {root}>Members</Table.Header.Cell>
-                        <Table.Header.Cell column="lastUpdated" {root}
-                            >Last updated</Table.Header.Cell>
-                    </svelte:fragment>
-                    {#each $members.memberships as membership}
-                        <Table.Row.Base {root}>
-                            <Table.Cell column="member" {root}>{membership.userName}</Table.Cell>
-                            <Table.Cell column="lastUpdated" {root}
-                                >{toLocaleDate(membership.$updatedAt)}</Table.Cell>
-                        </Table.Row.Base>
-                    {/each}
-                </Table.Root>
-            {/if}
+            </Table.Root>
+        {:else}
+            <Table.Root columns={[{ id: 'member' }, { id: 'lastUpdated' }]} let:root>
+                <svelte:fragment slot="header" let:root>
+                    <Table.Header.Cell column="member" {root}>Members</Table.Header.Cell>
+                    <Table.Header.Cell column="lastUpdated" {root}>Last updated</Table.Header.Cell>
+                </svelte:fragment>
+                {#each $members.memberships as membership}
+                    <Table.Row.Base {root}>
+                        <Table.Cell column="member" {root}>{membership.userName}</Table.Cell>
+                        <Table.Cell column="lastUpdated" {root}
+                            >{toLocaleDate(membership.$updatedAt)}</Table.Cell>
+                    </Table.Row.Base>
+                {/each}
+            </Table.Root>
         {/if}
-        <InputText
-            label={`Confirm the organization name to continue`}
-            placeholder="Enter {$organization.name} to continue"
-            id="organization-name"
-            required
-            bind:value={organizationName} />
     {/if}
+    <InputText
+        label={`Confirm the organization name to continue`}
+        placeholder="Enter {$organization.name} to continue"
+        id="organization-name"
+        required
+        bind:value={organizationName} />
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showDelete = false)}>Cancel</Button>
         <Button
