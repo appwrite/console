@@ -4,7 +4,11 @@ import { Dependencies } from '$lib/constants';
 import { isValueOfStringEnum } from '$lib/helpers/types';
 import { addNotification } from '$lib/stores/notifications';
 import { sdk } from '$lib/stores/sdk';
-import { OAuthProvider, ProjectOAuth2GooglePrompt, type Models as ConsoleModels } from '@appwrite.io/console';
+import {
+    OAuthProvider,
+    ProjectOAuth2GooglePrompt,
+    type Models as ConsoleModels
+} from '@appwrite.io/console';
 
 type ProjectOAuthProvider = ConsoleModels.OAuth2ProviderList['providers'][number];
 

@@ -21,7 +21,10 @@
 
     onMount(() => {
         if (page.url.searchParams.has('message')) {
-            addNotification({ type: 'error', message: 'OAuth authentication failed. Please try again.' });
+            addNotification({
+                type: 'error',
+                message: 'OAuth authentication failed. Please try again.'
+            });
         }
     });
 

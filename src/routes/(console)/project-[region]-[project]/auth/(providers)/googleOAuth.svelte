@@ -1,14 +1,13 @@
 <script lang="ts">
     import { page } from '$app/state';
     import { CopyInput, Modal } from '$lib/components';
-    import {
-        Button,
-        InputPassword,
-        InputSwitch,
-        InputText
-    } from '$lib/elements/forms';
+    import { Button, InputPassword, InputSwitch, InputText } from '$lib/elements/forms';
     import { updateOAuth } from '../updateOAuth';
-    import { OAuthProvider, ProjectOAuth2GooglePrompt, type Models as ConsoleModels } from '@appwrite.io/console';
+    import {
+        OAuthProvider,
+        ProjectOAuth2GooglePrompt,
+        type Models as ConsoleModels
+    } from '@appwrite.io/console';
     import type { AuthProvider } from '../updateOAuth';
     import { oAuthProviders } from '$lib/stores/oauth-providers';
     import {
