@@ -23,7 +23,7 @@
     }
 </script>
 
-{#if show && $organization?.$id && !$organization?.billingPlanDetails.supportsCredits && !page.url.pathname.includes(base + '/account')}
+{#if show && $organization?.$id && !$organization?.billingPlanDetails?.supportsCredits && !page.url.pathname.includes(base + '/account')}
     <GradientBanner on:close={handleClose}>
         <Layout.Stack
             gap="m"

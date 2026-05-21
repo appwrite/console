@@ -96,7 +96,7 @@
         .join(', ')}
 
     {#if services.length}
-        {@const supportsUsage = Object.keys($currentPlan.usage).length > 0}
+        {@const supportsUsage = Object.keys($currentPlan?.usage ?? {}).length > 0}
         <slot
             name="alert"
             {limit}
