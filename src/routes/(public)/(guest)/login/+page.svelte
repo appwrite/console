@@ -1,6 +1,7 @@
 <script lang="ts">
     import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
+    import { onMount } from 'svelte';
     import { Button, Form, InputEmail, InputPassword } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
@@ -17,6 +18,13 @@
     let mail: string, pass: string, disabled: boolean;
 
     export let data;
+
+    onMount(() => {
+        const oauthError = page.url.searchParams.get('message');
+        if (oauthError) {
+            addNotification({ type: 'error', message: oauthError });
+        }
+    });
 
     async function login() {
         try {
