@@ -134,6 +134,10 @@
             bind:value={appId} />
     {/if}
 
+    <Accordion title="Advanced" badge="Optional" hideDivider>
+        <GooglePromptPicker bind:value={prompt} />
+    </Accordion>
+
     {#if !showSecretInput}
         <div>
             <Tag size="s" on:click={() => (showSecretInput = true)}>
@@ -175,10 +179,6 @@
             </Layout.Stack>
         </Card.Base>
     {/if}
-
-    <Accordion title="Advanced" badge="Optional" hideDivider>
-        <GooglePromptPicker bind:value={prompt} />
-    </Accordion>
 
     <Alert.Inline status="info">
         To complete set up, add this OAuth2 redirect URI to your Google app configuration.
