@@ -36,6 +36,35 @@
         },
         backups: {
             root: 'Backup policies'
+        },
+        authMethods: {
+            root: 'Auth methods'
+        },
+        protocols: {
+            root: 'Protocols'
+        },
+        labels: {
+            root: 'Project labels'
+        },
+        services: {
+            root: 'Services'
+        },
+        policies: {
+            root: 'Security policies'
+        },
+        smtp: {
+            root: 'Custom SMTP'
+        },
+        customDomains: {
+            root: 'Custom domains'
+        },
+        integrations: {
+            root: 'Platforms',
+            apiKeys: 'Include API keys'
+        },
+        settings: {
+            root: 'Project variables',
+            webhooks: 'Include webhooks'
         }
     };
 
@@ -62,6 +91,36 @@
         },
         backups: {
             root: 'Import all backup policies'
+        },
+        authMethods: {
+            root: 'Import the project auth method flags (email/password, magic URL, JWT, phone, etc.)'
+        },
+        protocols: {
+            root: 'Import the project protocol flags (REST / GraphQL / WebSocket)'
+        },
+        labels: {
+            root: 'Import the project-level RBAC label array'
+        },
+        services: {
+            root: 'Import the project service enable/disable flags (Account, Databases, Functions, GraphQL, etc.)'
+        },
+        policies: {
+            root: 'Import the project security policies (password rules, session behavior, user limits, membership privacy)'
+        },
+        smtp: {
+            root: 'Import the project custom SMTP configuration (the password is not exposed by the SDK and stays on the destination)'
+        },
+        customDomains: {
+            root: 'Import manually-added custom-domain proxy rules (API, function, site, redirect). Auto-generated `.appwrite.network` rules are skipped — they are recreated by parent Function/Site migration.'
+        },
+        integrations: {
+            root: 'Import all platforms (web, Flutter, iOS, Android, etc.)',
+            apiKeys: 'Import all API keys with their scopes and expiration'
+        },
+        settings: {
+            root: 'Import all project-level variables (secret values are not exposed by the SDK and will be migrated empty)',
+            webhooks:
+                'Import all webhooks (signing secrets are not exposed by the SDK; the destination regenerates a fresh signature key for each)'
         }
     };
 
