@@ -295,7 +295,10 @@
         };
 
         // addons (additional members, projects, etc.)
-        const billingAddonNames: Record<string, string> = {
+        // Fallback labels for older cloud builds that don't yet send `addon.name`
+        // on the resource entry. Once the cloud rollout is complete this map can
+        // be removed entirely.
+        const billingAddonNamesFallback: Record<string, string> = {
             addon_baa: 'HIPAA BAA'
         };
 
@@ -315,8 +318,9 @@
                             ? 'Additional members'
                             : addon.resourceId === 'projects'
                               ? 'Additional projects'
-                              : (billingAddonNames[addon.resourceId] ??
-                                `${addon.resourceId} overage (${formatNum(addon.value)})`),
+                              : addon.name ||
+                                billingAddonNamesFallback[addon.resourceId] ||
+                                addon.resourceId,
                     usage: '',
                     price: formatCurrency(addon.amount)
                 },
