@@ -1,18 +1,18 @@
 import { isCloud } from '$lib/system';
 import { isSameDay } from '$lib/helpers/date';
 import { type BottomModalAlertItem, showBottomModalAlert } from '$lib/stores/bottom-alerts';
-import PresenceApi from '$lib/images/promos/presence-api.png';
+import PresencesApi from '$lib/images/promos/presences-api.png';
 
 const listOfPromotions: BottomModalAlertItem[] = [];
 
 if (isCloud) {
-    const presenceApiPromo: BottomModalAlertItem = {
-        id: 'modal:presence_api_announcement',
+    const presencesApiPromo: BottomModalAlertItem = {
+        id: 'modal:presences_api_announcement',
         src: {
-            dark: PresenceApi,
-            light: PresenceApi
+            dark: PresencesApi,
+            light: PresencesApi
         },
-        title: 'Announcing the Presence API',
+        title: 'Announcing the Presences API',
         message:
             'Track who is online, typing, and active in realtime with built-in channels, automatic expiry, and permission-aware subscriptions.',
         plan: 'free',
@@ -20,14 +20,14 @@ if (isCloud) {
         scope: 'everywhere',
         cta: {
             text: 'Read announcement',
-            link: () => 'https://appwrite.io/blog/post/announcing-presence-api',
+            link: () => 'https://appwrite.io/blog/post/announcing-presences-api',
             external: true,
             hideOnClick: true,
             skipUpgradeRedirect: true
         },
         show: true
     };
-    listOfPromotions.push(presenceApiPromo);
+    listOfPromotions.push(presencesApiPromo);
 }
 
 export function addBottomModalAlerts() {
