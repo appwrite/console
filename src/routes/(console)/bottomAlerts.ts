@@ -1,33 +1,33 @@
 import { isCloud } from '$lib/system';
 import { isSameDay } from '$lib/helpers/date';
 import { type BottomModalAlertItem, showBottomModalAlert } from '$lib/stores/bottom-alerts';
-import RelationshipsOutOfBeta from '$lib/images/promos/relationships-out-of-beta.png';
+import PresenceApi from '$lib/images/promos/presence-api.png';
 
 const listOfPromotions: BottomModalAlertItem[] = [];
 
 if (isCloud) {
-    const relationshipsOutOfBetaPromo: BottomModalAlertItem = {
-        id: 'modal:relationships_out_of_beta_announcement',
+    const presenceApiPromo: BottomModalAlertItem = {
+        id: 'modal:presence_api_announcement',
         src: {
-            dark: RelationshipsOutOfBeta,
-            light: RelationshipsOutOfBeta
+            dark: PresenceApi,
+            light: PresenceApi
         },
-        title: 'Database relationships are out of beta',
+        title: 'Announcing the Presence API',
         message:
-            'After a year of performance overhauls, opt-in loading, and full query support, relationships are now production-ready.',
+            'Track who is online, typing, and active in realtime with built-in channels, automatic expiry, and permission-aware subscriptions.',
         plan: 'free',
         importance: 8,
         scope: 'everywhere',
         cta: {
             text: 'Read announcement',
-            link: () => 'https://appwrite.io/blog/post/relationships-are-out-of-beta',
+            link: () => 'https://appwrite.io/blog/post/announcing-presence-api',
             external: true,
             hideOnClick: true,
             skipUpgradeRedirect: true
         },
         show: true
     };
-    listOfPromotions.push(relationshipsOutOfBetaPromo);
+    listOfPromotions.push(presenceApiPromo);
 }
 
 export function addBottomModalAlerts() {
