@@ -9,7 +9,8 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Adapter, BuildRuntime, Framework, type Models } from '@appwrite.io/console';
-    import { Input, Layout } from '@appwrite.io/pink-svelte';
+    import { Icon, Layout, Tooltip } from '@appwrite.io/pink-svelte';
+    import { IconInfo } from '@appwrite.io/pink-icons-svelte';
 
     export let site: Models.Site;
 
@@ -93,19 +94,28 @@
                             placeholder={providerBranches.length
                                 ? ''
                                 : 'e.g. main, feat/*, !hotfix/*'}
-                            bind:tags={providerBranches} />
-                        <Input.Helper state="default"
-                            >Leave empty to deploy on all branches. Prefix with <code>!</code> to exclude.</Input.Helper>
+                            bind:tags={providerBranches}>
+                            <Tooltip slot="info">
+                                <Icon icon={IconInfo} size="s" />
+                                <span slot="tooltip"
+                                    >Leave empty to deploy on all branches. Prefix with ! to
+                                    exclude.</span>
+                            </Tooltip>
+                        </InputTags>
                     </Layout.Stack>
                     <Layout.Stack gap="s">
                         <InputTags
                             id="providerPaths"
                             label="Path filters"
                             placeholder={providerPaths.length ? '' : 'e.g. src/**, !docs/**'}
-                            bind:tags={providerPaths} />
-                        <Input.Helper state="default"
-                            >Leave empty to deploy on all file changes. Prefix with <code>!</code>
-                            to exclude.</Input.Helper>
+                            bind:tags={providerPaths}>
+                            <Tooltip slot="info">
+                                <Icon icon={IconInfo} size="s" />
+                                <span slot="tooltip"
+                                    >Leave empty to deploy on all file changes. Prefix with ! to
+                                    exclude.</span>
+                            </Tooltip>
+                        </InputTags>
                     </Layout.Stack>
                 </Layout.Stack>
             </svelte:fragment>
