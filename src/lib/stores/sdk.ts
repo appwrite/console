@@ -12,6 +12,7 @@ import {
     Locale,
     Messaging,
     Migrations,
+    Organization,
     Project,
     Project as ProjectApi,
     Projects,
@@ -62,7 +63,19 @@ function createConsoleSdk(client: Client) {
         domains: new Domains(client),
         storage: new Storage(client),
         realtime: new Realtime(client),
-        organizations: new Organizations(client)
+        organizations: new Organizations(client),
+        organization(organizationId: string) {
+            const organizationClient = new Client();
+            organizationClient.setEndpoint(client.config.endpoint);
+            if (client.config.project) {
+                organizationClient.setProject(client.config.project);
+            }
+            Object.assign(organizationClient.headers, client.getHeaders(), {
+                'X-Appwrite-Organization': organizationId
+            });
+
+            return new Organization(organizationClient);
+        }
     };
 }
 

@@ -10,7 +10,7 @@ export const load: PageLoad = async ({ depends, params, parent }) => {
     depends(Dependencies.ADDONS);
 
     const [projects, invoices, addons, addonPrice] = await Promise.all([
-        sdk.forConsole.projects.list({
+        sdk.forConsole.organization(params.organization).listProjects({
             queries: [Query.equal('teamId', params.organization), Query.select(['$id', 'name'])]
         }),
         isCloud

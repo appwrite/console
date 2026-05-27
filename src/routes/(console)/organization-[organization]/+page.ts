@@ -32,7 +32,7 @@ export const load: PageLoad = async ({ params, url, route, depends, parent }) =>
         ? [Query.or([Query.equal('status', ['active', 'paused']), Query.isNull('status')])]
         : [];
 
-    const activeProjects = await sdk.forConsole.projects.list({
+    const activeProjects = await sdk.forConsole.organization(params.organization).listProjects({
         queries: [
             ...searchQueries,
             ...activeQueries,
