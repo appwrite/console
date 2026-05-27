@@ -427,16 +427,23 @@
     async function handleDelete() {
         showDelete = false;
         let hadErrors = false;
+        const rowIdsToDelete = selectedRowForDelete ? [selectedRowForDelete] : [...selectedRows];
+        const deletedRowsCount = rowIdsToDelete.length || 1;
 
         try {
-            if (selectedRowForDelete) {
+            $spreadsheetLoading = true;
+            selectedRows = [];
+            selectedRowForDelete = null;
+            spreadsheetRenderKey.set(hash(rowIdsToDelete));
+
+            if (rowIdsToDelete.length === 1) {
                 await sdk.forProject(page.params.region, page.params.project).tablesDB.deleteRow({
                     databaseId,
                     tableId,
-                    rowId: selectedRowForDelete
+                    rowId: rowIdsToDelete[0]
                 });
             } else {
-                if (selectedRows.length) {
+                if (rowIdsToDelete.length) {
                     const hasAnyRelationships = table.fields.some(isRelationship) ?? false;
 
                     const tablesSDK = sdk.forProject(
@@ -445,7 +452,7 @@
                     ).tablesDB;
 
                     if (hasAnyRelationships) {
-                        for (const batch of chunks(selectedRows)) {
+                        for (const batch of chunks(rowIdsToDelete)) {
                             try {
                                 await Promise.all(
                                     batch.map((rowId) =>
@@ -469,7 +476,7 @@
                             });
                         }
                     } else {
-                        for (const batch of chunks(selectedRows, 100)) {
+                        for (const batch of chunks(rowIdsToDelete, 100)) {
                             await tablesSDK.deleteRows({
                                 databaseId,
                                 tableId,
@@ -487,16 +494,12 @@
                 // error is already shown above!
                 addNotification({
                     type: 'success',
-                    message: `${selectedRows.length ? selectedRows.length : 1} row${selectedRows.length > 1 ? 's' : ''} deleted`
+                    message: `${deletedRowsCount} row${deletedRowsCount > 1 ? 's' : ''} deleted`
                 });
             }
 
             spreadsheetRenderKey.set(
-                hash([
-                    data.rows.total.toString(),
-                    ...(selectedRows as string[]),
-                    selectedRowForDelete
-                ])
+                hash([data.rows.total.toString(), ...rowIdsToDelete])
             );
         } catch (error) {
             addNotification({ type: 'error', message: error.message });
@@ -505,6 +508,7 @@
             selectedRows = [];
             showDelete = false;
             selectedRowForDelete = null;
+            $spreadsheetLoading = false;
         }
     }
 
