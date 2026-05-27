@@ -14,23 +14,19 @@
         const origin = params.get('origin');
         const path = params.get('path');
         try {
-            let project;
-            for (const organization of data.organizations?.teams ?? []) {
-                const { projects } = await sdk.forConsole
-                    .organization(organization.$id)
-                    .listProjects({
+            const results = await Promise.all(
+                (data.organizations?.teams ?? []).map((org) =>
+                    sdk.forConsole.organization(org.$id).listProjects({
                         queries: [
                             Query.equal('$id', projectId),
                             Query.limit(1),
                             Query.select(['$id', 'region'])
                         ],
                         total: false
-                    });
-                if (projects[0]) {
-                    project = projects[0];
-                    break;
-                }
-            }
+                    })
+                )
+            );
+            const project = results.find((r) => r.projects[0])?.projects[0];
 
             if (!project) {
                 await goto(
