@@ -498,9 +498,7 @@
                 });
             }
 
-            spreadsheetRenderKey.set(
-                hash([data.rows.total.toString(), ...rowIdsToDelete])
-            );
+            spreadsheetRenderKey.set(hash([data.rows.total.toString(), ...rowIdsToDelete]));
         } catch (error) {
             addNotification({ type: 'error', message: error.message });
             trackError(error, Submit.RowDelete);
