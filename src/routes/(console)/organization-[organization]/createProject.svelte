@@ -27,10 +27,9 @@
         try {
             disabled = true;
             showSubmissionLoader = true;
-            const project = await sdk.forConsole.projects.create({
+            const project = await sdk.forConsole.organization(teamId).createProject({
                 projectId: id || ID.unique(),
-                name,
-                teamId
+                name
             });
             show = false;
             dispatch('created', project);

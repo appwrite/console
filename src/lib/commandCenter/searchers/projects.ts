@@ -37,7 +37,7 @@ export const projectsSearcher = (async (query: string) => {
         return [];
     }
 
-    const { projects } = await sdk.forConsole.projects.list({
+    const { projects } = await sdk.forConsole.organization(get(organization).$id).listProjects({
         queries: [
             Query.equal('teamId', get(organization).$id),
             Query.orderDesc(''),

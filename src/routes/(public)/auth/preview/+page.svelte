@@ -6,22 +6,31 @@
     import { Layout, Spinner, Typography } from '@appwrite.io/pink-svelte';
     import { onMount } from 'svelte';
 
+    let { data } = $props();
+
     onMount(async () => {
         const params = new URLSearchParams(window.location.search);
         const projectId = params.get('projectId');
         const origin = params.get('origin');
         const path = params.get('path');
         try {
-            const { projects } = await sdk.forConsole.projects.list({
-                queries: [
-                    Query.equal('$id', projectId),
-                    Query.limit(1),
-                    Query.select(['$id', 'region'])
-                ],
-                total: false
-            });
-
-            const project = projects[0];
+            let project;
+            for (const organization of data.organizations?.teams ?? []) {
+                const { projects } = await sdk.forConsole
+                    .organization(organization.$id)
+                    .listProjects({
+                        queries: [
+                            Query.equal('$id', projectId),
+                            Query.limit(1),
+                            Query.select(['$id', 'region'])
+                        ],
+                        total: false
+                    });
+                if (projects[0]) {
+                    project = projects[0];
+                    break;
+                }
+            }
 
             if (!project) {
                 await goto(

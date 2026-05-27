@@ -21,7 +21,7 @@
 
     async function updateName() {
         try {
-            await sdk.forConsole.projects.update({
+            await sdk.forConsole.organization($project.teamId).updateProject({
                 projectId: $project.$id,
                 name
             });
