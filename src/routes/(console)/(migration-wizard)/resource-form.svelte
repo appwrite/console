@@ -123,6 +123,10 @@
             return resources.includes(MigrationResources.AuthMethods);
         }
 
+        if (groupKey === 'oauthProviders') {
+            return resources.includes(MigrationResources.OAuthProviders);
+        }
+
         if (groupKey === 'protocols') {
             return resources.includes(MigrationResources.Protocols);
         }
@@ -188,13 +192,14 @@
             messaging: 'provider',
             backups: 'backup-policy',
             authMethods: 'auth-methods',
-            protocols: 'protocols',
-            labels: 'labels',
-            services: 'services',
+            oauthProviders: 'oauth-providers',
+            protocols: 'project-protocols',
+            labels: 'project-labels',
+            services: 'project-services',
             policies: 'policies',
             smtp: 'smtp',
             customDomains: 'rule',
-            emailTemplates: 'email-template',
+            emailTemplates: 'project-email-template',
             integrations: 'platform',
             settings: 'project-variable'
         };

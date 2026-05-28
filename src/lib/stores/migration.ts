@@ -17,19 +17,19 @@ export type MigrationResource =
     | 'project-variable'
     | 'webhook'
     | 'auth-methods'
-    | 'protocols'
-    | 'labels'
-    | 'services'
+    | 'oauth-providers'
+    | 'project-protocols'
+    | 'project-labels'
+    | 'project-services'
+    | 'project-email-template'
     | 'policies'
     | 'smtp'
-    | 'rule'
-    | 'email-template';
+    | 'rule';
 
 // Appwrite enum is the superset of all provider resources — used as a
 // provider-agnostic reference. The addResource guard filters by provider.
-// Project-level singleton resources (Platform, ApiKey, ProjectVariable,
-// Webhook, AuthMethods, Protocols, Labels, Services, Policies) are augmented
-// locally until @appwrite.io/console SDK is regenerated.
+// Project-level singleton resources are augmented locally until @appwrite.io/console
+// SDK is regenerated.
 export const MigrationResources = {
     ...AppwriteMigrationResource,
     Platform: 'platform',
@@ -37,13 +37,14 @@ export const MigrationResources = {
     ProjectVariable: 'project-variable',
     Webhook: 'webhook',
     AuthMethods: 'auth-methods',
-    Protocols: 'protocols',
-    Labels: 'labels',
-    Services: 'services',
+    OAuthProviders: 'oauth-providers',
+    Protocols: 'project-protocols',
+    Labels: 'project-labels',
+    Services: 'project-services',
     Policies: 'policies',
     SMTP: 'smtp',
     Rule: 'rule',
-    EmailTemplate: 'email-template'
+    EmailTemplate: 'project-email-template'
 } as const;
 
 type ProviderResourceMap = {
@@ -81,6 +82,9 @@ const initialFormData = {
         root: false
     },
     authMethods: {
+        root: false
+    },
+    oauthProviders: {
         root: false
     },
     protocols: {
@@ -155,19 +159,21 @@ export const ResourcesFriendly = {
     'project-variable': { singular: 'Project Variable', plural: 'Project Variables' },
     webhook: { singular: 'Webhook', plural: 'Webhooks' },
     'auth-methods': { singular: 'Auth method config', plural: 'Auth method config' },
-    protocols: { singular: 'Protocol config', plural: 'Protocol config' },
-    labels: { singular: 'Project labels', plural: 'Project labels' },
-    services: { singular: 'Services config', plural: 'Services config' },
+    'oauth-providers': { singular: 'OAuth provider config', plural: 'OAuth provider config' },
+    'project-protocols': { singular: 'Protocol config', plural: 'Protocol config' },
+    'project-labels': { singular: 'Project labels', plural: 'Project labels' },
+    'project-services': { singular: 'Services config', plural: 'Services config' },
     policies: { singular: 'Policies config', plural: 'Policies config' },
     smtp: { singular: 'SMTP config', plural: 'SMTP config' },
     rule: { singular: 'Custom domain', plural: 'Custom domains' },
-    'email-template': { singular: 'Email template', plural: 'Email templates' }
+    'project-email-template': { singular: 'Email template', plural: 'Email templates' }
 };
 
 export const providerResources: ProviderResourceMap = {
     appwrite: [
         ...Object.values(AppwriteMigrationResource),
         MigrationResources.AuthMethods as AppwriteMigrationResource,
+        MigrationResources.OAuthProviders as AppwriteMigrationResource,
         MigrationResources.Protocols as AppwriteMigrationResource,
         MigrationResources.Labels as AppwriteMigrationResource,
         MigrationResources.Services as AppwriteMigrationResource,
@@ -244,6 +250,9 @@ export const migrationFormToResources = <P extends Provider>(
     }
     if (formData.authMethods.root) {
         addResource(MigrationResources.AuthMethods);
+    }
+    if (formData.oauthProviders.root) {
+        addResource(MigrationResources.OAuthProviders);
     }
     if (formData.protocols.root) {
         addResource(MigrationResources.Protocols);
@@ -359,6 +368,9 @@ export const resourcesToMigrationForm = (resources: MigrationResource[]): Migrat
     }
     if (resources.includes(MigrationResources.AuthMethods)) {
         formData.authMethods.root = true;
+    }
+    if (resources.includes(MigrationResources.OAuthProviders)) {
+        formData.oauthProviders.root = true;
     }
     if (resources.includes(MigrationResources.Protocols)) {
         formData.protocols.root = true;

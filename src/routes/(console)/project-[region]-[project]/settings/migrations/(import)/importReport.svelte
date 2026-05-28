@@ -40,6 +40,9 @@
         authMethods: {
             root: 'Auth methods'
         },
+        oauthProviders: {
+            root: 'OAuth providers'
+        },
         protocols: {
             root: 'Protocols'
         },
@@ -97,6 +100,9 @@
         },
         authMethods: {
             root: 'Import the project auth method flags (email/password, magic URL, JWT, phone, etc.)'
+        },
+        oauthProviders: {
+            root: 'Import the project OAuth provider enable flags. Credentials (client ID, secret) are not exposed by the SDK — providers are only re-enabled on the destination if it already has credentials registered for that provider.'
         },
         protocols: {
             root: 'Import the project protocol flags (REST / GraphQL / WebSocket)'
