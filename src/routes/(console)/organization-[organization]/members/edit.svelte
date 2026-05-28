@@ -44,7 +44,7 @@
     $effect(() => {
         if (showEdit && selectedMember) {
             const memberRoles = selectedMember.roles ?? [];
-            if (memberRoles.some(isProjectSpecificRole)) {
+            if (supportsProjectRoles && memberRoles.some(isProjectSpecificRole)) {
                 accessType = 'specific';
                 projectAccess = memberRoles.filter(isProjectSpecificRole).map((r) => {
                     const parsed = parseProjectRole(r);

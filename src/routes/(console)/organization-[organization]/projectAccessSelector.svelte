@@ -25,7 +25,7 @@
             .map((p) => ({ label: p.name, value: p.$id }));
     }
 
-    const allSelected = $derived(projects.length > 0 && projectAccess.length >= projects.length);
+    const allSelected = $derived(projects.length === 0 || projectAccess.length >= projects.length);
 
     function addRow() {
         projectAccess = [...projectAccess, { projectId: '', roleName: 'developer' }];

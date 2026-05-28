@@ -58,6 +58,7 @@
             role = isSelfHosted ? 'owner' : 'developer';
             accessType = 'all';
             projectAccess = [];
+            orgProjects = [];
         }
     });
 
