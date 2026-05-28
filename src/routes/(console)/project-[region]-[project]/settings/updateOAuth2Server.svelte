@@ -177,7 +177,7 @@
 
                 <InputTags
                     id="oauth2-scopes"
-                    label="Allowed scopes"
+                    label="Scopes"
                     bind:tags={scopes}
                     placeholder="e.g. profile"
                     max={100}
