@@ -54,6 +54,7 @@
                 providerSilentMode: site.providerSilentMode ?? undefined,
                 providerRootDirectory: site.providerRootDirectory ?? undefined,
                 buildSpecification: site.buildSpecification ?? undefined,
+                deploymentRetention: site.deploymentRetention ?? undefined,
                 providerBranches,
                 providerPaths
             });
