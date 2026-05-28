@@ -6,7 +6,14 @@
     import { base } from '$app/paths';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import Upgrade from '$lib/components/roles/upgrade.svelte';
-    import { getServiceLimit, readOnly, getRoleLabel } from '$lib/stores/billing';
+    import {
+        getServiceLimit,
+        readOnly,
+        getRoleLabel,
+        isProjectSpecificRole,
+        parseProjectRole
+    } from '$lib/stores/billing';
+
     import {
         BODY_TOOLTIP_MAX_WIDTH,
         BODY_TOOLTIP_WRAPPER_STYLE
@@ -149,7 +156,25 @@
                     </Typography.Text>
                 </Table.Cell>
                 <Table.Cell column="roles" {root}>
-                    {member.roles.map((role) => getRoleLabel(role)).join(', ')}
+                    {#if member.roles.some(isProjectSpecificRole)}
+                        <Layout.Stack direction="row" gap="xxs" wrap="wrap">
+                            {#each member.roles.filter(isProjectSpecificRole) as memberRole}
+                                {@const parsed = parseProjectRole(memberRole)}
+                                {@const project = parsed
+                                    ? data.orgProjects?.projects.find(
+                                          (p) => p.$id === parsed.projectId
+                                      )
+                                    : null}
+                                <Badge
+                                    size="xs"
+                                    variant="secondary"
+                                    content="{getRoleLabel(memberRole)}: {project?.name ??
+                                        parsed?.projectId}" />
+                            {/each}
+                        </Layout.Stack>
+                    {:else}
+                        {member.roles.map((r) => getRoleLabel(r)).join(', ')}
+                    {/if}
                 </Table.Cell>
                 <Table.Cell column="mfa" {root}>
                     <Badge
@@ -209,4 +234,4 @@
 </Container>
 
 <Delete {selectedMember} bind:showDelete />
-<Edit {selectedMember} bind:showEdit />
+<Edit {selectedMember} projects={data.orgProjects?.projects ?? []} bind:showEdit />

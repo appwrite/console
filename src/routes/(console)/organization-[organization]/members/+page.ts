@@ -13,14 +13,22 @@ export const load: PageLoad = async ({ url, params, route, depends }) => {
     const limit = getLimit(url, route, PAGE_LIMIT);
     const offset = pageToOffset(page, limit);
 
+    const [organizationMembers, orgProjects] = await Promise.all([
+        sdk.forConsole.teams.listMemberships({
+            teamId: params.organization,
+            queries: [Query.limit(limit), Query.offset(offset)],
+            search
+        }),
+        sdk.forConsole.organization(params.organization).listProjects({
+            queries: [Query.limit(100), Query.equal('teamId', params.organization)]
+        })
+    ]);
+
     return {
         offset,
         limit,
         search,
-        organizationMembers: await sdk.forConsole.teams.listMemberships({
-            teamId: params.organization,
-            queries: [Query.limit(limit), Query.offset(offset)],
-            search
-        })
+        organizationMembers,
+        orgProjects
     };
 };
