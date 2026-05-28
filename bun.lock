@@ -125,7 +125,7 @@
 
     "@analytics/type-utils": ["@analytics/type-utils@0.6.4", "", {}, "sha512-Ou1gQxFakOWLcPnbFVsrPb8g1wLLUZYYJXDPjHkG07+5mustGs5yqACx42UAu4A6NszNN6Z5gGxhyH45zPWRxw=="],
 
-    "@appwrite.io/console": ["@appwrite.io/console@https://pkg.vc/-/@appwrite/@appwrite.io/console@35c3dea", { "dependencies": { "json-bigint": "1.0.0" } }],
+    "@appwrite.io/console": ["@appwrite.io/console@https://pkg.vc/-/@appwrite/@appwrite.io/console@35c3dea", { "dependencies": { "json-bigint": "1.0.0" } }, "sha512-6V+xfUDQs5rIRlQqqidorHeIBP0Ce/zoqY1fn5vgJl6eUooFJmjBcYN36IwR58y1TwWPw3s5r+kewl9r64+J9w=="],
 
     "@appwrite.io/pink-icons": ["@appwrite.io/pink-icons@0.25.0", "", {}, "sha512-0O3i2oEuh5mWvjO80i+X6rbzrWLJ1m5wmv2/M3a1p2PyBJsFxN8xQMTEmTn3Wl/D26SsM7SpzbdW6gmfgoVU9Q=="],
 
