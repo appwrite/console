@@ -22,8 +22,8 @@
                 siteId: site.$id,
                 name: site.name,
                 framework: site.framework as Framework,
-                enabled: site.enabled || undefined,
-                logging: site.logging || undefined,
+                enabled: site.enabled ?? undefined,
+                logging: site.logging ?? undefined,
                 timeout: site.timeout || undefined,
                 installCommand: site.installCommand || undefined,
                 buildCommand: site.buildCommand || undefined,
@@ -35,7 +35,8 @@
                 installationId: '',
                 providerRepositoryId: '',
                 providerBranch: '',
-                providerRootDirectory: ''
+                providerRootDirectory: '',
+                deploymentRetention: site.deploymentRetention ?? undefined
             });
             await invalidate(Dependencies.SITE);
             dispatch('success');

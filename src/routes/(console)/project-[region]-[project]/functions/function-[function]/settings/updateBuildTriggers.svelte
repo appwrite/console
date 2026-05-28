@@ -56,6 +56,7 @@
                 providerSilentMode: func.providerSilentMode ?? undefined,
                 providerRootDirectory: func.providerRootDirectory ?? undefined,
                 buildSpecification: func.buildSpecification ?? undefined,
+                deploymentRetention: func.deploymentRetention ?? undefined,
                 providerBranches,
                 providerPaths
             });

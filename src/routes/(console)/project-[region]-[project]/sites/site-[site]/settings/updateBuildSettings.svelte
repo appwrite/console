@@ -157,8 +157,8 @@
                 siteId: site.$id,
                 name: site.name,
                 framework: selectedFramework.key as Framework,
-                enabled: site.enabled || undefined,
-                logging: site.logging || undefined,
+                enabled: site.enabled ?? undefined,
+                logging: site.logging ?? undefined,
                 timeout: site.timeout || undefined,
                 installCommand: installCommand || undefined,
                 buildCommand: buildCommand || undefined,
@@ -170,10 +170,11 @@
                 installationId: site.installationId || undefined,
                 providerRepositoryId: site.providerRepositoryId || undefined,
                 providerBranch: site.providerBranch || undefined,
-                providerSilentMode: site.providerSilentMode || undefined,
+                providerSilentMode: site.providerSilentMode ?? undefined,
                 providerRootDirectory: site.providerRootDirectory || undefined,
                 buildSpecification: specToSend || undefined,
-                runtimeSpecification: runtimeSpecToSend || undefined
+                runtimeSpecification: runtimeSpecToSend || undefined,
+                deploymentRetention: site.deploymentRetention ?? undefined
             });
             site.buildSpecification = specToSend;
             site.runtimeSpecification = runtimeSpecToSend;

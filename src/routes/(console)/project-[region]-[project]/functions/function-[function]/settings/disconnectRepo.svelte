@@ -31,8 +31,8 @@
                 events: $func.events || undefined,
                 schedule: $func.schedule || undefined,
                 timeout: $func.timeout || undefined,
-                enabled: $func.enabled || undefined,
-                logging: $func.logging || undefined,
+                enabled: $func.enabled ?? undefined,
+                logging: $func.logging ?? undefined,
                 entrypoint: $func.entrypoint,
                 commands: $func.commands || undefined,
                 scopes: ($func.scopes as Scopes[]) || undefined,
@@ -41,7 +41,8 @@
                 providerBranch: '',
                 providerSilentMode: true,
                 providerRootDirectory: '',
-                buildSpecification: $func.buildSpecification || undefined
+                buildSpecification: $func.buildSpecification || undefined,
+                deploymentRetention: $func.deploymentRetention ?? undefined
             });
             await invalidate(Dependencies.FUNCTION);
             dispatch('success');

@@ -40,8 +40,8 @@
                 siteId: site.$id,
                 name: site.name,
                 framework: site.framework as Framework,
-                enabled: site?.enabled || undefined,
-                logging: site?.logging || undefined,
+                enabled: site?.enabled ?? undefined,
+                logging: site?.logging ?? undefined,
                 timeout: site?.timeout || undefined,
                 installCommand: site?.installCommand || undefined,
                 buildCommand: site?.buildCommand || undefined,
@@ -53,10 +53,11 @@
                 installationId: site?.installationId || undefined,
                 providerRepositoryId: site?.providerRepositoryId || undefined,
                 providerBranch: site?.providerBranch || undefined,
-                providerSilentMode: site?.providerSilentMode || undefined,
+                providerSilentMode: site?.providerSilentMode ?? undefined,
                 providerRootDirectory: site?.providerRootDirectory || undefined,
                 buildSpecification: buildSpecification || undefined,
-                runtimeSpecification: runtimeSpecification || undefined
+                runtimeSpecification: runtimeSpecification || undefined,
+                deploymentRetention: site?.deploymentRetention ?? undefined
             });
             await invalidate(Dependencies.SITE);
 

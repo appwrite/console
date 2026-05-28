@@ -37,17 +37,18 @@
                 events: $func.events || undefined,
                 schedule: functionSchedule,
                 timeout: $func.timeout || undefined,
-                enabled: $func.enabled || undefined,
-                logging: $func.logging || undefined,
+                enabled: $func.enabled ?? undefined,
+                logging: $func.logging ?? undefined,
                 entrypoint: $func.entrypoint || undefined,
                 commands: $func.commands || undefined,
                 scopes: ($func.scopes as Scopes[]) || undefined,
                 installationId: $func.installationId || undefined,
                 providerRepositoryId: $func.providerRepositoryId || undefined,
                 providerBranch: $func.providerBranch || undefined,
-                providerSilentMode: $func.providerSilentMode || undefined,
+                providerSilentMode: $func.providerSilentMode ?? undefined,
                 providerRootDirectory: $func.providerRootDirectory || undefined,
-                buildSpecification: $func.buildSpecification || undefined
+                buildSpecification: $func.buildSpecification || undefined,
+                deploymentRetention: $func.deploymentRetention ?? undefined
             });
             await invalidate(Dependencies.FUNCTION);
             addNotification({
