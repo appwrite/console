@@ -19,9 +19,12 @@ export const load: PageLoad = async ({ url, params, route, depends }) => {
             queries: [Query.limit(limit), Query.offset(offset)],
             search
         }),
-        sdk.forConsole.organization(params.organization).listProjects({
-            queries: [Query.limit(100), Query.equal('teamId', params.organization)]
-        }).catch(() => null)
+        sdk.forConsole
+            .organization(params.organization)
+            .listProjects({
+                queries: [Query.limit(100), Query.equal('teamId', params.organization)]
+            })
+            .catch(() => null)
     ]);
 
     return {
