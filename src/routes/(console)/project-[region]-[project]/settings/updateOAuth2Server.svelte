@@ -100,7 +100,7 @@
             await sdk.forProject($project.region, $project.$id).project.updateOAuth2Server({
                 enabled,
                 authorizationUrl,
-                scopes: scopes.length ? scopes : undefined,
+                scopes,
                 accessTokenDuration: accessTokenDuration ?? undefined,
                 refreshTokenDuration: refreshTokenDuration ?? undefined,
                 publicAccessTokenDuration: publicAccessTokenDuration ?? undefined,
