@@ -6,7 +6,7 @@
     import { Button, Form, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { Runtime, type Models, type ProjectKeyScopes } from '@appwrite.io/console';
+    import { FunctionRuntime, type Models, type ProjectKeyScopes } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import DisconnectRepo from './disconnectRepo.svelte';
     import { installation, repository as repositoryStore, sortBranches } from '$lib/stores/vcs';
@@ -71,7 +71,7 @@
     }
     async function updateConfiguration() {
         try {
-            if (!isValueOfStringEnum(Runtime, func.runtime)) {
+            if (!isValueOfStringEnum(FunctionRuntime, func.runtime)) {
                 throw new Error(`Invalid runtime: ${func.runtime}`);
             }
             await sdk.forProject(page.params.region, page.params.project).functions.update({
@@ -146,13 +146,13 @@
                 sorted[0]?.name ??
                 nextBranch;
 
-            if (!isValueOfStringEnum(Runtime, func.runtime)) {
+            if (!isValueOfStringEnum(FunctionRuntime, func.runtime)) {
                 throw new Error(`Invalid runtime: ${func.runtime}`);
             }
             await sdk.forProject(page.params.region, page.params.project).functions.update({
                 functionId: func.$id,
                 name: func.name,
-                runtime: func.runtime as Runtime,
+                runtime: func.runtime as FunctionRuntime,
                 execute: func.execute || undefined,
                 events: func.events || undefined,
                 schedule: func.schedule || undefined,

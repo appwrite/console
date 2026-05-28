@@ -7,7 +7,12 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import { Adapter, BuildRuntime, Framework, type Models } from '@appwrite.io/console';
+    import {
+        SiteAdapter,
+        SiteBuildRuntime,
+        SiteFramework,
+        type Models
+    } from '@appwrite.io/console';
     import { page } from '$app/state';
 
     export let site: Models.Site;
@@ -22,7 +27,7 @@
             await sdk.forProject(page.params.region, page.params.project).sites.update({
                 siteId: site.$id,
                 name: siteName,
-                framework: site.framework as Framework,
+                framework: site.framework as SiteFramework,
                 enabled: site?.enabled ?? undefined,
                 logging: site?.logging ?? undefined,
                 timeout: site?.timeout || undefined,
@@ -30,8 +35,8 @@
                 buildCommand: site?.buildCommand || undefined,
                 startCommand: site?.startCommand || undefined,
                 outputDirectory: site?.outputDirectory || undefined,
-                buildRuntime: (site?.buildRuntime as BuildRuntime) || undefined,
-                adapter: site?.adapter as Adapter,
+                buildRuntime: (site?.buildRuntime as SiteBuildRuntime) || undefined,
+                adapter: site?.adapter as SiteAdapter,
                 fallbackFile: site?.fallbackFile || undefined,
                 installationId: site?.installationId || undefined,
                 providerRepositoryId: site?.providerRepositoryId || undefined,

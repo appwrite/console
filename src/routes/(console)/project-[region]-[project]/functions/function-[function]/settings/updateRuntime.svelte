@@ -10,7 +10,7 @@
     import { func } from '../store';
     import InputSelect from '$lib/elements/forms/inputSelect.svelte';
     import { isValueOfStringEnum } from '$lib/helpers/types';
-    import { Runtime, type Models, type ProjectKeyScopes } from '@appwrite.io/console';
+    import { FunctionRuntime, type Models, type ProjectKeyScopes } from '@appwrite.io/console';
     import { Layout, Typography } from '@appwrite.io/pink-svelte';
     import Link from '$lib/elements/link.svelte';
 
@@ -25,7 +25,7 @@
 
     async function updateRuntime() {
         try {
-            if (!isValueOfStringEnum(Runtime, runtime)) {
+            if (!isValueOfStringEnum(FunctionRuntime, runtime)) {
                 throw new Error(`Invalid runtime: ${runtime}`);
             }
             await sdk.forProject(page.params.region, page.params.project).functions.update({

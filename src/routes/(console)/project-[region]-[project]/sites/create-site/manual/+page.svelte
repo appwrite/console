@@ -11,7 +11,7 @@
     import { writable } from 'svelte/store';
     import Details from '../details.svelte';
     import Aside from './aside.svelte';
-    import { BuildRuntime, Framework, ID } from '@appwrite.io/console';
+    import { SiteBuildRuntime, SiteFramework, ID } from '@appwrite.io/console';
     import type { Models } from '@appwrite.io/console';
     import Configuration from '../configuration.svelte';
     import { regionalConsoleVariables } from '../../../store';
@@ -68,8 +68,8 @@
                 return;
             }
 
-            const fr = Object.values(Framework).find((f) => f === framework.key);
-            const buildRuntime = Object.values(BuildRuntime).find(
+            const fr = Object.values(SiteFramework).find((f) => f === framework.key);
+            const buildRuntime = Object.values(SiteBuildRuntime).find(
                 (f) => f === framework.buildRuntime
             );
             site = await sdk.forProject(page.params.region, page.params.project).sites.create({

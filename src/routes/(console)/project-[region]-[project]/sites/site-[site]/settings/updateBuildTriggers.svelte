@@ -8,9 +8,13 @@
     import { symmetricDifference } from '$lib/helpers/array';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { Adapter, BuildRuntime, Framework, type Models } from '@appwrite.io/console';
-    import { Icon, Layout, Tooltip, Typography } from '@appwrite.io/pink-svelte';
-    import Link from '$lib/elements/link.svelte';
+    import {
+        SiteAdapter,
+        SiteBuildRuntime,
+        SiteFramework,
+        type Models
+    } from '@appwrite.io/console';
+    import { Icon, Layout, Tooltip } from '@appwrite.io/pink-svelte';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
 
     export let site: Models.Site;
@@ -38,7 +42,7 @@
             await sdk.forProject(page.params.region, page.params.project).sites.update({
                 siteId: site.$id,
                 name: site.name,
-                framework: site.framework as Framework,
+                framework: site.framework as SiteFramework,
                 enabled: site.enabled ?? undefined,
                 logging: site.logging ?? undefined,
                 timeout: site.timeout ?? undefined,
@@ -46,8 +50,8 @@
                 buildCommand: site.buildCommand ?? undefined,
                 startCommand: site.startCommand ?? undefined,
                 outputDirectory: site.outputDirectory ?? undefined,
-                buildRuntime: (site.buildRuntime as BuildRuntime) ?? undefined,
-                adapter: (site.adapter as Adapter) ?? undefined,
+                buildRuntime: (site.buildRuntime as SiteBuildRuntime) ?? undefined,
+                adapter: (site.adapter as SiteAdapter) ?? undefined,
                 fallbackFile: site.fallbackFile ?? undefined,
                 installationId: site.installationId ?? undefined,
                 providerRepositoryId: site.providerRepositoryId ?? undefined,
@@ -85,14 +89,8 @@
     <Form onSubmit={update}>
         <CardGrid>
             <svelte:fragment slot="title">Build triggers</svelte:fragment>
-            <Typography.Text>
-                Control which branch pushes and file changes trigger automatic deployments. Use glob
-                patterns to include or exclude specific branches and paths. <Link
-                    external
-                    href="https://appwrite.io/docs/products/sites/deploy-from-git#build-triggers"
-                    >Learn more</Link
-                >.
-            </Typography.Text>
+            Control which branch pushes and file changes trigger automatic deployments. Use glob patterns
+            to include or exclude specific branches and paths.
             <svelte:fragment slot="aside">
                 <Layout.Stack gap="xl">
                     <Layout.Stack gap="s">

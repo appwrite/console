@@ -1,21 +1,21 @@
-import { StatusCode } from '@appwrite.io/console';
+import { RedirectStatusCode } from '@appwrite.io/console';
 
 export const statusCodeOptions = [
     {
         label: '301 Moved permanently',
-        value: StatusCode.MovedPermanently
+        value: RedirectStatusCode.MovedPermanently
     },
     {
         label: '302 Found',
-        value: StatusCode.Found
+        value: RedirectStatusCode.Found
     },
     {
         label: '307 Temporary redirect',
-        value: StatusCode.TemporaryRedirect
+        value: RedirectStatusCode.TemporaryRedirect
     },
     {
         label: '308 Permanent redirect',
-        value: StatusCode.PermanentRedirect
+        value: RedirectStatusCode.PermanentRedirect
     }
 ];
 

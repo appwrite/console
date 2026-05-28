@@ -10,7 +10,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { installation, repository, sortBranches } from '$lib/stores/vcs';
     import {
-        Runtime,
+        FunctionRuntime,
         VCSReferenceType,
         type Models,
         type ProjectKeyScopes
@@ -83,7 +83,7 @@
                 await sdk.forProject(page.params.region, page.params.project).functions.update({
                     functionId: $func.$id,
                     name: $func.name,
-                    runtime: $func.runtime as Runtime,
+                    runtime: $func.runtime as FunctionRuntime,
                     execute: $func.execute || undefined,
                     events: $func.events || undefined,
                     schedule: $func.schedule || undefined,

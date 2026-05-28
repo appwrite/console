@@ -17,7 +17,7 @@
     import Configuration from './configuration.svelte';
     import {
         ID,
-        Runtime,
+        FunctionRuntime,
         TemplateReferenceType,
         type Models,
         type ProjectKeyScopes
@@ -59,7 +59,7 @@
 
     let name = $state(untrack(() => data.template.name));
     let id = $state<string | null>(null);
-    let runtime = $state<Runtime>();
+    let runtime = $state<FunctionRuntime>();
     let branch = $state('main');
     let rootDir = $state('./');
     let connectBehaviour = $state<'now' | 'later'>('now');
@@ -91,7 +91,7 @@
         const requestedRuntime = availableRuntimes.find((runtime) => runtime.$id === runtimeParam);
 
         if (requestedRuntime) {
-            return requestedRuntime.$id as Runtime;
+            return requestedRuntime.$id as FunctionRuntime;
         }
 
         const runtimeById = new Map(
@@ -105,7 +105,7 @@
             : [];
         const runtimes = preferredRuntimes.length ? preferredRuntimes : availableRuntimes;
 
-        return [...runtimes].sort(sortRuntimesByVersionDesc)[0]?.$id as Runtime;
+        return [...runtimes].sort(sortRuntimesByVersionDesc)[0]?.$id as FunctionRuntime;
     }
 
     onMount(async () => {
@@ -155,7 +155,7 @@
                     .functions.create({
                         functionId: id || ID.unique(),
                         name,
-                        runtime: runtime as Runtime,
+                        runtime: runtime as FunctionRuntime,
                         execute:
                             execute && data.template.permissions?.length
                                 ? data.template.permissions

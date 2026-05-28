@@ -18,6 +18,7 @@
     import UpdateVariables from '../updateVariables.svelte';
     import { page } from '$app/state';
     import UpdateLabels from './updateLabels.svelte';
+    import UpdateOAuth2Server from './updateOAuth2Server.svelte';
     import type { PageData } from './$types';
     import { Alert } from '@appwrite.io/pink-svelte';
 
@@ -95,6 +96,7 @@
         <UpdateName />
         <UpdateLabels />
         <UpdateProtocols />
+        <UpdateOAuth2Server />
         <UpdateServices />
         <UpdateInstallations {...data.installations} limit={data.limit} offset={data.offset} />
         <UpdateVariables

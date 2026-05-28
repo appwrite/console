@@ -10,7 +10,7 @@
     import { installation, repository } from '$lib/stores/vcs';
     import { Layout } from '@appwrite.io/pink-svelte';
     import { writable } from 'svelte/store';
-    import { ID, Runtime, VCSReferenceType, VCSDetectionType } from '@appwrite.io/console';
+    import { ID, FunctionRuntime, VCSReferenceType, VCSDetectionType } from '@appwrite.io/console';
     import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import Details from '../(components)/details.svelte';
@@ -48,7 +48,7 @@
 
     let name = '';
     let id: string | null = null;
-    let runtime: Runtime;
+    let runtime: FunctionRuntime;
     let entrypoint = '';
     let buildCommand = '';
     let roles: string[] = [];
@@ -88,7 +88,7 @@
 
             entrypoint = detections.entrypoint;
             buildCommand = detections.commands;
-            runtime = detections.runtime as Runtime;
+            runtime = detections.runtime as FunctionRuntime;
             const detectedVariables = normalizeDetectedVariables(detections?.variables);
             if (detectedVariables.length) {
                 variables = mergeVariables(variables, detectedVariables);

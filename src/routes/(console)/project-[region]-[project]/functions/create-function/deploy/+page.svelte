@@ -13,7 +13,7 @@
     import { onMount } from 'svelte';
     import {
         ID,
-        Runtime,
+        FunctionRuntime,
         TemplateReferenceType,
         type ProjectKeyScopes
     } from '@appwrite.io/console';
@@ -42,7 +42,7 @@
     let execute = $state(true);
     let entrypoint = $state('');
     let specification = $state('');
-    let runtime = $state<Runtime>();
+    let runtime = $state<FunctionRuntime>();
     let installCommand = $state('');
     let selectedScopes = $state<ProjectKeyScopes[]>([]);
     let rootDir = $state(data.repository?.rootDirectory);
@@ -73,7 +73,7 @@
         const runtimeOption = data.runtimesList.runtimes.find(
             (runtime) => runtime.$id === runtimeParam
         );
-        runtime = (runtimeOption?.$id ?? data.runtimesList.runtimes[0]?.$id) as Runtime;
+        runtime = (runtimeOption?.$id ?? data.runtimesList.runtimes[0]?.$id) as FunctionRuntime;
 
         entrypoint = page.url.searchParams.get('entrypoint') || '';
 

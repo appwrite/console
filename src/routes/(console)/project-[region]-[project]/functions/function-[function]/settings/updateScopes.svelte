@@ -10,7 +10,11 @@
     import { onMount } from 'svelte';
     import { func } from '../store';
     import { isValueOfStringEnum } from '$lib/helpers/types';
-    import { Runtime, type ProjectKeyScopes } from '@appwrite.io/console';
+    import {
+        FunctionRuntime,
+        type ProjectKeyScopes,
+        type ProjectKeyScopes as FunctionScopes
+    } from '@appwrite.io/console';
     import Scopes from '$routes/(console)/project-[region]-[project]/overview/api-keys/scopes.svelte';
     import { symmetricDifference } from '$lib/helpers/array';
     import { Link } from '$lib/elements';
@@ -24,7 +28,7 @@
 
     async function updateScopes() {
         try {
-            if (!isValueOfStringEnum(Runtime, $func.runtime)) {
+            if (!isValueOfStringEnum(FunctionRuntime, $func.runtime)) {
                 throw new Error(`Invalid runtime: ${$func.runtime}`);
             }
             await sdk.forProject(page.params.region, page.params.project).functions.update({
@@ -39,7 +43,7 @@
                 logging: $func.logging ?? undefined,
                 entrypoint: $func.entrypoint || undefined,
                 commands: $func.commands || undefined,
-                scopes: functionScopes || undefined,
+                scopes: (functionScopes as unknown as FunctionScopes[]) || undefined,
                 installationId: $func.installationId || undefined,
                 providerRepositoryId: $func.providerRepositoryId || undefined,
                 providerBranch: $func.providerBranch || undefined,

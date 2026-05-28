@@ -10,7 +10,7 @@
     import { onMount } from 'svelte';
     import { func } from '../store';
     import { isValueOfStringEnum } from '$lib/helpers/types';
-    import { Runtime, type ProjectKeyScopes } from '@appwrite.io/console';
+    import { FunctionRuntime, type ProjectKeyScopes } from '@appwrite.io/console';
     import { Link } from '$lib/elements';
     import { parseExpression } from 'cron-parser';
 
@@ -23,7 +23,7 @@
 
     async function updateSchedule() {
         try {
-            if (!isValueOfStringEnum(Runtime, $func.runtime)) {
+            if (!isValueOfStringEnum(FunctionRuntime, $func.runtime)) {
                 throw new Error(`Invalid runtime: ${$func.runtime}`);
             }
 

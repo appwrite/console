@@ -8,7 +8,7 @@
     import { isValueOfStringEnum } from '$lib/helpers/types';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { Runtime, type Models, type ProjectKeyScopes } from '@appwrite.io/console';
+    import { FunctionRuntime, type Models, type ProjectKeyScopes } from '@appwrite.io/console';
 
     let { func }: { func: Models.Function } = $props();
 
@@ -52,7 +52,7 @@
 
     async function update() {
         try {
-            if (!isValueOfStringEnum(Runtime, func.runtime)) {
+            if (!isValueOfStringEnum(FunctionRuntime, func.runtime)) {
                 throw new Error(`Invalid runtime: ${func.runtime}`);
             }
 

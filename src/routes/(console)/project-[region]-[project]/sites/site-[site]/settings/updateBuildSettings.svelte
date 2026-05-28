@@ -6,7 +6,12 @@
     import { Button, Form, InputSelect, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { Adapter, BuildRuntime, Framework, type Models } from '@appwrite.io/console';
+    import {
+        SiteAdapter,
+        SiteBuildRuntime,
+        SiteFramework,
+        type Models
+    } from '@appwrite.io/console';
     import { Card, Fieldset, Icon, InlineCode, Layout, Tooltip } from '@appwrite.io/pink-svelte';
     import { iconPath } from '$lib/stores/app';
     import { Link } from '$lib/elements';
@@ -31,12 +36,12 @@
     let startCommand = $state(site?.startCommand);
     let outputDirectory = $state(site?.outputDirectory);
     let fallback = $state(site?.fallbackFile);
-    let adapter: Adapter = $state(site.adapter as Adapter);
+    let adapter: SiteAdapter = $state(site.adapter as SiteAdapter);
 
     let selectedFramework = $state(
         frameworks.find((framework) => framework.key === site.framework)
     );
-    let showFallback = $derived(adapter === Adapter.Static);
+    let showFallback = $derived(adapter === SiteAdapter.Static);
     let lastFrameworkAdapterKey = $state('');
 
     let isUntouched = $derived(
@@ -63,14 +68,14 @@
             // Update adapter
             const singleAdapter = selectedFramework?.adapters?.length <= 1;
             if (singleAdapter) {
-                const hasSSR = selectedFramework?.adapters?.some((a) => a?.key === Adapter.Ssr);
+                const hasSSR = selectedFramework?.adapters?.some((a) => a?.key === SiteAdapter.Ssr);
                 const hasStatic = selectedFramework?.adapters?.some(
-                    (a) => a?.key === Adapter.Static
+                    (a) => a?.key === SiteAdapter.Static
                 );
                 if (!hasSSR) {
-                    adapter = Adapter.Static;
+                    adapter = SiteAdapter.Static;
                 } else if (!hasStatic) {
-                    adapter = Adapter.Ssr;
+                    adapter = SiteAdapter.Ssr;
                 }
             }
 
@@ -81,7 +86,7 @@
             buildCommand = data.buildCommand;
             startCommand = data.startCommand;
             outputDirectory = data.outputDirectory;
-            adapter = data.key as Adapter;
+            adapter = data.key as SiteAdapter;
             fallback = data.fallbackFile;
         } else if (hasFrameworkSelectionChanged) {
             const data = (selectedFramework.adapters.find((a) => a.key === adapter) ??
@@ -109,10 +114,10 @@
     });
 
     $effect(() => {
-        if (adapter === Adapter.Static) {
+        if (adapter === SiteAdapter.Static) {
             if (!fallback) {
                 fallback ||= selectedFramework.adapters.find(
-                    (a) => a.key === Adapter.Static
+                    (a) => a.key === SiteAdapter.Static
                 ).fallbackFile;
             }
         }
@@ -121,7 +126,7 @@
     $effect(() => {
         if (selectedFramework) {
             if (!selectedFramework.adapters.some((a) => a.key === adapter)) {
-                adapter = selectedFramework.adapters[0].key as Adapter;
+                adapter = selectedFramework.adapters[0].key as SiteAdapter;
                 site.adapter = adapter;
             }
             if (specs && specs.specifications?.length) {
@@ -140,7 +145,7 @@
     async function update() {
         let adptr = selectedFramework.adapters.find((a) => a.key === adapter);
         if (!adptr?.key && selectedFramework.adapters?.length) {
-            adapter = selectedFramework.adapters[0].key as Adapter;
+            adapter = selectedFramework.adapters[0].key as SiteAdapter;
             adptr = selectedFramework.adapters[0];
             site.adapter = adapter;
         }
@@ -156,7 +161,7 @@
             await sdk.forProject(page.params.region, page.params.project).sites.update({
                 siteId: site.$id,
                 name: site.name,
-                framework: selectedFramework.key as Framework,
+                framework: selectedFramework.key as SiteFramework,
                 enabled: site.enabled ?? undefined,
                 logging: site.logging ?? undefined,
                 timeout: site.timeout || undefined,
@@ -164,8 +169,8 @@
                 buildCommand: buildCommand || undefined,
                 startCommand: startCommand || undefined,
                 outputDirectory: outputDirectory || undefined,
-                buildRuntime: (site?.buildRuntime as BuildRuntime) || undefined,
-                adapter: (adptr?.key as Adapter) || undefined,
+                buildRuntime: (site?.buildRuntime as SiteBuildRuntime) || undefined,
+                adapter: (adptr?.key as SiteAdapter) || undefined,
                 fallbackFile: adptr?.key === 'static' ? fallback || undefined : undefined,
                 installationId: site.installationId || undefined,
                 providerRepositoryId: site.providerRepositoryId || undefined,
@@ -244,7 +249,7 @@
                             radius="s"
                             padding="s"
                             name="adapter"
-                            value={`${Adapter.Ssr}`}
+                            value={`${SiteAdapter.Ssr}`}
                             bind:group={adapter}>
                             {#if adapterData?.ssr?.desc?.includes('$')}
                                 {@const parts = adapterData.ssr.desc.split('$')}
@@ -270,7 +275,7 @@
                             radius="s"
                             padding="s"
                             name="adapter"
-                            value={Adapter.Static}
+                            value={SiteAdapter.Static}
                             bind:group={adapter}>
                             {#if adapterData?.static?.desc?.includes('$')}
                                 {@const parts = adapterData.static.desc.split('$')}
@@ -332,7 +337,7 @@
                                 Reset
                             </Button>
                         </Layout.Stack>
-                        {#if adapter === Adapter.Ssr}
+                        {#if adapter === SiteAdapter.Ssr}
                             <Layout.Stack gap="s" direction="row" alignItems="flex-end">
                                 <InputText
                                     id="startCommand"

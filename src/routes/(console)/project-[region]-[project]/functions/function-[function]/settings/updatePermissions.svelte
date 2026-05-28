@@ -12,7 +12,7 @@
     import { Roles } from '$lib/components/permissions';
     import { symmetricDifference } from '$lib/helpers/array';
     import { isValueOfStringEnum } from '$lib/helpers/types';
-    import { Runtime, type ProjectKeyScopes } from '@appwrite.io/console';
+    import { FunctionRuntime, type ProjectKeyScopes } from '@appwrite.io/console';
     import { Link } from '$lib/elements';
 
     const functionId = page.params.function;
@@ -26,7 +26,7 @@
 
     async function updatePermissions() {
         try {
-            if (!isValueOfStringEnum(Runtime, $func.runtime)) {
+            if (!isValueOfStringEnum(FunctionRuntime, $func.runtime)) {
                 throw new Error(`Invalid runtime: ${$func.runtime}`);
             }
             await sdk.forProject(page.params.region, page.params.project).functions.update({

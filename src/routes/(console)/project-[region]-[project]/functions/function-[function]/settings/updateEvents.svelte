@@ -14,7 +14,7 @@
     import { EventModal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { isValueOfStringEnum } from '$lib/helpers/types';
-    import { Runtime, type ProjectKeyScopes } from '@appwrite.io/console';
+    import { FunctionRuntime, type ProjectKeyScopes } from '@appwrite.io/console';
     import { IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
     import { Icon, Layout, Link, Table, Typography } from '@appwrite.io/pink-svelte';
 
@@ -26,7 +26,7 @@
 
     async function updateEvents() {
         try {
-            if (!isValueOfStringEnum(Runtime, $func.runtime)) {
+            if (!isValueOfStringEnum(FunctionRuntime, $func.runtime)) {
                 throw new Error(`Invalid runtime: ${$func.runtime}`);
             }
             await sdk.forProject(page.params.region, page.params.project).functions.update({

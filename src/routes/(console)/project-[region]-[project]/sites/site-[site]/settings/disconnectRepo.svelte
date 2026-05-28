@@ -7,7 +7,12 @@
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import type { Adapter, BuildRuntime, Framework, Models } from '@appwrite.io/console';
+    import type {
+        SiteAdapter,
+        SiteBuildRuntime,
+        SiteFramework,
+        Models
+    } from '@appwrite.io/console';
     import { createEventDispatcher } from 'svelte';
 
     export let show = false;
@@ -21,7 +26,7 @@
             await sdk.forProject(page.params.region, page.params.project).sites.update({
                 siteId: site.$id,
                 name: site.name,
-                framework: site.framework as Framework,
+                framework: site.framework as SiteFramework,
                 enabled: site.enabled ?? undefined,
                 logging: site.logging ?? undefined,
                 timeout: site.timeout || undefined,
@@ -29,8 +34,8 @@
                 buildCommand: site.buildCommand || undefined,
                 startCommand: site.startCommand || undefined,
                 outputDirectory: site.outputDirectory || undefined,
-                buildRuntime: (site?.buildRuntime as BuildRuntime) || undefined,
-                adapter: (site?.adapter as Adapter) || undefined,
+                buildRuntime: (site?.buildRuntime as SiteBuildRuntime) || undefined,
+                adapter: (site?.adapter as SiteAdapter) || undefined,
                 fallbackFile: site.fallbackFile || undefined,
                 installationId: '',
                 providerRepositoryId: '',

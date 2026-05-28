@@ -13,9 +13,9 @@
     import { onMount } from 'svelte';
     import Domain from '../domain.svelte';
     import {
-        Adapter,
-        BuildRuntime,
-        Framework,
+        SiteAdapter,
+        SiteBuildRuntime,
+        SiteFramework,
         ID,
         TemplateReferenceType
     } from '@appwrite.io/console';
@@ -50,7 +50,7 @@
     let installCommand = $state('');
     let outputDirectory = $state('');
     let domainIsValid = $state(false);
-    let framework = $state<Framework>(Framework.Nextjs);
+    let framework = $state<SiteFramework>(SiteFramework.Nextjs);
     let variables = $state<Array<{ key: string; value: string; secret: boolean }>>([]);
 
     // Track if we have custom commands from URL
@@ -58,15 +58,16 @@
 
     // Framework options - dynamically generate from enum
     const frameworkOptions = $derived(
-        Object.values(Framework).map((fw) => ({
+        Object.values(SiteFramework).map((fw) => ({
             key: fw,
             name:
-                fw === Framework.Nextjs
+                fw === SiteFramework.Nextjs
                     ? 'Next.js'
-                    : fw === Framework.Sveltekit
+                    : fw === SiteFramework.Sveltekit
                       ? 'SvelteKit'
                       : fw.charAt(0).toUpperCase() + fw.slice(1),
-            buildRuntime: fw === Framework.Other ? BuildRuntime.Static1 : BuildRuntime.Node210
+            buildRuntime:
+                fw === SiteFramework.Other ? SiteBuildRuntime.Static1 : SiteBuildRuntime.Node210
         }))
     );
 
@@ -85,7 +86,7 @@
     const primaryAdapter = $derived.by(
         () => data.frameworks.frameworks.find((f) => f.key === framework)?.adapters?.[0]
     );
-    const shouldShowStartCommand = $derived(primaryAdapter?.key === Adapter.Ssr);
+    const shouldShowStartCommand = $derived(primaryAdapter?.key === SiteAdapter.Ssr);
 
     $effect(() => {
         if (framework && data.frameworks && !hasCustomCommands) {
@@ -104,9 +105,9 @@
         const preset = page.url.searchParams.get('preset') || 'nextjs';
 
         // Map preset string to Framework enum
-        framework = (Object.values(Framework) as string[]).includes(preset.toLowerCase())
-            ? (preset.toLowerCase() as Framework)
-            : Framework.Nextjs;
+        framework = (Object.values(SiteFramework) as string[]).includes(preset.toLowerCase())
+            ? (preset.toLowerCase() as SiteFramework)
+            : SiteFramework.Nextjs;
 
         // Build configuration - use from URL params or defaults
         installCommand = page.url.searchParams.get('install') || '';
@@ -157,7 +158,7 @@
                 buildCommand: buildCommand || undefined,
                 startCommand: shouldShowStartCommand ? startCommand || undefined : undefined,
                 outputDirectory: outputDirectory || undefined,
-                adapter: framework === Framework.Other ? Adapter.Static : undefined,
+                adapter: framework === SiteFramework.Other ? SiteAdapter.Static : undefined,
                 providerSilentMode: false
             });
 

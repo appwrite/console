@@ -11,7 +11,7 @@
         AppwriteMigrationResource,
         FirebaseMigrationResource,
         NHostMigrationResource,
-        OnDuplicate,
+        MigrationOnDuplicate,
         SupabaseMigrationResource
     } from '@appwrite.io/console';
     import { started } from '../stores';
@@ -40,7 +40,7 @@
     import { capitalize } from '$lib/helpers/string';
     import { page } from '$app/state';
 
-    let importOnDuplicate: OnDuplicate = OnDuplicate.Fail;
+    let importOnDuplicate: MigrationOnDuplicate = MigrationOnDuplicate.Fail;
 
     const onExit = () => {
         resetImportStores();
@@ -56,7 +56,9 @@
             // after picking Overwrite/Skip would silently apply that mode to
             // other resource types (users, teams, functions, etc.) on submit.
             const importOptions = {
-                onDuplicate: $formData.databases.root ? importOnDuplicate : OnDuplicate.Fail
+                onDuplicate: $formData.databases.root
+                    ? importOnDuplicate
+                    : MigrationOnDuplicate.Fail
             };
 
             switch ($provider.provider) {
@@ -221,7 +223,7 @@
                                 size="s"
                                 bind:group={importOnDuplicate}
                                 name="importOnDuplicate"
-                                value={OnDuplicate.Fail}
+                                value={MigrationOnDuplicate.Fail}
                                 label="Fail on duplicate (default)">
                                 <svelte:fragment slot="description">
                                     Migration aborts on the first existing resource (database,
@@ -232,7 +234,7 @@
                                 size="s"
                                 bind:group={importOnDuplicate}
                                 name="importOnDuplicate"
-                                value={OnDuplicate.Skip}
+                                value={MigrationOnDuplicate.Skip}
                                 label="Skip existing resources">
                                 <svelte:fragment slot="description">
                                     Existing resources are left untouched. Only resources missing on
@@ -243,7 +245,7 @@
                                 size="s"
                                 bind:group={importOnDuplicate}
                                 name="importOnDuplicate"
-                                value={OnDuplicate.Overwrite}
+                                value={MigrationOnDuplicate.Overwrite}
                                 label="Overwrite existing resources">
                                 <svelte:fragment slot="description">
                                     Existing resources are updated to match the source. Schema drift

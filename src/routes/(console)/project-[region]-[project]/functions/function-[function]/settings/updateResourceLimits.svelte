@@ -7,7 +7,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { isValueOfStringEnum } from '$lib/helpers/types';
-    import { Runtime, type Models, type ProjectKeyScopes } from '@appwrite.io/console';
+    import { FunctionRuntime, type Models, type ProjectKeyScopes } from '@appwrite.io/console';
     import Link from '$lib/elements/link.svelte';
     import { Alert, Icon, Tooltip } from '@appwrite.io/pink-svelte';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
@@ -37,7 +37,7 @@
 
     async function updateResourceLimits() {
         try {
-            if (!isValueOfStringEnum(Runtime, func.runtime)) {
+            if (!isValueOfStringEnum(FunctionRuntime, func.runtime)) {
                 throw new Error(`Invalid runtime: ${func.runtime}`);
             }
             await sdk.forProject(page.params.region, page.params.project).functions.update({

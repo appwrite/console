@@ -13,8 +13,8 @@
     import {
         type Models,
         ProxyResourceType,
-        Runtime,
-        StatusCode,
+        FunctionRuntime,
+        RedirectStatusCode,
         type ProjectKeyScopes
     } from '@appwrite.io/console';
     import { statusCodeOptions } from '$lib/stores/domains';
@@ -36,7 +36,7 @@
     let domainName = $state('');
     let redirect: string = $state(null);
     let branch: string = $state(null);
-    let statusCode = $state(StatusCode.TemporaryRedirect);
+    let statusCode = $state(RedirectStatusCode.TemporaryRedirect);
 
     const routeBase = resolveRoute(
         '/(console)/project-[region]-[project]/functions/function-[function]/domains',
@@ -129,14 +129,14 @@
 
     async function connect(selectedInstallationId: string, selectedRepository: string) {
         try {
-            if (!isValueOfStringEnum(Runtime, data.func.runtime)) {
+            if (!isValueOfStringEnum(FunctionRuntime, data.func.runtime)) {
                 throw new Error(`Invalid runtime: ${data.func.runtime}`);
             }
 
             await sdk.forProject(page.params.region, page.params.project).functions.update({
                 functionId: data.func.$id,
                 name: data.func.name,
-                runtime: data.func.runtime as Runtime,
+                runtime: data.func.runtime as FunctionRuntime,
                 execute: data.func.execute || undefined,
                 events: data.func.events || undefined,
                 schedule: data.func.schedule || undefined,

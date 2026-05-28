@@ -2,9 +2,9 @@
     import { Card, SvgIcon } from '$lib/components';
     import { Icon, Layout, Skeleton, Typography } from '@appwrite.io/pink-svelte';
     import { IconGithub, IconGitBranch } from '@appwrite.io/pink-icons-svelte';
-    import type { Models, Runtime } from '@appwrite.io/console';
+    import type { Models, FunctionRuntime } from '@appwrite.io/console';
 
-    export let runtime: Runtime;
+    export let runtime: FunctionRuntime;
     export let repositoryName: string = undefined;
     export let branch: string = undefined;
     export let rootDir: string = undefined;

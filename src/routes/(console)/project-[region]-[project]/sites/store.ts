@@ -1,12 +1,12 @@
 import { timeFromNow } from '$lib/helpers/date';
 import { timer } from '$lib/helpers/timeConversion';
 import type { Column } from '$lib/helpers/types';
-import { Framework, type Models } from '@appwrite.io/console';
+import { SiteFramework, type Models } from '@appwrite.io/console';
 
 import { writable } from 'svelte/store';
 
-export function getEnumFromModel(model: Models.Framework): Framework {
-    return Framework[model.name];
+export function getEnumFromModel(model: Models.Framework): SiteFramework {
+    return SiteFramework[model.name];
 }
 
 export const columns = writable<Column[]>([
