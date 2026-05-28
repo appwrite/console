@@ -27,15 +27,16 @@
                 events: func.events || undefined,
                 schedule: func.schedule || undefined,
                 timeout: func.timeout || undefined,
-                enabled: func.enabled || undefined,
+                enabled: func.enabled ?? undefined,
                 logging,
+                deploymentRetention: func.deploymentRetention ?? undefined,
                 entrypoint: func.entrypoint || undefined,
                 commands: func.commands || undefined,
                 scopes: (func.scopes as Scopes[]) || undefined,
                 installationId: func.installationId || undefined,
                 providerRepositoryId: func.providerRepositoryId || undefined,
                 providerBranch: func.providerBranch || undefined,
-                providerSilentMode: func.providerSilentMode || undefined,
+                providerSilentMode: func.providerSilentMode ?? undefined,
                 providerRootDirectory: func.providerRootDirectory || undefined,
                 buildSpecification: func.buildSpecification || undefined
             });
