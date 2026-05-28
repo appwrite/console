@@ -112,7 +112,7 @@
 
             addNotification({
                 type: 'success',
-                message: `OAuth2 server has been ${enabled ? 'enabled' : 'disabled'}.`
+                message: 'OAuth2 server settings have been updated.'
             });
             trackEvent(Submit.ProjectUpdateOAuth2Server);
         } catch (error) {
@@ -205,6 +205,7 @@
                         label="Access token duration"
                         bind:value={accessTokenValue}
                         placeholder="8"
+                        min={1}
                         disabled={!$canWriteProjects} />
                     <InputSelect
                         id="oauth2-access-token-unit"
@@ -220,6 +221,7 @@
                         label="Refresh token duration"
                         bind:value={refreshTokenValue}
                         placeholder="365"
+                        min={1}
                         disabled={!$canWriteProjects} />
                     <InputSelect
                         id="oauth2-refresh-token-unit"
@@ -251,6 +253,7 @@
                         label="Access token duration"
                         bind:value={publicAccessTokenValue}
                         placeholder="1"
+                        min={1}
                         disabled={!$canWriteProjects} />
                     <InputSelect
                         id="oauth2-public-access-token-unit"
@@ -266,6 +269,7 @@
                         label="Refresh token duration"
                         bind:value={publicRefreshTokenValue}
                         placeholder="30"
+                        min={1}
                         disabled={!$canWriteProjects} />
                     <InputSelect
                         id="oauth2-public-refresh-token-unit"
