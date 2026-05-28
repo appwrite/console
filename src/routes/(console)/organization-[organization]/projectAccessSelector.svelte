@@ -17,13 +17,15 @@
     } = $props();
 
     function availableProjects(currentId: string) {
-        const taken = new Set(projectAccess.map((a) => a.projectId).filter((id) => id !== currentId));
-        return projects.filter((p) => !taken.has(p.$id)).map((p) => ({ label: p.name, value: p.$id }));
+        const taken = new Set(
+            projectAccess.map((a) => a.projectId).filter((id) => id !== currentId)
+        );
+        return projects
+            .filter((p) => !taken.has(p.$id))
+            .map((p) => ({ label: p.name, value: p.$id }));
     }
 
-    const allSelected = $derived(
-        projects.length > 0 && projectAccess.length >= projects.length
-    );
+    const allSelected = $derived(projects.length > 0 && projectAccess.length >= projects.length);
 
     function addRow() {
         projectAccess = [...projectAccess, { projectId: '', roleName: 'developer' }];

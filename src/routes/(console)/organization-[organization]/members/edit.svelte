@@ -46,15 +46,13 @@
             const memberRoles = selectedMember.roles ?? [];
             if (memberRoles.some(isProjectSpecificRole)) {
                 accessType = 'specific';
-                projectAccess = memberRoles
-                    .filter(isProjectSpecificRole)
-                    .map((r) => {
-                        const parsed = parseProjectRole(r);
-                        return {
-                            projectId: parsed?.projectId ?? '',
-                            roleName: parsed?.roleName ?? defaultRole
-                        };
-                    });
+                projectAccess = memberRoles.filter(isProjectSpecificRole).map((r) => {
+                    const parsed = parseProjectRole(r);
+                    return {
+                        projectId: parsed?.projectId ?? '',
+                        roleName: parsed?.roleName ?? defaultRole
+                    };
+                });
                 role = defaultRole;
             } else {
                 accessType = 'all';
