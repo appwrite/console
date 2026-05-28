@@ -83,8 +83,8 @@
                     events: $func.events || undefined,
                     schedule: $func.schedule || undefined,
                     timeout: $func.timeout || undefined,
-                    enabled: $func.enabled || undefined,
-                    logging: $func.logging || undefined,
+                    enabled: $func.enabled ?? undefined,
+                    logging: $func.logging ?? undefined,
                     entrypoint: $func.entrypoint,
                     commands: $func.commands || undefined,
                     scopes: ($func.scopes as Scopes[]) || undefined,
@@ -93,7 +93,8 @@
                     providerBranch: branch || undefined,
                     providerSilentMode: $func.providerSilentMode ?? undefined,
                     providerRootDirectory: $func.providerRootDirectory ?? undefined,
-                    buildSpecification: $func.buildSpecification || undefined
+                    buildSpecification: $func.buildSpecification || undefined,
+                    deploymentRetention: $func.deploymentRetention ?? undefined
                 });
             }
             if (commit) {

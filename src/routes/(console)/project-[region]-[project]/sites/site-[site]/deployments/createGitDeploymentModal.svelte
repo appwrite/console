@@ -85,8 +85,8 @@
                     siteId: site.$id,
                     name: site.name,
                     framework: site.framework as Framework,
-                    enabled: site.enabled || undefined,
-                    logging: site.logging || undefined,
+                    enabled: site.enabled ?? undefined,
+                    logging: site.logging ?? undefined,
                     timeout: site.timeout || undefined,
                     installCommand: site.installCommand || undefined,
                     buildCommand: site.buildCommand || undefined,
@@ -98,8 +98,9 @@
                     installationId: $installation.$id || undefined,
                     providerRepositoryId: selectedRepository || undefined,
                     providerBranch: branch || undefined,
-                    providerSilentMode: site.providerSilentMode || undefined,
-                    providerRootDirectory: site.providerRootDirectory || undefined
+                    providerSilentMode: site.providerSilentMode ?? undefined,
+                    providerRootDirectory: site.providerRootDirectory || undefined,
+                    deploymentRetention: site.deploymentRetention ?? undefined
                 });
             }
             if (commit) {

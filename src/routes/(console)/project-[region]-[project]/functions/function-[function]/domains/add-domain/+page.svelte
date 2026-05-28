@@ -141,14 +141,18 @@
                 events: data.func.events || undefined,
                 schedule: data.func.schedule || undefined,
                 timeout: data.func.timeout || undefined,
-                enabled: data.func.enabled || undefined,
-                logging: data.func.logging || undefined,
+                enabled: data.func.enabled ?? undefined,
+                logging: data.func.logging ?? undefined,
                 entrypoint: data.func.entrypoint,
                 commands: data.func.commands || undefined,
                 scopes: (data.func.scopes as Scopes[]) || undefined,
                 installationId: selectedInstallationId,
                 providerRepositoryId: selectedRepository,
-                providerBranch: 'main'
+                providerBranch: 'main',
+                providerSilentMode: data.func.providerSilentMode ?? undefined,
+                providerRootDirectory: data.func.providerRootDirectory || undefined,
+                buildSpecification: data.func.buildSpecification || undefined,
+                deploymentRetention: data.func.deploymentRetention ?? undefined
             });
             await invalidate(Dependencies.FUNCTION);
         } catch {
