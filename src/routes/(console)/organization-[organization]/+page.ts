@@ -28,8 +28,10 @@ export const load: PageLoad = async ({ params, url, route, depends, parent }) =>
 
     // getScopes collapses project-specific roles to org-level scopes,
     // so we query the membership directly for the raw roles.
-    const projectScopeQueries: ReturnType<typeof Query.equal>[] = [];
-    if (isCloud && account) {
+    // Owners always see all projects — skip the extra call for them.
+    const projectScopeQueries: string[] = [];
+    const { roles } = await parent();
+    if (isCloud && account && !roles.includes('owner')) {
         const myMembership = await sdk.forConsole.teams
             .listMemberships({
                 teamId: params.organization,

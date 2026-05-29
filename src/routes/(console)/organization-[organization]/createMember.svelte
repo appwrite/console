@@ -35,9 +35,11 @@
     let accessType = $state<'all' | 'specific'>('all');
     let projectAccess = $state<Array<{ projectId: string; roleName: string }>>([]);
     let orgProjects = $state<Models.Project[]>([]);
+    let hasFetchedProjects = $state(false);
 
     $effect(() => {
-        if (showCreate && supportsProjectRoles && orgProjects.length === 0) {
+        if (showCreate && supportsProjectRoles && !hasFetchedProjects) {
+            hasFetchedProjects = true;
             sdk.forConsole
                 .organization($organization.$id)
                 .listProjects({
@@ -59,6 +61,7 @@
             accessType = 'all';
             projectAccess = [];
             orgProjects = [];
+            hasFetchedProjects = false;
         }
     });
 
