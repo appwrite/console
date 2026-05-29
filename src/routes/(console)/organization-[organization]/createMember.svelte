@@ -27,7 +27,7 @@
     } = $props();
 
     const supportsProjectRoles = $derived(
-        isCloud && !!$currentPlan?.supportsOrganizationRoles && $currentPlan?.group === 'scale'
+        isCloud && !!$currentPlan?.supportsProjectSpecificRoles
     );
 
     let email = $state('');

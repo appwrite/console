@@ -32,7 +32,7 @@
     } = $props();
 
     const supportsProjectRoles = $derived(
-        isCloud && !!$currentPlan?.supportsOrganizationRoles && $currentPlan?.group === 'scale'
+        isCloud && !!$currentPlan?.supportsProjectSpecificRoles
     );
     const defaultRole = isSelfHosted ? 'owner' : 'developer';
 
