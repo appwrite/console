@@ -228,7 +228,7 @@
                 <InputSelect
                     required
                     id="framework"
-                    label="Framework"
+                    label="SiteFramework"
                     placeholder="Select framework"
                     bind:value={frameworkKey}
                     options={frameworks.map((framework) => ({

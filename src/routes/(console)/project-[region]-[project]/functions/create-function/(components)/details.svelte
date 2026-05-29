@@ -59,7 +59,7 @@
             {:else}
                 <InputSelect
                     id="runtime"
-                    label="Runtime"
+                    label="FunctionRuntime"
                     placeholder="Select runtime"
                     bind:value={runtime}
                     required

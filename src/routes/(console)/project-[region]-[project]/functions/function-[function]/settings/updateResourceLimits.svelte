@@ -111,7 +111,7 @@
                 </Tooltip>
             </InputSelect>
             <InputSelect
-                label="Runtime specification"
+                label="FunctionRuntime specification"
                 id="runtime-specification"
                 required
                 disabled={options.length < 1}

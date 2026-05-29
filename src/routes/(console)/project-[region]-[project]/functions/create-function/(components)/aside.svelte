@@ -21,7 +21,7 @@
         <Layout.Stack gap="l">
             {#if selectedRuntime?.name && !loading}
                 <Layout.Stack gap="xxxs">
-                    <Typography.Caption variant="400">Runtime</Typography.Caption>
+                    <Typography.Caption variant="400">FunctionRuntime</Typography.Caption>
                     <Layout.Stack gap="xxs" alignItems="center" direction="row">
                         {#if selectedRuntime?.key}
                             <SvgIcon iconSize="small" size={16} name={selectedRuntime.key} />

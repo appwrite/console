@@ -214,7 +214,7 @@
                     </Layout.Stack>
                     <Input.Select
                         id="runtime"
-                        label="Runtime"
+                        label="FunctionRuntime"
                         placeholder="Select runtime"
                         bind:value={runtime}
                         required

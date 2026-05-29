@@ -52,7 +52,7 @@
             {#if framework?.name}
                 {@const frameworkIcon = getFrameworkIcon(framework.key)}
                 <Layout.Stack gap="xxxs">
-                    <Typography.Caption variant="400">Framework</Typography.Caption>
+                    <Typography.Caption variant="400">SiteFramework</Typography.Caption>
                     <Layout.Stack gap="xxs" alignItems="center" direction="row">
                         {#if frameworkIcon}
                             <SvgIcon iconSize="small" size={16} name={frameworkIcon} />

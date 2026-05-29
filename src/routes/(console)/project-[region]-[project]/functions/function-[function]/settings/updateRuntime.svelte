@@ -51,7 +51,7 @@
             });
             await invalidate(Dependencies.FUNCTION);
             addNotification({
-                message: 'Runtime settings have been updated',
+                message: 'FunctionRuntime settings have been updated',
                 type: 'success'
             });
             trackEvent(Submit.FunctionUpdateRuntime, { runtime });
@@ -69,7 +69,7 @@
 
 <Form onSubmit={updateRuntime}>
     <CardGrid>
-        <svelte:fragment slot="title">Runtime</svelte:fragment>
+        <svelte:fragment slot="title">FunctionRuntime</svelte:fragment>
         <Typography.Text>
             Select the runtime for executing your function and define its entrypoint. Version
             changes apply on redeploy and can be updated here. <Link external href="#"
@@ -79,7 +79,7 @@
         <svelte:fragment slot="aside">
             <Layout.Stack gap="l">
                 <InputSelect
-                    label="Runtime"
+                    label="FunctionRuntime"
                     id="runtime"
                     placeholder="Select runtime"
                     bind:value={runtime}

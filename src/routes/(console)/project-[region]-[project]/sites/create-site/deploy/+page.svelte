@@ -56,7 +56,7 @@
     // Track if we have custom commands from URL
     let hasCustomCommands = $state(false);
 
-    // Framework options - dynamically generate from enum
+    // SiteFramework options - dynamically generate from enum
     const frameworkOptions = $derived(
         Object.values(SiteFramework).map((fw) => ({
             key: fw,
@@ -104,7 +104,7 @@
     onMount(() => {
         const preset = page.url.searchParams.get('preset') || 'nextjs';
 
-        // Map preset string to Framework enum
+        // Map preset string to SiteFramework enum
         framework = (Object.values(SiteFramework) as string[]).includes(preset.toLowerCase())
             ? (preset.toLowerCase() as SiteFramework)
             : SiteFramework.Nextjs;
@@ -262,7 +262,7 @@
                     </Layout.Stack>
                     <Input.Select
                         id="framework"
-                        label="Framework"
+                        label="SiteFramework"
                         placeholder="Select framework"
                         bind:value={framework}
                         options={frameworkSelectOptions} />
