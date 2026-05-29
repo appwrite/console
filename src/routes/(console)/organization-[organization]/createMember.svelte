@@ -26,7 +26,9 @@
         oncreated?: (team: Models.Membership) => void;
     } = $props();
 
-    const supportsProjectRoles = $derived(isCloud && !!$currentPlan?.supportsOrganizationRoles);
+    const supportsProjectRoles = $derived(
+        isCloud && !!$currentPlan?.supportsOrganizationRoles && $currentPlan?.group === 'scale'
+    );
 
     let email = $state('');
     let name = $state('');

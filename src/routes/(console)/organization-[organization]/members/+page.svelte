@@ -217,7 +217,7 @@
                         </Button.Button>
                         <div style:min-width="232px" slot="tooltip">
                             <ActionMenu.Root>
-                                {#if isCloud && $currentPlan?.supportsOrganizationRoles}
+                                {#if isCloud && $currentPlan?.supportsOrganizationRoles && $currentPlan?.group === 'scale'}
                                     <ActionMenu.Item.Button
                                         trailingIcon={IconPencil}
                                         on:click={() => {
