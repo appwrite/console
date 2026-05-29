@@ -161,7 +161,7 @@
                             {#each member.roles.filter(isProjectSpecificRole) as memberRole}
                                 {@const parsed = parseProjectRole(memberRole)}
                                 {@const project = parsed
-                                    ? data.orgProjects?.projects.find(
+                                    ? data.orgProjects?.projects?.find(
                                           (p) => p.$id === parsed.projectId
                                       )
                                     : null}
