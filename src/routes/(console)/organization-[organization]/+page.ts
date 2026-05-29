@@ -48,7 +48,8 @@ export const load: PageLoad = async ({ params, url, route, depends, parent }) =>
             project.region ??= 'default';
             const platformList = await sdk
                 .forProject(project.region, project.$id)
-                .project.listPlatforms({ queries: [Query.limit(3)] });
+                .project.listPlatforms({ queries: [Query.limit(3)] })
+                .catch(() => ({ platforms: [], total: 0 }));
 
             return {
                 ...project,
