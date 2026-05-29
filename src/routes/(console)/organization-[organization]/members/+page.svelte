@@ -6,7 +6,14 @@
     import { base } from '$app/paths';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import Upgrade from '$lib/components/roles/upgrade.svelte';
-    import { getServiceLimit, readOnly, getRoleLabel } from '$lib/stores/billing';
+    import {
+        getServiceLimit,
+        readOnly,
+        getRoleLabel,
+        isProjectSpecificRole,
+        parseProjectRole
+    } from '$lib/stores/billing';
+
     import {
         BODY_TOOLTIP_MAX_WIDTH,
         BODY_TOOLTIP_WRAPPER_STYLE
@@ -149,7 +156,52 @@
                     </Typography.Text>
                 </Table.Cell>
                 <Table.Cell column="roles" {root}>
-                    {member.roles.map((role) => getRoleLabel(role)).join(', ')}
+                    {#if member.roles.some(isProjectSpecificRole)}
+                        {@const projectRoles = member.roles.filter(isProjectSpecificRole)}
+                        {@const firstRole = projectRoles[0]}
+                        {@const firstParsed = parseProjectRole(firstRole)}
+                        {@const firstProject = firstParsed
+                            ? data.orgProjects?.projects?.find(
+                                  (p) => p.$id === firstParsed.projectId
+                              )
+                            : null}
+                        {@const overflow = projectRoles.slice(1)}
+                        <Layout.Stack direction="row" gap="xxs">
+                            <Badge
+                                size="xs"
+                                variant="secondary"
+                                content="{getRoleLabel(firstRole)}: {firstProject?.name ??
+                                    firstParsed?.projectId}" />
+                            {#if overflow.length > 0}
+                                <Tooltip placement="top" maxWidth={BODY_TOOLTIP_MAX_WIDTH}>
+                                    <Badge
+                                        size="xs"
+                                        variant="secondary"
+                                        content="+{overflow.length}" />
+                                    <svelte:fragment slot="tooltip">
+                                        <div style={BODY_TOOLTIP_WRAPPER_STYLE}>
+                                            <Layout.Stack gap="xxs">
+                                                {#each overflow as overflowRole}
+                                                    {@const p = parseProjectRole(overflowRole)}
+                                                    {@const proj = p
+                                                        ? data.orgProjects?.projects?.find(
+                                                              (x) => x.$id === p.projectId
+                                                          )
+                                                        : null}
+                                                    <Typography.Text size="s">
+                                                        {getRoleLabel(overflowRole)}: {proj?.name ??
+                                                            p?.projectId}
+                                                    </Typography.Text>
+                                                {/each}
+                                            </Layout.Stack>
+                                        </div>
+                                    </svelte:fragment>
+                                </Tooltip>
+                            {/if}
+                        </Layout.Stack>
+                    {:else}
+                        {member.roles.map((r) => getRoleLabel(r)).join(', ')}
+                    {/if}
                 </Table.Cell>
                 <Table.Cell column="mfa" {root}>
                     <Badge
@@ -209,4 +261,4 @@
 </Container>
 
 <Delete {selectedMember} bind:showDelete />
-<Edit {selectedMember} bind:showEdit />
+<Edit {selectedMember} projects={data.orgProjects?.projects ?? []} bind:showEdit />

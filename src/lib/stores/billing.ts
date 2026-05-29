@@ -93,7 +93,37 @@ function makeBillingPlan(
     return typeof billingPlanOrId === 'string' ? billingIdToPlan(billingPlanOrId) : billingPlanOrId;
 }
 
+export const projectRoles = roles.filter((r) => r.value !== 'billing');
+
+const projectRoleNames = new Set(projectRoles.map((r) => r.value));
+
+export function isProjectSpecificRole(role: string): boolean {
+    if (!role.startsWith('project-')) return false;
+    const lastDash = role.lastIndexOf('-');
+    if (lastDash <= 'project-'.length) return false;
+    return projectRoleNames.has(role.slice(lastDash + 1));
+}
+
+export function parseProjectRole(role: string): { projectId: string; roleName: string } | null {
+    if (!isProjectSpecificRole(role)) return null;
+    const withoutPrefix = role.slice('project-'.length);
+    const lastDashIdx = withoutPrefix.lastIndexOf('-');
+    if (lastDashIdx === -1) return null;
+    return {
+        projectId: withoutPrefix.slice(0, lastDashIdx),
+        roleName: withoutPrefix.slice(lastDashIdx + 1)
+    };
+}
+
+export function buildProjectRole(projectId: string, roleName: string): string {
+    return `project-${projectId}-${roleName}`;
+}
+
 export function getRoleLabel(role: string) {
+    if (isProjectSpecificRole(role)) {
+        const parsed = parseProjectRole(role);
+        return projectRoles.find((r) => r.value === parsed?.roleName)?.label ?? role;
+    }
     return roles.find((r) => r.value === role)?.label ?? role;
 }
 
