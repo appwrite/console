@@ -3,7 +3,7 @@
     import InputSelect from '$lib/elements/forms/inputSelect.svelte';
     import { projectRoles } from '$lib/stores/billing';
     import type { Models } from '@appwrite.io/console';
-    import { Icon, Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { Icon, Layout } from '@appwrite.io/pink-svelte';
     import { IconPlus, IconTrash } from '@appwrite.io/pink-icons-svelte';
 
     type ProjectAccess = { projectId: string; roleName: string };
@@ -37,7 +37,6 @@
 </script>
 
 <Layout.Stack gap="s">
-    <Typography.Text variant="m-500">Project access</Typography.Text>
     {#each projectAccess as access, i}
         <Layout.Stack direction="row" gap="s" alignItems="flex-end">
             <div style:flex="1">
