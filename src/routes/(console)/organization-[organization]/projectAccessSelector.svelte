@@ -78,7 +78,6 @@
         rowSearching = rowSearching.filter((_, idx) => idx !== i);
         debouncedSearchers.delete(i);
     }
-
 </script>
 
 <Layout.Stack gap="s">
