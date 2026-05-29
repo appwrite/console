@@ -157,20 +157,24 @@
                 </Table.Cell>
                 <Table.Cell column="roles" {root}>
                     {#if member.roles.some(isProjectSpecificRole)}
-                        <Layout.Stack direction="row" gap="xxs" wrap="wrap">
-                            {#each member.roles.filter(isProjectSpecificRole) as memberRole}
-                                {@const parsed = parseProjectRole(memberRole)}
-                                {@const project = parsed
-                                    ? data.orgProjects?.projects?.find(
-                                          (p) => p.$id === parsed.projectId
-                                      )
-                                    : null}
+                        {@const projectRoles = member.roles.filter(isProjectSpecificRole)}
+                        {@const firstRole = projectRoles[0]}
+                        {@const parsed = parseProjectRole(firstRole)}
+                        {@const project = parsed
+                            ? data.orgProjects?.projects?.find((p) => p.$id === parsed.projectId)
+                            : null}
+                        <Layout.Stack direction="row" gap="xxs">
+                            <Badge
+                                size="xs"
+                                variant="secondary"
+                                content="{getRoleLabel(firstRole)}: {project?.name ??
+                                    parsed?.projectId}" />
+                            {#if projectRoles.length > 1}
                                 <Badge
                                     size="xs"
                                     variant="secondary"
-                                    content="{getRoleLabel(memberRole)}: {project?.name ??
-                                        parsed?.projectId}" />
-                            {/each}
+                                    content="+{projectRoles.length - 1}" />
+                            {/if}
                         </Layout.Stack>
                     {:else}
                         {member.roles.map((r) => getRoleLabel(r)).join(', ')}
