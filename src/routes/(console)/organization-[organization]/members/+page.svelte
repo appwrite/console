@@ -159,21 +159,39 @@
                     {#if member.roles.some(isProjectSpecificRole)}
                         {@const projectRoles = member.roles.filter(isProjectSpecificRole)}
                         {@const firstRole = projectRoles[0]}
-                        {@const parsed = parseProjectRole(firstRole)}
-                        {@const project = parsed
-                            ? data.orgProjects?.projects?.find((p) => p.$id === parsed.projectId)
+                        {@const firstParsed = parseProjectRole(firstRole)}
+                        {@const firstProject = firstParsed
+                            ? data.orgProjects?.projects?.find(
+                                  (p) => p.$id === firstParsed.projectId
+                              )
                             : null}
+                        {@const overflow = projectRoles.slice(1)}
                         <Layout.Stack direction="row" gap="xxs">
                             <Badge
                                 size="xs"
                                 variant="secondary"
-                                content="{getRoleLabel(firstRole)}: {project?.name ??
-                                    parsed?.projectId}" />
-                            {#if projectRoles.length > 1}
-                                <Badge
-                                    size="xs"
-                                    variant="secondary"
-                                    content="+{projectRoles.length - 1}" />
+                                content="{getRoleLabel(firstRole)}: {firstProject?.name ??
+                                    firstParsed?.projectId}" />
+                            {#if overflow.length > 0}
+                                <Tooltip placement="top">
+                                    <Badge size="xs" variant="secondary" content="+{overflow.length}" />
+                                    <svelte:fragment slot="tooltip">
+                                        <Layout.Stack gap="xxs">
+                                            {#each overflow as overflowRole}
+                                                {@const p = parseProjectRole(overflowRole)}
+                                                {@const proj = p
+                                                    ? data.orgProjects?.projects?.find(
+                                                          (x) => x.$id === p.projectId
+                                                      )
+                                                    : null}
+                                                <Typography.Text color="--color-neutral-0" size="s">
+                                                    {getRoleLabel(overflowRole)}: {proj?.name ??
+                                                        p?.projectId}
+                                                </Typography.Text>
+                                            {/each}
+                                        </Layout.Stack>
+                                    </svelte:fragment>
+                                </Tooltip>
                             {/if}
                         </Layout.Stack>
                     {:else}
