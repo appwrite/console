@@ -173,23 +173,25 @@
                                 content="{getRoleLabel(firstRole)}: {firstProject?.name ??
                                     firstParsed?.projectId}" />
                             {#if overflow.length > 0}
-                                <Tooltip placement="top">
+                                <Tooltip placement="top" maxWidth={BODY_TOOLTIP_MAX_WIDTH}>
                                     <Badge size="xs" variant="secondary" content="+{overflow.length}" />
                                     <svelte:fragment slot="tooltip">
-                                        <Layout.Stack gap="xxs">
-                                            {#each overflow as overflowRole}
-                                                {@const p = parseProjectRole(overflowRole)}
-                                                {@const proj = p
-                                                    ? data.orgProjects?.projects?.find(
-                                                          (x) => x.$id === p.projectId
-                                                      )
-                                                    : null}
-                                                <Typography.Text color="--color-neutral-0" size="s">
-                                                    {getRoleLabel(overflowRole)}: {proj?.name ??
-                                                        p?.projectId}
-                                                </Typography.Text>
-                                            {/each}
-                                        </Layout.Stack>
+                                        <div style={BODY_TOOLTIP_WRAPPER_STYLE}>
+                                            <Layout.Stack gap="xxs">
+                                                {#each overflow as overflowRole}
+                                                    {@const p = parseProjectRole(overflowRole)}
+                                                    {@const proj = p
+                                                        ? data.orgProjects?.projects?.find(
+                                                              (x) => x.$id === p.projectId
+                                                          )
+                                                        : null}
+                                                    <Typography.Text size="s">
+                                                        {getRoleLabel(overflowRole)}: {proj?.name ??
+                                                            p?.projectId}
+                                                    </Typography.Text>
+                                                {/each}
+                                            </Layout.Stack>
+                                        </div>
                                     </svelte:fragment>
                                 </Tooltip>
                             {/if}
