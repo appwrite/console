@@ -8,6 +8,7 @@
     import { Icon, Layout, Input } from '@appwrite.io/pink-svelte';
     import { IconPlus, IconTrash } from '@appwrite.io/pink-icons-svelte';
     import { debounce } from '$lib/helpers/debounce';
+    import { onMount } from 'svelte';
 
     type ProjectAccess = { projectId: string; roleName: string };
     type Option = { value: string; label: string };
@@ -25,6 +26,26 @@
     // discarded if a newer request has already been dispatched.
     let rowGeneration = $state<number[]>([]);
 
+    // Prefetch the first page the moment this component mounts (i.e. when the
+    // user switches to "Specific projects") so results are ready or in-flight
+    // before any row is opened.  All rows share this single Promise for
+    // unfiltered loads; typed searches always hit the API separately.
+    let prefetchPromise: Promise<Option[]> | null = null;
+
+    onMount(() => {
+        prefetchPromise = sdk.forConsole
+            .organization($organization.$id)
+            .listProjects({
+                queries: [
+                    Query.limit(25),
+                    Query.orderDesc(''),
+                    Query.equal('teamId', $organization.$id)
+                ]
+            })
+            .then((r) => r.projects.map((p) => ({ value: p.$id, label: p.name })))
+            .catch(() => []);
+    });
+
     function takenIds(excludeIndex: number): Set<string> {
         return new Set(
             projectAccess
@@ -39,27 +60,29 @@
         rowGeneration[index] = gen;
         rowSearching[index] = true;
 
-        const queries: string[] = [
-            Query.limit(25),
-            Query.orderDesc(''),
-            Query.equal('teamId', $organization.$id)
-        ];
-        if (search) {
-            queries.push(Query.search('name', search));
+        let allOptions: Option[];
+        if (!search && prefetchPromise) {
+            // Re-use the shared prefetch — avoids a redundant network request
+            allOptions = await prefetchPromise;
+        } else {
+            const queries: string[] = [
+                Query.limit(25),
+                Query.orderDesc(''),
+                Query.equal('teamId', $organization.$id)
+            ];
+            if (search) queries.push(Query.search('name', search));
+            const result = await sdk.forConsole
+                .organization($organization.$id)
+                .listProjects({ queries })
+                .catch(() => null);
+            allOptions = (result?.projects ?? []).map((p) => ({ value: p.$id, label: p.name }));
         }
-
-        const result = await sdk.forConsole
-            .organization($organization.$id)
-            .listProjects({ queries })
-            .catch(() => null);
 
         // Discard stale responses — a newer request has already been dispatched
         if (rowGeneration[index] !== gen) return;
 
         const taken = takenIds(index);
-        rowOptions[index] = (result?.projects ?? [])
-            .filter((p) => !taken.has(p.$id))
-            .map((p) => ({ value: p.$id, label: p.name }));
+        rowOptions[index] = allOptions.filter((p) => !taken.has(p.value));
         rowSearching[index] = false;
     }
 
