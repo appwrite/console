@@ -13,7 +13,7 @@
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { invalidate } from '$app/navigation';
     import { sdk } from '$lib/stores/sdk';
-    import type { SiteAdapter, SiteBuildRuntime, SiteFramework } from '@appwrite.io/console';
+    import type { Adapter, BuildRuntime, Framework } from '@appwrite.io/console';
     import { Dependencies } from '$lib/constants';
     import { ConnectRepoModal } from '$lib/components/git';
     import { regionalProtocol } from '$routes/(console)/project-[region]-[project]/store';
@@ -50,7 +50,7 @@
             await sdk.forProject(page.params.region, page.params.project).sites.update({
                 siteId: data.site.$id,
                 name: data.site.name,
-                framework: data.site.framework as SiteFramework,
+                framework: data.site.framework as Framework,
                 enabled: data.site.enabled,
                 logging: data.site.logging || undefined,
                 timeout: data.site.timeout,
@@ -58,8 +58,8 @@
                 buildCommand: data.site.buildCommand,
                 startCommand: data.site.startCommand,
                 outputDirectory: data.site.outputDirectory,
-                buildRuntime: data.site.buildRuntime as SiteBuildRuntime,
-                adapter: data.site.adapter as SiteAdapter,
+                buildRuntime: data.site.buildRuntime as BuildRuntime,
+                adapter: data.site.adapter as Adapter,
                 fallbackFile: data.site.fallbackFile,
                 installationId: selectedInstallationId,
                 providerRepositoryId: selectedRepository,

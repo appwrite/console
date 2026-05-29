@@ -10,7 +10,7 @@
     import { createEventDispatcher } from 'svelte';
     import { func } from '../store';
     import { isValueOfStringEnum } from '$lib/helpers/types';
-    import { FunctionRuntime, type ProjectKeyScopes } from '@appwrite.io/console';
+    import { Runtime, type Scopes } from '@appwrite.io/console';
 
     export let show = false;
     const functionId = page.params.function;
@@ -20,7 +20,7 @@
 
     const handleSubmit = async () => {
         try {
-            if (!isValueOfStringEnum(FunctionRuntime, $func.runtime)) {
+            if (!isValueOfStringEnum(Runtime, $func.runtime)) {
                 throw new Error(`Invalid runtime: ${$func.runtime}`);
             }
             await sdk.forProject(page.params.region, page.params.project).functions.update({
@@ -35,7 +35,7 @@
                 logging: $func.logging ?? undefined,
                 entrypoint: $func.entrypoint,
                 commands: $func.commands || undefined,
-                scopes: ($func.scopes as ProjectKeyScopes[]) || undefined,
+                scopes: ($func.scopes as Scopes[]) || undefined,
                 installationId: '',
                 providerRepositoryId: '',
                 providerBranch: '',

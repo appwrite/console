@@ -8,12 +8,7 @@
     import { symmetricDifference } from '$lib/helpers/array';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import {
-        SiteAdapter,
-        SiteBuildRuntime,
-        SiteFramework,
-        type Models
-    } from '@appwrite.io/console';
+    import { Adapter, BuildRuntime, Framework, type Models } from '@appwrite.io/console';
     import { Icon, Layout, Tooltip } from '@appwrite.io/pink-svelte';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
 
@@ -42,7 +37,7 @@
             await sdk.forProject(page.params.region, page.params.project).sites.update({
                 siteId: site.$id,
                 name: site.name,
-                framework: site.framework as SiteFramework,
+                framework: site.framework as Framework,
                 enabled: site.enabled ?? undefined,
                 logging: site.logging ?? undefined,
                 timeout: site.timeout ?? undefined,
@@ -50,8 +45,8 @@
                 buildCommand: site.buildCommand ?? undefined,
                 startCommand: site.startCommand ?? undefined,
                 outputDirectory: site.outputDirectory ?? undefined,
-                buildRuntime: (site.buildRuntime as SiteBuildRuntime) ?? undefined,
-                adapter: (site.adapter as SiteAdapter) ?? undefined,
+                buildRuntime: (site.buildRuntime as BuildRuntime) ?? undefined,
+                adapter: (site.adapter as Adapter) ?? undefined,
                 fallbackFile: site.fallbackFile ?? undefined,
                 installationId: site.installationId ?? undefined,
                 providerRepositoryId: site.providerRepositoryId ?? undefined,

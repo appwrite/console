@@ -22,7 +22,7 @@
     <svelte:fragment slot="aside">
         <Layout.Stack gap="xxxl" direction="row" wrap="wrap">
             <Layout.Stack gap="xxxs" inline>
-                <Typography.Caption variant="400">FunctionRuntime</Typography.Caption>
+                <Typography.Caption variant="400">Runtime</Typography.Caption>
                 <Typography.Text variant="m-400" color="--fgcolor-neutral-primary">
                     <Layout.Stack direction="row" gap="xxs" alignItems="center">
                         <SvgIcon size={16} iconSize="small" name={$func.runtime.split('-')[0]} />

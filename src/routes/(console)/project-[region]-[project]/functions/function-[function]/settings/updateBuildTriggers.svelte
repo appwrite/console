@@ -8,7 +8,7 @@
     import { symmetricDifference } from '$lib/helpers/array';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { type Models, FunctionRuntime, type ProjectKeyScopes } from '@appwrite.io/console';
+    import { type Models, Runtime, type Scopes } from '@appwrite.io/console';
     import { Icon, Layout, Tooltip } from '@appwrite.io/pink-svelte';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
 
@@ -40,7 +40,7 @@
             await sdk.forProject(page.params.region, page.params.project).functions.update({
                 functionId: func.$id,
                 name: func.name,
-                runtime: func.runtime as FunctionRuntime,
+                runtime: func.runtime as Runtime,
                 execute: func.execute?.length ? (func.execute as string[]) : undefined,
                 events: func.events?.length ? (func.events as string[]) : undefined,
                 schedule: func.schedule ?? undefined,
@@ -49,7 +49,7 @@
                 logging: func.logging ?? undefined,
                 entrypoint: func.entrypoint ?? undefined,
                 commands: func.commands ?? undefined,
-                scopes: func.scopes?.length ? (func.scopes as ProjectKeyScopes[]) : undefined,
+                scopes: func.scopes?.length ? (func.scopes as Scopes[]) : undefined,
                 installationId: func.installationId ?? undefined,
                 providerRepositoryId: func.providerRepositoryId ?? undefined,
                 providerBranch: func.providerBranch ?? undefined,

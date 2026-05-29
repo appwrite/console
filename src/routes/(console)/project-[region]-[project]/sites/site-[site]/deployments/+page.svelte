@@ -2,12 +2,7 @@
     import { PaginationWithLimit, EmptyFilter, Empty } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { Container, ResponsiveContainerHeader } from '$lib/layout';
-    import {
-        SiteAdapter,
-        SiteBuildRuntime,
-        SiteFramework,
-        type Models
-    } from '@appwrite.io/console';
+    import { Adapter, BuildRuntime, Framework, type Models } from '@appwrite.io/console';
     import { View } from '$lib/helpers/load';
     import { ActionMenu, Alert, Icon, Layout, Popover } from '@appwrite.io/pink-svelte';
     import Table from './table.svelte';
@@ -67,7 +62,7 @@
         await sdk.forProject(page.params.region, page.params.project).sites.update({
             siteId: data.site.$id,
             name: data.site.name,
-            framework: data.site.framework as SiteFramework,
+            framework: data.site.framework as Framework,
             enabled: data.site.enabled,
             logging: data.site.logging || undefined,
             timeout: data.site.timeout,
@@ -75,8 +70,8 @@
             buildCommand: data.site.buildCommand,
             startCommand: data.site.startCommand,
             outputDirectory: data.site.outputDirectory,
-            buildRuntime: data.site.buildRuntime as SiteBuildRuntime,
-            adapter: data.site.adapter as SiteAdapter,
+            buildRuntime: data.site.buildRuntime as BuildRuntime,
+            adapter: data.site.adapter as Adapter,
             fallbackFile: data.site.fallbackFile,
             installationId: selectedInstallationId,
             providerRepositoryId: selectedRepository,

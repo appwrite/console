@@ -10,7 +10,7 @@
     import { func } from '../store';
     import InputSelect from '$lib/elements/forms/inputSelect.svelte';
     import { isValueOfStringEnum } from '$lib/helpers/types';
-    import { FunctionRuntime, type Models, type ProjectKeyScopes } from '@appwrite.io/console';
+    import { Runtime, type Models, type Scopes } from '@appwrite.io/console';
     import { Layout, Typography } from '@appwrite.io/pink-svelte';
     import Link from '$lib/elements/link.svelte';
 
@@ -25,7 +25,7 @@
 
     async function updateRuntime() {
         try {
-            if (!isValueOfStringEnum(FunctionRuntime, runtime)) {
+            if (!isValueOfStringEnum(Runtime, runtime)) {
                 throw new Error(`Invalid runtime: ${runtime}`);
             }
             await sdk.forProject(page.params.region, page.params.project).functions.update({
@@ -40,7 +40,7 @@
                 logging: $func.logging ?? undefined,
                 entrypoint: entrypoint || undefined,
                 commands: $func.commands || undefined,
-                scopes: ($func.scopes as ProjectKeyScopes[]) || undefined,
+                scopes: ($func.scopes as Scopes[]) || undefined,
                 installationId: $func.installationId || undefined,
                 providerRepositoryId: $func.providerRepositoryId || undefined,
                 providerBranch: $func.providerBranch || undefined,
@@ -51,7 +51,7 @@
             });
             await invalidate(Dependencies.FUNCTION);
             addNotification({
-                message: 'FunctionRuntime settings have been updated',
+                message: 'Runtime settings have been updated',
                 type: 'success'
             });
             trackEvent(Submit.FunctionUpdateRuntime, { runtime });
@@ -69,7 +69,7 @@
 
 <Form onSubmit={updateRuntime}>
     <CardGrid>
-        <svelte:fragment slot="title">FunctionRuntime</svelte:fragment>
+        <svelte:fragment slot="title">Runtime</svelte:fragment>
         <Typography.Text>
             Select the runtime for executing your function and define its entrypoint. Version
             changes apply on redeploy and can be updated here. <Link external href="#"
@@ -79,7 +79,7 @@
         <svelte:fragment slot="aside">
             <Layout.Stack gap="l">
                 <InputSelect
-                    label="FunctionRuntime"
+                    label="Runtime"
                     id="runtime"
                     placeholder="Select runtime"
                     bind:value={runtime}

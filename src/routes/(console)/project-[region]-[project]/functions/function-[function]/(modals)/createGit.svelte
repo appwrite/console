@@ -9,12 +9,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { installation, repository, sortBranches } from '$lib/stores/vcs';
-    import {
-        FunctionRuntime,
-        VCSReferenceType,
-        type Models,
-        type ProjectKeyScopes
-    } from '@appwrite.io/console';
+    import { Runtime, VCSReferenceType, type Models, type Scopes } from '@appwrite.io/console';
     import { IconGithub } from '@appwrite.io/pink-icons-svelte';
     import { Icon, Input, Layout, Skeleton, Typography } from '@appwrite.io/pink-svelte';
     import { func } from '../store';
@@ -83,7 +78,7 @@
                 await sdk.forProject(page.params.region, page.params.project).functions.update({
                     functionId: $func.$id,
                     name: $func.name,
-                    runtime: $func.runtime as FunctionRuntime,
+                    runtime: $func.runtime as Runtime,
                     execute: $func.execute || undefined,
                     events: $func.events || undefined,
                     schedule: $func.schedule || undefined,
@@ -92,7 +87,7 @@
                     logging: $func.logging ?? undefined,
                     entrypoint: $func.entrypoint,
                     commands: $func.commands || undefined,
-                    scopes: ($func.scopes as ProjectKeyScopes[]) || undefined,
+                    scopes: ($func.scopes as Scopes[]) || undefined,
                     installationId: $installation.$id || undefined,
                     providerRepositoryId: selectedRepository || undefined,
                     providerBranch: branch || undefined,

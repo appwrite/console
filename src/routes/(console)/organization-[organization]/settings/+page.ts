@@ -1,7 +1,7 @@
 import type { PageLoad } from './$types';
 import { Dependencies } from '$lib/constants';
 import { sdk } from '$lib/stores/sdk';
-import { OrganizationAddon, Query } from '@appwrite.io/console';
+import { Addon, Query } from '@appwrite.io/console';
 import { isCloud } from '$lib/system';
 import { redirect } from '@sveltejs/kit';
 import { resolve } from '$app/paths';
@@ -40,7 +40,7 @@ export const load: PageLoad = async ({ depends, params, parent }) => {
             ? sdk.forConsole.organizations
                   .getAddonPrice({
                       organizationId: params.organization,
-                      addon: OrganizationAddon.Baa
+                      addon: Addon.Baa
                   })
                   .catch(() => null)
             : null

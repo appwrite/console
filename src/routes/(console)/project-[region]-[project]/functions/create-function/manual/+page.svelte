@@ -9,7 +9,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { Icon, Layout, Tooltip, Typography, Upload } from '@appwrite.io/pink-svelte';
     import { get, writable } from 'svelte/store';
-    import { ID, FunctionRuntime } from '@appwrite.io/console';
+    import { ID, Runtime } from '@appwrite.io/console';
     import type { Models } from '@appwrite.io/console';
     import Details from '../(components)/details.svelte';
     import Aside from '../(components)/aside.svelte';
@@ -57,7 +57,7 @@
 
     let name = '';
     let id: string | null = null;
-    let runtime: FunctionRuntime;
+    let runtime: Runtime;
     let entrypoint = '';
     let buildCommand = '';
     let roles: string[] = [];

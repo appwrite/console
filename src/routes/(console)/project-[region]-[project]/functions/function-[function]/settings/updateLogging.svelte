@@ -7,7 +7,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { isValueOfStringEnum } from '$lib/helpers/types';
-    import { FunctionRuntime, type Models, type ProjectKeyScopes } from '@appwrite.io/console';
+    import { Runtime, type Models, type Scopes } from '@appwrite.io/console';
     import { Typography } from '@appwrite.io/pink-svelte';
     import { page } from '$app/state';
 
@@ -16,7 +16,7 @@
 
     async function update() {
         try {
-            if (!isValueOfStringEnum(FunctionRuntime, func.runtime)) {
+            if (!isValueOfStringEnum(Runtime, func.runtime)) {
                 throw new Error(`Invalid runtime: ${func.runtime}`);
             }
             await sdk.forProject(page.params.region, page.params.project).functions.update({
@@ -32,7 +32,7 @@
                 deploymentRetention: func.deploymentRetention ?? undefined,
                 entrypoint: func.entrypoint || undefined,
                 commands: func.commands || undefined,
-                scopes: (func.scopes as ProjectKeyScopes[]) || undefined,
+                scopes: (func.scopes as Scopes[]) || undefined,
                 installationId: func.installationId || undefined,
                 providerRepositoryId: func.providerRepositoryId || undefined,
                 providerBranch: func.providerBranch || undefined,

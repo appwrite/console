@@ -43,7 +43,7 @@
         IconUpload,
         IconDownload
     } from '@appwrite.io/pink-icons-svelte';
-    import { MigrationOnDuplicate, type Models } from '@appwrite.io/console';
+    import { OnDuplicate, type Models } from '@appwrite.io/console';
     import CreateRow from '$database/table-[table]/rows/create.svelte';
     import { onDestroy } from 'svelte';
     import { isCloud } from '$lib/system';
@@ -66,7 +66,7 @@
     let isRefreshing = false;
     let showImportCSV = false;
     let showImportOptions = false;
-    let importOnDuplicate: MigrationOnDuplicate = MigrationOnDuplicate.Fail;
+    let importOnDuplicate: OnDuplicate = OnDuplicate.Fail;
     let pendingFile: Models.File | null = null;
     let pendingLocalFile = false;
 
@@ -123,7 +123,7 @@
     function onSelect(file: Models.File, localFile = false) {
         pendingFile = file;
         pendingLocalFile = localFile;
-        importOnDuplicate = MigrationOnDuplicate.Fail;
+        importOnDuplicate = OnDuplicate.Fail;
         showImportOptions = true;
     }
 
@@ -469,7 +469,7 @@
                 size="s"
                 bind:group={importOnDuplicate}
                 name="importOnDuplicate"
-                value={MigrationOnDuplicate.Fail}
+                value={OnDuplicate.Fail}
                 label="Fail on duplicate (default)">
                 <svelte:fragment slot="description">
                     Migration aborts on the first row with a matching ID.
@@ -479,7 +479,7 @@
                 size="s"
                 bind:group={importOnDuplicate}
                 name="importOnDuplicate"
-                value={MigrationOnDuplicate.Skip}
+                value={OnDuplicate.Skip}
                 label="Skip existing documents">
                 <svelte:fragment slot="description">
                     Documents with matching IDs will be silently skipped.
@@ -489,7 +489,7 @@
                 size="s"
                 bind:group={importOnDuplicate}
                 name="importOnDuplicate"
-                value={MigrationOnDuplicate.Overwrite}
+                value={OnDuplicate.Overwrite}
                 label="Overwrite existing documents">
                 <svelte:fragment slot="description">
                     Documents with matching IDs will be updated with the imported data.

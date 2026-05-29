@@ -7,7 +7,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { isValueOfStringEnum } from '$lib/helpers/types';
-    import { FunctionRuntime, type Models, type ProjectKeyScopes } from '@appwrite.io/console';
+    import { Runtime, type Models, type Scopes } from '@appwrite.io/console';
     import Link from '$lib/elements/link.svelte';
     import { Alert, Icon, Tooltip } from '@appwrite.io/pink-svelte';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
@@ -37,7 +37,7 @@
 
     async function updateResourceLimits() {
         try {
-            if (!isValueOfStringEnum(FunctionRuntime, func.runtime)) {
+            if (!isValueOfStringEnum(Runtime, func.runtime)) {
                 throw new Error(`Invalid runtime: ${func.runtime}`);
             }
             await sdk.forProject(page.params.region, page.params.project).functions.update({
@@ -52,7 +52,7 @@
                 logging: func.logging ?? undefined,
                 entrypoint: func.entrypoint || undefined,
                 commands: func.commands || undefined,
-                scopes: (func.scopes as ProjectKeyScopes[]) || undefined,
+                scopes: (func.scopes as Scopes[]) || undefined,
                 installationId: func.installationId || undefined,
                 providerRepositoryId: func.providerRepositoryId || undefined,
                 providerBranch: func.providerBranch || undefined,
@@ -111,7 +111,7 @@
                 </Tooltip>
             </InputSelect>
             <InputSelect
-                label="FunctionRuntime specification"
+                label="Runtime specification"
                 id="runtime-specification"
                 required
                 disabled={options.length < 1}

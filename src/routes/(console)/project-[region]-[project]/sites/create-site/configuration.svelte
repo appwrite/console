@@ -38,7 +38,7 @@
     <Layout.Stack gap="l">
         <InputSelect
             id="framework"
-            label="SiteFramework"
+            label="Framework"
             placeholder="Select framework"
             bind:value={frameworkId}
             options={frameworks.map((framework) => ({

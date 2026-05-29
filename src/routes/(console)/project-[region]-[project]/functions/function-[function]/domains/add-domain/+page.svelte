@@ -13,9 +13,9 @@
     import {
         type Models,
         ProxyResourceType,
-        FunctionRuntime,
-        RedirectStatusCode,
-        type ProjectKeyScopes
+        Runtime,
+        StatusCode,
+        type Scopes
     } from '@appwrite.io/console';
     import { statusCodeOptions } from '$lib/stores/domains';
     import { writable } from 'svelte/store';
@@ -36,7 +36,7 @@
     let domainName = $state('');
     let redirect: string = $state(null);
     let branch: string = $state(null);
-    let statusCode = $state(RedirectStatusCode.TemporaryRedirect);
+    let statusCode = $state(StatusCode.TemporaryRedirect307);
 
     const routeBase = resolveRoute(
         '/(console)/project-[region]-[project]/functions/function-[function]/domains',
@@ -129,14 +129,14 @@
 
     async function connect(selectedInstallationId: string, selectedRepository: string) {
         try {
-            if (!isValueOfStringEnum(FunctionRuntime, data.func.runtime)) {
+            if (!isValueOfStringEnum(Runtime, data.func.runtime)) {
                 throw new Error(`Invalid runtime: ${data.func.runtime}`);
             }
 
             await sdk.forProject(page.params.region, page.params.project).functions.update({
                 functionId: data.func.$id,
                 name: data.func.name,
-                runtime: data.func.runtime as FunctionRuntime,
+                runtime: data.func.runtime as Runtime,
                 execute: data.func.execute || undefined,
                 events: data.func.events || undefined,
                 schedule: data.func.schedule || undefined,
@@ -145,7 +145,7 @@
                 logging: data.func.logging ?? undefined,
                 entrypoint: data.func.entrypoint,
                 commands: data.func.commands || undefined,
-                scopes: (data.func.scopes as ProjectKeyScopes[]) || undefined,
+                scopes: (data.func.scopes as Scopes[]) || undefined,
                 installationId: selectedInstallationId,
                 providerRepositoryId: selectedRepository,
                 providerBranch: 'main',

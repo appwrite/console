@@ -11,12 +11,7 @@
     import { Fieldset, Layout, Icon, Input, Tag } from '@appwrite.io/pink-svelte';
     import { IconGithub, IconPencil } from '@appwrite.io/pink-icons-svelte';
     import { onMount } from 'svelte';
-    import {
-        ID,
-        FunctionRuntime,
-        TemplateReferenceType,
-        type ProjectKeyScopes
-    } from '@appwrite.io/console';
+    import { ID, Runtime, TemplateReferenceType, type Scopes } from '@appwrite.io/console';
     import { CustomId } from '$lib/components';
     import { getIconFromRuntime } from '$lib/stores/runtimes';
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
@@ -42,9 +37,9 @@
     let execute = $state(true);
     let entrypoint = $state('');
     let specification = $state('');
-    let runtime = $state<FunctionRuntime>();
+    let runtime = $state<Runtime>();
     let installCommand = $state('');
-    let selectedScopes = $state<ProjectKeyScopes[]>([]);
+    let selectedScopes = $state<Scopes[]>([]);
     let rootDir = $state(data.repository?.rootDirectory);
     let variables = $state<Array<{ key: string; value: string; secret: boolean }>>([]);
 
@@ -73,7 +68,7 @@
         const runtimeOption = data.runtimesList.runtimes.find(
             (runtime) => runtime.$id === runtimeParam
         );
-        runtime = (runtimeOption?.$id ?? data.runtimesList.runtimes[0]?.$id) as FunctionRuntime;
+        runtime = (runtimeOption?.$id ?? data.runtimesList.runtimes[0]?.$id) as Runtime;
 
         entrypoint = page.url.searchParams.get('entrypoint') || '';
 
@@ -214,7 +209,7 @@
                     </Layout.Stack>
                     <Input.Select
                         id="runtime"
-                        label="FunctionRuntime"
+                        label="Runtime"
                         placeholder="Select runtime"
                         bind:value={runtime}
                         required

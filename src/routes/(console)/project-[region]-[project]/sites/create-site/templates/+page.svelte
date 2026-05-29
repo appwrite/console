@@ -111,7 +111,7 @@
                         {/each}
                     </Layout.Stack>
                 </Accordion>
-                <Accordion title="SiteFramework" open>
+                <Accordion title="Framework" open>
                     <Layout.Stack>
                         {#each [...data.frameworks] as framework}
                             <Layout.Stack direction="row" gap="s">

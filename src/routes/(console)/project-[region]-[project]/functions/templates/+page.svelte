@@ -105,7 +105,7 @@
                         {/each}
                     </Layout.Stack>
                 </Accordion>
-                <Accordion title="FunctionRuntime">
+                <Accordion title="Runtime">
                     <Layout.Stack>
                         {#each [...data.runtimes] as runtime}
                             <!-- {@const icon = getIconFromRuntime(runtime)} -->

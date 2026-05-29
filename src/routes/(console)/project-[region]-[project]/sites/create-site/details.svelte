@@ -43,7 +43,7 @@
         {#if showFramework}
             <InputSelect
                 id="framework"
-                label="SiteFramework"
+                label="Framework"
                 placeholder="Select framework"
                 bind:value={framework.name}
                 {options} />

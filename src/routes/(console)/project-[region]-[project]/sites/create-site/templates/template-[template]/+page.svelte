@@ -25,9 +25,9 @@
     import Configuration from './configuration.svelte';
     import Aside from '../../aside.svelte';
     import {
-        SiteAdapter,
-        SiteBuildRuntime,
-        SiteFramework,
+        Adapter,
+        BuildRuntime,
+        Framework,
         ID,
         TemplateReferenceType,
         type Models
@@ -117,8 +117,8 @@
             return;
         } else {
             try {
-                const fr = Object.values(SiteFramework).find((f) => f === framework.key);
-                const buildRuntime = Object.values(SiteBuildRuntime).find(
+                const fr = Object.values(Framework).find((f) => f === framework.key);
+                const buildRuntime = Object.values(BuildRuntime).find(
                     (f) => f === framework.buildRuntime
                 );
                 let site = await sdk
@@ -131,7 +131,7 @@
                         installCommand: framework.installCommand,
                         buildCommand: framework.buildCommand,
                         outputDirectory: framework.outputDirectory,
-                        adapter: framework.adapter as unknown as SiteAdapter,
+                        adapter: framework.adapter as unknown as Adapter,
                         installationId:
                             connectBehaviour === 'later' ? undefined : selectedInstallationId,
                         fallbackFile: framework?.fallbackFile || undefined,

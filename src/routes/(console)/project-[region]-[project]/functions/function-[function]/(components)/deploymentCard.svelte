@@ -161,7 +161,7 @@
                         {@render textGroup('Total size', `${totalSize.value} ${totalSize.unit}`)}
 
                         <Layout.Stack gap="xxs" inline>
-                            {@render titleSnippet('FunctionRuntime')}
+                            {@render titleSnippet('Runtime')}
                             <Typography.Text variant="m-400" color="--fgcolor-neutral-primary">
                                 <Layout.Stack direction="row" gap="xxs" alignItems="center">
                                     <SvgIcon

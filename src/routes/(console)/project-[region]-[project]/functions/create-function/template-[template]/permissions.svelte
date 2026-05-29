@@ -1,16 +1,16 @@
 <script lang="ts">
     import { scopes } from '$lib/constants';
     import { Fieldset, Layout, Selector } from '@appwrite.io/pink-svelte';
-    import type { ProjectKeyScopes } from '@appwrite.io/console';
+    import type { Scopes } from '@appwrite.io/console';
 
     export let templateScopes: string[];
-    export let selectedScopes: ProjectKeyScopes[];
+    export let selectedScopes: Scopes[];
     export let execute = true;
 
     let scopeList = scopes
         .filter((s) => templateScopes.includes(s.scope))
         .map((s) => {
-            selectedScopes.push(s.scope as ProjectKeyScopes);
+            selectedScopes.push(s.scope as Scopes);
             return {
                 value: s,
                 checked: true
@@ -38,7 +38,7 @@
                     on:change={() => {
                         selectedScopes = scopeList
                             .filter((s) => s.checked)
-                            .map((s) => s.value.scope as ProjectKeyScopes);
+                            .map((s) => s.value.scope as Scopes);
                     }}>
                 </Selector.Switch>
             {/each}

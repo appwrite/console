@@ -2,9 +2,9 @@
     import { Card, SvgIcon } from '$lib/components';
     import { Icon, Layout, Skeleton, Typography } from '@appwrite.io/pink-svelte';
     import { IconGithub, IconGitBranch } from '@appwrite.io/pink-icons-svelte';
-    import type { Models, FunctionRuntime } from '@appwrite.io/console';
+    import type { Models, Runtime } from '@appwrite.io/console';
 
-    export let runtime: FunctionRuntime;
+    export let runtime: Runtime;
     export let repositoryName: string = undefined;
     export let branch: string = undefined;
     export let rootDir: string = undefined;
@@ -21,7 +21,7 @@
         <Layout.Stack gap="l">
             {#if selectedRuntime?.name && !loading}
                 <Layout.Stack gap="xxxs">
-                    <Typography.Caption variant="400">FunctionRuntime</Typography.Caption>
+                    <Typography.Caption variant="400">Runtime</Typography.Caption>
                     <Layout.Stack gap="xxs" alignItems="center" direction="row">
                         {#if selectedRuntime?.key}
                             <SvgIcon iconSize="small" size={16} name={selectedRuntime.key} />

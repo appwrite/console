@@ -6,7 +6,7 @@
     import { Button, Form, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { FunctionRuntime, type Models, type ProjectKeyScopes } from '@appwrite.io/console';
+    import { Runtime, type Models, type Scopes } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import DisconnectRepo from './disconnectRepo.svelte';
     import { installation, repository as repositoryStore, sortBranches } from '$lib/stores/vcs';
@@ -71,7 +71,7 @@
     }
     async function updateConfiguration() {
         try {
-            if (!isValueOfStringEnum(FunctionRuntime, func.runtime)) {
+            if (!isValueOfStringEnum(Runtime, func.runtime)) {
                 throw new Error(`Invalid runtime: ${func.runtime}`);
             }
             await sdk.forProject(page.params.region, page.params.project).functions.update({
@@ -86,7 +86,7 @@
                 logging: func.logging ?? undefined,
                 entrypoint: func.entrypoint || undefined,
                 commands: func.commands || undefined,
-                scopes: (func.scopes as ProjectKeyScopes[]) || undefined,
+                scopes: (func.scopes as Scopes[]) || undefined,
                 installationId: func.installationId || undefined,
                 providerRepositoryId: func.providerRepositoryId || undefined,
                 providerBranch: selectedBranch,
@@ -146,13 +146,13 @@
                 sorted[0]?.name ??
                 nextBranch;
 
-            if (!isValueOfStringEnum(FunctionRuntime, func.runtime)) {
+            if (!isValueOfStringEnum(Runtime, func.runtime)) {
                 throw new Error(`Invalid runtime: ${func.runtime}`);
             }
             await sdk.forProject(page.params.region, page.params.project).functions.update({
                 functionId: func.$id,
                 name: func.name,
-                runtime: func.runtime as FunctionRuntime,
+                runtime: func.runtime as Runtime,
                 execute: func.execute || undefined,
                 events: func.events || undefined,
                 schedule: func.schedule || undefined,
@@ -161,7 +161,7 @@
                 logging: func.logging ?? undefined,
                 entrypoint: func.entrypoint,
                 commands: func.commands || undefined,
-                scopes: (func.scopes as ProjectKeyScopes[]) || undefined,
+                scopes: (func.scopes as Scopes[]) || undefined,
                 installationId: selectedInstallationId,
                 providerRepositoryId: selectedRepository,
                 providerBranch: nextBranch,

@@ -12,12 +12,12 @@
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { LabelCard } from '$lib/components';
     import {
-        SiteAdapter,
-        SiteBuildRuntime,
-        SiteFramework,
+        Adapter,
+        BuildRuntime,
+        Framework,
         type Models,
         ProxyResourceType,
-        RedirectStatusCode
+        StatusCode
     } from '@appwrite.io/console';
     import { statusCodeOptions } from '$lib/stores/domains';
     import { writable } from 'svelte/store';
@@ -42,7 +42,7 @@
     let domainName = $state('');
     let redirect: string = $state(null);
     let branch: string = $state(null);
-    let statusCode = $state(RedirectStatusCode.TemporaryRedirect);
+    let statusCode = $state(StatusCode.TemporaryRedirect307);
 
     onMount(() => {
         if (
@@ -134,7 +134,7 @@
             await sdk.forProject(page.params.region, page.params.project).sites.update({
                 siteId: data.site.$id,
                 name: data.site.name,
-                framework: data.site.framework as SiteFramework,
+                framework: data.site.framework as Framework,
                 enabled: data.site.enabled,
                 logging: data.site.logging || undefined,
                 timeout: data.site.timeout,
@@ -142,8 +142,8 @@
                 buildCommand: data.site.buildCommand,
                 startCommand: data.site.startCommand,
                 outputDirectory: data.site.outputDirectory,
-                buildRuntime: data.site.buildRuntime as SiteBuildRuntime,
-                adapter: data.site.adapter as SiteAdapter,
+                buildRuntime: data.site.buildRuntime as BuildRuntime,
+                adapter: data.site.adapter as Adapter,
                 fallbackFile: data.site.fallbackFile,
                 installationId: selectedInstallationId,
                 providerRepositoryId: selectedRepository,

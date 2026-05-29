@@ -7,12 +7,7 @@
     import { Button, Form, InputSwitch } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import {
-        SiteAdapter,
-        SiteBuildRuntime,
-        SiteFramework,
-        type Models
-    } from '@appwrite.io/console';
+    import { Adapter, BuildRuntime, Framework, type Models } from '@appwrite.io/console';
     import { Typography } from '@appwrite.io/pink-svelte';
 
     export let site: Models.Site;
@@ -23,7 +18,7 @@
             await sdk.forProject(page.params.region, page.params.project).sites.update({
                 siteId: site.$id,
                 name: site.name,
-                framework: site.framework as SiteFramework,
+                framework: site.framework as Framework,
                 enabled: site?.enabled ?? undefined,
                 logging,
                 timeout: site?.timeout || undefined,
@@ -32,8 +27,8 @@
                 buildCommand: site?.buildCommand || undefined,
                 startCommand: site?.startCommand || undefined,
                 outputDirectory: site?.outputDirectory || undefined,
-                buildRuntime: (site?.buildRuntime as SiteBuildRuntime) || undefined,
-                adapter: site?.adapter as SiteAdapter,
+                buildRuntime: (site?.buildRuntime as BuildRuntime) || undefined,
+                adapter: site?.adapter as Adapter,
                 fallbackFile: site?.fallbackFile || undefined,
                 installationId: site?.installationId || undefined,
                 providerRepositoryId: site?.providerRepositoryId || undefined,

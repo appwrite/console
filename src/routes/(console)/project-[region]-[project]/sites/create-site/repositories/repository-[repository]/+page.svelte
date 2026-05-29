@@ -16,8 +16,8 @@
     import ProductionBranch from '$lib/components/git/productionBranchFieldset.svelte';
     import Aside from '../../aside.svelte';
     import {
-        SiteBuildRuntime,
-        SiteFramework,
+        BuildRuntime,
+        Framework,
         ID,
         VCSReferenceType,
         VCSDetectionType
@@ -113,8 +113,8 @@
             return;
         }
         try {
-            const fr = Object.values(SiteFramework).find((f) => f === framework.key);
-            const buildRuntime = Object.values(SiteBuildRuntime).find(
+            const fr = Object.values(Framework).find((f) => f === framework.key);
+            const buildRuntime = Object.values(BuildRuntime).find(
                 (f) => f === framework.buildRuntime
             );
             let site = await sdk.forProject(page.params.region, page.params.project).sites.create({

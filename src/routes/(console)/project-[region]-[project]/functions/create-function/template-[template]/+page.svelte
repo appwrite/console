@@ -17,10 +17,10 @@
     import Configuration from './configuration.svelte';
     import {
         ID,
-        FunctionRuntime,
+        Runtime,
         TemplateReferenceType,
         type Models,
-        type ProjectKeyScopes
+        type Scopes
     } from '@appwrite.io/console';
     import {
         ConnectBehaviour,
@@ -59,7 +59,7 @@
 
     let name = $state(untrack(() => data.template.name));
     let id = $state<string | null>(null);
-    let runtime = $state<FunctionRuntime>();
+    let runtime = $state<Runtime>();
     let branch = $state('main');
     let rootDir = $state('./');
     let connectBehaviour = $state<'now' | 'later'>('now');
@@ -71,7 +71,7 @@
     let showConfig = $state(false);
     let silentMode = $state(false);
     let entrypoint = $state('');
-    let selectedScopes = $state<ProjectKeyScopes[]>([]);
+    let selectedScopes = $state<Scopes[]>([]);
     let execute = $state(true);
     let variables = $state<Partial<Models.TemplateVariable>[]>([]);
     let specification = $state(untrack(() => specificationOptions[0]?.value || ''));
@@ -91,7 +91,7 @@
         const requestedRuntime = availableRuntimes.find((runtime) => runtime.$id === runtimeParam);
 
         if (requestedRuntime) {
-            return requestedRuntime.$id as FunctionRuntime;
+            return requestedRuntime.$id as Runtime;
         }
 
         const runtimeById = new Map(
@@ -105,7 +105,7 @@
             : [];
         const runtimes = preferredRuntimes.length ? preferredRuntimes : availableRuntimes;
 
-        return [...runtimes].sort(sortRuntimesByVersionDesc)[0]?.$id as FunctionRuntime;
+        return [...runtimes].sort(sortRuntimesByVersionDesc)[0]?.$id as Runtime;
     }
 
     onMount(async () => {
@@ -155,7 +155,7 @@
                     .functions.create({
                         functionId: id || ID.unique(),
                         name,
-                        runtime: runtime as FunctionRuntime,
+                        runtime: runtime as Runtime,
                         execute:
                             execute && data.template.permissions?.length
                                 ? data.template.permissions
