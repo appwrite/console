@@ -124,7 +124,7 @@
         }
 
         if (groupKey === 'oauthProviders') {
-            return resources.includes(MigrationResources.OAuthProviders);
+            return resources.some((r) => typeof r === 'string' && r.startsWith('oauth2-'));
         }
 
         if (groupKey === 'protocols') {
@@ -192,7 +192,6 @@
             messaging: 'provider',
             backups: 'backup-policy',
             authMethods: 'auth-methods',
-            oauthProviders: 'oauth-providers',
             protocols: 'project-protocols',
             labels: 'project-labels',
             services: 'project-services',
@@ -204,6 +203,23 @@
             settings: 'project-variable'
         };
         return map[groupKey] || groupKey;
+    };
+
+    // OAuth providers are split across ~40 per-provider TYPE_OAUTH2_* keys in
+    // the migration report. The wizard shows a single "OAuth providers"
+    // checkbox; aggregate the per-provider counts behind it.
+    const getReportValue = (groupKey: string): number | undefined => {
+        if (!report) return undefined;
+        if (groupKey === 'oauthProviders') {
+            return Object.entries(report).reduce(
+                (sum, [key, value]) =>
+                    typeof key === 'string' && key.startsWith('oauth2-') && typeof value === 'number'
+                        ? sum + value
+                        : sum,
+                0
+            );
+        }
+        return report[getReportKey(groupKey)];
     };
 </script>
 
@@ -243,7 +259,7 @@
                     {error}
                     {formGroup}
                     groupKey={getAsType(groupKey)}
-                    reportValue={report?.[getReportKey(groupKey)]}
+                    reportValue={getReportValue(groupKey)}
                     on:updateFormGroup={(e) => {
                         $formData[groupKey] = e.detail;
                     }} />
