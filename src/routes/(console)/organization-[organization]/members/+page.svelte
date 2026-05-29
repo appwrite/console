@@ -261,4 +261,4 @@
 </Container>
 
 <Delete {selectedMember} bind:showDelete />
-<Edit {selectedMember} projects={data.orgProjects?.projects ?? []} bind:showEdit />
+<Edit {selectedMember} bind:showEdit />

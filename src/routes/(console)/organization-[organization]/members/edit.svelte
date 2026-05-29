@@ -24,12 +24,10 @@
     let {
         showEdit = $bindable(false),
         selectedMember,
-        projects = [],
         onupdated
     }: {
         showEdit: boolean;
         selectedMember: Models.Membership;
-        projects?: Models.Project[];
         onupdated?: (membership: Models.Membership) => void;
     } = $props();
 
@@ -138,7 +136,7 @@
                 </Layout.Stack>
             </InputSelect>
         {:else}
-            <ProjectAccessSelector bind:projectAccess {projects} />
+            <ProjectAccessSelector bind:projectAccess />
         {/if}
     </Layout.Stack>
 
