@@ -174,7 +174,10 @@
                                     firstParsed?.projectId}" />
                             {#if overflow.length > 0}
                                 <Tooltip placement="top" maxWidth={BODY_TOOLTIP_MAX_WIDTH}>
-                                    <Badge size="xs" variant="secondary" content="+{overflow.length}" />
+                                    <Badge
+                                        size="xs"
+                                        variant="secondary"
+                                        content="+{overflow.length}" />
                                     <svelte:fragment slot="tooltip">
                                         <div style={BODY_TOOLTIP_WRAPPER_STYLE}>
                                             <Layout.Stack gap="xxs">
