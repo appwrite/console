@@ -17,46 +17,7 @@ export type MigrationResource =
     | 'project-variable'
     | 'webhook'
     | 'auth-methods'
-    | 'oauth2-amazon'
-    | 'oauth2-apple'
-    | 'oauth2-auth0'
-    | 'oauth2-authentik'
-    | 'oauth2-autodesk'
-    | 'oauth2-bitbucket'
-    | 'oauth2-bitly'
-    | 'oauth2-box'
-    | 'oauth2-dailymotion'
-    | 'oauth2-discord'
-    | 'oauth2-disqus'
-    | 'oauth2-dropbox'
-    | 'oauth2-etsy'
-    | 'oauth2-facebook'
-    | 'oauth2-figma'
-    | 'oauth2-fusionauth'
-    | 'oauth2-github'
-    | 'oauth2-gitlab'
-    | 'oauth2-google'
-    | 'oauth2-keycloak'
-    | 'oauth2-kick'
-    | 'oauth2-linkedin'
-    | 'oauth2-microsoft'
-    | 'oauth2-notion'
-    | 'oauth2-oidc'
-    | 'oauth2-okta'
-    | 'oauth2-paypal'
-    | 'oauth2-podio'
-    | 'oauth2-salesforce'
-    | 'oauth2-slack'
-    | 'oauth2-spotify'
-    | 'oauth2-stripe'
-    | 'oauth2-tradeshift'
-    | 'oauth2-twitch'
-    | 'oauth2-wordpress'
-    | 'oauth2-x'
-    | 'oauth2-yahoo'
-    | 'oauth2-yandex'
-    | 'oauth2-zoho'
-    | 'oauth2-zoom'
+    | 'oauth2-provider'
     | 'project-protocols'
     | 'project-labels'
     | 'project-services'
@@ -76,46 +37,7 @@ export const MigrationResources = {
     ProjectVariable: 'project-variable',
     Webhook: 'webhook',
     AuthMethods: 'auth-methods',
-    OAuth2Amazon: 'oauth2-amazon',
-    OAuth2Apple: 'oauth2-apple',
-    OAuth2Auth0: 'oauth2-auth0',
-    OAuth2Authentik: 'oauth2-authentik',
-    OAuth2Autodesk: 'oauth2-autodesk',
-    OAuth2Bitbucket: 'oauth2-bitbucket',
-    OAuth2Bitly: 'oauth2-bitly',
-    OAuth2Box: 'oauth2-box',
-    OAuth2Dailymotion: 'oauth2-dailymotion',
-    OAuth2Discord: 'oauth2-discord',
-    OAuth2Disqus: 'oauth2-disqus',
-    OAuth2Dropbox: 'oauth2-dropbox',
-    OAuth2Etsy: 'oauth2-etsy',
-    OAuth2Facebook: 'oauth2-facebook',
-    OAuth2Figma: 'oauth2-figma',
-    OAuth2FusionAuth: 'oauth2-fusionauth',
-    OAuth2Github: 'oauth2-github',
-    OAuth2Gitlab: 'oauth2-gitlab',
-    OAuth2Google: 'oauth2-google',
-    OAuth2Keycloak: 'oauth2-keycloak',
-    OAuth2Kick: 'oauth2-kick',
-    OAuth2Linkedin: 'oauth2-linkedin',
-    OAuth2Microsoft: 'oauth2-microsoft',
-    OAuth2Notion: 'oauth2-notion',
-    OAuth2Oidc: 'oauth2-oidc',
-    OAuth2Okta: 'oauth2-okta',
-    OAuth2Paypal: 'oauth2-paypal',
-    OAuth2Podio: 'oauth2-podio',
-    OAuth2Salesforce: 'oauth2-salesforce',
-    OAuth2Slack: 'oauth2-slack',
-    OAuth2Spotify: 'oauth2-spotify',
-    OAuth2Stripe: 'oauth2-stripe',
-    OAuth2Tradeshift: 'oauth2-tradeshift',
-    OAuth2Twitch: 'oauth2-twitch',
-    OAuth2Wordpress: 'oauth2-wordpress',
-    OAuth2X: 'oauth2-x',
-    OAuth2Yahoo: 'oauth2-yahoo',
-    OAuth2Yandex: 'oauth2-yandex',
-    OAuth2Zoho: 'oauth2-zoho',
-    OAuth2Zoom: 'oauth2-zoom',
+    OAuth2Provider: 'oauth2-provider',
     Protocols: 'project-protocols',
     Labels: 'project-labels',
     Services: 'project-services',
@@ -251,46 +173,7 @@ export const providerResources: ProviderResourceMap = {
     appwrite: [
         ...Object.values(AppwriteMigrationResource),
         MigrationResources.AuthMethods as AppwriteMigrationResource,
-        MigrationResources.OAuth2Amazon as AppwriteMigrationResource,
-        MigrationResources.OAuth2Apple as AppwriteMigrationResource,
-        MigrationResources.OAuth2Auth0 as AppwriteMigrationResource,
-        MigrationResources.OAuth2Authentik as AppwriteMigrationResource,
-        MigrationResources.OAuth2Autodesk as AppwriteMigrationResource,
-        MigrationResources.OAuth2Bitbucket as AppwriteMigrationResource,
-        MigrationResources.OAuth2Bitly as AppwriteMigrationResource,
-        MigrationResources.OAuth2Box as AppwriteMigrationResource,
-        MigrationResources.OAuth2Dailymotion as AppwriteMigrationResource,
-        MigrationResources.OAuth2Discord as AppwriteMigrationResource,
-        MigrationResources.OAuth2Disqus as AppwriteMigrationResource,
-        MigrationResources.OAuth2Dropbox as AppwriteMigrationResource,
-        MigrationResources.OAuth2Etsy as AppwriteMigrationResource,
-        MigrationResources.OAuth2Facebook as AppwriteMigrationResource,
-        MigrationResources.OAuth2Figma as AppwriteMigrationResource,
-        MigrationResources.OAuth2FusionAuth as AppwriteMigrationResource,
-        MigrationResources.OAuth2Github as AppwriteMigrationResource,
-        MigrationResources.OAuth2Gitlab as AppwriteMigrationResource,
-        MigrationResources.OAuth2Google as AppwriteMigrationResource,
-        MigrationResources.OAuth2Keycloak as AppwriteMigrationResource,
-        MigrationResources.OAuth2Kick as AppwriteMigrationResource,
-        MigrationResources.OAuth2Linkedin as AppwriteMigrationResource,
-        MigrationResources.OAuth2Microsoft as AppwriteMigrationResource,
-        MigrationResources.OAuth2Notion as AppwriteMigrationResource,
-        MigrationResources.OAuth2Oidc as AppwriteMigrationResource,
-        MigrationResources.OAuth2Okta as AppwriteMigrationResource,
-        MigrationResources.OAuth2Paypal as AppwriteMigrationResource,
-        MigrationResources.OAuth2Podio as AppwriteMigrationResource,
-        MigrationResources.OAuth2Salesforce as AppwriteMigrationResource,
-        MigrationResources.OAuth2Slack as AppwriteMigrationResource,
-        MigrationResources.OAuth2Spotify as AppwriteMigrationResource,
-        MigrationResources.OAuth2Stripe as AppwriteMigrationResource,
-        MigrationResources.OAuth2Tradeshift as AppwriteMigrationResource,
-        MigrationResources.OAuth2Twitch as AppwriteMigrationResource,
-        MigrationResources.OAuth2Wordpress as AppwriteMigrationResource,
-        MigrationResources.OAuth2X as AppwriteMigrationResource,
-        MigrationResources.OAuth2Yahoo as AppwriteMigrationResource,
-        MigrationResources.OAuth2Yandex as AppwriteMigrationResource,
-        MigrationResources.OAuth2Zoho as AppwriteMigrationResource,
-        MigrationResources.OAuth2Zoom as AppwriteMigrationResource,
+        MigrationResources.OAuth2Provider as AppwriteMigrationResource,
         MigrationResources.Protocols as AppwriteMigrationResource,
         MigrationResources.Labels as AppwriteMigrationResource,
         MigrationResources.Services as AppwriteMigrationResource,
@@ -369,46 +252,7 @@ export const migrationFormToResources = <P extends Provider>(
         addResource(MigrationResources.AuthMethods);
     }
     if (formData.oauthProviders.root) {
-        addResource(MigrationResources.OAuth2Amazon);
-        addResource(MigrationResources.OAuth2Apple);
-        addResource(MigrationResources.OAuth2Auth0);
-        addResource(MigrationResources.OAuth2Authentik);
-        addResource(MigrationResources.OAuth2Autodesk);
-        addResource(MigrationResources.OAuth2Bitbucket);
-        addResource(MigrationResources.OAuth2Bitly);
-        addResource(MigrationResources.OAuth2Box);
-        addResource(MigrationResources.OAuth2Dailymotion);
-        addResource(MigrationResources.OAuth2Discord);
-        addResource(MigrationResources.OAuth2Disqus);
-        addResource(MigrationResources.OAuth2Dropbox);
-        addResource(MigrationResources.OAuth2Etsy);
-        addResource(MigrationResources.OAuth2Facebook);
-        addResource(MigrationResources.OAuth2Figma);
-        addResource(MigrationResources.OAuth2FusionAuth);
-        addResource(MigrationResources.OAuth2Github);
-        addResource(MigrationResources.OAuth2Gitlab);
-        addResource(MigrationResources.OAuth2Google);
-        addResource(MigrationResources.OAuth2Keycloak);
-        addResource(MigrationResources.OAuth2Kick);
-        addResource(MigrationResources.OAuth2Linkedin);
-        addResource(MigrationResources.OAuth2Microsoft);
-        addResource(MigrationResources.OAuth2Notion);
-        addResource(MigrationResources.OAuth2Oidc);
-        addResource(MigrationResources.OAuth2Okta);
-        addResource(MigrationResources.OAuth2Paypal);
-        addResource(MigrationResources.OAuth2Podio);
-        addResource(MigrationResources.OAuth2Salesforce);
-        addResource(MigrationResources.OAuth2Slack);
-        addResource(MigrationResources.OAuth2Spotify);
-        addResource(MigrationResources.OAuth2Stripe);
-        addResource(MigrationResources.OAuth2Tradeshift);
-        addResource(MigrationResources.OAuth2Twitch);
-        addResource(MigrationResources.OAuth2Wordpress);
-        addResource(MigrationResources.OAuth2X);
-        addResource(MigrationResources.OAuth2Yahoo);
-        addResource(MigrationResources.OAuth2Yandex);
-        addResource(MigrationResources.OAuth2Zoho);
-        addResource(MigrationResources.OAuth2Zoom);
+        addResource(MigrationResources.OAuth2Provider);
     }
     if (formData.protocols.root) {
         addResource(MigrationResources.Protocols);
@@ -525,7 +369,7 @@ export const resourcesToMigrationForm = (resources: MigrationResource[]): Migrat
     if (resources.includes(MigrationResources.AuthMethods)) {
         formData.authMethods.root = true;
     }
-    if (resources.some((r) => typeof r === 'string' && r.startsWith('oauth2-'))) {
+    if (resources.includes(MigrationResources.OAuth2Provider)) {
         formData.oauthProviders.root = true;
     }
     if (resources.includes(MigrationResources.Protocols)) {
