@@ -32,28 +32,24 @@ export const load: PageLoad = async ({ params, url, route, depends, parent }) =>
         ? [Query.or([Query.equal('status', ['active', 'paused']), Query.isNull('status')])]
         : [];
 
-    // Fetch all matching projects so we can filter inaccessible ones before paginating.
-    // Most orgs have well under 100 projects; this avoids broken pagination from client-side
-    // filtering of server-paginated results.
-    const allProjectsResult = await sdk.forConsole.organization(params.organization).listProjects({
+    const activeProjects = await sdk.forConsole.organization(params.organization).listProjects({
         queries: [
             ...searchQueries,
             ...activeQueries,
-            Query.limit(100),
+            Query.offset(offset),
+            Query.limit(limit),
             Query.orderDesc(''),
             Query.equal('teamId', params.organization)
         ]
     });
 
-    const enrichedResults = await Promise.all(
-        allProjectsResult.projects.map(async (project) => {
+    const projects = await Promise.all(
+        activeProjects.projects.map(async (project) => {
             project.region ??= 'default';
             const platformList = await sdk
                 .forProject(project.region, project.$id)
                 .project.listPlatforms({ queries: [Query.limit(3)] })
-                .catch(() => null);
-
-            if (!platformList) return null;
+                .catch(() => ({ platforms: [], total: 0 }));
 
             return {
                 ...project,
@@ -63,18 +59,13 @@ export const load: PageLoad = async ({ params, url, route, depends, parent }) =>
         })
     );
 
-    const accessibleProjects = enrichedResults.filter((p) => p !== null);
-    const total = accessibleProjects.length;
-    const paginatedProjects = accessibleProjects.slice(offset, offset + limit);
-
     return {
         limit,
         offset,
         search,
         projects: {
-            ...allProjectsResult,
-            projects: paginatedProjects,
-            total
+            ...activeProjects,
+            projects
         }
     };
 };
