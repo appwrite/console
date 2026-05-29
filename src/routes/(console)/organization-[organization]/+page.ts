@@ -6,9 +6,10 @@ import { CARD_LIMIT, Dependencies } from '$lib/constants';
 import type { PageLoad } from './$types';
 import { redirect } from '@sveltejs/kit';
 import { resolve } from '$app/paths';
+import { isProjectSpecificRole, parseProjectRole } from '$lib/stores/billing';
 
 export const load: PageLoad = async ({ params, url, route, depends, parent }) => {
-    const { scopes } = await parent();
+    const { scopes, roles } = await parent();
     if (!scopes.includes('projects.read') && scopes.includes('billing.read')) {
         return redirect(
             301,
@@ -25,17 +26,31 @@ export const load: PageLoad = async ({ params, url, route, depends, parent }) =>
     const offset = pageToOffset(page, limit);
     const search = getSearch(url);
 
+    // For members with project-specific roles, only show the projects they have access to.
+    // Org-level roles (owner, developer, etc.) see all projects as normal.
+    const projectSpecificIds = isCloud
+        ? roles
+              .filter(isProjectSpecificRole)
+              .map((r) => parseProjectRole(r)?.projectId)
+              .filter(Boolean)
+        : [];
+    const hasProjectSpecificRoles = projectSpecificIds.length > 0;
+
     const searchQueries = search
         ? [Query.or([Query.search('search', search), Query.contains('labels', search)])]
         : [];
     const activeQueries = isCloud
         ? [Query.or([Query.equal('status', ['active', 'paused']), Query.isNull('status')])]
         : [];
+    const projectScopeQueries = hasProjectSpecificRoles
+        ? [Query.equal('$id', projectSpecificIds as string[])]
+        : [];
 
     const activeProjects = await sdk.forConsole.organization(params.organization).listProjects({
         queries: [
             ...searchQueries,
             ...activeQueries,
+            ...projectScopeQueries,
             Query.offset(offset),
             Query.limit(limit),
             Query.orderDesc(''),
