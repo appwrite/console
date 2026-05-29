@@ -15,7 +15,7 @@
     import Roles from '$lib/components/roles/roles.svelte';
     import { Icon, Popover, Layout } from '@appwrite.io/pink-svelte';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
-    import { Query, type Models } from '@appwrite.io/console';
+    import { type Models } from '@appwrite.io/console';
     import ProjectAccessSelector from './projectAccessSelector.svelte';
 
     let {
@@ -34,24 +34,6 @@
     let role = $state<string>(isSelfHosted ? 'owner' : 'developer');
     let accessType = $state<'all' | 'specific'>('all');
     let projectAccess = $state<Array<{ projectId: string; roleName: string }>>([]);
-    let orgProjects = $state<Models.Project[]>([]);
-    let hasFetchedProjects = $state(false);
-
-    $effect(() => {
-        if (showCreate && supportsProjectRoles && !hasFetchedProjects) {
-            hasFetchedProjects = true;
-            sdk.forConsole
-                .organization($organization.$id)
-                .listProjects({
-                    queries: [Query.limit(100), Query.equal('teamId', $organization.$id)]
-                })
-                .then((res) => {
-                    orgProjects = res.projects;
-                })
-                .catch(() => {});
-        }
-    });
-
     $effect(() => {
         if (!showCreate) {
             error = null;
@@ -60,8 +42,6 @@
             role = isSelfHosted ? 'owner' : 'developer';
             accessType = 'all';
             projectAccess = [];
-            orgProjects = [];
-            hasFetchedProjects = false;
         }
     });
 
@@ -148,7 +128,7 @@
                 </Layout.Stack>
             </InputSelect>
         {:else}
-            <ProjectAccessSelector bind:projectAccess projects={orgProjects} />
+            <ProjectAccessSelector bind:projectAccess />
         {/if}
     {/if}
 
