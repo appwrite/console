@@ -27,6 +27,16 @@
     $: if (error) {
         alert?.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' });
     }
+
+    // Melt UI's ComboBox (and other listbox-based components) call removeScroll()
+    // when they open, which adds overflow:hidden + compensatory padding-right
+    $: if (typeof document !== 'undefined') {
+        if (show) {
+            document.body.setAttribute('data-melt-scroll-lock', '');
+        } else {
+            document.body.removeAttribute('data-melt-scroll-lock');
+        }
+    }
 </script>
 
 <Form isModal {onSubmit}>

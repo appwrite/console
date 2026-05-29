@@ -35,6 +35,7 @@
         rowSearching[index] = true;
         const queries: string[] = [
             Query.limit(25),
+            Query.orderDesc(''),
             Query.equal('teamId', $organization.$id)
         ];
         if (search) {
@@ -83,7 +84,16 @@
 <Layout.Stack gap="s">
     {#each projectAccess as access, i}
         <Layout.Stack direction="row" gap="s" alignItems="flex-end">
-            <div style:flex="1">
+            <div
+                style:flex="1"
+                onfocusin={() => {
+                    if (!rowOptions[i]?.length) loadProjects(i);
+                }}
+                oninput={(e) => {
+                    if (e.target instanceof HTMLInputElement) {
+                        getDebouncedSearch(i)(e.target.value);
+                    }
+                }}>
                 <Input.ComboBox
                     id="project-{i}"
                     label={i === 0 ? 'Project' : ''}
@@ -91,9 +101,9 @@
                     placeholder="Search projects"
                     bind:value={access.projectId}
                     options={rowOptions[i] ?? []}
-                    noResultsOption={rowSearching[i] ? { disabled: true, message: 'Searching...' } : undefined}
-                    on:search={(e) => getDebouncedSearch(i)(e.detail)}
-                    on:focus={() => { if (!rowOptions[i]?.length) loadProjects(i); }} />
+                    noResultsOption={rowSearching[i]
+                        ? { disabled: true, message: 'Searching...' }
+                        : undefined} />
             </div>
             <div style:width="140px">
                 <InputSelect
