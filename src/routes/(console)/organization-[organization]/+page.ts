@@ -32,24 +32,28 @@ export const load: PageLoad = async ({ params, url, route, depends, parent }) =>
         ? [Query.or([Query.equal('status', ['active', 'paused']), Query.isNull('status')])]
         : [];
 
-    const activeProjects = await sdk.forConsole.organization(params.organization).listProjects({
+    // Fetch all matching projects so we can filter inaccessible ones before paginating.
+    // Most orgs have well under 100 projects; this avoids broken pagination from client-side
+    // filtering of server-paginated results.
+    const allProjectsResult = await sdk.forConsole.organization(params.organization).listProjects({
         queries: [
             ...searchQueries,
             ...activeQueries,
-            Query.offset(offset),
-            Query.limit(limit),
+            Query.limit(100),
             Query.orderDesc(''),
             Query.equal('teamId', params.organization)
         ]
     });
 
-    const projects = await Promise.all(
-        activeProjects.projects.map(async (project) => {
+    const enrichedResults = await Promise.all(
+        allProjectsResult.projects.map(async (project) => {
             project.region ??= 'default';
             const platformList = await sdk
                 .forProject(project.region, project.$id)
                 .project.listPlatforms({ queries: [Query.limit(3)] })
-                .catch(() => ({ platforms: [], total: 0 }));
+                .catch(() => null);
+
+            if (!platformList) return null;
 
             return {
                 ...project,
@@ -59,13 +63,18 @@ export const load: PageLoad = async ({ params, url, route, depends, parent }) =>
         })
     );
 
+    const accessibleProjects = enrichedResults.filter((p) => p !== null);
+    const total = accessibleProjects.length;
+    const paginatedProjects = accessibleProjects.slice(offset, offset + limit);
+
     return {
         limit,
         offset,
         search,
         projects: {
-            ...activeProjects,
-            projects
+            ...allProjectsResult,
+            projects: paginatedProjects,
+            total
         }
     };
 };
