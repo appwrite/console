@@ -77,6 +77,16 @@
         rowOptions = rowOptions.filter((_, idx) => idx !== i);
         rowSearching = rowSearching.filter((_, idx) => idx !== i);
         debouncedSearchers.delete(i);
+        // The removed row's project is no longer taken — invalidate sibling caches
+        // so they reload with the freed-up project available again.
+        rowOptions = rowOptions.map(() => []);
+    }
+
+    // When a project is selected in one row, the other rows' cached option lists
+    // are now stale (they still include the chosen project). Clear them so each
+    // row reloads fresh options (filtered via takenIds) on next focus.
+    function onProjectSelected(selectedIndex: number) {
+        rowOptions = rowOptions.map((opts, i) => (i === selectedIndex ? opts : []));
     }
 </script>
 
@@ -102,7 +112,8 @@
                     options={rowOptions[i] ?? []}
                     noResultsOption={rowSearching[i]
                         ? { disabled: true, message: 'Searching...' }
-                        : undefined} />
+                        : undefined}
+                    on:change={() => onProjectSelected(i)} />
             </div>
             <div style:width="140px">
                 <InputSelect
