@@ -18,9 +18,12 @@
         projectAccess: ProjectAccess[];
     } = $props();
 
-    // Per-row options and loading state
+    // Per-row options, loading state, and request-generation counters
     let rowOptions = $state<Option[][]>([]);
     let rowSearching = $state<boolean[]>([]);
+    // Incremented on every loadProjects call for a row; the response is
+    // discarded if a newer request has already been dispatched.
+    let rowGeneration = $state<number[]>([]);
 
     function takenIds(excludeIndex: number): Set<string> {
         return new Set(
@@ -32,7 +35,10 @@
     }
 
     async function loadProjects(index: number, search = '') {
+        const gen = (rowGeneration[index] ?? 0) + 1;
+        rowGeneration[index] = gen;
         rowSearching[index] = true;
+
         const queries: string[] = [
             Query.limit(25),
             Query.orderDesc(''),
@@ -47,12 +53,26 @@
             .listProjects({ queries })
             .catch(() => null);
 
+        // Discard stale responses — a newer request has already been dispatched
+        if (rowGeneration[index] !== gen) return;
+
         const taken = takenIds(index);
         rowOptions[index] = (result?.projects ?? [])
             .filter((p) => !taken.has(p.$id))
             .map((p) => ({ value: p.$id, label: p.name }));
         rowSearching[index] = false;
     }
+
+    // When the component is initialised with pre-existing rows (edit mode),
+    // options must be loaded eagerly so the ComboBox can resolve the project
+    // name from the stored projectId instead of showing the raw UUID.
+    $effect(() => {
+        projectAccess.forEach((access, i) => {
+            if (access.projectId && !rowOptions[i]?.length && !rowSearching[i]) {
+                loadProjects(i);
+            }
+        });
+    });
 
     // One debounced searcher per row — created on demand
     const debouncedSearchers = new Map<number, (search: string) => void>();
@@ -76,6 +96,7 @@
         projectAccess = projectAccess.filter((_, idx) => idx !== i);
         rowOptions = rowOptions.filter((_, idx) => idx !== i);
         rowSearching = rowSearching.filter((_, idx) => idx !== i);
+        rowGeneration = rowGeneration.filter((_, idx) => idx !== i);
         debouncedSearchers.delete(i);
         // The removed row's project is no longer taken — invalidate sibling caches
         // so they reload with the freed-up project available again.
