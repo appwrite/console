@@ -43,15 +43,13 @@ export const load: PageLoad = async ({ params, url, route, depends, parent }) =>
         ]
     });
 
-    const projectResults = await Promise.all(
+    const projects = await Promise.all(
         activeProjects.projects.map(async (project) => {
             project.region ??= 'default';
             const platformList = await sdk
                 .forProject(project.region, project.$id)
                 .project.listPlatforms({ queries: [Query.limit(3)] })
-                .catch(() => null);
-
-            if (!platformList) return null;
+                .catch(() => ({ platforms: [], total: 0 }));
 
             return {
                 ...project,
@@ -61,16 +59,13 @@ export const load: PageLoad = async ({ params, url, route, depends, parent }) =>
         })
     );
 
-    const projects = projectResults.filter((p) => p !== null);
-
     return {
         limit,
         offset,
         search,
         projects: {
             ...activeProjects,
-            projects,
-            total: activeProjects.total - (activeProjects.projects.length - projects.length)
+            projects
         }
     };
 };
