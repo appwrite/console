@@ -63,7 +63,7 @@
             const projectSdk = sdk.forProject(project.region, project.$id).project;
 
             await projectSdk.updatePasswordHistoryPolicy({
-                total: passwordHistoryEnabled ? passwordHistory : 0
+                total: passwordHistoryEnabled ? passwordHistory : null
             });
 
             await projectSdk.updatePasswordDictionaryPolicy({
