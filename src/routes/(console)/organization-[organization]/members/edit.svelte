@@ -19,6 +19,8 @@
         buildProjectRole
     } from '$lib/stores/billing';
     import { isCloud, isSelfHosted } from '$lib/system';
+    import { flags } from '$lib/flags';
+    import { user } from '$lib/stores/user';
     import ProjectAccessSelector from '../projectAccessSelector.svelte';
 
     let {
@@ -31,7 +33,11 @@
         onupdated?: (membership: Models.Membership) => void;
     } = $props();
 
-    const supportsProjectRoles = $derived(isCloud && !!$currentPlan?.supportsOrganizationRoles);
+    const supportsProjectRoles = $derived(
+        isCloud &&
+            flags.granularProjectAccess({ account: $user, organization: $organization }) &&
+            !!$currentPlan?.supportsOrganizationRoles
+    );
     const defaultRole = isSelfHosted ? 'owner' : 'developer';
 
     let error = $state<string>(null);

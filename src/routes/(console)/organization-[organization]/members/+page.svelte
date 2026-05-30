@@ -20,8 +20,10 @@
     } from '$lib/helpers/tooltipContent';
     import { addNotification } from '$lib/stores/notifications';
     import { currentPlan, newMemberModal, organization } from '$lib/stores/organization';
+    import { flags } from '$lib/flags';
     import { isOwner } from '$lib/stores/roles';
     import { sdk } from '$lib/stores/sdk';
+    import { user } from '$lib/stores/user';
     import type { Models } from '@appwrite.io/console';
     import Delete from '../deleteMember.svelte';
     import Edit from './edit.svelte';
@@ -60,6 +62,10 @@
     $: isLimited = limit !== 0 && limit < Infinity;
     $: isButtonDisabled =
         isCloud && (($readOnly && !GRACE_PERIOD_OVERRIDE) || (isLimited && memberCount >= limit));
+    $: supportsProjectRoles =
+        isCloud &&
+        flags.granularProjectAccess({ account: $user, organization: $organization }) &&
+        $currentPlan?.supportsOrganizationRoles;
 
     const resend = async (member: Models.Membership) => {
         try {
@@ -156,7 +162,7 @@
                     </Typography.Text>
                 </Table.Cell>
                 <Table.Cell column="roles" {root}>
-                    {#if member.roles.some(isProjectSpecificRole)}
+                    {#if supportsProjectRoles && member.roles.some(isProjectSpecificRole)}
                         {@const projectRoles = member.roles.filter(isProjectSpecificRole)}
                         {@const firstRole = projectRoles[0]}
                         {@const firstParsed = parseProjectRole(firstRole)}
@@ -217,7 +223,7 @@
                         </Button.Button>
                         <div style:min-width="232px" slot="tooltip">
                             <ActionMenu.Root>
-                                {#if isCloud && $currentPlan?.supportsOrganizationRoles}
+                                {#if supportsProjectRoles}
                                     <ActionMenu.Item.Button
                                         trailingIcon={IconPencil}
                                         on:click={() => {
