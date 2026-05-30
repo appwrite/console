@@ -14,7 +14,9 @@
         Typography
     } from '@appwrite.io/pink-svelte';
     import { onMount } from 'svelte';
+    import { isSelfHosted } from '$lib/system';
     import LoggingAlert from './loggingAlert.svelte';
+    import SelfHostedLogsAlert from './selfHostedLogsAlert.svelte';
 
     let {
         selectedLog,
@@ -83,6 +85,8 @@
     {#if responseTab === 'logs'}
         {#if selectedLog.logs}
             <Logs logs={selectedLog.logs} />
+        {:else if isSelfHosted}
+            <SelfHostedLogsAlert {product} />
         {:else if !logging}
             <LoggingAlert {product} />
         {:else}
@@ -93,6 +97,8 @@
     {:else if responseTab === 'errors'}
         {#if selectedLog.errors}
             <Logs logs={selectedLog.errors} />
+        {:else if isSelfHosted}
+            <SelfHostedLogsAlert {product} />
         {:else if !logging}
             <LoggingAlert {product} />
         {:else}
