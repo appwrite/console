@@ -11,7 +11,12 @@
     import { Fieldset, Layout, Icon, Input, Tag } from '@appwrite.io/pink-svelte';
     import { IconGithub, IconPencil } from '@appwrite.io/pink-icons-svelte';
     import { onMount } from 'svelte';
-    import { ID, Runtime, TemplateReferenceType, type ProjectKeyScopes } from '@appwrite.io/console';
+    import {
+        ID,
+        Runtime,
+        TemplateReferenceType,
+        type ProjectKeyScopes
+    } from '@appwrite.io/console';
     import { CustomId } from '$lib/components';
     import { getIconFromRuntime } from '$lib/stores/runtimes';
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';

@@ -9,7 +9,12 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { installation, repository, sortBranches } from '$lib/stores/vcs';
-    import { Runtime, VCSReferenceType, type Models, type ProjectKeyScopes } from '@appwrite.io/console';
+    import {
+        Runtime,
+        VCSReferenceType,
+        type Models,
+        type ProjectKeyScopes
+    } from '@appwrite.io/console';
     import { IconGithub } from '@appwrite.io/pink-icons-svelte';
     import { Icon, Input, Layout, Skeleton, Typography } from '@appwrite.io/pink-svelte';
     import { func } from '../store';
