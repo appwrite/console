@@ -10,11 +10,7 @@
     import { onMount } from 'svelte';
     import { func } from '../store';
     import { isValueOfStringEnum } from '$lib/helpers/types';
-    import {
-        Runtime,
-        type ProjectKeyScopes,
-        type ProjectKeyScopes as FunctionScopes
-    } from '@appwrite.io/console';
+    import { Runtime, type ProjectKeyScopes } from '@appwrite.io/console';
     import Scopes from '$routes/(console)/project-[region]-[project]/overview/api-keys/scopes.svelte';
     import { symmetricDifference } from '$lib/helpers/array';
     import { Link } from '$lib/elements';
@@ -43,7 +39,7 @@
                 logging: $func.logging ?? undefined,
                 entrypoint: $func.entrypoint || undefined,
                 commands: $func.commands || undefined,
-                scopes: (functionScopes as unknown as FunctionScopes[]) || undefined,
+                scopes: functionScopes || undefined,
                 installationId: $func.installationId || undefined,
                 providerRepositoryId: $func.providerRepositoryId || undefined,
                 providerBranch: $func.providerBranch || undefined,
