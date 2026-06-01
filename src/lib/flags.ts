@@ -20,5 +20,6 @@ function isFlagEnabled(name: string) {
 
 export const flags = {
     multiDb: isFlagEnabled('multi-db'),
-    granularProjectAccess: isFlagEnabled('granular-project-access')
+    granularProjectAccess: isFlagEnabled('granular-project-access'),
+    oauth2Server: isFlagEnabled('oauth2-server')
 };

@@ -18,8 +18,12 @@
     import UpdateVariables from '../updateVariables.svelte';
     import { page } from '$app/state';
     import UpdateLabels from './updateLabels.svelte';
+    import UpdateOAuth2Server from './updateOAuth2Server.svelte';
     import type { PageData } from './$types';
     import { Alert } from '@appwrite.io/pink-svelte';
+    import { flags } from '$lib/flags';
+    import { user } from '$lib/stores/user';
+    import { organization } from '$lib/stores/organization';
 
     let { data }: { data: PageData } = $props();
 
@@ -95,6 +99,9 @@
         <UpdateName />
         <UpdateLabels />
         <UpdateProtocols />
+        {#if flags.oauth2Server({ account: $user, organization: $organization })}
+            <UpdateOAuth2Server />
+        {/if}
         <UpdateServices />
         <UpdateInstallations {...data.installations} limit={data.limit} offset={data.offset} />
         <UpdateVariables
