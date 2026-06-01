@@ -8,7 +8,7 @@
     import { symmetricDifference } from '$lib/helpers/array';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { type Models, Runtime, type Scopes } from '@appwrite.io/console';
+    import { type Models, Runtime, type ProjectKeyScopes } from '@appwrite.io/console';
     import { Icon, Layout, Tooltip, Typography } from '@appwrite.io/pink-svelte';
     import Link from '$lib/elements/link.svelte';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
@@ -50,7 +50,7 @@
                 logging: func.logging ?? undefined,
                 entrypoint: func.entrypoint ?? undefined,
                 commands: func.commands ?? undefined,
-                scopes: func.scopes?.length ? (func.scopes as Scopes[]) : undefined,
+                scopes: func.scopes?.length ? (func.scopes as ProjectKeyScopes[]) : undefined,
                 installationId: func.installationId ?? undefined,
                 providerRepositoryId: func.providerRepositoryId ?? undefined,
                 providerBranch: func.providerBranch ?? undefined,

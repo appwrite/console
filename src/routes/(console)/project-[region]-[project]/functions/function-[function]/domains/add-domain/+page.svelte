@@ -15,7 +15,7 @@
         ProxyResourceType,
         Runtime,
         StatusCode,
-        type Scopes
+        type ProjectKeyScopes
     } from '@appwrite.io/console';
     import { statusCodeOptions } from '$lib/stores/domains';
     import { writable } from 'svelte/store';
@@ -36,7 +36,7 @@
     let domainName = $state('');
     let redirect: string = $state(null);
     let branch: string = $state(null);
-    let statusCode = $state(StatusCode.TemporaryRedirect307);
+    let statusCode = $state(StatusCode.TemporaryRedirect);
 
     const routeBase = resolveRoute(
         '/(console)/project-[region]-[project]/functions/function-[function]/domains',
@@ -145,7 +145,7 @@
                 logging: data.func.logging ?? undefined,
                 entrypoint: data.func.entrypoint,
                 commands: data.func.commands || undefined,
-                scopes: (data.func.scopes as Scopes[]) || undefined,
+                scopes: (data.func.scopes as ProjectKeyScopes[]) || undefined,
                 installationId: selectedInstallationId,
                 providerRepositoryId: selectedRepository,
                 providerBranch: 'main',

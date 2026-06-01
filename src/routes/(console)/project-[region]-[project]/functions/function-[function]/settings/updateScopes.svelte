@@ -13,7 +13,7 @@
     import {
         Runtime,
         type ProjectKeyScopes,
-        type Scopes as FunctionScopes
+        type ProjectKeyScopes as FunctionScopes
     } from '@appwrite.io/console';
     import Scopes from '$routes/(console)/project-[region]-[project]/overview/api-keys/scopes.svelte';
     import { symmetricDifference } from '$lib/helpers/array';

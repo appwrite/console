@@ -42,7 +42,7 @@
     let domainName = $state('');
     let redirect: string = $state(null);
     let branch: string = $state(null);
-    let statusCode = $state(StatusCode.TemporaryRedirect307);
+    let statusCode = $state(StatusCode.TemporaryRedirect);
 
     onMount(() => {
         if (
