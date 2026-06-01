@@ -20,7 +20,7 @@
         Runtime,
         TemplateReferenceType,
         type Models,
-        type Scopes
+        type ProjectKeyScopes
     } from '@appwrite.io/console';
     import {
         ConnectBehaviour,
@@ -71,7 +71,7 @@
     let showConfig = $state(false);
     let silentMode = $state(false);
     let entrypoint = $state('');
-    let selectedScopes = $state<Scopes[]>([]);
+    let selectedScopes = $state<ProjectKeyScopes[]>([]);
     let execute = $state(true);
     let variables = $state<Partial<Models.TemplateVariable>[]>([]);
     let specification = $state(untrack(() => specificationOptions[0]?.value || ''));

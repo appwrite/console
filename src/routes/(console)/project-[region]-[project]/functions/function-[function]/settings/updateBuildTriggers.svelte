@@ -8,8 +8,9 @@
     import { symmetricDifference } from '$lib/helpers/array';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { type Models, Runtime, type Scopes } from '@appwrite.io/console';
-    import { Icon, Layout, Tooltip } from '@appwrite.io/pink-svelte';
+    import { type Models, Runtime, type ProjectKeyScopes } from '@appwrite.io/console';
+    import { Icon, Layout, Tooltip, Typography } from '@appwrite.io/pink-svelte';
+    import Link from '$lib/elements/link.svelte';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
 
     export let func: Models.Function;
@@ -49,7 +50,7 @@
                 logging: func.logging ?? undefined,
                 entrypoint: func.entrypoint ?? undefined,
                 commands: func.commands ?? undefined,
-                scopes: func.scopes?.length ? (func.scopes as Scopes[]) : undefined,
+                scopes: func.scopes?.length ? (func.scopes as ProjectKeyScopes[]) : undefined,
                 installationId: func.installationId ?? undefined,
                 providerRepositoryId: func.providerRepositoryId ?? undefined,
                 providerBranch: func.providerBranch ?? undefined,
@@ -86,8 +87,14 @@
     <Form onSubmit={update}>
         <CardGrid>
             <svelte:fragment slot="title">Build triggers</svelte:fragment>
-            Control which branch pushes and file changes trigger automatic deployments. Use glob patterns
-            to include or exclude specific branches and paths.
+            <Typography.Text>
+                Control which branch pushes and file changes trigger automatic deployments. Use glob
+                patterns to include or exclude specific branches and paths. <Link
+                    external
+                    href="https://appwrite.io/docs/products/functions/deploy-from-git#build-triggers"
+                    >Learn more</Link
+                >.
+            </Typography.Text>
             <svelte:fragment slot="aside">
                 <Layout.Stack gap="xl">
                     <Layout.Stack gap="s">
