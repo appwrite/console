@@ -27,7 +27,9 @@ export const load: PageLoad = async ({ depends, params }) => {
 
     const { policies } = await sdk.forProject(params.region, params.project).project.listPolicies();
     const policiesById = Object.fromEntries(
-        (policies as ProjectPolicy[]).map((policy) => [policy.$id, policy])
+        (policies as ProjectPolicy[])
+            .filter((policy) => policy != null && policy.$id != null)
+            .map((policy) => [policy.$id, policy])
     ) as Partial<Record<ProjectPolicyId | EmailPolicyId, ProjectPolicy>>;
 
     return {
