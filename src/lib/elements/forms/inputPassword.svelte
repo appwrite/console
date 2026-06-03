@@ -10,7 +10,7 @@
     export let required = false;
     export let disabled = false;
     export let autofocus = false;
-    export let autocomplete = false;
+    export let autocomplete: boolean | string = false;
     export let minlength = 8;
     export let maxlength: number = null;
     export let leadingIcon: ComponentType | undefined = undefined;
@@ -47,7 +47,11 @@
     {leadingIcon}
     state={error ? 'error' : 'default'}
     autofocus={autofocus || undefined}
-    autocomplete={autocomplete ? 'on' : 'off'}
+    autocomplete={typeof autocomplete === 'string'
+        ? (autocomplete as HTMLInputElement['autocomplete'])
+        : autocomplete
+          ? 'on'
+          : 'off'}
     helper={helper || error}
     on:invalid={handleInvalid}
     bind:value>
