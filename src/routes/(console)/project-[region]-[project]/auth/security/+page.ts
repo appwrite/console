@@ -33,27 +33,33 @@ export const load: PageLoad = async ({ depends, params }) => {
     ) as Partial<Record<ProjectPolicyId | EmailPolicyId, ProjectPolicy>>;
 
     return {
-        membershipPrivacyPolicy: policiesById[
-            ProjectPolicyId.Membershipprivacy
-        ] as Models.PolicyMembershipPrivacy,
-        passwordDictionaryPolicy: policiesById[
-            ProjectPolicyId.Passworddictionary
-        ] as Models.PolicyPasswordDictionary,
-        passwordHistoryPolicy: policiesById[
-            ProjectPolicyId.Passwordhistory
-        ] as Models.PolicyPasswordHistory,
-        passwordPersonalDataPolicy: policiesById[
-            ProjectPolicyId.Passwordpersonaldata
-        ] as Models.PolicyPasswordPersonalData,
-        sessionAlertPolicy: policiesById[ProjectPolicyId.Sessionalert] as Models.PolicySessionAlert,
-        sessionDurationPolicy: policiesById[
-            ProjectPolicyId.Sessionduration
-        ] as Models.PolicySessionDuration,
-        sessionInvalidationPolicy: policiesById[
-            ProjectPolicyId.Sessioninvalidation
-        ] as Models.PolicySessionInvalidation,
-        sessionLimitPolicy: policiesById[ProjectPolicyId.Sessionlimit] as Models.PolicySessionLimit,
-        userLimitPolicy: policiesById[ProjectPolicyId.Userlimit] as Models.PolicyUserLimit,
+        membershipPrivacyPolicy: policiesById[ProjectPolicyId.Membershipprivacy] as
+            | Models.PolicyMembershipPrivacy
+            | undefined,
+        passwordDictionaryPolicy: policiesById[ProjectPolicyId.Passworddictionary] as
+            | Models.PolicyPasswordDictionary
+            | undefined,
+        passwordHistoryPolicy: policiesById[ProjectPolicyId.Passwordhistory] as
+            | Models.PolicyPasswordHistory
+            | undefined,
+        passwordPersonalDataPolicy: policiesById[ProjectPolicyId.Passwordpersonaldata] as
+            | Models.PolicyPasswordPersonalData
+            | undefined,
+        sessionAlertPolicy: policiesById[ProjectPolicyId.Sessionalert] as
+            | Models.PolicySessionAlert
+            | undefined,
+        sessionDurationPolicy: policiesById[ProjectPolicyId.Sessionduration] as
+            | Models.PolicySessionDuration
+            | undefined,
+        sessionInvalidationPolicy: policiesById[ProjectPolicyId.Sessioninvalidation] as
+            | Models.PolicySessionInvalidation
+            | undefined,
+        sessionLimitPolicy: policiesById[ProjectPolicyId.Sessionlimit] as
+            | Models.PolicySessionLimit
+            | undefined,
+        userLimitPolicy: policiesById[ProjectPolicyId.Userlimit] as
+            | Models.PolicyUserLimit
+            | undefined,
         denyAliasedEmailPolicy:
             (policiesById[ProjectEmailPolicyId.DenyAliasedEmail] as EnabledPolicy) ??
             getDefaultEnabledPolicy(ProjectEmailPolicyId.DenyAliasedEmail),

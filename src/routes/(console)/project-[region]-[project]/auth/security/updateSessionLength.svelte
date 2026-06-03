@@ -15,10 +15,11 @@
         policy
     }: {
         project: Models.Project;
-        policy: Models.PolicySessionDuration;
+        policy: Models.PolicySessionDuration | undefined;
     } = $props();
 
-    const { value, unit, baseValue, units } = $derived(createTimeUnitPair(policy.duration));
+    const policyDuration = $derived(policy?.duration ?? 0);
+    const { value, unit, baseValue, units } = $derived(createTimeUnitPair(policyDuration));
     const options = $derived(units.map((v) => ({ label: v.name, value: v.name })));
 
     async function updateSessionLength() {
@@ -53,7 +54,7 @@
         </Layout.Stack>
     </svelte:fragment>
     <svelte:fragment slot="actions">
-        <Button disabled={$baseValue === policy.duration} on:click={updateSessionLength}>
+        <Button disabled={$baseValue === policyDuration} on:click={updateSessionLength}>
             Update
         </Button>
     </svelte:fragment>

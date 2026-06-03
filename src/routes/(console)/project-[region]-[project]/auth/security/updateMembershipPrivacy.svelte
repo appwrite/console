@@ -14,21 +14,21 @@
         policy
     }: {
         project: Models.Project;
-        policy: Models.PolicyMembershipPrivacy;
+        policy: Models.PolicyMembershipPrivacy | undefined;
     } = $props();
 
-    let authMembershipsMfa = $state(policy.userMFA);
-    let authMembershipsUserId = $state(policy.userId);
-    let authMembershipsUserName = $state(policy.userName);
-    let authMembershipsUserEmail = $state(policy.userEmail);
-    let authMembershipsUserPhone = $state(policy.userPhone);
+    let authMembershipsMfa = $state(policy?.userMFA ?? false);
+    let authMembershipsUserId = $state(policy?.userId ?? false);
+    let authMembershipsUserName = $state(policy?.userName ?? false);
+    let authMembershipsUserEmail = $state(policy?.userEmail ?? false);
+    let authMembershipsUserPhone = $state(policy?.userPhone ?? false);
 
     const isSubmitDisabled = $derived(
-        authMembershipsUserId === policy.userId &&
-            authMembershipsUserName === policy.userName &&
-            authMembershipsUserEmail === policy.userEmail &&
-            authMembershipsUserPhone === policy.userPhone &&
-            authMembershipsMfa === policy.userMFA
+        authMembershipsUserId === (policy?.userId ?? false) &&
+            authMembershipsUserName === (policy?.userName ?? false) &&
+            authMembershipsUserEmail === (policy?.userEmail ?? false) &&
+            authMembershipsUserPhone === (policy?.userPhone ?? false) &&
+            authMembershipsMfa === (policy?.userMFA ?? false)
     );
 
     async function updateMembershipsPrivacy() {

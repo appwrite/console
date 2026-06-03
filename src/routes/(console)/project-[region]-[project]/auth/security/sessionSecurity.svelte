@@ -16,21 +16,22 @@
         sessionInvalidationPolicy
     }: {
         project: Models.Project;
-        sessionAlertPolicy: Models.PolicySessionAlert;
-        sessionInvalidationPolicy: Models.PolicySessionInvalidation;
+        sessionAlertPolicy: Models.PolicySessionAlert | undefined;
+        sessionInvalidationPolicy: Models.PolicySessionInvalidation | undefined;
     } = $props();
 
     let authSessionAlerts = $state(false);
     let sessionInvalidation = $state(false);
 
     onMount(() => {
-        authSessionAlerts = sessionAlertPolicy.enabled;
-        sessionInvalidation = sessionInvalidationPolicy.enabled;
+        authSessionAlerts = sessionAlertPolicy?.enabled ?? false;
+        sessionInvalidation = sessionInvalidationPolicy?.enabled ?? false;
     });
 
     const hasChanges = $derived.by(() => {
-        const alertsChanged = authSessionAlerts !== sessionAlertPolicy.enabled;
-        const invalidationChanged = sessionInvalidation !== sessionInvalidationPolicy.enabled;
+        const alertsChanged = authSessionAlerts !== (sessionAlertPolicy?.enabled ?? false);
+        const invalidationChanged =
+            sessionInvalidation !== (sessionInvalidationPolicy?.enabled ?? false);
         return alertsChanged || invalidationChanged;
     });
 
