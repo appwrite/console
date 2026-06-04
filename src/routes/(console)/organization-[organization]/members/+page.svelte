@@ -219,7 +219,7 @@
                         </Button.Button>
                         <div style:min-width="232px" slot="tooltip">
                             <ActionMenu.Root>
-                                {#if supportsOrgRoles}
+                                {#if supportsOrgRoles || supportsProjectRoles}
                                     <ActionMenu.Item.Button
                                         trailingIcon={IconPencil}
                                         on:click={() => {
