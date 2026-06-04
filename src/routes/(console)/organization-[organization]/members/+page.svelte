@@ -62,8 +62,7 @@
     $: isLimited = limit !== 0 && limit < Infinity;
     $: isButtonDisabled =
         isCloud && (($readOnly && !GRACE_PERIOD_OVERRIDE) || (isLimited && memberCount >= limit));
-    $: supportsOrgRoles =
-        isCloud && !!$currentPlan?.supportsOrganizationRoles;
+    $: supportsOrgRoles = isCloud && !!$currentPlan?.supportsOrganizationRoles;
     $: supportsProjectRoles =
         isCloud &&
         flags.granularProjectAccess({ account: $user, organization: $organization }) &&
