@@ -15,17 +15,18 @@
         policy
     }: {
         project: Models.Project;
-        policy: Models.PolicyUserLimit;
+        policy: Models.PolicyUserLimit | undefined;
     } = $props();
 
     let maxUsersInputField: HTMLInputElement | null = $state(null);
 
-    let value = $state(policy.total !== 0 ? 'limited' : 'unlimited');
-    let newLimit = $state(policy.total !== 0 ? policy.total : 100);
+    const policyTotal = $derived(policy?.total ?? 0);
+    let value = $state(policyTotal !== 0 ? 'limited' : 'unlimited');
+    let newLimit = $state(policyTotal !== 0 ? policyTotal : 100);
 
     const isLimited = $derived(value === 'limited');
     const btnDisabled = $derived.by(() => {
-        return (!isLimited && policy.total === 0) || (isLimited && policy.total === newLimit);
+        return (!isLimited && policyTotal === 0) || (isLimited && policyTotal === newLimit);
     });
 
     async function updateLimit() {

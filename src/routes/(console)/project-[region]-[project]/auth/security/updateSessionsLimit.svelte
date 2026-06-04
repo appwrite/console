@@ -14,10 +14,11 @@
         policy
     }: {
         project: Models.Project;
-        policy: Models.PolicySessionLimit;
+        policy: Models.PolicySessionLimit | undefined;
     } = $props();
 
-    let maxSessions = $state(policy.total);
+    const policyTotal = $derived(policy?.total ?? 0);
+    let maxSessions = $state(policyTotal);
 
     async function updateSessionsLimit() {
         try {
@@ -56,7 +57,7 @@
                 bind:value={maxSessions} />
         </svelte:fragment>
         <svelte:fragment slot="actions">
-            <Button disabled={maxSessions === policy.total} submit>Update</Button>
+            <Button disabled={maxSessions === policyTotal} submit>Update</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>

@@ -17,9 +17,9 @@
         personalDataPolicy
     }: {
         project: Models.Project;
-        dictionaryPolicy: Models.PolicyPasswordDictionary;
-        historyPolicy: Models.PolicyPasswordHistory;
-        personalDataPolicy: Models.PolicyPasswordPersonalData;
+        dictionaryPolicy: Models.PolicyPasswordDictionary | undefined;
+        historyPolicy: Models.PolicyPasswordHistory | undefined;
+        personalDataPolicy: Models.PolicyPasswordPersonalData | undefined;
     } = $props();
 
     let lastValidLimit = $state(5);
@@ -30,15 +30,15 @@
 
     onMount(() => {
         // update initial states here in onMount.
-        const historyValue = historyPolicy.total;
+        const historyValue = historyPolicy?.total;
         if (historyValue && historyValue > 0) {
             passwordHistory = historyValue;
             lastValidLimit = historyValue;
         }
 
         passwordHistoryEnabled = (historyValue ?? 0) !== 0;
-        passwordDictionary = dictionaryPolicy.enabled;
-        authPersonalDataCheck = personalDataPolicy.enabled;
+        passwordDictionary = dictionaryPolicy?.enabled ?? false;
+        authPersonalDataCheck = personalDataPolicy?.enabled ?? false;
     });
 
     $effect(() => {
@@ -49,11 +49,11 @@
     });
 
     const hasChanges = $derived.by(() => {
-        const dictChanged = passwordDictionary !== dictionaryPolicy.enabled;
-        const dataCheckChanged = authPersonalDataCheck !== personalDataPolicy.enabled;
-        const historyChanged = passwordHistoryEnabled !== (historyPolicy.total !== 0);
+        const dictChanged = passwordDictionary !== (dictionaryPolicy?.enabled ?? false);
+        const dataCheckChanged = authPersonalDataCheck !== (personalDataPolicy?.enabled ?? false);
+        const historyChanged = passwordHistoryEnabled !== ((historyPolicy?.total ?? 0) !== 0);
         const limitChanged =
-            passwordHistoryEnabled && Number(passwordHistory) !== historyPolicy.total;
+            passwordHistoryEnabled && Number(passwordHistory) !== (historyPolicy?.total ?? 0);
 
         return historyChanged || dictChanged || dataCheckChanged || limitChanged;
     });
