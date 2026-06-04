@@ -62,10 +62,12 @@
     $: isLimited = limit !== 0 && limit < Infinity;
     $: isButtonDisabled =
         isCloud && (($readOnly && !GRACE_PERIOD_OVERRIDE) || (isLimited && memberCount >= limit));
+    $: supportsOrgRoles =
+        isCloud && !!$currentPlan?.supportsOrganizationRoles;
     $: supportsProjectRoles =
         isCloud &&
         flags.granularProjectAccess({ account: $user, organization: $organization }) &&
-        $currentPlan?.supportsProjectSpecificRoles;
+        !!$currentPlan?.supportsProjectSpecificRoles;
 
     const resend = async (member: Models.Membership) => {
         try {
@@ -223,7 +225,7 @@
                         </Button.Button>
                         <div style:min-width="232px" slot="tooltip">
                             <ActionMenu.Root>
-                                {#if supportsProjectRoles}
+                                {#if supportsOrgRoles}
                                     <ActionMenu.Item.Button
                                         trailingIcon={IconPencil}
                                         on:click={() => {
