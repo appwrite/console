@@ -31,9 +31,7 @@
         onupdated?: (membership: Models.Membership) => void;
     } = $props();
 
-    const supportsProjectRoles = $derived(
-        isCloud && !!$currentPlan?.supportsProjectSpecificRoles
-    );
+    const supportsProjectRoles = $derived(isCloud && !!$currentPlan?.supportsProjectSpecificRoles);
     const defaultRole = isSelfHosted ? 'owner' : 'developer';
 
     let error = $state<string>(null);
