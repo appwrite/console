@@ -31,7 +31,7 @@
     const supportsProjectRoles = $derived(
         isCloud &&
             flags.granularProjectAccess({ account: $user, organization: $organization }) &&
-            !!$currentPlan?.supportsOrganizationRoles
+            !!$currentPlan?.supportsProjectSpecificRoles
     );
 
     let email = $state('');

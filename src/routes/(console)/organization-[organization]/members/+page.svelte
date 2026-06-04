@@ -65,7 +65,7 @@
     $: supportsProjectRoles =
         isCloud &&
         flags.granularProjectAccess({ account: $user, organization: $organization }) &&
-        $currentPlan?.supportsOrganizationRoles;
+        $currentPlan?.supportsProjectSpecificRoles;
 
     const resend = async (member: Models.Membership) => {
         try {

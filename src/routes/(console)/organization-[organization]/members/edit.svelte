@@ -36,7 +36,7 @@
     const supportsProjectRoles = $derived(
         isCloud &&
             flags.granularProjectAccess({ account: $user, organization: $organization }) &&
-            !!$currentPlan?.supportsOrganizationRoles
+            !!$currentPlan?.supportsProjectSpecificRoles
     );
     const defaultRole = isSelfHosted ? 'owner' : 'developer';
 
