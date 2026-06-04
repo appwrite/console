@@ -19,8 +19,6 @@
         buildProjectRole
     } from '$lib/stores/billing';
     import { isCloud, isSelfHosted } from '$lib/system';
-    import { flags } from '$lib/flags';
-    import { user } from '$lib/stores/user';
     import ProjectAccessSelector from '../projectAccessSelector.svelte';
 
     let {
@@ -34,9 +32,7 @@
     } = $props();
 
     const supportsProjectRoles = $derived(
-        isCloud &&
-            flags.granularProjectAccess({ account: $user, organization: $organization }) &&
-            !!$currentPlan?.supportsProjectSpecificRoles
+        isCloud && !!$currentPlan?.supportsProjectSpecificRoles
     );
     const defaultRole = isSelfHosted ? 'owner' : 'developer';
 

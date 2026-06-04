@@ -11,8 +11,6 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { isCloud, isSelfHosted } from '$lib/system';
     import { roles, buildProjectRole } from '$lib/stores/billing';
-    import { flags } from '$lib/flags';
-    import { user } from '$lib/stores/user';
     import InputSelect from '$lib/elements/forms/inputSelect.svelte';
     import Roles from '$lib/components/roles/roles.svelte';
     import { Icon, Popover, Layout } from '@appwrite.io/pink-svelte';
@@ -29,9 +27,7 @@
     } = $props();
 
     const supportsProjectRoles = $derived(
-        isCloud &&
-            flags.granularProjectAccess({ account: $user, organization: $organization }) &&
-            !!$currentPlan?.supportsProjectSpecificRoles
+        isCloud && !!$currentPlan?.supportsProjectSpecificRoles
     );
 
     let email = $state('');

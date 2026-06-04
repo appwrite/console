@@ -20,10 +20,8 @@
     } from '$lib/helpers/tooltipContent';
     import { addNotification } from '$lib/stores/notifications';
     import { currentPlan, newMemberModal, organization } from '$lib/stores/organization';
-    import { flags } from '$lib/flags';
     import { isOwner } from '$lib/stores/roles';
     import { sdk } from '$lib/stores/sdk';
-    import { user } from '$lib/stores/user';
     import type { Models } from '@appwrite.io/console';
     import Delete from '../deleteMember.svelte';
     import Edit from './edit.svelte';
@@ -63,10 +61,7 @@
     $: isButtonDisabled =
         isCloud && (($readOnly && !GRACE_PERIOD_OVERRIDE) || (isLimited && memberCount >= limit));
     $: supportsOrgRoles = isCloud && !!$currentPlan?.supportsOrganizationRoles;
-    $: supportsProjectRoles =
-        isCloud &&
-        flags.granularProjectAccess({ account: $user, organization: $organization }) &&
-        !!$currentPlan?.supportsProjectSpecificRoles;
+    $: supportsProjectRoles = isCloud && !!$currentPlan?.supportsProjectSpecificRoles;
 
     const resend = async (member: Models.Membership) => {
         try {
