@@ -18,12 +18,22 @@
     let {
         members = [],
         storageUsage = 0,
-        projects = $bindable([])
+        projects = $bindable([]),
+        targetPlan = null,
+        planChangeEstimate = null,
+        estimateError = null,
+        loading = false
     }: {
         storageUsage?: number;
         projects?: Models.Project[];
         members?: Models.Membership[];
         organization: Models.Organization;
+        targetPlan?: Models.BillingPlan | null;
+        planChangeEstimate?:
+            | (Models.EstimationUpdatePlan & Partial<Models.EstimationPlanChange>)
+            | null;
+        estimateError?: string | null;
+        loading?: boolean;
     } = $props();
 
     let showSelectProject = $state(false);
@@ -34,6 +44,38 @@
     let isDeletingProjects = $state(false);
     let selectedProjectsToDelete = $state<Array<string>>([]);
     const baseFreePlan = getBasePlanFromGroup(BillingPlanGroup.Starter);
+    const targetPlanLimits = $derived(planChangeEstimate?.limits ?? null);
+    const unsupportedAddons = $derived(targetPlanLimits?.unsupportedAddons ?? []);
+    const nonCompliantProjects = $derived(
+        targetPlanLimits?.projects?.filter((project) => !project.isCompliant) ?? []
+    );
+    const projectComplianceRows = $derived.by(() => {
+        return nonCompliantProjects.flatMap((project) => {
+            if (project.error) {
+                return [
+                    {
+                        id: `${project.$id}-error`,
+                        project: project.name,
+                        resource: 'Project evaluation',
+                        currentUsage: 'Unavailable',
+                        limit: 'Unavailable',
+                        action: project.error
+                    }
+                ];
+            }
+
+            return (project.resources ?? [])
+                .filter((resource) => resource.status !== 'compliant' || resource.excess > 0)
+                .map((resource) => ({
+                    id: `${project.$id}-${resource.type}`,
+                    project: project.name,
+                    resource: formatResourceType(resource.type),
+                    currentUsage: formatNumber(resource.currentUsage),
+                    limit: formatNumber(resource.limit),
+                    action: resource.resolutionHint
+                }));
+        });
+    });
 
     // Derived state using runes
     const freePlanLimits = $derived({
@@ -42,7 +84,8 @@
         storage: getServiceLimit('storage', null, baseFreePlan)
     });
 
-    // When preparing to downgrade to Free, enforce Free plan limit locally (2)
+    // When preparing to downgrade to Free, enforce Free plan limit locally.
+    const isDowngradingToFree = $derived(targetPlan?.group === BillingPlanGroup.Starter);
     const allowedProjectsToKeep = $derived(freePlanLimits.projects);
 
     const currentUsage = $derived({
@@ -54,13 +97,13 @@
     const storageUsageGB = $derived(storageUsage / (1024 * 1024 * 1024));
 
     const isLimitExceeded = $derived({
-        projects: currentUsage.projects > freePlanLimits.projects,
-        members: currentUsage.members > freePlanLimits.members,
-        storage: storageUsageGB > freePlanLimits.storage
+        projects: isDowngradingToFree && currentUsage.projects > freePlanLimits.projects,
+        members: isDowngradingToFree && currentUsage.members > freePlanLimits.members,
+        storage: isDowngradingToFree && storageUsageGB > freePlanLimits.storage
     });
 
     const excessUsage = $derived({
-        projects: Math.max(0, currentUsage.projects),
+        projects: Math.max(0, currentUsage.projects - freePlanLimits.projects),
         members: Math.max(0, currentUsage.members - freePlanLimits.members),
         storage: Math.max(0, storageUsageGB - freePlanLimits.storage)
     });
@@ -69,6 +112,15 @@
 
     function formatNumber(num: number): string {
         return formatNumberWithCommas(num);
+    }
+
+    function formatResourceType(type: string): string {
+        return type
+            .replace(/([A-Z])/g, ' $1')
+            .replace(/[_-]/g, ' ')
+            .replace(/\s+/g, ' ')
+            .trim()
+            .replace(/\b\w/g, (char) => char.toUpperCase());
     }
 
     function handleManageProjects() {
@@ -86,6 +138,7 @@
 
         if (!isUnderLimitPostSelection) {
             error = `You can keep a maximum ${allowedProjectsToKeep} projects on the selected plan.`;
+            isDeletingProjects = false;
             return;
         }
 
@@ -147,6 +200,81 @@
 </script>
 
 <Layout.Stack gap="l">
+    {#if targetPlanLimits}
+        {#if unsupportedAddons.length > 0}
+            <Alert.Inline status="warning" title="Unsupported add-ons detected">
+                Remove these add-ons before switching to {targetPlan?.name}: {unsupportedAddons.join(
+                    ', '
+                )}.
+            </Alert.Inline>
+        {/if}
+
+        {#if targetPlanLimits.canChangePlan}
+            <Alert.Inline status="success" title="All projects fit this plan">
+                {targetPlanLimits.totalProjects} project{targetPlanLimits.totalProjects === 1
+                    ? ''
+                    : 's'} comply with the {targetPlan?.name} plan limits.
+            </Alert.Inline>
+        {:else if targetPlanLimits.nonCompliantProjects > 0}
+            <Alert.Inline status="warning" title="Some projects exceed the selected plan limits">
+                {targetPlanLimits.nonCompliantProjects} project{targetPlanLimits.nonCompliantProjects ===
+                1
+                    ? ''
+                    : 's'} need attention before you can switch to the {targetPlan?.name} plan.
+            </Alert.Inline>
+        {/if}
+    {:else if loading}
+        <Alert.Inline status="info" title="Checking plan limits">
+            Reviewing your projects against the {targetPlan?.name} plan limits.
+        </Alert.Inline>
+    {:else if estimateError}
+        <Alert.Inline status="warning" title="We couldn't load plan compliance details">
+            {estimateError}
+        </Alert.Inline>
+    {/if}
+
+    {#if projectComplianceRows.length > 0}
+        <div class="responsive-table">
+            <Table.Root
+                columns={[
+                    { id: 'project', width: { min: 180 } },
+                    { id: 'resource', width: { min: 140 } },
+                    { id: 'currentUsage', width: { min: 110 } },
+                    { id: 'limit', width: { min: 110 } },
+                    { id: 'action', width: { min: 260 } }
+                ]}
+                let:root>
+                <svelte:fragment slot="header" let:root>
+                    <Table.Header.Cell column="project" {root}>Project</Table.Header.Cell>
+                    <Table.Header.Cell column="resource" {root}>Resource</Table.Header.Cell>
+                    <Table.Header.Cell column="currentUsage" {root}>Current</Table.Header.Cell>
+                    <Table.Header.Cell column="limit" {root}>Limit</Table.Header.Cell>
+                    <Table.Header.Cell column="action" {root}>Required action</Table.Header.Cell>
+                </svelte:fragment>
+
+                {#each projectComplianceRows as row}
+                    <Table.Row.Base {root}>
+                        <Table.Cell column="project" {root}>
+                            <Typography.Text>{row.project}</Typography.Text>
+                        </Table.Cell>
+                        <Table.Cell column="resource" {root}>
+                            <Typography.Text>{row.resource}</Typography.Text>
+                        </Table.Cell>
+                        <Table.Cell column="currentUsage" {root}>
+                            <Typography.Text>{row.currentUsage}</Typography.Text>
+                        </Table.Cell>
+                        <Table.Cell column="limit" {root}>
+                            <Typography.Text>{row.limit}</Typography.Text>
+                        </Table.Cell>
+                        <Table.Cell column="action" {root}>
+                            <Typography.Text>{row.action}</Typography.Text>
+                        </Table.Cell>
+                    </Table.Row.Base>
+                {/each}
+            </Table.Root>
+        </div>
+    {/if}
+
     {#if showSelectionReminder}
         <Alert.Inline status="warning" title="Choose projects to keep">
             The Free plan lets you keep {allowedProjectsToKeep} projects. Select them before continuing.
@@ -160,126 +288,130 @@
         </Alert.Inline>
     {/if}
 
-    <div class="responsive-table">
-        <Table.Root
-            columns={[
-                { id: 'resource', width: { min: 215 } },
-                { id: 'freeLimit', width: { min: 100 } },
-                { id: 'excessUsage', width: { min: 120 } },
-                { id: 'manage', width: { min: 110 } }
-            ]}
-            let:root>
-            <svelte:fragment slot="header" let:root>
-                <Table.Header.Cell column="resource" {root}>Resource</Table.Header.Cell>
-                <Table.Header.Cell column="freeLimit" {root}>Free limit</Table.Header.Cell>
-                <Table.Header.Cell column="excessUsage" {root}>
-                    <Layout.Stack direction="row" alignItems="center" gap="xs">
-                        <Typography.Text>Excess usage</Typography.Text>
-                        <Tooltip placement="bottom" portal>
-                            <Icon icon={IconInfo} size="s" />
-                            <span slot="tooltip">Usage beyond the Free plan limits.</span>
-                        </Tooltip>
-                    </Layout.Stack>
-                </Table.Header.Cell>
-                <Table.Header.Cell column="manage" {root}></Table.Header.Cell>
-            </svelte:fragment>
+    {#if isDowngradingToFree}
+        <div class="responsive-table">
+            <Table.Root
+                columns={[
+                    { id: 'resource', width: { min: 215 } },
+                    { id: 'freeLimit', width: { min: 100 } },
+                    { id: 'excessUsage', width: { min: 120 } },
+                    { id: 'manage', width: { min: 110 } }
+                ]}
+                let:root>
+                <svelte:fragment slot="header" let:root>
+                    <Table.Header.Cell column="resource" {root}>Resource</Table.Header.Cell>
+                    <Table.Header.Cell column="freeLimit" {root}>Free limit</Table.Header.Cell>
+                    <Table.Header.Cell column="excessUsage" {root}>
+                        <Layout.Stack direction="row" alignItems="center" gap="xs">
+                            <Typography.Text>Excess usage</Typography.Text>
+                            <Tooltip placement="bottom" portal>
+                                <Icon icon={IconInfo} size="s" />
+                                <span slot="tooltip">Usage beyond the Free plan limits.</span>
+                            </Tooltip>
+                        </Layout.Stack>
+                    </Table.Header.Cell>
+                    <Table.Header.Cell column="manage" {root}></Table.Header.Cell>
+                </svelte:fragment>
 
-            <!-- Projects Row -->
-            <Table.Row.Base {root}>
-                <Table.Cell column="resource" {root}>
-                    <Layout.Stack direction="row" alignItems="center" gap="xs">
-                        <Typography.Text>Projects</Typography.Text>
+                <!-- Projects Row -->
+                <Table.Row.Base {root}>
+                    <Table.Cell column="resource" {root}>
+                        <Layout.Stack direction="row" alignItems="center" gap="xs">
+                            <Typography.Text>Projects</Typography.Text>
+                            {#if isLimitExceeded.projects}
+                                <Badge
+                                    size="xs"
+                                    content="Action required"
+                                    variant="secondary"
+                                    type="warning" />
+                            {/if}
+                        </Layout.Stack>
+                    </Table.Cell>
+                    <Table.Cell column="freeLimit" {root}>
+                        <Typography.Text
+                            >{formatNumber(allowedProjectsToKeep)} projects</Typography.Text>
+                    </Table.Cell>
+                    <Table.Cell column="excessUsage" {root}>
                         {#if isLimitExceeded.projects}
-                            <Badge
-                                size="xs"
-                                content="Action required"
-                                variant="secondary"
-                                type="warning" />
+                            <Layout.Stack direction="row" alignItems="center" gap="xs">
+                                <Icon icon={IconArrowUp} size="s" color="--fgcolor-error" />
+                                <Typography.Text color="--fgcolor-error">
+                                    {formatNumber(excessUsage.projects)} projects
+                                </Typography.Text>
+                            </Layout.Stack>
+                        {:else}
+                            <Typography.Text color="--fgcolor-neutral-secondary">
+                                {formatNumber(currentUsage.projects)} / {formatNumber(
+                                    allowedProjectsToKeep
+                                )}
+                            </Typography.Text>
                         {/if}
-                    </Layout.Stack>
-                </Table.Cell>
-                <Table.Cell column="freeLimit" {root}>
-                    <Typography.Text
-                        >{formatNumber(allowedProjectsToKeep)} projects</Typography.Text>
-                </Table.Cell>
-                <Table.Cell column="excessUsage" {root}>
-                    {#if isLimitExceeded.projects}
-                        <Layout.Stack direction="row" alignItems="center" gap="xs">
-                            <Icon icon={IconArrowUp} size="s" color="--fgcolor-error" />
-                            <Typography.Text color="--fgcolor-error">
-                                {formatNumber(excessUsage.projects)} projects
-                            </Typography.Text>
-                        </Layout.Stack>
-                    {:else}
-                        <Typography.Text color="--fgcolor-neutral-secondary">
-                            {formatNumber(currentUsage.projects)} / {formatNumber(
-                                allowedProjectsToKeep
-                            )}
-                        </Typography.Text>
-                    {/if}
-                </Table.Cell>
-                <Table.Cell column="manage" {root}>
-                    {#if isLimitExceeded.projects}
-                        <Layout.Stack direction="row" justifyContent="flex-end">
-                            <Button size="xs" secondary on:click={handleManageProjects}
-                                >Manage projects</Button>
-                        </Layout.Stack>
-                    {/if}
-                </Table.Cell>
-            </Table.Row.Base>
+                    </Table.Cell>
+                    <Table.Cell column="manage" {root}>
+                        {#if isLimitExceeded.projects}
+                            <Layout.Stack direction="row" justifyContent="flex-end">
+                                <Button size="xs" secondary on:click={handleManageProjects}
+                                    >Manage projects</Button>
+                            </Layout.Stack>
+                        {/if}
+                    </Table.Cell>
+                </Table.Row.Base>
 
-            <!-- Organization Members Row -->
-            <Table.Row.Base {root}>
-                <Table.Cell column="resource" {root}>
-                    <Typography.Text>Organization members</Typography.Text>
-                </Table.Cell>
-                <Table.Cell column="freeLimit" {root}>
-                    <Typography.Text>{formatNumber(freePlanLimits.members)} member</Typography.Text>
-                </Table.Cell>
-                <Table.Cell column="excessUsage" {root}>
-                    {#if isLimitExceeded.members}
-                        <Layout.Stack direction="row" alignItems="center" gap="xs">
-                            <Icon icon={IconArrowUp} size="s" color="--fgcolor-error" />
-                            <Typography.Text color="--fgcolor-error">
-                                {formatNumber(excessUsage.members)} members
-                            </Typography.Text>
-                        </Layout.Stack>
-                    {:else}
-                        <Typography.Text color="--fgcolor-neutral-secondary">N/A</Typography.Text>
-                    {/if}
-                </Table.Cell>
-                <Table.Cell column="manage" {root}></Table.Cell>
-            </Table.Row.Base>
+                <!-- Organization Members Row -->
+                <Table.Row.Base {root}>
+                    <Table.Cell column="resource" {root}>
+                        <Typography.Text>Organization members</Typography.Text>
+                    </Table.Cell>
+                    <Table.Cell column="freeLimit" {root}>
+                        <Typography.Text
+                            >{formatNumber(freePlanLimits.members)} member</Typography.Text>
+                    </Table.Cell>
+                    <Table.Cell column="excessUsage" {root}>
+                        {#if isLimitExceeded.members}
+                            <Layout.Stack direction="row" alignItems="center" gap="xs">
+                                <Icon icon={IconArrowUp} size="s" color="--fgcolor-error" />
+                                <Typography.Text color="--fgcolor-error">
+                                    {formatNumber(excessUsage.members)} members
+                                </Typography.Text>
+                            </Layout.Stack>
+                        {:else}
+                            <Typography.Text color="--fgcolor-neutral-secondary"
+                                >N/A</Typography.Text>
+                        {/if}
+                    </Table.Cell>
+                    <Table.Cell column="manage" {root}></Table.Cell>
+                </Table.Row.Base>
 
-            <!-- Storage Row -->
-            <Table.Row.Base {root}>
-                <Table.Cell column="resource" {root}>
-                    <Typography.Text>Storage</Typography.Text>
-                </Table.Cell>
-                <Table.Cell column="freeLimit" {root}>
-                    <Typography.Text>{freePlanLimits.storage} GB</Typography.Text>
-                </Table.Cell>
-                <Table.Cell column="excessUsage" {root}>
-                    {#if isLimitExceeded.storage}
-                        <Layout.Stack direction="row" alignItems="center" gap="xs">
-                            <Icon icon={IconArrowUp} size="s" color="--fgcolor-error" />
-                            <Typography.Text color="--fgcolor-error">
-                                {excessUsage.storage.toFixed(2)} GB
+                <!-- Storage Row -->
+                <Table.Row.Base {root}>
+                    <Table.Cell column="resource" {root}>
+                        <Typography.Text>Storage</Typography.Text>
+                    </Table.Cell>
+                    <Table.Cell column="freeLimit" {root}>
+                        <Typography.Text>{freePlanLimits.storage} GB</Typography.Text>
+                    </Table.Cell>
+                    <Table.Cell column="excessUsage" {root}>
+                        {#if isLimitExceeded.storage}
+                            <Layout.Stack direction="row" alignItems="center" gap="xs">
+                                <Icon icon={IconArrowUp} size="s" color="--fgcolor-error" />
+                                <Typography.Text color="--fgcolor-error">
+                                    {excessUsage.storage.toFixed(2)} GB
+                                </Typography.Text>
+                            </Layout.Stack>
+                        {:else}
+                            <Typography.Text color="--fgcolor-neutral-secondary">
+                                {storageUsageGB.toFixed(2)} / {freePlanLimits.storage} GB
                             </Typography.Text>
-                        </Layout.Stack>
-                    {:else}
-                        <Typography.Text color="--fgcolor-neutral-secondary">
-                            {storageUsageGB.toFixed(2)} / {freePlanLimits.storage} GB
-                        </Typography.Text>
-                    {/if}
-                </Table.Cell>
-                <Table.Cell column="manage" {root}></Table.Cell>
-            </Table.Row.Base>
-        </Table.Root>
-    </div>
+                        {/if}
+                    </Table.Cell>
+                    <Table.Cell column="manage" {root}></Table.Cell>
+                </Table.Row.Base>
+            </Table.Root>
+        </div>
+    {/if}
 </Layout.Stack>
 
-{#if showSelectProject}
+{#if showSelectProject && isDowngradingToFree}
     {@const requiredToDelete = currentUsage.projects - allowedProjectsToKeep}
     <Modal
         bind:show={showSelectProject}
