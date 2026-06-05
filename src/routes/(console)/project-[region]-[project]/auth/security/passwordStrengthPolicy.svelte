@@ -18,17 +18,13 @@
         policy: Models.PolicyPasswordStrength;
     } = $props();
 
-    const getInitialMinLength = () => policy.min;
-    const getInitialUppercase = () => policy.uppercase;
-    const getInitialLowercase = () => policy.lowercase;
-    const getInitialNumber = () => policy.number;
-    const getInitialSymbols = () => policy.symbols;
+    const getInitial = () => policy;
 
-    let passwordMinLength = $state(getInitialMinLength());
-    let passwordUppercase = $state(getInitialUppercase());
-    let passwordLowercase = $state(getInitialLowercase());
-    let passwordNumber = $state(getInitialNumber());
-    let passwordSymbols = $state(getInitialSymbols());
+    let passwordMinLength = $state(getInitial().min);
+    let passwordUppercase = $state(getInitial().uppercase);
+    let passwordLowercase = $state(getInitial().lowercase);
+    let passwordNumber = $state(getInitial().number);
+    let passwordSymbols = $state(getInitial().symbols);
 
     const hasChanges = $derived(
         Number(passwordMinLength) !== policy.min ||
