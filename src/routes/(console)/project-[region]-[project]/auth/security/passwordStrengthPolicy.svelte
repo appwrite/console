@@ -24,27 +24,19 @@
     const getInitialNumber = () => policy.number;
     const getInitialSymbols = () => policy.symbols;
 
-    let savedMinLength = $state(getInitialMinLength());
-    let savedUppercase = $state(getInitialUppercase());
-    let savedLowercase = $state(getInitialLowercase());
-    let savedNumber = $state(getInitialNumber());
-    let savedSymbols = $state(getInitialSymbols());
-
     let passwordMinLength = $state(getInitialMinLength());
     let passwordUppercase = $state(getInitialUppercase());
     let passwordLowercase = $state(getInitialLowercase());
     let passwordNumber = $state(getInitialNumber());
     let passwordSymbols = $state(getInitialSymbols());
 
-    const hasChanges = $derived.by(() => {
-        return (
-            passwordMinLength !== savedMinLength ||
-            passwordUppercase !== savedUppercase ||
-            passwordLowercase !== savedLowercase ||
-            passwordNumber !== savedNumber ||
-            passwordSymbols !== savedSymbols
-        );
-    });
+    const hasChanges = $derived(
+        Number(passwordMinLength) !== policy.min ||
+            passwordUppercase !== policy.uppercase ||
+            passwordLowercase !== policy.lowercase ||
+            passwordNumber !== policy.number ||
+            passwordSymbols !== policy.symbols
+    );
 
     async function updatePasswordStrengthPolicy() {
         try {
@@ -55,12 +47,6 @@
                 number: passwordNumber,
                 symbols: passwordSymbols
             });
-
-            savedMinLength = passwordMinLength;
-            savedUppercase = passwordUppercase;
-            savedLowercase = passwordLowercase;
-            savedNumber = passwordNumber;
-            savedSymbols = passwordSymbols;
 
             await invalidate(Dependencies.PROJECT);
             addNotification({
