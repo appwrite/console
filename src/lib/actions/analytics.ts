@@ -272,6 +272,7 @@ export enum Submit {
     AuthStatusUpdate = 'submit_auth_status_update',
     AuthPasswordHistoryUpdate = 'submit_auth_password_history_limit_update',
     AuthPasswordDictionaryUpdate = 'submit_auth_password_dictionary_update',
+    AuthPasswordStrengthUpdate = 'submit_auth_password_strength_update',
     AuthPersonalDataCheckUpdate = 'submit_auth_personal_data_check_update',
     AuthAliasedEmailsUpdate = 'submit_auth_aliased_emails_update',
     AuthDisposableEmailsUpdate = 'submit_auth_disposable_emails_update',
