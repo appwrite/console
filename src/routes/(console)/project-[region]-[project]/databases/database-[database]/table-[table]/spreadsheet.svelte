@@ -565,6 +565,7 @@
                 return;
             }
             if (action === 'update') {
+                $databaseColumnSheetOptions.column = column;
                 $databaseColumnSheetOptions.show = true;
                 $databaseColumnSheetOptions.isEdit = true;
                 $databaseColumnSheetOptions.title = 'Update column';
