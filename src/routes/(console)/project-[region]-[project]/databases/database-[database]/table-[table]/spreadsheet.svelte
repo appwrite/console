@@ -1122,7 +1122,8 @@
                                         {@const value = row[columnId]}
                                         {@const formatted = formatColumn(row[columnId])}
                                         {@const isEmptyArray = formatted === 'Empty'}
-                                        {@const isDatetimeAttribute = rowColumn.type === 'datetime'}
+                                        {@const isDatetimeAttribute =
+                                            rowColumn?.type === 'datetime'}
                                         {@const isEncryptedAttribute =
                                             isTextType(rowColumn) &&
                                             'encrypt' in rowColumn &&
