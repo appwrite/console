@@ -17,18 +17,18 @@
 
     async function updateVerificationEmail() {
         showVerificationDropdown = false;
+        const newVerification = !$user.emailVerification;
+        const label = $user.name || $user.email || $user.phone || 'The account';
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
                 .users.updateEmailVerification({
                     userId: $user.$id,
-                    emailVerification: !$user.emailVerification
+                    emailVerification: newVerification
                 });
             await invalidate(Dependencies.USER);
             addNotification({
-                message: `${$user.name || $user.email || $user.phone || 'The account'} has been ${
-                    !$user.emailVerification ? 'unverified' : 'verified'
-                }`,
+                message: `${label} email has been ${newVerification ? 'verified' : 'unverified'}`,
                 type: 'success'
             });
             trackEvent(Submit.UserUpdateVerificationEmail);
@@ -42,18 +42,18 @@
     }
     async function updateVerificationPhone() {
         showVerificationDropdown = false;
+        const newVerification = !$user.phoneVerification;
+        const label = $user.name || $user.email || $user.phone || 'The account';
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
                 .users.updatePhoneVerification({
                     userId: $user.$id,
-                    phoneVerification: !$user.phoneVerification
+                    phoneVerification: newVerification
                 });
             await invalidate(Dependencies.USER);
             addNotification({
-                message: `${$user.name || $user.email || $user.phone || 'The account'} has been ${
-                    $user.phoneVerification ? 'unverified' : 'verified'
-                }`,
+                message: `${label} phone has been ${newVerification ? 'verified' : 'unverified'}`,
                 type: 'success'
             });
             trackEvent(Submit.UserUpdateVerificationPhone);
@@ -66,15 +66,15 @@
         }
     }
     async function updateStatus() {
+        const newStatus = !$user.status;
+        const label = $user.name || $user.email || $user.phone || 'The account';
         try {
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .users.updateStatus({ userId: $user.$id, status: !$user.status });
+                .users.updateStatus({ userId: $user.$id, status: newStatus });
             await invalidate(Dependencies.USER);
             addNotification({
-                message: `${$user.name || $user.email || $user.phone || 'The account'} has been ${
-                    $user.status ? 'unblocked' : 'blocked'
-                }`,
+                message: `${label} has been ${newStatus ? 'unblocked' : 'blocked'}`,
                 type: 'success'
             });
             trackEvent(Submit.UserUpdateStatus);
