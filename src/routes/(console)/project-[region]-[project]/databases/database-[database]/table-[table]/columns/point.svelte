@@ -93,7 +93,7 @@
 
     onMount(() => {
         if (!editing) {
-            savedDefault = getDefaultSpatialData('point');
+            savedDefault = getDefaultSpatialData('point') as number[];
             defaultChecked = false;
             $required = false;
         }

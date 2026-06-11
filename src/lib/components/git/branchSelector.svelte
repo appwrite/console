@@ -14,7 +14,7 @@
 
     const dispatch = createEventDispatcher();
     const inDialogGroup = hasContext('dialog-group');
-    const inPopoverGroup = hasContext('popover-group');
+    
 
     let open = false;
     let searchQuery = '';

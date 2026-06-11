@@ -100,7 +100,7 @@
 
     onMount(() => {
         if (!editing) {
-            savedDefault = getDefaultSpatialData('linestring');
+            savedDefault = getDefaultSpatialData('linestring') as number[][];
             defaultChecked = false;
             $required = false;
         }

@@ -114,7 +114,7 @@
 
     onMount(() => {
         if (!editing) {
-            savedDefault = getDefaultSpatialData('polygon');
+            savedDefault = getDefaultSpatialData('polygon') as number[][][];
             defaultChecked = false;
             $required = false;
         }
