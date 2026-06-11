@@ -18,34 +18,23 @@
     let searchQuery = '';
     let branches: string[] = [];
     let searchResults: string[] = [];
-    let offset = 0;
-    let hasMore = true;
     let loading = false;
     let searching = false;
     let searchTimer: ReturnType<typeof setTimeout>;
-    let listEl: HTMLUListElement;
     let searchInput: HTMLInputElement;
     let containerEl: HTMLDivElement;
-    const LIMIT = 100;
 
-    async function loadBranches(reset = false) {
-        if (loading || (!hasMore && !reset)) return;
+    async function loadBranches() {
+        if (loading || branches.length > 0) return;
         loading = true;
-        if (reset) {
-            branches = [];
-            offset = 0;
-            hasMore = true;
-        }
-        const { branches: newBranches, total } = await sdk
+        const { branches: result } = await sdk
             .forProject(page.params.region, page.params.project)
             .vcs.listRepositoryBranches({
                 installationId,
                 providerRepositoryId: repositoryId,
-                queries: [Query.limit(LIMIT), Query.offset(offset)]
+                queries: [Query.limit(100)]
             });
-        branches = [...branches, ...newBranches.map((b) => b.name)];
-        offset += newBranches.length;
-        hasMore = branches.length < total;
+        branches = result.map((b) => b.name);
         loading = false;
     }
 
@@ -62,7 +51,7 @@
                 installationId,
                 providerRepositoryId: repositoryId,
                 search: query,
-                queries: [Query.limit(LIMIT)]
+                queries: [Query.limit(100)]
             });
         searchResults = results.map((b) => b.name);
         searching = false;
@@ -84,20 +73,12 @@
     async function toggle() {
         open = !open;
         if (open) {
-            if (branches.length === 0) loadBranches();
+            loadBranches();
             await tick();
             searchInput?.focus();
         } else {
             searchQuery = '';
             searchResults = [];
-        }
-    }
-
-    function onScroll() {
-        if (!listEl || searchQuery) return;
-        const { scrollTop, scrollHeight, clientHeight } = listEl;
-        if (scrollHeight - scrollTop - clientHeight < 80) {
-            loadBranches();
         }
     }
 
@@ -157,15 +138,15 @@
                 {/if}
             </div>
 
-            <ul
-                bind:this={listEl}
-                on:scroll={onScroll}
-                role="listbox"
-                class="branch-list">
-                {#if searching}
+            <ul role="listbox" class="branch-list">
+                {#if loading}
+                    <li class="state-item">Loading...</li>
+                {:else if searching}
                     <li class="state-item">Searching...</li>
                 {:else if displayBranches.length === 0 && searchQuery}
                     <li class="state-item">No branches found</li>
+                {:else if displayBranches.length === 0}
+                    <li class="state-item">No branches available</li>
                 {:else}
                     {#each displayBranches as branch}
                         <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -177,8 +158,8 @@
                             {branch}
                         </li>
                     {/each}
-                    {#if !searchQuery && loading}
-                        <li class="state-item">Loading...</li>
+                    {#if !searchQuery}
+                        <li class="hint-item">Type to search all branches</li>
                     {/if}
                 {/if}
             </ul>
@@ -314,7 +295,6 @@
         color: var(--fgcolor-neutral-secondary);
         cursor: pointer;
         user-select: none;
-        border-radius: 0;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -339,6 +319,19 @@
     }
 
     .state-item:hover {
+        background: transparent !important;
+    }
+
+    .hint-item {
+        padding: var(--space-3) var(--space-5);
+        font-size: var(--font-size-xs);
+        color: var(--fgcolor-neutral-tertiary);
+        cursor: default;
+        border-top: var(--border-width-s) solid var(--border-neutral);
+        margin-top: var(--space-1);
+    }
+
+    .hint-item:hover {
         background: transparent !important;
     }
 </style>
