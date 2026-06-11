@@ -1,14 +1,14 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
     import { Modal, Card } from '$lib/components';
-    import { Repositories } from '$lib/components/git';
+    import { Repositories, BranchSelector } from '$lib/components/git';
     import { Dependencies } from '$lib/constants';
     import { Link } from '$lib/elements';
     import { Button, InputCheckbox } from '$lib/elements/forms';
     import { timeFromNow } from '$lib/helpers/date';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { installation, repository, sortBranches } from '$lib/stores/vcs';
+    import { installation, repository } from '$lib/stores/vcs';
     import {
         Runtime,
         VCSReferenceType,
@@ -16,7 +16,7 @@
         type ProjectKeyScopes
     } from '@appwrite.io/console';
     import { IconGithub } from '@appwrite.io/pink-icons-svelte';
-    import { Icon, Input, Layout, Skeleton, Typography } from '@appwrite.io/pink-svelte';
+    import { Icon, Layout, Skeleton, Typography } from '@appwrite.io/pink-svelte';
     import { func } from '../store';
     import { page } from '$app/state';
 
@@ -54,24 +54,8 @@
                     });
             }
             selectedRepository = $repository?.id;
-            const branchList = await sdk
-                .forProject(page.params.region, page.params.project)
-                .vcs.listRepositoryBranches({
-                    installationId: $installation.$id,
-                    providerRepositoryId: selectedRepository
-                });
 
-            const sorted = sortBranches(branchList.branches);
-
-            branch = sorted.find((b) => b.name === $func.providerBranch)
-                ? $func.providerBranch
-                : (sorted[0]?.name ?? null);
-
-            if (!branch) {
-                branch = 'main';
-            }
-
-            return sorted;
+            branch = $func.providerBranch || 'main';
         } catch {
             return;
         }
@@ -167,18 +151,7 @@
                 <Skeleton variant="line" width={100} height={19.6} />
                 <Skeleton variant="line" width={350} height={31} />
             </Layout.Stack>
-        {:then branches}
-            {@const options =
-                branches
-                    ?.map((branch) => {
-                        return {
-                            value: branch.name,
-                            label: branch.name
-                        };
-                    })
-                    ?.sort((a, b) => {
-                        return a.label > b.label ? 1 : -1;
-                    }) ?? []}
+        {:then}
             <Card padding="xs" radius="s" variant="secondary">
                 <Layout.Stack
                     direction="row"
@@ -200,16 +173,13 @@
                     </Typography.Caption>
                 </Layout.Stack>
             </Card>
-            <Input.ComboBox
-                required
-                id="branch"
-                label="Production branch"
-                placeholder="Select branch"
+            <BranchSelector
                 bind:value={branch}
+                installationId={$installation.$id}
+                repositoryId={selectedRepository}
                 on:select={(event) => {
-                    branch = event.detail.value;
-                }}
-                {options} />
+                    branch = event.detail;
+                }} />
             <!-- <InputText
                 id="commit"
                 label="Commit hash"

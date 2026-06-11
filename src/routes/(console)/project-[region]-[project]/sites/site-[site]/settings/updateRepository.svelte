@@ -6,7 +6,7 @@
     import { Button, Form, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { Adapter, BuildRuntime, Framework, type Models } from '@appwrite.io/console';
+    import { Adapter, BuildRuntime, Framework, Query, type Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import DisconnectRepo from './disconnectRepo.svelte';
     import { installation, repository as repositoryStore, sortBranches } from '$lib/stores/vcs';
@@ -17,12 +17,16 @@
         Layout,
         Skeleton,
         Card as PinkCard,
-        Input,
         Selector
     } from '@appwrite.io/pink-svelte';
     import Card from '$lib/components/card.svelte';
     import { IconGithub } from '@appwrite.io/pink-icons-svelte';
-    import { ConnectGit, ConnectRepoModal, RepositoryCard } from '$lib/components/git';
+    import {
+        ConnectGit,
+        ConnectRepoModal,
+        RepositoryCard,
+        BranchSelector
+    } from '$lib/components/git';
     import { showConnectRepo } from './store';
     import { page } from '$app/state';
     import SelectRootModal from '$lib/components/git/selectRootModal.svelte';
@@ -30,7 +34,6 @@
     export let site: Models.Site;
     export let installations: Models.InstallationList;
 
-    let branchesList: Models.BranchList;
     let selectedBranch = site?.providerBranch;
     let silentMode = site?.providerSilentMode ?? false;
     let selectedDir = site?.providerRootDirectory;
@@ -105,28 +108,25 @@
         }
     }
 
-    async function getBranches(installation: string, repo: string) {
-        branchesList = await sdk
-            .forProject(page.params.region, page.params.project)
-            .vcs.listRepositoryBranches({
-                installationId: installation,
-                providerRepositoryId: repo
-            });
-        branchesList.branches = sortBranches(branchesList.branches);
-
-        selectedBranch = site?.providerBranch ?? branchesList.branches[0].name;
-    }
-
     async function connect(selectedInstallationId: string, selectedRepository: string) {
         let nextBranch = site?.providerBranch ?? 'main';
         try {
-            const branchList = await sdk
-                .forProject(page.params.region, page.params.project)
-                .vcs.listRepositoryBranches({
-                    installationId: selectedInstallationId,
-                    providerRepositoryId: selectedRepository
-                });
-            const sorted = sortBranches(branchList.branches);
+            const allBranches = [];
+            let offset = 0;
+            const limit = 100;
+            while (true) {
+                const { branches, total } = await sdk
+                    .forProject(page.params.region, page.params.project)
+                    .vcs.listRepositoryBranches({
+                        installationId: selectedInstallationId,
+                        providerRepositoryId: selectedRepository,
+                        queries: [Query.limit(limit), Query.offset(offset)]
+                    });
+                allBranches.push(...branches);
+                if (allBranches.length >= total || branches.length < limit) break;
+                offset += limit;
+            }
+            const sorted = sortBranches(allBranches);
             nextBranch =
                 sorted.find((branch) => branch.name === site?.providerBranch)?.name ??
                 sorted.find((branch) => branch.name === 'main' || branch.name === 'master')?.name ??
@@ -163,7 +163,7 @@
     }
 
     $: if (site?.installationId && site?.providerRepositoryId) {
-        getBranches(site.installationId, site.providerRepositoryId);
+        selectedBranch = site?.providerBranch ?? 'main';
     }
 
     $: isUpdateButtonEnabled =
@@ -219,24 +219,11 @@
 
                     <Fieldset legend="Branch">
                         <Layout.Stack gap="xl">
-                            <Input.ComboBox
-                                required={true}
-                                id="branch"
-                                label="Production branch"
-                                placeholder="main"
-                                interactiveOutput
+                            <BranchSelector
                                 bind:value={selectedBranch}
-                                bind:search={selectedBranch}
-                                on:select={(event) => {
-                                    selectedBranch = event.detail.value;
-                                }}
-                                name="branch"
-                                options={branchesList?.branches?.map((branch) => {
-                                    return {
-                                        value: branch.name,
-                                        label: branch.name
-                                    };
-                                }) ?? []} />
+                                installationId={$installation?.$id}
+                                repositoryId={repository?.id?.toString()}
+                                on:select={(e) => (selectedBranch = e.detail)} />
                             <Layout.Stack direction="row" gap="s" alignItems="flex-end">
                                 <InputText
                                     id="root"

@@ -5,12 +5,12 @@
     import { Wizard } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { Fieldset, Layout, Tooltip, Icon, Input, Alert } from '@appwrite.io/pink-svelte';
+    import { Fieldset, Layout, Tooltip, Icon, Alert } from '@appwrite.io/pink-svelte';
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import { sortBranches } from '$lib/stores/vcs';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { LabelCard } from '$lib/components';
+    import { BranchSelector } from '$lib/components/git';
     import {
         Adapter,
         BuildRuntime,
@@ -196,29 +196,11 @@
                 <Fieldset legend="Settings">
                     <Layout.Stack gap="xl">
                         {#if data.site?.providerRepositoryId}
-                            {@const sortedBranches = sortBranches(data.branches.branches)}
-                            {@const options = sortedBranches.map((branch) => ({
-                                label: branch.name,
-                                value: branch.name
-                            }))}
-                            <Layout.Stack gap="s">
-                                <Input.ComboBox
-                                    required
-                                    id="branch"
-                                    label="Production branch"
-                                    placeholder="Select branch"
-                                    bind:value={branch}
-                                    on:select={(event) => {
-                                        branch = event.detail.value;
-                                    }}
-                                    {options} />
-                                {#if !data.branches?.total}
-                                    <Input.Helper state="default">
-                                        No branches found in the selected repository. Create a
-                                        branch to see it here.
-                                    </Input.Helper>
-                                {/if}
-                            </Layout.Stack>
+                            <BranchSelector
+                                bind:value={branch}
+                                installationId={data.site.installationId}
+                                repositoryId={data.site.providerRepositoryId}
+                                on:select={(e) => (branch = e.detail)} />
                         {:else}
                             <InputSelect
                                 disabled
