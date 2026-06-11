@@ -2,6 +2,7 @@
     import { Button, InputText } from '$lib/elements/forms';
     import { Fieldset, Input, Layout, Selector, Skeleton } from '@appwrite.io/pink-svelte';
     import SelectRootModal from './selectRootModal.svelte';
+    import { Query } from '@appwrite.io/console';
     import { sdk } from '$lib/stores/sdk';
     import { sortBranches } from '$lib/stores/vcs';
     import { page } from '$app/state';
@@ -25,14 +26,29 @@
 
         branch = repo.defaultBranch ?? 'main';
 
-        const { branches } = await sdk
-            .forProject(page.params.region, page.params.project)
-            .vcs.listRepositoryBranches({
-                installationId,
-                providerRepositoryId: repositoryId
-            });
+        const allBranches = [];
+        let offset = 0;
+        const limit = 100;
 
-        return sortBranches(branches);
+        while (true) {
+            const { branches, total } = await sdk
+                .forProject(page.params.region, page.params.project)
+                .vcs.listRepositoryBranches({
+                    installationId,
+                    providerRepositoryId: repositoryId,
+                    queries: [Query.limit(limit), Query.offset(offset)]
+                });
+
+            allBranches.push(...branches);
+
+            if (allBranches.length >= total || branches.length < limit) {
+                break;
+            }
+
+            offset += limit;
+        }
+
+        return sortBranches(allBranches);
     }
 </script>
 
