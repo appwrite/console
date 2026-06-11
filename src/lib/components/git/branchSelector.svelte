@@ -23,6 +23,9 @@
     let searchTimer: ReturnType<typeof setTimeout>;
     let searchInput: HTMLInputElement;
     let containerEl: HTMLDivElement;
+    let dropdownTop = 0;
+    let dropdownLeft = 0;
+    let dropdownWidth = 0;
 
     $: installationId, repositoryId, (() => {
         branches = [];
@@ -84,6 +87,10 @@
     async function toggle() {
         open = !open;
         if (open) {
+            const rect = containerEl.getBoundingClientRect();
+            dropdownTop = rect.bottom + window.scrollY;
+            dropdownLeft = rect.left + window.scrollX;
+            dropdownWidth = rect.width;
             loadBranches();
             await tick();
             searchInput?.focus();
@@ -129,7 +136,7 @@
     </button>
 
     {#if open}
-        <div class="dropdown">
+        <div class="dropdown" style="top: {dropdownTop}px; left: {dropdownLeft}px; width: {dropdownWidth}px;">
             <div class="search-header">
                 <Icon icon={IconSearch} size="s" />
                 <input
@@ -231,10 +238,7 @@
     }
 
     .dropdown {
-        position: absolute;
-        top: calc(100% + var(--space-2));
-        left: 0;
-        right: 0;
+        position: fixed;
         z-index: 9001;
         background: var(--bgcolor-neutral-primary);
         border: var(--border-width-s) solid var(--border-neutral);
