@@ -1,18 +1,16 @@
 <script lang="ts">
-    import { IconChevronDown, IconChevronUp, IconSearch, IconX } from '@appwrite.io/pink-icons-svelte';
-    import { Icon, Input } from '@appwrite.io/pink-svelte';
+    import { IconChevronDown, IconSearch, IconX } from '@appwrite.io/pink-icons-svelte';
+    import { Icon } from '@appwrite.io/pink-svelte';
     import { Query } from '@appwrite.io/console';
     import { sdk } from '$lib/stores/sdk';
     import { page } from '$app/state';
-    import { createEventDispatcher, onMount } from 'svelte';
-
+    import { createEventDispatcher, tick } from 'svelte';
 
     export let value = '';
     export let installationId: string;
     export let repositoryId: string;
     export let label = 'Production branch';
     export let placeholder = 'Select branch';
-    export let required = false;
 
     const dispatch = createEventDispatcher();
 
@@ -25,10 +23,13 @@
     let loading = false;
     let searching = false;
     let searchTimer: ReturnType<typeof setTimeout>;
+    let listEl: HTMLUListElement;
+    let searchInput: HTMLInputElement;
+    let containerEl: HTMLDivElement;
     const LIMIT = 100;
 
     async function loadBranches(reset = false) {
-        if (loading) return;
+        if (loading || (!hasMore && !reset)) return;
         loading = true;
         if (reset) {
             branches = [];
@@ -63,7 +64,6 @@
                 search: query,
                 queries: [Query.limit(LIMIT)]
             });
-
         searchResults = results.map((b) => b.name);
         searching = false;
     }
@@ -81,12 +81,37 @@
         dispatch('select', branch);
     }
 
-    function toggle() {
+    async function toggle() {
         open = !open;
-        if (open && branches.length === 0) {
+        if (open) {
+            if (branches.length === 0) loadBranches();
+            await tick();
+            searchInput?.focus();
+        } else {
+            searchQuery = '';
+            searchResults = [];
+        }
+    }
+
+    function onScroll() {
+        if (!listEl || searchQuery) return;
+        const { scrollTop, scrollHeight, clientHeight } = listEl;
+        if (scrollHeight - scrollTop - clientHeight < 80) {
             loadBranches();
         }
-        if (!open) {
+    }
+
+    function handleKeydown(e: KeyboardEvent) {
+        if (e.key === 'Escape') {
+            open = false;
+            searchQuery = '';
+            searchResults = [];
+        }
+    }
+
+    function handleOutsideClick(e: MouseEvent) {
+        if (open && !containerEl.contains(e.target as Node)) {
+            open = false;
             searchQuery = '';
             searchResults = [];
         }
@@ -95,66 +120,65 @@
     $: displayBranches = searchQuery ? searchResults : branches;
 </script>
 
-<div class="branch-selector" on:focusout={(e) => {
-    if (!e.currentTarget.contains(e.relatedTarget)) {
-        open = false;
-        searchQuery = '';
-        searchResults = [];
-    }
-}}>
+<svelte:window on:click={handleOutsideClick} on:keydown={handleKeydown} />
+
+<!-- svelte-ignore a11y-label-has-associated-control -->
+<div class="branch-selector" bind:this={containerEl}>
+    {#if label}
+        <label class="label">{label}</label>
+    {/if}
     <button
         type="button"
-        class="selector-trigger"
+        class="trigger"
         class:open
-        on:click={toggle}
-        aria-haspopup="listbox"
-        aria-expanded={open}>
-        <span class="selector-value">{value || placeholder}</span>
-        <Icon icon={open ? IconChevronUp : IconChevronDown} size="m" />
+        on:click={toggle}>
+        <span class="trigger-value" class:placeholder={!value}>{value || placeholder}</span>
+        <Icon icon={IconChevronDown} size="m" />
     </button>
 
     {#if open}
-        <div class="selector-dropdown" role="listbox">
-            <div class="selector-search">
+        <div class="dropdown">
+            <div class="search-header">
                 <Icon icon={IconSearch} size="s" />
                 <input
-                    type="text"
+                    bind:this={searchInput}
                     bind:value={searchQuery}
                     on:input={onSearchInput}
-                    placeholder="Search branches..."
+                    type="text"
+                    placeholder="Find a branch..."
                     autocomplete="off" />
                 {#if searchQuery}
-                    <button type="button" on:click={() => { searchQuery = ''; searchResults = []; }}>
+                    <button
+                        type="button"
+                        class="clear-btn"
+                        on:click={() => { searchQuery = ''; searchResults = []; }}>
                         <Icon icon={IconX} size="s" />
                     </button>
                 {/if}
             </div>
 
-            <ul class="selector-list">
+            <ul
+                bind:this={listEl}
+                on:scroll={onScroll}
+                role="listbox"
+                class="branch-list">
                 {#if searching}
-                    <li class="selector-state">Searching...</li>
-                {:else if displayBranches.length === 0}
-                    <li class="selector-state">No branches found</li>
+                    <li class="state-item">Searching...</li>
+                {:else if displayBranches.length === 0 && searchQuery}
+                    <li class="state-item">No branches found</li>
                 {:else}
                     {#each displayBranches as branch}
+                        <!-- svelte-ignore a11y-click-events-have-key-events -->
                         <li
                             role="option"
                             aria-selected={branch === value}
-                            class:selected={branch === value}
-                            on:click={() => select(branch)}
-                            on:keydown={(e) => e.key === 'Enter' && select(branch)}>
+                            class:active={branch === value}
+                            on:click={() => select(branch)}>
                             {branch}
                         </li>
                     {/each}
-                    {#if !searchQuery && hasMore}
-                        <li class="selector-load-more">
-                            <button
-                                type="button"
-                                disabled={loading}
-                                on:click|stopPropagation={() => loadBranches()}>
-                                {loading ? 'Loading...' : 'Load more'}
-                            </button>
-                        </li>
+                    {#if !searchQuery && loading}
+                        <li class="state-item">Loading...</li>
                     {/if}
                 {/if}
             </ul>
@@ -166,9 +190,18 @@
     .branch-selector {
         position: relative;
         width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-2);
     }
 
-    .selector-trigger {
+    .label {
+        font-size: var(--font-size-s);
+        font-weight: 500;
+        color: var(--fgcolor-neutral-primary);
+    }
+
+    .trigger {
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -178,20 +211,22 @@
         border-radius: var(--border-radius-s);
         background: var(--bgcolor-neutral-default);
         cursor: pointer;
-        line-height: 140%;
         font-size: var(--font-size-s);
         color: var(--fgcolor-neutral-primary);
+        transition: border-color 0.15s ease;
+        line-height: 140%;
     }
 
-    .selector-trigger:hover:not(.open) {
+    .trigger:hover {
         border-color: var(--border-focus);
     }
 
-    .selector-trigger.open {
+    .trigger.open {
         outline: var(--border-width-l) solid var(--border-focus);
+        border-color: var(--border-focus);
     }
 
-    .selector-value {
+    .trigger-value {
         flex: 1;
         text-align: left;
         overflow: hidden;
@@ -199,7 +234,11 @@
         white-space: nowrap;
     }
 
-    .selector-dropdown {
+    .trigger-value.placeholder {
+        color: var(--fgcolor-neutral-tertiary);
+    }
+
+    .dropdown {
         position: absolute;
         top: calc(100% + var(--space-2));
         left: 0;
@@ -208,19 +247,19 @@
         background: var(--bgcolor-neutral-primary);
         border: var(--border-width-s) solid var(--border-neutral);
         border-radius: var(--border-radius-m);
-        box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.03), 0px 4px 4px 0px rgba(0, 0, 0, 0.04);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
         overflow: hidden;
     }
 
-    .selector-search {
+    .search-header {
         display: flex;
         align-items: center;
         gap: var(--space-3);
-        padding: var(--space-3) var(--space-4);
+        padding: var(--space-4) var(--space-5);
         border-bottom: var(--border-width-s) solid var(--border-neutral);
     }
 
-    .selector-search input {
+    .search-header input {
         flex: 1;
         border: none;
         background: transparent;
@@ -229,62 +268,77 @@
         outline: none;
     }
 
-    .selector-search input::placeholder {
+    .search-header input::placeholder {
         color: var(--fgcolor-neutral-tertiary);
     }
 
-    .selector-list {
-        max-height: 280px;
-        overflow-y: auto;
-        padding: var(--gap-xxs);
+    .clear-btn {
         display: flex;
-        flex-direction: column;
-        gap: var(--gap-xxxs);
-    }
-
-    .selector-list li {
-        padding: var(--space-3) var(--space-5);
-        border-radius: var(--border-radius-s);
-        cursor: pointer;
-        font-size: var(--font-size-s);
-        color: var(--fgcolor-neutral-secondary);
-        user-select: none;
-    }
-
-    .selector-list li:hover,
-    .selector-list li.selected {
-        background: var(--overlay-neutral-hover);
-    }
-
-    .selector-state {
-        padding: var(--space-3) var(--space-5);
-        font-size: var(--font-size-s);
-        color: var(--fgcolor-neutral-tertiary);
-        cursor: default;
-    }
-
-    .selector-load-more {
-        padding: var(--space-2) var(--space-4);
-        text-align: center;
-    }
-
-    .selector-load-more button {
-        font-size: var(--font-size-s);
-        color: var(--fgcolor-interactive-primary);
+        align-items: center;
         background: none;
         border: none;
         cursor: pointer;
-        padding: var(--space-2) var(--space-4);
-        border-radius: var(--border-radius-s);
-        width: 100%;
+        padding: 0;
+        color: var(--fgcolor-neutral-tertiary);
     }
 
-    .selector-load-more button:hover:not(:disabled) {
+    .clear-btn:hover {
+        color: var(--fgcolor-neutral-primary);
+    }
+
+    .branch-list {
+        max-height: 300px;
+        overflow-y: auto;
+        padding: var(--space-2) 0;
+        list-style: none;
+        margin: 0;
+    }
+
+    .branch-list::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    .branch-list::-webkit-scrollbar-track {
+        background: transparent;
+        margin-block: 6px;
+    }
+
+    .branch-list::-webkit-scrollbar-thumb {
+        background: var(--border-neutral);
+        border-radius: 2px;
+    }
+
+    .branch-list li {
+        padding: var(--space-2) var(--space-5);
+        font-size: var(--font-size-s);
+        color: var(--fgcolor-neutral-secondary);
+        cursor: pointer;
+        user-select: none;
+        border-radius: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .branch-list li:hover {
         background: var(--overlay-neutral-hover);
+        color: var(--fgcolor-neutral-primary);
     }
 
-    .selector-load-more button:disabled {
-        opacity: 0.5;
-        cursor: default;
+    .branch-list li.active {
+        background: var(--overlay-neutral-hover);
+        color: var(--fgcolor-neutral-primary);
+        font-weight: 500;
+    }
+
+    .state-item {
+        padding: var(--space-3) var(--space-5) !important;
+        color: var(--fgcolor-neutral-tertiary) !important;
+        cursor: default !important;
+        font-size: var(--font-size-s);
+    }
+
+    .state-item:hover {
+        background: transparent !important;
     }
 </style>
