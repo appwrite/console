@@ -1,6 +1,6 @@
 <script lang="ts">
     import { IconSearch, IconX } from '@appwrite.io/pink-icons-svelte';
-    import { Icon, Input } from '@appwrite.io/pink-svelte';
+    import { Icon } from '@appwrite.io/pink-svelte';
     import { Query } from '@appwrite.io/console';
     import { sdk } from '$lib/stores/sdk';
     import { page } from '$app/state';
@@ -95,7 +95,11 @@
     $: displayBranches = branches;
 </script>
 
-<Input.Base id="branch-selector" {label}>
+<div class="field-wrapper">
+    {#if label}
+        <!-- svelte-ignore a11y-label-has-associated-control -->
+        <label class="field-label">{label}</label>
+    {/if}
     <div
         class="input"
         class:open={$open}
@@ -140,9 +144,22 @@
             {/if}
         </ul>
     {/if}
-</Input.Base>
+</div>
 
 <style>
+    .field-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-2);
+        width: 100%;
+    }
+
+    .field-label {
+        font-size: var(--font-size-s);
+        font-weight: 500;
+        color: var(--fgcolor-neutral-primary);
+    }
+
     .input {
         display: flex;
         gap: var(--space-5);
