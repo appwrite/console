@@ -20,6 +20,7 @@
 
     let branches: string[] = [];
     let loading = false;
+    let loaded = false;
     let searchTimer: ReturnType<typeof setTimeout>;
 
     const {
@@ -49,10 +50,11 @@
 
     $: installationId, repositoryId, (() => {
         branches = [];
+        loaded = false;
     })();
 
     async function loadBranches() {
-        if (loading || !installationId || !repositoryId) return;
+        if (loading || loaded || !installationId || !repositoryId) return;
         loading = true;
         try {
             const { branches: result } = await sdk
@@ -63,6 +65,7 @@
                     queries: [Query.limit(100)]
                 });
             branches = result.map((b) => b.name);
+            loaded = true;
         } finally {
             loading = false;
         }
@@ -85,7 +88,7 @@
         }
     }
 
-    $: if ($open && branches.length === 0 && !loading) {
+    $: if ($open && !loaded && !loading) {
         loadBranches();
     }
 
