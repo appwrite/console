@@ -22,7 +22,7 @@
     } from '@appwrite.io/pink-svelte';
     import Card from '$lib/components/card.svelte';
     import { IconGithub } from '@appwrite.io/pink-icons-svelte';
-    import { ConnectGit, ConnectRepoModal, RepositoryCard } from '$lib/components/git';
+    import { ConnectGit, ConnectRepoModal, RepositoryCard, BranchSelector } from '$lib/components/git';
     import { showConnectRepo } from './store';
     import { page } from '$app/state';
     import SelectRootModal from '$lib/components/git/selectRootModal.svelte';
@@ -240,24 +240,11 @@
 
                     <Fieldset legend="Branch">
                         <Layout.Stack gap="xl">
-                            <Input.ComboBox
-                                required={true}
-                                id="branch"
-                                label="Production branch"
-                                placeholder="main"
-                                interactiveOutput
+                            <BranchSelector
                                 bind:value={selectedBranch}
-                                bind:search={selectedBranch}
-                                on:select={(event) => {
-                                    selectedBranch = event.detail.value;
-                                }}
-                                name="branch"
-                                options={branchesList?.branches?.map((branch) => {
-                                    return {
-                                        value: branch.name,
-                                        label: branch.name
-                                    };
-                                }) ?? []} />
+                                installationId={$installation?.$id}
+                                repositoryId={repository?.id?.toString()}
+                                on:select={(e) => (selectedBranch = e.detail)} />
                             <Layout.Stack direction="row" gap="s" alignItems="flex-end">
                                 <InputText
                                     id="root"
