@@ -10,6 +10,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { installation, repository, sortBranches } from '$lib/stores/vcs';
     import {
+        Query,
         Runtime,
         VCSReferenceType,
         type Models,
@@ -54,14 +55,23 @@
                     });
             }
             selectedRepository = $repository?.id;
-            const branchList = await sdk
-                .forProject(page.params.region, page.params.project)
-                .vcs.listRepositoryBranches({
-                    installationId: $installation.$id,
-                    providerRepositoryId: selectedRepository
-                });
+            const allBranches = [];
+            let offset = 0;
+            const limit = 100;
+            while (true) {
+                const { branches, total } = await sdk
+                    .forProject(page.params.region, page.params.project)
+                    .vcs.listRepositoryBranches({
+                        installationId: $installation.$id,
+                        providerRepositoryId: selectedRepository,
+                        queries: [Query.limit(limit), Query.offset(offset)]
+                    });
+                allBranches.push(...branches);
+                if (allBranches.length >= total || branches.length < limit) break;
+                offset += limit;
+            }
 
-            const sorted = sortBranches(branchList.branches);
+            const sorted = sortBranches(allBranches);
 
             branch = sorted.find((b) => b.name === $func.providerBranch)
                 ? $func.providerBranch

@@ -6,7 +6,7 @@
     import { Button, Form, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { Runtime, type Models, type ProjectKeyScopes } from '@appwrite.io/console';
+    import { Query, Runtime, type Models, type ProjectKeyScopes } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import DisconnectRepo from './disconnectRepo.svelte';
     import { installation, repository as repositoryStore, sortBranches } from '$lib/stores/vcs';
@@ -110,12 +110,24 @@
         }
     }
     async function getBranches(installation: string, repo: string) {
-        branchesList = await sdk
-            .forProject(page.params.region, page.params.project)
-            .vcs.listRepositoryBranches({
-                installationId: installation,
-                providerRepositoryId: repo
-            });
+        const allBranches = [];
+        let offset = 0;
+        const limit = 100;
+        let total = 0;
+        while (true) {
+            const { branches, total: t } = await sdk
+                .forProject(page.params.region, page.params.project)
+                .vcs.listRepositoryBranches({
+                    installationId: installation,
+                    providerRepositoryId: repo,
+                    queries: [Query.limit(limit), Query.offset(offset)]
+                });
+            total = t;
+            allBranches.push(...branches);
+            if (allBranches.length >= total || branches.length < limit) break;
+            offset += limit;
+        }
+        branchesList = { branches: allBranches, total };
         branchesList.branches = sortBranches(branchesList.branches);
 
         selectedBranch = func?.providerBranch ?? branchesList.branches[0].name;
@@ -133,13 +145,22 @@
     async function connect(selectedInstallationId: string, selectedRepository: string) {
         let nextBranch = func?.providerBranch ?? 'main';
         try {
-            const branchList = await sdk
-                .forProject(page.params.region, page.params.project)
-                .vcs.listRepositoryBranches({
-                    installationId: selectedInstallationId,
-                    providerRepositoryId: selectedRepository
-                });
-            const sorted = sortBranches(branchList.branches);
+            const allBranches = [];
+            let offset = 0;
+            const limit = 100;
+            while (true) {
+                const { branches, total } = await sdk
+                    .forProject(page.params.region, page.params.project)
+                    .vcs.listRepositoryBranches({
+                        installationId: selectedInstallationId,
+                        providerRepositoryId: selectedRepository,
+                        queries: [Query.limit(limit), Query.offset(offset)]
+                    });
+                allBranches.push(...branches);
+                if (allBranches.length >= total || branches.length < limit) break;
+                offset += limit;
+            }
+            const sorted = sortBranches(allBranches);
             nextBranch =
                 sorted.find((branch) => branch.name === func?.providerBranch)?.name ??
                 sorted.find((branch) => branch.name === 'main' || branch.name === 'master')?.name ??

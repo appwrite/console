@@ -26,12 +26,26 @@ export const load = async ({ parent, depends, params }) => {
         rules,
         domainsList,
         installations,
-        branches:
-            func?.installationId && func?.providerRepositoryId
-                ? await sdk.forProject(params.region, params.project).vcs.listRepositoryBranches({
-                      installationId: func.installationId,
-                      providerRepositoryId: func.providerRepositoryId
-                  })
-                : undefined
+        branches: await (async () => {
+            if (!func?.installationId || !func?.providerRepositoryId) return undefined;
+            const allBranches = [];
+            let offset = 0;
+            const limit = 100;
+            let total = 0;
+            while (true) {
+                const { branches, total: t } = await sdk
+                    .forProject(params.region, params.project)
+                    .vcs.listRepositoryBranches({
+                        installationId: func.installationId,
+                        providerRepositoryId: func.providerRepositoryId,
+                        queries: [Query.limit(limit), Query.offset(offset)]
+                    });
+                total = t;
+                allBranches.push(...branches);
+                if (allBranches.length >= total || branches.length < limit) break;
+                offset += limit;
+            }
+            return { branches: allBranches, total };
+        })()
     };
 };
