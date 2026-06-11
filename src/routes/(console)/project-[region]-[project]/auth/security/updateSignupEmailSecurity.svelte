@@ -168,7 +168,7 @@
             <InputSwitch
                 bind:value={authCorporateEmails}
                 id="authCorporateEmails"
-                label="Deny non-corporate emails">
+                label="Require corporate emails">
                 <svelte:fragment slot="description">
                     <Layout.Stack gap="s">
                         <Typography.Text
