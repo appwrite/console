@@ -168,13 +168,13 @@
             <InputSwitch
                 bind:value={authCorporateEmails}
                 id="authCorporateEmails"
-                label="Deny non-corporate emails">
+                label="Require corporate emails">
                 <svelte:fragment slot="description">
                     <Layout.Stack gap="s">
                         <Typography.Text
                             >Only allow corporate email addresses. Blocks free providers and
                             disposable emails. For example: <Typography.Code
-                                >user@company.com</Typography.Code>
+                                >user@gmail.com</Typography.Code>
                         </Typography.Text>
                     </Layout.Stack>
                 </svelte:fragment>
