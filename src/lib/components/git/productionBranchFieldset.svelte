@@ -26,29 +26,15 @@
 
         branch = repo.defaultBranch ?? 'main';
 
-        const allBranches = [];
-        let offset = 0;
-        const limit = 100;
+        const { branches } = await sdk
+            .forProject(page.params.region, page.params.project)
+            .vcs.listRepositoryBranches({
+                installationId,
+                providerRepositoryId: repositoryId,
+                queries: [Query.limit(1000)]
+            });
 
-        while (true) {
-            const { branches, total } = await sdk
-                .forProject(page.params.region, page.params.project)
-                .vcs.listRepositoryBranches({
-                    installationId,
-                    providerRepositoryId: repositoryId,
-                    queries: [Query.limit(limit), Query.offset(offset)]
-                });
-
-            allBranches.push(...branches);
-
-            if (allBranches.length >= total || branches.length < limit) {
-                break;
-            }
-
-            offset += limit;
-        }
-
-        return sortBranches(allBranches);
+        return sortBranches(branches);
     }
 </script>
 
