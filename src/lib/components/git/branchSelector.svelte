@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { IconChevronDown, IconChevronUp, IconSearch, IconX } from '@appwrite.io/pink-icons-svelte';
-    import { Icon, Input } from '@appwrite.io/pink-svelte';
+    import { IconChevronDown, IconSearch, IconX } from '@appwrite.io/pink-icons-svelte';
+    import { Icon } from '@appwrite.io/pink-svelte';
     import { Query } from '@appwrite.io/console';
     import { sdk } from '$lib/stores/sdk';
     import { page } from '$app/state';
@@ -103,22 +103,19 @@
 
 <svelte:window on:click={handleOutsideClick} on:keydown={handleKeydown} />
 
+<!-- svelte-ignore a11y-label-has-associated-control -->
 <div class="branch-selector" bind:this={containerEl}>
-    <Input.Base id="branch-selector" {label}>
-        <!-- svelte-ignore a11y-click-events-have-key-events -->
-        <div
-            class="input"
-            class:open
-            role="combobox"
-            aria-expanded={open}
-            aria-haspopup="listbox"
-            tabindex="0"
-            on:click={toggle}
-            on:keydown={(e) => e.key === 'Enter' && toggle()}>
-            <span class:muted={!value}>{value || placeholder}</span>
-            <Icon icon={open ? IconChevronUp : IconChevronDown} size="m" />
-        </div>
-    </Input.Base>
+    {#if label}
+        <label class="label">{label}</label>
+    {/if}
+    <button
+        type="button"
+        class="trigger"
+        class:open
+        on:click={toggle}>
+        <span class="trigger-value" class:placeholder={!value}>{value || placeholder}</span>
+        <Icon icon={IconChevronDown} size="m" />
+    </button>
 
     {#if open}
         <div class="dropdown">
@@ -174,28 +171,43 @@
     .branch-selector {
         position: relative;
         width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-2);
     }
 
-    .input {
+    .label {
+        font-size: var(--font-size-s);
+        font-weight: 500;
+        color: var(--fgcolor-neutral-primary);
+    }
+
+    .trigger {
         display: flex;
-        gap: var(--space-5);
         align-items: center;
+        justify-content: space-between;
         width: 100%;
+        padding: var(--space-3) var(--space-6);
         border: var(--border-width-s) solid var(--border-neutral);
         border-radius: var(--border-radius-s);
-        background-color: var(--bgcolor-neutral-default);
-        padding-inline: var(--space-6);
-        padding-block: var(--space-3);
+        background: var(--bgcolor-neutral-default);
         cursor: pointer;
         font-size: var(--font-size-s);
         color: var(--fgcolor-neutral-primary);
+        transition: border-color 0.15s ease;
         line-height: 140%;
-        user-select: none;
-        transition: all 0.15s ease-in-out;
-        outline-offset: calc(var(--border-width-s) * -1);
     }
 
-    .input span {
+    .trigger:hover {
+        border-color: var(--border-focus);
+    }
+
+    .trigger.open {
+        outline: var(--border-width-l) solid var(--border-focus);
+        border-color: var(--border-focus);
+    }
+
+    .trigger-value {
         flex: 1;
         text-align: left;
         overflow: hidden;
@@ -203,16 +215,8 @@
         white-space: nowrap;
     }
 
-    .input .muted {
+    .trigger-value.placeholder {
         color: var(--fgcolor-neutral-tertiary);
-    }
-
-    .input:hover:not(.open) {
-        border-color: var(--border-focus);
-    }
-
-    .input.open {
-        outline: var(--border-width-l) solid var(--border-focus);
     }
 
     .dropdown {
