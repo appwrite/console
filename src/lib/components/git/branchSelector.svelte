@@ -89,11 +89,7 @@
     async function toggle() {
         open = !open;
         if (open) {
-            portalTarget = inDialogGroup
-                ? document.querySelector('dialog[open]')
-                : inPopoverGroup
-                  ? document.body
-                  : null;
+            portalTarget = null;
             loadBranches();
             await tick();
             searchInput?.focus();
@@ -139,17 +135,9 @@
         <span class="trigger-value" class:muted={!value}>{value || placeholder}</span>
         <Icon icon={open ? IconChevronUp : IconChevronDown} size="m" />
     </button>
-</div>
 
-{#if open}
-    {#if portalTarget}
-        <svelte:element this="div" class="branch-selector-dropdown portal" style="
-            position: fixed;
-            top: {containerEl?.getBoundingClientRect().bottom + 4}px;
-            left: {containerEl?.getBoundingClientRect().left}px;
-            width: {containerEl?.getBoundingClientRect().width}px;
-            z-index: 9001;
-        ">
+    {#if open}
+        <div class="dropdown">
             <div class="search-header">
                 <Icon icon={IconSearch} size="s" />
                 <input
@@ -186,50 +174,9 @@
                     {/if}
                 {/if}
             </ul>
-        </svelte:element>
-    {:else}
-        <div class="branch-selector-dropdown" style="position: relative; margin-top: -1px;">
-            <div class="dropdown-inner" style="position: absolute; top: 0; left: 0; right: 0; z-index: 9001;">
-                <div class="search-header">
-                    <Icon icon={IconSearch} size="s" />
-                    <input
-                        bind:this={searchInput}
-                        bind:value={searchQuery}
-                        on:input={onSearchInput}
-                        type="text"
-                        placeholder="Find a branch..."
-                        autocomplete="off" />
-                    {#if searchQuery}
-                        <button type="button" class="clear-btn" on:click={() => { searchQuery = ''; searchResults = []; }}>
-                            <Icon icon={IconX} size="s" />
-                        </button>
-                    {/if}
-                </div>
-                <ul role="listbox" class="branch-list">
-                    {#if loading}
-                        <li class="state-item">Loading...</li>
-                    {:else if searching}
-                        <li class="state-item">Searching...</li>
-                    {:else if displayBranches.length === 0 && searchQuery}
-                        <li class="state-item">No branches found</li>
-                    {:else if displayBranches.length === 0}
-                        <li class="state-item">No branches available</li>
-                    {:else}
-                        {#each displayBranches as branch}
-                            <!-- svelte-ignore a11y-click-events-have-key-events -->
-                            <li role="option" aria-selected={branch === value} class:active={branch === value} on:click={() => select(branch)}>
-                                {branch}
-                            </li>
-                        {/each}
-                        {#if !searchQuery}
-                            <li class="hint-item">Type to search all branches</li>
-                        {/if}
-                    {/if}
-                </ul>
-            </div>
         </div>
     {/if}
-{/if}
+</div>
 
 <style>
     .branch-selector {
@@ -238,6 +185,7 @@
         display: flex;
         flex-direction: column;
         gap: var(--space-2);
+        overflow: visible;
     }
 
     .label {
@@ -268,7 +216,12 @@
     .trigger-value { flex: 1; text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .trigger-value.muted { color: var(--fgcolor-neutral-tertiary); }
 
-    .dropdown-inner, :global(.branch-selector-dropdown.portal) {
+    .dropdown {
+        position: absolute;
+        top: calc(100% + var(--space-2));
+        left: 0;
+        right: 0;
+        z-index: 9001;
         background: var(--bgcolor-neutral-primary);
         border: var(--border-width-s) solid var(--border-neutral);
         border-radius: var(--border-radius-m);
