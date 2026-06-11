@@ -34,7 +34,6 @@
     export let site: Models.Site;
     export let installations: Models.InstallationList;
 
-    let branchesList: Models.BranchList;
     let selectedBranch = site?.providerBranch;
     let silentMode = site?.providerSilentMode ?? false;
     let selectedDir = site?.providerRootDirectory;
@@ -109,29 +108,6 @@
         }
     }
 
-    async function getBranches(installation: string, repo: string) {
-        const allBranches = [];
-        let offset = 0;
-        const limit = 100;
-        let total = 0;
-        while (true) {
-            const { branches, total: t } = await sdk
-                .forProject(page.params.region, page.params.project)
-                .vcs.listRepositoryBranches({
-                    installationId: installation,
-                    providerRepositoryId: repo,
-                    queries: [Query.limit(limit), Query.offset(offset)]
-                });
-            total = t;
-            allBranches.push(...branches);
-            if (allBranches.length >= total || branches.length < limit) break;
-            offset += limit;
-        }
-        branchesList = { branches: allBranches, total };
-        branchesList.branches = sortBranches(branchesList.branches);
-
-        selectedBranch = site?.providerBranch ?? branchesList.branches[0].name;
-    }
 
     async function connect(selectedInstallationId: string, selectedRepository: string) {
         let nextBranch = site?.providerBranch ?? 'main';
@@ -188,7 +164,7 @@
     }
 
     $: if (site?.installationId && site?.providerRepositoryId) {
-        getBranches(site.installationId, site.providerRepositoryId);
+        selectedBranch = site?.providerBranch ?? 'main';
     }
 
     $: isUpdateButtonEnabled =

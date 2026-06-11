@@ -34,7 +34,6 @@
     export let func: Models.Function;
     export let installations: Models.InstallationList;
 
-    let branchesList: Models.BranchList;
     let selectedBranch = func?.providerBranch;
     let silentMode = func?.providerSilentMode ?? false;
     let selectedDir = func?.providerRootDirectory;
@@ -113,32 +112,8 @@
             trackError(error, Submit.FunctionUpdateConfiguration);
         }
     }
-    async function getBranches(installation: string, repo: string) {
-        const allBranches = [];
-        let offset = 0;
-        const limit = 100;
-        let total = 0;
-        while (true) {
-            const { branches, total: t } = await sdk
-                .forProject(page.params.region, page.params.project)
-                .vcs.listRepositoryBranches({
-                    installationId: installation,
-                    providerRepositoryId: repo,
-                    queries: [Query.limit(limit), Query.offset(offset)]
-                });
-            total = t;
-            allBranches.push(...branches);
-            if (allBranches.length >= total || branches.length < limit) break;
-            offset += limit;
-        }
-        branchesList = { branches: allBranches, total };
-        branchesList.branches = sortBranches(branchesList.branches);
-
-        selectedBranch = func?.providerBranch ?? branchesList.branches[0].name;
-    }
-
     $: if (func?.installationId && func?.providerRepositoryId) {
-        getBranches(func.installationId, func.providerRepositoryId);
+        selectedBranch = func?.providerBranch ?? 'main';
     }
 
     $: isUpdateButtonEnabled =
