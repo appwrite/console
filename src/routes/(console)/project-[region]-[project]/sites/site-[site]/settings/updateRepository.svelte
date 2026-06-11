@@ -108,7 +108,6 @@
         }
     }
 
-
     async function connect(selectedInstallationId: string, selectedRepository: string) {
         let nextBranch = site?.providerBranch ?? 'main';
         try {
