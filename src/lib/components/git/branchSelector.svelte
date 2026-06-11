@@ -131,7 +131,7 @@
 
     function handleOutsideClick(e: MouseEvent) {
         if (open && !containerEl.contains(e.target as Node)) {
-            const dropdown = document.querySelector('.branch-selector-dropdown');
+            const dropdown = document.querySelector('.branch-selector-portal');
             if (dropdown && dropdown.contains(e.target as Node)) return;
             open = false;
             searchQuery = '';
@@ -156,7 +156,7 @@
 
     {#if open}
         <div
-            class="dropdown"
+            class="dropdown branch-selector-portal"
             use:portal
             style="position: fixed; top: {dropdownRect.top}px; left: {dropdownRect.left}px; width: {dropdownRect.width}px; z-index: 9001;">
             <div class="search-header">
