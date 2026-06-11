@@ -178,7 +178,7 @@
                 installationId={$installation.$id}
                 repositoryId={selectedRepository}
                 on:select={(event) => {
-                    branch = event.detail.value;
+                    branch = event.detail;
                 }} />
             <!-- <InputText
                 id="commit"
