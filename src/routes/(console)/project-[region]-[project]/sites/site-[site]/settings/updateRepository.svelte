@@ -17,7 +17,6 @@
         Layout,
         Skeleton,
         Card as PinkCard,
-        Input,
         Selector
     } from '@appwrite.io/pink-svelte';
     import Card from '$lib/components/card.svelte';
