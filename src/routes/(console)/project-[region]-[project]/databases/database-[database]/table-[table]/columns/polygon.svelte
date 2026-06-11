@@ -64,7 +64,7 @@
             savedDefault = data.default;
             data.default = null;
         } else {
-            data.default = savedDefault ?? getDefaultSpatialData('polygon');
+            data.default = (savedDefault ?? getDefaultSpatialData('polygon')) as number[][][];
         }
     }
 

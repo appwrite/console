@@ -61,7 +61,7 @@
             savedDefault = data.default;
             data.default = null;
         } else {
-            data.default = savedDefault ?? getDefaultSpatialData('linestring');
+            data.default = (savedDefault ?? getDefaultSpatialData('linestring')) as number[][];
         }
     }
 
