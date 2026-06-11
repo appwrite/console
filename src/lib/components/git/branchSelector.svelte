@@ -1,5 +1,10 @@
 <script lang="ts">
-    import { IconChevronDown, IconChevronUp, IconSearch, IconX } from '@appwrite.io/pink-icons-svelte';
+    import {
+        IconChevronDown,
+        IconChevronUp,
+        IconSearch,
+        IconX
+    } from '@appwrite.io/pink-icons-svelte';
     import { Icon } from '@appwrite.io/pink-svelte';
     import { Query } from '@appwrite.io/console';
     import { sdk } from '$lib/stores/sdk';
@@ -14,7 +19,6 @@
 
     const dispatch = createEventDispatcher();
     const inDialogGroup = hasContext('dialog-group');
-    
 
     let open = false;
     let searchQuery = '';
@@ -29,9 +33,7 @@
     let dropdownRect = { top: 0, left: 0, width: 0 };
 
     function portal(node: HTMLElement) {
-        const target = inDialogGroup
-            ? document.querySelector('dialog[open]')
-            : document.body;
+        const target = inDialogGroup ? document.querySelector('dialog[open]') : document.body;
         target?.appendChild(node);
         return {
             destroy() {
@@ -46,10 +48,12 @@
         dropdownRect = { top: rect.bottom + 4, left: rect.left, width: rect.width };
     }
 
-    $: installationId, repositoryId, (() => {
-        branches = [];
-        loaded = false;
-    })();
+    $: (installationId,
+        repositoryId,
+        (() => {
+            branches = [];
+            loaded = false;
+        })());
 
     async function loadBranches() {
         if (loading || loaded || !installationId || !repositoryId) return;
@@ -145,11 +149,7 @@
         <!-- svelte-ignore a11y-label-has-associated-control -->
         <label class="label">{label}</label>
     {/if}
-    <button
-        type="button"
-        class="trigger"
-        class:open
-        on:click={toggle}>
+    <button type="button" class="trigger" class:open on:click={toggle}>
         <span class="trigger-value" class:muted={!value}>{value || placeholder}</span>
         <Icon icon={open ? IconChevronUp : IconChevronDown} size="m" />
     </button>
@@ -169,7 +169,13 @@
                     placeholder="Find a branch..."
                     autocomplete="off" />
                 {#if searchQuery}
-                    <button type="button" class="clear-btn" on:click={() => { searchQuery = ''; searchResults = []; }}>
+                    <button
+                        type="button"
+                        class="clear-btn"
+                        on:click={() => {
+                            searchQuery = '';
+                            searchResults = [];
+                        }}>
                         <Icon icon={IconX} size="s" />
                     </button>
                 {/if}
@@ -186,7 +192,11 @@
                 {:else}
                     {#each displayBranches as branch}
                         <!-- svelte-ignore a11y-click-events-have-key-events -->
-                        <li role="option" aria-selected={branch === value} class:active={branch === value} on:click={() => select(branch)}>
+                        <li
+                            role="option"
+                            aria-selected={branch === value}
+                            class:active={branch === value}
+                            on:click={() => select(branch)}>
                             {branch}
                         </li>
                     {/each}
@@ -231,11 +241,24 @@
         line-height: 140%;
     }
 
-    .trigger:hover { border-color: var(--border-focus); }
-    .trigger.open { outline: var(--border-width-l) solid var(--border-focus); border-color: var(--border-focus); }
+    .trigger:hover {
+        border-color: var(--border-focus);
+    }
+    .trigger.open {
+        outline: var(--border-width-l) solid var(--border-focus);
+        border-color: var(--border-focus);
+    }
 
-    .trigger-value { flex: 1; text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .trigger-value.muted { color: var(--fgcolor-neutral-tertiary); }
+    .trigger-value {
+        flex: 1;
+        text-align: left;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .trigger-value.muted {
+        color: var(--fgcolor-neutral-tertiary);
+    }
 
     .dropdown {
         background: var(--bgcolor-neutral-primary);
@@ -262,7 +285,9 @@
         outline: none;
     }
 
-    .search-header input::placeholder { color: var(--fgcolor-neutral-tertiary); }
+    .search-header input::placeholder {
+        color: var(--fgcolor-neutral-tertiary);
+    }
 
     .clear-btn {
         display: flex;
@@ -274,7 +299,9 @@
         color: var(--fgcolor-neutral-tertiary);
     }
 
-    .clear-btn:hover { color: var(--fgcolor-neutral-primary); }
+    .clear-btn:hover {
+        color: var(--fgcolor-neutral-primary);
+    }
 
     .branch-list {
         max-height: 300px;
@@ -295,11 +322,22 @@
         text-overflow: ellipsis;
     }
 
-    .branch-list li:hover, .branch-list li.active { background: var(--overlay-neutral-hover); color: var(--fgcolor-neutral-primary); }
-    .branch-list li.active { font-weight: 500; }
+    .branch-list li:hover,
+    .branch-list li.active {
+        background: var(--overlay-neutral-hover);
+        color: var(--fgcolor-neutral-primary);
+    }
+    .branch-list li.active {
+        font-weight: 500;
+    }
 
-    .state-item { color: var(--fgcolor-neutral-tertiary) !important; cursor: default !important; }
-    .state-item:hover { background: transparent !important; }
+    .state-item {
+        color: var(--fgcolor-neutral-tertiary) !important;
+        cursor: default !important;
+    }
+    .state-item:hover {
+        background: transparent !important;
+    }
 
     .hint-item {
         font-size: var(--font-size-xs);
@@ -310,5 +348,7 @@
         padding-top: var(--space-2);
     }
 
-    .hint-item:hover { background: transparent !important; }
+    .hint-item:hover {
+        background: transparent !important;
+    }
 </style>

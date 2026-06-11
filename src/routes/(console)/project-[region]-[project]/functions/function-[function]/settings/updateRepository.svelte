@@ -21,7 +21,12 @@
     } from '@appwrite.io/pink-svelte';
     import Card from '$lib/components/card.svelte';
     import { IconGithub } from '@appwrite.io/pink-icons-svelte';
-    import { ConnectGit, ConnectRepoModal, RepositoryCard, BranchSelector } from '$lib/components/git';
+    import {
+        ConnectGit,
+        ConnectRepoModal,
+        RepositoryCard,
+        BranchSelector
+    } from '$lib/components/git';
     import { isValueOfStringEnum } from '$lib/helpers/types';
     import { page } from '$app/state';
     import SelectRootModal from '$lib/components/git/selectRootModal.svelte';
