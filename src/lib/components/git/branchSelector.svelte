@@ -85,7 +85,7 @@
         }
     }
 
-    $: if ($open && branches.length === 0) {
+    $: if ($open && branches.length === 0 && !loading) {
         loadBranches();
     }
 
