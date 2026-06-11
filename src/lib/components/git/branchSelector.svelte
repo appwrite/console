@@ -24,18 +24,26 @@
     let searchInput: HTMLInputElement;
     let containerEl: HTMLDivElement;
 
+    $: installationId, repositoryId, (() => {
+        branches = [];
+        searchResults = [];
+    })();
+
     async function loadBranches() {
         if (loading || branches.length > 0) return;
         loading = true;
-        const { branches: result } = await sdk
-            .forProject(page.params.region, page.params.project)
-            .vcs.listRepositoryBranches({
-                installationId,
-                providerRepositoryId: repositoryId,
-                queries: [Query.limit(100)]
-            });
-        branches = result.map((b) => b.name);
-        loading = false;
+        try {
+            const { branches: result } = await sdk
+                .forProject(page.params.region, page.params.project)
+                .vcs.listRepositoryBranches({
+                    installationId,
+                    providerRepositoryId: repositoryId,
+                    queries: [Query.limit(100)]
+                });
+            branches = result.map((b) => b.name);
+        } finally {
+            loading = false;
+        }
     }
 
     async function searchBranches(query: string) {
@@ -45,16 +53,19 @@
             return;
         }
         searching = true;
-        const { branches: results } = await sdk
-            .forProject(page.params.region, page.params.project)
-            .vcs.listRepositoryBranches({
-                installationId,
-                providerRepositoryId: repositoryId,
-                search: query,
-                queries: [Query.limit(100)]
-            });
-        searchResults = results.map((b) => b.name);
-        searching = false;
+        try {
+            const { branches: results } = await sdk
+                .forProject(page.params.region, page.params.project)
+                .vcs.listRepositoryBranches({
+                    installationId,
+                    providerRepositoryId: repositoryId,
+                    search: query,
+                    queries: [Query.limit(100)]
+                });
+            searchResults = results.map((b) => b.name);
+        } finally {
+            searching = false;
+        }
     }
 
     function onSearchInput() {
