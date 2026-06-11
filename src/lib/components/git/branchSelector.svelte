@@ -26,7 +26,25 @@
     let searchTimer: ReturnType<typeof setTimeout>;
     let searchInput: HTMLInputElement;
     let containerEl: HTMLDivElement;
-    let portalTarget: Element | null = null;
+    let dropdownRect = { top: 0, left: 0, width: 0 };
+
+    function portal(node: HTMLElement) {
+        const target = inDialogGroup
+            ? document.querySelector('dialog[open]')
+            : document.body;
+        target?.appendChild(node);
+        return {
+            destroy() {
+                node.parentNode?.removeChild(node);
+            }
+        };
+    }
+
+    function updateRect() {
+        if (!containerEl) return;
+        const rect = containerEl.getBoundingClientRect();
+        dropdownRect = { top: rect.bottom + 4, left: rect.left, width: rect.width };
+    }
 
     $: installationId, repositoryId, (() => {
         branches = [];
@@ -89,7 +107,7 @@
     async function toggle() {
         open = !open;
         if (open) {
-            portalTarget = null;
+            updateRect();
             loadBranches();
             await tick();
             searchInput?.focus();
@@ -137,7 +155,10 @@
     </button>
 
     {#if open}
-        <div class="dropdown">
+        <div
+            class="dropdown"
+            use:portal
+            style="position: fixed; top: {dropdownRect.top}px; left: {dropdownRect.left}px; width: {dropdownRect.width}px; z-index: 9001;">
             <div class="search-header">
                 <Icon icon={IconSearch} size="s" />
                 <input
@@ -217,11 +238,6 @@
     .trigger-value.muted { color: var(--fgcolor-neutral-tertiary); }
 
     .dropdown {
-        position: absolute;
-        top: calc(100% + var(--space-2));
-        left: 0;
-        right: 0;
-        z-index: 9001;
         background: var(--bgcolor-neutral-primary);
         border: var(--border-width-s) solid var(--border-neutral);
         border-radius: var(--border-radius-m);
