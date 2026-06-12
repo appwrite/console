@@ -635,6 +635,8 @@ export function checkForUpgradingStatus(org: Models.Organization) {
 }
 
 export async function checkForMissingPaymentMethod() {
+    if (!isCloud) return;
+
     const starterPlan = getBasePlanFromGroup(BillingPlanGroup.Starter);
     if (!starterPlan?.$id) {
         return;
@@ -662,6 +664,8 @@ export async function checkForMissingPaymentMethod() {
 
 // Display upgrade banner for new users after 1 week for 30 days
 export async function checkForNewDevUpgradePro(org: Models.Organization) {
+    if (!isCloud) return;
+
     // browser or plan check.
     if (!browser || !org?.billingPlanDetails?.supportsCredits) return;
 
