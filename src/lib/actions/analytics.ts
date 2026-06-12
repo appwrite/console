@@ -277,6 +277,7 @@ export enum Submit {
     AuthAliasedEmailsUpdate = 'submit_auth_aliased_emails_update',
     AuthDisposableEmailsUpdate = 'submit_auth_disposable_emails_update',
     AuthFreeEmailsUpdate = 'submit_auth_free_emails_update',
+    AuthCorporateEmailsUpdate = 'submit_auth_corporate_emails_update',
     AuthSessionAlertsUpdate = 'submit_auth_session_alerts_update',
     AuthMembershipPrivacyUpdate = 'submit_auth_membership_privacy_update',
     AuthMockNumbersUpdate = 'submit_auth_mock_numbers_update',

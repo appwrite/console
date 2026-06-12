@@ -18,32 +18,38 @@
         project,
         denyAliasedEmailPolicy,
         denyDisposableEmailPolicy,
-        denyFreeEmailPolicy
+        denyFreeEmailPolicy,
+        denyCorporateEmailPolicy
     }: {
         project: Models.Project;
         denyAliasedEmailPolicy: EnabledPolicy;
         denyDisposableEmailPolicy: EnabledPolicy;
         denyFreeEmailPolicy: EnabledPolicy;
+        denyCorporateEmailPolicy: EnabledPolicy;
     } = $props();
 
     const getInitialAliasedEmails = () => denyAliasedEmailPolicy.enabled;
     const getInitialDisposableEmails = () => denyDisposableEmailPolicy.enabled;
     const getInitialFreeEmails = () => denyFreeEmailPolicy.enabled;
+    const getInitialCorporateEmails = () => denyCorporateEmailPolicy.enabled;
 
     let savedAliasedEmails = $state(getInitialAliasedEmails());
     let savedDisposableEmails = $state(getInitialDisposableEmails());
     let savedFreeEmails = $state(getInitialFreeEmails());
+    let savedCorporateEmails = $state(getInitialCorporateEmails());
 
     let authAliasedEmails = $state(getInitialAliasedEmails());
     let authDisposableEmails = $state(getInitialDisposableEmails());
     let authFreeEmails = $state(getInitialFreeEmails());
+    let authCorporateEmails = $state(getInitialCorporateEmails());
 
     const hasChanges = $derived.by(() => {
         const aliasedChanged = authAliasedEmails !== savedAliasedEmails;
         const disposableChanged = authDisposableEmails !== savedDisposableEmails;
         const freeChanged = authFreeEmails !== savedFreeEmails;
+        const corporateChanged = authCorporateEmails !== savedCorporateEmails;
 
-        return aliasedChanged || disposableChanged || freeChanged;
+        return aliasedChanged || disposableChanged || freeChanged || corporateChanged;
     });
 
     async function updateSignupEmailSecurity() {
@@ -80,9 +86,19 @@
                 trackEvent(Submit.AuthFreeEmailsUpdate);
             }
 
+            if (authCorporateEmails !== savedCorporateEmails) {
+                currentSubmit = Submit.AuthCorporateEmailsUpdate;
+                await projectSdk.updateDenyCorporateEmailPolicy({
+                    enabled: authCorporateEmails
+                });
+                hasAppliedServerChange = true;
+                trackEvent(Submit.AuthCorporateEmailsUpdate);
+            }
+
             savedAliasedEmails = authAliasedEmails;
             savedDisposableEmails = authDisposableEmails;
             savedFreeEmails = authFreeEmails;
+            savedCorporateEmails = authCorporateEmails;
             await invalidate(Dependencies.PROJECT);
 
             addNotification({
@@ -144,6 +160,21 @@
                         <Typography.Text
                             >Block temporary and disposable email providers. For example: <Typography.Code
                                 >alex9734@mailinator.com</Typography.Code>
+                        </Typography.Text>
+                    </Layout.Stack>
+                </svelte:fragment>
+            </InputSwitch>
+
+            <InputSwitch
+                bind:value={authCorporateEmails}
+                id="authCorporateEmails"
+                label="Deny non-corporate emails">
+                <svelte:fragment slot="description">
+                    <Layout.Stack gap="s">
+                        <Typography.Text
+                            >Only allow corporate email addresses. Blocks free providers and
+                            disposable emails. For example: <Typography.Code
+                                >user@gmail.com</Typography.Code>
                         </Typography.Text>
                     </Layout.Stack>
                 </svelte:fragment>
