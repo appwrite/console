@@ -37,6 +37,12 @@
      */
     let importItems = $state<ImportItemsMap>(new Map());
 
+    /**
+     * Tracks removal timeouts for completed/failed imports.
+     * Used to prevent memory leaks and race conditions.
+     */
+    let removalTimeouts = new Map<string, ReturnType<typeof setTimeout>>();
+
     async function showCompletionNotification(database: string, table: string, payload: Payload) {
         const isSuccess = payload.status === 'completed';
         const isError = !isSuccess && !!payload.errors;
@@ -117,11 +123,27 @@
         }
 
         if (status === 'completed' || status === 'failed') {
-            await showCompletionNotification(databaseId, tableId, importData);
+            try {
+                await showCompletionNotification(databaseId, tableId, importData);
+            } finally {
+                const existingTimeout = removalTimeouts.get(importData.$id);
+                if (existingTimeout) {
+                    clearTimeout(existingTimeout);
+                }
+                const timeoutId = setTimeout(() => {
+                    const next = new Map(importItems);
+                    next.delete(importData.$id);
+                    importItems = next;
+                    removalTimeouts.delete(importData.$id);
+                }, 5000);
+                removalTimeouts.set(importData.$id, timeoutId);
+            }
         }
     }
 
     function clear() {
+        removalTimeouts.forEach((timeout) => clearTimeout(timeout));
+        removalTimeouts = new Map();
         importItems = new Map();
     }
 
@@ -187,12 +209,18 @@
                 migrations.migrations.forEach(updateOrAddItem);
             });
 
-        return realtime.forConsole(page.params.region, 'console', (response) => {
+        const unsubscribe = realtime.forConsole(page.params.region, 'console', (response) => {
             if (!response.channels.includes(`projects.${getProjectId()}`)) return;
             if (response.events.includes('migrations.*')) {
                 updateOrAddItem(response.payload as Payload);
             }
         });
+
+        return () => {
+            unsubscribe();
+            removalTimeouts.forEach((timeout) => clearTimeout(timeout));
+            removalTimeouts = new Map();
+        };
     });
 
     let isOpen = $state(true);
