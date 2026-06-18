@@ -68,24 +68,28 @@
         };
     });
 
-    // Keep the shown code in sync when a new `user_code` arrives in the URL
-    // (e.g. the user follows a fresh `verification_uri_complete` link while this
-    // route stays mounted). A different code means a different request, so drop
-    // any loaded grant and return to confirmation rather than approving the old
-    // one.
+    // Sync state to the `user_code` in the URL. This tracks ONLY the URL param
+    // (not the locally-typed `code`), so typing in the field never re-triggers
+    // it. Whenever the URL code changes — including being removed — the previous
+    // request is no longer valid, so drop any loaded grant and return to
+    // confirmation rather than confirming/approving a stale one.
+    let lastUrlCode = $state<string | null>(null);
     $effect(() => {
-        page.url.searchParams.get('user_code');
-        const next = normalizeUserCode(page.url.searchParams.get('user_code') ?? '');
-        if (!next || next === code) return;
-        code = next;
+        const urlCode = normalizeUserCode(page.url.searchParams.get('user_code') ?? '');
+        if (urlCode === lastUrlCode) return;
+        lastUrlCode = urlCode;
+        code = urlCode;
         grant = null;
         app = null;
         error = null;
-        hasPrefilledCode = Boolean(next);
-        phase = phase === 'loading' ? phase : 'enter-code';
+        hasPrefilledCode = Boolean(urlCode);
+        if (phase !== 'loading') phase = 'enter-code';
     });
 
     async function handleSubmit() {
+        // Guard against a double Enter / programmatic resubmit racing or
+        // invalidating the in-flight request.
+        if (submitting) return;
         const normalized = normalizeUserCode(code);
         if (!normalized) return;
         error = null;
@@ -97,6 +101,9 @@
             const loadedApp = await sdk.forConsole.apps.get({
                 appId: loadedGrant.appId
             });
+            // A fresh `user_code` may have arrived while we awaited. Ignore this
+            // now-stale result so we never show consent for a superseded request.
+            if (normalizeUserCode(code) !== normalized) return;
             trackEvent(Submit.AccountOAuth2DeviceVerify, {
                 app_id: loadedGrant.appId
             });
@@ -105,6 +112,8 @@
             error = null;
             phase = 'consent';
         } catch (e: unknown) {
+            // Drop errors from a submission the active code has already moved past.
+            if (normalizeUserCode(code) !== normalized) return;
             if (e instanceof AppwriteException && e.type === 'oauth2_invalid_user_code') {
                 error = 'That code is invalid or has expired. Check your device and try again.';
             } else {

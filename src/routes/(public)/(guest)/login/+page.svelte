@@ -71,8 +71,11 @@
             if (redirect) {
                 try {
                     await sdk.forConsole.account.get();
-                    page.url.searchParams.delete('redirect');
-                    await goto(`${redirect}${page.url.search}`);
+                    // Resume to the stored redirect exactly — it already carries
+                    // its own query string. Appending the login page's remaining
+                    // search params would leak login-only params (e.g. `message`)
+                    // into the OAuth2 request route.
+                    await goto(redirect);
                     await invalidate(Dependencies.ACCOUNT);
                     return;
                 } catch (mfaError) {

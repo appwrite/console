@@ -17,13 +17,23 @@
     let account = $state<Models.User<Models.Preferences> | null>(null);
     let error = $state<string | null>(null);
 
+    // OIDC `max_age` is a non-negative integer count of seconds. Reject anything
+    // else (e.g. `max_age=abc`) so we omit the param rather than forwarding NaN.
+    function parseMaxAge(raw: string | null): number | undefined {
+        if (!raw) return undefined;
+        const value = Number(raw);
+        return Number.isInteger(value) && value >= 0 ? value : undefined;
+    }
+
     // Re-runs when the authorize params change (this route can stay mounted as
     // the router moves between requests). Reset to loading so a previously
     // loaded grant can never be approved against a different request.
     $effect(() => {
-        // Touch the search params so the effect re-runs on URL change.
-        page.url.searchParams.get('grant_id');
-        page.url.searchParams.get('client_id');
+        // Depend on the ENTIRE query string so the effect re-runs whenever any
+        // part of the authorize request changes — not just grant_id/client_id,
+        // but also redirect_uri, scope, state, nonce, PKCE fields, prompt,
+        // max_age and authorization_details.
+        page.url.searchParams.toString();
 
         let cancelled = false;
         phase = 'loading';
@@ -106,7 +116,7 @@
                         codeChallenge: params.get('code_challenge') ?? undefined,
                         codeChallengeMethod: params.get('code_challenge_method') ?? undefined,
                         prompt: params.get('prompt') ?? undefined,
-                        maxAge: params.get('max_age') ? Number(params.get('max_age')) : undefined,
+                        maxAge: parseMaxAge(params.get('max_age')),
                         authorizationDetails: params.get('authorization_details') ?? undefined
                     });
                     if (cancelled) return;

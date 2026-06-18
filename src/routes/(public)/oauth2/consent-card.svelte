@@ -61,12 +61,18 @@
 
     async function approve() {
         if (busy) return;
+        // Pin the request we're acting on. If the parent swaps in a different
+        // grant while this call is in flight (the route moved to another
+        // consent request), drop the stale result so we never redirect with the
+        // previous grant's redirectUrl.
+        const grantId = grant.$id;
         error = null;
         approving = true;
         try {
             const result = await sdk.forConsole.oauth2.approve({
-                grantId: grant.$id
+                grantId
             });
+            if (grant.$id !== grantId) return;
             trackEvent(Submit.AccountOAuth2ConsentApprove, {
                 app_id: grant.appId,
                 flow
@@ -77,6 +83,7 @@
             }
             window.location.href = result.redirectUrl;
         } catch (e: unknown) {
+            if (grant.$id !== grantId) return;
             const message = (e as Error)?.message ?? 'Failed to authorize the application';
             error = message;
             addNotification({ type: 'error', message });
@@ -88,12 +95,15 @@
 
     async function reject() {
         if (busy) return;
+        // Pin the request we're acting on (see `approve`).
+        const grantId = grant.$id;
         error = null;
         rejecting = true;
         try {
             const result = await sdk.forConsole.oauth2.reject({
-                grantId: grant.$id
+                grantId
             });
+            if (grant.$id !== grantId) return;
             trackEvent(Submit.AccountOAuth2ConsentDeny, {
                 app_id: grant.appId,
                 flow
@@ -104,6 +114,7 @@
             }
             window.location.href = result.redirectUrl;
         } catch (e: unknown) {
+            if (grant.$id !== grantId) return;
             const message = (e as Error)?.message ?? 'Failed to cancel the request';
             error = message;
             addNotification({ type: 'error', message });
