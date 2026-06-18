@@ -9,7 +9,7 @@
 
 <div class="auth-bg">
     <section>
-        <div class="console-container">
+        <div class="oauth2-shell">
             <slot />
         </div>
     </section>
@@ -47,8 +47,15 @@
         justify-content: space-between;
         section {
             flex: 1;
+            width: 100%;
             display: flex;
             align-items: center;
+            justify-content: center;
+            padding-inline: 1rem;
+        }
+        .oauth2-shell {
+            width: 100%;
+            max-width: 28rem;
         }
         footer {
             padding: 2rem 1rem;
