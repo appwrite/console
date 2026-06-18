@@ -62,6 +62,34 @@
                 return;
             }
 
+            // Honor the `redirect` query param so OAuth2 consent/device flows
+            // (and other deep links) resume after email login. MFA-safe: if
+            // additional factors are required, fall through to invalidate(ACCOUNT)
+            // so the root layout routes to /mfa carrying the redirect param from
+            // the current /login URL.
+            const redirect = page.url.searchParams.get('redirect');
+            if (redirect) {
+                try {
+                    await sdk.forConsole.account.get();
+                    page.url.searchParams.delete('redirect');
+                    await goto(`${redirect}${page.url.search}`);
+                    await invalidate(Dependencies.ACCOUNT);
+                    return;
+                } catch (mfaError) {
+                    if (mfaError?.type !== 'user_more_factors_required') {
+                        addNotification({
+                            type: 'error',
+                            message: mfaError.message
+                        });
+                        trackError(mfaError, Submit.AccountLogin);
+                        disabled = false;
+                        return;
+                    }
+                    // MFA required: fall through so the root layout redirects to
+                    // /mfa with the redirect param preserved in the URL.
+                }
+            }
+
             // no specific redirect, so redirect will happen through invalidating the account
             await invalidate(Dependencies.ACCOUNT);
         } catch (error) {

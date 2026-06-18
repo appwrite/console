@@ -2,6 +2,7 @@ import { isMultiRegionSupported, VARS } from '$lib/system';
 import { registerImpersonationClients, restoreImpersonation } from '$lib/appwrite/impersonation';
 import {
     Account,
+    Apps,
     Assistant,
     Avatars,
     Backups,
@@ -12,6 +13,7 @@ import {
     Locale,
     Messaging,
     Migrations,
+    Oauth2,
     Organization,
     Project,
     Project as ProjectApi,
@@ -48,6 +50,8 @@ function createConsoleSdk(client: Client) {
     return {
         client,
         account: new Account(client),
+        apps: new Apps(client),
+        oauth2: new Oauth2(client),
         avatars: new Avatars(client),
         functions: new Functions(client),
         health: new Health(client),
