@@ -21,37 +21,15 @@
         Icon,
         InteractiveText
     } from '@appwrite.io/pink-svelte';
-    import { IconGlobeAlt, IconTerminal } from '@appwrite.io/pink-icons-svelte';
-    import { toLocaleDate } from '$lib/helpers/date';
+    import { IconGlobeAlt } from '@appwrite.io/pink-icons-svelte';
 
     export let data: PageData;
 
-    // Apps the user authorized through the console OAuth2 server (e.g. the
-    // Appwrite CLI via the device flow) are stored as identities with an
-    // `oauth2:<appId>` provider, separately from browser sessions.
-    $: connectedApps = data.identities.identities.filter((identity) =>
-        identity.provider?.startsWith('oauth2:')
+    // OAuth2 app authorizations (e.g. the Appwrite CLI) are surfaced on the
+    // Applications tab, so keep them out of the browser-session list here.
+    $: visibleSessions = data.sessions.sessions.filter(
+        (session) => !session.provider?.startsWith('oauth2')
     );
-
-    // The built-in CLI client only supports the device flow, so we can label it
-    // precisely; other OAuth2 clients just show "OAuth".
-    const OAUTH2_PREFIX = 'oauth2:';
-    const KNOWN_APP_NAMES: Record<string, string> = {
-        'appwrite-cli': 'Appwrite CLI'
-    };
-
-    function appIdOf(provider: string): string {
-        return provider.slice(OAUTH2_PREFIX.length);
-    }
-
-    function appName(provider: string): string {
-        const appId = appIdOf(provider);
-        return KNOWN_APP_NAMES[appId] ?? appId;
-    }
-
-    function connectionLabel(provider: string): string {
-        return appIdOf(provider) === 'appwrite-cli' ? 'OAuth · device flow' : 'OAuth';
-    }
 
     function getBrowser(clientCode: string) {
         const code = clientCode.toLowerCase();
@@ -103,20 +81,6 @@
         await goto(`${base}/login`);
     }
 
-    async function revokeApp(identity: Models.Identity) {
-        try {
-            await sdk.forConsole.account.deleteIdentity({ identityId: identity.$id });
-            await invalidate(Dependencies.ACCOUNT_SESSIONS);
-            trackEvent(Submit.AccountDeleteIdentity);
-            addNotification({
-                type: 'success',
-                message: `Access for ${appName(identity.provider)} has been revoked`
-            });
-        } catch (e) {
-            addNotification({ type: 'error', message: e.message });
-        }
-    }
-
     onMount(() => {
         return pageStore.subscribe(($page) => {
             const url = new URL($page.url);
@@ -153,7 +117,7 @@
             <Table.Header.Cell column="ip" {root}>IP</Table.Header.Cell>
             <Table.Header.Cell column="actions" {root} />
         </svelte:fragment>
-        {#each data.sessions.sessions as session}
+        {#each visibleSessions as session}
             {@const browser = getBrowser(session.clientCode)}
             <Table.Row.Base {root}>
                 <Table.Cell column="client" {root}>
@@ -204,51 +168,4 @@
             </Table.Row.Base>
         {/each}
     </Table.Root>
-
-    {#if connectedApps.length > 0}
-        <Layout.Stack gap="xxs">
-            <Typography.Title size="s">Connected applications</Typography.Title>
-            <Typography.Text variant="m-400" color="--fgcolor-neutral-secondary">
-                Applications you've authorized to access your account.
-            </Typography.Text>
-        </Layout.Stack>
-
-        <Table.Root
-            class="responsive-table"
-            let:root
-            columns={[
-                { id: 'app', width: { min: 450 } },
-                { id: 'authorized', width: { min: 200 } },
-                { id: 'actions', width: 100 }
-            ]}>
-            <svelte:fragment slot="header" let:root>
-                <Table.Header.Cell column="app" {root}>Application</Table.Header.Cell>
-                <Table.Header.Cell column="authorized" {root}>Authorized</Table.Header.Cell>
-                <Table.Header.Cell column="actions" {root} />
-            </svelte:fragment>
-            {#each connectedApps as identity (identity.$id)}
-                <Table.Row.Base {root}>
-                    <Table.Cell column="app" {root}>
-                        <Layout.Stack direction="row" alignItems="center">
-                            <div class="avatar is-size-small">
-                                <Icon icon={IconTerminal} size="s" />
-                            </div>
-                            <Trim>{appName(identity.provider)}</Trim>
-                            <Badge
-                                variant="secondary"
-                                content={connectionLabel(identity.provider)} />
-                        </Layout.Stack>
-                    </Table.Cell>
-                    <Table.Cell column="authorized" {root}>
-                        {toLocaleDate(identity.$createdAt)}
-                    </Table.Cell>
-                    <Table.Cell column="actions" {root}>
-                        <Button size="xs" secondary on:click={() => revokeApp(identity)}>
-                            Revoke
-                        </Button>
-                    </Table.Cell>
-                </Table.Row.Base>
-            {/each}
-        </Table.Root>
-    {/if}
 </Container>

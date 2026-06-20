@@ -23,6 +23,11 @@
             event: 'sessions'
         },
         {
+            href: `${path}/applications`,
+            title: 'Applications',
+            event: 'applications'
+        },
+        {
             href: `${path}/activity`,
             title: 'Activity',
             event: 'activity',
