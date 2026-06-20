@@ -25,6 +25,12 @@
 
     export let data: PageData;
 
+    // OAuth2 app authorizations (e.g. the Appwrite CLI) are surfaced on the
+    // Applications tab, so keep them out of the browser-session list here.
+    $: visibleSessions = data.sessions.sessions.filter(
+        (session) => !session.provider?.startsWith('oauth2')
+    );
+
     function getBrowser(clientCode: string) {
         const code = clientCode.toLowerCase();
         if (!isValueOfStringEnum(Browser, code)) return '';
@@ -111,7 +117,7 @@
             <Table.Header.Cell column="ip" {root}>IP</Table.Header.Cell>
             <Table.Header.Cell column="actions" {root} />
         </svelte:fragment>
-        {#each data.sessions.sessions as session}
+        {#each visibleSessions as session}
             {@const browser = getBrowser(session.clientCode)}
             <Table.Row.Base {root}>
                 <Table.Cell column="client" {root}>
