@@ -14,17 +14,10 @@ export interface ScopeDescriptor {
     icon: ComponentType;
 }
 
-/**
- * This consent screen always authorizes against the Appwrite **console**
- * project. On the server, any OAuth2 access token issued for the console
- * project is granted the full `users` (member) role — the same access a
- * signed-in console session has — regardless of the OIDC scopes requested.
- * The `openid`/`profile`/`email` scopes only shape the OIDC identity claims;
- * they do NOT limit what the application can do. So the consent screen must
- * lead with the full-access reality rather than implying read-only access.
- */
-export const FULL_ACCESS_SCOPE: ScopeDescriptor = {
-    id: '__full_access__',
+export const ACCOUNT_ADMIN_SCOPE = 'account.admin';
+
+export const ACCOUNT_ADMIN_DESCRIPTOR: ScopeDescriptor = {
+    id: ACCOUNT_ADMIN_SCOPE,
     title: 'Full access to your account',
     description: 'Manage your organizations, projects, and all their resources on your behalf.',
     icon: IconShieldCheck
@@ -45,6 +38,11 @@ const BUILTIN_SCOPES: Record<string, Omit<ScopeDescriptor, 'id'>> = {
         title: 'View your email address',
         description: 'Read the email address associated with your account.',
         icon: IconMail
+    },
+    [ACCOUNT_ADMIN_SCOPE]: {
+        title: ACCOUNT_ADMIN_DESCRIPTOR.title,
+        description: ACCOUNT_ADMIN_DESCRIPTOR.description,
+        icon: ACCOUNT_ADMIN_DESCRIPTOR.icon
     }
 };
 
@@ -71,20 +69,25 @@ export function describeScopes(scopes: string[]): ScopeDescriptor[] {
     return scopes.map(describeScope);
 }
 
-// Identity scopes shown (in this order) as secondary detail beneath the
-// full-access item. `openid` is intentionally omitted — identity verification
-// is implied by full account access, so listing it separately is redundant.
 const CONSENT_IDENTITY_SCOPES = ['profile', 'email'] as const;
 
 /**
- * Build the permission list for the console OAuth2 consent screen. Always leads
- * with the full-access item (the true effect of authorizing), followed by the
- * identity scopes the application actually reads (profile, email) when present.
+ * Build the permission list for the OAuth2 consent screen. Full account access
+ * is shown only when the app explicitly requests `account.admin`; OIDC identity
+ * scopes are shown as secondary detail when present.
  */
 export function describeConsentScopes(scopes: string[]): ScopeDescriptor[] {
     const requested = new Set(scopes);
+    const admin = requested.has(ACCOUNT_ADMIN_SCOPE) ? [ACCOUNT_ADMIN_DESCRIPTOR] : [];
     const identity = CONSENT_IDENTITY_SCOPES.filter((scope) => requested.has(scope)).map(
         describeScope
     );
-    return [FULL_ACCESS_SCOPE, ...identity];
+    const remaining = scopes.filter(
+        (scope) =>
+            scope !== 'openid' &&
+            scope !== ACCOUNT_ADMIN_SCOPE &&
+            !(CONSENT_IDENTITY_SCOPES as readonly string[]).includes(scope)
+    );
+
+    return [...admin, ...identity, ...remaining.map(describeScope)];
 }
