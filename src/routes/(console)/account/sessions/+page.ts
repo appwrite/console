@@ -5,7 +5,10 @@ import type { PageLoad } from './$types';
 export const load: PageLoad = async ({ depends }) => {
     depends(Dependencies.ACCOUNT_SESSIONS);
 
-    return {
-        sessions: await sdk.forConsole.account.listSessions()
-    };
+    const [sessions, identities] = await Promise.all([
+        sdk.forConsole.account.listSessions(),
+        sdk.forConsole.account.listIdentities()
+    ]);
+
+    return { sessions, identities };
 };
