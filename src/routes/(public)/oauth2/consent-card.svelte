@@ -1,19 +1,19 @@
 <script lang="ts">
     import type { Models } from '@appwrite.io/console';
     import { Card, Layout, Typography, Icon, Spinner } from '@appwrite.io/pink-svelte';
-    import {
-        IconCheck,
-        IconExclamation,
-        IconShieldCheck,
-        IconExternalLink
-    } from '@appwrite.io/pink-icons-svelte';
+    import { IconCheck, IconExclamation } from '@appwrite.io/pink-icons-svelte';
     import { Button, Form } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { describeConsentScopes } from '$lib/helpers/oauth2-scopes';
+    import { ACCOUNT_ADMIN_SCOPE, describeConsentScopes } from '$lib/helpers/oauth2-scopes';
 
     export type OAuth2Flow = 'authorization' | 'device';
+
+    // Identity scopes are self-explanatory from their title, so we render them as
+    // single lines. Everything else (full account access, custom scopes) keeps its
+    // description so the user understands what they're granting.
+    const CONCISE_SCOPES = new Set(['openid', 'profile', 'email']);
 
     interface AuthorizationDetail {
         type: string;
@@ -58,6 +58,11 @@
     const redirectHost = $derived(hostnameOf(grant.redirectUri));
 
     const appInitial = $derived((app.name || '?').charAt(0).toUpperCase());
+    const accountInitial = $derived((accountLabel || '?').charAt(0).toUpperCase());
+
+    function showDescription(scopeId: string): boolean {
+        return scopeId === ACCOUNT_ADMIN_SCOPE || !CONCISE_SCOPES.has(scopeId);
+    }
 
     async function approve() {
         if (busy) return;
@@ -139,47 +144,45 @@
                 <Typography.Title size="m" align="center">
                     Authorize {app.name}
                 </Typography.Title>
-                <Typography.Text variant="m-400" align="center">
-                    {app.tagline || `${app.name} wants to access your Appwrite account.`}
+                <Typography.Text variant="m-400" align="center" color="--fgcolor-neutral-secondary">
+                    {app.tagline || `${app.name} is requesting access to your Appwrite account.`}
                 </Typography.Text>
             </Layout.Stack>
+
+            {#if accountLabel}
+                <div class="account-chip">
+                    <span class="account-avatar">{accountInitial}</span>
+                    <span class="account-label">{accountLabel}</span>
+                </div>
+            {/if}
         </Layout.Stack>
 
-        <Layout.Stack gap="m">
-            <Typography.Eyebrow color="--fgcolor-neutral-secondary">
-                This will allow {app.name} to
-            </Typography.Eyebrow>
-            <ul class="scope-list">
-                {#each scopes as scope (scope.id)}
-                    <li class="scope-item">
-                        <span class="scope-icon">
-                            <Icon icon={scope.icon} size="s" />
-                        </span>
-                        <span class="scope-text">
-                            <span class="scope-title">{scope.title}</span>
+        <ul class="scope-list">
+            {#each scopes as scope (scope.id)}
+                <li class="scope-item" class:lead={scope.id === ACCOUNT_ADMIN_SCOPE}>
+                    <span class="scope-icon">
+                        <Icon icon={scope.icon} size="s" />
+                    </span>
+                    <span class="scope-text">
+                        <span class="scope-title">{scope.title}</span>
+                        {#if showDescription(scope.id)}
                             <span class="scope-desc">{scope.description}</span>
-                        </span>
-                    </li>
-                {/each}
-            </ul>
-        </Layout.Stack>
+                        {/if}
+                    </span>
+                </li>
+            {/each}
+        </ul>
 
         {#if details.length > 0}
             <Layout.Stack gap="s">
-                <Typography.Eyebrow color="--fgcolor-neutral-secondary">
-                    Requested resources
-                </Typography.Eyebrow>
-                <ul class="detail-list">
+                <Typography.Text variant="m-500" color="--fgcolor-neutral-secondary">
+                    Also requested
+                </Typography.Text>
+                <div class="detail-list">
                     {#each details as detail, i (`${detail.type}-${i}`)}
-                        <li class="detail-item">
-                            <Icon
-                                icon={IconShieldCheck}
-                                size="s"
-                                color="--fgcolor-neutral-secondary" />
-                            <span class="detail-type">{detail.type}</span>
-                        </li>
+                        <span class="detail-tag">{detail.type}</span>
                     {/each}
-                </ul>
+                </div>
             </Layout.Stack>
         {/if}
 
@@ -208,41 +211,24 @@
             </Layout.Stack>
         </Form>
 
-        <Typography.Text variant="m-400" align="center" color="--fgcolor-neutral-secondary">
-            {#if accountLabel}
-                Signed in as <span class="bold">{accountLabel}</span>.{' '}
-            {/if}
+        <p class="footnote">
             {#if flow === 'authorization' && redirectHost}
-                You'll be redirected to {redirectHost}.
+                <span>You'll be returned to {redirectHost}</span>
             {/if}
             {#if flow === 'device'}
-                After authorizing, return to your device.
+                <span>After authorizing, return to your device</span>
             {/if}
-        </Typography.Text>
-
-        {#if app.privacyPolicyUrl || app.termsUrl}
-            <Typography.Text variant="m-400" align="center" color="--fgcolor-neutral-secondary">
-                {#if app.privacyPolicyUrl}
-                    <a
-                        href={app.privacyPolicyUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        class="footer-link">
-                        Privacy Policy
-                        <Icon icon={IconExternalLink} size="xs" />
-                    </a>
-                {/if}
-                {#if app.privacyPolicyUrl && app.termsUrl}
-                    {' · '}
-                {/if}
-                {#if app.termsUrl}
-                    <a href={app.termsUrl} target="_blank" rel="noreferrer" class="footer-link">
-                        Terms of Service
-                        <Icon icon={IconExternalLink} size="xs" />
-                    </a>
-                {/if}
-            </Typography.Text>
-        {/if}
+            {#if app.privacyPolicyUrl}
+                <a href={app.privacyPolicyUrl} target="_blank" rel="noreferrer" class="footer-link">
+                    Privacy
+                </a>
+            {/if}
+            {#if app.termsUrl}
+                <a href={app.termsUrl} target="_blank" rel="noreferrer" class="footer-link">
+                    Terms
+                </a>
+            {/if}
+        </p>
     </Layout.Stack>
 </Card.Base>
 
@@ -250,18 +236,18 @@
     .app-logo {
         width: 3.5rem;
         height: 3.5rem;
-        border-radius: 0.75rem;
+        border-radius: 0.85rem;
         object-fit: cover;
-        border: 1px solid var(--border-color-neutral-strong, #e2e2e2);
+        border: 1px solid var(--border-neutral-strong);
     }
 
     .app-logo-placeholder {
         width: 3.5rem;
         height: 3.5rem;
-        border-radius: 0.75rem;
-        border: 1px solid var(--border-color-neutral-strong, #e2e2e2);
-        background: var(--bgcolor-neutral-secondary, #f4f4f4);
-        color: var(--fgcolor-neutral-secondary, #6b7280);
+        border-radius: 0.85rem;
+        border: 1px solid var(--border-neutral-strong);
+        background: var(--bgcolor-neutral-secondary);
+        color: var(--fgcolor-neutral-secondary);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -269,93 +255,146 @@
         font-weight: 600;
     }
 
+    /* Account context, shown right under the heading like Google/GitHub consent. */
+    .account-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        max-width: 100%;
+        padding: 0.3rem 0.75rem 0.3rem 0.35rem;
+        border: 1px solid var(--border-neutral-strong);
+        border-radius: 2rem;
+        font-size: 0.8125rem;
+        color: var(--fgcolor-neutral-secondary);
+    }
+
+    .account-avatar {
+        flex-shrink: 0;
+        width: 1.4rem;
+        height: 1.4rem;
+        border-radius: 50%;
+        background: var(--bgcolor-neutral-invert);
+        color: var(--fgcolor-neutral-on-invert, var(--bgcolor-neutral-primary));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.7rem;
+        font-weight: 600;
+    }
+
+    .account-label {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        color: var(--fgcolor-neutral-primary);
+    }
+
+    /* Single grouped container — rows split by hairlines instead of N tiles. */
     .scope-list {
         list-style: none;
         margin: 0;
         padding: 0;
-        display: flex;
-        flex-direction: column;
-        gap: 0.75rem;
+        border: 1px solid var(--border-neutral);
+        border-radius: 0.75rem;
+        background: var(--bgcolor-neutral-default);
+        overflow: hidden;
     }
 
     .scope-item {
         display: flex;
         align-items: flex-start;
         gap: 0.75rem;
+        padding: 0.85rem 0.9rem;
+    }
+
+    .scope-item + .scope-item {
+        border-top: 1px solid var(--border-neutral);
     }
 
     .scope-icon {
         flex-shrink: 0;
-        width: 2rem;
-        height: 2rem;
-        border-radius: 0.5rem;
-        background: var(--bgcolor-neutral-secondary, #f4f4f4);
-        color: var(--fgcolor-neutral-secondary, #6b7280);
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-top: 0.125rem;
+        margin-top: 0.05rem;
+        color: var(--fgcolor-neutral-tertiary);
+    }
+
+    .scope-item.lead .scope-icon {
+        color: var(--fgcolor-neutral-secondary);
     }
 
     .scope-text {
         display: flex;
         flex-direction: column;
-        gap: 0.125rem;
+        gap: 0.15rem;
+        min-width: 0;
     }
 
     .scope-title {
         font-size: 0.875rem;
         font-weight: 500;
-        color: var(--fgcolor-neutral-primary, #1f2937);
+        line-height: 1.3;
+        color: var(--fgcolor-neutral-primary);
+    }
+
+    .scope-item.lead .scope-title {
+        font-weight: 600;
     }
 
     .scope-desc {
-        font-size: 0.75rem;
-        color: var(--fgcolor-neutral-secondary, #6b7280);
+        font-size: 0.78rem;
+        line-height: 1.4;
+        color: var(--fgcolor-neutral-secondary);
     }
 
+    /* Rich authorization details — de-emphasized, compact tags. */
     .detail-list {
-        list-style: none;
-        margin: 0;
-        padding: 0;
         display: flex;
-        flex-direction: column;
-        gap: 0.375rem;
+        flex-wrap: wrap;
+        gap: 0.4rem;
     }
 
-    .detail-item {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        background: var(--bgcolor-neutral-secondary, #f4f4f4);
-        border-radius: 0.5rem;
-        padding: 0.5rem 0.75rem;
-        font-size: 0.875rem;
-        font-weight: 500;
-    }
-
-    .detail-type {
-        color: var(--fgcolor-neutral-primary, #1f2937);
+    .detail-tag {
+        font-family: var(--font-family-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+        font-size: 0.74rem;
+        color: var(--fgcolor-neutral-secondary);
+        border: 1px solid var(--border-neutral-strong);
+        border-radius: 0.4rem;
+        padding: 0.2rem 0.5rem;
+        background: var(--bgcolor-neutral-default);
     }
 
     .error-box {
         display: flex;
         align-items: flex-start;
         gap: 0.5rem;
-        border: 1px solid var(--border-color-danger, rgba(220, 38, 38, 0.2));
+        border: 1px solid var(--border-danger, rgba(220, 38, 38, 0.2));
         background: var(--bgcolor-danger-secondary, rgba(220, 38, 38, 0.1));
-        border-radius: 0.375rem;
+        border-radius: 0.5rem;
         padding: 0.75rem;
     }
 
-    .bold {
-        font-weight: 500;
+    /* One quiet line: contextual note + legal links, dot-separated. */
+    .footnote {
+        margin: 0;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        font-size: 0.78rem;
+        color: var(--fgcolor-neutral-tertiary);
+        text-align: center;
+    }
+
+    .footnote > :global(* + *)::before {
+        content: '·';
+        margin-inline-end: 0.5rem;
+        color: var(--fgcolor-neutral-tertiary);
     }
 
     .footer-link {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.25rem;
         color: inherit;
         text-decoration: none;
     }
