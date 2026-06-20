@@ -157,21 +157,23 @@
             {/if}
         </Layout.Stack>
 
-        <ul class="scope-list">
-            {#each scopes as scope (scope.id)}
-                <li class="scope-item" class:lead={scope.id === ACCOUNT_ADMIN_SCOPE}>
-                    <span class="scope-icon">
-                        <Icon icon={scope.icon} size="s" />
-                    </span>
-                    <span class="scope-text">
-                        <span class="scope-title">{scope.title}</span>
-                        {#if showDescription(scope.id)}
-                            <span class="scope-desc">{scope.description}</span>
-                        {/if}
-                    </span>
-                </li>
-            {/each}
-        </ul>
+        {#if scopes.length > 0}
+            <ul class="scope-list">
+                {#each scopes as scope (scope.id)}
+                    <li class="scope-item" class:lead={scope.id === ACCOUNT_ADMIN_SCOPE}>
+                        <span class="scope-icon">
+                            <Icon icon={scope.icon} size="s" />
+                        </span>
+                        <span class="scope-text">
+                            <span class="scope-title">{scope.title}</span>
+                            {#if showDescription(scope.id)}
+                                <span class="scope-desc">{scope.description}</span>
+                            {/if}
+                        </span>
+                    </li>
+                {/each}
+            </ul>
+        {/if}
 
         {#if details.length > 0}
             <Layout.Stack gap="s">

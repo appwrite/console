@@ -72,9 +72,11 @@ export function describeScopes(scopes: string[]): ScopeDescriptor[] {
 const CONSENT_IDENTITY_SCOPES = ['profile', 'email'] as const;
 
 /**
- * Build the permission list for the OAuth2 consent screen. Full account access
- * is shown only when the app explicitly requests `account.admin`; OIDC identity
- * scopes are shown as secondary detail when present.
+ * Build the permission list for the console OAuth2 consent screen. The server
+ * enforces scope-based access, so this maps 1:1 to the issued token: full access
+ * only for `account.admin`, then identity scopes, then any granular scopes.
+ * Falls back to the lone `openid` "Verify your identity" row so a minimal OIDC
+ * request is never empty.
  */
 export function describeConsentScopes(scopes: string[]): ScopeDescriptor[] {
     const requested = new Set(scopes);
@@ -89,5 +91,10 @@ export function describeConsentScopes(scopes: string[]): ScopeDescriptor[] {
             !(CONSENT_IDENTITY_SCOPES as readonly string[]).includes(scope)
     );
 
-    return [...admin, ...identity, ...remaining.map(describeScope)];
+    const described = [...admin, ...identity, ...remaining.map(describeScope)];
+    if (described.length === 0 && requested.has('openid')) {
+        return [describeScope('openid')];
+    }
+
+    return described;
 }
