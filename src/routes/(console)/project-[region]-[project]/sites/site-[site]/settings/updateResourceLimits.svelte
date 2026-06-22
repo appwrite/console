@@ -16,7 +16,8 @@
     import { page } from '$app/state';
 
     export let site: Models.Site;
-    export let specs: Models.SpecificationList;
+    export let buildSpecs: Models.SpecificationList;
+    export let runtimeSpecs: Models.SpecificationList;
 
     let buildSpecification = site.buildSpecification;
     let runtimeSpecification = site.runtimeSpecification;
@@ -75,15 +76,14 @@
         }
     }
 
-    const specifications = specs?.specifications ?? [];
-    const buildEnabledSpecs = specifications.filter((spec) => spec.enabledForBuilds);
-    const runtimeEnabledSpecs = specifications.filter((spec) => spec.enabled);
-    const buildOptions = specifications.map((spec) => ({
+    const buildEnabledSpecs = buildSpecs.specifications.filter((spec) => spec.enabled);
+    const runtimeEnabledSpecs = runtimeSpecs.specifications.filter((spec) => spec.enabled);
+    const buildOptions = buildSpecs.specifications.map((spec) => ({
         label: `${spec.cpus} CPU, ${spec.memory} MB RAM`,
         value: spec.slug,
-        disabled: !spec.enabledForBuilds
+        disabled: !spec.enabled
     }));
-    const runtimeOptions = specifications.map((spec) => ({
+    const runtimeOptions = runtimeSpecs.specifications.map((spec) => ({
         label: `${spec.cpus} CPU, ${spec.memory} MB RAM`,
         value: spec.slug,
         disabled: !spec.enabled

@@ -77,7 +77,8 @@
     <UpdateBuildSettings
         site={data.site}
         frameworks={data.frameworks.frameworks}
-        specs={data.specificationsList} />
+        buildSpecs={data.buildSpecificationsList}
+        runtimeSpecs={data.runtimeSpecificationsList} />
     <UpdateRuntimeSettings site={data.site} frameworks={data.frameworks.frameworks} />
     <UpdateVariables
         {sdkCreateVariable}
@@ -95,7 +96,10 @@
         product="site"
         analyticsSource="site_settings" />
     {#if isCloud}
-        <UpdateResourceLimits site={data.site} specs={data.specificationsList} />
+        <UpdateResourceLimits
+            site={data.site}
+            buildSpecs={data.buildSpecificationsList}
+            runtimeSpecs={data.runtimeSpecificationsList} />
     {/if}
     <UpdateDeploymentRetention site={data.site} />
     <UpdateTimeout site={data.site} />

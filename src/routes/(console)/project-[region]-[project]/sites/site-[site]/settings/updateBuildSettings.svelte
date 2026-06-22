@@ -18,11 +18,13 @@
     let {
         site,
         frameworks,
-        specs
+        buildSpecs,
+        runtimeSpecs
     }: {
         site: Models.Site;
         frameworks: Models.Framework[];
-        specs: Models.SpecificationList;
+        buildSpecs: Models.SpecificationList;
+        runtimeSpecs: Models.SpecificationList;
     } = $props();
 
     let frameworkKey = $state(site.framework);
@@ -124,9 +126,9 @@
                 adapter = selectedFramework.adapters[0].key as Adapter;
                 site.adapter = adapter;
             }
-            if (specs && specs.specifications?.length) {
-                const buildEnabledSpecs = specs.specifications.filter((s) => s.enabledForBuilds);
-                const runtimeEnabledSpecs = specs.specifications.filter((s) => s.enabled);
+            if (buildSpecs.specifications.length || runtimeSpecs.specifications.length) {
+                const buildEnabledSpecs = buildSpecs.specifications.filter((s) => s.enabled);
+                const runtimeEnabledSpecs = runtimeSpecs.specifications.filter((s) => s.enabled);
                 if (
                     buildEnabledSpecs.length &&
                     !buildEnabledSpecs.some((s) => s.slug === site.buildSpecification)
@@ -150,9 +152,8 @@
             adptr = selectedFramework.adapters[0];
             site.adapter = adapter;
         }
-        const specifications = specs?.specifications ?? [];
-        const buildEnabledSpecs = specifications.filter((s) => s.enabledForBuilds);
-        const runtimeEnabledSpecs = specifications.filter((s) => s.enabled);
+        const buildEnabledSpecs = buildSpecs.specifications.filter((s) => s.enabled);
+        const runtimeEnabledSpecs = runtimeSpecs.specifications.filter((s) => s.enabled);
         const specToSend = buildEnabledSpecs.some((s) => s.slug === site.buildSpecification)
             ? site.buildSpecification
             : (buildEnabledSpecs[0]?.slug ?? site.buildSpecification);

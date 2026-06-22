@@ -11,14 +11,21 @@ export const load = async ({ params, depends, parent }) => {
     const limit = PAGE_LIMIT;
     const variablesOffset = 0;
 
-    const { runtimesList, specificationsList, function: fn } = await parent();
+    const {
+        runtimesList,
+        specificationsList,
+        runtimeSpecificationsList,
+        function: fn
+    } = await parent();
 
-    const enabledSpecs = specificationsList?.specifications?.filter((s) => s.enabled) ?? [];
-    if (!enabledSpecs.some((s) => s.slug === fn.buildSpecification)) {
-        fn.buildSpecification = enabledSpecs[0]?.slug;
+    const buildEnabledSpecs = specificationsList?.specifications?.filter((s) => s.enabled) ?? [];
+    const runtimeEnabledSpecs =
+        runtimeSpecificationsList?.specifications?.filter((s) => s.enabled) ?? [];
+    if (!buildEnabledSpecs.some((s) => s.slug === fn.buildSpecification)) {
+        fn.buildSpecification = buildEnabledSpecs[0]?.slug;
     }
-    if (!enabledSpecs.some((s) => s.slug === fn.runtimeSpecification)) {
-        fn.runtimeSpecification = enabledSpecs[0]?.slug;
+    if (!runtimeEnabledSpecs.some((s) => s.slug === fn.runtimeSpecification)) {
+        fn.runtimeSpecification = runtimeEnabledSpecs[0]?.slug;
     }
 
     const [globalVariables, variables] = await Promise.all([
@@ -56,6 +63,7 @@ export const load = async ({ params, depends, parent }) => {
         variablesOffset,
         runtimesList,
         specificationsList,
+        runtimeSpecificationsList,
         function: fn
     };
 };
