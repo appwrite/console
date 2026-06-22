@@ -109,7 +109,8 @@
                             href="https://appwrite.io/docs/products/databases/databases"
                             text
                             event="empty_documentation"
-                            ariaLabel="read {entityLower.singular} documentation">Documentation</Button>
+                            ariaLabel="read {entityLower.singular} documentation"
+                            >Documentation</Button>
 
                         {#if $canWriteTables}
                             <Button secondary on:click={() => ($showCreateEntity = true)}>
