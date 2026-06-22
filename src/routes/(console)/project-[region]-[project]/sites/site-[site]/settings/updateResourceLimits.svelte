@@ -18,11 +18,6 @@
     export let site: Models.Site;
     export let specs: Models.SpecificationList;
 
-    type SiteSpecification = Models.Specification & {
-        buildEnabled: boolean;
-        runtimeEnabled: boolean;
-    };
-
     let buildSpecification = site.buildSpecification;
     let runtimeSpecification = site.runtimeSpecification;
     let originalBuild = site.buildSpecification;
@@ -80,18 +75,18 @@
         }
     }
 
-    const specifications = (specs?.specifications ?? []) as SiteSpecification[];
-    const buildEnabledSpecs = specifications.filter((spec) => spec.buildEnabled);
-    const runtimeEnabledSpecs = specifications.filter((spec) => spec.runtimeEnabled);
+    const specifications = specs?.specifications ?? [];
+    const buildEnabledSpecs = specifications.filter((spec) => spec.enabledForBuilds);
+    const runtimeEnabledSpecs = specifications.filter((spec) => spec.enabled);
     const buildOptions = specifications.map((spec) => ({
         label: `${spec.cpus} CPU, ${spec.memory} MB RAM`,
         value: spec.slug,
-        disabled: !spec.buildEnabled
+        disabled: !spec.enabledForBuilds
     }));
     const runtimeOptions = specifications.map((spec) => ({
         label: `${spec.cpus} CPU, ${spec.memory} MB RAM`,
         value: spec.slug,
-        disabled: !spec.runtimeEnabled
+        disabled: !spec.enabled
     }));
 </script>
 

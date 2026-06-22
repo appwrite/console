@@ -25,11 +25,6 @@
         specs: Models.SpecificationList;
     } = $props();
 
-    type SiteSpecification = Models.Specification & {
-        buildEnabled: boolean;
-        runtimeEnabled: boolean;
-    };
-
     let frameworkKey = $state(site.framework);
     let installCommand = $state(site?.installCommand);
     let buildCommand = $state(site?.buildCommand);
@@ -130,9 +125,8 @@
                 site.adapter = adapter;
             }
             if (specs && specs.specifications?.length) {
-                const specifications = specs.specifications as SiteSpecification[];
-                const buildEnabledSpecs = specifications.filter((s) => s.buildEnabled);
-                const runtimeEnabledSpecs = specifications.filter((s) => s.runtimeEnabled);
+                const buildEnabledSpecs = specs.specifications.filter((s) => s.enabledForBuilds);
+                const runtimeEnabledSpecs = specs.specifications.filter((s) => s.enabled);
                 if (
                     buildEnabledSpecs.length &&
                     !buildEnabledSpecs.some((s) => s.slug === site.buildSpecification)
@@ -156,9 +150,9 @@
             adptr = selectedFramework.adapters[0];
             site.adapter = adapter;
         }
-        const specifications = (specs?.specifications ?? []) as SiteSpecification[];
-        const buildEnabledSpecs = specifications.filter((s) => s.buildEnabled);
-        const runtimeEnabledSpecs = specifications.filter((s) => s.runtimeEnabled);
+        const specifications = specs?.specifications ?? [];
+        const buildEnabledSpecs = specifications.filter((s) => s.enabledForBuilds);
+        const runtimeEnabledSpecs = specifications.filter((s) => s.enabled);
         const specToSend = buildEnabledSpecs.some((s) => s.slug === site.buildSpecification)
             ? site.buildSpecification
             : (buildEnabledSpecs[0]?.slug ?? site.buildSpecification);

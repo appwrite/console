@@ -1,10 +1,9 @@
 import { sdk } from '$lib/stores/sdk';
 import { Dependencies, PAGE_LIMIT } from '$lib/constants';
 import { isCloud } from '$lib/system';
-import { Query, type Models } from '@appwrite.io/console';
+import { Query } from '@appwrite.io/console';
 
 const VARIABLES_LIMIT = 100;
-type SiteSpecification = Models.Specification & { buildEnabled: boolean; runtimeEnabled: boolean };
 
 export const load = async ({ params, depends, parent }) => {
     depends(Dependencies.VARIABLES);
@@ -47,9 +46,9 @@ export const load = async ({ params, depends, parent }) => {
         }
     });
 
-    const specifications = (specificationsList?.specifications ?? []) as SiteSpecification[];
-    const buildEnabledSpecs = specifications.filter((s) => s.buildEnabled);
-    const runtimeEnabledSpecs = specifications.filter((s) => s.runtimeEnabled);
+    const specifications = specificationsList?.specifications ?? [];
+    const buildEnabledSpecs = specifications.filter((s) => s.enabledForBuilds);
+    const runtimeEnabledSpecs = specifications.filter((s) => s.enabled);
     if (
         buildEnabledSpecs.length &&
         !buildEnabledSpecs.some((s) => s.slug === site.buildSpecification)
