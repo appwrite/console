@@ -18,6 +18,11 @@
     export let site: Models.Site;
     export let specs: Models.SpecificationList;
 
+    type SiteSpecification = Models.Specification & {
+        buildEnabled: boolean;
+        runtimeEnabled: boolean;
+    };
+
     let buildSpecification = site.buildSpecification;
     let runtimeSpecification = site.runtimeSpecification;
     let originalBuild = site.buildSpecification;
@@ -75,10 +80,18 @@
         }
     }
 
-    const options = (specs?.specifications ?? []).map((spec) => ({
+    const specifications = (specs?.specifications ?? []) as SiteSpecification[];
+    const buildEnabledSpecs = specifications.filter((spec) => spec.buildEnabled);
+    const runtimeEnabledSpecs = specifications.filter((spec) => spec.runtimeEnabled);
+    const buildOptions = specifications.map((spec) => ({
         label: `${spec.cpus} CPU, ${spec.memory} MB RAM`,
         value: spec.slug,
-        disabled: !spec.enabled
+        disabled: !spec.buildEnabled
+    }));
+    const runtimeOptions = specifications.map((spec) => ({
+        label: `${spec.cpus} CPU, ${spec.memory} MB RAM`,
+        value: spec.slug,
+        disabled: !spec.runtimeEnabled
     }));
 </script>
 
@@ -94,9 +107,9 @@
                 label="Build specification"
                 id="build-specification"
                 required
-                disabled={options.length < 1}
+                disabled={buildEnabledSpecs.length < 1}
                 bind:value={buildSpecification}
-                {options}>
+                options={buildOptions}>
                 <Tooltip slot="info">
                     <Icon icon={IconInfo} size="s" />
                     <span slot="tooltip">
@@ -109,9 +122,9 @@
                 label="Runtime specification"
                 id="runtime-specification"
                 required
-                disabled={options.length < 1}
+                disabled={runtimeEnabledSpecs.length < 1}
                 bind:value={runtimeSpecification}
-                {options}>
+                options={runtimeOptions}>
                 <Tooltip slot="info">
                     <Icon icon={IconInfo} size="s" />
                     <span slot="tooltip">
