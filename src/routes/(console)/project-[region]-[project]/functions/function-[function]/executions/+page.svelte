@@ -66,7 +66,7 @@
                     text
                     event="empty_documentation"
                     size="s"
-                    ariaLabel="create execution">Documentation</Button>
+                    ariaLabel="read execution documentation">Documentation</Button>
                 <Tooltip disabled={!!data.func?.deploymentId} maxWidth={BODY_TOOLTIP_MAX_WIDTH}>
                     <div>
                         <Button
