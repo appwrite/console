@@ -118,7 +118,7 @@
                         prompt: params.get('prompt') ?? undefined,
                         maxAge: parseMaxAge(params.get('max_age')),
                         authorizationDetails: params.get('authorization_details') ?? undefined,
-                        resource: params.get('resource[0]') ?? undefined
+                        resource: params.get('resource') ?? undefined
                     });
                     if (cancelled) return;
                     if (result.redirectUrl) {
