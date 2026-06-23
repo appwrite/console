@@ -1,19 +1,14 @@
 <script lang="ts">
     import type { Models } from '@appwrite.io/console';
-    import { Card, Layout, Typography, Icon, Spinner } from '@appwrite.io/pink-svelte';
+    import { Accordion, Card, Layout, Typography, Icon, Spinner } from '@appwrite.io/pink-svelte';
     import { IconCheck, IconExclamation } from '@appwrite.io/pink-icons-svelte';
     import { Button, Form } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { ACCOUNT_ADMIN_SCOPE, describeConsentScopes } from '$lib/helpers/oauth2-scopes';
+    import { groupConsentScopes } from '$lib/helpers/oauth2-scopes';
 
     export type OAuth2Flow = 'authorization' | 'device';
-
-    // Identity scopes are self-explanatory from their title, so we render them as
-    // single lines. Everything else (full account access, custom scopes) keeps its
-    // description so the user understands what they're granting.
-    const CONCISE_SCOPES = new Set(['openid', 'profile', 'email']);
 
     interface AuthorizationDetail {
         type: string;
@@ -53,16 +48,12 @@
     let rejecting = $state(false);
     let busy = $derived(approving || rejecting);
 
-    const scopes = $derived(describeConsentScopes(grant.scopes ?? []));
+    const scopes = $derived(groupConsentScopes(grant.scopes ?? []));
     const details = $derived(parseAuthorizationDetails(grant.authorizationDetails ?? ''));
     const redirectHost = $derived(hostnameOf(grant.redirectUri));
 
     const appInitial = $derived((app.name || '?').charAt(0).toUpperCase());
     const accountInitial = $derived((accountLabel || '?').charAt(0).toUpperCase());
-
-    function showDescription(scopeId: string): boolean {
-        return scopeId === ACCOUNT_ADMIN_SCOPE || !CONCISE_SCOPES.has(scopeId);
-    }
 
     async function approve() {
         if (busy) return;
@@ -157,22 +148,52 @@
             {/if}
         </Layout.Stack>
 
-        {#if scopes.length > 0}
+        {#if scopes.admin || scopes.identity.length > 0}
             <ul class="scope-list">
-                {#each scopes as scope (scope.id)}
-                    <li class="scope-item" class:lead={scope.id === ACCOUNT_ADMIN_SCOPE}>
+                {#if scopes.admin}
+                    <li class="scope-item lead">
+                        <span class="scope-icon">
+                            <Icon icon={scopes.admin.icon} size="s" />
+                        </span>
+                        <span class="scope-text">
+                            <span class="scope-title">{scopes.admin.title}</span>
+                            <span class="scope-desc">{scopes.admin.description}</span>
+                        </span>
+                    </li>
+                {/if}
+                {#each scopes.identity as scope (scope.id)}
+                    <li class="scope-item">
                         <span class="scope-icon">
                             <Icon icon={scope.icon} size="s" />
                         </span>
                         <span class="scope-text">
                             <span class="scope-title">{scope.title}</span>
-                            {#if showDescription(scope.id)}
-                                <span class="scope-desc">{scope.description}</span>
-                            {/if}
                         </span>
                     </li>
                 {/each}
             </ul>
+        {/if}
+
+        {#if scopes.groups.length > 0}
+            <div class="scope-accordion">
+                <Accordion title="App permissions" badge={String(scopes.granularCount)}>
+                    <ul class="scope-group-list">
+                        {#each scopes.groups as group (group.resource)}
+                            <li class="scope-group">
+                                <span class="scope-icon">
+                                    <Icon icon={group.icon} size="s" />
+                                </span>
+                                <span class="scope-group-title">{group.title}</span>
+                                <span class="scope-group-actions">
+                                    {#each group.actions as action (action.id)}
+                                        <span class="scope-action-tag">{action.label}</span>
+                                    {/each}
+                                </span>
+                            </li>
+                        {/each}
+                    </ul>
+                </Accordion>
+            </div>
         {/if}
 
         {#if details.length > 0}
@@ -348,6 +369,58 @@
         font-size: 0.78rem;
         line-height: 1.4;
         color: var(--fgcolor-neutral-secondary);
+    }
+
+    /* Collapsed bucket of granular console scopes, grouped by resource. */
+    .scope-accordion {
+        border: 1px solid var(--border-neutral);
+        border-radius: 0.75rem;
+        overflow: hidden;
+    }
+
+    .scope-group-list {
+        list-style: none;
+        margin: 0;
+        padding-block-start: 0.25rem;
+        padding-inline-end: 0.25rem;
+    }
+
+    .scope-group {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.8rem 0;
+    }
+
+    .scope-group + .scope-group {
+        border-top: 1px solid var(--border-neutral);
+    }
+
+    .scope-group-title {
+        flex: 1;
+        min-width: 0;
+        font-size: 0.875rem;
+        font-weight: 500;
+        line-height: 1.3;
+        color: var(--fgcolor-neutral-primary);
+    }
+
+    .scope-group-actions {
+        display: flex;
+        flex-shrink: 0;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 0.3rem;
+    }
+
+    .scope-action-tag {
+        font-size: 0.72rem;
+        line-height: 1.4;
+        color: var(--fgcolor-neutral-secondary);
+        border: 1px solid var(--border-neutral-strong);
+        border-radius: 0.4rem;
+        padding: 0.1rem 0.4rem;
+        background: var(--bgcolor-neutral-default);
     }
 
     /* Rich authorization details — de-emphasized, compact tags. */
