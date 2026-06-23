@@ -426,6 +426,18 @@ export const scopes: ScopeDefinition[] = [
         icon: 'send'
     },
     {
+        scope: 'presences.read',
+        description: "Access to read your project's presences",
+        category: 'Presences',
+        icon: 'user-group'
+    },
+    {
+        scope: 'presences.write',
+        description: "Access to create, update, and delete your project's presences",
+        category: 'Presences',
+        icon: 'user-group'
+    },
+    {
         scope: 'locale.read',
         description: "Access to access your project's Locale service",
         category: 'Other',
