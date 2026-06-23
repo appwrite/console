@@ -34,23 +34,22 @@
 <style lang="scss">
     .auth-bg {
         position: fixed;
+        inset: 0;
+        overflow-y: auto;
         background: var(--bgcolor-neutral-primary, #fff);
         background-size: cover;
-        top: 0;
-        left: 0;
-        height: 100%;
-        width: 100%;
         display: flex;
         flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        justify-content: space-between;
         section {
-            flex: 1;
+            /* Grow to fill (keeping the card centered) when the card is short, but
+               never shrink below the card's own height — so a tall card overflows
+               the shell and scrolls instead of being clipped above the fold. */
+            flex: 1 0 auto;
             width: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
+            padding-block: 2rem;
             padding-inline: 1rem;
         }
         .oauth2-shell {
@@ -58,6 +57,7 @@
             max-width: 28rem;
         }
         footer {
+            flex-shrink: 0;
             padding: 2rem 1rem;
             display: flex;
             gap: 0.5rem;

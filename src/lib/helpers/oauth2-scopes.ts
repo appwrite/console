@@ -98,3 +98,95 @@ export function describeConsentScopes(scopes: string[]): ScopeDescriptor[] {
 
     return described;
 }
+
+export interface ScopeAction {
+    /** Full scope id, e.g. `teams.write`. */
+    id: string;
+    /** Trailing verb, e.g. `read` / `write`. */
+    action: string;
+    /** Display label for the verb, e.g. `Read` / `Write`. */
+    label: string;
+}
+
+export interface ScopeResourceGroup {
+    /** Resource prefix, e.g. `teams` or `backups.policies`. */
+    resource: string;
+    /** Display title for the resource, e.g. `Teams`. */
+    title: string;
+    icon: ComponentType;
+    actions: ScopeAction[];
+}
+
+export interface GroupedConsentScopes {
+    /** `account.admin` full-access descriptor, when requested. */
+    admin: ScopeDescriptor | null;
+    /** OIDC identity scopes (openid/profile/email), always shown in full. */
+    identity: ScopeDescriptor[];
+    /** Every other granular scope, bucketed by resource for collapsing. */
+    groups: ScopeResourceGroup[];
+    /** Total count of granular scopes across all groups. */
+    granularCount: number;
+}
+
+/**
+ * Split a granular scope into its resource prefix and trailing action verb.
+ * `teams.read` -> { resource: 'teams', action: 'read' }, and
+ * `backups.policies.write` -> { resource: 'backups.policies', action: 'write' }.
+ * Scopes without a `.` fall back to the whole scope as the resource.
+ */
+function splitScope(scope: string): { resource: string; action: string } {
+    const lastDot = scope.lastIndexOf('.');
+    if (lastDot <= 0) {
+        return { resource: scope, action: '' };
+    }
+    return { resource: scope.slice(0, lastDot), action: scope.slice(lastDot + 1) };
+}
+
+/**
+ * Group the consent scopes for the OAuth2 consent screen. `account.admin` and the
+ * OIDC identity scopes stay as full, always-visible rows; everything else is
+ * bucketed by resource (`teams`, `projects`, …) so the granular console scopes can
+ * be tucked into a single collapsible section rather than a long flat list.
+ * Resource and action order follow first appearance in the requested scopes.
+ */
+export function groupConsentScopes(scopes: string[]): GroupedConsentScopes {
+    const requested = new Set(scopes);
+    const admin = requested.has(ACCOUNT_ADMIN_SCOPE) ? ACCOUNT_ADMIN_DESCRIPTOR : null;
+    const identity = CONSENT_IDENTITY_SCOPES.filter((scope) => requested.has(scope)).map(
+        describeScope
+    );
+
+    const remaining = scopes.filter(
+        (scope) =>
+            scope !== 'openid' &&
+            scope !== ACCOUNT_ADMIN_SCOPE &&
+            !(CONSENT_IDENTITY_SCOPES as readonly string[]).includes(scope)
+    );
+
+    const byResource = new Map<string, ScopeResourceGroup>();
+    for (const scope of remaining) {
+        const { resource, action } = splitScope(scope);
+        let group = byResource.get(resource);
+        if (!group) {
+            group = {
+                resource,
+                title: titleizeScope(resource),
+                icon: IconKey,
+                actions: []
+            };
+            byResource.set(resource, group);
+        }
+        if (!group.actions.some((existing) => existing.id === scope)) {
+            group.actions.push({ id: scope, action, label: titleizeScope(action || scope) });
+        }
+    }
+
+    const groups = [...byResource.values()];
+
+    // Keep a non-empty consent screen for a minimal OIDC request.
+    if (!admin && identity.length === 0 && groups.length === 0 && requested.has('openid')) {
+        return { admin: null, identity: [describeScope('openid')], groups: [], granularCount: 0 };
+    }
+
+    return { admin, identity, groups, granularCount: remaining.length };
+}
