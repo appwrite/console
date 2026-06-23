@@ -17,7 +17,8 @@
     import { page } from '$app/state';
 
     export let func: Models.Function;
-    export let specs: Models.SpecificationList;
+    export let buildSpecs: Models.SpecificationList;
+    export let runtimeSpecs: Models.SpecificationList;
 
     let buildSpecification = func.buildSpecification;
     let runtimeSpecification = func.runtimeSpecification;
@@ -79,7 +80,12 @@
         }
     }
 
-    const options = (specs?.specifications ?? []).map((spec) => ({
+    const buildOptions = buildSpecs.specifications.map((spec) => ({
+        label: `${spec.cpus} CPU, ${spec.memory} MB RAM`,
+        value: spec.slug,
+        disabled: !spec.enabled
+    }));
+    const runtimeOptions = runtimeSpecs.specifications.map((spec) => ({
         label: `${spec.cpus} CPU, ${spec.memory} MB RAM`,
         value: spec.slug,
         disabled: !spec.enabled
@@ -100,9 +106,9 @@
                 label="Build specification"
                 id="build-specification"
                 required
-                disabled={options.length < 1}
+                disabled={buildOptions.length < 1}
                 bind:value={buildSpecification}
-                {options}>
+                options={buildOptions}>
                 <Tooltip slot="info">
                     <Icon icon={IconInfo} size="s" />
                     <span slot="tooltip">
@@ -114,9 +120,9 @@
                 label="Runtime specification"
                 id="runtime-specification"
                 required
-                disabled={options.length < 1}
+                disabled={runtimeOptions.length < 1}
                 bind:value={runtimeSpecification}
-                {options}>
+                options={runtimeOptions}>
                 <Tooltip slot="info">
                     <Icon icon={IconInfo} size="s" />
                     <span slot="tooltip">
