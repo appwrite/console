@@ -13,7 +13,7 @@
     import { ID, type Models } from '@appwrite.io/console';
     import { capitalize } from '$lib/helpers/string';
     import { backupRetainingOptions, customRetainingOptions } from '../store';
-    import { presetPolicies, showCreatePolicy } from './store';
+    import { presetPolicies } from './store';
     import {
         backupFrequencies,
         backupPolicyDescription,
@@ -24,8 +24,6 @@
     import { Card, Icon, Layout, Link, Tag, Typography } from '@appwrite.io/pink-svelte';
     import { IconPencil, IconTrash } from '@appwrite.io/pink-icons-svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
-    import { goto } from '$app/navigation';
-    import { getChangePlanUrl } from '$lib/stores/billing';
 
     export let isShowing: boolean;
     export let disabled: boolean = false;
@@ -251,11 +249,9 @@
                     <Button
                         extraCompact
                         class="u-underline cursor-pointer"
-                        on:click={() => {
-                            isShowing = false;
-                            $showCreatePolicy = false;
-                            goto(getChangePlanUrl(project.teamId));
-                        }}>Upgrade your plan</Button> to add customized backup policies.
+                        external
+                        href="https://appwrite.io/contact-us/enterprise"
+                        >Upgrade to Enterprise</Button> to add customized backup policies.
                 </Layout.Stack>
             </Layout.Stack>
         {:else}
@@ -268,11 +264,10 @@
                     <Typography.Text variant="m-400" slot="description">
                         Daily backups are retained for 7 days.
 
-                        <Link.Button
-                            on:click={() => {
-                                isShowing = false;
-                                goto(getChangePlanUrl(project.teamId));
-                            }}>Upgrade your plan</Link.Button>
+                        <Link.Anchor
+                            href="https://appwrite.io/contact-us/enterprise"
+                            target="_blank"
+                            rel="noopener noreferrer">Upgrade to Enterprise</Link.Anchor>
                         to add customized backup policies.
                     </Typography.Text>
                 </InputSwitch>
