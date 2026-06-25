@@ -28,7 +28,8 @@
         project={data.project}
         denyAliasedEmailPolicy={data.denyAliasedEmailPolicy}
         denyDisposableEmailPolicy={data.denyDisposableEmailPolicy}
-        denyFreeEmailPolicy={data.denyFreeEmailPolicy} />
+        denyFreeEmailPolicy={data.denyFreeEmailPolicy}
+        denyCorporateEmailPolicy={data.denyCorporateEmailPolicy} />
     <SessionSecurity
         project={data.project}
         sessionAlertPolicy={data.sessionAlertPolicy}

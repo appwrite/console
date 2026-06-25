@@ -565,6 +565,7 @@
                 return;
             }
             if (action === 'update') {
+                $databaseColumnSheetOptions.column = column;
                 $databaseColumnSheetOptions.show = true;
                 $databaseColumnSheetOptions.isEdit = true;
                 $databaseColumnSheetOptions.title = 'Update column';
@@ -1121,7 +1122,8 @@
                                         {@const value = row[columnId]}
                                         {@const formatted = formatColumn(row[columnId])}
                                         {@const isEmptyArray = formatted === 'Empty'}
-                                        {@const isDatetimeAttribute = rowColumn.type === 'datetime'}
+                                        {@const isDatetimeAttribute =
+                                            rowColumn?.type === 'datetime'}
                                         {@const isEncryptedAttribute =
                                             isTextType(rowColumn) &&
                                             'encrypt' in rowColumn &&

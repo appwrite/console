@@ -18,11 +18,13 @@
     let {
         site,
         frameworks,
-        specs
+        buildSpecs,
+        runtimeSpecs
     }: {
         site: Models.Site;
         frameworks: Models.Framework[];
-        specs: Models.SpecificationList;
+        buildSpecs: Models.SpecificationList;
+        runtimeSpecs: Models.SpecificationList;
     } = $props();
 
     let frameworkKey = $state(site.framework);
@@ -124,14 +126,20 @@
                 adapter = selectedFramework.adapters[0].key as Adapter;
                 site.adapter = adapter;
             }
-            if (specs && specs.specifications?.length) {
-                const enabledSpecs = specs.specifications.filter((s) => s.enabled);
-                const fallbackSlug = enabledSpecs[0]?.slug ?? specs.specifications[0]?.slug;
-                if (!enabledSpecs.some((s) => s.slug === site.buildSpecification)) {
-                    site.buildSpecification = fallbackSlug;
+            if (buildSpecs.specifications.length || runtimeSpecs.specifications.length) {
+                const buildEnabledSpecs = buildSpecs.specifications.filter((s) => s.enabled);
+                const runtimeEnabledSpecs = runtimeSpecs.specifications.filter((s) => s.enabled);
+                if (
+                    buildEnabledSpecs.length &&
+                    !buildEnabledSpecs.some((s) => s.slug === site.buildSpecification)
+                ) {
+                    site.buildSpecification = buildEnabledSpecs[0]?.slug;
                 }
-                if (!enabledSpecs.some((s) => s.slug === site.runtimeSpecification)) {
-                    site.runtimeSpecification = fallbackSlug;
+                if (
+                    runtimeEnabledSpecs.length &&
+                    !runtimeEnabledSpecs.some((s) => s.slug === site.runtimeSpecification)
+                ) {
+                    site.runtimeSpecification = runtimeEnabledSpecs[0]?.slug;
                 }
             }
         }
@@ -144,14 +152,16 @@
             adptr = selectedFramework.adapters[0];
             site.adapter = adapter;
         }
-        // only allow enabled specsification for it
-        const enabledSpecs = specs?.specifications?.filter((s) => s.enabled) ?? [];
-        const specToSend = enabledSpecs.some((s) => s.slug === site.buildSpecification)
+        const buildEnabledSpecs = buildSpecs.specifications.filter((s) => s.enabled);
+        const runtimeEnabledSpecs = runtimeSpecs.specifications.filter((s) => s.enabled);
+        const specToSend = buildEnabledSpecs.some((s) => s.slug === site.buildSpecification)
             ? site.buildSpecification
-            : enabledSpecs[0]?.slug;
-        const runtimeSpecToSend = enabledSpecs.some((s) => s.slug === site.runtimeSpecification)
+            : (buildEnabledSpecs[0]?.slug ?? site.buildSpecification);
+        const runtimeSpecToSend = runtimeEnabledSpecs.some(
+            (s) => s.slug === site.runtimeSpecification
+        )
             ? site.runtimeSpecification
-            : enabledSpecs[0]?.slug;
+            : (runtimeEnabledSpecs[0]?.slug ?? site.runtimeSpecification);
         try {
             await sdk.forProject(page.params.region, page.params.project).sites.update({
                 siteId: site.$id,

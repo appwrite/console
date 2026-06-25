@@ -128,7 +128,10 @@
 
     <UpdatePermissions />
     {#if isCloud}
-        <UpdateResourceLimits func={data.function} specs={data.specificationsList} />
+        <UpdateResourceLimits
+            func={data.function}
+            buildSpecs={data.specificationsList}
+            runtimeSpecs={data.runtimeSpecificationsList} />
     {/if}
     <UpdateEvents />
     <UpdateSchedule />

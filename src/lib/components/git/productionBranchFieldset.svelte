@@ -1,9 +1,9 @@
 <script lang="ts">
     import { Button, InputText } from '$lib/elements/forms';
-    import { Fieldset, Input, Layout, Selector, Skeleton } from '@appwrite.io/pink-svelte';
+    import { Fieldset, Layout, Selector } from '@appwrite.io/pink-svelte';
     import SelectRootModal from './selectRootModal.svelte';
+    import BranchSelector from './branchSelector.svelte';
     import { sdk } from '$lib/stores/sdk';
-    import { sortBranches } from '$lib/stores/vcs';
     import { page } from '$app/state';
 
     export let branch = 'main';
@@ -15,67 +15,29 @@
 
     let show = false;
 
-    async function loadBranches() {
+    async function loadDefaultBranch() {
         const repo = await sdk
             .forProject(page.params.region, page.params.project)
             .vcs.getRepository({
                 installationId,
                 providerRepositoryId: repositoryId
             });
-
         branch = repo.defaultBranch ?? 'main';
-
-        const { branches } = await sdk
-            .forProject(page.params.region, page.params.project)
-            .vcs.listRepositoryBranches({
-                installationId,
-                providerRepositoryId: repositoryId
-            });
-
-        return sortBranches(branches);
     }
 </script>
 
 <Fieldset legend="Branch">
-    {#await loadBranches()}
+    {#await loadDefaultBranch()}
         <Layout.Stack gap="xl">
-            <Layout.Stack gap="xs">
-                <Skeleton variant="line" width={100} height={20} />
-                <Skeleton variant="line" width="100%" height={32} />
-            </Layout.Stack>
-            <Layout.Stack gap="xs">
-                <Skeleton variant="line" width={100} height={20} />
-                <Skeleton variant="line" width="100%" height={32} />
-            </Layout.Stack>
-            <Layout.Stack gap="xs">
-                <Skeleton variant="line" width={100} height={20} />
-                <Skeleton variant="line" width={300} height={15} />
-                <Skeleton variant="line" width={300} height={15} />
-            </Layout.Stack>
+            <Layout.Stack gap="xs" />
         </Layout.Stack>
-    {:then branches}
-        {@const options =
-            branches
-                ?.map((branch) => {
-                    return {
-                        value: branch.name,
-                        label: branch.name
-                    };
-                })
-                ?.sort((a, b) => {
-                    return a.label > b.label ? 1 : -1;
-                }) ?? []}
+    {:then}
         <Layout.Stack gap="xl">
-            <Input.ComboBox
-                required
-                id="branch"
-                label="Production branch"
-                placeholder="Select branch"
+            <BranchSelector
                 bind:value={branch}
-                on:select={(event) => {
-                    branch = event.detail.value;
-                }}
-                {options} />
+                {installationId}
+                {repositoryId}
+                on:select={(e) => (branch = e.detail)} />
             <Layout.Stack direction="row" gap="s" alignItems="flex-end">
                 <InputText
                     id="root"

@@ -11,7 +11,8 @@ type EnabledPolicy = {
 const ProjectEmailPolicyId = {
     DenyAliasedEmail: 'deny-aliased-email',
     DenyDisposableEmail: 'deny-disposable-email',
-    DenyFreeEmail: 'deny-free-email'
+    DenyFreeEmail: 'deny-free-email',
+    DenyCorporateEmail: 'deny-corporate-email'
 } as const;
 
 type ProjectPolicy = Models.PolicyList['policies'][number] | EnabledPolicy;
@@ -72,6 +73,9 @@ export const load: PageLoad = async ({ depends, params }) => {
             getDefaultEnabledPolicy(ProjectEmailPolicyId.DenyDisposableEmail),
         denyFreeEmailPolicy:
             (policiesById[ProjectEmailPolicyId.DenyFreeEmail] as EnabledPolicy) ??
-            getDefaultEnabledPolicy(ProjectEmailPolicyId.DenyFreeEmail)
+            getDefaultEnabledPolicy(ProjectEmailPolicyId.DenyFreeEmail),
+        denyCorporateEmailPolicy:
+            (policiesById[ProjectEmailPolicyId.DenyCorporateEmail] as EnabledPolicy) ??
+            getDefaultEnabledPolicy(ProjectEmailPolicyId.DenyCorporateEmail)
     };
 };

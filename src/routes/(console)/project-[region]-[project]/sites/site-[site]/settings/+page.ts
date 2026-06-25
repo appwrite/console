@@ -12,21 +12,34 @@ export const load = async ({ params, depends, parent }) => {
     const variablesOffset = 0;
     const { site } = await parent();
 
-    const [globalVariables, variables, frameworks, installations, specificationsList] =
-        await Promise.all([
-            sdk.forProject(params.region, params.project).projectApi.listVariables({
-                queries: [Query.limit(VARIABLES_LIMIT)]
-            }),
-            sdk.forProject(params.region, params.project).sites.listVariables({
-                siteId: params.site,
-                queries: [Query.limit(limit), Query.offset(variablesOffset)]
-            }),
-            sdk.forProject(params.region, params.project).sites.listFrameworks(),
-            sdk.forProject(params.region, params.project).vcs.listInstallations(),
-            isCloud
-                ? sdk.forProject(params.region, params.project).sites.listSpecifications()
-                : Promise.resolve({ specifications: [], total: 0 })
-        ]);
+    const [
+        globalVariables,
+        variables,
+        frameworks,
+        installations,
+        buildSpecificationsList,
+        runtimeSpecificationsList
+    ] = await Promise.all([
+        sdk.forProject(params.region, params.project).projectApi.listVariables({
+            queries: [Query.limit(VARIABLES_LIMIT)]
+        }),
+        sdk.forProject(params.region, params.project).sites.listVariables({
+            siteId: params.site,
+            queries: [Query.limit(limit), Query.offset(variablesOffset)]
+        }),
+        sdk.forProject(params.region, params.project).sites.listFrameworks(),
+        sdk.forProject(params.region, params.project).vcs.listInstallations(),
+        isCloud
+            ? sdk
+                  .forProject(params.region, params.project)
+                  .sites.listSpecifications({ type: 'builds' })
+            : Promise.resolve({ specifications: [], total: 0 }),
+        isCloud
+            ? sdk
+                  .forProject(params.region, params.project)
+                  .sites.listSpecifications({ type: 'runtimes' })
+            : Promise.resolve({ specifications: [], total: 0 })
+    ]);
 
     // Conflicting variables first
     variables.variables = variables.variables.sort((var1, var2) => {
@@ -46,12 +59,19 @@ export const load = async ({ params, depends, parent }) => {
         }
     });
 
-    const enabledSpecs = specificationsList?.specifications?.filter((s) => s.enabled) ?? [];
-    if (!enabledSpecs.some((s) => s.slug === site.buildSpecification)) {
-        site.buildSpecification = enabledSpecs[0]?.slug;
+    const buildEnabledSpecs = buildSpecificationsList.specifications.filter((s) => s.enabled);
+    const runtimeEnabledSpecs = runtimeSpecificationsList.specifications.filter((s) => s.enabled);
+    if (
+        buildEnabledSpecs.length &&
+        !buildEnabledSpecs.some((s) => s.slug === site.buildSpecification)
+    ) {
+        site.buildSpecification = buildEnabledSpecs[0]?.slug;
     }
-    if (!enabledSpecs.some((s) => s.slug === site.runtimeSpecification)) {
-        site.runtimeSpecification = enabledSpecs[0]?.slug;
+    if (
+        runtimeEnabledSpecs.length &&
+        !runtimeEnabledSpecs.some((s) => s.slug === site.runtimeSpecification)
+    ) {
+        site.runtimeSpecification = runtimeEnabledSpecs[0]?.slug;
     }
 
     return {
@@ -62,6 +82,7 @@ export const load = async ({ params, depends, parent }) => {
         limit,
         variablesOffset,
         installations,
-        specificationsList
+        buildSpecificationsList,
+        runtimeSpecificationsList
     };
 };

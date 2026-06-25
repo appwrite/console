@@ -2,7 +2,7 @@
     import { PaginationWithLimit, EmptyFilter, Empty } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { Container, ResponsiveContainerHeader } from '$lib/layout';
-    import { Adapter, BuildRuntime, Framework, type Models } from '@appwrite.io/console';
+    import { Adapter, BuildRuntime, Framework, Query, type Models } from '@appwrite.io/console';
     import { View } from '$lib/helpers/load';
     import { ActionMenu, Alert, Icon, Layout, Popover } from '@appwrite.io/pink-svelte';
     import Table from './table.svelte';
@@ -43,13 +43,22 @@
     async function connect(selectedInstallationId: string, selectedRepository: string) {
         let nextBranch = data.site?.providerBranch ?? 'main';
         try {
-            const branchList = await sdk
-                .forProject(page.params.region, page.params.project)
-                .vcs.listRepositoryBranches({
-                    installationId: selectedInstallationId,
-                    providerRepositoryId: selectedRepository
-                });
-            const sorted = sortBranches(branchList.branches);
+            const allBranches = [];
+            let offset = 0;
+            const limit = 100;
+            while (true) {
+                const { branches, total } = await sdk
+                    .forProject(page.params.region, page.params.project)
+                    .vcs.listRepositoryBranches({
+                        installationId: selectedInstallationId,
+                        providerRepositoryId: selectedRepository,
+                        queries: [Query.limit(limit), Query.offset(offset)]
+                    });
+                allBranches.push(...branches);
+                if (allBranches.length >= total || branches.length < limit) break;
+                offset += limit;
+            }
+            const sorted = sortBranches(allBranches);
             nextBranch =
                 sorted.find((branch) => branch.name === data.site?.providerBranch)?.name ??
                 sorted.find((branch) => branch.name === 'main' || branch.name === 'master')?.name ??
