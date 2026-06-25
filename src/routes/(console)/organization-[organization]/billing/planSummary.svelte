@@ -295,6 +295,13 @@
         };
 
         // addons (additional members, projects, etc.)
+        // Fallback labels for older cloud builds that don't yet send `addon.name`
+        // on the resource entry. Once the cloud rollout is complete this map can
+        // be removed entirely.
+        const billingAddonNamesFallback: Record<string, string> = {
+            addon_baa: 'HIPAA BAA'
+        };
+
         const addons = (currentAggregation?.resources || [])
             .filter(
                 (r) =>
@@ -312,7 +319,8 @@
                             : addon.resourceId === 'projects'
                               ? 'Additional projects'
                               : addon.name ||
-                                `${addon.resourceId} overage (${formatNum(addon.value)})`,
+                                billingAddonNamesFallback[addon.resourceId] ||
+                                addon.resourceId,
                     usage: '',
                     price: formatCurrency(addon.amount)
                 },

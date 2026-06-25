@@ -7,6 +7,7 @@
     import UpdateSessionLength from './updateSessionLength.svelte';
     import UpdateSessionsLimit from './updateSessionsLimit.svelte';
     import PasswordPolicies from './passwordPolicies.svelte';
+    import PasswordStrengthPolicy from './passwordStrengthPolicy.svelte';
     import SessionSecurity from './sessionSecurity.svelte';
     import UpdateSignupEmailSecurity from './updateSignupEmailSecurity.svelte';
 
@@ -17,6 +18,7 @@
     <UpdateUsersLimit project={data.project} policy={data.userLimitPolicy} />
     <UpdateSessionLength project={data.project} policy={data.sessionDurationPolicy} />
     <UpdateSessionsLimit project={data.project} policy={data.sessionLimitPolicy} />
+    <PasswordStrengthPolicy project={data.project} policy={data.passwordStrengthPolicy} />
     <PasswordPolicies
         project={data.project}
         dictionaryPolicy={data.passwordDictionaryPolicy}
@@ -26,7 +28,8 @@
         project={data.project}
         denyAliasedEmailPolicy={data.denyAliasedEmailPolicy}
         denyDisposableEmailPolicy={data.denyDisposableEmailPolicy}
-        denyFreeEmailPolicy={data.denyFreeEmailPolicy} />
+        denyFreeEmailPolicy={data.denyFreeEmailPolicy}
+        denyCorporateEmailPolicy={data.denyCorporateEmailPolicy} />
     <SessionSecurity
         project={data.project}
         sessionAlertPolicy={data.sessionAlertPolicy}

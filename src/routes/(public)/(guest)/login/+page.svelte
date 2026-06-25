@@ -1,6 +1,7 @@
 <script lang="ts">
     import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
+    import { onMount } from 'svelte';
     import { Button, Form, InputEmail, InputPassword } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
@@ -17,6 +18,15 @@
     let mail: string, pass: string, disabled: boolean;
 
     export let data;
+
+    onMount(() => {
+        if (page.url.searchParams.has('message')) {
+            addNotification({
+                type: 'error',
+                message: 'OAuth authentication failed. Please try again.'
+            });
+        }
+    });
 
     async function login() {
         try {
@@ -50,6 +60,37 @@
             if ($redirectTo) {
                 window.location.href = $redirectTo;
                 return;
+            }
+
+            // Honor the `redirect` query param so OAuth2 consent/device flows
+            // (and other deep links) resume after email login. MFA-safe: if
+            // additional factors are required, fall through to invalidate(ACCOUNT)
+            // so the root layout routes to /mfa carrying the redirect param from
+            // the current /login URL.
+            const redirect = page.url.searchParams.get('redirect');
+            if (redirect) {
+                try {
+                    await sdk.forConsole.account.get();
+                    // Resume to the stored redirect exactly — it already carries
+                    // its own query string. Appending the login page's remaining
+                    // search params would leak login-only params (e.g. `message`)
+                    // into the OAuth2 request route.
+                    await goto(redirect);
+                    await invalidate(Dependencies.ACCOUNT);
+                    return;
+                } catch (mfaError) {
+                    if (mfaError?.type !== 'user_more_factors_required') {
+                        addNotification({
+                            type: 'error',
+                            message: mfaError.message
+                        });
+                        trackError(mfaError, Submit.AccountLogin);
+                        disabled = false;
+                        return;
+                    }
+                    // MFA required: fall through so the root layout redirects to
+                    // /mfa with the redirect param preserved in the URL.
+                }
             }
 
             // no specific redirect, so redirect will happen through invalidating the account

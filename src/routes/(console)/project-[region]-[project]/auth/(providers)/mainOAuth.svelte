@@ -148,7 +148,7 @@
     }
 
     function isOidcAdvancedParam(id: string): boolean {
-        return id === 'authorizationURL' || id === 'tokenUrl' || id === 'userInfoUrl';
+        return id !== 'wellKnownURL' && id.toLowerCase().includes('url');
     }
 
     async function handleP8FileUpload(id: string, event: Event) {
@@ -244,21 +244,6 @@
             required={enabled && !!param.example}
             bind:value={fieldValues[param.$id]} />
     {/each}
-
-    {#if advancedDetailParams.length > 0}
-        <Accordion title="Advanced" badge="Optional" hideDivider>
-            <Layout.Stack gap="l">
-                {#each advancedDetailParams as param}
-                    <InputText
-                        id={param.$id}
-                        label={primaryName(param.name)}
-                        placeholder={param.example || ''}
-                        helper={helperText(param.hint)}
-                        bind:value={fieldValues[param.$id]} />
-                {/each}
-            </Layout.Stack>
-        </Accordion>
-    {/if}
 
     {#if secretParams.length > 0}
         {#if !showSecretInput}
@@ -370,6 +355,21 @@
                 </Layout.Stack>
             </Card.Base>
         {/if}
+    {/if}
+
+    {#if advancedDetailParams.length > 0}
+        <Accordion title="Advanced" badge="Optional" hideDivider>
+            <Layout.Stack gap="l">
+                {#each advancedDetailParams as param}
+                    <InputText
+                        id={param.$id}
+                        label={primaryName(param.name)}
+                        placeholder={param.example || ''}
+                        helper={helperText(param.hint)}
+                        bind:value={fieldValues[param.$id]} />
+                {/each}
+            </Layout.Stack>
+        </Accordion>
     {/if}
 
     <Alert.Inline status="info">

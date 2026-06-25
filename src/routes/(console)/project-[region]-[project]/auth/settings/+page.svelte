@@ -2,7 +2,7 @@
     import { invalidate } from '$app/navigation';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid } from '$lib/components';
-    import { InputSwitch } from '$lib/elements/forms';
+    import { InputSearch, InputSwitch } from '$lib/elements/forms';
     import Button from '$lib/elements/forms/button.svelte';
     import { Container } from '$lib/layout';
     import { app } from '$lib/stores/app';
@@ -36,6 +36,7 @@
 
     let showProvider = $state(false);
     let selectedProvider: AuthProvider | null = $state(null);
+    let oauthProviderSearch = $state('');
     let isUpdatingAllAuthMethods = $state(false);
     let showUpdateAuthMethodsDialog = $state(false);
     let updateAuthMethodsEnabledMode = $state<boolean | null>(null);
@@ -56,6 +57,27 @@
 
     const shouldDisableEnableAllButton = $derived(isAnyUpdateInProgress || allAuthMethodsEnabled);
     const shouldDisableDisableAllButton = $derived(isAnyUpdateInProgress || allAuthMethodsDisabled);
+    const filteredOAuthProviders = $derived.by(() => {
+        const search = oauthProviderSearch.trim().toLowerCase();
+
+        return resolvedOAuthProviders
+            .filter((provider) => {
+                const oAuthProvider = oAuthProviders[provider.key];
+                if (!oAuthProvider || oAuthProvider.internal) return false;
+                if (provider.key === 'mock' || provider.name === 'Mock') return false;
+                if (!search) return true;
+
+                return (
+                    provider.name.toLowerCase().includes(search) ||
+                    provider.key.toLowerCase().includes(search)
+                );
+            })
+            .sort((a, b) => {
+                if (a.enabled !== b.enabled) return a.enabled ? -1 : 1;
+
+                return a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
+            });
+    });
 
     async function authUpdate(box: AuthMethod) {
         apiAuthMethodUpdates.add(box.method);
@@ -205,13 +227,18 @@
                 </svelte:fragment>
             </CardGrid>
             <Layout.Stack>
-                <Typography.Title size="s">OAuth2 Providers</Typography.Title>
-                <ul class="grid-box" style:--grid-gap="1rem" style:--grid-item-size="15rem">
-                    {#each resolvedOAuthProviders
-                        .filter((p) => p.key !== 'mock' && p.name !== 'Mock')
-                        .sort( (a, b) => (a.enabled === b.enabled ? 0 : a.enabled ? -1 : 1) ) as provider}
-                        {@const oAuthProvider = oAuthProviders[provider.key]}
-                        {#if oAuthProvider && !oAuthProvider.internal}
+                <div class="oauth-providers-header">
+                    <Typography.Title size="s">OAuth2 Providers</Typography.Title>
+                    <div class="oauth-providers-search">
+                        <InputSearch
+                            bind:value={oauthProviderSearch}
+                            placeholder="Search OAuth2 providers" />
+                    </div>
+                </div>
+                {#if filteredOAuthProviders.length}
+                    <ul class="grid-box" style:--grid-gap="1rem" style:--grid-item-size="15rem">
+                        {#each filteredOAuthProviders as provider (provider.key)}
+                            {@const oAuthProvider = oAuthProviders[provider.key]}
                             <Card.Button
                                 padding="s"
                                 on:click={() => {
@@ -241,9 +268,13 @@
                                         content={provider.enabled ? 'enabled' : 'disabled'} />
                                 </Layout.Stack>
                             </Card.Button>
-                        {/if}
-                    {/each}
-                </ul>
+                        {/each}
+                    </ul>
+                {:else}
+                    <div class="oauth-providers-empty">
+                        <Typography.Text>No OAuth2 providers match your search.</Typography.Text>
+                    </div>
+                {/if}
             </Layout.Stack>
         </Layout.Stack>
     </Container>
@@ -292,9 +323,37 @@
         min-width: 0;
     }
 
+    .oauth-providers-header {
+        align-items: center;
+        display: flex;
+        gap: var(--space-4);
+        justify-content: space-between;
+    }
+
+    .oauth-providers-search {
+        max-width: 20rem;
+        width: 100%;
+    }
+
+    .oauth-providers-empty {
+        align-items: center;
+        display: flex;
+        justify-content: flex-start;
+        padding: var(--space-4) 0;
+    }
+
     @media (max-width: 768px) {
         .auth-methods-grid {
             grid-template-columns: 1fr;
+        }
+
+        .oauth-providers-header {
+            align-items: stretch;
+            flex-direction: column;
+        }
+
+        .oauth-providers-search {
+            width: 100%;
         }
     }
 </style>

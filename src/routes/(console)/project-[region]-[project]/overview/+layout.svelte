@@ -17,13 +17,11 @@
     import { PlatformsPanel } from '$lib/commandCenter/panels';
     import { Tab, Tabs } from '$lib/components';
     import { isTabSelected } from '$lib/helpers/load';
-    import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { Container, type UsagePeriods } from '$lib/layout';
     import { onMount, setContext, type Component } from 'svelte';
     import Bandwidth from './bandwidth.svelte';
     import Requests from './requests.svelte';
     import { usage } from './store';
-    import { formatNum } from '$lib/helpers/string';
     import { periodToDates } from '$lib/layout/usage.svelte';
     import { canWriteProjects } from '$lib/stores/roles';
     import { Card, Layout, Typography } from '@appwrite.io/pink-svelte';
@@ -121,123 +119,50 @@
 <Container overlapCover>
     <Layout.Stack gap="xxl">
         {#if $usage}
-            {@const storage = humanFileSize($usage.filesStorageTotal ?? 0)}
-            <Layout.Stack gap="xl">
-                <Layout.Stack gap="l" direction={$isSmallViewport ? 'column' : 'row'}>
-                    <Card.Base
-                        class="is-2-columns-medium-screen is-3-columns-large-screen"
-                        padding="s">
-                        <Bandwidth {period} on:change={(e) => changePeriod(e.detail)} />
-                    </Card.Base>
-                    <Card.Base
-                        class="is-2-columns-medium-screen is-3-columns-large-screen"
-                        padding="s">
-                        <Requests {period} on:change={(e) => changePeriod(e.detail)} />
-                    </Card.Base>
-                </Layout.Stack>
-
-                <Layout.Stack gap="xl" direction={$isSmallViewport ? 'column' : 'row'}>
-                    <Card.Link
-                        padding="s"
-                        href={`${base}/project-${page.params.region}-${page.params.project}/databases`}
-                        class="is-2-columns-large-screen">
-                        <div class="grid-item-1">
-                            <div class="grid-item-1-start-start">
-                                <div class="eyebrow-heading-3">
-                                    <span class="icon-database" aria-hidden="true"></span>
-                                    <span class="text">Database</span>
-                                </div>
-                            </div>
-
-                            <div class="grid-item-1-start-end"></div>
-
-                            <div class="grid-item-1-end-start">
-                                <Typography.Title>
-                                    {formatNum($usage.documentsTotal ?? 0)}
-                                </Typography.Title>
-                                <Typography.Text>Rows</Typography.Text>
-                            </div>
-                        </div>
-                    </Card.Link>
-                    <Card.Link
-                        padding="s"
-                        href={`${base}/project-${page.params.region}-${page.params.project}/storage`}
-                        class="is-2-columns-large-screen">
-                        <div class="grid-item-1">
-                            <div class="grid-item-1-start-start">
-                                <div class="eyebrow-heading-3">
-                                    <span class="icon-folder" aria-hidden="true"></span>
-                                    <span class="text">Storage</span>
-                                </div>
-                            </div>
-
-                            <div class="grid-item-1-start-end"></div>
-
-                            <div class="grid-item-1-end-start">
-                                <Typography.Title>
-                                    {storage.value}
-                                    <span class="body-text-2">{storage.unit}</span>
-                                </Typography.Title>
-                                <Typography.Text>Storage</Typography.Text>
-                            </div>
-                        </div>
-                    </Card.Link>
-                    <Card.Link
-                        padding="s"
-                        href={`${base}/project-${page.params.region}-${page.params.project}/auth`}
-                        class="is-2-columns-large-screen">
-                        <div class="grid-item-1">
-                            <div class="grid-item-1-start-start">
-                                <div class="eyebrow-heading-3">
-                                    <span class="icon-user-group" aria-hidden="true"></span>
-                                    <span class="text">Auth</span>
-                                </div>
-                            </div>
-
-                            <div class="grid-item-1-start-end"></div>
-
-                            <div class="grid-item-1-end-start">
-                                <Typography.Title>
-                                    {formatNum($usage.usersTotal ?? 0)}
-                                </Typography.Title>
-                                <Typography.Text>Users</Typography.Text>
-                            </div>
-                        </div>
-                    </Card.Link>
-                    <Card.Link
-                        padding="s"
-                        href={`${base}/project-${page.params.region}-${page.params.project}/functions`}
-                        class="is-2-columns-large-screen">
-                        <div class="grid-item-1">
-                            <div class="grid-item-1-start-start">
-                                <div class="eyebrow-heading-3">
-                                    <span class="icon-lightning-bolt" aria-hidden="true"></span>
-                                    <span class="text">Functions</span>
-                                </div>
-                            </div>
-
-                            <div class="grid-item-1-start-end"></div>
-
-                            <div class="grid-item-1-end-start">
-                                <Typography.Title>
-                                    {formatNum($usage.executionsTotal ?? 0)}
-                                </Typography.Title>
-                                <Typography.Text>Executions</Typography.Text>
-                            </div>
-
-                            <div class="grid-item-1-end-end">
-                                <div class="text"></div>
-                            </div>
-                        </div>
-                    </Card.Link>
-                    <!--                    <Card.Base-->
-                    <!--                        padding="s"-->
-                    <!--                        class="is-2-columns-medium-screen is-2-columns-large-screen is-2-rows-large-screen is-location-row-2-end-large-screen">-->
-                    <!--                        <Realtime />-->
-                    <!--                    </Card.Base>-->
-                </Layout.Stack>
+            <Layout.Stack gap="l" direction={$isSmallViewport ? 'column' : 'row'}>
+                <Card.Base class="is-2-columns-medium-screen is-3-columns-large-screen" padding="s">
+                    <Bandwidth {period} on:change={(e) => changePeriod(e.detail)} />
+                </Card.Base>
+                <Card.Base class="is-2-columns-medium-screen is-3-columns-large-screen" padding="s">
+                    <Requests {period} on:change={(e) => changePeriod(e.detail)} />
+                </Card.Base>
             </Layout.Stack>
         {/if}
+
+        <div class="nav-tiles">
+            <Card.Link
+                padding="s"
+                href={`${base}/project-${page.params.region}-${page.params.project}/databases`}>
+                <div class="eyebrow-heading-3">
+                    <span class="icon-database" aria-hidden="true"></span>
+                    <span class="text">Database</span>
+                </div>
+            </Card.Link>
+            <Card.Link
+                padding="s"
+                href={`${base}/project-${page.params.region}-${page.params.project}/storage`}>
+                <div class="eyebrow-heading-3">
+                    <span class="icon-folder" aria-hidden="true"></span>
+                    <span class="text">Storage</span>
+                </div>
+            </Card.Link>
+            <Card.Link
+                padding="s"
+                href={`${base}/project-${page.params.region}-${page.params.project}/auth`}>
+                <div class="eyebrow-heading-3">
+                    <span class="icon-user-group" aria-hidden="true"></span>
+                    <span class="text">Auth</span>
+                </div>
+            </Card.Link>
+            <Card.Link
+                padding="s"
+                href={`${base}/project-${page.params.region}-${page.params.project}/functions`}>
+                <div class="eyebrow-heading-3">
+                    <span class="icon-lightning-bolt" aria-hidden="true"></span>
+                    <span class="text">Functions</span>
+                </div>
+            </Card.Link>
+        </div>
 
         <Layout.Stack gap="xl">
             <Typography.Title>Integrations</Typography.Title>
@@ -260,3 +185,17 @@
         </Layout.Stack>
     </Layout.Stack>
 </Container>
+
+<style>
+    .nav-tiles {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    @media (min-width: 768px) {
+        .nav-tiles {
+            grid-template-columns: repeat(4, 1fr);
+        }
+    }
+</style>

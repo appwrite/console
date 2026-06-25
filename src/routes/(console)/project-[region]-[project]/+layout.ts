@@ -20,7 +20,19 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
     depends(Dependencies.PROJECT);
 
     const projectSdk = sdk.forProject(params.region, params.project).project;
-    const project = await projectSdk.get();
+    let project: Models.Project;
+    try {
+        project = await projectSdk.get();
+    } catch {
+        // project is inaccessible (deleted, wrong region, etc.) — go back to last known org
+        const lastOrg = prefs?.organization;
+        redirect(
+            303,
+            lastOrg
+                ? resolve('/(console)/organization-[organization]', { organization: lastOrg })
+                : resolve('/(console)')
+        );
+    }
     if (project.status !== 'active' && project.status !== 'paused') {
         // project isn't active, redirect back to organizations page
         redirect(
@@ -52,7 +64,8 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
             sdk.forConsoleIn(project.region).console.variables(),
             isCloud
                 ? sdk.forConsole.organizations.getScopes({
-                      organizationId: project.teamId
+                      organizationId: project.teamId,
+                      projectId: params.project
                   })
                 : null,
             projectSdk.listPlatforms({ queries: [Query.limit(1)] }),

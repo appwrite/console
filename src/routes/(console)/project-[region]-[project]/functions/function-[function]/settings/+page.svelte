@@ -17,6 +17,7 @@
     import { Button } from '$lib/elements/forms';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import UpdateRepository from './updateRepository.svelte';
+    import UpdateBuildTriggers from './updateBuildTriggers.svelte';
     import UpdateBuildCommand from './updateBuildCommand.svelte';
     import UpdateResourceLimits from './updateResourceLimits.svelte';
     import UpdateDeploymentRetention from './updateDeploymentRetention.svelte';
@@ -105,6 +106,7 @@
     <UpdateRuntime runtimesList={data.runtimesList} />
     {#key data.function.providerRepositoryId}
         <UpdateRepository func={data.function} installations={data.installations} />
+        <UpdateBuildTriggers func={data.function} />
     {/key}
 
     <UpdateVariables
@@ -126,7 +128,10 @@
 
     <UpdatePermissions />
     {#if isCloud}
-        <UpdateResourceLimits func={data.function} specs={data.specificationsList} />
+        <UpdateResourceLimits
+            func={data.function}
+            buildSpecs={data.specificationsList}
+            runtimeSpecs={data.runtimeSpecificationsList} />
     {/if}
     <UpdateEvents />
     <UpdateSchedule />

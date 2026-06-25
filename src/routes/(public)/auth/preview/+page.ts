@@ -2,7 +2,7 @@ import { base } from '$app/paths';
 import { redirect } from '@sveltejs/kit';
 
 export const load = async ({ parent, url }) => {
-    const { account } = await parent();
+    const { account, organizations } = await parent();
 
     const projectId = url.searchParams.get('projectId');
     const origin = url.searchParams.get('origin');
@@ -15,7 +15,8 @@ export const load = async ({ parent, url }) => {
         );
     } else {
         return {
-            account
+            account,
+            organizations
         };
     }
 };

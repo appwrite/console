@@ -4,7 +4,11 @@ import { Dependencies } from '$lib/constants';
 import { isValueOfStringEnum } from '$lib/helpers/types';
 import { addNotification } from '$lib/stores/notifications';
 import { sdk } from '$lib/stores/sdk';
-import { OAuthProvider, type Models as ConsoleModels } from '@appwrite.io/console';
+import {
+    OAuthProvider,
+    ProjectOAuth2GooglePrompt,
+    type Models as ConsoleModels
+} from '@appwrite.io/console';
 
 type ProjectOAuthProvider = ConsoleModels.OAuth2ProviderList['providers'][number];
 
@@ -21,6 +25,7 @@ type Args = {
     secret: string | null;
     details: Record<string, string>;
     enabled: boolean;
+    promptValues?: ProjectOAuth2GooglePrompt[];
 };
 
 type Return = {
@@ -45,7 +50,8 @@ async function updateProjectOAuth({
     appId,
     secret,
     details,
-    enabled
+    enabled,
+    promptValues
 }: Args) {
     const projectSdk = sdk.forProject(region, projectId).project;
     const parsedSecret = parseSecret(secret);
@@ -184,6 +190,7 @@ async function updateProjectOAuth({
             return projectSdk.updateOAuth2Google({
                 clientId: getAppId(),
                 clientSecret: getSecret(),
+                prompt: promptValues ?? [],
                 enabled
             });
         case OAuthProvider.Keycloak:
@@ -345,14 +352,24 @@ export async function updateOAuth({
     appId,
     secret,
     details,
-    enabled
+    enabled,
+    promptValues
 }: Args): Promise<Return> {
     try {
         if (!isValueOfStringEnum(OAuthProvider, provider.key)) {
             throw new Error(`Invalid OAuth2 provider: ${provider.key}`);
         }
 
-        await updateProjectOAuth({ region, projectId, provider, appId, secret, details, enabled });
+        await updateProjectOAuth({
+            region,
+            projectId,
+            provider,
+            appId,
+            secret,
+            details,
+            enabled,
+            promptValues
+        });
         await invalidate(Dependencies.PROJECT);
 
         addNotification({

@@ -11,7 +11,8 @@ type EnabledPolicy = {
 const ProjectEmailPolicyId = {
     DenyAliasedEmail: 'deny-aliased-email',
     DenyDisposableEmail: 'deny-disposable-email',
-    DenyFreeEmail: 'deny-free-email'
+    DenyFreeEmail: 'deny-free-email',
+    DenyCorporateEmail: 'deny-corporate-email'
 } as const;
 
 type ProjectPolicy = Models.PolicyList['policies'][number] | EnabledPolicy;
@@ -20,6 +21,15 @@ type EmailPolicyId = (typeof ProjectEmailPolicyId)[keyof typeof ProjectEmailPoli
 const getDefaultEnabledPolicy = (policyId: EmailPolicyId): EnabledPolicy => ({
     $id: policyId,
     enabled: false
+});
+
+const getDefaultPasswordStrengthPolicy = (): Models.PolicyPasswordStrength => ({
+    $id: ProjectPolicyId.Passwordstrength,
+    min: 8,
+    uppercase: false,
+    lowercase: false,
+    number: false,
+    symbols: false
 });
 
 export const load: PageLoad = async ({ depends, params }) => {
@@ -40,6 +50,9 @@ export const load: PageLoad = async ({ depends, params }) => {
         passwordHistoryPolicy: policiesById[
             ProjectPolicyId.Passwordhistory
         ] as Models.PolicyPasswordHistory,
+        passwordStrengthPolicy:
+            (policiesById[ProjectPolicyId.Passwordstrength] as Models.PolicyPasswordStrength) ??
+            getDefaultPasswordStrengthPolicy(),
         passwordPersonalDataPolicy: policiesById[
             ProjectPolicyId.Passwordpersonaldata
         ] as Models.PolicyPasswordPersonalData,
@@ -60,6 +73,9 @@ export const load: PageLoad = async ({ depends, params }) => {
             getDefaultEnabledPolicy(ProjectEmailPolicyId.DenyDisposableEmail),
         denyFreeEmailPolicy:
             (policiesById[ProjectEmailPolicyId.DenyFreeEmail] as EnabledPolicy) ??
-            getDefaultEnabledPolicy(ProjectEmailPolicyId.DenyFreeEmail)
+            getDefaultEnabledPolicy(ProjectEmailPolicyId.DenyFreeEmail),
+        denyCorporateEmailPolicy:
+            (policiesById[ProjectEmailPolicyId.DenyCorporateEmail] as EnabledPolicy) ??
+            getDefaultEnabledPolicy(ProjectEmailPolicyId.DenyCorporateEmail)
     };
 };

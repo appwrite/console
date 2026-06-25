@@ -48,9 +48,14 @@
     function handleKeyDown(e: KeyboardEvent) {
         const tabBtn = e.target as HTMLElement;
         const tabItem = tabBtn.closest('.tabs-item') as HTMLElement;
+        if (!tabItem) return;
+
         const tabsList = tabItem.closest('.tabs') as HTMLElement;
+        if (!tabsList) return;
+
         const tabItems = Array.from(tabsList.querySelectorAll('.tabs-item'));
         const currentIdx = tabItems.indexOf(tabItem);
+        if (currentIdx === -1) return;
 
         const dir = getElementDir(tabsList);
 

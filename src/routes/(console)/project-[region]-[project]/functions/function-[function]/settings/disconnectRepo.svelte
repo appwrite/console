@@ -10,7 +10,7 @@
     import { createEventDispatcher } from 'svelte';
     import { func } from '../store';
     import { isValueOfStringEnum } from '$lib/helpers/types';
-    import { Runtime, type Scopes } from '@appwrite.io/console';
+    import { Runtime, type ProjectKeyScopes } from '@appwrite.io/console';
 
     export let show = false;
     const functionId = page.params.function;
@@ -31,17 +31,18 @@
                 events: $func.events || undefined,
                 schedule: $func.schedule || undefined,
                 timeout: $func.timeout || undefined,
-                enabled: $func.enabled || undefined,
-                logging: $func.logging || undefined,
+                enabled: $func.enabled ?? undefined,
+                logging: $func.logging ?? undefined,
                 entrypoint: $func.entrypoint,
                 commands: $func.commands || undefined,
-                scopes: ($func.scopes as Scopes[]) || undefined,
+                scopes: ($func.scopes as ProjectKeyScopes[]) || undefined,
                 installationId: '',
                 providerRepositoryId: '',
                 providerBranch: '',
                 providerSilentMode: true,
                 providerRootDirectory: '',
-                buildSpecification: $func.buildSpecification || undefined
+                buildSpecification: $func.buildSpecification || undefined,
+                deploymentRetention: $func.deploymentRetention ?? undefined
             });
             await invalidate(Dependencies.FUNCTION);
             dispatch('success');

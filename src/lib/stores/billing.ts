@@ -93,7 +93,37 @@ function makeBillingPlan(
     return typeof billingPlanOrId === 'string' ? billingIdToPlan(billingPlanOrId) : billingPlanOrId;
 }
 
+export const projectRoles = roles.filter((r) => r.value !== 'billing');
+
+const projectRoleNames = new Set(projectRoles.map((r) => r.value));
+
+export function isProjectSpecificRole(role: string): boolean {
+    if (!role.startsWith('project-')) return false;
+    const lastDash = role.lastIndexOf('-');
+    if (lastDash <= 'project-'.length) return false;
+    return projectRoleNames.has(role.slice(lastDash + 1));
+}
+
+export function parseProjectRole(role: string): { projectId: string; roleName: string } | null {
+    if (!isProjectSpecificRole(role)) return null;
+    const withoutPrefix = role.slice('project-'.length);
+    const lastDashIdx = withoutPrefix.lastIndexOf('-');
+    if (lastDashIdx === -1) return null;
+    return {
+        projectId: withoutPrefix.slice(0, lastDashIdx),
+        roleName: withoutPrefix.slice(lastDashIdx + 1)
+    };
+}
+
+export function buildProjectRole(projectId: string, roleName: string): string {
+    return `project-${projectId}-${roleName}`;
+}
+
 export function getRoleLabel(role: string) {
+    if (isProjectSpecificRole(role)) {
+        const parsed = parseProjectRole(role);
+        return projectRoles.find((r) => r.value === parsed?.roleName)?.label ?? role;
+    }
     return roles.find((r) => r.value === role)?.label ?? role;
 }
 
@@ -151,7 +181,11 @@ export function getBasePlanFromGroup(billingPlanGroup: BillingPlanGroup): Models
     return proPlans.sort((a, b) => a.order - b.order)[0];
 }
 
-export function billingIdToPlan(billingId: string): Models.BillingPlan | null {
+export function billingIdToPlan(billingId: string | null | undefined): Models.BillingPlan | null {
+    if (!billingId) {
+        return null;
+    }
+
     const plansInfoStore = getPlansInfoStore();
     if (plansInfoStore.has(billingId)) {
         return plansInfoStore.get(billingId);
@@ -287,9 +321,9 @@ export const actionRequiredInvoices = writable<Models.InvoiceList>(null);
 export const showUsageRatesModal = writable<boolean>(false);
 export const useNewPricingModal = derived(currentPlan, ($plan) => $plan?.usagePerProject === true);
 
-export function checkForUsageFees(plan: string, id: PlanServices) {
+export function checkForUsageFees(plan: string | null | undefined, id: PlanServices) {
     const billingPlan = billingIdToPlan(plan);
-    const supportsUsage = Object.keys(billingPlan.usage).length > 0;
+    const supportsUsage = Object.keys(billingPlan?.usage ?? {}).length > 0;
 
     if (supportsUsage) {
         switch (id) {
@@ -307,10 +341,10 @@ export function checkForUsageFees(plan: string, id: PlanServices) {
     } else return false;
 }
 
-export function checkForProjectLimitation(plan: string, id: PlanServices) {
+export function checkForProjectLimitation(plan: string | null | undefined, id: PlanServices) {
     if (id === 'members') {
         const billingPlan = billingIdToPlan(plan);
-        const hasUnlimitedProjects = billingPlan.projects === 0;
+        const hasUnlimitedProjects = billingPlan?.projects === 0;
 
         if (hasUnlimitedProjects) {
             return false; // No project limitation for members on Pro/Scale plans
@@ -629,7 +663,7 @@ export async function checkForMissingPaymentMethod() {
 // Display upgrade banner for new users after 1 week for 30 days
 export async function checkForNewDevUpgradePro(org: Models.Organization) {
     // browser or plan check.
-    if (!browser || !org.billingPlanDetails.supportsCredits) return;
+    if (!browser || !org?.billingPlanDetails?.supportsCredits) return;
 
     // already dismissed by user!
     if (localStorage.getItem('newDevUpgradePro')) return;
@@ -640,6 +674,8 @@ export async function checkForNewDevUpgradePro(org: Models.Organization) {
 
     const now = new Date().getTime();
     const account = get(user);
+    if (!account?.$createdAt) return;
+
     const accountCreated = new Date(account.$createdAt).getTime();
     if (now - accountCreated < 1000 * 60 * 60 * 24 * 7) return;
 

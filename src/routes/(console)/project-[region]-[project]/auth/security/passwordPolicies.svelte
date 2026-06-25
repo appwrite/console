@@ -8,7 +8,6 @@
     import { sdk } from '$lib/stores/sdk';
     import { Typography, Link, Layout } from '@appwrite.io/pink-svelte';
     import type { Models } from '@appwrite.io/console';
-    import { onMount } from 'svelte';
 
     let {
         project,
@@ -22,72 +21,100 @@
         personalDataPolicy: Models.PolicyPasswordPersonalData;
     } = $props();
 
-    let lastValidLimit = $state(5);
-    let passwordHistory = $state(5);
-    let passwordDictionary = $state(false);
-    let passwordHistoryEnabled = $state(false);
-    let authPersonalDataCheck = $state(false);
+    const getInitialHistoryLimit = () => (historyPolicy.total > 0 ? historyPolicy.total : 5);
+    const getInitialHistoryEnabled = () => historyPolicy.total > 0;
+    const getInitialDictionary = () => dictionaryPolicy.enabled;
+    const getInitialPersonalDataCheck = () => personalDataPolicy.enabled;
 
-    onMount(() => {
-        // update initial states here in onMount.
-        const historyValue = historyPolicy.total;
-        if (historyValue && historyValue > 0) {
-            passwordHistory = historyValue;
-            lastValidLimit = historyValue;
-        }
+    let savedHistoryLimit = $state(getInitialHistoryLimit());
+    let savedHistoryEnabled = $state(getInitialHistoryEnabled());
+    let savedDictionary = $state(getInitialDictionary());
+    let savedPersonalDataCheck = $state(getInitialPersonalDataCheck());
 
-        passwordHistoryEnabled = (historyValue ?? 0) !== 0;
-        passwordDictionary = dictionaryPolicy.enabled;
-        authPersonalDataCheck = personalDataPolicy.enabled;
-    });
+    let lastValidHistoryLimit = $state(getInitialHistoryLimit());
+    let passwordHistoryLimit = $state(getInitialHistoryLimit());
+    let passwordDictionary = $state(getInitialDictionary());
+    let passwordHistoryEnabled = $state(getInitialHistoryEnabled());
+    let authPersonalDataCheck = $state(getInitialPersonalDataCheck());
 
     $effect(() => {
         // restore last valid limit when enabling
-        if (passwordHistoryEnabled && passwordHistory < 1) {
-            passwordHistory = lastValidLimit;
+        if (passwordHistoryEnabled && passwordHistoryLimit < 1) {
+            passwordHistoryLimit = lastValidHistoryLimit;
+        }
+
+        if (passwordHistoryLimit > 0) {
+            lastValidHistoryLimit = passwordHistoryLimit;
         }
     });
 
     const hasChanges = $derived.by(() => {
-        const dictChanged = passwordDictionary !== dictionaryPolicy.enabled;
-        const dataCheckChanged = authPersonalDataCheck !== personalDataPolicy.enabled;
-        const historyChanged = passwordHistoryEnabled !== (historyPolicy.total !== 0);
+        const dictChanged = passwordDictionary !== savedDictionary;
+        const dataCheckChanged = authPersonalDataCheck !== savedPersonalDataCheck;
+        const historyChanged = passwordHistoryEnabled !== savedHistoryEnabled;
         const limitChanged =
-            passwordHistoryEnabled && Number(passwordHistory) !== historyPolicy.total;
+            passwordHistoryEnabled && Number(passwordHistoryLimit) !== savedHistoryLimit;
 
         return historyChanged || dictChanged || dataCheckChanged || limitChanged;
     });
 
     async function updatePasswordPolicies() {
+        let currentSubmit = Submit.AuthPasswordHistoryUpdate;
+        let hasAppliedServerChange = false;
+
         try {
             const projectSdk = sdk.forProject(project.region, project.$id).project;
 
-            await projectSdk.updatePasswordHistoryPolicy({
-                total: passwordHistoryEnabled ? passwordHistory : 0
-            });
+            if (
+                passwordHistoryEnabled !== savedHistoryEnabled ||
+                (passwordHistoryEnabled && Number(passwordHistoryLimit) !== savedHistoryLimit)
+            ) {
+                currentSubmit = Submit.AuthPasswordHistoryUpdate;
+                await projectSdk.updatePasswordHistoryPolicy({
+                    total: passwordHistoryEnabled ? passwordHistoryLimit : null
+                });
+                hasAppliedServerChange = true;
+                trackEvent(Submit.AuthPasswordHistoryUpdate);
+            }
 
-            await projectSdk.updatePasswordDictionaryPolicy({
-                enabled: passwordDictionary
-            });
+            if (passwordDictionary !== savedDictionary) {
+                currentSubmit = Submit.AuthPasswordDictionaryUpdate;
+                await projectSdk.updatePasswordDictionaryPolicy({
+                    enabled: passwordDictionary
+                });
+                hasAppliedServerChange = true;
+                trackEvent(Submit.AuthPasswordDictionaryUpdate);
+            }
 
-            await projectSdk.updatePasswordPersonalDataPolicy({
-                enabled: authPersonalDataCheck
-            });
+            if (authPersonalDataCheck !== savedPersonalDataCheck) {
+                currentSubmit = Submit.AuthPersonalDataCheckUpdate;
+                await projectSdk.updatePasswordPersonalDataPolicy({
+                    enabled: authPersonalDataCheck
+                });
+                hasAppliedServerChange = true;
+                trackEvent(Submit.AuthPersonalDataCheckUpdate);
+            }
+
+            savedHistoryLimit = passwordHistoryLimit;
+            savedHistoryEnabled = passwordHistoryEnabled;
+            savedDictionary = passwordDictionary;
+            savedPersonalDataCheck = authPersonalDataCheck;
 
             await invalidate(Dependencies.PROJECT);
             addNotification({
                 type: 'success',
                 message: 'Updated password policies.'
             });
-            trackEvent(Submit.AuthPasswordHistoryUpdate);
-            trackEvent(Submit.AuthPasswordDictionaryUpdate);
-            trackEvent(Submit.AuthPersonalDataCheckUpdate);
         } catch (error) {
+            if (hasAppliedServerChange) {
+                await invalidate(Dependencies.PROJECT);
+            }
+
             addNotification({
                 type: 'error',
                 message: error.message
             });
-            trackError(error, Submit.AuthPasswordHistoryUpdate);
+            trackError(error, currentSubmit);
         }
     }
 </script>
@@ -114,7 +141,7 @@
                                 autofocus
                                 label="Limit"
                                 id="password-history"
-                                bind:value={passwordHistory}
+                                bind:value={passwordHistoryLimit}
                                 helper="Maximum 20 passwords." />
                         {/if}
                     </Layout.Stack>
