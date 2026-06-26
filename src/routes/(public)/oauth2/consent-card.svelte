@@ -1,24 +1,39 @@
 <script lang="ts">
     import type { Models } from '@appwrite.io/console';
-    import { Accordion, Card, Layout, Typography, Icon, Spinner } from '@appwrite.io/pink-svelte';
+    import {
+        Badge,
+        Card,
+        Layout,
+        Typography,
+        Icon,
+        Selector,
+        Spinner
+    } from '@appwrite.io/pink-svelte';
     import { IconCheck, IconExclamation } from '@appwrite.io/pink-icons-svelte';
     import { Button, Form } from '$lib/elements/forms';
+    import AvatarInitials from '$lib/components/avatarInitials.svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { groupConsentScopes } from '$lib/helpers/oauth2-scopes';
+    import { splitSelectableScopes } from '$lib/helpers/oauth2-scopes';
     import {
         actionsOf,
-        isAppwriteConsoleDetail,
+        collectProjectIds,
+        isAppwriteProjectDetail,
         loadActionCatalog,
         parseAuthorizationDetails,
+        resolveProjectNames,
         serializeGrantedDetails,
         type ActionCatalog,
-        type AuthorizationDetail
+        type AuthorizationDetail,
+        type ResolvedProject
     } from '$lib/helpers/oauth2-authorization-details';
     import OAuth2ScopePicker from './oauth2-scope-picker.svelte';
 
     export type OAuth2Flow = 'authorization' | 'device';
+
+    /** How many project chips to show in an entry header before collapsing. */
+    const MAX_PROJECT_CHIPS = 5;
 
     function hostnameOf(uri: string): string | null {
         try {
@@ -43,27 +58,28 @@
     let rejecting = $state(false);
     let busy = $derived(approving || rejecting);
 
-    // Requested scopes (identity + account/console-tier) are shown read-only,
-    // grouped by resource. The granular per-project permissions live in
-    // authorization_details and are chosen individually below.
-    const scopes = $derived(groupConsentScopes(grant.scopes ?? []));
+    // The `scope` param carries identity + account/console-tier scopes. Identity
+    // and full-access (`account.admin`) are shown read-only; the rest are
+    // individually selectable. Project-tier permissions live in
+    // authorization_details and are chosen per project below.
+    const scopes = $derived(splitSelectableScopes(grant.scopes ?? []));
     const details = $derived<AuthorizationDetail[]>(
         parseAuthorizationDetails(grant.authorizationDetails)
     );
-    const hasConsoleActions = $derived(
-        details.some((detail) => isAppwriteConsoleDetail(detail) && actionsOf(detail).length > 0)
+    const hasProjectActions = $derived(
+        details.some((detail) => isAppwriteProjectDetail(detail) && actionsOf(detail).length > 0)
     );
     const redirectHost = $derived(hostnameOf(grant.redirectUri));
 
     const appInitial = $derived((app.name || '?').charAt(0).toUpperCase());
     const accountInitial = $derived((accountLabel || '?').charAt(0).toUpperCase());
 
-    // Lazily loaded scope metadata (category + descriptions) for grouping the
-    // requested actions. Never blocks approve/reject — the picker just shows a
-    // spinner until it resolves.
+    // Lazily loaded scope metadata (category + descriptions) for the per-project
+    // pickers. Never blocks approve/reject — the picker shows a spinner until it
+    // resolves.
     let catalog = $state<ActionCatalog | null>(null);
     $effect(() => {
-        if (!hasConsoleActions || catalog) return;
+        if (!hasProjectActions || catalog) return;
         let cancelled = false;
         void loadActionCatalog().then((loaded) => {
             if (!cancelled) catalog = loaded;
@@ -73,16 +89,25 @@
         };
     });
 
-    // Per-entry action selection: entryIndex -> { action -> granted }. Requested
-    // actions start selected (the user opts OUT of what they don't want). Reset
-    // whenever the grant changes so a stale selection can't leak across requests.
+    // Selectable console-scope state: scopeId -> granted. Starts all-on (opt-out).
+    // Re-initialised whenever the grant changes so a stale selection can't leak.
+    let scopeSelection = $state<Record<string, boolean>>({});
+    $effect(() => {
+        grant.$id;
+        const next: Record<string, boolean> = {};
+        for (const descriptor of scopes.selectable) {
+            next[descriptor.id] = true;
+        }
+        scopeSelection = next;
+    });
+
+    // Per-entry project-action selection: entryIndex -> { action -> granted }.
     let selection = $state<Record<number, Record<string, boolean>>>({});
     $effect(() => {
-        // Re-init keyed on the grant id + its requested details.
         grant.$id;
         const next: Record<number, Record<string, boolean>> = {};
         details.forEach((detail, index) => {
-            if (!isAppwriteConsoleDetail(detail)) return;
+            if (!isAppwriteProjectDetail(detail)) return;
             const actionMap: Record<string, boolean> = {};
             for (const action of actionsOf(detail)) {
                 actionMap[action] = true;
@@ -92,35 +117,65 @@
         selection = next;
     });
 
-    /** A short, human context line for an entry's resource scoping. */
-    function detailContext(detail: AuthorizationDetail): string | null {
-        const parts: string[] = [];
-        const projects = detail.projectIds?.length ?? 0;
-        const orgs = detail.organizationIds?.length ?? 0;
-        if (projects > 0) parts.push(`${projects} project${projects === 1 ? '' : 's'}`);
-        if (orgs > 0) parts.push(`${orgs} organization${orgs === 1 ? '' : 's'}`);
-        if (parts.length === 0) return null;
-        return `Limited to ${parts.join(' and ')}`;
+    // Best-effort id -> project resolution. Fills in asynchronously; until then
+    // (and for anything unresolved) headers fall back to the raw project id.
+    let projectNames = $state<Record<string, ResolvedProject>>({});
+    $effect(() => {
+        grant.$id;
+        const ids = collectProjectIds(details);
+        if (ids.length === 0) {
+            projectNames = {};
+            return;
+        }
+        let cancelled = false;
+        void resolveProjectNames(ids).then((map) => {
+            if (!cancelled) projectNames = Object.fromEntries(map);
+        });
+        return () => {
+            cancelled = true;
+        };
+    });
+
+    function projectsForDetail(detail: AuthorizationDetail): ResolvedProject[] {
+        return (detail.projectIds ?? [])
+            .filter((id): id is string => typeof id === 'string' && id !== '')
+            .map((id) => projectNames[id] ?? { id, name: id, resolved: false });
     }
 
-    function locationHosts(detail: AuthorizationDetail): string[] {
-        return (detail.locations ?? [])
-            .map((location) => hostnameOf(location))
-            .filter((host): host is string => Boolean(host));
-    }
-
-    // Approving is meaningless if the request offered actions but the user
-    // unchecked every one and granted no identity scope either.
     const grantedActionCount = $derived(
         Object.values(selection).reduce(
-            (total, actionMap) =>
-                total + Object.values(actionMap).filter((isGranted) => isGranted).length,
+            (total, actionMap) => total + Object.values(actionMap).filter(Boolean).length,
             0
         )
     );
-    const nothingToGrant = $derived(
-        hasConsoleActions && grantedActionCount === 0 && (grant.scopes ?? []).length === 0
+    const grantedConsoleScopeCount = $derived(
+        scopes.selectable.filter((descriptor) => scopeSelection[descriptor.id]).length
     );
+    // Authorize stays enabled as long as SOMETHING is granted — a project action,
+    // a console scope, an identity scope, or full access.
+    const nothingToGrant = $derived(
+        grantedActionCount === 0 &&
+            grantedConsoleScopeCount === 0 &&
+            scopes.identity.length === 0 &&
+            !scopes.admin &&
+            !(grant.scopes ?? []).includes('openid')
+    );
+
+    /** The downscoped `scope` string the user consented to (identity always kept). */
+    function buildGrantedScope(): string {
+        const requested = grant.scopes ?? [];
+        const granted: string[] = [];
+        const add = (scope: string) => {
+            if (!granted.includes(scope)) granted.push(scope);
+        };
+        if (requested.includes('openid')) add('openid');
+        for (const descriptor of scopes.identity) add(descriptor.id);
+        if (scopes.admin) add(scopes.admin.id);
+        for (const descriptor of scopes.selectable) {
+            if (scopeSelection[descriptor.id]) add(descriptor.id);
+        }
+        return granted.join(' ');
+    }
 
     async function approve() {
         if (busy) return;
@@ -132,16 +187,15 @@
         error = null;
         approving = true;
         try {
-            // When the request carries appwrite_console actions, send back the
-            // exact subset the user consented to (downscope-only — the picker
-            // never offers actions the client didn't request). Otherwise omit
-            // it and keep whatever the client originally requested.
-            const authorizationDetails = hasConsoleActions
-                ? serializeGrantedDetails(details, selection)
-                : undefined;
+            // Send back exactly what the user consented to (downscope-only): the
+            // selected console scopes via `scope`, and the selected project
+            // actions via `authorization_details` (when any were requested).
             const result = await sdk.forConsole.oauth2.approve({
                 grantId,
-                authorizationDetails
+                scope: buildGrantedScope(),
+                authorizationDetails: hasProjectActions
+                    ? serializeGrantedDetails(details, selection)
+                    : undefined
             });
             if (grant.$id !== grantId) return;
             trackEvent(Submit.AccountOAuth2ConsentApprove, {
@@ -243,53 +297,78 @@
                         </span>
                         <span class="scope-text">
                             <span class="scope-title">{scope.title}</span>
+                            <span class="scope-desc">{scope.description}</span>
                         </span>
                     </li>
                 {/each}
             </ul>
         {/if}
 
-        {#if scopes.groups.length > 0}
-            <div class="scope-accordion">
-                <Accordion title="Account access" badge={String(scopes.granularCount)}>
-                    <ul class="scope-group-list">
-                        {#each scopes.groups as group (group.resource)}
-                            <li class="scope-group">
-                                <span class="scope-icon">
-                                    <Icon icon={group.icon} size="s" />
-                                </span>
-                                <span class="scope-group-title">{group.title}</span>
-                                <span class="scope-group-actions">
-                                    {#each group.actions as action (action.id)}
-                                        <span class="scope-action-tag">{action.label}</span>
-                                    {/each}
-                                </span>
-                            </li>
-                        {/each}
-                    </ul>
-                </Accordion>
-            </div>
+        {#if scopes.selectable.length > 0}
+            <Layout.Stack gap="s">
+                <Typography.Text variant="m-500">Console access</Typography.Text>
+                <ul class="scope-list">
+                    {#each scopes.selectable as scope (scope.id)}
+                        <li class="scope-item">
+                            <span class="scope-check">
+                                <Selector.Checkbox
+                                    size="s"
+                                    id={`scope-${scope.id}`}
+                                    disabled={busy || !!scopes.admin}
+                                    bind:checked={scopeSelection[scope.id]} />
+                            </span>
+                            <label class="scope-text" for={`scope-${scope.id}`}>
+                                <span class="scope-title">{scope.title}</span>
+                                <span class="scope-desc">{scope.description}</span>
+                            </label>
+                        </li>
+                    {/each}
+                </ul>
+                {#if scopes.admin}
+                    <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
+                        Full access is granted, so these are included.
+                    </Typography.Text>
+                {/if}
+            </Layout.Stack>
         {/if}
 
         {#if details.length > 0}
             <Layout.Stack gap="m">
                 <Layout.Stack gap="xxs">
-                    <Typography.Text variant="m-500">Choose what to allow</Typography.Text>
+                    <Typography.Text variant="m-500">Project access</Typography.Text>
                     <Typography.Text variant="m-400" color="--fgcolor-neutral-secondary">
-                        {app.name} requested these permissions. Grant only the ones you're comfortable
-                        with — you can turn any of them off.
+                        {app.name} requested access to these projects. Grant only the permissions you're
+                        comfortable with — you can turn any of them off.
                     </Typography.Text>
                 </Layout.Stack>
 
                 {#each details as detail, index (`${detail.type}-${index}`)}
-                    {#if isAppwriteConsoleDetail(detail) && actionsOf(detail).length > 0}
-                        {@const context = detailContext(detail)}
-                        {@const hosts = locationHosts(detail)}
+                    {#if isAppwriteProjectDetail(detail) && actionsOf(detail).length > 0}
+                        {@const projects = projectsForDetail(detail)}
                         <div class="detail-section">
-                            {#if context || hosts.length > 0}
-                                <div class="detail-context">
-                                    {#if context}<span>{context}</span>{/if}
-                                    {#if hosts.length > 0}<span>{hosts.join(', ')}</span>{/if}
+                            {#if projects.length > 0}
+                                <div class="project-header">
+                                    {#each projects.slice(0, MAX_PROJECT_CHIPS) as project (project.id)}
+                                        <span class="project-chip">
+                                            <AvatarInitials size="xs" name={project.name} />
+                                            <span
+                                                class="project-name"
+                                                class:mono={!project.resolved}>
+                                                {project.name}
+                                            </span>
+                                            {#if project.region}
+                                                <Badge
+                                                    size="xs"
+                                                    variant="secondary"
+                                                    content={project.region} />
+                                            {/if}
+                                        </span>
+                                    {/each}
+                                    {#if projects.length > MAX_PROJECT_CHIPS}
+                                        <span class="project-more">
+                                            +{projects.length - MAX_PROJECT_CHIPS} more
+                                        </span>
+                                    {/if}
                                 </div>
                             {/if}
                             {#if catalog}
@@ -440,7 +519,8 @@
         border-top: 1px solid var(--border-neutral);
     }
 
-    .scope-icon {
+    .scope-icon,
+    .scope-check {
         flex-shrink: 0;
         display: flex;
         align-items: center;
@@ -460,6 +540,10 @@
         min-width: 0;
     }
 
+    label.scope-text {
+        cursor: pointer;
+    }
+
     .scope-title {
         font-size: 0.875rem;
         font-weight: 500;
@@ -477,58 +561,6 @@
         color: var(--fgcolor-neutral-secondary);
     }
 
-    /* Collapsed bucket of granular console scopes, grouped by resource. */
-    .scope-accordion {
-        border: 1px solid var(--border-neutral);
-        border-radius: 0.75rem;
-        overflow: hidden;
-    }
-
-    .scope-group-list {
-        list-style: none;
-        margin: 0;
-        padding-block-start: 0.25rem;
-        padding-inline-end: 0.25rem;
-    }
-
-    .scope-group {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        padding: 0.8rem 0;
-    }
-
-    .scope-group + .scope-group {
-        border-top: 1px solid var(--border-neutral);
-    }
-
-    .scope-group-title {
-        flex: 1;
-        min-width: 0;
-        font-size: 0.875rem;
-        font-weight: 500;
-        line-height: 1.3;
-        color: var(--fgcolor-neutral-primary);
-    }
-
-    .scope-group-actions {
-        display: flex;
-        flex-shrink: 0;
-        flex-wrap: wrap;
-        justify-content: flex-end;
-        gap: 0.3rem;
-    }
-
-    .scope-action-tag {
-        font-size: 0.72rem;
-        line-height: 1.4;
-        color: var(--fgcolor-neutral-secondary);
-        border: 1px solid var(--border-neutral-strong);
-        border-radius: 0.4rem;
-        padding: 0.1rem 0.4rem;
-        background: var(--bgcolor-neutral-default);
-    }
-
     /* Rich authorization details — one bordered picker section per requested entry. */
     .detail-section {
         border: 1px solid var(--border-neutral);
@@ -541,11 +573,40 @@
         margin-top: 0.5rem;
     }
 
-    .detail-context {
+    /* Project name(s) this entry's permissions apply to. */
+    .project-header {
         display: flex;
         flex-wrap: wrap;
-        gap: 0.25rem 0.75rem;
-        margin-bottom: 0.75rem;
+        align-items: center;
+        gap: 0.4rem 0.6rem;
+        margin-bottom: 0.85rem;
+    }
+
+    .project-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        min-width: 0;
+    }
+
+    .project-name {
+        font-size: 0.85rem;
+        font-weight: 500;
+        line-height: 1.3;
+        color: var(--fgcolor-neutral-primary);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .project-name.mono {
+        font-family: var(--font-family-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+        font-size: 0.78rem;
+        font-weight: 400;
+        color: var(--fgcolor-neutral-secondary);
+    }
+
+    .project-more {
         font-size: 0.78rem;
         color: var(--fgcolor-neutral-tertiary);
     }

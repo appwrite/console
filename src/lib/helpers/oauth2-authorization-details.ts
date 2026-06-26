@@ -1,22 +1,28 @@
+import { Query } from '@appwrite.io/console';
 import { sdk } from '$lib/stores/sdk';
+import { getTeamOrOrganizationList } from '$lib/stores/organization';
 
 /**
  * RFC 9396 Rich Authorization Requests (RAR) helpers for the OAuth2 consent
  * screen.
  *
- * The console OAuth2 server keeps a small set of identity scopes on the
- * standard `scope` parameter (`openid`, `profile`, `email`, `account.admin`)
- * and moves every granular permission into `authorization_details` entries of
- * type `appwrite_console`. The consent screen lets the user approve a *subset*
- * of the requested actions; the approved set is sent back to the approve
- * endpoint and replaces what the client originally requested. We only ever
- * downscope — actions the client did not request are never offered.
+ * The console OAuth2 server keeps identity + account/console-tier scopes on the
+ * standard `scope` parameter (`openid`, `profile`, `email`, `account.admin`,
+ * plus `teams.*`, `projects.*`, …) and moves every project-tier permission into
+ * `authorization_details` entries of type `appwrite_project`, each bound to the
+ * concrete `projectIds` it applies to. The consent screen lets the user approve
+ * a *subset* of the requested actions; the approved set is sent back to the
+ * approve endpoint and replaces what the client originally requested. We only
+ * ever downscope — actions the client did not request are never offered.
  */
 
 /** The single RAR `type` the console OAuth2 server understands. */
-export const APPWRITE_CONSOLE_RAR_TYPE = 'appwrite_console';
+export const APPWRITE_PROJECT_RAR_TYPE = 'appwrite_project';
 
-/** Fields an `appwrite_console` entry may carry, besides `type`/`actions`. */
+/** The reserved internal project id; never a valid RAR target. */
+const RESERVED_CONSOLE_PROJECT = 'console';
+
+/** Fields an `appwrite_project` entry may carry, besides `type`/`actions`. */
 const RESOURCE_FIELDS = ['projectIds', 'organizationIds', 'locations'] as const;
 
 export interface AuthorizationDetail {
@@ -86,11 +92,11 @@ export function parseAuthorizationDetails(raw: string | null | undefined): Autho
     }
 }
 
-export function isAppwriteConsoleDetail(detail: AuthorizationDetail): boolean {
-    return detail.type === APPWRITE_CONSOLE_RAR_TYPE;
+export function isAppwriteProjectDetail(detail: AuthorizationDetail): boolean {
+    return detail.type === APPWRITE_PROJECT_RAR_TYPE;
 }
 
-/** Distinct, requested actions for a single `appwrite_console` entry. */
+/** Distinct, requested actions for a single `appwrite_project` entry. */
 export function actionsOf(detail: AuthorizationDetail): string[] {
     if (!Array.isArray(detail.actions)) return [];
     const seen = new Set<string>();
@@ -172,7 +178,7 @@ export function serializeGrantedDetails(
     const granted: AuthorizationDetail[] = [];
 
     requested.forEach((detail, index) => {
-        if (!isAppwriteConsoleDetail(detail)) {
+        if (!isAppwriteProjectDetail(detail)) {
             granted.push(detail);
             return;
         }
@@ -186,7 +192,7 @@ export function serializeGrantedDetails(
         }
 
         const rebuilt: AuthorizationDetail = {
-            type: APPWRITE_CONSOLE_RAR_TYPE,
+            type: APPWRITE_PROJECT_RAR_TYPE,
             actions: keptActions
         };
         for (const field of RESOURCE_FIELDS) {
@@ -199,4 +205,76 @@ export function serializeGrantedDetails(
     });
 
     return JSON.stringify(granted);
+}
+
+export interface ResolvedProject {
+    id: string;
+    /** Project name, or the raw id when it couldn't be resolved. */
+    name: string;
+    region?: string;
+    /** True when a real project name was found; false means we fell back to id. */
+    resolved: boolean;
+}
+
+export type ProjectNameMap = Map<string, ResolvedProject>;
+
+/** Unique, real project ids referenced across all appwrite_project entries. */
+export function collectProjectIds(details: AuthorizationDetail[]): string[] {
+    const seen = new Set<string>();
+    for (const detail of details) {
+        if (!isAppwriteProjectDetail(detail)) continue;
+        for (const id of detail.projectIds ?? []) {
+            if (typeof id === 'string' && id !== '' && id !== RESERVED_CONSOLE_PROJECT) {
+                seen.add(id);
+            }
+        }
+    }
+    return [...seen];
+}
+
+/**
+ * Best-effort resolution of project ids to their display names. A bare project
+ * id can't be fetched directly — projects are reachable only through their
+ * owning organization — so we list the user's organizations and ask each for
+ * the requested ids. Anything we can't find (not owned, or in a non-primary
+ * region the console endpoint doesn't see) falls back to showing the raw id.
+ * Never throws: on any failure the caller still gets an id-only map.
+ */
+export async function resolveProjectNames(ids: string[]): Promise<ProjectNameMap> {
+    const map: ProjectNameMap = new Map();
+    for (const id of ids) {
+        map.set(id, { id, name: id, resolved: false });
+    }
+    if (ids.length === 0) return map;
+
+    try {
+        const orgs = await getTeamOrOrganizationList([Query.limit(100)]);
+        const results = await Promise.allSettled(
+            orgs.teams.map((org) =>
+                sdk.forConsole.organization(org.$id).listProjects({
+                    queries: [
+                        Query.equal('$id', ids),
+                        Query.select(['$id', 'name', 'region', 'teamId']),
+                        Query.limit(ids.length)
+                    ]
+                })
+            )
+        );
+
+        for (const result of results) {
+            if (result.status !== 'fulfilled') continue;
+            for (const project of result.value.projects) {
+                map.set(project.$id, {
+                    id: project.$id,
+                    name: project.name,
+                    region: project.region,
+                    resolved: true
+                });
+            }
+        }
+    } catch {
+        // Keep the id-only fallback map.
+    }
+
+    return map;
 }

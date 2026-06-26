@@ -2,6 +2,10 @@ import type { ComponentType } from 'svelte';
 import {
     IconShieldCheck,
     IconUser,
+    IconUserCircle,
+    IconUserGroup,
+    IconViewGrid,
+    IconGlobe,
     IconMail,
     IconIdentification,
     IconKey
@@ -43,6 +47,53 @@ const BUILTIN_SCOPES: Record<string, Omit<ScopeDescriptor, 'id'>> = {
         title: ACCOUNT_ADMIN_DESCRIPTOR.title,
         description: ACCOUNT_ADMIN_DESCRIPTOR.description,
         icon: ACCOUNT_ADMIN_DESCRIPTOR.icon
+    },
+    // Account/console-tier scopes (carried on the `scope` param). These read as
+    // console-level actions — managing your account, organizations, projects.
+    account: {
+        title: 'Manage your account',
+        description: 'Manage your account, sessions, tokens, and billing.',
+        icon: IconUserCircle
+    },
+    'teams.read': {
+        title: 'View your organizations',
+        description: 'Read the organizations you belong to.',
+        icon: IconUserGroup
+    },
+    'teams.write': {
+        title: 'Manage your organizations',
+        description: 'Create, update, and delete your organizations and their members.',
+        icon: IconUserGroup
+    },
+    'projects.read': {
+        title: 'View your projects',
+        description: 'List the projects in your organizations.',
+        icon: IconViewGrid
+    },
+    'projects.write': {
+        title: 'Manage your projects',
+        description: 'Create, update, and delete projects in your organizations.',
+        icon: IconViewGrid
+    },
+    'organization.keys.read': {
+        title: 'View organization API keys',
+        description: "Read your organizations' API keys.",
+        icon: IconKey
+    },
+    'organization.keys.write': {
+        title: 'Manage organization API keys',
+        description: "Create, update, and delete your organizations' API keys.",
+        icon: IconKey
+    },
+    'domains.read': {
+        title: 'View organization domains',
+        description: "Read your organizations' domains.",
+        icon: IconGlobe
+    },
+    'domains.write': {
+        title: 'Manage organization domains',
+        description: "Create, update, and delete your organizations' domains.",
+        icon: IconGlobe
     }
 };
 
@@ -97,6 +148,49 @@ export function describeConsentScopes(scopes: string[]): ScopeDescriptor[] {
     }
 
     return described;
+}
+
+export interface SelectableConsentScopes {
+    /** `account.admin` full-access descriptor, when requested (read-only). */
+    admin: ScopeDescriptor | null;
+    /** OIDC identity scopes (profile/email), always granted (read-only). */
+    identity: ScopeDescriptor[];
+    /** Account/console-tier scopes the user can individually toggle. */
+    selectable: ScopeDescriptor[];
+}
+
+/**
+ * Split the requested `scope`-param scopes for the consent screen into the
+ * read-only rows (full-access `account.admin`, identity scopes) and the
+ * individually-selectable account/console-tier scopes. Anything that isn't
+ * `openid`, an identity scope, or `account.admin` is treated as a selectable
+ * console-tier scope — the `scope` param only ever carries console-tier scopes
+ * (project-tier permissions travel in `authorization_details`). Request order
+ * is preserved.
+ */
+export function splitSelectableScopes(scopes: string[]): SelectableConsentScopes {
+    const requested = new Set(scopes);
+    const admin = requested.has(ACCOUNT_ADMIN_SCOPE) ? ACCOUNT_ADMIN_DESCRIPTOR : null;
+    const identity = CONSENT_IDENTITY_SCOPES.filter((scope) => requested.has(scope)).map(
+        describeScope
+    );
+
+    const seen = new Set<string>();
+    const selectable: ScopeDescriptor[] = [];
+    for (const scope of scopes) {
+        if (
+            scope === 'openid' ||
+            scope === ACCOUNT_ADMIN_SCOPE ||
+            (CONSENT_IDENTITY_SCOPES as readonly string[]).includes(scope) ||
+            seen.has(scope)
+        ) {
+            continue;
+        }
+        seen.add(scope);
+        selectable.push(describeScope(scope));
+    }
+
+    return { admin, identity, selectable };
 }
 
 export interface ScopeAction {
