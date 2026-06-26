@@ -11,7 +11,6 @@
     } from '@appwrite.io/pink-svelte';
     import { IconCheck, IconExclamation } from '@appwrite.io/pink-icons-svelte';
     import { Button, Form } from '$lib/elements/forms';
-    import AvatarInitials from '$lib/components/avatarInitials.svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
@@ -350,7 +349,6 @@
                                 <div class="project-header">
                                     {#each projects.slice(0, MAX_PROJECT_CHIPS) as project (project.id)}
                                         <span class="project-chip">
-                                            <AvatarInitials size="xs" name={project.name} />
                                             <span
                                                 class="project-name"
                                                 class:mono={!project.resolved}>
