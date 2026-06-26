@@ -7,23 +7,18 @@
     import { sdk } from '$lib/stores/sdk';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { groupConsentScopes } from '$lib/helpers/oauth2-scopes';
+    import {
+        actionsOf,
+        isAppwriteConsoleDetail,
+        loadActionCatalog,
+        parseAuthorizationDetails,
+        serializeGrantedDetails,
+        type ActionCatalog,
+        type AuthorizationDetail
+    } from '$lib/helpers/oauth2-authorization-details';
+    import OAuth2ScopePicker from './oauth2-scope-picker.svelte';
 
     export type OAuth2Flow = 'authorization' | 'device';
-
-    interface AuthorizationDetail {
-        type: string;
-        [key: string]: unknown;
-    }
-
-    function parseAuthorizationDetails(raw: string): AuthorizationDetail[] {
-        if (!raw) return [];
-        try {
-            const parsed = JSON.parse(raw);
-            return Array.isArray(parsed) ? (parsed as AuthorizationDetail[]) : [];
-        } catch {
-            return [];
-        }
-    }
 
     function hostnameOf(uri: string): string | null {
         try {
@@ -48,12 +43,84 @@
     let rejecting = $state(false);
     let busy = $derived(approving || rejecting);
 
+    // Requested scopes (identity + account/console-tier) are shown read-only,
+    // grouped by resource. The granular per-project permissions live in
+    // authorization_details and are chosen individually below.
     const scopes = $derived(groupConsentScopes(grant.scopes ?? []));
-    const details = $derived(parseAuthorizationDetails(grant.authorizationDetails ?? ''));
+    const details = $derived<AuthorizationDetail[]>(
+        parseAuthorizationDetails(grant.authorizationDetails)
+    );
+    const hasConsoleActions = $derived(
+        details.some((detail) => isAppwriteConsoleDetail(detail) && actionsOf(detail).length > 0)
+    );
     const redirectHost = $derived(hostnameOf(grant.redirectUri));
 
     const appInitial = $derived((app.name || '?').charAt(0).toUpperCase());
     const accountInitial = $derived((accountLabel || '?').charAt(0).toUpperCase());
+
+    // Lazily loaded scope metadata (category + descriptions) for grouping the
+    // requested actions. Never blocks approve/reject — the picker just shows a
+    // spinner until it resolves.
+    let catalog = $state<ActionCatalog | null>(null);
+    $effect(() => {
+        if (!hasConsoleActions || catalog) return;
+        let cancelled = false;
+        void loadActionCatalog().then((loaded) => {
+            if (!cancelled) catalog = loaded;
+        });
+        return () => {
+            cancelled = true;
+        };
+    });
+
+    // Per-entry action selection: entryIndex -> { action -> granted }. Requested
+    // actions start selected (the user opts OUT of what they don't want). Reset
+    // whenever the grant changes so a stale selection can't leak across requests.
+    let selection = $state<Record<number, Record<string, boolean>>>({});
+    $effect(() => {
+        // Re-init keyed on the grant id + its requested details.
+        grant.$id;
+        const next: Record<number, Record<string, boolean>> = {};
+        details.forEach((detail, index) => {
+            if (!isAppwriteConsoleDetail(detail)) return;
+            const actionMap: Record<string, boolean> = {};
+            for (const action of actionsOf(detail)) {
+                actionMap[action] = true;
+            }
+            next[index] = actionMap;
+        });
+        selection = next;
+    });
+
+    /** A short, human context line for an entry's resource scoping. */
+    function detailContext(detail: AuthorizationDetail): string | null {
+        const parts: string[] = [];
+        const projects = detail.projectIds?.length ?? 0;
+        const orgs = detail.organizationIds?.length ?? 0;
+        if (projects > 0) parts.push(`${projects} project${projects === 1 ? '' : 's'}`);
+        if (orgs > 0) parts.push(`${orgs} organization${orgs === 1 ? '' : 's'}`);
+        if (parts.length === 0) return null;
+        return `Limited to ${parts.join(' and ')}`;
+    }
+
+    function locationHosts(detail: AuthorizationDetail): string[] {
+        return (detail.locations ?? [])
+            .map((location) => hostnameOf(location))
+            .filter((host): host is string => Boolean(host));
+    }
+
+    // Approving is meaningless if the request offered actions but the user
+    // unchecked every one and granted no identity scope either.
+    const grantedActionCount = $derived(
+        Object.values(selection).reduce(
+            (total, actionMap) =>
+                total + Object.values(actionMap).filter((isGranted) => isGranted).length,
+            0
+        )
+    );
+    const nothingToGrant = $derived(
+        hasConsoleActions && grantedActionCount === 0 && (grant.scopes ?? []).length === 0
+    );
 
     async function approve() {
         if (busy) return;
@@ -65,8 +132,16 @@
         error = null;
         approving = true;
         try {
+            // When the request carries appwrite_console actions, send back the
+            // exact subset the user consented to (downscope-only — the picker
+            // never offers actions the client didn't request). Otherwise omit
+            // it and keep whatever the client originally requested.
+            const authorizationDetails = hasConsoleActions
+                ? serializeGrantedDetails(details, selection)
+                : undefined;
             const result = await sdk.forConsole.oauth2.approve({
-                grantId
+                grantId,
+                authorizationDetails
             });
             if (grant.$id !== grantId) return;
             trackEvent(Submit.AccountOAuth2ConsentApprove, {
@@ -176,7 +251,7 @@
 
         {#if scopes.groups.length > 0}
             <div class="scope-accordion">
-                <Accordion title="App permissions" badge={String(scopes.granularCount)}>
+                <Accordion title="Account access" badge={String(scopes.granularCount)}>
                     <ul class="scope-group-list">
                         {#each scopes.groups as group (group.resource)}
                             <li class="scope-group">
@@ -197,15 +272,46 @@
         {/if}
 
         {#if details.length > 0}
-            <Layout.Stack gap="s">
-                <Typography.Text variant="m-500" color="--fgcolor-neutral-secondary">
-                    Also requested
-                </Typography.Text>
-                <div class="detail-list">
-                    {#each details as detail, i (`${detail.type}-${i}`)}
-                        <span class="detail-tag">{detail.type}</span>
-                    {/each}
-                </div>
+            <Layout.Stack gap="m">
+                <Layout.Stack gap="xxs">
+                    <Typography.Text variant="m-500">Choose what to allow</Typography.Text>
+                    <Typography.Text variant="m-400" color="--fgcolor-neutral-secondary">
+                        {app.name} requested these permissions. Grant only the ones you're comfortable
+                        with — you can turn any of them off.
+                    </Typography.Text>
+                </Layout.Stack>
+
+                {#each details as detail, index (`${detail.type}-${index}`)}
+                    {#if isAppwriteConsoleDetail(detail) && actionsOf(detail).length > 0}
+                        {@const context = detailContext(detail)}
+                        {@const hosts = locationHosts(detail)}
+                        <div class="detail-section">
+                            {#if context || hosts.length > 0}
+                                <div class="detail-context">
+                                    {#if context}<span>{context}</span>{/if}
+                                    {#if hosts.length > 0}<span>{hosts.join(', ')}</span>{/if}
+                                </div>
+                            {/if}
+                            {#if catalog}
+                                <OAuth2ScopePicker
+                                    actions={actionsOf(detail)}
+                                    {catalog}
+                                    disabled={busy}
+                                    bind:selected={selection[index]} />
+                            {:else}
+                                <div class="picker-loading">
+                                    <Spinner size="m" />
+                                </div>
+                            {/if}
+                        </div>
+                    {:else}
+                        <!-- Unknown RAR type: surface it read-only so the user
+                             still sees it, but it isn't user-editable here. -->
+                        <div class="detail-list">
+                            <span class="detail-tag">{detail.type}</span>
+                        </div>
+                    {/if}
+                {/each}
             </Layout.Stack>
         {/if}
 
@@ -220,7 +326,7 @@
 
         <Form onSubmit={approve}>
             <Layout.Stack gap="s">
-                <Button fullWidth submit disabled={busy}>
+                <Button fullWidth submit disabled={busy || nothingToGrant}>
                     {#if approving}
                         <Spinner size="s" />
                     {:else}
@@ -423,7 +529,35 @@
         background: var(--bgcolor-neutral-default);
     }
 
-    /* Rich authorization details — de-emphasized, compact tags. */
+    /* Rich authorization details — one bordered picker section per requested entry. */
+    .detail-section {
+        border: 1px solid var(--border-neutral);
+        border-radius: 0.75rem;
+        background: var(--bgcolor-neutral-default);
+        padding: 0.9rem;
+    }
+
+    .detail-section + .detail-section {
+        margin-top: 0.5rem;
+    }
+
+    .detail-context {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.25rem 0.75rem;
+        margin-bottom: 0.75rem;
+        font-size: 0.78rem;
+        color: var(--fgcolor-neutral-tertiary);
+    }
+
+    .picker-loading {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem 0;
+    }
+
+    /* Unknown RAR types fall back to de-emphasized, compact tags. */
     .detail-list {
         display: flex;
         flex-wrap: wrap;
