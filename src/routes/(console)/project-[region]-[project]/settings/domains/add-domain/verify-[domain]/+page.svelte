@@ -61,7 +61,7 @@
             const apexDomain = getApexDomain(proxyRule.domain);
             const domain = data.domainsList.domains.find((d) => d.domain === apexDomain);
             if (isCloud && domain) {
-                await sdk.forConsole.domains.updateNameservers({
+                await sdk.forConsole.domains.verifyNameservers({
                     domainId: domain.$id
                 });
             }
