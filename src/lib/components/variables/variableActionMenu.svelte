@@ -84,7 +84,6 @@
         aria-label="More options"
         onclick={(e) => {
             e.preventDefault();
-            e.stopPropagation();
             toggle();
         }}>
         <Icon icon={IconDotsHorizontal} size="s" />
