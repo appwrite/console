@@ -30,6 +30,15 @@
         open = !open;
     }
 
+    function portalToBody(node: HTMLElement) {
+        document.body.appendChild(node);
+        return {
+            destroy() {
+                node.parentNode?.removeChild(node);
+            }
+        };
+    }
+
     $effect(() => {
         if (open && triggerEl && menuEl) {
             cleanup = autoUpdate(triggerEl, menuEl, () => {
@@ -79,6 +88,7 @@
 
 {#if open}
     <div
+        use:portalToBody
         bind:this={menuEl}
         style="position: fixed; z-index: 9001; background: var(--bgcolor-neutral-primary); border: var(--border-width-s) solid var(--border-neutral); border-radius: var(--border-radius-m); box-shadow: 0 1px 3px 0 rgba(0,0,0,0.03), 0 4px 4px 0 rgba(0,0,0,0.04); overflow: hidden;"
         role="menu">
