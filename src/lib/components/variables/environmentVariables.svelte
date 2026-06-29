@@ -2,27 +2,17 @@
     import { Empty, Paginator } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import {
-        ActionMenu,
         Accordion,
         Badge,
         InteractiveText,
         Icon,
         Layout,
-        Popover,
         Skeleton,
         Table,
-        Tooltip,
-        Button as PinkButton
+        Tooltip
     } from '@appwrite.io/pink-svelte';
-    import {
-        IconDotsHorizontal,
-        IconCode,
-        IconUpload,
-        IconPlus,
-        IconTrash,
-        IconEyeOff,
-        IconPencil
-    } from '@appwrite.io/pink-icons-svelte';
+    import { IconCode, IconUpload, IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import VariableActionMenu from './variableActionMenu.svelte';
     import type { Models } from '@appwrite.io/console';
     import VariableEditorModal from './variableEditorModal.svelte';
     import SecretVariableModal from './secretVariableModal.svelte';
@@ -66,14 +56,14 @@
     const tableColumns = $derived(
         $isSmallViewport
             ? [
-                  { id: 'key', width: { min: 420 } },
-                  { id: 'value', width: { min: 240 } },
+                  { id: 'key', width: { min: 120, max: 300 } },
+                  { id: 'value', width: { min: 100, max: 200 } },
                   { id: 'actions', width: 40 }
               ]
             : [
-                  { id: 'key', width: { min: 300 } },
-                  { id: 'value', width: { min: 280 } },
-                  { id: 'actions', width: 40 }
+                  { id: 'key', width: { min: 280, max: 420 } },
+                  { id: 'value', width: { min: 200, max: 400 } },
+                  { id: 'actions', width: 50 }
               ]
     );
 </script>
@@ -111,13 +101,15 @@
                     <Button
                         secondary
                         size="s"
+                        icon={$isSmallViewport}
                         on:click={() => {
                             showCreate = true;
                             trackEvent(Click.VariablesCreateClick, {
                                 source: createSource
                             });
                         }}>
-                        <Icon slot="start" icon={IconPlus} /> Create variable
+                        <Icon slot="start" icon={IconPlus} />
+                        {#if !$isSmallViewport}Create variable{/if}
                     </Button>
                 {/if}
             </Layout.Stack>
@@ -179,59 +171,20 @@
                                     </Table.Cell>
                                     <Table.Cell column="actions" {root}>
                                         <div style="margin-inline-start: auto">
-                                            <Popover
-                                                padding="none"
-                                                placement="bottom-end"
-                                                let:toggle>
-                                                <PinkButton.Button
-                                                    icon
-                                                    variant="text"
-                                                    size="s"
-                                                    aria-label="More options"
-                                                    onclick={(e) => {
-                                                        e.preventDefault();
-                                                        toggle(e);
-                                                    }}>
-                                                    <Icon icon={IconDotsHorizontal} size="s" />
-                                                </PinkButton.Button>
-
-                                                <svelte:fragment slot="tooltip" let:toggle>
-                                                    <ActionMenu.Root>
-                                                        {#if !variable?.secret}
-                                                            <ActionMenu.Item.Button
-                                                                leadingIcon={IconPencil}
-                                                                onclick={(e) => {
-                                                                    toggle(e);
-                                                                    currentVariable = variable;
-                                                                    showUpdate = true;
-                                                                }}>
-                                                                Update
-                                                            </ActionMenu.Item.Button>
-                                                        {/if}
-                                                        {#if !variable?.secret}
-                                                            <ActionMenu.Item.Button
-                                                                leadingIcon={IconEyeOff}
-                                                                onclick={(e) => {
-                                                                    toggle(e);
-                                                                    currentVariable = variable;
-                                                                    showSecretModal = true;
-                                                                }}>
-                                                                Secret
-                                                            </ActionMenu.Item.Button>
-                                                        {/if}
-                                                        <ActionMenu.Item.Button
-                                                            status="danger"
-                                                            leadingIcon={IconTrash}
-                                                            onclick={(e) => {
-                                                                toggle(e);
-                                                                currentVariable = variable;
-                                                                showDelete = true;
-                                                            }}>
-                                                            Delete
-                                                        </ActionMenu.Item.Button>
-                                                    </ActionMenu.Root>
-                                                </svelte:fragment>
-                                            </Popover>
+                                            <VariableActionMenu
+                                                {variable}
+                                                onUpdate={() => {
+                                                    currentVariable = variable;
+                                                    showUpdate = true;
+                                                }}
+                                                onSecret={() => {
+                                                    currentVariable = variable;
+                                                    showSecretModal = true;
+                                                }}
+                                                onDelete={() => {
+                                                    currentVariable = variable;
+                                                    showDelete = true;
+                                                }} />
                                         </div>
                                     </Table.Cell>
                                 </Table.Row.Base>
