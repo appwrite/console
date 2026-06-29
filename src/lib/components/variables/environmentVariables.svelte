@@ -60,14 +60,14 @@
     const tableColumns = $derived(
         $isSmallViewport
             ? [
-                  { id: 'key', width: { min: 420 } },
-                  { id: 'value', width: { min: 240 } },
-                  { id: 'actions', width: 40 }
+                  { id: 'key', width: { min: 380, max: 520 } },
+                  { id: 'value', width: { min: 200, max: 320 } },
+                  { id: 'actions', width: 50 }
               ]
             : [
-                  { id: 'key', width: { min: 300 } },
-                  { id: 'value', width: { min: 280 } },
-                  { id: 'actions', width: 40 }
+                  { id: 'key', width: { min: 280, max: 420 } },
+                  { id: 'value', width: { min: 200, max: 400 } },
+                  { id: 'actions', width: 50 }
               ]
     );
 </script>
