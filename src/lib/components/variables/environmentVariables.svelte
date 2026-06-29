@@ -2,27 +2,21 @@
     import { Empty, Paginator } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import {
-        ActionMenu,
         Accordion,
         Badge,
         InteractiveText,
         Icon,
         Layout,
-        Popover,
         Skeleton,
         Table,
-        Tooltip,
-        Button as PinkButton
+        Tooltip
     } from '@appwrite.io/pink-svelte';
     import {
-        IconDotsHorizontal,
         IconCode,
         IconUpload,
-        IconPlus,
-        IconTrash,
-        IconEyeOff,
-        IconPencil
+        IconPlus
     } from '@appwrite.io/pink-icons-svelte';
+    import VariableActionMenu from './variableActionMenu.svelte';
     import type { Models } from '@appwrite.io/console';
     import VariableEditorModal from './variableEditorModal.svelte';
     import SecretVariableModal from './secretVariableModal.svelte';
@@ -179,60 +173,20 @@
                                     </Table.Cell>
                                     <Table.Cell column="actions" {root}>
                                         <div style="margin-inline-start: auto">
-                                            <Popover
-                                                padding="none"
-                                                placement="bottom-end"
-                                                portal
-                                                let:toggle>
-                                                <PinkButton.Button
-                                                    icon
-                                                    variant="text"
-                                                    size="s"
-                                                    aria-label="More options"
-                                                    onclick={(e) => {
-                                                        e.preventDefault();
-                                                        toggle(e);
-                                                    }}>
-                                                    <Icon icon={IconDotsHorizontal} size="s" />
-                                                </PinkButton.Button>
-
-                                                <svelte:fragment slot="tooltip" let:toggle>
-                                                    <ActionMenu.Root>
-                                                        {#if !variable?.secret}
-                                                            <ActionMenu.Item.Button
-                                                                leadingIcon={IconPencil}
-                                                                onclick={(e) => {
-                                                                    currentVariable = variable;
-                                                                    showUpdate = true;
-                                                                    toggle(e);
-                                                                }}>
-                                                                Update
-                                                            </ActionMenu.Item.Button>
-                                                        {/if}
-                                                        {#if !variable?.secret}
-                                                            <ActionMenu.Item.Button
-                                                                leadingIcon={IconEyeOff}
-                                                                onclick={(e) => {
-                                                                    currentVariable = variable;
-                                                                    showSecretModal = true;
-                                                                    toggle(e);
-                                                                }}>
-                                                                Secret
-                                                            </ActionMenu.Item.Button>
-                                                        {/if}
-                                                        <ActionMenu.Item.Button
-                                                            status="danger"
-                                                            leadingIcon={IconTrash}
-                                                            onclick={(e) => {
-                                                                currentVariable = variable;
-                                                                showDelete = true;
-                                                                toggle(e);
-                                                            }}>
-                                                            Delete
-                                                        </ActionMenu.Item.Button>
-                                                    </ActionMenu.Root>
-                                                </svelte:fragment>
-                                            </Popover>
+                                            <VariableActionMenu
+                                                {variable}
+                                                onUpdate={() => {
+                                                    currentVariable = variable;
+                                                    showUpdate = true;
+                                                }}
+                                                onSecret={() => {
+                                                    currentVariable = variable;
+                                                    showSecretModal = true;
+                                                }}
+                                                onDelete={() => {
+                                                    currentVariable = variable;
+                                                    showDelete = true;
+                                                }} />
                                         </div>
                                     </Table.Cell>
                                 </Table.Row.Base>
