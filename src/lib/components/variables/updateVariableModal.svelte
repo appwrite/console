@@ -23,10 +23,10 @@
     function handleVariable() {
         if (selectedVar) {
             variables = variables.map((variable) => {
-                if (variable.$id === selectedVar.$id) {
-                    return pair;
-                }
-                return variable;
+                const match = selectedVar.$id
+                    ? variable.$id === selectedVar.$id
+                    : variable.key === selectedVar.key;
+                return match ? pair : variable;
             });
         } else {
             variables = [...variables, pair];

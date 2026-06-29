@@ -182,6 +182,7 @@
                                             <Popover
                                                 padding="none"
                                                 placement="bottom-end"
+                                                portal
                                                 let:toggle>
                                                 <PinkButton.Button
                                                     icon
