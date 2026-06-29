@@ -182,6 +182,7 @@
                                             <Popover
                                                 padding="none"
                                                 placement="bottom-end"
+                                                portal
                                                 let:toggle>
                                                 <PinkButton.Button
                                                     icon
@@ -201,9 +202,9 @@
                                                             <ActionMenu.Item.Button
                                                                 leadingIcon={IconPencil}
                                                                 onclick={(e) => {
-                                                                    toggle(e);
                                                                     currentVariable = variable;
                                                                     showUpdate = true;
+                                                                    toggle(e);
                                                                 }}>
                                                                 Update
                                                             </ActionMenu.Item.Button>
@@ -212,9 +213,9 @@
                                                             <ActionMenu.Item.Button
                                                                 leadingIcon={IconEyeOff}
                                                                 onclick={(e) => {
-                                                                    toggle(e);
                                                                     currentVariable = variable;
                                                                     showSecretModal = true;
+                                                                    toggle(e);
                                                                 }}>
                                                                 Secret
                                                             </ActionMenu.Item.Button>
@@ -223,9 +224,9 @@
                                                             status="danger"
                                                             leadingIcon={IconTrash}
                                                             onclick={(e) => {
-                                                                toggle(e);
                                                                 currentVariable = variable;
                                                                 showDelete = true;
+                                                                toggle(e);
                                                             }}>
                                                             Delete
                                                         </ActionMenu.Item.Button>
@@ -278,9 +279,3 @@
 {#if showDelete}
     <DeleteVariableModal bind:show={showDelete} bind:variables bind:currentVariable />
 {/if}
-
-<style>
-    :global(.responsive-table [role='row'] [role='cell']:last-child) {
-        overflow: visible;
-    }
-</style>
