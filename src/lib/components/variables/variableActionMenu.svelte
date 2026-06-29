@@ -20,7 +20,6 @@
     let open = $state(false);
     let triggerEl = $state<HTMLElement | null>(null);
     let menuEl = $state<HTMLElement | null>(null);
-    let cleanup: (() => void) | null = null;
 
     function hide() {
         open = false;
@@ -40,21 +39,21 @@
     }
 
     $effect(() => {
-        if (open && triggerEl && menuEl) {
-            cleanup = autoUpdate(triggerEl, menuEl, () => {
-                computePosition(triggerEl, menuEl, {
-                    placement: 'bottom-end',
-                    middleware: [offset(2), flip(), shift()]
-                }).then(({ x, y }) => {
-                    if (menuEl) {
-                        Object.assign(menuEl.style, { left: `${x}px`, top: `${y}px` });
-                    }
-                });
+        if (!open || !triggerEl || !menuEl) return;
+
+        const stop = autoUpdate(triggerEl, menuEl, () => {
+            computePosition(triggerEl, menuEl, {
+                placement: 'bottom-end',
+                strategy: 'fixed',
+                middleware: [offset(2), flip(), shift()]
+            }).then(({ x, y }) => {
+                if (menuEl) {
+                    Object.assign(menuEl.style, { left: `${x}px`, top: `${y}px` });
+                }
             });
-        } else {
-            cleanup?.();
-            cleanup = null;
-        }
+        });
+
+        return stop;
     });
 
     function handleWindowClick(e: MouseEvent) {
@@ -96,21 +95,21 @@
             {#if !variable?.secret}
                 <ActionMenu.Item.Button
                     leadingIcon={IconPencil}
-                    on:click={() => { hide(); onUpdate(); }}>
+                    onclick={() => { hide(); onUpdate(); }}>
                     Update
                 </ActionMenu.Item.Button>
             {/if}
             {#if !variable?.secret}
                 <ActionMenu.Item.Button
                     leadingIcon={IconEyeOff}
-                    on:click={() => { hide(); onSecret(); }}>
+                    onclick={() => { hide(); onSecret(); }}>
                     Secret
                 </ActionMenu.Item.Button>
             {/if}
             <ActionMenu.Item.Button
                 status="danger"
                 leadingIcon={IconTrash}
-                on:click={() => { hide(); onDelete(); }}>
+                onclick={() => { hide(); onDelete(); }}>
                 Delete
             </ActionMenu.Item.Button>
         </ActionMenu.Root>
