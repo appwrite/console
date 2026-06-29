@@ -80,7 +80,7 @@
 {#if open}
     <div
         bind:this={menuEl}
-        style="position: fixed; z-index: 9001;"
+        style="position: fixed; z-index: 9001; background: var(--bgcolor-neutral-primary); border: var(--border-width-s) solid var(--border-neutral); border-radius: var(--border-radius-m); box-shadow: 0 1px 3px 0 rgba(0,0,0,0.03), 0 4px 4px 0 rgba(0,0,0,0.04); overflow: hidden;"
         role="menu">
         <ActionMenu.Root>
             {#if !variable?.secret}
