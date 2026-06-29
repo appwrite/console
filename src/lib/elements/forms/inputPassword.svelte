@@ -47,7 +47,7 @@
     {leadingIcon}
     state={error ? 'error' : 'default'}
     autofocus={autofocus || undefined}
-    autocomplete={(typeof autocomplete === 'string' ? autocomplete : autocomplete ? 'on' : 'off') as 'on' | 'off'}
+    autocomplete={(typeof autocomplete === 'string' ? autocomplete : autocomplete ? 'on' : 'off') as unknown as AutoFill}
     helper={helper || error}
     on:invalid={handleInvalid}
     bind:value>
