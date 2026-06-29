@@ -105,13 +105,15 @@
                     <Button
                         secondary
                         size="s"
+                        icon={$isSmallViewport}
                         on:click={() => {
                             showCreate = true;
                             trackEvent(Click.VariablesCreateClick, {
                                 source: createSource
                             });
                         }}>
-                        <Icon slot="start" icon={IconPlus} /> Create variable
+                        <Icon slot="start" icon={IconPlus} />
+                        {#if !$isSmallViewport}Create variable{/if}
                     </Button>
                 {/if}
             </Layout.Stack>
