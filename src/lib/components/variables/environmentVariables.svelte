@@ -60,9 +60,9 @@
     const tableColumns = $derived(
         $isSmallViewport
             ? [
-                  { id: 'key', width: { min: 380, max: 520 } },
-                  { id: 'value', width: { min: 200, max: 320 } },
-                  { id: 'actions', width: 50 }
+                  { id: 'key', width: { min: 120, max: 300 } },
+                  { id: 'value', width: { min: 100, max: 200 } },
+                  { id: 'actions', width: 40 }
               ]
             : [
                   { id: 'key', width: { min: 280, max: 420 } },
