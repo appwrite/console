@@ -525,7 +525,7 @@
                                 {/if}
                             </Table.Cell>
                             <Table.Cell column="actions" {root}>
-                                <Popover placement="bottom-end" let:toggle padding="none">
+                                <Popover placement="bottom-end" let:toggle padding="none" portal>
                                     <Button
                                         text
                                         icon
