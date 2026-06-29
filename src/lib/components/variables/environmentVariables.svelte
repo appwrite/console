@@ -280,7 +280,7 @@
 {/if}
 
 <style>
-    :global(.responsive-table [data-column='actions']) {
+    :global(.responsive-table [role='row'] [role='cell']:last-child) {
         overflow: visible;
     }
 </style>
