@@ -11,11 +11,7 @@
         Table,
         Tooltip
     } from '@appwrite.io/pink-svelte';
-    import {
-        IconCode,
-        IconUpload,
-        IconPlus
-    } from '@appwrite.io/pink-icons-svelte';
+    import { IconCode, IconUpload, IconPlus } from '@appwrite.io/pink-icons-svelte';
     import VariableActionMenu from './variableActionMenu.svelte';
     import type { Models } from '@appwrite.io/console';
     import VariableEditorModal from './variableEditorModal.svelte';

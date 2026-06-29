@@ -1,7 +1,12 @@
 <script lang="ts">
     import { computePosition, flip, offset, shift, autoUpdate } from '@floating-ui/dom';
     import { Icon, ActionMenu } from '@appwrite.io/pink-svelte';
-    import { IconDotsHorizontal, IconPencil, IconEyeOff, IconTrash } from '@appwrite.io/pink-icons-svelte';
+    import {
+        IconDotsHorizontal,
+        IconPencil,
+        IconEyeOff,
+        IconTrash
+    } from '@appwrite.io/pink-icons-svelte';
     import { Button as PinkButton } from '@appwrite.io/pink-svelte';
     import type { Models } from '@appwrite.io/console';
 
@@ -95,21 +100,30 @@
             {#if !variable?.secret}
                 <ActionMenu.Item.Button
                     leadingIcon={IconPencil}
-                    onclick={() => { hide(); onUpdate(); }}>
+                    onclick={() => {
+                        hide();
+                        onUpdate();
+                    }}>
                     Update
                 </ActionMenu.Item.Button>
             {/if}
             {#if !variable?.secret}
                 <ActionMenu.Item.Button
                     leadingIcon={IconEyeOff}
-                    onclick={() => { hide(); onSecret(); }}>
+                    onclick={() => {
+                        hide();
+                        onSecret();
+                    }}>
                     Secret
                 </ActionMenu.Item.Button>
             {/if}
             <ActionMenu.Item.Button
                 status="danger"
                 leadingIcon={IconTrash}
-                onclick={() => { hide(); onDelete(); }}>
+                onclick={() => {
+                    hide();
+                    onDelete();
+                }}>
                 Delete
             </ActionMenu.Item.Button>
         </ActionMenu.Root>
