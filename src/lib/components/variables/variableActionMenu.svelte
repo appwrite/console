@@ -25,6 +25,7 @@
     let open = $state(false);
     let triggerEl = $state<HTMLElement | null>(null);
     let menuEl = $state<HTMLElement | null>(null);
+    let cleanup: (() => void) | null = null;
 
     function hide() {
         open = false;
@@ -44,21 +45,21 @@
     }
 
     $effect(() => {
-        if (!open || !triggerEl || !menuEl) return;
-
-        const stop = autoUpdate(triggerEl, menuEl, () => {
-            computePosition(triggerEl, menuEl, {
-                placement: 'bottom-end',
-                strategy: 'fixed',
-                middleware: [offset(2), flip(), shift()]
-            }).then(({ x, y }) => {
-                if (menuEl) {
-                    Object.assign(menuEl.style, { left: `${x}px`, top: `${y}px` });
-                }
+        if (open && triggerEl && menuEl) {
+            cleanup = autoUpdate(triggerEl, menuEl, () => {
+                computePosition(triggerEl, menuEl, {
+                    placement: 'bottom-end',
+                    middleware: [offset(2), flip(), shift()]
+                }).then(({ x, y }) => {
+                    if (menuEl) {
+                        Object.assign(menuEl.style, { left: `${x}px`, top: `${y}px` });
+                    }
+                });
             });
-        });
-
-        return stop;
+        } else {
+            cleanup?.();
+            cleanup = null;
+        }
     });
 
     function handleWindowClick(e: MouseEvent) {
@@ -100,7 +101,7 @@
             {#if !variable?.secret}
                 <ActionMenu.Item.Button
                     leadingIcon={IconPencil}
-                    onclick={() => {
+                    on:click={() => {
                         hide();
                         onUpdate();
                     }}>
@@ -110,7 +111,7 @@
             {#if !variable?.secret}
                 <ActionMenu.Item.Button
                     leadingIcon={IconEyeOff}
-                    onclick={() => {
+                    on:click={() => {
                         hide();
                         onSecret();
                     }}>
@@ -120,7 +121,7 @@
             <ActionMenu.Item.Button
                 status="danger"
                 leadingIcon={IconTrash}
-                onclick={() => {
+                on:click={() => {
                     hide();
                     onDelete();
                 }}>
