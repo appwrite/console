@@ -278,3 +278,9 @@
 {#if showDelete}
     <DeleteVariableModal bind:show={showDelete} bind:variables bind:currentVariable />
 {/if}
+
+<style>
+    :global(.responsive-table [data-column='actions']) {
+        overflow: visible;
+    }
+</style>
