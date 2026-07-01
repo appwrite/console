@@ -1,8 +1,12 @@
+import { redirect } from '@sveltejs/kit';
 import { Dependencies } from '$lib/constants';
 import { sdk } from '$lib/stores/sdk';
+import { isCloud } from '$lib/system';
 import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ depends }) => {
+    if (!isCloud) redirect(302, '/');
+
     depends(Dependencies.PAYMENT_METHODS);
     depends(Dependencies.ADDRESS);
 
