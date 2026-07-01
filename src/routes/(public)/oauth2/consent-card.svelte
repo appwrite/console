@@ -310,7 +310,7 @@
                                         {/if}
                                     </div>
                                     <ul class="perm-list">
-                                        {#each group.lines as line (line.title)}
+                                        {#each group.lines as line (line.token)}
                                             <li class="perm">
                                                 <span class="perm-check">
                                                     <Icon icon={IconCheck} size="s" />
