@@ -3,83 +3,37 @@ import { sdk } from '$lib/stores/sdk';
 import { getTeamOrOrganizationList } from '$lib/stores/organization';
 
 /**
- * RFC 9396 Rich Authorization Requests (RAR) helpers for the OAuth2 consent
- * screen.
+ * RFC 9396 Rich Authorization Requests (RAR) helpers for the console OAuth2
+ * consent screen (contract v2).
  *
- * The console OAuth2 server keeps identity + account/console-tier scopes on the
- * standard `scope` parameter (`openid`, `profile`, `email`, `account.admin`,
- * plus `teams.*`, `projects.*`, …) and moves every project-tier permission into
- * `authorization_details` entries of type `appwrite_project`, each bound to the
- * concrete `projectIds` it applies to. The consent screen lets the user approve
- * a *subset* of the requested actions; the approved set is sent back to the
- * approve endpoint and replaces what the client originally requested. We only
- * ever downscope — actions the client did not request are never offered.
+ * In v2 the `scope` parameter carries every privilege the client requests (see
+ * `oauth2-scopes.ts`). `authorization_details` only binds those privileges to
+ * concrete resources, as entries of two types:
+ *
+ *   { "type": "project",      "identifiers": ["<projectId>", …] | ["*"] }
+ *   { "type": "organization", "identifiers": ["<teamId>", …]    | ["*"] }
+ *
+ * `identifiers` is the only field besides `type`; `*` is a wildcard that binds
+ * the tier's scopes to every project / organization the user owns (present and
+ * future). The consent screen lets the user narrow the requested identifiers to
+ * a subset and sends the result back to the approve endpoint, which replaces the
+ * client's requested details.
  */
 
-/** The single RAR `type` the console OAuth2 server understands. */
-export const APPWRITE_PROJECT_RAR_TYPE = 'appwrite_project';
+export const PROJECT_RAR_TYPE = 'project';
+export const ORGANIZATION_RAR_TYPE = 'organization';
+
+/** Wildcard identifier — binds a tier's scopes to every owned resource. */
+export const WILDCARD_IDENTIFIER = '*';
 
 /** The reserved internal project id; never a valid RAR target. */
 const RESERVED_CONSOLE_PROJECT = 'console';
 
-/** Fields an `appwrite_project` entry may carry, besides `type`/`actions`. */
-const RESOURCE_FIELDS = ['projectIds', 'organizationIds', 'locations'] as const;
-
 export interface AuthorizationDetail {
     type: string;
-    actions?: string[];
-    projectIds?: string[];
-    organizationIds?: string[];
-    locations?: string[];
+    identifiers?: string[];
     [key: string]: unknown;
 }
-
-export interface ActionDescriptor {
-    /** Scope id, e.g. `databases.write`. */
-    action: string;
-    /** Human title derived from the scope id. */
-    title: string;
-    /** Catalog description, or a generic fallback. */
-    description: string;
-    /** Catalog category used for grouping, e.g. `Databases`. */
-    category: string;
-    deprecated: boolean;
-}
-
-export type ActionCatalog = Map<string, Omit<ActionDescriptor, 'action' | 'title'>>;
-
-/**
- * Account-level scopes are not exposed by the project/organization scope
- * endpoints, so we describe them locally. They are few and stable.
- */
-const ACCOUNT_SCOPE_CATALOG: ActionCatalog = new Map([
-    [
-        'account',
-        {
-            category: 'Account',
-            description: 'Manage your account, organizations, sessions, tokens, and billing.',
-            deprecated: false
-        }
-    ],
-    [
-        'teams.read',
-        {
-            category: 'Account',
-            description: "Read your account's organizations.",
-            deprecated: false
-        }
-    ],
-    [
-        'teams.write',
-        {
-            category: 'Account',
-            description: "Create, update, and delete your account's organizations and memberships.",
-            deprecated: false
-        }
-    ]
-]);
-
-const UNCATEGORIZED = 'Other';
 
 /** Parse the grant's `authorizationDetails` JSON string into entries. */
 export function parseAuthorizationDetails(raw: string | null | undefined): AuthorizationDetail[] {
@@ -92,144 +46,92 @@ export function parseAuthorizationDetails(raw: string | null | undefined): Autho
     }
 }
 
-export function isAppwriteProjectDetail(detail: AuthorizationDetail): boolean {
-    return detail.type === APPWRITE_PROJECT_RAR_TYPE;
-}
-
-/** Distinct, requested actions for a single `appwrite_project` entry. */
-export function actionsOf(detail: AuthorizationDetail): string[] {
-    if (!Array.isArray(detail.actions)) return [];
+/** Distinct, non-empty identifiers for a single entry. */
+export function identifiersOf(detail: AuthorizationDetail): string[] {
+    if (!Array.isArray(detail.identifiers)) return [];
     const seen = new Set<string>();
     const out: string[] = [];
-    for (const action of detail.actions) {
-        if (typeof action === 'string' && action !== '' && !seen.has(action)) {
-            seen.add(action);
-            out.push(action);
+    for (const identifier of detail.identifiers) {
+        if (typeof identifier === 'string' && identifier !== '' && !seen.has(identifier)) {
+            seen.add(identifier);
+            out.push(identifier);
         }
     }
     return out;
 }
 
-/** Turn `databases.write` into `Databases write` for a readable title. */
-export function titleizeAction(action: string): string {
-    const cleaned = action.replace(/[._:-]+/g, ' ').trim();
-    if (!cleaned) return action;
-    return cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
-}
-
 /**
- * Build the action catalog from the live project + organization scope
- * endpoints, falling back to the local account-scope map. The consent screen
- * always runs for a signed-in console user, so these admin-scoped endpoints are
- * available; if they fail we still describe actions via the fallback + titleize
- * so the screen never breaks.
+ * Union of identifiers across every entry of the given type, request order
+ * preserved. Keeps the `*` wildcard; drops the reserved `console` project id
+ * from `project` entries (the server rejects it anyway).
  */
-export async function loadActionCatalog(): Promise<ActionCatalog> {
-    const catalog: ActionCatalog = new Map(ACCOUNT_SCOPE_CATALOG);
-
-    const results = await Promise.allSettled([
-        sdk.forConsole.console.listProjectScopes(),
-        sdk.forConsole.console.listOrganizationScopes()
-    ]);
-
-    for (const result of results) {
-        if (result.status !== 'fulfilled') continue;
-        for (const scope of result.value.scopes) {
-            // Project + organization scopes can overlap (e.g. `teams.read`);
-            // first writer wins, which keeps the project description.
-            if (!catalog.has(scope.$id)) {
-                catalog.set(scope.$id, {
-                    category: scope.category || UNCATEGORIZED,
-                    description: scope.description,
-                    deprecated: scope.deprecated
-                });
-            }
+export function mergeIdentifiers(details: AuthorizationDetail[], type: string): string[] {
+    const seen = new Set<string>();
+    const out: string[] = [];
+    for (const detail of details) {
+        if (detail.type !== type) continue;
+        for (const identifier of identifiersOf(detail)) {
+            if (type === PROJECT_RAR_TYPE && identifier === RESERVED_CONSOLE_PROJECT) continue;
+            if (seen.has(identifier)) continue;
+            seen.add(identifier);
+            out.push(identifier);
         }
     }
-
-    return catalog;
+    return out;
 }
 
-/** Resolve a single action to a descriptor, falling back to a titleized one. */
-export function describeAction(action: string, catalog: ActionCatalog): ActionDescriptor {
-    const entry = catalog.get(action);
-    return {
-        action,
-        title: titleizeAction(action),
-        description: entry?.description ?? `Access to ${action}.`,
-        category: entry?.category ?? UNCATEGORIZED,
-        deprecated: entry?.deprecated ?? false
-    };
+export function hasWildcard(identifiers: string[]): boolean {
+    return identifiers.includes(WILDCARD_IDENTIFIER);
+}
+
+/** Concrete (non-wildcard) ids among a set of identifiers. */
+export function concreteIdentifiers(identifiers: string[]): string[] {
+    return identifiers.filter((identifier) => identifier !== WILDCARD_IDENTIFIER);
 }
 
 /**
- * Rebuild the `authorization_details` array from the user's selection, keyed by
- * entry index. Only `appwrite_console` entries are filtered to the selected
- * actions; entries that end up with no actions are dropped, and entries of
- * other types pass through untouched. Returns a JSON string ready for the
- * approve endpoint, or `'[]'` when nothing remains (an empty string would tell
- * the server to keep the originally requested details, which is never what the
- * consent screen wants).
+ * Rebuild the `authorization_details` array from the user's granted selection.
+ * Emits a `project` / `organization` entry only when that tier ends up bound to
+ * at least one identifier. Returns a JSON string ready for the approve endpoint,
+ * or `'[]'` when nothing remains (an empty string would tell the server to keep
+ * the originally requested details, which is never what the consent screen
+ * wants).
  */
-export function serializeGrantedDetails(
-    requested: AuthorizationDetail[],
-    selectedByIndex: Record<number, Record<string, boolean>>
-): string {
-    const granted: AuthorizationDetail[] = [];
-
-    requested.forEach((detail, index) => {
-        if (!isAppwriteProjectDetail(detail)) {
-            granted.push(detail);
-            return;
-        }
-
-        const requestedActions = actionsOf(detail);
-        const selected = selectedByIndex[index] ?? {};
-        const keptActions = requestedActions.filter((action) => selected[action]);
-
-        if (keptActions.length === 0) {
-            return;
-        }
-
-        const rebuilt: AuthorizationDetail = {
-            type: APPWRITE_PROJECT_RAR_TYPE,
-            actions: keptActions
-        };
-        for (const field of RESOURCE_FIELDS) {
-            const value = detail[field];
-            if (Array.isArray(value) && value.length > 0) {
-                rebuilt[field] = value as string[];
-            }
-        }
-        granted.push(rebuilt);
-    });
-
-    return JSON.stringify(granted);
+export function serializeGrantedDetails(granted: {
+    project?: string[];
+    organization?: string[];
+}): string {
+    const out: AuthorizationDetail[] = [];
+    if (granted.project && granted.project.length > 0) {
+        out.push({ type: PROJECT_RAR_TYPE, identifiers: granted.project });
+    }
+    if (granted.organization && granted.organization.length > 0) {
+        out.push({ type: ORGANIZATION_RAR_TYPE, identifiers: granted.organization });
+    }
+    return JSON.stringify(out);
 }
 
-export interface ResolvedProject {
+/* -------------------------------------------------------------------------- */
+/*  Resource name resolution — turn identifiers into display names            */
+/* -------------------------------------------------------------------------- */
+
+export interface ResolvedResource {
     id: string;
-    /** Project name, or the raw id when it couldn't be resolved. */
+    /** Display name, or the raw id when it couldn't be resolved. */
     name: string;
     region?: string;
-    /** True when a real project name was found; false means we fell back to id. */
+    /** True when a real name was found; false means we fell back to the id. */
     resolved: boolean;
 }
 
-export type ProjectNameMap = Map<string, ResolvedProject>;
+export type ResourceNameMap = Map<string, ResolvedResource>;
 
-/** Unique, real project ids referenced across all appwrite_project entries. */
-export function collectProjectIds(details: AuthorizationDetail[]): string[] {
-    const seen = new Set<string>();
-    for (const detail of details) {
-        if (!isAppwriteProjectDetail(detail)) continue;
-        for (const id of detail.projectIds ?? []) {
-            if (typeof id === 'string' && id !== '' && id !== RESERVED_CONSOLE_PROJECT) {
-                seen.add(id);
-            }
-        }
+function idOnlyMap(ids: string[]): ResourceNameMap {
+    const map: ResourceNameMap = new Map();
+    for (const id of ids) {
+        map.set(id, { id, name: id, resolved: false });
     }
-    return [...seen];
+    return map;
 }
 
 /**
@@ -240,11 +142,8 @@ export function collectProjectIds(details: AuthorizationDetail[]): string[] {
  * region the console endpoint doesn't see) falls back to showing the raw id.
  * Never throws: on any failure the caller still gets an id-only map.
  */
-export async function resolveProjectNames(ids: string[]): Promise<ProjectNameMap> {
-    const map: ProjectNameMap = new Map();
-    for (const id of ids) {
-        map.set(id, { id, name: id, resolved: false });
-    }
+export async function resolveProjectNames(ids: string[]): Promise<ResourceNameMap> {
+    const map = idOnlyMap(ids);
     if (ids.length === 0) return map;
 
     try {
@@ -277,4 +176,97 @@ export async function resolveProjectNames(ids: string[]): Promise<ProjectNameMap
     }
 
     return map;
+}
+
+/**
+ * Best-effort resolution of organization ids to their names. The user's
+ * organization list already carries names, so a single list call covers it.
+ * Never throws: on any failure the caller still gets an id-only map.
+ */
+export async function resolveOrganizationNames(ids: string[]): Promise<ResourceNameMap> {
+    const map = idOnlyMap(ids);
+    if (ids.length === 0) return map;
+
+    try {
+        const orgs = await getTeamOrOrganizationList([Query.limit(100)]);
+        for (const org of orgs.teams) {
+            if (map.has(org.$id)) {
+                map.set(org.$id, { id: org.$id, name: org.name, resolved: true });
+            }
+        }
+    } catch {
+        // Keep the id-only fallback map.
+    }
+
+    return map;
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Type-to-search — narrowing a wildcard grant to specific resources         */
+/* -------------------------------------------------------------------------- */
+
+/** How many results a resource search returns. Keeps the dropdown bounded and
+ *  sidesteps pagination — the user types to narrow rather than scrolling. */
+const SEARCH_LIMIT = 8;
+/** Cap on organizations swept per project search, to bound the request fan-out. */
+const SEARCH_ORG_SCAN = 20;
+
+/**
+ * Search the user's projects by name for the resource picker. Projects are only
+ * reachable through their owning organization, so we sweep the user's orgs and
+ * ask each for name matches, merge, and cap. An empty term returns the first
+ * projects found (so the picker can show something before the user types).
+ * Never throws: returns an empty list on failure.
+ */
+export async function searchProjects(term: string): Promise<ResolvedResource[]> {
+    try {
+        const orgs = await getTeamOrOrganizationList([Query.limit(SEARCH_ORG_SCAN)]);
+        const trimmed = term.trim();
+        const results = await Promise.allSettled(
+            orgs.teams.map((org) => {
+                const queries = [
+                    Query.select(['$id', 'name', 'region', 'teamId']),
+                    Query.limit(SEARCH_LIMIT)
+                ];
+                if (trimmed !== '') {
+                    queries.unshift(Query.startsWith('name', trimmed));
+                }
+                return sdk.forConsole.organization(org.$id).listProjects({ queries });
+            })
+        );
+
+        const seen = new Set<string>();
+        const out: ResolvedResource[] = [];
+        for (const result of results) {
+            if (result.status !== 'fulfilled') continue;
+            for (const project of result.value.projects) {
+                if (project.$id === RESERVED_CONSOLE_PROJECT || seen.has(project.$id)) continue;
+                seen.add(project.$id);
+                out.push({
+                    id: project.$id,
+                    name: project.name,
+                    region: project.region,
+                    resolved: true
+                });
+                if (out.length >= SEARCH_LIMIT) return out;
+            }
+        }
+        return out;
+    } catch {
+        return [];
+    }
+}
+
+/**
+ * Load the user's organizations as resources for the org picker. Organizations
+ * are few enough to load once and filter client-side, so this returns the full
+ * list; the picker searches within it. Never throws.
+ */
+export async function listOrganizationResources(): Promise<ResolvedResource[]> {
+    try {
+        const orgs = await getTeamOrOrganizationList([Query.limit(100)]);
+        return orgs.teams.map((org) => ({ id: org.$id, name: org.name, resolved: true }));
+    } catch {
+        return [];
+    }
 }
