@@ -121,6 +121,22 @@
             scopes: ['read:user', 'user:email']
         });
     }
+    function onGoogleLogin() {
+        let successUrl = window.location.origin;
+
+        if (page.url.searchParams.has('code')) {
+            successUrl += `?code=${page.url.searchParams.get('code')}`;
+        } else if (page.url.searchParams.has('campaign')) {
+            successUrl += `?campaign=${page.url.searchParams.get('campaign')}`;
+        }
+
+        sdk.forConsole.account.createOAuth2Session({
+            provider: OAuthProvider.Google,
+            success: successUrl,
+            failure: window.location.origin,
+            scopes: ['profile', 'email']
+        });
+    }
 </script>
 
 <svelte:head>
@@ -138,6 +154,12 @@
                             <span class="icon-github" aria-hidden="true"></span>
                             <span class="text">Sign up with GitHub</span>
                         </Button>
+                        <div style:margin-top="var(--gap-s, 8px)">
+                            <Button secondary fullWidth on:click={onGoogleLogin} {disabled}>
+                                <span class="icon-google" aria-hidden="true"></span>
+                                <span class="text">Sign up with Google</span>
+                            </Button>
+                        </div>
                     </div>
                     <span class="with-separators eyebrow-heading-3">or</span>
                 {/if}
