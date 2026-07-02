@@ -64,7 +64,7 @@ export const load: PageLoad = async ({ params, url, route, depends, parent }) =>
             ...projectScopeQueries,
             Query.offset(offset),
             Query.limit(limit),
-            Query.orderDesc(''),
+            Query.orderDesc('accessedAt'),
             Query.equal('teamId', params.organization)
         ]
     });
