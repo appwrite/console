@@ -23,7 +23,7 @@ export const load: PageLoad = async ({ url, route, params, depends }) => {
         search,
         page,
         users: await sdk.forProject(params.region, params.project).users.list({
-            queries: [Query.limit(limit), Query.offset(offset), Query.orderDesc('')],
+            queries: [Query.limit(limit), Query.offset(offset), Query.orderDesc('accessedAt')],
             search
         })
     };
