@@ -28,6 +28,7 @@
         resolveOrganizationNames,
         PROJECT_RAR_TYPE,
         ORGANIZATION_RAR_TYPE,
+        WILDCARD_IDENTIFIER,
         type ResolvedResource,
         type ResourceNameMap
     } from '$lib/helpers/oauth2-authorization-details';
@@ -80,18 +81,30 @@
     // binding is the only thing the user narrows here.
     const scopeModel = $derived(splitConsentScopes(grant.scopes ?? []));
     const details = $derived(parseAuthorizationDetails(grant.authorizationDetails));
-    const projectIdentifiers = $derived(mergeIdentifiers(details, PROJECT_RAR_TYPE));
-    const organizationIdentifiers = $derived(mergeIdentifiers(details, ORGANIZATION_RAR_TYPE));
 
-    // A tier is shown only when the client requested both permissions for it AND
-    // resources to bind them to — either half alone grants nothing.
-    const projectRequested = $derived(
-        (scopeModel.project.all || scopeModel.project.scopes.length > 0) &&
-            projectIdentifiers.length > 0
+    const projectScopesRequested = $derived(
+        scopeModel.project.all || scopeModel.project.scopes.length > 0
     );
+    const organizationScopesRequested = $derived(
+        scopeModel.organization.all || scopeModel.organization.scopes.length > 0
+    );
+
+    // When a tier's scopes are requested but left unbound, fall back to the
+    // wildcard so the user still gets the full resource picker.
+    const projectIdentifiers = $derived.by(() => {
+        const bound = mergeIdentifiers(details, PROJECT_RAR_TYPE);
+        if (bound.length > 0) return bound;
+        return projectScopesRequested ? [WILDCARD_IDENTIFIER] : [];
+    });
+    const organizationIdentifiers = $derived.by(() => {
+        const bound = mergeIdentifiers(details, ORGANIZATION_RAR_TYPE);
+        if (bound.length > 0) return bound;
+        return organizationScopesRequested ? [WILDCARD_IDENTIFIER] : [];
+    });
+
+    const projectRequested = $derived(projectScopesRequested && projectIdentifiers.length > 0);
     const organizationRequested = $derived(
-        (scopeModel.organization.all || scopeModel.organization.scopes.length > 0) &&
-            organizationIdentifiers.length > 0
+        organizationScopesRequested && organizationIdentifiers.length > 0
     );
 
     const redirectHost = $derived(hostnameOf(grant.redirectUri));
@@ -179,7 +192,7 @@
                 // Scopes are not downscoped — omit `scope` so the server keeps what
                 // the client requested. Only the resource binding is narrowed.
                 authorizationDetails:
-                    details.length > 0
+                    projectRequested || organizationRequested
                         ? serializeGrantedDetails({
                               project: projectGranted ? projectSelected : undefined,
                               organization: organizationGranted ? organizationSelected : undefined
