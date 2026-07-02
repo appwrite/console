@@ -124,6 +124,25 @@
             scopes: ['read:user', 'user:email']
         });
     }
+    function onGoogleLogin() {
+        let url = window.location.origin;
+
+        if (page.url.searchParams) {
+            const redirect = page.url.searchParams.get('redirect');
+            page.url.searchParams.delete('redirect');
+            if (redirect) {
+                url = `${redirect}${page.url.search}`;
+            } else {
+                url = `${base}${page.url.search ?? ''}`;
+            }
+        }
+        sdk.forConsole.account.createOAuth2Session({
+            provider: OAuthProvider.Google,
+            success: window.location.origin + url,
+            failure: window.location.origin,
+            scopes: ['profile', 'email']
+        });
+    }
 </script>
 
 <svelte:head>
@@ -136,12 +155,16 @@
         <Form onSubmit={login}>
             <Layout.Stack>
                 {#if isCloud}
-                    <div style:margin-bottom="var(--gap-s, 8px)">
+                    <Layout.Stack gap="s">
                         <Button secondary fullWidth on:click={onGithubLogin} {disabled}>
                             <span class="icon-github" aria-hidden="true"></span>
                             <span class="text">Sign in with GitHub</span>
                         </Button>
-                    </div>
+                        <Button secondary fullWidth on:click={onGoogleLogin} {disabled}>
+                            <span class="icon-google" aria-hidden="true"></span>
+                            <span class="text">Sign in with Google</span>
+                        </Button>
+                    </Layout.Stack>
                     <span class="with-separators eyebrow-heading-3">or</span>
                 {/if}
                 <InputEmail
