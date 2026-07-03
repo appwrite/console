@@ -118,7 +118,7 @@
                     <Button
                         external
                         secondary
-                        href="https://appwrite.io/docs/products/databases/databases">
+                        href="https://appwrite.io/docs/advanced/security/audit-logs">
                         Documentation
                     </Button>
                 </svelte:fragment>
