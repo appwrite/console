@@ -11,13 +11,28 @@
         IconOfficeBuilding,
         IconLockClosed,
         IconExclamationCircle,
-        IconDuplicate
+        IconDuplicate,
+        IconAdjustments,
+        IconShieldCheck
     } from '@appwrite.io/pink-icons-svelte';
     import { Button, Form } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { splitConsentScopes, buildConsentPermissions } from '$lib/helpers/oauth2-scopes';
+    import {
+        splitConsentScopes,
+        buildConsentPermissions,
+        buildTierEditorRows,
+        PROJECT_SCOPE_PREFIX,
+        ORGANIZATION_SCOPE_PREFIX,
+        type EditorRow
+    } from '$lib/helpers/oauth2-scopes';
+    import {
+        isMcpGrant,
+        composeGrantedScopes,
+        type TierSelection,
+        type ResourceSelection
+    } from '$lib/helpers/oauth2-mcp';
     import {
         parseAuthorizationDetails,
         mergeIdentifiers,
@@ -114,16 +129,91 @@
     const permissionGroups = $derived(buildConsentPermissions(scopeModel));
     let showPermissions = $state(true);
 
+    // MCP grants (detected via the grant's RFC 8707 resources) get a narrowing
+    // editor: the client requested the full scope catalog, so consent is the
+    // control point. Every other grant renders exactly as before — read-only
+    // permissions, no scope narrowing.
+    const canNarrow = $derived(isMcpGrant(grant));
+
     // The one thing the user controls: which projects / organizations the tiers
     // are bound to. Defaults to exactly what the client requested; reset on grant
     // change so a stale selection can't leak.
     let projectSelected = $state<string[]>([]);
     let organizationSelected = $state<string[]>([]);
+
+    // Scope-narrowing editor state (MCP grants only). Rows absent from a tier's
+    // selection are selected with full requested access, so the empty record is
+    // the "full access" default.
+    let customize = $state(false);
+    let readOnlyAll = $state(false);
+    let projectSelection = $state<TierSelection>({});
+    let organizationSelection = $state<TierSelection>({});
+
     $effect(() => {
         grant.$id;
         projectSelected = [...projectIdentifiers];
         organizationSelected = [...organizationIdentifiers];
+        customize = false;
+        readOnlyAll = false;
+        projectSelection = {};
+        organizationSelection = {};
     });
+
+    const projectRows = $derived(
+        canNarrow ? buildTierEditorRows(scopeModel.project, PROJECT_SCOPE_PREFIX) : []
+    );
+    const organizationRows = $derived(
+        canNarrow ? buildTierEditorRows(scopeModel.organization, ORGANIZATION_SCOPE_PREFIX) : []
+    );
+
+    function sameIdentifiers(a: string[], b: string[]): boolean {
+        return a.length === b.length && a.every((id) => b.includes(id));
+    }
+    const resourcesNarrowed = $derived(
+        !sameIdentifiers(projectSelected, projectIdentifiers) ||
+            !sameIdentifiers(organizationSelected, organizationIdentifiers)
+    );
+
+    // The narrowed grant to send on approve. `scope: undefined` means the user
+    // kept the full request — the approve call then omits `scope` so the server
+    // grants the full literal requested list and re-authorizations skip consent.
+    const composed = $derived(
+        canNarrow
+            ? composeGrantedScopes({
+                  model: scopeModel,
+                  project: projectSelection,
+                  organization: organizationSelection,
+                  readOnly: readOnlyAll,
+                  resourcesNarrowed
+              })
+            : null
+    );
+
+    function rowState(selection: TierSelection, resource: string): ResourceSelection {
+        return selection[resource] ?? { selected: true, level: 'full' };
+    }
+
+    function updateRow(
+        tier: 'project' | 'organization',
+        resource: string,
+        patch: Partial<ResourceSelection>
+    ) {
+        const selection = tier === 'project' ? projectSelection : organizationSelection;
+        const next = { ...selection, [resource]: { ...rowState(selection, resource), ...patch } };
+        if (tier === 'project') projectSelection = next;
+        else organizationSelection = next;
+    }
+
+    function setAllRows(tier: 'project' | 'organization', rows: EditorRow[], selected: boolean) {
+        const next: TierSelection = {};
+        for (const row of rows) next[row.resource] = { selected, level: 'full' };
+        if (tier === 'project') projectSelection = next;
+        else organizationSelection = next;
+    }
+
+    function tierAllSelected(rows: EditorRow[], selection: TierSelection): boolean {
+        return rows.every((row) => rowState(selection, row.resource).selected);
+    }
 
     const projectGranted = $derived(projectRequested && projectSelected.length > 0);
     const organizationGranted = $derived(organizationRequested && organizationSelected.length > 0);
@@ -144,7 +234,13 @@
             !projectGranted &&
             !organizationGranted
     );
-    const blocked = $derived(nothingToGrant || projectNeedsResource || organizationNeedsResource);
+    // With the narrowing editor, the selection must keep at least one
+    // non-identity scope — an identity-only grant would leave the app
+    // "authorized" but unable to act.
+    const nothingSelected = $derived(composed?.blocked ?? false);
+    const blocked = $derived(
+        nothingToGrant || projectNeedsResource || organizationNeedsResource || nothingSelected
+    );
 
     // Resource search wiring. Projects search server-side (there can be many);
     // organizations are few, so they load once and filter client-side.
@@ -189,8 +285,12 @@
         try {
             const result = await sdk.forConsole.oauth2.approve({
                 grantId,
-                // Scopes are not downscoped — omit `scope` so the server keeps what
-                // the client requested. Only the resource binding is narrowed.
+                // For MCP grants the editor may downscope the requested catalog;
+                // `scope` stays omitted when the user kept the full request so
+                // the server grants the full literal requested list (keeping the
+                // consent-skip diff empty on re-authorization). Non-MCP grants
+                // never send `scope` — only the resource binding is narrowed.
+                scope: composed?.scope,
                 authorizationDetails:
                     projectRequested || organizationRequested
                         ? serializeGrantedDetails({
@@ -243,6 +343,88 @@
     }
 </script>
 
+{#snippet editorGroup(
+    tierKey: 'project' | 'organization',
+    heading: string,
+    note: string,
+    rows: EditorRow[],
+    selection: TierSelection
+)}
+    {#if rows.length > 0}
+        <div class="perm-group">
+            <div class="perm-group-head">
+                <label class="editor-check group-check">
+                    <input
+                        type="checkbox"
+                        checked={tierAllSelected(rows, selection)}
+                        onchange={(e) => setAllRows(tierKey, rows, e.currentTarget.checked)}
+                        disabled={busy} />
+                    <Typography.Text variant="m-500" color="--fgcolor-neutral-secondary">
+                        {heading}
+                    </Typography.Text>
+                </label>
+                <span class="subtext">{note}</span>
+            </div>
+            <ul class="perm-list">
+                {#each rows as row (row.resource)}
+                    {@const state = rowState(selection, row.resource)}
+                    <li class="perm editor-row" class:off={!state.selected}>
+                        <label class="editor-check">
+                            <input
+                                type="checkbox"
+                                checked={state.selected}
+                                onchange={(e) =>
+                                    updateRow(tierKey, row.resource, {
+                                        selected: e.currentTarget.checked
+                                    })}
+                                disabled={busy}
+                                aria-label="Allow access to {row.title}" />
+                        </label>
+                        <span class="perm-text">
+                            <span class="perm-row-head">
+                                <span class="perm-title">{row.title}</span>
+                                {#if row.hasRead && row.hasWrite}
+                                    <span class="level-toggle" class:disabled={!state.selected}>
+                                        <button
+                                            type="button"
+                                            class="level-btn"
+                                            class:active={state.level === 'read' || readOnlyAll}
+                                            disabled={busy || !state.selected}
+                                            onclick={() =>
+                                                updateRow(tierKey, row.resource, {
+                                                    level: 'read'
+                                                })}>
+                                            Read
+                                        </button>
+                                        <button
+                                            type="button"
+                                            class="level-btn"
+                                            class:active={state.level === 'full' && !readOnlyAll}
+                                            disabled={busy || !state.selected || readOnlyAll}
+                                            onclick={() =>
+                                                updateRow(tierKey, row.resource, {
+                                                    level: 'full'
+                                                })}>
+                                            Read + Write
+                                        </button>
+                                    </span>
+                                {:else}
+                                    <span class="access-chip" class:strong={row.accessStrong}>
+                                        {row.access}
+                                    </span>
+                                {/if}
+                            </span>
+                            {#if row.description}
+                                <span class="perm-desc">{row.description}</span>
+                            {/if}
+                        </span>
+                    </li>
+                {/each}
+            </ul>
+        </div>
+    {/if}
+{/snippet}
+
 {#snippet copyBtn(token: string)}
     <button
         type="button"
@@ -294,7 +476,104 @@
         </header>
 
         <div class="body">
-            {#if permissionGroups.length > 0}
+            {#if canNarrow}
+                <section class="panel editor-panel">
+                    <div class="access-summary">
+                        <span class="scope-icon">
+                            <Icon icon={IconShieldCheck} size="s" />
+                        </span>
+                        <span class="scope-head-text">
+                            <Typography.Text variant="m-500">
+                                {composed?.untouched ? 'Full access' : 'Custom access'}
+                            </Typography.Text>
+                            <span class="subtext">
+                                {composed?.untouched
+                                    ? `${app.name} will be able to manage your organizations, projects, and their data on your behalf.`
+                                    : `${app.name} only gets the permissions you selected below.`}
+                            </span>
+                        </span>
+                    </div>
+
+                    <button
+                        type="button"
+                        class="customize-head"
+                        aria-expanded={customize}
+                        onclick={() => (customize = !customize)}>
+                        <span class="customize-label">
+                            <span class="customize-icon">
+                                <Icon icon={IconAdjustments} size="s" />
+                            </span>
+                            <span class="scope-head-text">
+                                <span class="perm-title">Customize access</span>
+                                <span class="subtext"
+                                    >You can limit {app.name} to specific projects and actions.</span>
+                            </span>
+                        </span>
+                        <Icon icon={customize ? IconChevronUp : IconChevronDown} size="s" />
+                    </button>
+
+                    {#if customize}
+                        <div class="editor-body">
+                            <label class="editor-readonly">
+                                <input type="checkbox" bind:checked={readOnlyAll} disabled={busy} />
+                                <span class="perm-text">
+                                    <span class="perm-title">Read-only</span>
+                                    <span class="subtext"
+                                        >Limit every selected permission to viewing data — nothing
+                                        can be created, changed, or deleted.</span>
+                                </span>
+                            </label>
+
+                            {#if scopeModel.identity.length > 0}
+                                <span class="subtext editor-identity">
+                                    Basic identity ({scopeModel.identity
+                                        .map((scope) => scope.id)
+                                        .join(', ')}) is always shared so {app.name} can recognize your
+                                    account.
+                                </span>
+                            {/if}
+
+                            {@render editorGroup(
+                                'project',
+                                'Projects',
+                                'Applies only to the projects you select below.',
+                                projectRows,
+                                projectSelection
+                            )}
+                            {@render editorGroup(
+                                'organization',
+                                'Organizations',
+                                'Applies only to the organizations you select below.',
+                                organizationRows,
+                                organizationSelection
+                            )}
+
+                            {#if nothingSelected}
+                                <div class="scope-warning">
+                                    <Icon
+                                        icon={IconExclamationCircle}
+                                        size="s"
+                                        color="--fgcolor-warning" />
+                                    <span
+                                        >Select at least one permission, or {app.name} gets no access
+                                        at all.</span>
+                                </div>
+                            {/if}
+                            {#if composed?.lengthCollapsed}
+                                <div class="scope-warning">
+                                    <Icon
+                                        icon={IconExclamationCircle}
+                                        size="s"
+                                        color="--fgcolor-warning" />
+                                    <span
+                                        >Your selection was too long to grant scope-by-scope, so a
+                                        fully selected tier was granted as full tier access instead.</span>
+                                </div>
+                            {/if}
+                        </div>
+                    {/if}
+                </section>
+            {:else if permissionGroups.length > 0}
                 <section class="panel">
                     <button
                         type="button"
@@ -766,6 +1045,140 @@
 
     .copy-btn.copied {
         color: var(--fgcolor-success);
+    }
+
+    /* ---- MCP narrowing editor ----------------------------------------------- */
+    .editor-panel {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .access-summary {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.7rem;
+        padding: 1rem 1rem 0.85rem;
+    }
+
+    .customize-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+        width: 100%;
+        padding: 0.85rem 1rem;
+        border: none;
+        border-top: 1px solid var(--border-neutral);
+        background: transparent;
+        color: var(--fgcolor-neutral-primary);
+        cursor: pointer;
+        text-align: left;
+    }
+
+    .customize-head:hover {
+        background: var(--overlay-neutral-hover, var(--bgcolor-neutral-secondary));
+    }
+
+    .customize-label {
+        display: inline-flex;
+        align-items: flex-start;
+        gap: 0.7rem;
+        min-width: 0;
+    }
+
+    .customize-icon {
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 2rem;
+        height: 2rem;
+        border-radius: var(--border-radius-s, 0.5rem);
+        background: var(--bgcolor-neutral-secondary);
+        color: var(--fgcolor-neutral-secondary);
+    }
+
+    .editor-body {
+        display: flex;
+        flex-direction: column;
+        gap: 1.1rem;
+        padding: 0.9rem 1rem 1.1rem;
+        border-top: 1px solid var(--border-neutral);
+        max-height: 24rem;
+        overflow-y: auto;
+    }
+
+    .editor-readonly {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.7rem;
+        padding: 0.7rem 0.8rem;
+        border: 1px solid var(--border-neutral);
+        border-radius: var(--border-radius-s, 0.5rem);
+        background: var(--bgcolor-neutral-secondary);
+        cursor: pointer;
+    }
+
+    .editor-identity {
+        display: block;
+    }
+
+    .editor-check {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        cursor: pointer;
+    }
+
+    .editor-check input[type='checkbox'],
+    .editor-readonly input[type='checkbox'] {
+        width: 1rem;
+        height: 1rem;
+        margin: 0.15rem 0 0;
+        accent-color: var(--bgcolor-neutral-invert);
+        cursor: pointer;
+    }
+
+    .editor-row.off .perm-text {
+        opacity: 0.45;
+    }
+
+    .level-toggle {
+        flex-shrink: 0;
+        display: inline-flex;
+        border: 1px solid var(--border-neutral-strong);
+        border-radius: 2rem;
+        overflow: hidden;
+    }
+
+    .level-toggle.disabled {
+        opacity: 0.45;
+    }
+
+    .level-btn {
+        padding: 0.1rem 0.55rem;
+        border: none;
+        background: transparent;
+        font-size: 0.58rem;
+        font-weight: 600;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        white-space: nowrap;
+        color: var(--fgcolor-neutral-secondary);
+        cursor: pointer;
+    }
+
+    .level-btn + .level-btn {
+        border-left: 1px solid var(--border-neutral-strong);
+    }
+
+    .level-btn.active {
+        background: var(--bgcolor-neutral-invert);
+        color: var(--fgcolor-neutral-on-invert, var(--bgcolor-neutral-primary));
+    }
+
+    .level-btn:disabled {
+        cursor: default;
     }
 
     /* ---- Scope (resource) panels ------------------------------------------ */

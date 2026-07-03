@@ -446,15 +446,20 @@ function actionRank(action: string): number {
     return 2;
 }
 
-function actionOf(scope: string): string {
+/** The action of a bare scope token — `read` in `tables.read`. */
+export function scopeAction(scope: string): string {
     const dot = scope.lastIndexOf('.');
     return dot === -1 ? scope : scope.slice(dot + 1);
 }
 
-function resourceOf(scope: string): string {
+/** The resource of a bare scope token — `tables` in `tables.read`. */
+export function scopeResource(scope: string): string {
     const dot = scope.lastIndexOf('.');
     return dot === -1 ? scope : scope.slice(0, dot);
 }
+
+const actionOf = scopeAction;
+const resourceOf = scopeResource;
 
 function tierLines(
     tier: TierScopes,
@@ -524,6 +529,63 @@ function tierLines(
     for (const { line } of groupLines) lines.push(line);
 
     return lines;
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Editor rows — per-resource rows for the MCP consent narrowing editor      */
+/* -------------------------------------------------------------------------- */
+
+export interface EditorRow {
+    /** Resource key (everything before the last dot), stable editor identity. */
+    resource: string;
+    /** Display title from the resource catalog, e.g. "Tables". */
+    title: string;
+    /** One-line description of what the resource covers. */
+    description?: string;
+    /** Requested actions for this resource, `read` before `write` before others. */
+    actions: string[];
+    hasRead: boolean;
+    hasWrite: boolean;
+    /** Access chip label for the full requested access, e.g. "Read + Write". */
+    access: string;
+    /** Whether the chip should read as elevated (write access). */
+    accessStrong: boolean;
+}
+
+/**
+ * Group one tier's requested scopes into per-resource editor rows for the MCP
+ * consent narrowing editor. Same grouping and copy as the read-only summary,
+ * but keyed by resource so each row can be toggled and its access level set.
+ */
+export function buildTierEditorRows(tier: TierScopes, prefix: string): EditorRow[] {
+    const copyMap =
+        prefix === PROJECT_SCOPE_PREFIX ? PROJECT_RESOURCE_COPY : ORGANIZATION_RESOURCE_COPY;
+    const groups = new Map<string, string[]>();
+    for (const scope of tier.scopes) {
+        const resource = resourceOf(scope);
+        const bucket = groups.get(resource);
+        if (bucket) bucket.push(scope);
+        else groups.set(resource, [scope]);
+    }
+    return [...groups.entries()].map(([resource, scopes]) => {
+        scopes.sort((a, b) => actionRank(actionOf(a)) - actionRank(actionOf(b)));
+        const actions = scopes.map(actionOf);
+        const { title, description, access, accessStrong } = describeResource(
+            resource,
+            actions,
+            copyMap
+        );
+        return {
+            resource,
+            title,
+            description,
+            actions,
+            hasRead: actions.includes('read'),
+            hasWrite: actions.includes('write'),
+            access,
+            accessStrong
+        };
+    });
 }
 
 /**
