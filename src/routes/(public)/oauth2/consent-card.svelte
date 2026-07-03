@@ -291,12 +291,22 @@
                 // consent-skip diff empty on re-authorization). Non-MCP grants
                 // never send `scope` — only the resource binding is narrowed.
                 scope: composed?.scope,
+                // Same consent-skip reasoning for the resource binding: on an
+                // MCP grant with untouched pickers, omit `authorizationDetails`
+                // so the server keeps exactly what the client requested — the
+                // re-auth diff (a hash of requested vs stored details) then
+                // stays empty. A narrowed selection is sent and deliberately
+                // forces re-consent on the next full request.
                 authorizationDetails:
                     projectRequested || organizationRequested
-                        ? serializeGrantedDetails({
-                              project: projectGranted ? projectSelected : undefined,
-                              organization: organizationGranted ? organizationSelected : undefined
-                          })
+                        ? canNarrow && !resourcesNarrowed
+                            ? undefined
+                            : serializeGrantedDetails({
+                                  project: projectGranted ? projectSelected : undefined,
+                                  organization: organizationGranted
+                                      ? organizationSelected
+                                      : undefined
+                              })
                         : undefined
             });
             if (grant.$id !== grantId) return;
