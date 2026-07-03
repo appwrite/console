@@ -192,6 +192,14 @@ const PROJECT_RESOURCE_COPY: Record<string, ResourceCopy> = {
         name: 'Project policies',
         desc: "This project's security and access policies."
     },
+    policies: {
+        name: 'Policies',
+        desc: "Legacy access to this project's security and backup policies."
+    },
+    'project.oauth2': {
+        name: 'OAuth2 configuration',
+        desc: "This project's OAuth2 authorization server configuration."
+    },
     templates: {
         name: 'Templates',
         desc: "The project's customizable email and SMS message templates."
@@ -236,6 +244,18 @@ const PROJECT_RESOURCE_COPY: Record<string, ResourceCopy> = {
         name: 'Rows',
         desc: 'The individual rows of data stored inside your database tables.'
     },
+    collections: {
+        name: 'Collections',
+        desc: 'Legacy database collections and their structure, replaced by tables.'
+    },
+    attributes: {
+        name: 'Attributes',
+        desc: 'Legacy collection attributes that define document structure, replaced by columns.'
+    },
+    documents: {
+        name: 'Documents',
+        desc: 'Legacy documents stored inside your collections, replaced by rows.'
+    },
     buckets: {
         name: 'Storage buckets',
         desc: 'Storage buckets and their file-level permission and security settings.'
@@ -255,6 +275,10 @@ const PROJECT_RESOURCE_COPY: Record<string, ResourceCopy> = {
     executions: {
         name: 'Executions',
         desc: 'The execution history and logs of your serverless functions.'
+    },
+    execution: {
+        name: 'Executions (legacy)',
+        desc: 'Legacy access to function executions, replaced by Executions.'
     },
     sites: {
         name: 'Sites',
@@ -370,6 +394,14 @@ const ORGANIZATION_RESOURCE_COPY: Record<string, ResourceCopy> = {
     'organization.keys': {
         name: 'Organization keys',
         desc: 'Organization-level API keys that authorize access across projects.'
+    },
+    keys: {
+        name: 'Organization keys (legacy)',
+        desc: 'Legacy access to organization API keys, replaced by Organization keys.'
+    },
+    devKeys: {
+        name: 'Development keys',
+        desc: 'Development keys used to bypass rate limits while building locally.'
     },
     domains: {
         name: 'Organization domains',
