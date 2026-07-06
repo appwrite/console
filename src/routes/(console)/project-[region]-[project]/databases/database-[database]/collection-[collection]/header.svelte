@@ -28,12 +28,6 @@
                 event: 'indexes'
             },
             {
-                href: `${path}/activity`,
-                title: 'Activity',
-                event: 'activity',
-                hasChildren: true
-            },
-            {
                 href: `${path}/usage`,
                 title: 'Usage',
                 event: 'usage',

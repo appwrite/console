@@ -31,7 +31,6 @@
         columnsWidth,
         showCreateIndexSheet,
         Deletion,
-        rowActivitySheet,
         paginatedRows,
         paginatedRowsLoading,
         databaseRelatedRowSheetOptions,
@@ -677,11 +676,6 @@
             if (action === 'delete') {
                 showDelete = true;
                 selectedRowForDelete = row.$id;
-            }
-
-            if (action === 'activity') {
-                $rowActivitySheet.row = row;
-                $rowActivitySheet.show = true;
             }
         }
     }

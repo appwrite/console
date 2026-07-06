@@ -13,7 +13,6 @@
         | 'update'
         | 'duplicate-row'
         | 'permissions'
-        | 'activity'
         | 'copy-url'
         | 'copy-json'
         // | 'copy-snippet'
@@ -26,7 +25,6 @@
     import {
         IconArrowLeft,
         IconArrowRight,
-        IconChartBar,
         IconClipboardCopy,
         IconDuplicate,
         IconKey,
@@ -68,7 +66,6 @@
         { label: 'Duplicate', icon: IconDuplicate, action: 'duplicate-row' },
         { divider: true },
         { label: 'Manage permissions', icon: IconKey, action: 'permissions' },
-        { label: 'View activity', icon: IconChartBar, action: 'activity' },
         { divider: true },
         { label: 'Copy URL', icon: IconLink, action: 'copy-url' },
         { label: 'Copy as JSON', icon: IconClipboardCopy, action: 'copy-json' },

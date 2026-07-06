@@ -21,18 +21,6 @@
             rank: 1
         },
         {
-            label: 'Go to Activity',
-            callback() {
-                goto(
-                    `${base}/project-${$project.region}-${$project.$id}/messaging/topics/topic-${topicId}/activity`
-                );
-            },
-            keys: ['g', 'a'],
-            disabled: page.url.pathname.endsWith('activity'),
-            group: 'topics',
-            rank: 1
-        },
-        {
             label: 'Go to Overview',
             callback() {
                 goto(
