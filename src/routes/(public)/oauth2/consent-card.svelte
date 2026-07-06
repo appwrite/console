@@ -33,6 +33,7 @@
         type TierSelection,
         type ResourceSelection
     } from '$lib/helpers/oauth2-mcp';
+    import { isWebRedirect } from '$lib/helpers/oauth2-redirect';
     import {
         parseAuthorizationDetails,
         mergeIdentifiers,
@@ -50,6 +51,7 @@
     import ResourceSelector from './resource-selector.svelte';
 
     export type OAuth2Flow = 'authorization' | 'device';
+    export type OAuth2Outcome = 'approved' | 'denied';
 
     function hostnameOf(uri: string): string | null {
         try {
@@ -80,10 +82,10 @@
         app: Models.App;
         accountLabel?: string;
         flow: OAuth2Flow;
-        onDeviceDone?: (outcome: 'approved' | 'denied') => void;
+        onDone?: (outcome: OAuth2Outcome, redirectUrl?: string) => void;
     }
 
-    let { grant, app, accountLabel = undefined, flow, onDeviceDone }: Props = $props();
+    let { grant, app, accountLabel = undefined, flow, onDone }: Props = $props();
 
     let error = $state<string | null>(null);
     let approving = $state(false);
@@ -312,10 +314,13 @@
             if (grant.$id !== grantId) return;
             trackEvent(Submit.AccountOAuth2ConsentApprove, { app_id: grant.appId, flow });
             if (flow === 'device' || !result.redirectUrl) {
-                onDeviceDone?.('approved');
+                onDone?.('approved', result.redirectUrl);
                 return;
             }
             window.location.href = result.redirectUrl;
+            if (!isWebRedirect(result.redirectUrl)) {
+                onDone?.('approved', result.redirectUrl);
+            }
         } catch (e: unknown) {
             if (grant.$id !== grantId) return;
             const message = (e as Error)?.message ?? 'Failed to authorize the application';
@@ -337,10 +342,13 @@
             if (grant.$id !== grantId) return;
             trackEvent(Submit.AccountOAuth2ConsentDeny, { app_id: grant.appId, flow });
             if (flow === 'device' || !result.redirectUrl) {
-                onDeviceDone?.('denied');
+                onDone?.('denied', result.redirectUrl);
                 return;
             }
             window.location.href = result.redirectUrl;
+            if (!isWebRedirect(result.redirectUrl)) {
+                onDone?.('denied', result.redirectUrl);
+            }
         } catch (e: unknown) {
             if (grant.$id !== grantId) return;
             const message = (e as Error)?.message ?? 'Failed to cancel the request';
