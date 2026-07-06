@@ -50,8 +50,7 @@ export function mcpResourceUrls(raw?: string | null): string[] {
         .split(',')
         .map(normalizeResourceUrl)
         .filter((url) => url !== '');
-    const urls = configured.length > 0 ? configured : DEFAULT_MCP_RESOURCE_URLS;
-    return urls.map(normalizeResourceUrl);
+    return configured.length > 0 ? configured : DEFAULT_MCP_RESOURCE_URLS;
 }
 
 /** Whether any of the grant's requested resources is a known MCP resource URI. */
@@ -161,7 +160,10 @@ export function composeGrantedScopes(input: ComposeInput): ComposedGrant {
         umbrella: string
     ): string[] => {
         const requested = tier.all || tier.scopes.length > 0;
-        if (requested && emission.full && tier.all) return [umbrella];
+        // Never collapse under read-only: the umbrella grants write, so a tier
+        // whose requested tokens are all `.read` (emission.full despite the
+        // toggle) must still emit the explicit token list.
+        if (requested && emission.full && tier.all && !readOnly) return [umbrella];
         return emission.tokens.map((token) => prefix + token);
     };
 
@@ -181,8 +183,10 @@ export function composeGrantedScopes(input: ComposeInput): ComposedGrant {
     // Client-side mirror of the server's scope length cap. Unreachable in
     // practice (the full catalog is ~2.6 KB), but if a selection ever exceeds
     // it, collapse the larger tier to its requested umbrella and surface that.
+    // Umbrella collapse grants write, so it is off the table under read-only —
+    // the toggle already halves the token list, keeping it well under the cap.
     let lengthCollapsed = false;
-    if (join().length > MAX_SCOPE_PARAM_LENGTH) {
+    if (!readOnly && join().length > MAX_SCOPE_PARAM_LENGTH) {
         const projectLength = projectScopes.join(' ').length;
         const organizationLength = organizationScopes.join(' ').length;
         if (projectLength >= organizationLength && model.project.all) {
