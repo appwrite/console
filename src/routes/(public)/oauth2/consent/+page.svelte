@@ -7,6 +7,7 @@
     import { IconExclamation } from '@appwrite.io/pink-icons-svelte';
     import { Button } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
+    import { isWebRedirect } from '$lib/helpers/oauth2-redirect';
     import OAuth2ConsentCard, { type OAuth2Outcome } from '../consent-card.svelte';
     import OAuth2OutcomeCard from '../outcome-card.svelte';
 
@@ -25,15 +26,6 @@
         if (!raw) return undefined;
         const value = Number(raw);
         return Number.isInteger(value) && value >= 0 ? value : undefined;
-    }
-
-    function isWebRedirect(uri: string): boolean {
-        try {
-            const { protocol } = new URL(uri);
-            return protocol === 'http:' || protocol === 'https:';
-        } catch {
-            return false;
-        }
     }
 
     function onDone(outcome: OAuth2Outcome, redirectUrl?: string) {
@@ -147,6 +139,7 @@
                             app = await sdk.forConsole.apps
                                 .get({ appId: clientId })
                                 .catch(() => null);
+                            if (cancelled) return;
                             phase = 'approved';
                         }
                         return;

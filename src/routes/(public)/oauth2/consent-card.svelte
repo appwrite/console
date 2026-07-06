@@ -18,6 +18,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { splitConsentScopes, buildConsentPermissions } from '$lib/helpers/oauth2-scopes';
+    import { isWebRedirect } from '$lib/helpers/oauth2-redirect';
     import {
         parseAuthorizationDetails,
         mergeIdentifiers,
@@ -42,15 +43,6 @@
             return new URL(uri).hostname;
         } catch {
             return null;
-        }
-    }
-
-    function isWebRedirect(uri: string): boolean {
-        try {
-            const { protocol } = new URL(uri);
-            return protocol === 'http:' || protocol === 'https:';
-        } catch {
-            return false;
         }
     }
 

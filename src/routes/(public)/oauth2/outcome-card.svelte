@@ -58,14 +58,20 @@
                 {:else}
                     <div class="avatar placeholder">{appInitial}</div>
                 {/if}
-                <span class="connector">
-                    <span class="connector-line"></span>
-                    <span class="connector-node">
+                {#if accountLabel}
+                    <span class="connector">
+                        <span class="connector-line"></span>
+                        <span class="connector-node">
+                            <Icon icon={approved ? IconCheck : IconX} size="s" />
+                        </span>
+                        <span class="connector-line"></span>
+                    </span>
+                    <div class="avatar account">{accountInitial}</div>
+                {:else}
+                    <span class="status-badge" class:approved>
                         <Icon icon={approved ? IconCheck : IconX} size="s" />
                     </span>
-                    <span class="connector-line"></span>
-                </span>
-                <div class="avatar account">{accountInitial}</div>
+                {/if}
             </div>
 
             <div class="headline">
@@ -119,9 +125,33 @@
        connector becomes a solid line with a status node when approved; stays
        dashed with an X when the request was cancelled. */
     .identity {
+        position: relative;
         display: flex;
         align-items: center;
         justify-content: center;
+    }
+
+    /* Fallback when no account is known: the status sits on the app avatar's
+       corner instead of in the connector. */
+    .status-badge {
+        position: absolute;
+        right: -0.5rem;
+        bottom: -0.35rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 1.5rem;
+        height: 1.5rem;
+        border-radius: 50%;
+        border: 1px solid var(--border-neutral);
+        background: var(--bgcolor-neutral-primary);
+        color: var(--fgcolor-neutral-secondary);
+    }
+
+    .status-badge.approved {
+        border-color: var(--border-success, rgba(16, 185, 129, 0.45));
+        background: var(--bgcolor-success-weaker, rgba(16, 185, 129, 0.12));
+        color: var(--fgcolor-success);
     }
 
     .avatar {
