@@ -42,7 +42,6 @@
     import { sleep } from '$lib/helpers/promises';
     import { hash } from '$lib/helpers/string';
     import {
-        documentActivitySheet,
         documentPermissionSheet,
         noSqlDocument,
         showCreateIndexSheet
@@ -50,7 +49,6 @@
     import {
         SideSheet,
         EditRecordPermissions,
-        RecordActivity,
         useDatabaseSdk,
         DEFAULT_VECTOR_DIMENSION,
         type Field,
@@ -137,15 +135,6 @@
                 goto(withPath(basePath, '/indexes'));
             },
             disabled: page.url.pathname.endsWith('indexes'),
-            group: 'collections'
-        },
-        {
-            label: 'Go to activity',
-            keys: ['g', 'c'],
-            callback() {
-                goto(withPath(basePath, '/activity'));
-            },
-            disabled: page.url.pathname.endsWith('activity'),
             group: 'collections'
         },
         {
@@ -350,10 +339,6 @@
         entity={collection}
         bind:this={editRecordPermissions}
         bind:record={$documentPermissionSheet.document} />
-</SideSheet>
-
-<SideSheet title="Document activity" bind:show={$documentActivitySheet.show} closeOnBlur>
-    <RecordActivity record={$documentActivitySheet.document} />
 </SideSheet>
 
 <SideSheet

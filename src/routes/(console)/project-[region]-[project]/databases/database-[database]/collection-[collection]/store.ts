@@ -95,11 +95,6 @@ export const documentPermissionSheet = writable({
     document: null as Models.Document
 });
 
-export const documentActivitySheet = writable({
-    show: false,
-    document: null as Models.Document
-});
-
 export const showCreateIndexSheet = writable<{
     show: boolean;
     column?: string;
