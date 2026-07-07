@@ -299,7 +299,9 @@
         // on the resource entry. Once the cloud rollout is complete this map can
         // be removed entirely.
         const billingAddonNamesFallback: Record<string, string> = {
-            addon_baa: 'HIPAA BAA'
+            addon_baa: 'HIPAA BAA',
+            addon_premiumGeoDB: 'Premium Geo DB',
+            addon_premiumGeoDBOrg: 'Premium Geo DB'
         };
 
         const addons = (currentAggregation?.resources || [])
@@ -471,7 +473,10 @@
                         .map((addon) =>
                             createRow({
                                 id: `addon-${addon.resourceId}`,
-                                label: addon.name || addon.resourceId,
+                                label:
+                                    addon.name ||
+                                    billingAddonNamesFallback[addon.resourceId] ||
+                                    addon.resourceId,
                                 resource: addon,
                                 usageFormatter: ({ value }) => formatNum(value),
                                 priceFormatter: ({ amount }) => formatCurrency(amount),
