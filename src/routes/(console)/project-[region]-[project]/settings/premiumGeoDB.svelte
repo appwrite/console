@@ -11,6 +11,7 @@
     import { Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
+    import { confirmPayment } from '$lib/stores/stripe';
     import { formatCurrency } from '$lib/helpers/numbers';
     import { Badge } from '@appwrite.io/pink-svelte';
     import type { Models } from '@appwrite.io/console';
@@ -137,9 +138,30 @@
     async function handleReEnable() {
         reEnabling = true;
         try {
-            await sdk.forConsoleIn(page.params.region).projects.createPremiumGeoDBAddon({
-                projectId: page.params.project
-            });
+            const result: Models.Addon | Models.PaymentAuthentication = await sdk
+                .forConsoleIn(page.params.region)
+                .projects.createPremiumGeoDBAddon({
+                    projectId: page.params.project
+                });
+
+            // Re-enabling a scheduled-for-removal addon is normally free (already paid for
+            // the cycle), but the endpoint can still return a PaymentAuthentication if a
+            // charge is required. Mirror the enable modal so 3DS is not silently dropped.
+            if ('clientSecret' in result) {
+                const paymentAuth = result as unknown as Models.PaymentAuthentication;
+                const settingsUrl = resolve('/(console)/project-[region]-[project]/settings', {
+                    region: page.params.region,
+                    project: page.params.project
+                });
+                await confirmPayment({
+                    clientSecret: paymentAuth.clientSecret,
+                    paymentMethodId: $organization.paymentMethodId,
+                    orgId: $organization.$id,
+                    route: `${settingsUrl}?type=confirm-addon&addonId=${paymentAuth.addonId}`
+                });
+                return;
+            }
+
             await Promise.all([invalidate(Dependencies.ADDONS), invalidate(Dependencies.PROJECT)]);
             addNotification({
                 message: 'Premium Geo DB addon has been re-enabled',
