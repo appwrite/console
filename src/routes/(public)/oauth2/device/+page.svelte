@@ -5,16 +5,13 @@
     import { page } from '$app/state';
     import { AppwriteException, type Models } from '@appwrite.io/console';
     import { Card, Layout, Typography, Icon, Spinner } from '@appwrite.io/pink-svelte';
-    import {
-        IconDesktopComputer,
-        IconCheckCircle,
-        IconXCircle
-    } from '@appwrite.io/pink-icons-svelte';
+    import { IconDesktopComputer } from '@appwrite.io/pink-icons-svelte';
     import { Button, Form, Label } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import OAuth2ConsentCard, { type OAuth2Flow } from '../consent-card.svelte';
+    import OAuth2ConsentCard, { type OAuth2Flow, type OAuth2Outcome } from '../consent-card.svelte';
+    import OAuth2OutcomeCard from '../outcome-card.svelte';
 
     type Phase = 'loading' | 'enter-code' | 'consent' | 'approved' | 'denied';
 
@@ -127,7 +124,7 @@
         }
     }
 
-    function onDeviceDone(outcome: 'approved' | 'denied') {
+    function onDone(outcome: OAuth2Outcome) {
         phase = outcome === 'approved' ? 'approved' : 'denied';
     }
 </script>
@@ -209,32 +206,13 @@
                 {app}
                 accountLabel={account?.email || account?.name || undefined}
                 flow={DEVICE_FLOW}
-                {onDeviceDone} />
-        {:else if phase === 'approved'}
-            <Card.Base padding="l" radius="l" style="width: 100%;">
-                <Layout.Stack gap="l" alignItems="center" alignContent="center">
-                    <div class="success-icon-wrap">
-                        <Icon icon={IconCheckCircle} size="l" color="--fgcolor-success" />
-                    </div>
-                    <Typography.Title size="m" align="center">Device connected</Typography.Title>
-                    <Typography.Text variant="m-400" align="center">
-                        You've authorized {app?.name ?? 'the application'}. You can return to your
-                        device — it will continue automatically.
-                    </Typography.Text>
-                </Layout.Stack>
-            </Card.Base>
-        {:else if phase === 'denied'}
-            <Card.Base padding="l" radius="l" style="width: 100%;">
-                <Layout.Stack gap="l" alignItems="center" alignContent="center">
-                    <div class="denied-icon-wrap">
-                        <Icon icon={IconXCircle} size="l" color="--fgcolor-neutral-secondary" />
-                    </div>
-                    <Typography.Title size="m" align="center">Request cancelled</Typography.Title>
-                    <Typography.Text variant="m-400" align="center">
-                        No access was granted. You can close this page.
-                    </Typography.Text>
-                </Layout.Stack>
-            </Card.Base>
+                {onDone} />
+        {:else if phase === 'approved' || phase === 'denied'}
+            <OAuth2OutcomeCard
+                outcome={phase}
+                flow={DEVICE_FLOW}
+                {app}
+                accountLabel={account?.email || account?.name || undefined} />
         {/if}
     </div>
 </div>
@@ -298,26 +276,6 @@
 
     .code-input:disabled {
         opacity: 0.6;
-    }
-
-    .success-icon-wrap {
-        width: 3rem;
-        height: 3rem;
-        border-radius: 50%;
-        background: var(--bgcolor-success-secondary, rgba(16, 185, 129, 0.1));
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .denied-icon-wrap {
-        width: 3rem;
-        height: 3rem;
-        border-radius: 50%;
-        background: var(--bgcolor-neutral-secondary, #f4f4f4);
-        display: flex;
-        align-items: center;
-        justify-content: center;
     }
 
     .bold {

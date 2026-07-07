@@ -7,15 +7,18 @@
     import { IconExclamation } from '@appwrite.io/pink-icons-svelte';
     import { Button } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
-    import OAuth2ConsentCard from '../consent-card.svelte';
+    import { isWebRedirect } from '$lib/helpers/oauth2-redirect';
+    import OAuth2ConsentCard, { type OAuth2Outcome } from '../consent-card.svelte';
+    import OAuth2OutcomeCard from '../outcome-card.svelte';
 
-    type Phase = 'loading' | 'ready' | 'error';
+    type Phase = 'loading' | 'ready' | 'approved' | 'denied' | 'error';
 
     let phase = $state<Phase>('loading');
     let grant = $state<Models.Oauth2Grant | null>(null);
     let app = $state<Models.App | null>(null);
     let account = $state<Models.User<Models.Preferences> | null>(null);
     let error = $state<string | null>(null);
+    let completedRedirectUrl = $state<string | undefined>(undefined);
 
     // OIDC `max_age` is a non-negative integer count of seconds. Reject anything
     // else (e.g. `max_age=abc`) so we omit the param rather than forwarding NaN.
@@ -23,6 +26,11 @@
         if (!raw) return undefined;
         const value = Number(raw);
         return Number.isInteger(value) && value >= 0 ? value : undefined;
+    }
+
+    function onDone(outcome: OAuth2Outcome, redirectUrl?: string) {
+        completedRedirectUrl = redirectUrl;
+        phase = outcome === 'approved' ? 'approved' : 'denied';
     }
 
     // Re-runs when the authorize params change (this route can stay mounted as
@@ -38,6 +46,7 @@
         let cancelled = false;
         phase = 'loading';
         error = null;
+        completedRedirectUrl = undefined;
 
         const currentRelativeUrl = () => window.location.pathname + window.location.search;
 
@@ -124,6 +133,15 @@
                     if (result.redirectUrl) {
                         // Already consented — go straight back to the client.
                         window.location.href = result.redirectUrl;
+                        if (!isWebRedirect(result.redirectUrl)) {
+                            completedRedirectUrl = result.redirectUrl;
+                            account = loggedInAccount;
+                            app = await sdk.forConsole.apps
+                                .get({ appId: clientId })
+                                .catch(() => null);
+                            if (cancelled) return;
+                            phase = 'approved';
+                        }
                         return;
                     }
                     if (result.grantId) {
@@ -184,7 +202,15 @@
                 {grant}
                 {app}
                 accountLabel={account?.email || account?.name || undefined}
-                flow="authorization" />
+                flow="authorization"
+                {onDone} />
+        {:else if phase === 'approved' || phase === 'denied'}
+            <OAuth2OutcomeCard
+                outcome={phase}
+                flow="authorization"
+                {app}
+                accountLabel={account?.email || account?.name || undefined}
+                redirectUrl={completedRedirectUrl} />
         {/if}
     </div>
 </div>

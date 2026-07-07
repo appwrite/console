@@ -72,6 +72,7 @@
             label="Value"
             placeholder="Enter value"
             bind:value={pair.value}
+            autocomplete="new-password"
             minlength={0} />
         <Selector.Checkbox
             id="secret"

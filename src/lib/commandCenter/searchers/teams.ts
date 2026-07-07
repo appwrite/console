@@ -33,17 +33,6 @@ export const teamSearcher = (async (query: string) => {
                 },
                 group: 'teams',
                 nested: true
-            },
-
-            {
-                label: 'Go to activity',
-                callback: () => {
-                    goto(
-                        `${base}/project-${page.params.region}-${page.params.project}/auth/teams/team-${teams[0].$id}/activity`
-                    );
-                },
-                group: 'teams',
-                nested: true
             }
         ];
     }

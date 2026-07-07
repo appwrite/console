@@ -42,7 +42,6 @@
     import { mockSuggestions } from '$database/(suggestions)';
     import {
         collectionColumns,
-        documentActivitySheet,
         documentPermissionSheet,
         noSqlDocument,
         paginatedDocuments,
@@ -430,11 +429,6 @@
         if (action === 'delete') {
             selectedDocumentForDelete = document.$id;
             showDelete = true;
-        }
-
-        if (action === 'activity') {
-            $documentActivitySheet.show = true;
-            $documentActivitySheet.document = document;
         }
     }
 

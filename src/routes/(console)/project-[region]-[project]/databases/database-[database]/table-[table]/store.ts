@@ -143,11 +143,6 @@ export enum Deletion {
     restrict = 'Row can not be deleted'
 }
 
-export const rowActivitySheet = writable({
-    show: false,
-    row: null as Models.Row
-});
-
 export const rowPermissionSheet = writable({
     show: false,
     row: null as Models.Row

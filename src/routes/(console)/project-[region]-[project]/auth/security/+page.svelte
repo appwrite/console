@@ -10,6 +10,7 @@
     import PasswordStrengthPolicy from './passwordStrengthPolicy.svelte';
     import SessionSecurity from './sessionSecurity.svelte';
     import UpdateSignupEmailSecurity from './updateSignupEmailSecurity.svelte';
+    import { isCloud } from '$lib/system';
 
     let { data }: PageProps = $props();
 </script>
@@ -24,12 +25,14 @@
         dictionaryPolicy={data.passwordDictionaryPolicy}
         historyPolicy={data.passwordHistoryPolicy}
         personalDataPolicy={data.passwordPersonalDataPolicy} />
-    <UpdateSignupEmailSecurity
-        project={data.project}
-        denyAliasedEmailPolicy={data.denyAliasedEmailPolicy}
-        denyDisposableEmailPolicy={data.denyDisposableEmailPolicy}
-        denyFreeEmailPolicy={data.denyFreeEmailPolicy}
-        denyCorporateEmailPolicy={data.denyCorporateEmailPolicy} />
+    {#if isCloud}
+        <UpdateSignupEmailSecurity
+            project={data.project}
+            denyAliasedEmailPolicy={data.denyAliasedEmailPolicy}
+            denyDisposableEmailPolicy={data.denyDisposableEmailPolicy}
+            denyFreeEmailPolicy={data.denyFreeEmailPolicy}
+            denyCorporateEmailPolicy={data.denyCorporateEmailPolicy} />
+    {/if}
     <SessionSecurity
         project={data.project}
         sessionAlertPolicy={data.sessionAlertPolicy}

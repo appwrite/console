@@ -81,6 +81,7 @@
                         label={`${i === 0 ? 'Value' : ''}`}
                         placeholder="Enter value"
                         bind:value={pair.value}
+                        autocomplete="new-password"
                         minlength={0} />
                     <PinkButton.Button
                         icon

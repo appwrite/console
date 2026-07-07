@@ -28,12 +28,6 @@
             event: 'applications'
         },
         {
-            href: `${path}/activity`,
-            title: 'Activity',
-            event: 'activity',
-            hasChildren: true
-        },
-        {
             href: `${path}/organizations`,
             title: 'Organizations',
             event: 'organizations',
