@@ -2,7 +2,7 @@
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/state';
-    import { AppwriteException, type Models } from '@appwrite.io/console';
+    import { AppwriteException, Client, Oauth2, type Models } from '@appwrite.io/console';
     import { Card, Layout, Typography, Icon, Spinner } from '@appwrite.io/pink-svelte';
     import { IconExclamation } from '@appwrite.io/pink-icons-svelte';
     import { Button } from '$lib/elements/forms';
@@ -33,15 +33,34 @@
         phase = outcome === 'approved' ? 'approved' : 'denied';
     }
 
+    // PAR is a public client endpoint (like /token): the server serves it with
+    // wildcard CORS and credentials disabled, so the browser rejects the
+    // console SDK's default credentialed fetch. Call it through an anonymous
+    // client that omits cookies — the endpoint needs no session anyway.
+    function anonymousOAuth2(): Oauth2 {
+        const client = new Client()
+            .setEndpoint(sdk.forConsole.client.config.endpoint)
+            .setProject('console')
+            .setCredentials('omit');
+        return new Oauth2(client);
+    }
+
+    // The ENTIRE query string, so the flow restarts whenever any part of the
+    // authorize request changes — not just grant_id/client_id, but also
+    // redirect_uri, scope, state, nonce, PKCE fields, prompt, max_age,
+    // authorization_details and request_uri. A $derived string (rather than
+    // reading page.url in the effect) so identity-only replacements of the
+    // URL object — e.g. login calling invalidate(ACCOUNT) right after goto —
+    // do NOT re-run the flow: a rerun would cancel an in-flight authorize
+    // and, on the PAR path, re-dereference an already-consumed single-use
+    // request_uri handle.
+    const authorizeQuery = $derived(page.url.searchParams.toString());
+
     // Re-runs when the authorize params change (this route can stay mounted as
     // the router moves between requests). Reset to loading so a previously
     // loaded grant can never be approved against a different request.
     $effect(() => {
-        // Depend on the ENTIRE query string so the effect re-runs whenever any
-        // part of the authorize request changes — not just grant_id/client_id,
-        // but also redirect_uri, scope, state, nonce, PKCE fields, prompt,
-        // max_age and authorization_details.
-        page.url.searchParams.toString();
+        const query = authorizeQuery;
 
         let cancelled = false;
         phase = 'loading';
@@ -50,8 +69,9 @@
 
         const currentRelativeUrl = () => window.location.pathname + window.location.search;
 
-        const goSignIn = () => {
-            void goto(`${base}/login?redirect=${encodeURIComponent(currentRelativeUrl())}`, {
+        const goSignIn = (resumeUrl?: string) => {
+            const target = resumeUrl ?? currentRelativeUrl();
+            void goto(`${base}/login?redirect=${encodeURIComponent(target)}`, {
                 replaceState: true
             });
         };
@@ -78,7 +98,7 @@
         }
 
         async function init(): Promise<void> {
-            const params = page.url.searchParams;
+            const params = new URLSearchParams(query);
             const grantId = params.get('grant_id');
 
             if (grantId) {
@@ -98,8 +118,86 @@
                 return;
             }
 
-            // No grant yet: this is the pre-login entry with raw authorize params.
+            // Shared handling for a JSON authorize response, whether the request
+            // arrived as raw params or as a pushed request_uri handle.
+            async function handleAuthorizeResult(
+                result: Models.Oauth2Authorize,
+                loggedInAccount: Models.User<Models.Preferences>,
+                clientId: string | null,
+                fromRequestUri: boolean
+            ): Promise<void> {
+                if (result.redirectUrl) {
+                    // Already consented — go straight back to the client.
+                    window.location.href = result.redirectUrl;
+                    if (!isWebRedirect(result.redirectUrl)) {
+                        completedRedirectUrl = result.redirectUrl;
+                        account = loggedInAccount;
+                        app = clientId
+                            ? await sdk.forConsole.apps.get({ appId: clientId }).catch(() => null)
+                            : null;
+                        if (cancelled) return;
+                        phase = 'approved';
+                    }
+                    return;
+                }
+                if (result.grantId) {
+                    if (fromRequestUri) {
+                        // The pushed request handle is single-use and now consumed.
+                        // Rewrite the URL to the grant so a reload or back/forward
+                        // navigation resumes via getGrant instead of failing on a
+                        // dead request_uri. The effect re-runs and loads the grant.
+                        await goto(`${base}/oauth2/consent?grant_id=${result.grantId}`, {
+                            replaceState: true
+                        });
+                        return;
+                    }
+                    await loadConsent(result.grantId, loggedInAccount);
+                    return;
+                }
+                error = 'Could not start authorization.';
+                phase = 'error';
+            }
+
             const clientId = params.get('client_id');
+            const requestUri = params.get('request_uri');
+
+            // Pushed authorization request (PAR) resume: we round-tripped a short
+            // request_uri handle through login instead of the full authorize URL.
+            if (requestUri) {
+                const loggedInAccount = (await sdk.forConsole.account
+                    .get()
+                    .catch(() => null)) as Models.User<Models.Preferences> | null;
+                if (cancelled) return;
+
+                if (!loggedInAccount) {
+                    // The handle is single-use: never dereference it while logged
+                    // out — the server consumes it before rejecting the call.
+                    goSignIn();
+                    return;
+                }
+
+                try {
+                    const result = await sdk.forConsole.oauth2.authorize({
+                        // request_uri must not be combined with any other
+                        // authorization param; client_id is the only one the
+                        // server accepts alongside it (and must match).
+                        clientId: clientId ?? undefined,
+                        requestUri
+                    });
+                    if (cancelled) return;
+                    await handleAuthorizeResult(result, loggedInAccount, clientId, true);
+                } catch (e: unknown) {
+                    if (cancelled) return;
+                    const message = (e as Error)?.message ?? '';
+                    error = message.toLowerCase().includes('request_uri')
+                        ? 'This sign-in request has expired. Return to the application and try connecting again.'
+                        : message || 'Could not start authorization.';
+                    phase = 'error';
+                }
+                return;
+            }
+
+            // No grant yet: this is the pre-login entry with raw authorize params.
             if (clientId) {
                 const loggedInAccount = (await sdk.forConsole.account
                     .get()
@@ -107,7 +205,40 @@
                 if (cancelled) return;
 
                 if (!loggedInAccount) {
-                    goSignIn();
+                    // Push the authorization request server-side and carry only a
+                    // short request_uri through login. The full consent URL rides
+                    // inside the OAuth provider's `state` during GitHub sign-in
+                    // and can exceed the provider's size limits.
+                    const resources = params.getAll('resource');
+                    try {
+                        const par = await anonymousOAuth2().createPAR({
+                            clientId,
+                            redirectUri: params.get('redirect_uri') ?? '',
+                            responseType: params.get('response_type') ?? 'code',
+                            scope: params.get('scope') ?? '',
+                            state: params.get('state') ?? undefined,
+                            nonce: params.get('nonce') ?? undefined,
+                            codeChallenge: params.get('code_challenge') ?? undefined,
+                            codeChallengeMethod: params.get('code_challenge_method') ?? undefined,
+                            prompt: params.get('prompt') ?? undefined,
+                            maxAge: parseMaxAge(params.get('max_age')),
+                            authorizationDetails: params.get('authorization_details') ?? undefined,
+                            // The SDK types `resource` as a string but the server
+                            // accepts a URI list (RFC 8707 allows repeated values).
+                            resource:
+                                resources.length > 0 ? (resources as unknown as string) : undefined
+                        });
+                        if (cancelled) return;
+                        goSignIn(
+                            `${base}/oauth2/consent?client_id=${encodeURIComponent(clientId)}&request_uri=${encodeURIComponent(par.request_uri)}`
+                        );
+                    } catch {
+                        if (cancelled) return;
+                        // PAR unavailable (older server) or the request is invalid.
+                        // Fall back to the legacy full-URL redirect; validation
+                        // errors resurface via authorize after login.
+                        goSignIn();
+                    }
                     return;
                 }
 
@@ -130,26 +261,7 @@
                         resource: params.get('resource') ?? undefined
                     });
                     if (cancelled) return;
-                    if (result.redirectUrl) {
-                        // Already consented — go straight back to the client.
-                        window.location.href = result.redirectUrl;
-                        if (!isWebRedirect(result.redirectUrl)) {
-                            completedRedirectUrl = result.redirectUrl;
-                            account = loggedInAccount;
-                            app = await sdk.forConsole.apps
-                                .get({ appId: clientId })
-                                .catch(() => null);
-                            if (cancelled) return;
-                            phase = 'approved';
-                        }
-                        return;
-                    }
-                    if (result.grantId) {
-                        await loadConsent(result.grantId, loggedInAccount);
-                        return;
-                    }
-                    error = 'Could not start authorization.';
-                    phase = 'error';
+                    await handleAuthorizeResult(result, loggedInAccount, clientId, false);
                 } catch (e: unknown) {
                     if (cancelled) return;
                     error = (e as Error)?.message ?? 'Could not start authorization.';

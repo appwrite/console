@@ -10,7 +10,7 @@
     import type { Models } from '@appwrite.io/console';
 
     export let show = false;
-    export let locale: Models.Locale;
+    export let locale: Models.CloudLocale;
     export let organization: string = null;
     export let countryList: Models.CountryList;
 

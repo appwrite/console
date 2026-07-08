@@ -29,7 +29,7 @@
 
     export let data: PageData;
 
-    const locale: Models.Locale = data.locale;
+    const locale: Models.CloudLocale = data.locale;
     const countryList: Models.CountryList = data.countryList;
 
     let show = false;
