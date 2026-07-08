@@ -22,7 +22,7 @@
     } from '@appwrite.io/pink-icons-svelte';
     import type { Models } from '@appwrite.io/console';
 
-    export let locale: Models.Locale;
+    export let locale: Models.CloudLocale;
     export let countryList: Models.CountryList;
     export let organization: Models.Organization;
     export let billingAddress: Models.BillingAddress;
