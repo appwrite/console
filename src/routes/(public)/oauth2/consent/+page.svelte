@@ -234,6 +234,7 @@
                 // existing approved identity) via the SDK, then render consent or
                 // redirect.
                 try {
+                    const resources = params.getAll('resource');
                     const result = await sdk.forConsole.oauth2.authorize({
                         clientId,
                         redirectUri: params.get('redirect_uri') ?? '',
@@ -246,7 +247,10 @@
                         prompt: params.get('prompt') ?? undefined,
                         maxAge: parseMaxAge(params.get('max_age')),
                         authorizationDetails: params.get('authorization_details') ?? undefined,
-                        resource: params.get('resource') ?? undefined
+                        // SDK types `resource` as string; the server accepts
+                        // a URI list (RFC 8707).
+                        resource:
+                            resources.length > 0 ? (resources as unknown as string) : undefined
                     });
                     if (cancelled) return;
                     await handleAuthorizeResult(result, loggedInAccount, clientId, false);
