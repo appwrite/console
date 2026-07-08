@@ -33,10 +33,8 @@
         phase = outcome === 'approved' ? 'approved' : 'denied';
     }
 
-    // PAR is a public client endpoint (like /token): the server serves it with
-    // wildcard CORS and credentials disabled, so the browser rejects the
-    // console SDK's default credentialed fetch. Call it through an anonymous
-    // client that omits cookies — the endpoint needs no session anyway.
+    // /par is served like /token: wildcard CORS with credentials disabled, so
+    // the browser rejects the default client's credentialed fetch.
     function anonymousOAuth2(): Oauth2 {
         const client = new Client()
             .setEndpoint(sdk.forConsole.client.config.endpoint)
@@ -45,15 +43,10 @@
         return new Oauth2(client);
     }
 
-    // The ENTIRE query string, so the flow restarts whenever any part of the
-    // authorize request changes — not just grant_id/client_id, but also
-    // redirect_uri, scope, state, nonce, PKCE fields, prompt, max_age,
-    // authorization_details and request_uri. A $derived string (rather than
-    // reading page.url in the effect) so identity-only replacements of the
-    // URL object — e.g. login calling invalidate(ACCOUNT) right after goto —
-    // do NOT re-run the flow: a rerun would cancel an in-flight authorize
-    // and, on the PAR path, re-dereference an already-consumed single-use
-    // request_uri handle.
+    // A $derived string so identity-only replacements of page.url (e.g. login
+    // calling invalidate(ACCOUNT) right after goto) don't restart the flow —
+    // a restart would cancel an in-flight authorize and re-dereference an
+    // already-consumed single-use request_uri.
     const authorizeQuery = $derived(page.url.searchParams.toString());
 
     // Re-runs when the authorize params change (this route can stay mounted as
@@ -118,8 +111,6 @@
                 return;
             }
 
-            // Shared handling for a JSON authorize response, whether the request
-            // arrived as raw params or as a pushed request_uri handle.
             async function handleAuthorizeResult(
                 result: Models.Oauth2Authorize,
                 loggedInAccount: Models.User<Models.Preferences>,
@@ -142,10 +133,8 @@
                 }
                 if (result.grantId) {
                     if (fromRequestUri) {
-                        // The pushed request handle is single-use and now consumed.
-                        // Rewrite the URL to the grant so a reload or back/forward
-                        // navigation resumes via getGrant instead of failing on a
-                        // dead request_uri. The effect re-runs and loads the grant.
+                        // The handle is now consumed — rewrite to the grant URL so
+                        // reloads resume via getGrant instead of a dead request_uri.
                         await goto(`${base}/oauth2/consent?grant_id=${result.grantId}`, {
                             replaceState: true
                         });
@@ -161,8 +150,6 @@
             const clientId = params.get('client_id');
             const requestUri = params.get('request_uri');
 
-            // Pushed authorization request (PAR) resume: we round-tripped a short
-            // request_uri handle through login instead of the full authorize URL.
             if (requestUri) {
                 const loggedInAccount = (await sdk.forConsole.account
                     .get()
@@ -177,10 +164,9 @@
                 }
 
                 try {
+                    // The server rejects request_uri combined with any other
+                    // authorization param; only client_id may accompany it.
                     const result = await sdk.forConsole.oauth2.authorize({
-                        // request_uri must not be combined with any other
-                        // authorization param; client_id is the only one the
-                        // server accepts alongside it (and must match).
                         clientId: clientId ?? undefined,
                         requestUri
                     });
@@ -188,10 +174,9 @@
                     await handleAuthorizeResult(result, loggedInAccount, clientId, true);
                 } catch (e: unknown) {
                     if (cancelled) return;
-                    // The server reports every dead-handle case — expired,
-                    // already consumed, malformed — as `oauth2_invalid_request`.
-                    // Since this call sends nothing but the handle, that type
-                    // can only mean the handle itself is no longer usable.
+                    // Every dead-handle case (expired, consumed, malformed) is
+                    // reported as oauth2_invalid_request; since only the handle
+                    // is sent, that type can only mean the handle is unusable.
                     const invalidHandle =
                         e instanceof AppwriteException && e.type === 'oauth2_invalid_request';
                     error = invalidHandle
@@ -210,10 +195,9 @@
                 if (cancelled) return;
 
                 if (!loggedInAccount) {
-                    // Push the authorization request server-side and carry only a
-                    // short request_uri through login. The full consent URL rides
-                    // inside the OAuth provider's `state` during GitHub sign-in
-                    // and can exceed the provider's size limits.
+                    // Carry only a short request_uri through login — the full
+                    // consent URL travels inside the OAuth provider's `state`
+                    // during GitHub sign-in and can exceed its size limits.
                     const resources = params.getAll('resource');
                     try {
                         const par = await anonymousOAuth2().createPAR({
@@ -228,8 +212,8 @@
                             prompt: params.get('prompt') ?? undefined,
                             maxAge: parseMaxAge(params.get('max_age')),
                             authorizationDetails: params.get('authorization_details') ?? undefined,
-                            // The SDK types `resource` as a string but the server
-                            // accepts a URI list (RFC 8707 allows repeated values).
+                            // SDK types `resource` as string; the server accepts
+                            // a URI list (RFC 8707).
                             resource:
                                 resources.length > 0 ? (resources as unknown as string) : undefined
                         });
@@ -239,9 +223,8 @@
                         );
                     } catch {
                         if (cancelled) return;
-                        // PAR unavailable (older server) or the request is invalid.
-                        // Fall back to the legacy full-URL redirect; validation
-                        // errors resurface via authorize after login.
+                        // PAR unavailable (older server) or invalid request —
+                        // fall back to the legacy full-URL redirect.
                         goSignIn();
                     }
                     return;
