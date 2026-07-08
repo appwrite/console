@@ -33,8 +33,11 @@
         phase = outcome === 'approved' ? 'approved' : 'denied';
     }
 
-    // /par is served like /token: wildcard CORS with credentials disabled, so
-    // the browser rejects the default client's credentialed fetch.
+    // /par is public (no auth needed), which is exactly why the default client
+    // can't call it: public endpoints are served like /token — wildcard CORS
+    // with Access-Control-Allow-Credentials: false — and the browser blocks
+    // sdk.forConsole's credentialed (cookie-sending) fetch against that. This
+    // client sends the same request with credentials omitted.
     function anonymousOAuth2(): Oauth2 {
         const client = new Client()
             .setEndpoint(sdk.forConsole.client.config.endpoint)
