@@ -2,7 +2,7 @@
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/state';
-    import { AppwriteException, Client, Oauth2, type Models } from '@appwrite.io/console';
+    import { AppwriteException, type Models } from '@appwrite.io/console';
     import { Card, Layout, Typography, Icon, Spinner } from '@appwrite.io/pink-svelte';
     import { IconExclamation } from '@appwrite.io/pink-icons-svelte';
     import { Button } from '$lib/elements/forms';
@@ -31,19 +31,6 @@
     function onDone(outcome: OAuth2Outcome, redirectUrl?: string) {
         completedRedirectUrl = redirectUrl;
         phase = outcome === 'approved' ? 'approved' : 'denied';
-    }
-
-    // /par is public (no auth needed), which is exactly why the default client
-    // can't call it: public endpoints are served like /token — wildcard CORS
-    // with Access-Control-Allow-Credentials: false — and the browser blocks
-    // sdk.forConsole's credentialed (cookie-sending) fetch against that. This
-    // client sends the same request with credentials omitted.
-    function anonymousOAuth2(): Oauth2 {
-        const client = new Client()
-            .setEndpoint(sdk.forConsole.client.config.endpoint)
-            .setProject('console')
-            .setCredentials('omit');
-        return new Oauth2(client);
     }
 
     // A $derived string so identity-only replacements of page.url (e.g. login
@@ -160,8 +147,8 @@
                 if (cancelled) return;
 
                 if (!loggedInAccount) {
-                    // The handle is single-use: never dereference it while logged
-                    // out — the server consumes it before rejecting the call.
+                    // Dereferencing while logged out can only 401; keep the
+                    // single-use handle untouched and go straight to login.
                     goSignIn();
                     return;
                 }
@@ -203,7 +190,7 @@
                     // during GitHub sign-in and can exceed its size limits.
                     const resources = params.getAll('resource');
                     try {
-                        const par = await anonymousOAuth2().createPAR({
+                        const par = await sdk.forConsole.oauth2.createPAR({
                             clientId,
                             redirectUri: params.get('redirect_uri') ?? '',
                             responseType: params.get('response_type') ?? 'code',
