@@ -188,10 +188,15 @@
                     await handleAuthorizeResult(result, loggedInAccount, clientId, true);
                 } catch (e: unknown) {
                     if (cancelled) return;
-                    const message = (e as Error)?.message ?? '';
-                    error = message.toLowerCase().includes('request_uri')
+                    // The server reports every dead-handle case — expired,
+                    // already consumed, malformed — as `oauth2_invalid_request`.
+                    // Since this call sends nothing but the handle, that type
+                    // can only mean the handle itself is no longer usable.
+                    const invalidHandle =
+                        e instanceof AppwriteException && e.type === 'oauth2_invalid_request';
+                    error = invalidHandle
                         ? 'This sign-in request has expired. Return to the application and try connecting again.'
-                        : message || 'Could not start authorization.';
+                        : ((e as Error)?.message ?? 'Could not start authorization.');
                     phase = 'error';
                 }
                 return;
