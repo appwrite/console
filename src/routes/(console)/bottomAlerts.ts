@@ -1,33 +1,33 @@
 import { isCloud } from '$lib/system';
 import { isSameDay } from '$lib/helpers/date';
 import { type BottomModalAlertItem, showBottomModalAlert } from '$lib/stores/bottom-alerts';
-import PresencesApi from '$lib/images/promos/presences-api.png';
+import StateOfAppwriteSurvey from '$lib/images/promos/state-of-appwrite-survey.png';
 
 const listOfPromotions: BottomModalAlertItem[] = [];
 
 if (isCloud) {
-    const presencesApiPromo: BottomModalAlertItem = {
-        id: 'modal:presences_api_announcement',
+    const stateOfAppwriteSurveyPromo: BottomModalAlertItem = {
+        id: 'modal:state_of_appwrite_survey_announcement',
         src: {
-            dark: PresencesApi,
-            light: PresencesApi
+            dark: StateOfAppwriteSurvey,
+            light: StateOfAppwriteSurvey
         },
-        title: 'Announcing the Presences API',
+        title: 'State of Appwrite Cloud',
         message:
-            'Track who is online, typing, and active in realtime with built-in channels, automatic expiry, and permission-aware subscriptions.',
+            'Help us shape the future of Appwrite Cloud by sharing your experience, AI stack, and usage preferences. Your feedback is vital!',
         plan: 'free',
         importance: 8,
         scope: 'everywhere',
         cta: {
-            text: 'Read announcement',
-            link: () => 'https://appwrite.io/blog/post/announcing-presences-api',
+            text: 'Take the survey',
+            link: () => 'https://forms.gle/5cvWxTwhonoDCWsi7',
             external: true,
             hideOnClick: true,
             skipUpgradeRedirect: true
         },
         show: true
     };
-    listOfPromotions.push(presencesApiPromo);
+    listOfPromotions.push(stateOfAppwriteSurveyPromo);
 }
 
 export function addBottomModalAlerts() {
