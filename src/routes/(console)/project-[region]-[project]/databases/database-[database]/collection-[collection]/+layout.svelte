@@ -138,15 +138,6 @@
             group: 'collections'
         },
         {
-            label: 'Go to usage',
-            keys: ['g', 'u'],
-            callback() {
-                goto(withPath(basePath, '/usage'));
-            },
-            disabled: page.url.pathname.endsWith('usage'),
-            group: 'collections'
-        },
-        {
             label: 'Go to settings',
             keys: ['g', 's'],
             callback() {
