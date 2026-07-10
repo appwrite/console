@@ -7,6 +7,7 @@ import { sdk } from '$lib/stores/sdk';
 import {
     OAuthProvider,
     ProjectOAuth2GooglePrompt,
+    ProjectOAuth2OidcPrompt,
     type Models as ConsoleModels
 } from '@appwrite.io/console';
 
@@ -25,7 +26,8 @@ type Args = {
     secret: string | null;
     details: Record<string, string>;
     enabled: boolean;
-    promptValues?: ProjectOAuth2GooglePrompt[];
+    promptValues?: ProjectOAuth2GooglePrompt[] | ProjectOAuth2OidcPrompt[];
+    maxAge?: number;
 };
 
 type Return = {
@@ -51,7 +53,8 @@ async function updateProjectOAuth({
     secret,
     details,
     enabled,
-    promptValues
+    promptValues,
+    maxAge
 }: Args) {
     const projectSdk = sdk.forProject(region, projectId).project;
     const parsedSecret = parseSecret(secret);
@@ -84,6 +87,12 @@ async function updateProjectOAuth({
                 keyId: getDetail('keyId'),
                 teamId: getDetail('teamId'),
                 p8File: getSecret('p8File'),
+                enabled
+            });
+        case OAuthProvider.Appwrite:
+            return projectSdk.updateOAuth2Appwrite({
+                clientId: getAppId(),
+                clientSecret: getSecret(),
                 enabled
             });
         case OAuthProvider.Auth0:
@@ -190,7 +199,7 @@ async function updateProjectOAuth({
             return projectSdk.updateOAuth2Google({
                 clientId: getAppId(),
                 clientSecret: getSecret(),
-                prompt: promptValues ?? [],
+                prompt: (promptValues as ProjectOAuth2GooglePrompt[]) ?? [],
                 enabled
             });
         case OAuthProvider.Keycloak:
@@ -234,6 +243,8 @@ async function updateProjectOAuth({
                 authorizationURL: getDetail('authorizationURL'),
                 tokenURL: getDetail('tokenUrl'),
                 userInfoURL: getDetail('userInfoUrl'),
+                prompt: (promptValues as ProjectOAuth2OidcPrompt[]) ?? [],
+                maxAge: maxAge ?? 0,
                 enabled
             });
         case OAuthProvider.Okta:
@@ -353,7 +364,8 @@ export async function updateOAuth({
     secret,
     details,
     enabled,
-    promptValues
+    promptValues,
+    maxAge
 }: Args): Promise<Return> {
     try {
         if (!isValueOfStringEnum(OAuthProvider, provider.key)) {
@@ -368,7 +380,8 @@ export async function updateOAuth({
             secret,
             details,
             enabled,
-            promptValues
+            promptValues,
+            maxAge
         });
         await invalidate(Dependencies.PROJECT);
 
