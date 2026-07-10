@@ -14,7 +14,7 @@ if (isCloud) {
         },
         title: 'State of Appwrite Cloud',
         message:
-            'Help us shape the future of Appwrite Cloud by sharing your experience, AI stack, and usage preferences. Your feedback is vital!',
+            'Share your experience building with Appwrite Cloud and using AI tools, and help shape our product roadmap for 2026 and beyond.',
         plan: 'free',
         importance: 8,
         scope: 'everywhere',
