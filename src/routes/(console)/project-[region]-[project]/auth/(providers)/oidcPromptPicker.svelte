@@ -34,7 +34,7 @@
     <Typography.Text variant="m-500">Prompt</Typography.Text>
     <Layout.Stack direction="row" gap="s" flexWrap="wrap">
         {#each options as option (option.val)}
-            <Tag size="s" selected={value.includes(option.val)} on:click={() => toggle(option.val)}>
+            <Tag size="s" selected={value.includes(option.val)} onclick={() => toggle(option.val)}>
                 {option.label}
             </Tag>
         {/each}
