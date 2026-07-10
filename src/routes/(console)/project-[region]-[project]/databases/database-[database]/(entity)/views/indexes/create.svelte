@@ -60,7 +60,8 @@
                 leadingIcon: baseColumnOptions.find(
                     (option) =>
                         option.type === field.type &&
-                        option.format === ('format' in field ? field.format : undefined)
+                        option.format ===
+                            ('format' in field && field.format ? field.format : undefined)
                 )?.icon
             }))
     );
