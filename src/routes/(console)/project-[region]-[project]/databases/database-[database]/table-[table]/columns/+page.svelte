@@ -515,26 +515,30 @@
                         {columnType.toLowerCase()}
                     </Spreadsheet.Cell>
                     <Spreadsheet.Cell column="indexed" {root} isEditable={false}>
-                        <!-- $id is always indexed internally -->
-                        {@const isActuallyIndexed =
-                            isId || $indexes.some((index) => index.columns.includes(column.key))}
+                        {#if !isRelationship(column)}
+                            <!-- $id is always indexed internally -->
+                            {@const isActuallyIndexed =
+                                isId ||
+                                $indexes.some((index) => index.columns.includes(column.key))}
 
-                        <!-- $id is always indexed internally -->
-                        {@const checked = isId || isActuallyIndexed || !!columnIndexMap[column.key]}
+                            <!-- $id is always indexed internally -->
+                            {@const checked =
+                                isId || isActuallyIndexed || !!columnIndexMap[column.key]}
 
-                        <Selector.Checkbox
-                            size="s"
-                            {checked}
-                            disabled={isActuallyIndexed}
-                            on:change={(e) => {
-                                if (!isActuallyIndexed) {
-                                    if (e.detail) {
-                                        columnIndexMap[column.key] = true;
-                                        $showCreateIndexSheet.show = true;
-                                        $showCreateIndexSheet.column = column.key;
+                            <Selector.Checkbox
+                                size="s"
+                                {checked}
+                                disabled={isActuallyIndexed}
+                                on:change={(e) => {
+                                    if (!isActuallyIndexed) {
+                                        if (e.detail) {
+                                            columnIndexMap[column.key] = true;
+                                            $showCreateIndexSheet.show = true;
+                                            $showCreateIndexSheet.column = column.key;
+                                        }
                                     }
-                                }
-                            }} />
+                                }} />
+                        {/if}
                     </Spreadsheet.Cell>
                     <Spreadsheet.Cell column="default" {root} isEditable={false}>
                         {@const _default = column.required
