@@ -88,15 +88,11 @@ const endpoint = getApiEndpoint();
 const clientConsole = new Client();
 const clientConsoleOperator = new Client();
 const scopedConsoleClient = new Client();
-/** Reused client for org-scoped console Users API (platform user management). */
-const organizationScopedConsoleClient = new Client();
-
 const clientProject = new Client();
 const clientRealtime = new Client();
 
 if (!building) {
     scopedConsoleClient.setProject('console');
-    organizationScopedConsoleClient.setProject('console');
     clientConsole.setEndpoint(endpoint).setProject('console');
     clientConsoleOperator.setEndpoint(endpoint).setProject('console');
 
@@ -106,7 +102,6 @@ if (!building) {
     registerImpersonationClients([
         clientConsole,
         scopedConsoleClient,
-        organizationScopedConsoleClient,
         clientProject,
         clientRealtime
     ]);
@@ -188,27 +183,20 @@ export const sdk = {
     /**
      * Users service scoped to an organization on the console project.
      *
-     * The backend grants owner/admin scopes (including users.read / users.write)
-     * only when an organization context is present. Returns a narrow Users
-     * instance (not a full SDK) and reuses one Client, updating the org header
-     * when the organization changes — same pattern as `organization()`.
+     * Builds a fresh Client per call (same pattern as `organization()`) so auth
+     * headers always mirror the current console session / impersonation state,
+     * then stamps `X-Appwrite-Organization` for users.read/write scopes.
+     * Returns a narrow Users instance only — not a full console SDK.
      */
     forConsoleUsersInOrganization(organizationId: string) {
-        if (
-            !organizationScopedConsoleClient.config.endpoint ||
-            organizationScopedConsoleClient.config.endpoint !== clientConsole.config.endpoint
-        ) {
-            organizationScopedConsoleClient.setEndpoint(clientConsole.config.endpoint);
-        }
-        if (organizationScopedConsoleClient.config.project !== 'console') {
-            organizationScopedConsoleClient.setProject('console');
-        }
-
-        Object.assign(organizationScopedConsoleClient.headers, clientConsole.getHeaders(), {
+        const organizationClient = new Client();
+        organizationClient.setEndpoint(clientConsole.config.endpoint || getApiEndpoint());
+        organizationClient.setProject('console');
+        Object.assign(organizationClient.headers, clientConsole.getHeaders(), {
             'X-Appwrite-Organization': organizationId
         });
 
-        return new Users(organizationScopedConsoleClient);
+        return new Users(organizationClient);
     },
 
     forProject(region: string, projectId: string) {
