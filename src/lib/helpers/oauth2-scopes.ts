@@ -476,6 +476,8 @@ export interface PermissionGroup {
     heading: string;
     /** Contextual note under the heading, e.g. which resources it applies to. */
     note?: string;
+    /** Whether the consent screen lets the user collapse this group. */
+    collapsible?: boolean;
     lines: PermissionLine[];
 }
 
@@ -666,6 +668,7 @@ export function buildConsentPermissions(model: ConsentScopeModel): PermissionGro
         groups.push({
             heading: 'Projects',
             note: 'Applies only to the projects you select below.',
+            collapsible: true,
             lines: projectLines
         });
     }
@@ -680,6 +683,7 @@ export function buildConsentPermissions(model: ConsentScopeModel): PermissionGro
         groups.push({
             heading: 'Organizations',
             note: 'Applies only to the organizations you select below.',
+            collapsible: true,
             lines: organizationLines
         });
     }

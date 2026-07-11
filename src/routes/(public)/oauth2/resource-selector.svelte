@@ -112,17 +112,20 @@
         const currentTerm = term;
         const offset = results.length;
         loadingMore = true;
-        const page = await find(currentTerm, offset, PAGE_SIZE);
-        if (currentTerm !== term) return;
+        try {
+            const page = await find(currentTerm, offset, PAGE_SIZE);
+            if (currentTerm !== term) return;
 
-        const seen = new Set(results.map((resource) => resource.id));
-        const next = page.resources.filter((resource) => !seen.has(resource.id));
-        results = [...results, ...next];
-        hasMore = page.hasMore;
-        const merged = { ...names };
-        for (const resource of next) merged[resource.id] = resource;
-        names = merged;
-        loadingMore = false;
+            const seen = new Set(results.map((resource) => resource.id));
+            const next = page.resources.filter((resource) => !seen.has(resource.id));
+            results = [...results, ...next];
+            hasMore = page.hasMore;
+            const merged = { ...names };
+            for (const resource of next) merged[resource.id] = resource;
+            names = merged;
+        } finally {
+            loadingMore = false;
+        }
     }
 
     function handleResultsScroll(event: Event) {

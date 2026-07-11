@@ -287,7 +287,9 @@ export async function searchOrganizations(
     try {
         const queries = [Query.offset(offset), Query.limit(limit)];
         const trimmed = term.trim();
-        if (trimmed !== '') queries.push(Query.search('name', trimmed));
+        // startsWith over search: search is full-text (word-boundary) matching,
+        // which drops partial-fragment matches; this mirrors the project search.
+        if (trimmed !== '') queries.push(Query.startsWith('name', trimmed));
 
         const orgs = await getTeamOrOrganizationList(queries);
         return {

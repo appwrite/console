@@ -686,9 +686,7 @@
                     {#if showPermissions}
                         <div class="panel-body">
                             {#each permissionGroups as group (group.heading)}
-                                {@const collapsible =
-                                    group.heading === 'Projects' ||
-                                    group.heading === 'Organizations'}
+                                {@const collapsible = group.collapsible === true}
                                 <div class="perm-group">
                                     <div class="perm-group-head">
                                         {#if collapsible}
