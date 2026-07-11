@@ -126,6 +126,11 @@ export interface ResolvedResource {
 
 export type ResourceNameMap = Map<string, ResolvedResource>;
 
+export interface ResourcePage {
+    resources: ResolvedResource[];
+    hasMore: boolean;
+}
+
 function idOnlyMap(ids: string[]): ResourceNameMap {
     const map: ResourceNameMap = new Map();
     for (const id of ids) {
@@ -205,68 +210,97 @@ export async function resolveOrganizationNames(ids: string[]): Promise<ResourceN
 /*  Type-to-search — narrowing a wildcard grant to specific resources         */
 /* -------------------------------------------------------------------------- */
 
-/** How many results a resource search returns. Keeps the dropdown bounded and
- *  sidesteps pagination — the user types to narrow rather than scrolling. */
-const SEARCH_LIMIT = 8;
 /** Cap on organizations swept per project search, to bound the request fan-out. */
 const SEARCH_ORG_SCAN = 20;
 
 /**
  * Search the user's projects by name for the resource picker. Projects are only
  * reachable through their owning organization, so we sweep the user's orgs and
- * ask each for name matches, merge, and cap. An empty term returns the first
- * projects found (so the picker can show something before the user types).
- * Never throws: returns an empty list on failure.
+ * ask each for name matches. Results are exposed as a global paginated list
+ * across those organizations so the picker can load more as the user scrolls.
+ * Never throws: returns an empty page on failure.
  */
-export async function searchProjects(term: string): Promise<ResolvedResource[]> {
+export async function searchProjects(
+    term: string,
+    offset: number,
+    limit: number
+): Promise<ResourcePage> {
     try {
         const orgs = await getTeamOrOrganizationList([Query.limit(SEARCH_ORG_SCAN)]);
         const trimmed = term.trim();
-        const results = await Promise.allSettled(
-            orgs.teams.map((org) => {
-                const queries = [
-                    Query.select(['$id', 'name', 'region', 'teamId']),
-                    Query.limit(SEARCH_LIMIT)
-                ];
-                if (trimmed !== '') {
-                    queries.unshift(Query.startsWith('name', trimmed));
-                }
-                return sdk.forConsole.organization(org.$id).listProjects({ queries });
-            })
-        );
+        const resources: ResolvedResource[] = [];
+        let skip = offset;
 
-        const seen = new Set<string>();
-        const out: ResolvedResource[] = [];
-        for (const result of results) {
-            if (result.status !== 'fulfilled') continue;
-            for (const project of result.value.projects) {
-                if (project.$id === RESERVED_CONSOLE_PROJECT || seen.has(project.$id)) continue;
-                seen.add(project.$id);
-                out.push({
+        for (const org of orgs.teams) {
+            const pageLimit = limit + 1 - resources.length;
+            const queries = [
+                Query.notEqual('$id', RESERVED_CONSOLE_PROJECT),
+                Query.offset(skip),
+                Query.limit(pageLimit),
+                Query.select(['$id', 'name', 'region', 'teamId'])
+            ];
+            if (trimmed !== '') {
+                queries.unshift(Query.startsWith('name', trimmed));
+            }
+
+            const result = await sdk.forConsole
+                .organization(org.$id)
+                .listProjects({ queries })
+                .catch(() => null);
+            if (!result) continue;
+
+            if (skip >= result.total) {
+                skip -= result.total;
+                continue;
+            }
+            skip = 0;
+
+            for (const project of result.projects) {
+                resources.push({
                     id: project.$id,
                     name: project.name,
                     region: project.region,
                     resolved: true
                 });
-                if (out.length >= SEARCH_LIMIT) return out;
             }
+            if (resources.length > limit) break;
         }
-        return out;
+
+        return {
+            resources: resources.slice(0, limit),
+            hasMore: resources.length > limit
+        };
     } catch {
-        return [];
+        return { resources: [], hasMore: false };
     }
 }
 
 /**
- * Load the user's organizations as resources for the org picker. Organizations
- * are few enough to load once and filter client-side, so this returns the full
- * list; the picker searches within it. Never throws.
+ * Search the user's organizations by name using offset pagination. Never
+ * throws: returns an empty page on failure.
  */
-export async function listOrganizationResources(): Promise<ResolvedResource[]> {
+export async function searchOrganizations(
+    term: string,
+    offset: number,
+    limit: number
+): Promise<ResourcePage> {
     try {
-        const orgs = await getTeamOrOrganizationList([Query.limit(100)]);
-        return orgs.teams.map((org) => ({ id: org.$id, name: org.name, resolved: true }));
+        const queries = [Query.offset(offset), Query.limit(limit)];
+        const trimmed = term.trim();
+        // startsWith over search: search is full-text (word-boundary) matching,
+        // which drops partial-fragment matches; this mirrors the project search.
+        if (trimmed !== '') queries.push(Query.startsWith('name', trimmed));
+
+        const orgs = await getTeamOrOrganizationList(queries);
+        return {
+            resources: orgs.teams.map((org) => ({
+                id: org.$id,
+                name: org.name,
+                resolved: true
+            })),
+            hasMore: offset + orgs.teams.length < orgs.total
+        };
     } catch {
-        return [];
+        return { resources: [], hasMore: false };
     }
 }
