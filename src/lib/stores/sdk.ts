@@ -181,6 +181,24 @@ export const sdk = {
         return createConsoleSdk(scopedConsoleClient);
     },
 
+    /**
+     * Console client scoped to an organization.
+     *
+     * The backend grants owner/admin scopes (including users.read / users.write)
+     * on the console project only when an organization context is present.
+     * Use this for platform-level user management on self-hosted instances.
+     */
+    forConsoleInOrganization(organizationId: string) {
+        const organizationClient = new Client();
+        organizationClient.setEndpoint(clientConsole.config.endpoint);
+        organizationClient.setProject('console');
+        Object.assign(organizationClient.headers, clientConsole.getHeaders(), {
+            'X-Appwrite-Organization': organizationId
+        });
+
+        return createConsoleSdk(organizationClient);
+    },
+
     forProject(region: string, projectId: string) {
         const endpoint = getApiEndpoint(region);
         if (endpoint !== clientProject.config.endpoint) {
