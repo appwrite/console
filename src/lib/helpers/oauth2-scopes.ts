@@ -403,6 +403,14 @@ const ORGANIZATION_RESOURCE_COPY: Record<string, ResourceCopy> = {
         name: 'Development keys',
         desc: 'Development keys used to bypass rate limits while building locally.'
     },
+    'organization.memberships': {
+        name: 'Organization memberships',
+        desc: 'Memberships that control who belongs to this organization and their roles.'
+    },
+    organization: {
+        name: 'Organization',
+        desc: "This organization's name, settings, and other general configuration."
+    },
     domains: {
         name: 'Organization domains',
         desc: 'Custom domains owned and managed at the organization level.'

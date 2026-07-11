@@ -11,9 +11,9 @@
         IconOfficeBuilding,
         IconLockClosed,
         IconExclamationCircle,
-        IconDuplicate,
         IconAdjustments,
-        IconShieldCheck
+        IconShieldCheck,
+        IconSwitchHorizontal
     } from '@appwrite.io/pink-icons-svelte';
     import { Button, Form } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
@@ -39,13 +39,13 @@
         mergeIdentifiers,
         serializeGrantedDetails,
         searchProjects,
-        listOrganizationResources,
+        searchOrganizations,
         resolveProjectNames,
         resolveOrganizationNames,
         PROJECT_RAR_TYPE,
         ORGANIZATION_RAR_TYPE,
         WILDCARD_IDENTIFIER,
-        type ResolvedResource,
+        type ResourcePage,
         type ResourceNameMap
     } from '$lib/helpers/oauth2-authorization-details';
     import ResourceSelector from './resource-selector.svelte';
@@ -61,31 +61,16 @@
         }
     }
 
-    // Scope tokens are never rendered inline — they add noise. Instead each row
-    // exposes a hover copy button that yields the raw token, exactly as issued
-    // (prefix included), for anyone who needs the precise string.
-    let copiedToken = $state<string | null>(null);
-    let copyTimer: ReturnType<typeof setTimeout> | null = null;
-    async function copyToken(token: string) {
-        try {
-            await navigator.clipboard.writeText(token);
-            copiedToken = token;
-            if (copyTimer) clearTimeout(copyTimer);
-            copyTimer = setTimeout(() => (copiedToken = null), 1500);
-        } catch {
-            /* clipboard unavailable — nothing to surface */
-        }
-    }
-
     interface Props {
         grant: Models.Oauth2Grant;
         app: Models.App;
         accountLabel?: string;
         flow: OAuth2Flow;
         onDone?: (outcome: OAuth2Outcome, redirectUrl?: string) => void;
+        onSwitchAccount?: () => void | Promise<void>;
     }
 
-    let { grant, app, accountLabel = undefined, flow, onDone }: Props = $props();
+    let { grant, app, accountLabel = undefined, flow, onDone, onSwitchAccount }: Props = $props();
 
     let error = $state<string | null>(null);
     let approving = $state(false);
@@ -130,6 +115,34 @@
 
     const permissionGroups = $derived(buildConsentPermissions(scopeModel));
     let showPermissions = $state(true);
+    let permissionGroupOpen = $state<Record<string, boolean>>({});
+
+    // Account menu — the chip doubles as a trigger for switching accounts.
+    let accountMenuOpen = $state(false);
+    let accountMenuEl = $state<HTMLDivElement | null>(null);
+
+    $effect(() => {
+        if (!accountMenuOpen) return;
+        const onPointerDown = (event: PointerEvent) => {
+            if (accountMenuEl && !accountMenuEl.contains(event.target as Node)) {
+                accountMenuOpen = false;
+            }
+        };
+        const onKeyDown = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') accountMenuOpen = false;
+        };
+        window.addEventListener('pointerdown', onPointerDown, true);
+        window.addEventListener('keydown', onKeyDown);
+        return () => {
+            window.removeEventListener('pointerdown', onPointerDown, true);
+            window.removeEventListener('keydown', onKeyDown);
+        };
+    });
+
+    function switchAccount() {
+        accountMenuOpen = false;
+        void onSwitchAccount?.();
+    }
 
     // MCP grants (detected via the grant's RFC 8707 resources) get a narrowing
     // editor: the client requested the full scope catalog, so consent is the
@@ -150,6 +163,8 @@
     let readOnlyAll = $state(false);
     let projectSelection = $state<TierSelection>({});
     let organizationSelection = $state<TierSelection>({});
+    let projectPermissionsOpen = $state(true);
+    let organizationPermissionsOpen = $state(true);
 
     $effect(() => {
         grant.$id;
@@ -159,6 +174,9 @@
         readOnlyAll = false;
         projectSelection = {};
         organizationSelection = {};
+        projectPermissionsOpen = true;
+        organizationPermissionsOpen = true;
+        permissionGroupOpen = {};
     });
 
     const projectRows = $derived(
@@ -217,6 +235,22 @@
         return rows.every((row) => rowState(selection, row.resource).selected);
     }
 
+    function tierPermissionsOpen(tier: 'project' | 'organization'): boolean {
+        return tier === 'project' ? projectPermissionsOpen : organizationPermissionsOpen;
+    }
+
+    function toggleTierPermissions(tier: 'project' | 'organization') {
+        if (tier === 'project') projectPermissionsOpen = !projectPermissionsOpen;
+        else organizationPermissionsOpen = !organizationPermissionsOpen;
+    }
+
+    function togglePermissionGroup(heading: string) {
+        permissionGroupOpen = {
+            ...permissionGroupOpen,
+            [heading]: permissionGroupOpen[heading] === false
+        };
+    }
+
     const projectGranted = $derived(projectRequested && projectSelected.length > 0);
     const organizationGranted = $derived(organizationRequested && organizationSelected.length > 0);
 
@@ -246,15 +280,11 @@
 
     // Resource search wiring. Projects search server-side (there can be many);
     // organizations are few, so they load once and filter client-side.
-    function findProjects(term: string): Promise<ResolvedResource[]> {
-        return searchProjects(term);
+    function findProjects(term: string, offset: number, limit: number): Promise<ResourcePage> {
+        return searchProjects(term, offset, limit);
     }
-    let orgCache: ResolvedResource[] | null = null;
-    async function findOrganizations(term: string): Promise<ResolvedResource[]> {
-        if (!orgCache) orgCache = await listOrganizationResources();
-        const t = term.trim().toLowerCase();
-        const list = t ? orgCache.filter((o) => o.name.toLowerCase().includes(t)) : orgCache;
-        return list.slice(0, 8);
+    function findOrganizations(term: string, offset: number, limit: number): Promise<ResourcePage> {
+        return searchOrganizations(term, offset, limit);
     }
     function resolveProjects(ids: string[]): Promise<ResourceNameMap> {
         return resolveProjectNames(ids);
@@ -371,88 +401,92 @@
     {#if rows.length > 0}
         <div class="perm-group">
             <div class="perm-group-head">
-                <label class="editor-check group-check">
-                    <input
-                        type="checkbox"
-                        checked={tierAllSelected(rows, selection)}
-                        onchange={(e) => setAllRows(tierKey, rows, e.currentTarget.checked)}
-                        disabled={busy} />
-                    <Typography.Text variant="m-500" color="--fgcolor-neutral-secondary">
-                        {heading}
-                    </Typography.Text>
-                </label>
+                <div class="perm-group-heading-row">
+                    <label class="editor-check group-check">
+                        <input
+                            type="checkbox"
+                            checked={tierAllSelected(rows, selection)}
+                            onchange={(e) => setAllRows(tierKey, rows, e.currentTarget.checked)}
+                            disabled={busy}
+                            aria-label="Allow all {heading.toLowerCase()} permissions" />
+                    </label>
+                    <button
+                        type="button"
+                        class="perm-group-toggle"
+                        aria-expanded={tierPermissionsOpen(tierKey)}
+                        aria-controls="{tierKey}-permissions-list"
+                        onclick={() => toggleTierPermissions(tierKey)}>
+                        <Typography.Text variant="m-500" color="--fgcolor-neutral-secondary">
+                            {heading}
+                        </Typography.Text>
+                        <Icon
+                            icon={tierPermissionsOpen(tierKey) ? IconChevronUp : IconChevronDown}
+                            size="s" />
+                    </button>
+                </div>
                 <span class="subtext">{note}</span>
             </div>
-            <ul class="perm-list">
-                {#each rows as row (row.resource)}
-                    {@const state = rowState(selection, row.resource)}
-                    <li class="perm editor-row" class:off={!state.selected}>
-                        <label class="editor-check">
-                            <input
-                                type="checkbox"
-                                checked={state.selected}
-                                onchange={(e) =>
-                                    updateRow(tierKey, row.resource, {
-                                        selected: e.currentTarget.checked
-                                    })}
-                                disabled={busy}
-                                aria-label="Allow access to {row.title}" />
-                        </label>
-                        <span class="perm-text">
-                            <span class="perm-row-head">
-                                <span class="perm-title">{row.title}</span>
-                                {#if row.hasRead && row.hasWrite}
-                                    <span class="level-toggle" class:disabled={!state.selected}>
-                                        <button
-                                            type="button"
-                                            class="level-btn"
-                                            class:active={state.level === 'read' || readOnlyAll}
-                                            disabled={busy || !state.selected}
-                                            onclick={() =>
-                                                updateRow(tierKey, row.resource, {
-                                                    level: 'read'
-                                                })}>
-                                            Read
-                                        </button>
-                                        <button
-                                            type="button"
-                                            class="level-btn"
-                                            class:active={state.level === 'full' && !readOnlyAll}
-                                            disabled={busy || !state.selected || readOnlyAll}
-                                            onclick={() =>
-                                                updateRow(tierKey, row.resource, {
-                                                    level: 'full'
-                                                })}>
-                                            Read + Write
-                                        </button>
-                                    </span>
-                                {:else}
-                                    <span class="access-chip" class:strong={row.accessStrong}>
-                                        {row.access}
-                                    </span>
+            {#if tierPermissionsOpen(tierKey)}
+                <ul class="perm-list" id="{tierKey}-permissions-list">
+                    {#each rows as row (row.resource)}
+                        {@const state = rowState(selection, row.resource)}
+                        <li class="perm editor-row" class:off={!state.selected}>
+                            <label class="editor-check">
+                                <input
+                                    type="checkbox"
+                                    checked={state.selected}
+                                    onchange={(e) =>
+                                        updateRow(tierKey, row.resource, {
+                                            selected: e.currentTarget.checked
+                                        })}
+                                    disabled={busy}
+                                    aria-label="Allow access to {row.title}" />
+                            </label>
+                            <span class="perm-text">
+                                <span class="perm-row-head">
+                                    <span class="perm-title">{row.title}</span>
+                                    {#if row.hasRead && row.hasWrite}
+                                        <span class="level-toggle" class:disabled={!state.selected}>
+                                            <button
+                                                type="button"
+                                                class="level-btn"
+                                                class:active={state.level === 'read' || readOnlyAll}
+                                                disabled={busy || !state.selected}
+                                                onclick={() =>
+                                                    updateRow(tierKey, row.resource, {
+                                                        level: 'read'
+                                                    })}>
+                                                Read
+                                            </button>
+                                            <button
+                                                type="button"
+                                                class="level-btn"
+                                                class:active={state.level === 'full' &&
+                                                    !readOnlyAll}
+                                                disabled={busy || !state.selected || readOnlyAll}
+                                                onclick={() =>
+                                                    updateRow(tierKey, row.resource, {
+                                                        level: 'full'
+                                                    })}>
+                                                Read + Write
+                                            </button>
+                                        </span>
+                                    {:else}
+                                        <span class="access-chip" class:strong={row.accessStrong}>
+                                            {row.access}
+                                        </span>
+                                    {/if}
+                                </span>
+                                {#if row.description}
+                                    <span class="perm-desc">{row.description}</span>
                                 {/if}
                             </span>
-                            {#if row.description}
-                                <span class="perm-desc">{row.description}</span>
-                            {/if}
-                        </span>
-                    </li>
-                {/each}
-            </ul>
+                        </li>
+                    {/each}
+                </ul>
+            {/if}
         </div>
     {/if}
-{/snippet}
-
-{#snippet copyBtn(token: string)}
-    <button
-        type="button"
-        class="copy-btn"
-        class:copied={copiedToken === token}
-        title="Copy scope"
-        aria-label="Copy scope {token}"
-        onclick={() => copyToken(token)}>
-        <Icon icon={copiedToken === token ? IconCheck : IconDuplicate} size="s" />
-    </button>
 {/snippet}
 
 <Card.Base padding="none" radius="l" style="width: 100%; overflow: hidden;">
@@ -486,10 +520,54 @@
             </div>
 
             {#if accountLabel}
-                <div class="account-chip">
-                    <span class="account-avatar">{accountInitial}</span>
-                    <span class="account-label">{accountLabel}</span>
-                </div>
+                {#if onSwitchAccount}
+                    <div class="account-menu" bind:this={accountMenuEl}>
+                        <button
+                            type="button"
+                            class="account-chip interactive"
+                            class:open={accountMenuOpen}
+                            disabled={busy}
+                            aria-haspopup="menu"
+                            aria-expanded={accountMenuOpen}
+                            onclick={() => (accountMenuOpen = !accountMenuOpen)}>
+                            <span class="account-avatar">{accountInitial}</span>
+                            <span class="account-label">{accountLabel}</span>
+                            <Icon
+                                icon={accountMenuOpen ? IconChevronUp : IconChevronDown}
+                                size="s" />
+                        </button>
+
+                        {#if accountMenuOpen}
+                            <div class="account-dropdown" role="menu">
+                                <div class="account-dropdown-current">
+                                    <span class="account-avatar large">{accountInitial}</span>
+                                    <span class="account-dropdown-text">
+                                        <span class="account-dropdown-label">{accountLabel}</span>
+                                    </span>
+                                    <span class="account-dropdown-check">
+                                        <Icon icon={IconCheck} size="s" />
+                                    </span>
+                                </div>
+                                <button
+                                    type="button"
+                                    class="account-dropdown-action"
+                                    role="menuitem"
+                                    disabled={busy}
+                                    onclick={switchAccount}>
+                                    <span class="account-dropdown-action-icon">
+                                        <Icon icon={IconSwitchHorizontal} size="s" />
+                                    </span>
+                                    Use a different account
+                                </button>
+                            </div>
+                        {/if}
+                    </div>
+                {:else}
+                    <div class="account-chip">
+                        <span class="account-avatar">{accountInitial}</span>
+                        <span class="account-label">{accountLabel}</span>
+                    </div>
+                {/if}
             {/if}
         </header>
 
@@ -608,42 +686,73 @@
                     {#if showPermissions}
                         <div class="panel-body">
                             {#each permissionGroups as group (group.heading)}
+                                {@const collapsible =
+                                    group.heading === 'Projects' ||
+                                    group.heading === 'Organizations'}
                                 <div class="perm-group">
                                     <div class="perm-group-head">
-                                        <Typography.Text
-                                            variant="m-500"
-                                            color="--fgcolor-neutral-secondary">
-                                            {group.heading}
-                                        </Typography.Text>
+                                        {#if collapsible}
+                                            <button
+                                                type="button"
+                                                class="permission-group-toggle"
+                                                aria-expanded={permissionGroupOpen[
+                                                    group.heading
+                                                ] !== false}
+                                                aria-controls="permission-group-{group.heading.toLowerCase()}"
+                                                onclick={() =>
+                                                    togglePermissionGroup(group.heading)}>
+                                                <Typography.Text
+                                                    variant="m-500"
+                                                    color="--fgcolor-neutral-secondary">
+                                                    {group.heading}
+                                                </Typography.Text>
+                                                <Icon
+                                                    icon={permissionGroupOpen[group.heading] !==
+                                                    false
+                                                        ? IconChevronUp
+                                                        : IconChevronDown}
+                                                    size="s" />
+                                            </button>
+                                        {:else}
+                                            <Typography.Text
+                                                variant="m-500"
+                                                color="--fgcolor-neutral-secondary">
+                                                {group.heading}
+                                            </Typography.Text>
+                                        {/if}
                                         {#if group.note}
                                             <span class="subtext">{group.note}</span>
                                         {/if}
                                     </div>
-                                    <ul class="perm-list">
-                                        {#each group.lines as line (line.token)}
-                                            <li class="perm">
-                                                <span class="perm-check">
-                                                    <Icon icon={IconCheck} size="s" />
-                                                </span>
-                                                <span class="perm-text">
-                                                    <span class="perm-row-head">
-                                                        <span class="perm-title">{line.title}</span>
-                                                        {#if line.access}
-                                                            <span
-                                                                class="access-chip"
-                                                                class:strong={line.accessStrong}
-                                                                >{line.access}</span>
+                                    {#if !collapsible || permissionGroupOpen[group.heading] !== false}
+                                        <ul
+                                            class="perm-list"
+                                            id="permission-group-{group.heading.toLowerCase()}">
+                                            {#each group.lines as line (line.token)}
+                                                <li class="perm">
+                                                    <span class="perm-check">
+                                                        <Icon icon={IconCheck} size="s" />
+                                                    </span>
+                                                    <span class="perm-text">
+                                                        <span class="perm-row-head">
+                                                            <span class="perm-title"
+                                                                >{line.title}</span>
+                                                            {#if line.access}
+                                                                <span
+                                                                    class="access-chip"
+                                                                    class:strong={line.accessStrong}
+                                                                    >{line.access}</span>
+                                                            {/if}
+                                                        </span>
+                                                        {#if line.description}
+                                                            <span class="perm-desc"
+                                                                >{line.description}</span>
                                                         {/if}
                                                     </span>
-                                                    {#if line.description}
-                                                        <span class="perm-desc"
-                                                            >{line.description}</span>
-                                                    {/if}
-                                                </span>
-                                                {@render copyBtn(line.token)}
-                                            </li>
-                                        {/each}
-                                    </ul>
+                                                </li>
+                                            {/each}
+                                        </ul>
+                                    {/if}
                                 </div>
                             {/each}
                         </div>
@@ -868,6 +977,116 @@
         background: var(--bgcolor-neutral-primary);
     }
 
+    .account-chip.interactive {
+        padding-inline-end: 0.6rem;
+        cursor: pointer;
+        font: inherit;
+        font-size: 0.8125rem;
+        transition:
+            background 0.15s ease,
+            border-color 0.15s ease;
+    }
+
+    .account-chip.interactive:hover:not(:disabled),
+    .account-chip.interactive.open {
+        background: var(--overlay-neutral-hover, var(--bgcolor-neutral-secondary));
+        border-color: var(--border-neutral-strong);
+    }
+
+    .account-chip.interactive:disabled {
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+
+    .account-menu {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        max-width: 100%;
+    }
+
+    .account-dropdown {
+        position: absolute;
+        top: calc(100% + 0.4rem);
+        z-index: 10;
+        width: 19rem;
+        max-width: calc(100vw - 2rem);
+        padding: 0.35rem;
+        border: 1px solid var(--border-neutral);
+        border-radius: var(--border-radius-m, 0.6rem);
+        background: var(--bgcolor-neutral-primary);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+        text-align: start;
+    }
+
+    .account-dropdown-current {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        padding: 0.55rem 0.6rem;
+        border-radius: var(--border-radius-s, 0.5rem);
+    }
+
+    .account-dropdown-text {
+        display: flex;
+        flex-direction: column;
+        gap: 0.1rem;
+        min-width: 0;
+        flex: 1;
+    }
+
+    .account-dropdown-label {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: var(--fgcolor-neutral-primary);
+    }
+
+    .account-dropdown-check {
+        flex-shrink: 0;
+        color: var(--fgcolor-success);
+    }
+
+    .account-dropdown-action {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        width: 100%;
+        margin-top: 0.25rem;
+        padding: 0.55rem 0.6rem;
+        border: none;
+        border-top: 1px solid var(--border-neutral);
+        border-radius: 0 0 var(--border-radius-s, 0.5rem) var(--border-radius-s, 0.5rem);
+        background: transparent;
+        color: var(--fgcolor-neutral-primary);
+        font: inherit;
+        font-size: 0.85rem;
+        cursor: pointer;
+        text-align: start;
+    }
+
+    .account-dropdown-action:hover:not(:disabled) {
+        background: var(--overlay-neutral-hover, var(--bgcolor-neutral-secondary));
+    }
+
+    .account-dropdown-action:disabled {
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+
+    .account-dropdown-action-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 1.75rem;
+        height: 1.75rem;
+        border-radius: 50%;
+        border: 1px dashed var(--border-neutral-strong);
+        color: var(--fgcolor-neutral-secondary);
+    }
+
     .account-avatar {
         flex-shrink: 0;
         width: 1.4rem;
@@ -880,6 +1099,12 @@
         justify-content: center;
         font-size: 0.7rem;
         font-weight: 600;
+    }
+
+    .account-avatar.large {
+        width: 2rem;
+        height: 2rem;
+        font-size: 0.85rem;
     }
 
     .account-label {
@@ -944,6 +1169,31 @@
         display: flex;
         flex-direction: column;
         gap: 0.1rem;
+    }
+
+    .perm-group-heading-row {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+    }
+
+    .perm-group-toggle,
+    .permission-group-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex: 1;
+        min-width: 0;
+        padding: 0;
+        border: none;
+        background: transparent;
+        color: inherit;
+        cursor: pointer;
+        text-align: start;
+    }
+
+    .permission-group-toggle {
+        width: 100%;
     }
 
     .perm-list {
@@ -1025,44 +1275,6 @@
         font-size: 0.78rem;
         line-height: 1.4;
         color: var(--fgcolor-neutral-secondary);
-    }
-
-    .copy-btn {
-        position: absolute;
-        right: 0;
-        bottom: 0.55rem;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-        width: 1.5rem;
-        height: 1.5rem;
-        padding: 0;
-        border: none;
-        border-radius: var(--border-radius-xs, 0.3rem);
-        background: var(--bgcolor-neutral-primary);
-        color: var(--fgcolor-neutral-tertiary);
-        cursor: pointer;
-        opacity: 0;
-        transition:
-            opacity 0.12s ease,
-            background 0.12s ease,
-            color 0.12s ease;
-    }
-
-    .perm:hover .copy-btn,
-    .copy-btn:focus-visible,
-    .copy-btn.copied {
-        opacity: 1;
-    }
-
-    .copy-btn:hover {
-        background: var(--overlay-neutral-hover, var(--bgcolor-neutral-secondary));
-        color: var(--fgcolor-neutral-primary);
-    }
-
-    .copy-btn.copied {
-        color: var(--fgcolor-success);
     }
 
     /* ---- MCP narrowing editor ----------------------------------------------- */

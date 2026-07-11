@@ -10,8 +10,11 @@
     import {
         WILDCARD_IDENTIFIER,
         type ResolvedResource,
+        type ResourcePage,
         type ResourceNameMap
     } from '$lib/helpers/oauth2-authorization-details';
+
+    const PAGE_SIZE = 8;
 
     interface Props {
         /** Plural label, e.g. `projects`. */
@@ -20,8 +23,8 @@
         requested: string[];
         /** Current selection (`['*']` = all). Two-way bound to the parent. */
         selected: string[];
-        /** Live search over the selectable universe. */
-        find: (term: string) => Promise<ResolvedResource[]>;
+        /** Paginated live search over the selectable universe. */
+        find: (term: string, offset: number, limit: number) => Promise<ResourcePage>;
         /** Resolve specific requested ids to display names. */
         resolveNames: (ids: string[]) => Promise<ResourceNameMap>;
         disabled?: boolean;
@@ -58,6 +61,8 @@
     let term = $state('');
     let results = $state<ResolvedResource[]>([]);
     let searching = $state(false);
+    let loadingMore = $state(false);
+    let hasMore = $state(false);
 
     function labelFor(id: string): ResolvedResource {
         return names[id] ?? { id, name: id, resolved: false };
@@ -82,12 +87,16 @@
         const t = term;
         let cancelled = false;
         searching = true;
+        loadingMore = false;
+        hasMore = false;
+        results = [];
         const timer = setTimeout(() => {
-            void find(t).then((res) => {
+            void find(t, 0, PAGE_SIZE).then((page) => {
                 if (cancelled) return;
-                results = res;
+                results = page.resources;
+                hasMore = page.hasMore;
                 const merged = { ...names };
-                for (const r of res) merged[r.id] = r;
+                for (const r of page.resources) merged[r.id] = r;
                 names = merged;
                 searching = false;
             });
@@ -98,6 +107,31 @@
         };
     });
 
+    async function loadMore() {
+        if (searching || loadingMore || !hasMore) return;
+        const currentTerm = term;
+        const offset = results.length;
+        loadingMore = true;
+        const page = await find(currentTerm, offset, PAGE_SIZE);
+        if (currentTerm !== term) return;
+
+        const seen = new Set(results.map((resource) => resource.id));
+        const next = page.resources.filter((resource) => !seen.has(resource.id));
+        results = [...results, ...next];
+        hasMore = page.hasMore;
+        const merged = { ...names };
+        for (const resource of next) merged[resource.id] = resource;
+        names = merged;
+        loadingMore = false;
+    }
+
+    function handleResultsScroll(event: Event) {
+        const list = event.currentTarget as HTMLElement;
+        if (list.scrollTop + list.clientHeight >= list.scrollHeight - 24) {
+            void loadMore();
+        }
+    }
+
     const suggestions = $derived(results.filter((r) => !selected.includes(r.id)));
 
     function setAll(all: boolean) {
@@ -107,6 +141,7 @@
     function add(id: string) {
         if (selected.includes(id)) return;
         selected = [...selected.filter((x) => x !== WILDCARD_IDENTIFIER), id];
+        if (hasMore) queueMicrotask(() => void loadMore());
     }
 
     function remove(id: string) {
@@ -187,7 +222,7 @@
                     bind:value={term}
                     placeholder={`Search ${pluralLabel} by name`}
                     {disabled} />
-                <ul class="results">
+                <ul class="results" onscroll={handleResultsScroll}>
                     {#if searching}
                         <li class="results-state"><Spinner size="s" /></li>
                     {:else if suggestions.length === 0}
@@ -217,6 +252,9 @@
                                 </button>
                             </li>
                         {/each}
+                        {#if loadingMore}
+                            <li class="results-state"><Spinner size="s" /></li>
+                        {/if}
                     {/if}
                 </ul>
             {/if}
