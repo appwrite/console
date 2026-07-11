@@ -17,11 +17,12 @@
         Popover,
         ActionMenu
     } from '@appwrite.io/pink-svelte';
+    import type { PageProps } from './$types';
 
-    export let data;
+    let { data }: PageProps = $props();
 
-    let selectedUser: Models.User<Record<string, unknown>> | null = null;
-    let showDelete = false;
+    let selectedUser = $state<Models.User<Record<string, unknown>> | null>(null);
+    let showDelete = $state(false);
 </script>
 
 <Container>
@@ -58,7 +59,9 @@
                     <Table.Row.Base {root}>
                         <Table.Cell column="name" {root}>
                             <Layout.Stack direction="row" alignItems="center" gap="s">
-                                <AvatarInitials size="xs" name={consoleUser.name || consoleUser.email} />
+                                <AvatarInitials
+                                    size="xs"
+                                    name={consoleUser.name || consoleUser.email} />
                                 <Layout.Stack direction="row" alignItems="center" gap="s">
                                     <Typography.Text truncate>
                                         {consoleUser.name || 'n/a'}

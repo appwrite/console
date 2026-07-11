@@ -8,12 +8,15 @@ import { base } from '$app/paths';
 import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ url, params, route, depends, parent }) => {
-    await parent();
+    const parentData = await parent();
     depends(Dependencies.CONSOLE_USERS);
 
-    // Platform-wide console user management is self-hosted only.
+    const roles: string[] = parentData.roles ?? [];
+    const isOwner = roles.includes('owner');
+
+    // Platform-wide console user management is self-hosted + owner only.
     // Cloud multi-tenancy must not expose cross-organization user listings.
-    if (!isSelfHosted) {
+    if (!isSelfHosted || !isOwner) {
         redirect(303, `${base}/organization-${params.organization}`);
     }
 
@@ -23,7 +26,7 @@ export const load: PageLoad = async ({ url, params, route, depends, parent }) =>
     const offset = pageToOffset(page, limit);
 
     try {
-        const users = await sdk.forConsoleInOrganization(params.organization).users.list({
+        const users = await sdk.forConsoleUsersInOrganization(params.organization).list({
             queries: [Query.limit(limit), Query.offset(offset), Query.orderDesc('$createdAt')],
             search: search || undefined
         });

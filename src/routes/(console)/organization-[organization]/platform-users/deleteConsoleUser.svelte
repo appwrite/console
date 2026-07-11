@@ -12,20 +12,30 @@
     import { isSelfHosted } from '$lib/system';
     import { canPermanentlyDeleteConsoleUser } from '$lib/helpers/consoleUsers';
 
-    export let showDelete = false;
-    export let selectedUser: Models.User<Record<string, unknown>> | null = null;
+    let {
+        showDelete = $bindable(false),
+        selectedUser = null
+    }: {
+        showDelete?: boolean;
+        selectedUser?: Models.User<Record<string, unknown>> | null;
+    } = $props();
 
-    let error: string;
+    let error = $state<string>(null);
 
-    $: isSelf = selectedUser?.$id === $user?.$id;
-    $: allowed = canPermanentlyDeleteConsoleUser({
-        isSelfHosted,
-        actorUserId: $user?.$id,
-        targetUserId: selectedUser?.$id
+    const isSelf = $derived(selectedUser?.$id === $user?.$id);
+    const allowed = $derived(
+        canPermanentlyDeleteConsoleUser({
+            isSelfHosted,
+            actorUserId: $user?.$id,
+            targetUserId: selectedUser?.$id
+        })
+    );
+
+    $effect(() => {
+        if (showDelete) {
+            error = null;
+        }
     });
-    $: if (showDelete) {
-        error = null;
-    }
 
     const deleteUser = async () => {
         if (!selectedUser || !allowed) {
@@ -36,7 +46,7 @@
         }
 
         try {
-            await sdk.forConsoleInOrganization(page.params.organization).users.delete({
+            await sdk.forConsoleUsersInOrganization(page.params.organization).delete({
                 userId: selectedUser.$id
             });
 

@@ -3,7 +3,6 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
-    import { createEventDispatcher } from 'svelte';
     import { user } from '$lib/stores/user';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Dependencies } from '$lib/constants';
@@ -19,28 +18,40 @@
         resolveConsoleUserDeletionMode
     } from '$lib/helpers/consoleUsers';
 
-    const dispatch = createEventDispatcher();
+    let {
+        showDelete = $bindable(false),
+        selectedMember = undefined,
+        ondeleted
+    }: {
+        showDelete?: boolean;
+        selectedMember?: Models.Membership;
+        ondeleted?: () => void;
+    } = $props();
 
-    export let showDelete = false;
-    export let selectedMember: Models.Membership;
+    let error = $state<string>(null);
+    let permanentlyDelete = $state(false);
 
-    let error: string;
-    let permanentlyDelete = false;
+    const isUser = $derived(selectedMember?.userId === $user?.$id);
+    const canPermanentlyDelete = $derived(
+        canPermanentlyDeleteConsoleUser({
+            isSelfHosted,
+            actorUserId: $user?.$id,
+            targetUserId: selectedMember?.userId
+        })
+    );
+    const deletionMode = $derived(
+        resolveConsoleUserDeletionMode({
+            permanentlyDeleteRequested: permanentlyDelete,
+            canPermanentlyDelete
+        })
+    );
 
-    $: isUser = selectedMember?.userId === $user?.$id;
-    $: canPermanentlyDelete = canPermanentlyDeleteConsoleUser({
-        isSelfHosted,
-        actorUserId: $user?.$id,
-        targetUserId: selectedMember?.userId
+    $effect(() => {
+        if (showDelete) {
+            permanentlyDelete = false;
+            error = null;
+        }
     });
-    $: deletionMode = resolveConsoleUserDeletionMode({
-        permanentlyDeleteRequested: permanentlyDelete,
-        canPermanentlyDelete
-    });
-    $: if (showDelete) {
-        permanentlyDelete = false;
-        error = null;
-    }
 
     const deleteMembership = async () => {
         try {
@@ -49,7 +60,7 @@
                 // Single Users API call — the deletes worker cleans memberships.
                 // Do NOT delete membership first: a partial failure would leave a
                 // shadow account and make retries fail on the already-removed membership.
-                await sdk.forConsoleInOrganization(selectedMember.teamId).users.delete({
+                await sdk.forConsoleUsersInOrganization(selectedMember.teamId).delete({
                     userId: selectedMember.userId
                 });
             } else {
@@ -62,7 +73,7 @@
             if (isUser) {
                 logout();
             } else {
-                dispatch('deleted');
+                ondeleted?.();
             }
 
             await Promise.all([

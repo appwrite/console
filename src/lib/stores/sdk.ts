@@ -88,12 +88,15 @@ const endpoint = getApiEndpoint();
 const clientConsole = new Client();
 const clientConsoleOperator = new Client();
 const scopedConsoleClient = new Client();
+/** Reused client for org-scoped console Users API (platform user management). */
+const organizationScopedConsoleClient = new Client();
 
 const clientProject = new Client();
 const clientRealtime = new Client();
 
 if (!building) {
     scopedConsoleClient.setProject('console');
+    organizationScopedConsoleClient.setProject('console');
     clientConsole.setEndpoint(endpoint).setProject('console');
     clientConsoleOperator.setEndpoint(endpoint).setProject('console');
 
@@ -103,6 +106,7 @@ if (!building) {
     registerImpersonationClients([
         clientConsole,
         scopedConsoleClient,
+        organizationScopedConsoleClient,
         clientProject,
         clientRealtime
     ]);
@@ -182,21 +186,29 @@ export const sdk = {
     },
 
     /**
-     * Console client scoped to an organization.
+     * Users service scoped to an organization on the console project.
      *
      * The backend grants owner/admin scopes (including users.read / users.write)
-     * on the console project only when an organization context is present.
-     * Use this for platform-level user management on self-hosted instances.
+     * only when an organization context is present. Returns a narrow Users
+     * instance (not a full SDK) and reuses one Client, updating the org header
+     * when the organization changes — same pattern as `organization()`.
      */
-    forConsoleInOrganization(organizationId: string) {
-        const organizationClient = new Client();
-        organizationClient.setEndpoint(clientConsole.config.endpoint);
-        organizationClient.setProject('console');
-        Object.assign(organizationClient.headers, clientConsole.getHeaders(), {
+    forConsoleUsersInOrganization(organizationId: string) {
+        if (
+            !organizationScopedConsoleClient.config.endpoint ||
+            organizationScopedConsoleClient.config.endpoint !== clientConsole.config.endpoint
+        ) {
+            organizationScopedConsoleClient.setEndpoint(clientConsole.config.endpoint);
+        }
+        if (organizationScopedConsoleClient.config.project !== 'console') {
+            organizationScopedConsoleClient.setProject('console');
+        }
+
+        Object.assign(organizationScopedConsoleClient.headers, clientConsole.getHeaders(), {
             'X-Appwrite-Organization': organizationId
         });
 
-        return createConsoleSdk(organizationClient);
+        return new Users(organizationScopedConsoleClient);
     },
 
     forProject(region: string, projectId: string) {
