@@ -2,6 +2,7 @@ import { sdk } from '$lib/stores/sdk';
 import { Dependencies, PAGE_LIMIT } from '$lib/constants';
 import { isCloud } from '$lib/system';
 import { Query } from '@appwrite.io/console';
+import { trimLeadingDisabledSpecifications } from '$lib/helpers/specifications';
 
 const VARIABLES_LIMIT = 100;
 
@@ -82,7 +83,7 @@ export const load = async ({ params, depends, parent }) => {
         limit,
         variablesOffset,
         installations,
-        buildSpecificationsList,
+        buildSpecificationsList: trimLeadingDisabledSpecifications(buildSpecificationsList),
         runtimeSpecificationsList
     };
 };

@@ -4,6 +4,7 @@ import { sdk } from '$lib/stores/sdk';
 import { Query } from '@appwrite.io/console';
 import { Dependencies } from '$lib/constants';
 import { isCloud } from '$lib/system';
+import { trimLeadingDisabledSpecifications } from '$lib/helpers/specifications';
 import type { LayoutLoad } from './$types';
 
 export const load: LayoutLoad = async ({ depends, params }) => {
@@ -32,7 +33,7 @@ export const load: LayoutLoad = async ({ depends, params }) => {
         breadcrumbs: Breadcrumbs,
         runtimesList,
         installations,
-        specificationsList: buildSpecificationsList,
+        specificationsList: trimLeadingDisabledSpecifications(buildSpecificationsList),
         runtimeSpecificationsList
     };
 };
