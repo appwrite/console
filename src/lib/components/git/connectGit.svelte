@@ -13,7 +13,8 @@
     // Not in the SDK's generated types yet -- server already returns it.
     let vcsProviders = ($regionalConsoleVariables as { _APP_VCS_PROVIDERS?: string[] })
         ?._APP_VCS_PROVIDERS;
-    let isGiteaEnabled = vcsProviders?.includes('gitea') ?? false;
+    // Gitea is a self-hosted-only feature, not offered on Appwrite Cloud.
+    let isGiteaEnabled = isSelfHosted && (vcsProviders?.includes('gitea') ?? false);
 </script>
 
 <Layout.Stack>
