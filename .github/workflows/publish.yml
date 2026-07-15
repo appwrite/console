@@ -42,12 +42,13 @@ jobs:
                       "PUBLIC_CONSOLE_FEATURE_FLAGS="
                       "PUBLIC_APPWRITE_MULTI_REGION=true"
                       "PUBLIC_CONSOLE_MOCK_AI_SUGGESTIONS=false"
-                      "PUBLIC_GROWTH_ENDPOINT=${{ secrets.PUBLIC_GROWTH_ENDPOINT }}"
+                      "PUBLIC_GROWTH_ENDPOINT=${{ vars.VITE_APPWRITE_GROWTH_ENDPOINT }}"
                       "PUBLIC_STRIPE_KEY=${{ secrets.PUBLIC_STRIPE_KEY }}"
                       "PUBLIC_CONSOLE_FINGERPRINT_KEY=${{ secrets.PUBLIC_CONSOLE_FINGERPRINT_KEY }}"
                       "SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}"
                       "SENTRY_RELEASE=${{ github.event.release.tag_name }}"
     publish-cloud-stage:
+        environment: staging
         runs-on: ubuntu-latest
         steps:
             - name: Checkout the repo
@@ -84,7 +85,7 @@ jobs:
                       "PUBLIC_CONSOLE_FEATURE_FLAGS="
                       "PUBLIC_APPWRITE_MULTI_REGION=true"
                       "PUBLIC_CONSOLE_MOCK_AI_SUGGESTIONS=false"
-                      "PUBLIC_GROWTH_ENDPOINT=${{ secrets.PUBLIC_GROWTH_ENDPOINT }}"
+                      "PUBLIC_GROWTH_ENDPOINT=${{ vars.VITE_APPWRITE_GROWTH_ENDPOINT }}"
                       "PUBLIC_STRIPE_KEY=${{ secrets.PUBLIC_STRIPE_KEY_STAGE }}"
                       "PUBLIC_CONSOLE_FINGERPRINT_KEY=${{ secrets.PUBLIC_CONSOLE_FINGERPRINT_KEY_STAGE }}"
     publish-self-hosted:
@@ -124,7 +125,7 @@ jobs:
                       "PUBLIC_APPWRITE_MULTI_REGION=false"
                       "PUBLIC_CONSOLE_MOCK_AI_SUGGESTIONS=true"
                       "PUBLIC_CONSOLE_FEATURE_FLAGS="
-                      "PUBLIC_GROWTH_ENDPOINT=${{ secrets.PUBLIC_GROWTH_ENDPOINT }}"
+                      "PUBLIC_GROWTH_ENDPOINT=${{ vars.VITE_APPWRITE_GROWTH_ENDPOINT }}"
 
     publish-cloud-no-regions:
         runs-on: ubuntu-latest
@@ -165,4 +166,4 @@ jobs:
                       "PUBLIC_CONSOLE_FEATURE_FLAGS="
                       "PUBLIC_STRIPE_KEY=${{ secrets.PUBLIC_STRIPE_KEY_STAGE }}"
                       "PUBLIC_CONSOLE_FINGERPRINT_KEY=${{ secrets.PUBLIC_CONSOLE_FINGERPRINT_KEY_STAGE }}"
-                      "PUBLIC_GROWTH_ENDPOINT=${{ secrets.PUBLIC_GROWTH_ENDPOINT }}"
+                      "PUBLIC_GROWTH_ENDPOINT=${{ vars.VITE_APPWRITE_GROWTH_ENDPOINT }}"
