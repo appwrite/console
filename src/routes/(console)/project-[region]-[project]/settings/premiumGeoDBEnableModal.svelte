@@ -39,12 +39,50 @@
                     region: page.params.region,
                     project: page.params.project
                 });
-                await confirmPayment({
+                const outcome = await confirmPayment({
                     clientSecret: paymentAuth.clientSecret,
                     paymentMethodId: $organization.paymentMethodId,
                     orgId: $organization.$id,
-                    route: `${settingsUrl}?type=confirm-addon&addonId=${paymentAuth.addonId}`
+                    route: `${settingsUrl}?type=confirm-addon&addonId=${paymentAuth.addonId}`,
+                    redirectIfRequired: true
                 });
+
+                if (!outcome || outcome.status === 'error') {
+                    if (outcome?.status === 'error') {
+                        error = outcome.message;
+                    }
+                    return;
+                }
+
+                // 3DS challenge required — Stripe redirects; the settings onMount
+                // handler finalizes on return via ?type=confirm-addon.
+                if (outcome.status === 'requires_action') {
+                    return;
+                }
+
+                await sdk.forConsoleIn(page.params.region).projects.confirmAddonPayment({
+                    projectId: page.params.project,
+                    addonId: paymentAuth.addonId
+                });
+
+                await Promise.all([
+                    invalidate(Dependencies.ADDONS),
+                    invalidate(Dependencies.PROJECT)
+                ]);
+
+                if (outcome.status === 'processing') {
+                    addNotification({
+                        message:
+                            "Premium Geo DB addon payment is processing — we'll activate it shortly.",
+                        type: 'info'
+                    });
+                } else {
+                    addNotification({
+                        message: 'Premium Geo DB addon has been enabled',
+                        type: 'success'
+                    });
+                }
+                show = false;
                 return;
             }
 
