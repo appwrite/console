@@ -13,7 +13,7 @@ const config: PlaywrightTestConfig = {
     webServer: {
         timeout: 120000,
         env: {
-            PUBLIC_APPWRITE_ENDPOINT: 'https://stage.cloud.appwrite.io/v1',
+            PUBLIC_APPWRITE_ENDPOINT: 'https://cloud.staging.appwrite.io/v1',
             PUBLIC_CONSOLE_MODE: 'cloud',
             PUBLIC_APPWRITE_MULTI_REGION: 'true',
             PUBLIC_STRIPE_KEY:

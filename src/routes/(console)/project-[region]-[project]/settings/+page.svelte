@@ -18,7 +18,9 @@
     import UpdateVariables from '../updateVariables.svelte';
     import { page } from '$app/state';
     import UpdateLabels from './updateLabels.svelte';
+    import PremiumGeoDB from './premiumGeoDB.svelte';
     import UpdateOAuth2Server from './updateOAuth2Server.svelte';
+    import { isCloud } from '$lib/system';
     import type { PageData } from './$types';
     import { Alert } from '@appwrite.io/pink-svelte';
     import { flags } from '$lib/flags';
@@ -104,6 +106,9 @@
         {/if}
         <UpdateServices />
         <UpdateInstallations {...data.installations} limit={data.limit} offset={data.offset} />
+        {#if isCloud && $canWriteProjects}
+            <PremiumGeoDB addons={data.addons} addonPrice={data.addonPrice} />
+        {/if}
         <UpdateVariables
             {sdkCreateVariable}
             {sdkUpdateVariable}
