@@ -23,6 +23,12 @@ export const oAuthProviders: Record<string, Provider> = {
         docs: 'https://developer.apple.com/sign-in-with-apple/',
         component: Main
     },
+    appwrite: {
+        name: 'Appwrite',
+        icon: 'appwrite',
+        docs: 'https://appwrite.io/docs/products/auth/oauth2',
+        component: Main
+    },
     auth0: {
         name: 'Auth0',
         icon: 'auth0',

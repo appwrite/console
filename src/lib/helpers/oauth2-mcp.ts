@@ -28,8 +28,8 @@ import {
  * client gains nothing by claiming the MCP resource URI.
  */
 
-/** Canonical resource URI of the hosted Appwrite MCP server. */
-export const DEFAULT_MCP_RESOURCE_URLS = ['https://mcp.appwrite.io/mcp'];
+/** Resource URIs advertised by the hosted Appwrite MCP server. */
+export const DEFAULT_MCP_RESOURCE_URLS = ['https://mcp.appwrite.io', 'https://mcp.appwrite.io/mcp'];
 
 /** Mirror of the authorization server's `scope` parameter length cap. */
 export const MAX_SCOPE_PARAM_LENGTH = 8192;

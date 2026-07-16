@@ -7,6 +7,7 @@
     import { IconExclamation } from '@appwrite.io/pink-icons-svelte';
     import { Button } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
+    import { logout } from '$lib/helpers/logout';
     import { isWebRedirect } from '$lib/helpers/oauth2-redirect';
     import OAuth2ConsentCard, { type OAuth2Outcome } from '../consent-card.svelte';
     import OAuth2OutcomeCard from '../outcome-card.svelte';
@@ -21,6 +22,17 @@
     let account = $state<Account | null>(null);
     let error = $state<string | null>(null);
     let completedRedirectUrl = $state<string | undefined>(undefined);
+    let accountSwitchResumeUrl = $state<string | null>(null);
+
+    const ACCOUNT_SWITCH_STORAGE_PREFIX = 'oauth2-account-switch:';
+
+    function rememberAccountSwitchUrl(key: string, url: string) {
+        sessionStorage.setItem(`${ACCOUNT_SWITCH_STORAGE_PREFIX}${key}`, url);
+    }
+
+    function accountSwitchUrlFor(key: string): string | null {
+        return sessionStorage.getItem(`${ACCOUNT_SWITCH_STORAGE_PREFIX}${key}`);
+    }
 
     // OIDC `max_age` is a non-negative integer count of seconds. Reject anything
     // else (e.g. `max_age=abc`) so we omit the param rather than forwarding NaN.
@@ -84,6 +96,7 @@
     }
 
     async function resumeFromGrant(grantId: string, cancelled: () => boolean): Promise<void> {
+        accountSwitchResumeUrl = accountSwitchUrlFor(grantId);
         try {
             await loadConsent(grantId, cancelled);
         } catch (e: unknown) {
@@ -118,6 +131,9 @@
             return;
         }
         if (result.grantId) {
+            if (accountSwitchResumeUrl) {
+                rememberAccountSwitchUrl(result.grantId, accountSwitchResumeUrl);
+            }
             if (fromRequestUri) {
                 // The handle is now consumed — rewrite to the grant URL so
                 // reloads resume via getGrant instead of a dead request_uri.
@@ -138,6 +154,7 @@
         requestUri: string,
         cancelled: () => boolean
     ): Promise<void> {
+        accountSwitchResumeUrl = accountSwitchUrlFor(requestUri);
         const loggedInAccount = await getAccount();
         if (cancelled()) return;
 
@@ -176,6 +193,8 @@
         params: URLSearchParams,
         cancelled: () => boolean
     ): Promise<void> {
+        const authorizeUrl = window.location.pathname + window.location.search;
+        accountSwitchResumeUrl = authorizeUrl;
         const loggedInAccount = await getAccount();
         if (cancelled()) return;
 
@@ -189,6 +208,7 @@
                     ...readAuthorizeParams(params)
                 });
                 if (cancelled()) return;
+                rememberAccountSwitchUrl(par.request_uri, authorizeUrl);
                 goSignIn(
                     `${resolve('/oauth2/consent')}?client_id=${encodeURIComponent(clientId)}&request_uri=${encodeURIComponent(par.request_uri)}`
                 );
@@ -243,6 +263,17 @@
         phase = outcome === 'approved' ? 'approved' : 'denied';
     }
 
+    async function switchAccount() {
+        if (!accountSwitchResumeUrl) return;
+        phase = 'loading';
+        try {
+            await logout(false);
+            goSignIn(accountSwitchResumeUrl);
+        } catch (e: unknown) {
+            fail(e, 'Failed to switch accounts');
+        }
+    }
+
     // A $derived string so identity-only replacements of page.url (e.g. login
     // calling invalidate(ACCOUNT) right after goto) don't restart the flow —
     // a restart would cancel an in-flight authorize and re-dereference an
@@ -261,6 +292,7 @@
         phase = 'loading';
         error = null;
         completedRedirectUrl = undefined;
+        accountSwitchResumeUrl = null;
 
         void init(params, () => run !== currentRun);
 
@@ -303,6 +335,7 @@
                 {app}
                 accountLabel={account?.email || account?.name || undefined}
                 flow="authorization"
+                onSwitchAccount={accountSwitchResumeUrl ? switchAccount : undefined}
                 {onDone} />
         {:else if phase === 'approved' || phase === 'denied'}
             <OAuth2OutcomeCard

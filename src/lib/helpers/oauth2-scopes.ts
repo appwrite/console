@@ -403,6 +403,14 @@ const ORGANIZATION_RESOURCE_COPY: Record<string, ResourceCopy> = {
         name: 'Development keys',
         desc: 'Development keys used to bypass rate limits while building locally.'
     },
+    'organization.memberships': {
+        name: 'Organization memberships',
+        desc: 'Memberships that control who belongs to this organization and their roles.'
+    },
+    organization: {
+        name: 'Organization',
+        desc: "This organization's name, settings, and other general configuration."
+    },
     domains: {
         name: 'Organization domains',
         desc: 'Custom domains owned and managed at the organization level.'
@@ -468,6 +476,8 @@ export interface PermissionGroup {
     heading: string;
     /** Contextual note under the heading, e.g. which resources it applies to. */
     note?: string;
+    /** Whether the consent screen lets the user collapse this group. */
+    collapsible?: boolean;
     lines: PermissionLine[];
 }
 
@@ -658,6 +668,7 @@ export function buildConsentPermissions(model: ConsentScopeModel): PermissionGro
         groups.push({
             heading: 'Projects',
             note: 'Applies only to the projects you select below.',
+            collapsible: true,
             lines: projectLines
         });
     }
@@ -672,6 +683,7 @@ export function buildConsentPermissions(model: ConsentScopeModel): PermissionGro
         groups.push({
             heading: 'Organizations',
             note: 'Applies only to the organizations you select below.',
+            collapsible: true,
             lines: organizationLines
         });
     }
