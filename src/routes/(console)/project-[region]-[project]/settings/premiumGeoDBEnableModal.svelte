@@ -60,10 +60,23 @@
                     return;
                 }
 
-                await sdk.forConsoleIn(page.params.region).projects.confirmAddonPayment({
-                    projectId: page.params.project,
-                    addonId: paymentAuth.addonId
-                });
+                try {
+                    await sdk.forConsoleIn(page.params.region).projects.confirmAddonPayment({
+                        projectId: page.params.project,
+                        addonId: paymentAuth.addonId
+                    });
+                } catch (e) {
+                    // A 404 here means the Stripe webhook already consumed the invoice
+                    // and activated the addon (race) — the addon is enabled, so sync
+                    // state and assume success rather than surfacing the error.
+                    if (
+                        e?.type !== 'billing_invoice_not_found' &&
+                        e?.type !== 'addon_not_found' &&
+                        e?.code !== 404
+                    ) {
+                        throw e;
+                    }
+                }
 
                 await Promise.all([
                     invalidate(Dependencies.ADDONS),
