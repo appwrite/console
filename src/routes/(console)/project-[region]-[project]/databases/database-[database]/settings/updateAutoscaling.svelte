@@ -77,6 +77,7 @@
                         min={database.storage}
                         max={10000}
                         bind:value={maxGb}
+                        helper="The maximum total size this database's storage can grow to. Autoscaling stops at this limit."
                         required />
                 {/if}
             </ul>
