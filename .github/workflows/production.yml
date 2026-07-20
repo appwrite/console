@@ -1,0 +1,106 @@
+name: Production deployment
+
+on:
+    workflow_dispatch:
+    release:
+        types: [published]
+
+concurrency:
+    group: ${{ github.workflow }}
+    cancel-in-progress: false
+
+env:
+    ENVIRONMENT: production
+    DECLARATIVE_OWNER: appwrite-labs
+    DECLARATIVE_REPOSITORY: cloud-applications
+    DECLARATIVE_ALIAS: cloud-console
+    IMAGE_NAME: appwrite/console-cloud
+    TAG: ${{ github.event.release.tag_name || github.sha }}
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout the repo
+              uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+            - name: Set up QEMU
+              uses: docker/setup-qemu-action@ce360397dd3f832beb865e1373c09c0e9f86d70a # v4.0.0
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@4d04d5d9486b7bd6fa91e7baf45bbb4f8b9deedd # v4.0.0
+            - name: Log in to Docker Hub
+              uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121 # v4.1.0
+              with:
+                  username: ${{ vars.DOCKERHUB_USERNAME }}
+                  password: ${{ secrets.DOCKERHUB_TOKEN }}
+            - name: Build and push Docker image
+              uses: docker/build-push-action@bcafcacb16a39f128d818304e6c9c0c18556b85f # v7.1.0
+              with:
+                  context: .
+                  push: true
+                  platforms: linux/amd64,linux/arm64
+                  tags: ${{ env.IMAGE_NAME }}:${{ env.TAG }}
+                  build-args: |
+                      "PUBLIC_CONSOLE_MODE=cloud"
+                      "PUBLIC_CONSOLE_FEATURE_FLAGS="
+                      "PUBLIC_APPWRITE_MULTI_REGION=true"
+                      "PUBLIC_CONSOLE_MOCK_AI_SUGGESTIONS=false"
+                      "PUBLIC_GROWTH_ENDPOINT=${{ vars.VITE_APPWRITE_GROWTH_ENDPOINT }}"
+                      "PUBLIC_STRIPE_KEY=${{ secrets.PUBLIC_STRIPE_KEY }}"
+                      "PUBLIC_CONSOLE_FINGERPRINT_KEY=${{ secrets.PUBLIC_CONSOLE_FINGERPRINT_KEY }}"
+                      "SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}"
+                      "SENTRY_RELEASE=${{ github.event.release.tag_name }}"
+
+    deploy:
+        needs: build
+        runs-on: ubuntu-latest
+        # Shared across the staging and production workflows so their deploy
+        # jobs never push to cloud-applications at the same time.
+        concurrency:
+            group: declarative-deploy
+            cancel-in-progress: false
+        steps:
+            - name: Get token for ${{ env.DECLARATIVE_REPOSITORY }}
+              id: app-token
+              uses: actions/create-github-app-token@fee1f7d63c2ff003460e3d139729b119787bc349 # v2
+              with:
+                  app-id: ${{ vars.DECLARATIVE_DEPLOYMENT_GITHUB_APP_ID }}
+                  private-key: ${{ secrets.DECLARATIVE_DEPLOYMENT_GITHUB_APP_PRIVATE_KEY }}
+                  owner: ${{ env.DECLARATIVE_OWNER }}
+                  repositories: ${{ env.DECLARATIVE_REPOSITORY }}
+
+            - name: Checkout ${{ env.DECLARATIVE_REPOSITORY }}
+              uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+              with:
+                  repository: ${{ env.DECLARATIVE_OWNER }}/${{ env.DECLARATIVE_REPOSITORY }}
+                  token: ${{ steps.app-token.outputs.token }}
+                  # Don't leave the write-capable token in .git/config for later steps.
+                  persist-credentials: false
+
+            - name: Update image tag
+              run: yq -i '.[strenv(DECLARATIVE_ALIAS)].image.tag = strenv(TAG)' ${{ env.ENVIRONMENT }}/cloud/default.yaml
+
+            - name: Open pull request
+              # The release author reviews; falls back to the dispatcher for
+              # manual runs. The PR author is the GitHub App bot, so requesting
+              # the release author as reviewer is always allowed.
+              env:
+                  GH_TOKEN: ${{ steps.app-token.outputs.token }}
+                  REVIEWER: ${{ github.event.release.author.login || github.actor }}
+                  BRANCH: deploy/console-${{ env.TAG }}
+              run: |
+                  git config user.name "github-actions[bot]"
+                  git config user.email "github-actions[bot]@users.noreply.github.com"
+                  git add ${{ env.ENVIRONMENT }}/cloud/default.yaml
+                  if git diff --cached --quiet; then
+                    echo "No changes to commit"
+                    exit 0
+                  fi
+                  git checkout -b "$BRANCH"
+                  git commit -m "chore(${{ env.ENVIRONMENT }}): console image tag to ${{ env.TAG }}"
+                  git push "https://x-access-token:${GH_TOKEN}@github.com/${{ env.DECLARATIVE_OWNER }}/${{ env.DECLARATIVE_REPOSITORY }}.git" "$BRANCH"
+                  gh pr create \
+                    --base main \
+                    --head "$BRANCH" \
+                    --reviewer "$REVIEWER" \
+                    --title "chore(${{ env.ENVIRONMENT }}): console image tag to ${{ env.TAG }}" \
+                    --body "Promotes \`${{ env.IMAGE_NAME }}:${{ env.TAG }}\` to production. Requested by @$REVIEWER."
