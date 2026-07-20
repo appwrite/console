@@ -3,6 +3,7 @@
     import { disableCommands } from '$lib/commandCenter';
     import { Form } from '$lib/elements/forms';
     import { Alert, Layout, Modal } from '@appwrite.io/pink-svelte';
+    import DOMPurify from 'dompurify';
 
     export let show = false;
     export let autoClose = true;
@@ -51,7 +52,10 @@
                         on:dismiss={() => {
                             error = null;
                         }}>
-                        {@html error}
+                        {@html DOMPurify.sanitize(error, {
+                            ALLOWED_TAGS: ['a'],
+                            ALLOWED_ATTR: ['href', 'target', 'rel']
+                        })}
                     </Alert.Inline>
                 </div>
             {/if}
@@ -78,7 +82,11 @@
     }
 
     .alert-error :global(a) {
-    color: inherit;
-    text-decoration: underline;
-}
+        color: inherit;
+        text-decoration: underline;
+    }
+    rt-error :global(a) {
+        color: inherit;
+        text-decoration: underline;
+    }
 </style>
