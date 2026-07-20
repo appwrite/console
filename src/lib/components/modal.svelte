@@ -54,8 +54,8 @@
                         }}>
                         {@html DOMPurify.sanitize(error, {
                             ALLOWED_TAGS: ['a'],
-                            ALLOWED_ATTR: ['href', 'target', 'rel']
-                        })}
+                            ALLOWED_ATTR: ['href']
+                        }).replace(/<a /g, '<a rel="noopener noreferrer" ')}
                     </Alert.Inline>
                 </div>
             {/if}
@@ -80,7 +80,8 @@
         opacity: 0;
         animation: none;
     }
-
+    /* Svelte cannot see the DOM rendered by `{@html}`, resulting in a false positive.*/
+    /* svelte-ignore css-unused-selector */
     .alert-error :global(a) {
         color: inherit;
         text-decoration: underline;
