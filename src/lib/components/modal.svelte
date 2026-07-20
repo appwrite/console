@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { Form } from '$lib/elements/forms';
-    import { disableCommands } from '$lib/commandCenter';
     import { beforeNavigate } from '$app/navigation';
+    import { disableCommands } from '$lib/commandCenter';
+    import { Form } from '$lib/elements/forms';
     import { Alert, Layout, Modal } from '@appwrite.io/pink-svelte';
 
     export let show = false;
@@ -44,14 +44,14 @@
         <Modal {size} {title} bind:open={show} {hideFooter} {dismissible}>
             <slot slot="description" name="description" />
             {#if error}
-                <div bind:this={alert}>
+                <div bind:this={alert} class="alert-error">
                     <Alert.Inline
                         dismissible
                         status="warning"
                         on:dismiss={() => {
                             error = null;
                         }}>
-                        {error}
+                        {@html error}
                     </Alert.Inline>
                 </div>
             {/if}
@@ -76,4 +76,9 @@
         opacity: 0;
         animation: none;
     }
+
+    .alert-error :global(a) {
+    color: inherit;
+    text-decoration: underline;
+}
 </style>
