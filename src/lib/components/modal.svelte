@@ -54,7 +54,7 @@
                         }}>
                         {@html DOMPurify.sanitize(error, {
                             ALLOWED_TAGS: ['a'],
-                            ALLOWED_ATTR: ['href']
+                            ALLOWED_ATTR: ['href', 'target']
                         }).replace(/<a /g, '<a rel="noopener noreferrer" ')}
                     </Alert.Inline>
                 </div>
