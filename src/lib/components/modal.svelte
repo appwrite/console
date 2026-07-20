@@ -80,13 +80,8 @@
         opacity: 0;
         animation: none;
     }
-    /* Svelte cannot see the DOM rendered by `{@html}`, resulting in a false positive.*/
-    /* svelte-ignore css-unused-selector */
+
     .alert-error :global(a) {
-        color: inherit;
-        text-decoration: underline;
-    }
-    rt-error :global(a) {
         color: inherit;
         text-decoration: underline;
     }
