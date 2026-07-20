@@ -73,11 +73,15 @@ jobs:
               with:
                   repository: ${{ env.DECLARATIVE_OWNER }}/${{ env.DECLARATIVE_REPOSITORY }}
                   token: ${{ steps.app-token.outputs.token }}
+                  # Don't leave the write-capable token in .git/config for later steps.
+                  persist-credentials: false
 
             - name: Update image tag
               run: yq -i '.[strenv(DECLARATIVE_ALIAS)].image.tag = strenv(TAG)' ${{ env.ENVIRONMENT }}/cloud/default.yaml
 
             - name: Commit and push
+              env:
+                  GH_TOKEN: ${{ steps.app-token.outputs.token }}
               run: |
                   git config user.name "github-actions[bot]"
                   git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -86,5 +90,5 @@ jobs:
                     echo "No changes to commit"
                   else
                     git commit -m "chore(${{ env.ENVIRONMENT }}): console image tag to ${{ env.TAG }}"
-                    git push
+                    git push "https://x-access-token:${GH_TOKEN}@github.com/${{ env.DECLARATIVE_OWNER }}/${{ env.DECLARATIVE_REPOSITORY }}.git" HEAD:main
                   fi

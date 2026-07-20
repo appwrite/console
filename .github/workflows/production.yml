@@ -73,18 +73,34 @@ jobs:
               with:
                   repository: ${{ env.DECLARATIVE_OWNER }}/${{ env.DECLARATIVE_REPOSITORY }}
                   token: ${{ steps.app-token.outputs.token }}
+                  # Don't leave the write-capable token in .git/config for later steps.
+                  persist-credentials: false
 
             - name: Update image tag
               run: yq -i '.[strenv(DECLARATIVE_ALIAS)].image.tag = strenv(TAG)' ${{ env.ENVIRONMENT }}/cloud/default.yaml
 
-            - name: Commit and push
+            - name: Open pull request
+              # The release author reviews; falls back to the dispatcher for
+              # manual runs. The PR author is the GitHub App bot, so requesting
+              # the release author as reviewer is always allowed.
+              env:
+                  GH_TOKEN: ${{ steps.app-token.outputs.token }}
+                  REVIEWER: ${{ github.event.release.author.login || github.actor }}
+                  BRANCH: deploy/console-${{ env.TAG }}
               run: |
                   git config user.name "github-actions[bot]"
                   git config user.email "github-actions[bot]@users.noreply.github.com"
                   git add ${{ env.ENVIRONMENT }}/cloud/default.yaml
                   if git diff --cached --quiet; then
                     echo "No changes to commit"
-                  else
-                    git commit -m "chore(${{ env.ENVIRONMENT }}): console image tag to ${{ env.TAG }}"
-                    git push
+                    exit 0
                   fi
+                  git checkout -b "$BRANCH"
+                  git commit -m "chore(${{ env.ENVIRONMENT }}): console image tag to ${{ env.TAG }}"
+                  git push "https://x-access-token:${GH_TOKEN}@github.com/${{ env.DECLARATIVE_OWNER }}/${{ env.DECLARATIVE_REPOSITORY }}.git" "$BRANCH"
+                  gh pr create \
+                    --base main \
+                    --head "$BRANCH" \
+                    --reviewer "$REVIEWER" \
+                    --title "chore(${{ env.ENVIRONMENT }}): console image tag to ${{ env.TAG }}" \
+                    --body "Promotes \`${{ env.IMAGE_NAME }}:${{ env.TAG }}\` to production. Requested by @$REVIEWER."
