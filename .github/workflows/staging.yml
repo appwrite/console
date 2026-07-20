@@ -14,7 +14,6 @@ env:
     ENVIRONMENT: staging
     DECLARATIVE_OWNER: appwrite-labs
     DECLARATIVE_REPOSITORY: cloud-applications
-    # console is the `cloud-console` alias inside the cloud umbrella chart.
     DECLARATIVE_ALIAS: cloud-console
     IMAGE_NAME: appwrite/console-cloud-stage
     TAG: ${{ github.sha }}
