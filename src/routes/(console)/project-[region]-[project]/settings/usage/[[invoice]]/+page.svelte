@@ -12,7 +12,7 @@
     import { bytesToSize, humanFileSize, mbSecondsToGBHours } from '$lib/helpers/sizeConvertion';
     import { BarChart, Legend } from '$lib/charts';
     import { formatNum } from '$lib/helpers/string';
-    import { total } from '$lib/layout/usage.svelte';
+    import { total } from '$lib/layout/usageHelpers';
     import { base } from '$app/paths';
     import { formatCurrency, formatNumberWithCommas, clampMin } from '$lib/helpers/numbers';
     import { getCountryName } from '$lib/helpers/diallingCodes.js';

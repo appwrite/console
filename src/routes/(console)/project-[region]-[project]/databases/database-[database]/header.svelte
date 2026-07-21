@@ -35,12 +35,6 @@
                 hasChildren: true
             },
             {
-                href: withPath(baseDatabasePath, '/usage'),
-                title: 'Usage',
-                event: 'usage',
-                hasChildren: true
-            },
-            {
                 href: withPath(baseDatabasePath, '/settings'),
                 event: 'settings',
                 title: 'Settings',

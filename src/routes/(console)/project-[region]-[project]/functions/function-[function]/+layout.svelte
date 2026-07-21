@@ -132,18 +132,6 @@
             disabled: page.url.pathname.endsWith($func.$id)
         },
         {
-            label: 'Go to usage',
-            callback() {
-                goto(
-                    `${base}/project-${page.params.region}-${page.params.project}/functions/function-${$func.$id}/usage`
-                );
-            },
-            keys: ['g', 'u'],
-            group: 'navigation',
-            rank: 10,
-            disabled: page.url.pathname.endsWith('usage')
-        },
-        {
             label: 'Go to executions',
             callback() {
                 goto(
