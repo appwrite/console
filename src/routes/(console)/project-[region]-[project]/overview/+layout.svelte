@@ -22,7 +22,7 @@
     import Bandwidth from './bandwidth.svelte';
     import Requests from './requests.svelte';
     import { usage } from './store';
-    import { periodToDates } from '$lib/layout/usage.svelte';
+    import { periodToDates } from '$lib/layout/usageHelpers';
     import { canWriteProjects } from '$lib/stores/roles';
     import { Card, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { writable, type Writable } from 'svelte/store';

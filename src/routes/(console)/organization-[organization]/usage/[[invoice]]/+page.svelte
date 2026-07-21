@@ -15,7 +15,7 @@
     import { organization } from '$lib/stores/organization';
     import ProjectBreakdown from './ProjectBreakdown.svelte';
     import { formatNum } from '$lib/helpers/string';
-    import { accumulateFromEndingTotal, total } from '$lib/layout/usage.svelte';
+    import { accumulateFromEndingTotal, total } from '$lib/layout/usageHelpers';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import TotalMembers from './totalMembers.svelte';
     import { formatCurrency, formatNumberWithCommas } from '$lib/helpers/numbers';
