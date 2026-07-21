@@ -57,16 +57,6 @@ export const functionsSearcher = (async (query: string) => {
                 group: 'functions'
             },
             {
-                label: 'Go to usage',
-                nested: true,
-                callback() {
-                    goto(
-                        `${base}/project-${page.params.region}-${projectId}/functions/function-${func.$id}/usage`
-                    );
-                },
-                group: 'functions'
-            },
-            {
                 label: 'Go to executions',
                 nested: true,
                 callback() {

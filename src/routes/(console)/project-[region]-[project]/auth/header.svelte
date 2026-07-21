@@ -35,12 +35,6 @@
             disabled: !$canWriteProjects
         },
         {
-            href: `${path}/usage`,
-            title: 'Usage',
-            hasChildren: true,
-            event: 'usage'
-        },
-        {
             href: `${path}/settings`,
             title: 'Settings',
             event: 'settings',

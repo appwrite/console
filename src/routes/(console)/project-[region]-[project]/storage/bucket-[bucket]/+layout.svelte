@@ -75,18 +75,6 @@
             rank: 10
         },
         {
-            label: 'Go to usage',
-            callback() {
-                goto(
-                    `${base}/project-${$project.region}-${$project.$id}/storage/bucket-${$bucket.$id}/usage`
-                );
-            },
-            disabled: page.url.pathname.endsWith('usage'),
-            keys: ['g', 'u'],
-            group: 'navigation',
-            rank: 10
-        },
-        {
             label: 'Go to settings',
             callback() {
                 goto(
