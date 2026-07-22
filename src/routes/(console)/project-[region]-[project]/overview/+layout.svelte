@@ -93,16 +93,6 @@
                 keys: ['c', 'k'],
                 group: 'integrations',
                 disabled: !$canWriteProjects
-            },
-            {
-                label: 'Create Dev Key',
-                icon: IconPlus,
-                callback() {
-                    goto(`${path}/dev-keys/create`);
-                },
-                keys: ['c', 'd', 'k'],
-                group: 'integrations',
-                disabled: !$canWriteProjects
             }
         ]);
         $updateCommandGroupRanks({

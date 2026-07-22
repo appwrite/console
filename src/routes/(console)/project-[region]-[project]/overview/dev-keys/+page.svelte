@@ -1,11 +1,27 @@
 <script lang="ts">
-    import Action from './action.svelte';
     import { setOverviewAction } from '../context';
     import Table from '../(components)/table.svelte';
+    import { Alert, Layout, Typography } from '@appwrite.io/pink-svelte';
 
-    export let data;
+    let { data } = $props();
 
-    setOverviewAction(Action);
+    setOverviewAction(null);
 </script>
 
-<Table keys={data.devKeys} keyType="dev" />
+<Layout.Stack gap="l">
+    <Alert.Inline status="warning" title="Dev keys are deprecated">
+        <Typography.Text>
+            Creating new dev keys is no longer supported. Existing dev keys keep working until they
+            expire. Learn more in the
+            <a
+                href="https://appwrite.io/changelog/entry/2026-07-22"
+                target="_blank"
+                rel="noopener noreferrer"
+                style="text-decoration: underline;">
+                changelog
+            </a>.
+        </Typography.Text>
+    </Alert.Inline>
+
+    <Table keys={data.devKeys} keyType="dev" />
+</Layout.Stack>

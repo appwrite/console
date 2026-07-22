@@ -1,6 +1,6 @@
 import { sdk } from '$lib/stores/sdk';
 import { cachedStore } from '$lib/helpers/cache';
-import { get, readable, writable, type Writable } from 'svelte/store';
+import { get, readable } from 'svelte/store';
 import type { Models, ProjectUsageRange } from '@appwrite.io/console';
 import { page } from '$app/state';
 import type { Column } from '$lib/helpers/types';
@@ -24,8 +24,6 @@ export const usage = cachedStore<
         }
     };
 });
-
-export const showDevKeysCreateModal: Writable<boolean> = writable(false);
 
 export const devKeyColumns = readable<Column[]>([
     { id: 'name', title: 'Name', type: 'string', width: { min: 120 } },
