@@ -10,7 +10,6 @@
     import CreateGitDeploymentModal from './createGitDeploymentModal.svelte';
     import { columns } from './store';
     import CreateManualDeploymentModal from './createManualDeploymentModal.svelte';
-    import DeploymentMetrics from './deploymentMetrics.svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { onMount } from 'svelte';
     import { realtime, sdk } from '$lib/stores/sdk';
@@ -122,8 +121,6 @@
                 </Alert.Inline>
             {/if}
         {/if}
-
-        <DeploymentMetrics />
 
         <Layout.Stack gap="l">
             <ResponsiveContainerHeader
