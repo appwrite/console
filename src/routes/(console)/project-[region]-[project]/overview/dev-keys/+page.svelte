@@ -11,8 +11,8 @@
 <Layout.Stack gap="l">
     <Alert.Inline status="warning" title="Dev keys are deprecated">
         <Typography.Text>
-            Creating new dev keys is no longer supported. Existing dev keys keep working until they
-            expire. Learn more in the
+            As of July 22, 2026, creating new dev keys is paused. Existing dev keys keep working
+            until September 1, 2026. Learn more in the
             <a
                 href="https://appwrite.io/changelog/entry/2026-07-22"
                 target="_blank"
