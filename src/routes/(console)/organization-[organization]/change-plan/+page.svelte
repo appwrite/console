@@ -39,6 +39,8 @@
     import { BillingPlanGroup, type Models, Query } from '@appwrite.io/console';
     import { toLocaleDate } from '$lib/helpers/date';
 
+    type PlanChangeEstimate = Models.EstimationUpdatePlan & Partial<Models.EstimationPlanChange>;
+
     export let data;
 
     let selectedPlan: Models.BillingPlan = data.plan;
@@ -61,6 +63,10 @@
     let feedbackMessage: string;
     let orgUsage: Models.UsageOrganization;
     let allProjects: { projects: Models.Project[] } = { projects: [] };
+    let planChangeEstimate: PlanChangeEstimate | null = null;
+    let planEstimateError: string | null = null;
+    let isLoadingPlanEstimate = false;
+    let planEstimateRequestId = 0;
 
     $: paymentMethods = null;
 
@@ -134,12 +140,89 @@
         return paymentMethods;
     }
 
-    function hasExcessProjectsForFreePlan(): boolean {
-        const freeBasePlan = getBasePlanFromGroup(BillingPlanGroup.Starter);
-        const freePlanProjectLimit = freeBasePlan?.projects ?? 2;
-        const currentProjectCount = allProjects.projects.length;
-        return currentProjectCount > freePlanProjectLimit;
+    function getAdditionalInvites(): string[] {
+        return (collaborators ?? []).filter(
+            (collaborator) =>
+                !data?.members?.memberships?.find((member) => member.userEmail === collaborator)
+        );
     }
+
+    function getPlanChangeLimits(): Models.PlanChangeLimits | null {
+        return planChangeEstimate?.limits ?? null;
+    }
+
+    function getPlanChangeBlockingMessage(): string | null {
+        const limits = getPlanChangeLimits();
+
+        if (isDowngrade && planEstimateError && !planChangeEstimate) {
+            return `We couldn't verify whether your organization meets the ${selectedPlan.name} plan limits. Please try again.`;
+        }
+
+        if (!limits || limits.canChangePlan) {
+            return null;
+        }
+
+        if (limits.unsupportedAddons?.length) {
+            return `Remove unsupported add-ons before switching to ${selectedPlan.name}.`;
+        }
+
+        if (limits.nonCompliantProjects > 0) {
+            return `${limits.nonCompliantProjects} project${limits.nonCompliantProjects !== 1 ? 's' : ''} exceed the ${selectedPlan.name} plan limits. Resolve the issues below before continuing.`;
+        }
+
+        return `This organization doesn't currently meet the ${selectedPlan.name} plan limits.`;
+    }
+
+    async function loadPlanChangeEstimate() {
+        const requestId = ++planEstimateRequestId;
+
+        if (
+            !data?.organization?.$id ||
+            !selectedPlan?.$id ||
+            selectedPlan.$id === $organization?.billingPlanId
+        ) {
+            planChangeEstimate = null;
+            planEstimateError = null;
+            isLoadingPlanEstimate = false;
+            return;
+        }
+
+        isLoadingPlanEstimate = true;
+        planEstimateError = null;
+
+        try {
+            const estimation = await sdk.forConsole.organizations.estimationUpdatePlan({
+                organizationId: data.organization.$id,
+                billingPlan: selectedPlan.$id,
+                invites: getAdditionalInvites(),
+                couponId:
+                    selectedCoupon?.code && selectedCoupon.code.length > 0
+                        ? selectedCoupon.code
+                        : null
+            });
+
+            if (requestId !== planEstimateRequestId) return;
+
+            planChangeEstimate = estimation as PlanChangeEstimate;
+        } catch (e) {
+            if (requestId !== planEstimateRequestId) return;
+
+            planChangeEstimate = null;
+            planEstimateError = e.message;
+        } finally {
+            if (requestId === planEstimateRequestId) {
+                isLoadingPlanEstimate = false;
+            }
+        }
+    }
+
+    let additionalInviteEmails: string[] = [];
+    let additionalInviteSignature = '';
+    let selectedCouponCode: string | null = null;
+
+    $: additionalInviteEmails = getAdditionalInvites();
+    $: additionalInviteSignature = additionalInviteEmails.join(',');
+    $: selectedCouponCode = selectedCoupon?.code ?? null;
 
     async function handleSubmit() {
         if (isDowngrade) {
@@ -168,14 +251,11 @@
     }
 
     async function downgrade() {
-        if (selectedPlan.group === BillingPlanGroup.Starter && hasExcessProjectsForFreePlan()) {
-            const freeBasePlan = getBasePlanFromGroup(BillingPlanGroup.Starter);
-            const freePlanProjectLimit = freeBasePlan?.projects ?? 2;
-            const currentProjectCount = allProjects?.projects?.length ?? 0;
-
+        const blockingMessage = getPlanChangeBlockingMessage();
+        if (blockingMessage) {
             addNotification({
                 type: 'error',
-                message: `Please delete ${currentProjectCount - freePlanProjectLimit} project${currentProjectCount - freePlanProjectLimit !== 1 ? 's' : ''} before downgrading`
+                message: blockingMessage
             });
             return;
         }
@@ -251,13 +331,7 @@
     async function upgrade() {
         try {
             // Add collaborators
-            let newCollaborators = [];
-            if (collaborators?.length) {
-                newCollaborators = collaborators.filter(
-                    (collaborator) =>
-                        !data?.members?.memberships?.find((m) => m.userEmail === collaborator)
-                );
-            }
+            const newCollaborators = getAdditionalInvites();
             const org = await sdk.forConsole.organizations.updatePlan({
                 organizationId: data.organization.$id,
                 billingPlan: selectedPlan.$id,
@@ -341,18 +415,28 @@
 
     $: isUpgrade = selectedPlan.order > $currentPlan?.order;
     $: isDowngrade = selectedPlan.order < $currentPlan?.order;
+    $: if (
+        data?.organization?.$id &&
+        selectedPlan?.$id &&
+        additionalInviteSignature !== undefined &&
+        selectedCouponCode !== undefined
+    ) {
+        loadPlanChangeEstimate();
+    }
 
-    // Check if projects exceed Free plan limit when downgrading
     $: isButtonDisabled = (() => {
-        const freeBasePlan = getBasePlanFromGroup(BillingPlanGroup.Starter);
-        const freePlanProjectLimit = freeBasePlan?.projects ?? 2;
-        const hasExcessProjects = allProjects.projects.length > freePlanProjectLimit;
-
         if ($organization?.billingPlanId === selectedPlan.$id) return true;
         if (isDowngrade && selectedPlan.group === BillingPlanGroup.Starter && data.hasFreeOrgs)
             return true;
+        if (isDowngrade) {
+            if (isLoadingPlanEstimate) return true;
+            if (planEstimateError && !planChangeEstimate) return true;
 
-        return isDowngrade && selectedPlan.group === BillingPlanGroup.Starter && hasExcessProjects;
+            const limits = getPlanChangeLimits();
+            if (limits && !limits.canChangePlan) return true;
+        }
+
+        return false;
     })();
 </script>
 
@@ -428,7 +512,8 @@
                                 features until your billing period ends. After that,
                                 <span class="u-bold"
                                     >all team members except the owner will be removed,</span>
-                                and service disruptions may occur if usage exceeds Free plan limits.
+                                and service disruptions may occur if usage exceeds {selectedPlan.name}
+                                plan limits.
                             </Alert.Inline>
                         {/if}
 
@@ -436,7 +521,11 @@
                             organization={data.organization}
                             bind:projects={allProjects.projects}
                             members={data.members?.memberships || []}
-                            storageUsage={orgUsage?.storageTotal ?? 0} />
+                            storageUsage={orgUsage?.storageTotal ?? 0}
+                            targetPlan={selectedPlan}
+                            {planChangeEstimate}
+                            estimateError={planEstimateError}
+                            loading={isLoadingPlanEstimate} />
                     {/if}
                 </Layout.Stack>
             </Fieldset>
@@ -512,12 +601,14 @@
         {@const isSameGroup = data.organization.billingPlanDetails.group === selectedPlan.group}
         {#if !isStarter && !isSameGroup && isSelfService}
             <EstimatedTotalBox
-                {collaborators}
+                collaborators={getAdditionalInvites()}
                 {isDowngrade}
                 billingPlan={selectedPlan}
                 bind:couponData={selectedCoupon}
                 bind:billingBudget
-                organizationId={data.organization.$id} />
+                organizationId={data.organization.$id}
+                estimationOverride={planChangeEstimate}
+                preferExternalEstimate />
         {:else if isSelfService}
             <PlanComparisonBox downgrade={data.hasFreeOrgs ? false : isDowngrade} />
         {/if}
