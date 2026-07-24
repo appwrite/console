@@ -25,6 +25,7 @@
 
     let error: string;
     let currentColumn: Columns;
+    let editingColumn: Columns;
 
     onMount(() => {
         if (!isModal) {
@@ -54,7 +55,7 @@
 
     export async function submit() {
         try {
-            await option.update(databaseId, tableId, selectedColumn, originalKey);
+            await option.update(databaseId, tableId, editingColumn, originalKey);
             await invalidate(Dependencies.TABLE);
 
             if (isModal && !page.url.pathname.includes('columns')) {
@@ -65,12 +66,12 @@
 
             addNotification({
                 type: 'success',
-                message: `Column ${selectedColumn.key} has been updated`
+                message: `Column ${editingColumn.key} has been updated`
             });
 
             showEdit = false;
             const oldKey = originalKey;
-            const newKey = selectedColumn.key;
+            const newKey = editingColumn.key;
 
             // TODO: these stores need to be added.
             if (oldKey !== newKey && $columnsOrder.includes(oldKey)) {
@@ -106,17 +107,28 @@
     $: onShow(showEdit);
     $: title = `Update ${columnOptions.find((v) => v.name === option.name)?.sentenceName ?? ''} column`;
 
+    function deepCloneColumn(col: Columns): Columns {
+        return {
+            ...col,
+            ...('elements' in col && Array.isArray(col['elements'])
+                ? { elements: [...col['elements']] }
+                : {})
+        } as Columns;
+    }
+
     function onShow(show: boolean) {
         if (show) {
-            currentColumn ??= { ...selectedColumn };
+            editingColumn = deepCloneColumn(selectedColumn);
+            currentColumn ??= deepCloneColumn(selectedColumn);
             originalKey = currentColumn.key;
             error = null;
         } else {
             currentColumn = null;
+            editingColumn = null;
         }
     }
 
-    $: $databaseColumnSheetOptions.disableSubmit = deepEqual(currentColumn, selectedColumn);
+    $: $databaseColumnSheetOptions.disableSubmit = deepEqual(currentColumn, editingColumn);
 </script>
 
 {#if isModal}
@@ -125,45 +137,45 @@
             {option?.name}
         </svelte:fragment>
 
-        {#if selectedColumn}
-            {#if selectedColumn?.type !== 'relationship'}
+        {#if editingColumn}
+            {#if editingColumn?.type !== 'relationship'}
                 <InputText
                     id="key"
                     label="Column key"
                     placeholder="Enter key"
-                    bind:value={selectedColumn.key}
+                    bind:value={editingColumn.key}
                     autofocus />
             {/if}
             {#if option}
                 <svelte:component
                     this={option.component}
                     editing
-                    bind:data={selectedColumn}
+                    bind:data={editingColumn}
                     onclose={() => (option = null)} />
             {/if}
         {/if}
 
         <svelte:fragment slot="footer">
             <Button secondary on:click={() => (showEdit = false)}>Cancel</Button>
-            <Button submit disabled={deepEqual(currentColumn, selectedColumn)}>Update</Button>
+            <Button submit disabled={deepEqual(currentColumn, editingColumn)}>Update</Button>
         </svelte:fragment>
     </Modal>
-{:else if selectedColumn}
+{:else if editingColumn}
     <Layout.Stack gap="xxxl">
         <Layout.Stack gap="l">
-            {#if selectedColumn?.type !== 'relationship'}
+            {#if editingColumn?.type !== 'relationship'}
                 <InputText
                     id="key"
                     label="Column key"
                     placeholder="Enter key"
-                    bind:value={selectedColumn.key}
+                    bind:value={editingColumn.key}
                     autofocus />
             {/if}
             {#if option}
                 <svelte:component
                     this={option.component}
                     editing
-                    bind:data={selectedColumn}
+                    bind:data={editingColumn}
                     onclose={() => (option = null)} />
             {/if}
         </Layout.Stack>
