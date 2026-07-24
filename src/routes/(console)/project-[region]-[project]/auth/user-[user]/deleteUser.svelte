@@ -1,13 +1,14 @@
 <script lang="ts">
     import { page } from '$app/state';
     import { sdk } from '$lib/stores/sdk';
-    import { goto } from '$app/navigation';
+    import { goto, invalidate } from '$app/navigation';
     import type { Models } from '@appwrite.io/console';
     import Confirm from '$lib/components/confirm.svelte';
     import { Typography } from '@appwrite.io/pink-svelte';
     import { resolveRoute } from '$lib/stores/navigation';
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import { Dependencies } from '$lib/constants';
 
     export let showDelete = false;
     export let project: Models.Project;
@@ -19,6 +20,7 @@
             await sdk
                 .forProject(page.params.region, page.params.project)
                 .users.delete({ userId: user.$id });
+            await invalidate(Dependencies.USERS);
             showDelete = false;
             addNotification({
                 type: 'success',
