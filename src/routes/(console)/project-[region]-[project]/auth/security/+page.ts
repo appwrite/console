@@ -32,6 +32,11 @@ const getDefaultPasswordStrengthPolicy = (): Models.PolicyPasswordStrength => ({
     symbols: false
 });
 
+const getDefaultUserLimitPolicy = (): Models.PolicyUserLimit => ({
+    $id: ProjectPolicyId.Userlimit,
+    total: 0
+});
+
 export const load: PageLoad = async ({ depends, params }) => {
     depends(Dependencies.PROJECT);
 
@@ -64,7 +69,9 @@ export const load: PageLoad = async ({ depends, params }) => {
             ProjectPolicyId.Sessioninvalidation
         ] as Models.PolicySessionInvalidation,
         sessionLimitPolicy: policiesById[ProjectPolicyId.Sessionlimit] as Models.PolicySessionLimit,
-        userLimitPolicy: policiesById[ProjectPolicyId.Userlimit] as Models.PolicyUserLimit,
+        userLimitPolicy:
+            (policiesById[ProjectPolicyId.Userlimit] as Models.PolicyUserLimit) ??
+            getDefaultUserLimitPolicy(),
         denyAliasedEmailPolicy:
             (policiesById[ProjectEmailPolicyId.DenyAliasedEmail] as EnabledPolicy) ??
             getDefaultEnabledPolicy(ProjectEmailPolicyId.DenyAliasedEmail),

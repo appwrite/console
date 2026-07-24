@@ -23,6 +23,11 @@
     let value = $state(policy.total !== 0 ? 'limited' : 'unlimited');
     let newLimit = $state(policy.total !== 0 ? policy.total : 100);
 
+    $effect(() => {
+        value = policy.total !== 0 ? 'limited' : 'unlimited';
+        newLimit = policy.total !== 0 ? policy.total : 100;
+    });
+
     const isLimited = $derived(value === 'limited');
     const btnDisabled = $derived.by(() => {
         return (!isLimited && policy.total === 0) || (isLimited && policy.total === newLimit);
