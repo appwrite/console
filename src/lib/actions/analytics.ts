@@ -262,6 +262,7 @@ export enum Submit {
     ProjectResume = 'submit_project_resume',
     MemberCreate = 'submit_member_create',
     MemberDelete = 'submit_member_delete',
+    ConsoleUserDelete = 'submit_console_user_delete',
     MembershipUpdate = 'submit_membership_update',
     MembershipUpdateStatus = 'submit_membership_update_status',
     MessagingTargetUpdate = 'submit_messaging_target_update',

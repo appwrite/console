@@ -88,7 +88,6 @@ const endpoint = getApiEndpoint();
 const clientConsole = new Client();
 const clientConsoleOperator = new Client();
 const scopedConsoleClient = new Client();
-
 const clientProject = new Client();
 const clientRealtime = new Client();
 
@@ -179,6 +178,25 @@ export const sdk = {
         }
 
         return createConsoleSdk(scopedConsoleClient);
+    },
+
+    /**
+     * Users service scoped to an organization on the console project.
+     *
+     * Builds a fresh Client per call (same pattern as `organization()`) so auth
+     * headers always mirror the current console session / impersonation state,
+     * then stamps `X-Appwrite-Organization` for users.read/write scopes.
+     * Returns a narrow Users instance only — not a full console SDK.
+     */
+    forConsoleUsersInOrganization(organizationId: string) {
+        const organizationClient = new Client();
+        organizationClient.setEndpoint(clientConsole.config.endpoint || getApiEndpoint());
+        organizationClient.setProject('console');
+        Object.assign(organizationClient.headers, clientConsole.getHeaders(), {
+            'X-Appwrite-Organization': organizationId
+        });
+
+        return new Users(organizationClient);
     },
 
     forProject(region: string, projectId: string) {

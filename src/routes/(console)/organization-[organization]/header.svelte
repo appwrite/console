@@ -20,7 +20,7 @@
         isBilling,
         isOwner
     } from '$lib/stores/roles';
-    import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
+    import { GRACE_PERIOD_OVERRIDE, isCloud, isSelfHosted } from '$lib/system';
     import { IconPlus, IconPlusSm } from '@appwrite.io/pink-icons-svelte';
     import { Badge, Icon, Layout, Tooltip, Typography } from '@appwrite.io/pink-svelte';
     import { BillingPlanGroup, type Models } from '@appwrite.io/console';
@@ -66,6 +66,14 @@
                 event: 'members',
                 hasChildren: true,
                 disabled: !$canSeeTeams
+            },
+            {
+                href: `${path}/platform-users`,
+                title: 'Platform users',
+                event: 'platform_users',
+                hasChildren: true,
+                // Self-hosted only: list/delete every console account on the instance.
+                disabled: !(isSelfHosted && $isOwner)
             },
             {
                 href: `${path}/usage`,
