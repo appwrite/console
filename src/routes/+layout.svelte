@@ -58,7 +58,11 @@
             }
 
             if (ref || referrer || utmSource || utmCampaign || utmMedium) {
-                sdk.forConsole.sources.create(ref, referrer, utmSource, utmCampaign, utmMedium);
+                // fire-and-forget: swallow failures so a blocked request doesn't
+                // surface as an unhandled rejection
+                sdk.forConsole.sources
+                    .create(ref, referrer, utmSource, utmCampaign, utmMedium)
+                    .catch(() => {});
             }
 
             if (referrer || ref) {
