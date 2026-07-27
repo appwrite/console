@@ -49,11 +49,11 @@
     $: legendData = [
         {
             name: 'Reads',
-            value: clampMin(data.usage.databasesReads.reduce((sum, item) => sum + item.value, 0))
+            value: clampMin((dbReads ?? []).reduce((sum, item) => sum + item.value, 0))
         },
         {
             name: 'Writes',
-            value: clampMin(data.usage.databasesWrites.reduce((sum, item) => sum + item.value, 0))
+            value: clampMin((dbWrites ?? []).reduce((sum, item) => sum + item.value, 0))
         }
     ];
 
@@ -196,11 +196,11 @@
                         series={[
                             {
                                 name: 'Reads',
-                                data: [...dbReads.map((e) => [e.date, e.value])]
+                                data: [...(dbReads ?? []).map((e) => [e.date, e.value])]
                             },
                             {
                                 name: 'Writes',
-                                data: [...dbWrites.map((e) => [e.date, e.value])]
+                                data: [...(dbWrites ?? []).map((e) => [e.date, e.value])]
                             }
                         ]} />
                 </div>
@@ -321,7 +321,7 @@
                             data: [...executions.map((e) => [e.date, e.value])]
                         }
                     ]} />
-                {#if data.usage.executionsBreakdown.length > 0}
+                {#if data.usage.executionsBreakdown?.length > 0}
                     <Table.Root columns={2} let:root>
                         <svelte:fragment slot="header" let:root>
                             <Table.Header.Cell {root}>Function</Table.Header.Cell>
@@ -579,7 +579,7 @@
                         </span>
                     </p>
                 </div>
-                {#if data.usage.authPhoneCountryBreakdown.length > 0}
+                {#if data.usage.authPhoneCountryBreakdown?.length > 0}
                     <Accordion title="Region breakdown">
                         <Table.Root columns={3} let:root>
                             <svelte:fragment slot="header" let:root>
