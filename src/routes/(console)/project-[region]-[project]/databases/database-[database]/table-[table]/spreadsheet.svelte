@@ -98,6 +98,7 @@
         expandTabs,
         type Columns,
         buildWildcardEntitiesQuery,
+        loadGridRows,
         type SortState,
         randomDataModalState,
         spreadsheetLoading,
@@ -725,19 +726,22 @@
         const filterQueries = parsedQueries.size ? data.parsedQueries.values() : [];
 
         $paginatedRowsLoading = true;
-        const loadedRows = await sdk
-            .forProject(page.params.region, page.params.project)
-            .tablesDB.listRows({
-                databaseId,
-                tableId,
-                queries: [
-                    getCorrectOrderQuery(),
-                    Query.limit(SPREADSHEET_PAGE_LIMIT),
-                    Query.offset(pageToOffset(pageNumber, SPREADSHEET_PAGE_LIMIT)),
-                    ...filterQueries /* filter queries */,
-                    ...buildWildcardEntitiesQuery(table)
-                ]
-            });
+        const loadedRows = await loadGridRows(
+            table,
+            (includeRelationships) => [
+                getCorrectOrderQuery(),
+                Query.limit(SPREADSHEET_PAGE_LIMIT),
+                Query.offset(pageToOffset(pageNumber, SPREADSHEET_PAGE_LIMIT)),
+                ...filterQueries /* filter queries */,
+                ...(includeRelationships
+                    ? buildWildcardEntitiesQuery(table)
+                    : [Query.select(['*'])])
+            ],
+            (queries) =>
+                sdk
+                    .forProject(page.params.region, page.params.project)
+                    .tablesDB.listRows({ databaseId, tableId, queries })
+        );
 
         paginatedRows.setPage(pageNumber, loadedRows.rows);
         $paginatedRowsLoading = false;
@@ -753,18 +757,21 @@
             paginatedRows.setMaxPage(targetPageNum);
             $paginatedRowsLoading = true;
 
-            const loadedRows = await sdk
-                .forProject(page.params.region, page.params.project)
-                .tablesDB.listRows({
-                    databaseId,
-                    tableId,
-                    queries: [
-                        getCorrectOrderQuery(),
-                        Query.limit(SPREADSHEET_PAGE_LIMIT),
-                        Query.offset(pageToOffset(targetPageNum, SPREADSHEET_PAGE_LIMIT)),
-                        ...buildWildcardEntitiesQuery(table)
-                    ]
-                });
+            const loadedRows = await loadGridRows(
+                table,
+                (includeRelationships) => [
+                    getCorrectOrderQuery(),
+                    Query.limit(SPREADSHEET_PAGE_LIMIT),
+                    Query.offset(pageToOffset(targetPageNum, SPREADSHEET_PAGE_LIMIT)),
+                    ...(includeRelationships
+                        ? buildWildcardEntitiesQuery(table)
+                        : [Query.select(['*'])])
+                ],
+                (queries) =>
+                    sdk
+                        .forProject(page.params.region, page.params.project)
+                        .tablesDB.listRows({ databaseId, tableId, queries })
+            );
 
             paginatedRows.setPage(targetPageNum, loadedRows.rows);
             $paginatedRowsLoading = false;
