@@ -723,7 +723,8 @@
         }
 
         const parsedQueries = data.parsedQueries;
-        const filterQueries = parsedQueries.size ? data.parsedQueries.values() : [];
+        // materialized: the fallback in `loadGridRows` builds the queries more than once.
+        const filterQueries = parsedQueries.size ? Array.from(data.parsedQueries.values()) : [];
 
         $paginatedRowsLoading = true;
         const loadedRows = await loadGridRows(
