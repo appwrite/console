@@ -2,7 +2,7 @@ import { Dependencies, SPREADSHEET_PAGE_LIMIT } from '$lib/constants';
 import { getLimit, getPage, getQuery, getView, pageToOffset, View } from '$lib/helpers/load';
 import type { PageLoad } from './$types';
 import { queries, queryParamToMap } from '$lib/components/filters';
-import { buildGridQueries, extractSortFromQueries } from '$database/store';
+import { buildGridQueries, extractSortFromQueries, loadGridRows } from '$database/store';
 import { getCollectionService } from '$database/(entity)';
 
 export const load: PageLoad = async ({ params, depends, url, route, parent }) => {
@@ -22,6 +22,21 @@ export const load: PageLoad = async ({ params, depends, url, route, parent }) =>
     const currentSort = extractSortFromQueries(parsedQueries);
     const collectionSdk = getCollectionService(params.region, params.project, database.type);
 
+    const documentsPage = await loadGridRows(
+        collection,
+        (includeRelationships) =>
+            buildGridQueries(limit, offset, parsedQueries, collection, includeRelationships),
+        async (queries) => {
+            const response = await collectionSdk.listDocuments({
+                databaseId: params.database,
+                collectionId: params.collection,
+                queries
+            });
+
+            return { total: response.total, rows: response.documents };
+        }
+    );
+
     return {
         offset,
         limit,
@@ -29,10 +44,6 @@ export const load: PageLoad = async ({ params, depends, url, route, parent }) =>
         query,
         currentSort,
         parsedQueries,
-        documents: await collectionSdk.listDocuments({
-            databaseId: params.database,
-            collectionId: params.collection,
-            queries: buildGridQueries(limit, offset, parsedQueries, collection)
-        })
+        documents: { total: documentsPage.total, documents: documentsPage.rows }
     };
 };
