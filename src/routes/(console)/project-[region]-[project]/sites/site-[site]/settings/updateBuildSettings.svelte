@@ -32,7 +32,7 @@
     let buildCommand = $state(site?.buildCommand);
     let startCommand = $state(site?.startCommand);
     let outputDirectory = $state(site?.outputDirectory);
-    let fallback = $state(site?.fallbackFile);
+    let fallback = $state(site?.fallbackFile ?? '');
     let adapter: Adapter = $state(site.adapter as Adapter);
 
     let selectedFramework = $state(
@@ -108,16 +108,6 @@
         }
 
         lastFrameworkAdapterKey = `${selectedFramework.key}:${adapter ?? ''}`;
-    });
-
-    $effect(() => {
-        if (adapter === Adapter.Static) {
-            if (!fallback) {
-                fallback ||= selectedFramework.adapters.find(
-                    (a) => a.key === Adapter.Static
-                ).fallbackFile;
-            }
-        }
     });
 
     $effect(() => {
