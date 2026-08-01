@@ -26,6 +26,7 @@
     } from '@appwrite.io/pink-svelte';
     import { toggleCommandCenter } from '$lib/commandCenter/commandCenter.svelte';
     import {
+        IconCheck,
         IconChevronRight,
         IconLogoutRight,
         IconMenuAlt4,
@@ -353,6 +354,8 @@
                                     {
                                         name: 'Light',
                                         leadingIcon: IconSun,
+                                        trailingIcon:
+                                            activeTheme === 'light' ? IconCheck : undefined,
                                         onClick: () => {
                                             updateTheme('light');
                                         }
@@ -360,6 +363,8 @@
                                     {
                                         name: 'Dark',
                                         leadingIcon: IconMoon,
+                                        trailingIcon:
+                                            activeTheme === 'dark' ? IconCheck : undefined,
                                         onClick: () => {
                                             updateTheme('dark');
                                         }
@@ -367,6 +372,8 @@
                                     {
                                         name: 'System',
                                         leadingIcon: IconMode,
+                                        trailingIcon:
+                                            activeTheme === 'auto' ? IconCheck : undefined,
                                         onClick: () => {
                                             updateTheme('auto');
                                         }
