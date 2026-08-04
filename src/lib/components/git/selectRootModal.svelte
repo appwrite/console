@@ -7,7 +7,7 @@
     import { installation, repository } from '$lib/stores/vcs';
     import { VCSDetectionType, type Models } from '@appwrite.io/console';
     import DirectoryPicker from '$lib/components/git/DirectoryPicker.svelte';
-    import InstallationError from '$lib/components/git/installationError.svelte';
+    import InstallationError from './installationError.svelte';
     import {
         getVcsInstallationErrorKind,
         type VcsInstallationErrorKind

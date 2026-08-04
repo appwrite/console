@@ -15,7 +15,7 @@
     import { page } from '$app/state';
     import { connectGitHub } from '$lib/stores/git';
     import type { VcsInstallationErrorKind } from '$lib/helpers/vcsError';
-    import InstallationError from '$lib/components/git/installationError.svelte';
+    import InstallationError from './installationError.svelte';
 
     let {
         show = $bindable(false),

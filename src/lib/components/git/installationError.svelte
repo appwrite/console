@@ -1,18 +1,11 @@
 <script lang="ts">
     /**
-     * Shared rendering for a VCS call that failed because of the installation
-     * itself, rather than because the repository, branch or directory is
-     * genuinely empty.
+     * Use anywhere a Git surface would otherwise show "No repositories found",
+     * "No branches available" or a spinner that never resolves.
      *
-     * Use this anywhere a Git surface would otherwise show "No repositories
-     * found", "No branches available" or a spinner that never resolves. It
-     * explains what happened and offers the action that actually fixes it.
-     *
-     * Reconnecting is a plain full page redirect to the provider's authorize
-     * endpoint. The callback upserts onto the existing installation row, so the
-     * stored token is replaced in place and the installation never has to be
-     * removed first. That is why the label is "Reconnect installation" and not
-     * "Remove and reconnect".
+     * Reconnecting redirects to the provider's authorize endpoint. The callback
+     * upserts onto the existing installation row, so the token is replaced in
+     * place: the label is "Reconnect installation", not "Remove and reconnect".
      */
     import { page } from '$app/state';
     import { Alert, Layout, Typography } from '@appwrite.io/pink-svelte';
