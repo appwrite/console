@@ -12,6 +12,7 @@
     import { MessagingProviderType } from '@appwrite.io/console';
     import UpdateTopics from './updateTopics.svelte';
     import UpdateTargets from './updateTargets.svelte';
+    import { canWriteMessages } from '$lib/stores/roles';
     import { onMount } from 'svelte';
 
     export let data: PageData;
@@ -37,5 +38,7 @@
         message={$message}
         selectedTargetsById={data.targetsById}
         selectedRecipients={data.messageRecipients} />
-    <Delete message={$message} />
+    {#if $canWriteMessages}
+        <Delete message={$message} />
+    {/if}
 </Container>
