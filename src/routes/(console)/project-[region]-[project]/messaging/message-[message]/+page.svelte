@@ -37,7 +37,5 @@
         message={$message}
         selectedTargetsById={data.targetsById}
         selectedRecipients={data.messageRecipients} />
-    {#if $message.status !== 'processing'}
-        <Delete message={$message} />
-    {/if}
+    <Delete message={$message} />
 </Container>
