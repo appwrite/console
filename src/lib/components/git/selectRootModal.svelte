@@ -7,6 +7,11 @@
     import { installation, repository } from '$lib/stores/vcs';
     import { VCSDetectionType, type Models } from '@appwrite.io/console';
     import DirectoryPicker from '$lib/components/git/DirectoryPicker.svelte';
+    import InstallationError from '$lib/components/git/installationError.svelte';
+    import {
+        getVcsInstallationErrorKind,
+        type VcsInstallationErrorKind
+    } from '$lib/helpers/vcsError';
     import { writable } from 'svelte/store';
 
     type Directory = {
@@ -32,6 +37,15 @@
     } = $props();
 
     let isLoading = $state(true);
+    /**
+     * Reading the tree goes through the installation token, so a dead token
+     * surfaces here as a failed contents call. Left unhandled the picker either
+     * sits on its spinner forever or renders an empty tree, both of which read
+     * as "this repository has no directories".
+     */
+    let installationErrorKind = $state<VcsInstallationErrorKind | null>(null);
+    /** Whether the root listing ever succeeded, so the tree has something real in it. */
+    let loadedRoot = $state(false);
     let directories = $state<Directory[]>([
         {
             title: 'Repository (root)',
@@ -218,12 +232,22 @@
         }
 
         for (const pathToLoad of pathsToLoad) {
-            const { fileCount, directories } = await fetchContents(pathToLoad);
-            const targetDir = getDirByPath(pathToLoad);
-            if (targetDir) {
-                targetDir.fileCount = fileCount;
+            try {
+                const { fileCount, directories } = await fetchContents(pathToLoad);
+                const targetDir = getDirByPath(pathToLoad);
+                if (targetDir) {
+                    targetDir.fileCount = fileCount;
+                }
+                ensureChildren(pathToLoad, directories);
+            } catch (error) {
+                const kind = getVcsInstallationErrorKind(error);
+                if (!kind) throw error;
+                // Every remaining segment goes through the same installation,
+                // so stop rather than firing a request per level that is
+                // already known to fail.
+                installationErrorKind = kind;
+                return;
             }
-            ensureChildren(pathToLoad, directories);
         }
     }
 
@@ -250,12 +274,17 @@
                     directories[0].thumbnailUrl = detectedIcon;
                 }
 
+                installationErrorKind = null;
+                loadedRoot = true;
                 isLoading = false;
                 expandedPaths = [...new Set([...expandedPaths, '/'])];
                 prefetchPath(rootDir || '/');
                 detectIconsForChildren('/');
             } catch (error) {
-                console.error('Failed to load root directory:', error);
+                installationErrorKind = getVcsInstallationErrorKind(error);
+                if (!installationErrorKind) {
+                    console.error('Failed to load root directory:', error);
+                }
                 isLoading = false;
             }
         })();
@@ -308,7 +337,12 @@
 
             expandedPaths = [...new Set([...expandedPaths, path])];
         } catch (error) {
-            console.error('Failed to load directory:', error);
+            const kind = getVcsInstallationErrorKind(error);
+            if (kind) {
+                installationErrorKind = kind;
+            } else {
+                console.error('Failed to load directory:', error);
+            }
         } finally {
             targetDir.loading = false;
             inFlightPaths.delete(path);
@@ -360,7 +394,9 @@
     }
 
     $effect(() => {
-        if (show && !initialized && !isLoading) {
+        // `loadedRoot` gates this: without a real tree, expanding walks paths
+        // that are not there and fires one doomed request per segment.
+        if (show && !initialized && !isLoading && loadedRoot) {
             initialized = true;
             const normalized = normalizePath(rootDir || '/');
             initialPath = normalized;
@@ -380,6 +416,18 @@
         loadPath(detail.fullPath);
     }
 
+    function retryLoad() {
+        installationErrorKind = null;
+        if (loadedRoot) {
+            // Only a deeper directory failed, so the tree is still usable.
+            loadPath(currentPath);
+            return;
+        }
+        // Re-runs the root effect, the only thing that can populate the tree.
+        initialized = false;
+        isLoading = true;
+    }
+
     function handleSubmit() {
         rootDir = currentPath;
         show = false;
@@ -390,16 +438,25 @@
     <span slot="description">
         Select the directory where your site code is located using the menu below.
     </span>
-    <DirectoryPicker
-        {directories}
-        {isLoading}
-        expanded={expandedStore}
-        bind:selected={currentPath}
-        openTo={initialPath}
-        onSelect={handleSelect} />
+    {#if installationErrorKind}
+        <InstallationError
+            kind={installationErrorKind}
+            provider={$installation?.provider}
+            organization={$installation?.organization}
+            onRetry={retryLoad} />
+    {/if}
+    {#if loadedRoot || !installationErrorKind}
+        <DirectoryPicker
+            {directories}
+            {isLoading}
+            expanded={expandedStore}
+            bind:selected={currentPath}
+            openTo={initialPath}
+            onSelect={handleSelect} />
+    {/if}
 
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (show = false)}>Cancel</Button>
-        <Button submit disabled={isLoading || !hasChanges}>Save</Button>
+        <Button submit disabled={isLoading || !hasChanges || !loadedRoot}>Save</Button>
     </svelte:fragment>
 </Modal>

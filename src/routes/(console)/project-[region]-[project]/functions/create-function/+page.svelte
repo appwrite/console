@@ -23,32 +23,40 @@
     import { Button } from '$lib/elements/forms';
     import { getIconFromRuntime } from '$lib/stores/runtimes';
     import { regionalConsoleVariables } from '../../store';
+    import type { VcsInstallationErrorKind } from '$lib/helpers/vcsError';
 
-    export let data;
+    let { data } = $props();
 
     const isVcsEnabled = $regionalConsoleVariables?._APP_VCS_ENABLED === true;
     const wizardBase = resolveRoute('/(console)/project-[region]-[project]/functions', page.params);
 
-    let selectedRepository: string;
+    let selectedRepository: string = $state(null);
+    // Set by <Repositories> when the list failed because the installation is
+    // broken. The permissions link below is the wrong advice then: the
+    // repositories are not hidden by scopes, Appwrite cannot read any of them.
+    let installationErrorKind = $state<VcsInstallationErrorKind | null>(null);
 
-    const featuredTemplates = data.templates
-        .filter((template) => template.id !== 'starter')
-        .slice(0, 4);
-
-    const starterTemplate = data.templates.find((template) => template.id === 'starter');
-
-    const latestRuntimesByKey = new Map<string, Models.Runtime>();
-    for (const runtime of data.runtimesList.runtimes) {
-        latestRuntimesByKey.set(runtime.key, runtime);
-    }
-
-    const starterTemplateRuntimeIds = new Set<string>(
-        starterTemplate?.runtimes.map((runtime) => runtime.name) ?? []
+    const featuredTemplates = $derived(
+        data.templates.filter((template) => template.id !== 'starter').slice(0, 4)
     );
 
-    const starterTemplateRuntimes = [...latestRuntimesByKey.values()].filter((runtime) =>
-        starterTemplateRuntimeIds.has(runtime.$id)
-    );
+    const starterTemplate = $derived(data.templates.find((template) => template.id === 'starter'));
+
+    const starterTemplateRuntimes = $derived.by(() => {
+        const starterRuntimeIds = new Set<string>(
+            starterTemplate?.runtimes.map((runtime) => runtime.name) ?? []
+        );
+
+        // Keyed by `key` so only the newest version of each runtime survives.
+        const latestRuntimesByKey = new Map<string, Models.Runtime>();
+        for (const runtime of data.runtimesList.runtimes) {
+            latestRuntimesByKey.set(runtime.key, runtime);
+        }
+
+        return [...latestRuntimesByKey.values()].filter((runtime) =>
+            starterRuntimeIds.has(runtime.$id)
+        );
+    });
 
     function connect(e: Models.ProviderRepository) {
         trackEvent(Click.ConnectRepositoryClick, { from: 'cover' });
@@ -103,6 +111,7 @@
 
                             <Repositories
                                 bind:selectedRepository
+                                bind:installationErrorKind
                                 action="button"
                                 callbackState={{
                                     from: 'github',
@@ -110,7 +119,7 @@
                                 }}
                                 {connect} />
                         </Layout.Stack>
-                        {#if $installation}
+                        {#if $installation && !installationErrorKind}
                             <Layout.Stack gap="l">
                                 <Divider />
                                 <Link

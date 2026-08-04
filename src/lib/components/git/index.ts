@@ -10,3 +10,4 @@ export { default as ProductionBranchFieldset } from './productionBranchFieldset.
 export { default as BranchSelector } from './branchSelector.svelte';
 export { default as RepositoryCard } from './repositoryCard.svelte';
 export { default as ConnectRepoModal } from './connectRepoModal.svelte';
+export { default as InstallationError } from './installationError.svelte';

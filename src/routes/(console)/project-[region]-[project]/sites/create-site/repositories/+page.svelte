@@ -8,12 +8,17 @@
     import { Wizard } from '$lib/layout';
     import { resolveRoute } from '$lib/stores/navigation.js';
     import { installation, repository } from '$lib/stores/vcs.js';
+    import type { VcsInstallationErrorKind } from '$lib/helpers/vcsError';
     import type { Models } from '@appwrite.io/console';
     import { Fieldset, Layout, Typography } from '@appwrite.io/pink-svelte';
 
     let { data } = $props();
 
     let selectedRepository: string = $state(null);
+    // Set by <Repositories> when the list failed because the installation is
+    // broken. The "Missing a repository?" aside then points at the wrong fix:
+    // the repositories are not missing, Appwrite cannot read any of them.
+    let installationErrorKind = $state<VcsInstallationErrorKind | null>(null);
 
     function onConnect(e: Models.ProviderRepository) {
         trackEvent(Click.ConnectRepositoryClick, {
@@ -40,55 +45,67 @@
         <Fieldset legend="Git repository">
             <Repositories
                 bind:selectedRepository
+                bind:installationErrorKind
                 product="sites"
                 action="button"
                 connect={onConnect} />
         </Fieldset>
     {:else}
-        <Repositories bind:selectedRepository product="sites" action="button" connect={onConnect} />
+        <Repositories
+            bind:selectedRepository
+            bind:installationErrorKind
+            product="sites"
+            action="button"
+            connect={onConnect} />
     {/if}
 
     <svelte:fragment slot="aside">
-        <Card radius="s" padding="s">
-            <Layout.Stack gap="l">
-                {#if !data?.installations?.total}
-                    <Layout.Stack gap="xxs">
-                        <Typography.Text variation="m-400">
-                            Don't have a repository set up yet? Explore our templates, available in
-                            all your favorite frameworks, and deploy in seconds.
-                        </Typography.Text>
-                    </Layout.Stack>
-                    <Button
-                        href={resolveRoute(
-                            '/(console)/project-[region]-[project]/sites/create-site/templates',
-                            page.params
-                        )}
-                        secondary>View templates</Button>
-                {:else}
-                    <Layout.Stack gap="s">
-                        <Typography.Text variation="m-500" color="--fgcolor-neutral-primary">
-                            Missing a repository?
-                        </Typography.Text>
-                        <Typography.Text variation="m-400">
-                            Make sure Appwrite has access to your GitHub repositories. If you chose
-                            specific repos, you may need to update your permissions to include the
-                            missing one.
-                        </Typography.Text>
-                    </Layout.Stack>
-                    <Layout.Stack gap="s" direction="row">
+        <!-- Both halves of this aside are wrong once the installation is broken:
+             the templates pitch assumes there is nothing connected yet, and the
+             permissions copy assumes Appwrite can still read the account. The
+             error rendered in the main column carries the real fix. -->
+        {#if !installationErrorKind}
+            <Card radius="s" padding="s">
+                <Layout.Stack gap="l">
+                    {#if !data?.installations?.total}
+                        <Layout.Stack gap="xxs">
+                            <Typography.Text variation="m-400">
+                                Don't have a repository set up yet? Explore our templates, available
+                                in all your favorite frameworks, and deploy in seconds.
+                            </Typography.Text>
+                        </Layout.Stack>
                         <Button
-                            href="https://appwrite.io/docs/products/sites/deploy-from-git"
-                            external
-                            secondary>Docs</Button>
-                        {#if $installation}
+                            href={resolveRoute(
+                                '/(console)/project-[region]-[project]/sites/create-site/templates',
+                                page.params
+                            )}
+                            secondary>View templates</Button>
+                    {:else}
+                        <Layout.Stack gap="s">
+                            <Typography.Text variation="m-500" color="--fgcolor-neutral-primary">
+                                Missing a repository?
+                            </Typography.Text>
+                            <Typography.Text variation="m-400">
+                                Make sure Appwrite has access to your GitHub repositories. If you
+                                chose specific repos, you may need to update your permissions to
+                                include the missing one.
+                            </Typography.Text>
+                        </Layout.Stack>
+                        <Layout.Stack gap="s" direction="row">
                             <Button
-                                href={`https://github.com/settings/installations/${$installation.providerInstallationId}`}
+                                href="https://appwrite.io/docs/products/sites/deploy-from-git"
                                 external
-                                text>Go to GitHub</Button>
-                        {/if}
-                    </Layout.Stack>
-                {/if}
-            </Layout.Stack>
-        </Card>
+                                secondary>Docs</Button>
+                            {#if $installation}
+                                <Button
+                                    href={`https://github.com/settings/installations/${$installation.providerInstallationId}`}
+                                    external
+                                    text>Go to GitHub</Button>
+                            {/if}
+                        </Layout.Stack>
+                    {/if}
+                </Layout.Stack>
+            </Card>
+        {/if}
     </svelte:fragment>
 </Wizard>

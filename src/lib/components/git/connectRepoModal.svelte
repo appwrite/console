@@ -14,6 +14,8 @@
     import RepositoryBehaviour from '$lib/components/git/repositoryBehaviour.svelte';
     import { page } from '$app/state';
     import { connectGitHub } from '$lib/stores/git';
+    import type { VcsInstallationErrorKind } from '$lib/helpers/vcsError';
+    import InstallationError from '$lib/components/git/installationError.svelte';
 
     let {
         show = $bindable(false),
@@ -38,6 +40,10 @@
     let selectedRepository = $state('');
     let installations = $state({ installations: [], total: 0 });
     let error = $state('');
+    // Set by <Repositories> when the list failed because the installation is
+    // broken. The permissions hint in the footer is wrong in that case: no
+    // amount of scope fiddling fixes a token Appwrite can no longer refresh.
+    let installationErrorKind = $state<VcsInstallationErrorKind | null>(null);
 
     onMount(async () => {
         installations = await sdk
@@ -100,6 +106,14 @@
                 <RepositoryBehaviour bind:repositoryBehaviour />
             {/if}
             {#if repositoryBehaviour === 'new'}
+                {#if installationErrorKind}
+                    <!-- Create is disabled below for the same reason, so say why
+                         here rather than leaving a dead button. -->
+                    <InstallationError
+                        kind={installationErrorKind}
+                        provider={$installation?.provider}
+                        organization={$installation?.organization} />
+                {/if}
                 <NewRepository
                     bind:repositoryName
                     bind:repositoryPrivate
@@ -108,6 +122,7 @@
             {:else}
                 <Repositories
                     bind:selectedRepository
+                    bind:installationErrorKind
                     {product}
                     action="button"
                     {callbackState}
@@ -141,7 +156,7 @@
         <ConnectGit {callbackState} />
     {/if}
     <svelte:fragment slot="footer">
-        {#if repositoryBehaviour === 'existing'}
+        {#if repositoryBehaviour === 'existing' && !installationErrorKind}
             <Layout.Stack>
                 <Link variant="quiet" href={connectGitHub(callbackState).toString()}>
                     <Layout.Stack direction="row" gap="xs">
@@ -152,7 +167,12 @@
             </Layout.Stack>
         {:else if repositoryBehaviour === 'new'}
             <Button text size="s" on:click={() => (show = false)}>Cancel</Button>
-            <Button size="s" submit disabled={!repositoryName || !$installation?.$id}>
+            <!-- Creating a repository refreshes the installation token first, so
+                 it fails the same way the listing just did. -->
+            <Button
+                size="s"
+                submit
+                disabled={!repositoryName || !$installation?.$id || !!installationErrorKind}>
                 Create
             </Button>
         {/if}
