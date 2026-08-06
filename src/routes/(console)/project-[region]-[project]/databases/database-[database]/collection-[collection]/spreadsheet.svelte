@@ -809,7 +809,7 @@
                                         {/if}
                                     {:else}
                                         {@const value = document[columnId]}
-                                        {#if value}
+                                        {#if value !== null && value !== undefined}
                                             <Typography.Text truncate>{value}</Typography.Text>
                                         {:else}
                                             <Badge variant="secondary" size="xs" content="N/A" />
