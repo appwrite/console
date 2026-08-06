@@ -277,7 +277,10 @@ export function getServiceLimit(
 
     if (serviceId === 'members') {
         if (!plan?.addons?.seats) return Infinity;
-        return plan.addons.seats?.limit ?? 1;
+        // Plans that don't cap seats omit `limit` in the plan config, and the API
+        // serializes the missing value as `0`. That means "no seat cap", not
+        // "no members allowed" — an organization always has at least one member.
+        return plan.addons.seats?.limit || Infinity;
     }
 
     if (serviceId === 'projects') {
@@ -474,7 +477,11 @@ export async function checkForUsageLimit(organization: Models.Organization) {
 
     const members = organization.total;
     const memberLimit = getServiceLimit('members');
-    const membersOverflow = memberLimit === Infinity ? 0 : Math.max(0, members - memberLimit);
+    // Only a real, positive cap can be exceeded. Without this guard an unknown or
+    // zero limit turns every organization read-only, which silently disables
+    // project creation, member invites and every other write action.
+    const membersOverflow =
+        Number.isFinite(memberLimit) && memberLimit > 0 ? Math.max(0, members - memberLimit) : 0;
 
     if (resources.some((r) => r.value >= 100) || membersOverflow > 0) {
         readOnly.set(true);
