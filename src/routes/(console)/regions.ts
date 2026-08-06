@@ -7,6 +7,7 @@ import { setRegionHosts, type ConsoleRegionWithHost } from '$lib/helpers/regionH
 import type { Models } from '@appwrite.io/console';
 
 let lastLoadedOrganization = null;
+let selfHostedRegionsPromise: Promise<Models.ConsoleRegionList | null> | null = null;
 
 async function loadSelfHostedRegions(): Promise<Models.ConsoleRegionList | null> {
     try {
@@ -32,6 +33,34 @@ async function loadSelfHostedRegions(): Promise<Models.ConsoleRegionList | null>
     } catch (error) {
         console.error('Failed to load self-hosted regions catalog', error);
         return null;
+    }
+}
+
+/**
+ * Ensure self-hosted `/console/regions` hosts are loaded before the first regional SDK call.
+ * No-op on Cloud or when multi-region is disabled. Idempotent (shared in-flight promise).
+ */
+export async function ensureSelfHostedRegions(): Promise<void> {
+    if (isCloud || !isMultiRegion) return;
+
+    const stored = get(regions);
+    if (stored.regions?.length) {
+        setRegionHosts(stored.regions as ConsoleRegionWithHost[]);
+        return;
+    }
+
+    if (!selfHostedRegionsPromise) {
+        selfHostedRegionsPromise = loadSelfHostedRegions().finally(() => {
+            // Allow retry after a failed fetch on the next navigation.
+            if (!get(regions).regions?.length) {
+                selfHostedRegionsPromise = null;
+            }
+        });
+    }
+
+    const catalog = await selfHostedRegionsPromise;
+    if (catalog) {
+        regions.set(catalog);
     }
 }
 
@@ -64,9 +93,11 @@ export async function loadAvailableRegions(orgId: string, force: boolean = false
         }
 
         if (isMultiRegion) {
-            const catalog = await loadSelfHostedRegions();
-            if (catalog) {
-                regions.set(catalog);
+            if (force) {
+                selfHostedRegionsPromise = null;
+            }
+            await ensureSelfHostedRegions();
+            if (get(regions).regions?.length) {
                 lastLoadedOrganization = orgId;
             }
         }
