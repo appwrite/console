@@ -1,6 +1,6 @@
 import { page } from '$app/state';
 import { get } from 'svelte/store';
-import { sdk } from '$lib/stores/sdk';
+import { getApiEndpoint } from '$lib/stores/sdk';
 import { projectRegion } from '$routes/(console)/project-[region]-[project]/store';
 import type { Models } from '@appwrite.io/console';
 import { error } from '@sveltejs/kit';
@@ -40,9 +40,7 @@ export function getProjectId(): string | null {
  */
 export function getProjectEndpoint(): string {
     const currentProjectRegion = get(projectRegion);
-    const { protocol, hostname, href } = new URL(sdk.forConsole.client.config.endpoint);
-
-    return currentProjectRegion ? `${protocol}//${currentProjectRegion.$id}.${hostname}/v1` : href;
+    return getApiEndpoint(currentProjectRegion?.$id);
 }
 
 export function isProjectBlocked(project: Models.Project | null | undefined): boolean {

@@ -12,6 +12,7 @@ import {
     SUBDOMAIN_SYD,
     SUBDOMAIN_TOR
 } from '$lib/constants';
+import { resolveRegionV1Endpoint } from '$lib/helpers/regionHosts';
 
 /** Ordered list of region DNS prefixes (e.g. `fra.`) for stripping from API hostnames. */
 const REGION_SUBDOMAIN_PREFIXES: readonly string[] = [
@@ -78,6 +79,12 @@ export function buildRegionalV1Endpoint(
 ): string {
     if (!isMultiRegion) {
         return `${protocol}//${hostname}/v1`;
+    }
+
+    // Self-hosted: optional hostname/endpoint from /console/regions catalog
+    const override = resolveRegionV1Endpoint(protocol, region);
+    if (override) {
+        return override;
     }
 
     const subdomain = getRegionSubdomain(region);
