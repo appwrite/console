@@ -1,5 +1,6 @@
 import { get } from 'svelte/store';
 import { base } from '$app/paths';
+import { error } from '@sveltejs/kit';
 import { sdk } from '$lib/stores/sdk';
 import { isCloud, isMultiRegion } from '$lib/system';
 import { regions } from '$lib/stores/organization';
@@ -7,14 +8,13 @@ import { setRegionHosts, type ConsoleRegionWithHost } from '$lib/helpers/regionH
 import type { Models } from '@appwrite.io/console';
 
 let lastLoadedOrganization = null;
-let selfHostedRegionsPromise: Promise<Models.ConsoleRegionList | null> | null = null;
+let selfHostedRegionsPromise: Promise<Models.ConsoleRegionList> | null = null;
 
-async function loadSelfHostedRegions(): Promise<Models.ConsoleRegionList | null> {
+async function loadSelfHostedRegions(): Promise<Models.ConsoleRegionList> {
     try {
         const res = await fetch(`${base}/regions`, { cache: 'no-store' });
         if (!res.ok) {
-            console.error(`Failed to fetch ${base}/regions: ${res.status}`);
-            return null;
+            throw error(503, `Failed to fetch ${base}/regions: ${res.status}`);
         }
 
         const data = await res.json();
@@ -24,21 +24,29 @@ async function loadSelfHostedRegions(): Promise<Models.ConsoleRegionList | null>
         } else if (data && Array.isArray(data.regions)) {
             list = data.regions;
         } else {
-            console.error('Invalid /console/regions JSON shape');
-            return null;
+            throw error(503, 'Invalid /console/regions JSON shape');
+        }
+
+        if (!list.length) {
+            throw error(503, 'Self-hosted regions catalog is empty');
         }
 
         setRegionHosts(list);
         return { total: list.length, regions: list };
-    } catch (error) {
-        console.error('Failed to load self-hosted regions catalog', error);
-        return null;
+    } catch (err) {
+        // Preserve SvelteKit HttpError from this loader; wrap other failures.
+        if (err && typeof err === 'object' && 'status' in err && 'body' in err) {
+            throw err;
+        }
+        console.error('Failed to load self-hosted regions catalog', err);
+        throw error(503, 'Failed to load self-hosted regions catalog');
     }
 }
 
 /**
  * Ensure self-hosted `/console/regions` hosts are loaded before the first regional SDK call.
  * No-op on Cloud or when multi-region is disabled. Idempotent (shared in-flight promise).
+ * Hard-fails on catalog load errors so regional traffic cannot silently fall back to apex `/v1`.
  */
 export async function ensureSelfHostedRegions(): Promise<void> {
     if (isCloud || !isMultiRegion) return;
@@ -58,10 +66,7 @@ export async function ensureSelfHostedRegions(): Promise<void> {
         });
     }
 
-    const catalog = await selfHostedRegionsPromise;
-    if (catalog) {
-        regions.set(catalog);
-    }
+    regions.set(await selfHostedRegionsPromise);
 }
 
 /**
@@ -97,11 +102,13 @@ export async function loadAvailableRegions(orgId: string, force: boolean = false
                 selfHostedRegionsPromise = null;
             }
             await ensureSelfHostedRegions();
-            if (get(regions).regions?.length) {
-                lastLoadedOrganization = orgId;
-            }
+            lastLoadedOrganization = orgId;
         }
-    } catch (error) {
-        console.error(`Failed to load regions for teamId: ${orgId}`, error);
+    } catch (err) {
+        console.error(`Failed to load regions for teamId: ${orgId}`, err);
+        // Multi-region SH must not continue with an empty host map (apex fallback).
+        if (isMultiRegion && !isCloud) {
+            throw err;
+        }
     }
 }
