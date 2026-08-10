@@ -88,7 +88,7 @@
     {:else}
         <!-- the `on:click` is from string > array mode for advanced edit button -->
         <svelte:component
-            this={column.array || (isSpatialType(column) && limited)
+            this={array || (isSpatialType(column) && limited)
                 ? columnsTypeMap['string']
                 : columnsTypeMap[column.type]}
             {id}
