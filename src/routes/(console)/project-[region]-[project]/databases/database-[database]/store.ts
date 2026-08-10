@@ -161,13 +161,24 @@ export function buildWildcardEntitiesQuery(entity: Entity | null = null): string
     ];
 }
 
+/**
+ * A filter can carry `orderAsc` or `orderDesc` inside its value, so match on the
+ * query's method rather than searching the serialized query for the substring.
+ */
+export function orderMethod(query: string): string | null {
+    const { method } = JSON.parse(query);
+
+    return method === 'orderAsc' || method === 'orderDesc' ? method : null;
+}
+
 export function extractSortFromQueries(parsedQueries: Map<TagValue, string>) {
     for (const [tagValue, queryString] of parsedQueries.entries()) {
-        if (queryString.includes('orderAsc') || queryString.includes('orderDesc')) {
-            const isAsc = queryString.includes('orderAsc');
+        const method = orderMethod(queryString);
+
+        if (method) {
             return {
                 column: tagValue.value,
-                direction: isAsc ? 'asc' : 'desc'
+                direction: method === 'orderAsc' ? 'asc' : 'desc'
             };
         }
     }
@@ -196,7 +207,7 @@ export function buildGridQueries(
     includeRelationships: boolean = true
 ) {
     const orderQuery = Array.from(parsedQueries.values()).find(
-        (q) => q.includes('orderAsc') || q.includes('orderDesc')
+        (query) => orderMethod(query) !== null
     );
 
     const queryArray = [Query.limit(limit), Query.offset(offset)];

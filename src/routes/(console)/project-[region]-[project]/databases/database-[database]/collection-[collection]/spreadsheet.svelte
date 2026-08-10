@@ -37,7 +37,12 @@
     import { formatNumberWithCommas } from '$lib/helpers/numbers';
     import { chunks } from '$lib/helpers/array';
     import { mapToQueryParams } from '$lib/components/filters/store';
-    import { expandTabs, buildWildcardEntitiesQuery, orderTieBreaker } from '$database/store';
+    import {
+        expandTabs,
+        buildWildcardEntitiesQuery,
+        orderMethod,
+        orderTieBreaker
+    } from '$database/store';
     import { setupUnsavedChangesGuard } from '$lib/helpers/unsavedChanges';
     import { mockSuggestions } from '$database/(suggestions)';
     import {
@@ -265,7 +270,7 @@
 
         if (parsedQueries.size > 0) {
             for (const [tagValue, queryString] of parsedQueries.entries()) {
-                if (queryString.includes('orderAsc') || queryString.includes('orderDesc')) {
+                if (orderMethod(queryString)) {
                     parsedQueries.delete(tagValue);
                 }
             }

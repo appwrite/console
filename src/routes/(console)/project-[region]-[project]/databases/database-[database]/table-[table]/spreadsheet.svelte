@@ -98,6 +98,7 @@
         expandTabs,
         type Columns,
         buildWildcardEntitiesQuery,
+        orderMethod,
         orderTieBreaker,
         loadGridRows,
         type SortState,
@@ -395,7 +396,7 @@
 
         if (parsedQueries.size > 0) {
             for (const [tagValue, queryString] of parsedQueries.entries()) {
-                if (queryString.includes('orderAsc') || queryString.includes('orderDesc')) {
+                if (orderMethod(queryString)) {
                     parsedQueries.delete(tagValue);
                 }
             }
