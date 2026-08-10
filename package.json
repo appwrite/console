@@ -51,7 +51,7 @@
         "flatted": "^3.4.2",
         "ignore": "^6.0.2",
         "json5": "^2.2.3",
-        "nanoid": "^5.1.11",
+        "nanoid": "^5.1.16",
         "nanotar": "^0.3.0",
         "pretty-bytes": "^6.1.1",
         "remarkable": "^2.0.1",
@@ -113,6 +113,6 @@
         "picomatch": "^4.0.4",
         "cookie": "^0.7.0",
         "ws": "^8.21.0",
-        "postcss": "^8.5.18"
+        "postcss": "^8.5.26"
     }
 }
