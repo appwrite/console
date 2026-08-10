@@ -175,6 +175,19 @@ export function extractSortFromQueries(parsedQueries: Map<TagValue, string>) {
     return { column: null, direction: 'default' };
 }
 
+/**
+ * The API appends `$sequence` to any sort without a unique attribute, but always
+ * ascending. A lone descending sort therefore becomes `column DESC, _id ASC`, a
+ * direction mix neither scan direction of the index can serve, so the engine
+ * filesorts the whole table. Pin the tie breaker to the sort's own direction.
+ */
+export function orderTieBreaker(order: string): string[] {
+    const { method, attribute } = JSON.parse(order);
+    const needsTieBreaker = attribute && attribute !== '$id' && attribute !== '$sequence';
+
+    return needsTieBreaker && method === 'orderDesc' ? [Query.orderDesc('$sequence')] : [];
+}
+
 export function buildGridQueries(
     limit: number,
     offset: number,
@@ -182,19 +195,20 @@ export function buildGridQueries(
     table: Entity,
     includeRelationships: boolean = true
 ) {
-    const hasOrderQuery = Array.from(parsedQueries.values()).some(
+    const orderQuery = Array.from(parsedQueries.values()).find(
         (q) => q.includes('orderAsc') || q.includes('orderDesc')
     );
 
     const queryArray = [Query.limit(limit), Query.offset(offset)];
 
     // don't override if there's a user created sort!
-    if (!hasOrderQuery) {
+    if (!orderQuery) {
         queryArray.push(Query.orderDesc(''));
     }
 
     queryArray.push(
         ...parsedQueries.values(),
+        ...(orderQuery ? orderTieBreaker(orderQuery) : []),
         ...(includeRelationships ? buildWildcardEntitiesQuery(table) : [Query.select(['*'])])
     );
 

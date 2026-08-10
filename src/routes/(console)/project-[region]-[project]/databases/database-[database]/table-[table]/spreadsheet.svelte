@@ -98,6 +98,7 @@
         expandTabs,
         type Columns,
         buildWildcardEntitiesQuery,
+        orderTieBreaker,
         loadGridRows,
         type SortState,
         randomDataModalState,
@@ -709,12 +710,15 @@
         }
     }
 
-    function getCorrectOrderQuery() {
-        return $sortState?.column && $sortState?.direction !== 'default'
-            ? $sortState.direction === 'asc'
-                ? Query.orderAsc($sortState.column)
-                : Query.orderDesc($sortState.column)
-            : Query.orderDesc('');
+    function getCorrectOrderQueries() {
+        const order =
+            $sortState?.column && $sortState?.direction !== 'default'
+                ? $sortState.direction === 'asc'
+                    ? Query.orderAsc($sortState.column)
+                    : Query.orderDesc($sortState.column)
+                : Query.orderDesc('');
+
+        return [order, ...orderTieBreaker(order)];
     }
 
     async function loadPage(pageNumber: number): Promise<boolean> {
@@ -730,7 +734,7 @@
         const loadedRows = await loadGridRows(
             table,
             (includeRelationships) => [
-                getCorrectOrderQuery(),
+                ...getCorrectOrderQueries(),
                 Query.limit(SPREADSHEET_PAGE_LIMIT),
                 Query.offset(pageToOffset(pageNumber, SPREADSHEET_PAGE_LIMIT)),
                 ...filterQueries /* filter queries */,
@@ -761,7 +765,7 @@
             const loadedRows = await loadGridRows(
                 table,
                 (includeRelationships) => [
-                    getCorrectOrderQuery(),
+                    ...getCorrectOrderQueries(),
                     Query.limit(SPREADSHEET_PAGE_LIMIT),
                     Query.offset(pageToOffset(targetPageNum, SPREADSHEET_PAGE_LIMIT)),
                     ...(includeRelationships

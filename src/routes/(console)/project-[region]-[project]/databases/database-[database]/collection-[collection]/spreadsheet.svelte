@@ -37,7 +37,7 @@
     import { formatNumberWithCommas } from '$lib/helpers/numbers';
     import { chunks } from '$lib/helpers/array';
     import { mapToQueryParams } from '$lib/components/filters/store';
-    import { expandTabs, buildWildcardEntitiesQuery } from '$database/store';
+    import { expandTabs, buildWildcardEntitiesQuery, orderTieBreaker } from '$database/store';
     import { setupUnsavedChangesGuard } from '$lib/helpers/unsavedChanges';
     import { mockSuggestions } from '$database/(suggestions)';
     import {
@@ -491,12 +491,15 @@
         }
     }
 
-    function getCorrectOrderQuery() {
-        return $sortState?.column && $sortState?.direction !== 'default'
-            ? $sortState.direction === 'asc'
-                ? Query.orderAsc($sortState.column)
-                : Query.orderDesc($sortState.column)
-            : Query.orderDesc('');
+    function getCorrectOrderQueries() {
+        const order =
+            $sortState?.column && $sortState?.direction !== 'default'
+                ? $sortState.direction === 'asc'
+                    ? Query.orderAsc($sortState.column)
+                    : Query.orderDesc($sortState.column)
+                : Query.orderDesc('');
+
+        return [order, ...orderTieBreaker(order)];
     }
 
     async function loadPage(pageNumber: number): Promise<boolean> {
@@ -512,7 +515,7 @@
             databaseId,
             collectionId,
             queries: [
-                getCorrectOrderQuery(),
+                ...getCorrectOrderQueries(),
                 Query.limit(SPREADSHEET_PAGE_LIMIT),
                 Query.offset(pageToOffset(pageNumber, SPREADSHEET_PAGE_LIMIT)),
                 ...filterQueries /* filter queries */,
@@ -538,7 +541,7 @@
                 databaseId,
                 collectionId,
                 queries: [
-                    getCorrectOrderQuery(),
+                    ...getCorrectOrderQueries(),
                     Query.limit(SPREADSHEET_PAGE_LIMIT),
                     Query.offset(pageToOffset(targetPageNum, SPREADSHEET_PAGE_LIMIT)),
                     ...buildWildcardEntitiesQuery(collection)
