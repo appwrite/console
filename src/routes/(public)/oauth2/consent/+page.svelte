@@ -9,6 +9,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { logout } from '$lib/helpers/logout';
     import { isWebRedirect } from '$lib/helpers/oauth2-redirect';
+    import { getOAuth2App } from '$lib/helpers/oauth2-cimd';
     import OAuth2ConsentCard, { type OAuth2Outcome } from '../consent-card.svelte';
     import OAuth2OutcomeCard from '../outcome-card.svelte';
     import { OAuth2ErrorMessage, OAuth2ErrorType } from '../errors';
@@ -85,7 +86,7 @@
     ): Promise<void> {
         const loadedGrant = await sdk.forConsole.oauth2.getGrant({ grantId });
         const [loadedApp, loadedAccount] = await Promise.all([
-            sdk.forConsole.apps.get({ appId: loadedGrant.appId }),
+            getOAuth2App(loadedGrant.appId),
             knownAccount !== undefined ? Promise.resolve(knownAccount) : getAccount()
         ]);
         if (cancelled()) return;
@@ -122,9 +123,7 @@
             if (!isWebRedirect(result.redirectUrl)) {
                 completedRedirectUrl = result.redirectUrl;
                 account = loggedInAccount;
-                app = clientId
-                    ? await sdk.forConsole.apps.get({ appId: clientId }).catch(() => null)
-                    : null;
+                app = clientId ? await getOAuth2App(clientId).catch(() => null) : null;
                 if (cancelled()) return;
                 phase = 'approved';
             }
