@@ -16,6 +16,7 @@
     } from '@appwrite.io/pink-svelte';
     import { parse } from '$lib/helpers/envfile';
     import { removeFile } from '$lib/helpers/files';
+    import { validateVariables } from '$lib/helpers/variables';
     import type { VariablesOperationItem } from './variablesOperation';
 
     export let show = false;
@@ -27,7 +28,7 @@
     ) => Promise<unknown>;
     export let sdkUpdateVariable: (
         variableId: string,
-        key: string,
+        key: string | undefined,
         value: string,
         secret?: boolean
     ) => Promise<unknown>;
@@ -64,16 +65,17 @@
 
             const entries = Object.entries(uploaded);
 
-            for (const [key, value] of entries) {
-                if (value.length > 8192) {
-                    throw new Error(`Variable ${key} is longer than 8192 allowed characters`);
-                }
-            }
-
             const filteredEntries = entries.filter(([, value]) => !!value);
 
             if (!filteredEntries.length) {
                 throw new Error('No variables found');
+            }
+
+            const validationError = validateVariables(
+                filteredEntries.map(([key, value]) => ({ key, value }))
+            );
+            if (validationError) {
+                throw new Error(validationError);
             }
 
             if (filteredEntries.length > 100) {
@@ -93,7 +95,7 @@
 
             show = false;
 
-            await Promise.all(
+            const results = await Promise.allSettled(
                 filteredEntries.map(([key, value]) => {
                     const found = variableList.variables.find((variable) => variable.key === key);
                     return found
@@ -101,6 +103,18 @@
                         : sdkCreateVariable(key, value, secret);
                 })
             );
+
+            // Each variable is written on its own, so report which keys failed
+            // instead of letting one rejection hide the ones that landed.
+            const failed = results
+                .map((result, index) =>
+                    result.status === 'rejected' ? filteredEntries[index][0] : null
+                )
+                .filter(Boolean);
+
+            if (failed.length) {
+                throw new Error(`Failed to upload variables: ${failed.join(', ')}`);
+            }
 
             onStatusChange({
                 id: importId,

@@ -22,6 +22,7 @@
     import UpdateVariableModal from './updateVariableModal.svelte';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { isSmallViewport } from '$lib/stores/viewport';
+    import { isValidVariableKey } from '$lib/helpers/variables';
 
     const DOCS_LINKS: Record<ProductLabel, string> = {
         site: 'https://appwrite.io/docs/products/sites/develop#accessing-environment-variables',
@@ -146,7 +147,28 @@
                             </svelte:fragment>
                             {#each paginatedItems as variable}
                                 <Table.Row.Base {root}>
-                                    <Table.Cell column="key" {root}>{variable.key}</Table.Cell>
+                                    <Table.Cell column="key" {root}>
+                                        <Layout.Stack
+                                            gap="xxs"
+                                            alignItems="center"
+                                            direction="row"
+                                            inline>
+                                            {#if !isValidVariableKey(variable.key)}
+                                                <Tooltip maxWidth="26rem">
+                                                    <span
+                                                        class="icon-exclamation u-color-text-danger"
+                                                        aria-hidden="true"></span>
+                                                    <svelte:fragment slot="tooltip">
+                                                        This key can't be used as an environment
+                                                        variable name. Rename it using only letters,
+                                                        digits and underscores, without starting
+                                                        with a digit.
+                                                    </svelte:fragment>
+                                                </Tooltip>
+                                            {/if}
+                                            {variable.key}
+                                        </Layout.Stack>
+                                    </Table.Cell>
                                     <Table.Cell column="value" {root}>
                                         <!-- TODO: fix max width -->
                                         <div style="max-width: 100%">

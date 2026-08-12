@@ -5,6 +5,7 @@
     import Button from '$lib/elements/forms/button.svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { parse } from '$lib/helpers/envfile';
+    import { validateVariables } from '$lib/helpers/variables';
     import { Alert, Icon, Layout, Tabs } from '@appwrite.io/pink-svelte';
     import { IconDownload, IconDuplicate } from '@appwrite.io/pink-icons-svelte';
     import { InputTextarea } from '$lib/elements/forms';
@@ -47,10 +48,11 @@
             const vars = tab === 'env' ? parse(envCode) : JSON.parse(jsonCode ? jsonCode : '{}');
             const entries = Object.entries(vars);
 
-            for (const [key, value] of entries) {
-                if (('' + value).length > 8192) {
-                    throw new Error(`Variable ${key} is longer than 8192 allowed characters`);
-                }
+            const validationError = validateVariables(
+                entries.map(([key, value]) => ({ key, value }))
+            );
+            if (validationError) {
+                throw new Error(validationError);
             }
 
             // Update or remove editable variables

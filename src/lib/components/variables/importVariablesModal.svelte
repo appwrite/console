@@ -7,6 +7,7 @@
     import { Icon, Layout, Selector, Tooltip, Typography, Upload } from '@appwrite.io/pink-svelte';
     import { parse } from '$lib/helpers/envfile';
     import { removeFile } from '$lib/helpers/files';
+    import { validateVariables } from '$lib/helpers/variables';
 
     export let show = false;
     export let variables: Partial<Models.Variable>[];
@@ -37,10 +38,11 @@
             }
             const entries = Object.entries(uploaded);
 
-            for (const [key, value] of entries) {
-                if (value.length > 8192) {
-                    throw new Error(`Variable ${key} is longer than 8192 allowed characters`);
-                }
+            const validationError = validateVariables(
+                entries.map(([key, value]) => ({ key, value }))
+            );
+            if (validationError) {
+                throw new Error(validationError);
             }
 
             entries

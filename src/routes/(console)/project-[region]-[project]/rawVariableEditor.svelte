@@ -6,6 +6,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import type { Models } from '@appwrite.io/console';
     import { parse } from '$lib/helpers/envfile';
+    import { validateVariables } from '$lib/helpers/variables';
     import { Icon, InlineCode, Layout, Tabs } from '@appwrite.io/pink-svelte';
     import { InputTextarea } from '$lib/elements/forms';
     import {
@@ -35,7 +36,7 @@
     ) => Promise<unknown>;
     export let sdkUpdateVariable: (
         variableId: string,
-        key: string,
+        key: string | undefined,
         value: string,
         secret?: boolean
     ) => Promise<unknown>;
@@ -74,10 +75,10 @@
     }
 
     function validateEntries(entries: DraftVariable[]) {
-        for (const { key, value } of entries) {
-            if (value.length > 8192) {
-                throw new Error(`Variable ${key} is longer than 8192 allowed characters`);
-            }
+        const validationError = validateVariables(entries);
+
+        if (validationError) {
+            throw new Error(validationError);
         }
     }
 
@@ -146,22 +147,26 @@
             const editableVariables = variableList.variables.filter((variable) => !variable.secret);
             const secretVariables = variableList.variables.filter((variable) => variable.secret);
 
-            await Promise.all(
+            const existingKeys = editableVariables.map((variable) => variable.key);
+            const existingResults = await Promise.allSettled(
                 editableVariables.map(async (variable) => {
                     const newValue = vars[variable.key] ?? null;
 
                     if (newValue === null) {
                         await sdkDeleteVariable(variable.$id);
                     } else if (newValue !== variable.value) {
-                        await sdkUpdateVariable(variable.$id, variable.key, newValue, false);
+                        // The key is unchanged here, so leave it out and let
+                        // the API keep the stored one.
+                        await sdkUpdateVariable(variable.$id, undefined, newValue, false);
                     }
                     delete vars[variable.key];
                 })
             );
 
             // Add new variables, skipping keys that exist in secret variables
-            await Promise.all(
-                Object.keys(vars).map(async (key) => {
+            const newKeys = Object.keys(vars);
+            const newResults = await Promise.allSettled(
+                newKeys.map(async (key) => {
                     const existingVariable = variableList.variables.find(
                         (variable) => variable.key === key
                     );
@@ -178,6 +183,22 @@
                     await sdkCreateVariable(key, vars[key], false);
                 })
             );
+
+            // Every variable is written on its own, so name the keys that
+            // failed rather than surfacing a single rejection.
+            const failed = [
+                ...existingResults.map((result, index) =>
+                    result.status === 'rejected' ? existingKeys[index] : null
+                ),
+                ...newResults.map((result, index) =>
+                    result.status === 'rejected' ? newKeys[index] : null
+                )
+            ].filter(Boolean);
+
+            if (failed.length) {
+                throw new Error(`Failed to update variables: ${failed.join(', ')}`);
+            }
+
             // Ensure secret variables are preserved
             variableList.variables = [
                 ...secretVariables,
