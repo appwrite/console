@@ -367,9 +367,8 @@
                         {#if adapter === Adapter.Ssr}
                             <Accordion title="Advanced">
                                 <Layout.Stack gap="l">
-                                    Leave empty to let your framework start the way Appwrite
-                                    expects. Set a command only if your site needs its own
-                                    entrypoint.
+                                    Command used to start your SSR server after a successful deploy.
+                                    Leave it empty to use the framework default.
                                     <InputText
                                         id="startCommand"
                                         label="Start command"
