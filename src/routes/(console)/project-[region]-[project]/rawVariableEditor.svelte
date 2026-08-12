@@ -152,6 +152,11 @@
                 editableVariables.map(async (variable) => {
                     const newValue = vars[variable.key] ?? null;
 
+                    // Claim the key up front. A rejected write must not leave it
+                    // behind for the second pass, which would retry it as a new
+                    // variable and send the stored key along with it.
+                    delete vars[variable.key];
+
                     if (newValue === null) {
                         await sdkDeleteVariable(variable.$id);
                     } else if (newValue !== variable.value) {
@@ -159,7 +164,6 @@
                         // the API keep the stored one.
                         await sdkUpdateVariable(variable.$id, undefined, newValue, false);
                     }
-                    delete vars[variable.key];
                 })
             );
 
