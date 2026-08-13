@@ -92,6 +92,7 @@
             outputDirectory = data.outputDirectory;
             adapter = data.key as Adapter;
             fallback = data.fallbackFile;
+            startCommand = '';
         } else if (hasFrameworkSelectionChanged) {
             const data =
                 selectedFramework.adapters.find((a) => a.key === adapter) ??
@@ -110,6 +111,7 @@
             fallback = isOriginalAdapter
                 ? (site?.fallbackFile ?? data.fallbackFile)
                 : data.fallbackFile;
+            startCommand = isOriginalAdapter ? (site?.startCommand ?? '') : '';
         }
 
         lastFrameworkAdapterKey = `${selectedFramework.key}:${adapter ?? ''}`;
@@ -167,7 +169,7 @@
                 timeout: site.timeout || undefined,
                 installCommand: installCommand || undefined,
                 buildCommand: buildCommand || undefined,
-                startCommand: startCommand || undefined,
+                startCommand: adptr?.key === 'ssr' ? startCommand || undefined : undefined,
                 outputDirectory: outputDirectory || undefined,
                 buildRuntime: (site?.buildRuntime as BuildRuntime) || undefined,
                 adapter: (adptr?.key as Adapter) || undefined,
