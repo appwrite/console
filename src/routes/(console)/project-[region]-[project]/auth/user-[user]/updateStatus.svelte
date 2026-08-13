@@ -15,6 +15,20 @@
 
     let showVerificationDropdown = false;
 
+    function getVerificationMessage(
+        type: 'email' | 'phone',
+        name: string | undefined,
+        verified: boolean
+    ): string {
+        const status = verified ? 'has been verified' : 'is no longer verified';
+
+        if (name?.trim()) {
+            return `The ${type} for ${name.trim()} ${status}`;
+        }
+
+        return `The ${type} ${status}`;
+    }
+
     async function updateVerificationEmail() {
         showVerificationDropdown = false;
         try {
@@ -26,9 +40,7 @@
                 });
             await invalidate(Dependencies.USER);
             addNotification({
-                message: `${$user.name || $user.email || $user.phone || 'The account'} has been ${
-                    !$user.emailVerification ? 'unverified' : 'verified'
-                }`,
+                message: getVerificationMessage('email', $user.name, $user.emailVerification),
                 type: 'success'
             });
             trackEvent(Submit.UserUpdateVerificationEmail);
@@ -51,9 +63,7 @@
                 });
             await invalidate(Dependencies.USER);
             addNotification({
-                message: `${$user.name || $user.email || $user.phone || 'The account'} has been ${
-                    $user.phoneVerification ? 'unverified' : 'verified'
-                }`,
+                message: getVerificationMessage('phone', $user.name, $user.phoneVerification),
                 type: 'success'
             });
             trackEvent(Submit.UserUpdateVerificationPhone);
