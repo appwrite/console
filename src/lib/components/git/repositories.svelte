@@ -16,6 +16,11 @@
     } from '@appwrite.io/pink-svelte';
     import { IconLockClosed, IconPlus } from '@appwrite.io/pink-icons-svelte';
     import ConnectGit from './connectGit.svelte';
+    import InstallationError from './installationError.svelte';
+    import {
+        getVcsInstallationErrorKind,
+        type VcsInstallationErrorKind
+    } from '$lib/helpers/vcsError';
     import SvgIcon from '../svgIcon.svelte';
     import { Query, VCSDetectionType, type Models } from '@appwrite.io/console';
     import { getFrameworkIcon } from '$lib/stores/sites';
@@ -34,6 +39,7 @@
         hasInstallations = $bindable($installations?.total > 0),
         product = 'functions',
         callbackState = null,
+        installationErrorKind = $bindable(null),
         connect = () => {}
     }: {
         action?: 'button' | 'select';
@@ -42,6 +48,14 @@
         hasInstallations?: boolean;
         product?: 'functions' | 'sites';
         callbackState?: Record<string, string> | null;
+        /**
+         * Read only output: set when the repository list failed because of the
+         * installation itself rather than because it is empty. Bind to it to
+         * hide surrounding copy that would be wrong while it is set, such as a
+         * "missing a repository? check your permissions" hint, which sends the
+         * user to fix scopes when the real problem is a dead token.
+         */
+        installationErrorKind?: VcsInstallationErrorKind | null;
         connect?: (repository: Models.ProviderRepository) => void;
     } = $props();
 
@@ -53,6 +67,12 @@
     let connectingRepositoryId = $state<string | null>(null);
     let loadRepositoriesRequestId = 0;
     const limit = 5;
+
+    // The installation the list is currently showing, so a failure can name the
+    // provider and owner the user has to go and reconnect.
+    const activeInstallation = $derived(
+        installationsMap?.find((entry) => entry.$id === selectedInstallation)
+    );
 
     onMount(() => {
         isLoadingRepositories = true;
@@ -104,7 +124,10 @@
                 );
             }
             installationsMap = installationList.installations;
-        } else {
+            return;
+        }
+
+        try {
             const { installations } = await sdk
                 .forProject(page.params.region, page.params.project)
                 .vcs.listInstallations();
@@ -115,37 +138,76 @@
                 installation.set(installations.find((entry) => entry.$id === selectedInstallation));
             }
             installationsMap = installations;
+        } catch (error) {
+            // Without this the disabled "Loading..." placeholder below never
+            // resolves, which reads as a hung UI rather than a failed request.
+            installationsMap = [];
+            isLoadingRepositories = false;
+            addNotification({
+                type: 'error',
+                message: error?.message ?? 'Failed to load Git installations'
+            });
         }
     }
 
     async function loadRepositories(installationId: string, search: string) {
         const requestId = ++loadRepositoriesRequestId;
+        installationErrorKind = null;
 
-        const result = await sdk
-            .forProject(page.params.region, page.params.project)
-            .vcs.listRepositories({
-                installationId,
-                type:
-                    product === 'functions' ? VCSDetectionType.Runtime : VCSDetectionType.Framework,
-                search: search || undefined,
-                queries: [Query.limit(limit), Query.offset(offset)]
+        try {
+            const result = await sdk
+                .forProject(page.params.region, page.params.project)
+                .vcs.listRepositories({
+                    installationId,
+                    type:
+                        product === 'functions'
+                            ? VCSDetectionType.Runtime
+                            : VCSDetectionType.Framework,
+                    search: search || undefined,
+                    queries: [Query.limit(limit), Query.offset(offset)]
+                });
+
+            // Stale request
+            if (requestId !== loadRepositoriesRequestId) {
+                return;
+            }
+
+            $repositories.repositories =
+                product === 'functions'
+                    ? (result as unknown as Models.ProviderRepositoryRuntimeList)
+                          .runtimeProviderRepositories
+                    : (result as unknown as Models.ProviderRepositoryFrameworkList)
+                          .frameworkProviderRepositories; //TODO: remove forced cast after backend fixes
+            $repositories.total = result.total;
+            $repositories.search = search;
+            $repositories.installationId = installationId;
+            return $repositories.repositories;
+        } catch (error) {
+            // Stale request
+            if (requestId !== loadRepositoriesRequestId) {
+                return;
+            }
+
+            const kind = getVcsInstallationErrorKind(error);
+            if (kind) {
+                // Drop the previous page only when something replaces it.
+                // Rendered in the list position, so the empty state never gets
+                // a chance to claim the installation simply has no repositories.
+                $repositories.repositories = [];
+                $repositories.total = 0;
+                $repositories.search = search;
+                $repositories.installationId = installationId;
+                installationErrorKind = kind;
+                return;
+            }
+
+            // Any other failure only gets a toast, so keep the previous page
+            // rather than swapping it for a bare "no repositories found".
+            addNotification({
+                type: 'error',
+                message: error?.message ?? 'Failed to load repositories'
             });
-
-        // Stale request
-        if (requestId !== loadRepositoriesRequestId) {
-            return;
         }
-
-        $repositories.repositories =
-            product === 'functions'
-                ? (result as unknown as Models.ProviderRepositoryRuntimeList)
-                      .runtimeProviderRepositories
-                : (result as unknown as Models.ProviderRepositoryFrameworkList)
-                      .frameworkProviderRepositories; //TODO: remove forced cast after backend fixes
-        $repositories.total = result.total;
-        $repositories.search = search;
-        $repositories.installationId = installationId;
-        return $repositories.repositories;
     }
 
     selectedRepository;
@@ -190,6 +252,10 @@
                                 window.location.href = connectGitHub(callbackState).toString();
                             }
                             search = '';
+                            // A different installation has its own health, so
+                            // clear immediately instead of leaving the previous
+                            // one's error up for the debounce window.
+                            installationErrorKind = null;
                             installation.set(
                                 installationsMap.find((entry) => entry.$id === selectedInstallation)
                             );
@@ -205,6 +271,12 @@
             <!-- manual installation change -->
             {#if isLoadingRepositories}
                 <SkeletonRepoList count={limit} />
+            {:else if installationErrorKind}
+                <InstallationError
+                    kind={installationErrorKind}
+                    provider={activeInstallation?.provider}
+                    organization={activeInstallation?.organization}
+                    onRetry={loadRepositoryPage} />
             {:else if $repositories.total > 0}
                 <Table.Root columns={1} let:root>
                     {#each $repositories.repositories as repo}

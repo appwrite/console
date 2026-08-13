@@ -9,28 +9,79 @@
     import { Query } from '@appwrite.io/console';
     import { sdk } from '$lib/stores/sdk';
     import { page } from '$app/state';
-    import { createEventDispatcher, hasContext, tick } from 'svelte';
+    import { createEventDispatcher, hasContext, tick, untrack } from 'svelte';
+    import { getVcsInstallationErrorKind } from '$lib/helpers/vcsError';
+    import { installation, installations } from '$lib/stores/vcs';
+    import InstallationError from './installationError.svelte';
 
-    export let value = '';
-    export let installationId: string;
-    export let repositoryId: string;
-    export let label = 'Production branch';
-    export let placeholder = 'Select branch';
+    type Props = {
+        value?: string;
+        installationId: string;
+        repositoryId: string;
+        label?: string;
+        placeholder?: string;
+        /**
+         * Set to `false` when the surrounding surface already renders its own
+         * installation alert for the same installation, so the user is not shown
+         * the same "Reconnect" warning twice. The in-list error state stays
+         * either way: the branch list must never read as "no branches".
+         */
+        showInstallationError?: boolean;
+    };
 
-    const dispatch = createEventDispatcher();
+    let {
+        value = $bindable(''),
+        installationId,
+        repositoryId,
+        label = 'Production branch',
+        placeholder = 'Select branch',
+        showInstallationError = true
+    }: Props = $props();
+
+    // Deprecated in Svelte 5 but kept deliberately: every call site listens with
+    // `on:select`, and none of them are in scope here.
+    const dispatch = createEventDispatcher<{ select: string }>();
     const inDialogGroup = hasContext('dialog-group');
 
-    let open = false;
-    let searchQuery = '';
-    let branches: string[] = [];
-    let searchResults: string[] = [];
-    let loading = false;
-    let loaded = false;
-    let searching = false;
+    let open = $state(false);
+    let searchQuery = $state('');
+    let branches = $state<string[]>([]);
+    let searchResults = $state<string[]>([]);
+    let loading = $state(false);
+    let searching = $state(false);
+    /**
+     * The last failure from the branch endpoints. Without it a dead installation
+     * token renders as a successful empty list ("No branches available"), which
+     * is the opposite of what happened.
+     */
+    let error = $state<unknown>(null);
+    /** Repository the cached `branches` belong to, or `null` when nothing loaded. */
+    let loadedFor = $state<string | null>(null);
     let searchTimer: ReturnType<typeof setTimeout>;
-    let searchInput: HTMLInputElement;
-    let containerEl: HTMLDivElement;
-    let dropdownRect = { top: 0, left: 0, width: 0 };
+    let searchInput = $state<HTMLInputElement>();
+    let containerEl = $state<HTMLDivElement>();
+    let dropdownRect = $state({ top: 0, left: 0, width: 0 });
+
+    const repositoryKey = $derived(`${installationId}:${repositoryId}`);
+    const errorKind = $derived(getVcsInstallationErrorKind(error));
+    const displayBranches = $derived(searchQuery ? searchResults : branches);
+
+    /**
+     * Provider and owner for the reconnect alert. Every route that renders a
+     * branch selector loads `page.data.installations`; the writable store covers
+     * the surfaces that pick an installation client side.
+     */
+    const installationDetails = $derived(
+        $installations?.installations?.find((entry) => entry.$id === installationId) ??
+            ($installation?.$id === installationId ? $installation : undefined)
+    );
+
+    /**
+     * When the list could not be loaded the typed query is the only way left to
+     * name a branch, so it is offered as a selectable value. Only in the error
+     * state: with a working list, committing an unverified name would be wrong.
+     */
+    const typedBranch = $derived(error ? searchQuery.trim() : '');
 
     function portal(node: HTMLElement) {
         const target = inDialogGroup ? document.querySelector('dialog[open]') : document.body;
@@ -48,16 +99,26 @@
         dropdownRect = { top: rect.bottom + 4, left: rect.left, width: rect.width };
     }
 
-    $: (installationId,
-        repositoryId,
-        (() => {
+    $effect(() => {
+        // Cached branches and any recorded failure belong to the repository they
+        // were loaded for, so a change to either id throws them away. Only the
+        // key is tracked: reading `loadedFor` reactively would re-run this on
+        // every load and wipe the failure it had just recorded.
+        const key = repositoryKey;
+        untrack(() => {
+            if (loadedFor === key) return;
             branches = [];
-            loaded = false;
-        })());
+            searchResults = [];
+            error = null;
+            loadedFor = null;
+        });
+    });
 
-    async function loadBranches() {
-        if (loading || loaded || !installationId || !repositoryId) return;
+    async function loadBranches(force = false) {
+        const key = repositoryKey;
+        if (loading || (!force && loadedFor === key) || !installationId || !repositoryId) return;
         loading = true;
+        error = null;
         try {
             const { branches: result } = await sdk
                 .forProject(page.params.region, page.params.project)
@@ -67,7 +128,11 @@
                     queries: [Query.limit(100)]
                 });
             branches = result.map((b) => b.name);
-            loaded = true;
+            loadedFor = key;
+        } catch (e) {
+            error = e;
+            branches = [];
+            loadedFor = null;
         } finally {
             loading = false;
         }
@@ -77,6 +142,14 @@
         if (!query) {
             searchResults = [];
             searching = false;
+            // A failed search must not outlive the query that caused it. When
+            // the base list never loaded there is nothing underneath to fall
+            // back to, so fetch it rather than showing a bare empty list.
+            if (loadedFor === repositoryKey) {
+                error = null;
+            } else {
+                loadBranches();
+            }
             return;
         }
         searching = true;
@@ -90,6 +163,12 @@
                     queries: [Query.limit(100)]
                 });
             searchResults = results.map((b) => b.name);
+            // Cleared on success only, so a failed load keeps explaining itself
+            // (and keeps the typed value selectable) while the search is running.
+            error = null;
+        } catch (e) {
+            error = e;
+            searchResults = [];
         } finally {
             searching = false;
         }
@@ -100,11 +179,40 @@
         searchTimer = setTimeout(() => searchBranches(searchQuery), 300);
     }
 
+    function onSearchKeydown(event: KeyboardEvent) {
+        if (event.key !== 'Enter' || !typedBranch) return;
+        event.preventDefault();
+        select(typedBranch);
+    }
+
+    function clearSearch() {
+        clearTimeout(searchTimer);
+        searchQuery = '';
+        searchResults = [];
+        searching = false;
+        // Same reasoning as searchBranches, but only while the dropdown is
+        // open: the close paths call this too, and reloading then is wasted.
+        if (loadedFor === repositoryKey) {
+            error = null;
+        } else if (open) {
+            loadBranches();
+        }
+    }
+
+    function retry() {
+        error = null;
+        if (searchQuery) {
+            clearTimeout(searchTimer);
+            searchBranches(searchQuery);
+            return;
+        }
+        loadBranches(true);
+    }
+
     function select(branch: string) {
         value = branch;
         open = false;
-        searchQuery = '';
-        searchResults = [];
+        clearSearch();
         dispatch('select', branch);
     }
 
@@ -116,43 +224,46 @@
             await tick();
             searchInput?.focus();
         } else {
-            searchQuery = '';
-            searchResults = [];
+            clearSearch();
         }
     }
 
     function handleKeydown(e: KeyboardEvent) {
         if (e.key === 'Escape') {
             open = false;
-            searchQuery = '';
-            searchResults = [];
+            clearSearch();
         }
     }
 
     function handleOutsideClick(e: MouseEvent) {
-        if (open && !containerEl.contains(e.target as Node)) {
+        if (open && !containerEl?.contains(e.target as Node)) {
             const dropdown = document.querySelector('.branch-selector-portal');
             if (dropdown && dropdown.contains(e.target as Node)) return;
             open = false;
-            searchQuery = '';
-            searchResults = [];
+            clearSearch();
         }
     }
-
-    $: displayBranches = searchQuery ? searchResults : branches;
 </script>
 
-<svelte:window on:click={handleOutsideClick} on:keydown={handleKeydown} />
+<svelte:window onclick={handleOutsideClick} onkeydown={handleKeydown} />
 
 <div class="branch-selector" bind:this={containerEl}>
     {#if label}
-        <!-- svelte-ignore a11y-label-has-associated-control -->
+        <!-- svelte-ignore a11y_label_has_associated_control -->
         <label class="label">{label}</label>
     {/if}
-    <button type="button" class="trigger" class:open on:click={toggle}>
+    <button type="button" class="trigger" class:open onclick={toggle}>
         <span class="trigger-value" class:muted={!value}>{value || placeholder}</span>
         <Icon icon={open ? IconChevronUp : IconChevronDown} size="m" />
     </button>
+
+    {#if errorKind && showInstallationError}
+        <InstallationError
+            kind={errorKind}
+            provider={installationDetails?.provider}
+            organization={installationDetails?.organization}
+            onRetry={retry} />
+    {/if}
 
     {#if open}
         <div
@@ -164,18 +275,13 @@
                 <input
                     bind:this={searchInput}
                     bind:value={searchQuery}
-                    on:input={onSearchInput}
+                    oninput={onSearchInput}
+                    onkeydown={onSearchKeydown}
                     type="text"
                     placeholder="Find a branch..."
                     autocomplete="off" />
                 {#if searchQuery}
-                    <button
-                        type="button"
-                        class="clear-btn"
-                        on:click={() => {
-                            searchQuery = '';
-                            searchResults = [];
-                        }}>
+                    <button type="button" class="clear-btn" onclick={clearSearch}>
                         <Icon icon={IconX} size="s" />
                     </button>
                 {/if}
@@ -185,18 +291,32 @@
                     <li class="state-item">Loading...</li>
                 {:else if searching}
                     <li class="state-item">Searching...</li>
+                {:else if error}
+                    <!-- Never claim the repository has no branches when the call failed. -->
+                    <li class="state-item">Branches could not be loaded</li>
+                    {#if typedBranch}
+                        <!-- svelte-ignore a11y_click_events_have_key_events -->
+                        <li
+                            role="option"
+                            aria-selected={typedBranch === value}
+                            onclick={() => select(typedBranch)}>
+                            Use "{typedBranch}"
+                        </li>
+                    {:else}
+                        <li class="hint-item">Type a branch name to use it anyway</li>
+                    {/if}
                 {:else if displayBranches.length === 0 && searchQuery}
                     <li class="state-item">No branches found</li>
                 {:else if displayBranches.length === 0}
                     <li class="state-item">No branches available</li>
                 {:else}
                     {#each displayBranches as branch}
-                        <!-- svelte-ignore a11y-click-events-have-key-events -->
+                        <!-- svelte-ignore a11y_click_events_have_key_events -->
                         <li
                             role="option"
                             aria-selected={branch === value}
                             class:active={branch === value}
-                            on:click={() => select(branch)}>
+                            onclick={() => select(branch)}>
                             {branch}
                         </li>
                     {/each}

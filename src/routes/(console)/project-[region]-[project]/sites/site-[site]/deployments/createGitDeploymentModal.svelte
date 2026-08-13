@@ -2,11 +2,15 @@
     import { invalidate } from '$app/navigation';
     import { page } from '$app/state';
     import { Modal, Card } from '$lib/components';
-    import { Repositories, BranchSelector } from '$lib/components/git';
+    import { Repositories, BranchSelector, InstallationError } from '$lib/components/git';
     import { Dependencies } from '$lib/constants';
     import { Link } from '$lib/elements';
     import { Button, InputCheckbox } from '$lib/elements/forms';
     import { timeFromNow } from '$lib/helpers/date';
+    import {
+        getVcsInstallationErrorKind,
+        type VcsInstallationErrorKind
+    } from '$lib/helpers/vcsError';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { installation, repository } from '$lib/stores/vcs';
@@ -19,24 +23,46 @@
     } from '@appwrite.io/console';
     import { IconGithub } from '@appwrite.io/pink-icons-svelte';
     import { Icon, Layout, Skeleton, Typography } from '@appwrite.io/pink-svelte';
+    import { untrack } from 'svelte';
 
-    export let show = false;
-    export let site: Models.Site;
+    let {
+        show = $bindable(false),
+        site,
+        installations
+    }: {
+        show?: boolean;
+        site: Models.Site;
+        installations: Models.InstallationList;
+    } = $props();
 
-    export let installations: Models.InstallationList;
-    let hasRepository = !!site?.providerRepositoryId;
-    let selectedRepository: string = site.providerRepositoryId;
-    let branch: string = null;
-    let commit: string = null;
-    let activate = true;
-    let error = '';
+    // Seeded from the site once, then owned locally: connecting a repository in
+    // the modal flips `hasRepository` before the site itself has been updated.
+    let hasRepository = $state(untrack(() => !!site?.providerRepositoryId));
+    let selectedRepository: string = $state(untrack(() => site.providerRepositoryId));
+    let branch: string = $state(null);
+    let commit: string = $state(null);
+    let activate = $state(true);
+    let error = $state('');
+    let isLoadingRepository = $state(true);
+    /**
+     * Looking the repository up refreshes the installation token first, so a
+     * dead token fails here rather than on anything to do with the repository.
+     * Without this the modal renders a repository card with nothing in it and a
+     * branch picker that can never fill, while "Create" stays live for a
+     * deployment that cannot be created.
+     */
+    let installationErrorKind = $state<VcsInstallationErrorKind | null>(null);
 
-    async function loadInstallations() {
+    // Deliberately not `$state`: a guard so opening the modal loads once, not
+    // something the template reads.
+    let loadStarted = false;
+
+    function loadInstallations() {
         if (!site?.installationId && installations?.total > 0) {
             installation.set(installations.installations[0]);
         }
         $installation = installations.installations.find(
-            (installation) => installation.$id === site.installationId
+            (entry) => entry.$id === site.installationId
         );
         if (!$installation?.$id) {
             $installation = installations.installations[0];
@@ -44,8 +70,10 @@
     }
 
     async function load() {
+        isLoadingRepository = true;
+        installationErrorKind = null;
         try {
-            await loadInstallations();
+            loadInstallations();
             if (!$repository?.id && hasRepository) {
                 $repository = await sdk
                     .forProject(page.params.region, page.params.project)
@@ -57,8 +85,13 @@
             selectedRepository = $repository?.id;
 
             branch = site.providerBranch || 'main';
-        } catch {
-            return;
+        } catch (e) {
+            installationErrorKind = getVcsInstallationErrorKind(e);
+            if (!installationErrorKind) {
+                error = e.message;
+            }
+        } finally {
+            isLoadingRepository = false;
         }
     }
 
@@ -119,13 +152,22 @@
         }
     }
 
-    $: if (!show) {
+    $effect(() => {
+        if (!show || !hasRepository || loadStarted) return;
+        loadStarted = true;
+        load();
+    });
+
+    $effect(() => {
+        if (show) return;
         error = '';
         branch = null;
         commit = null;
         activate = true;
         hasRepository = !!site?.providerRepositoryId;
-    }
+        installationErrorKind = null;
+        loadStarted = false;
+    });
 </script>
 
 <Modal title="Create Git deployment" bind:show onSubmit={createDeployment} bind:error>
@@ -135,7 +177,7 @@
             external>Learn more</Link>
     </span>
     {#if hasRepository}
-        {#await load()}
+        {#if isLoadingRepository}
             <Card padding="xs" radius="s" variant="secondary">
                 <Layout.Stack
                     direction="row"
@@ -152,7 +194,13 @@
                 <Skeleton variant="line" width={100} height={19.6} />
                 <Skeleton variant="line" width={350} height={31} />
             </Layout.Stack>
-        {:then}
+        {:else if installationErrorKind}
+            <InstallationError
+                kind={installationErrorKind}
+                provider={$installation?.provider}
+                organization={$installation?.organization}
+                onRetry={load} />
+        {:else}
             <Card padding="xs" radius="s" variant="secondary">
                 <Layout.Stack
                     direction="row"
@@ -194,10 +242,11 @@
                 unchecked, it will remain inactive, and you can activate it manually later."
                     bind:checked={activate} />
             {/if}
-        {/await}
+        {/if}
     {:else}
         <Repositories
             bind:selectedRepository
+            bind:installationErrorKind
             installationList={installations}
             product="sites"
             action="button"
@@ -211,7 +260,15 @@
     {/if}
     <svelte:fragment slot="footer">
         <Button text size="s" on:click={() => (show = false)}>Cancel</Button>
-        <Button submit size="s" disabled={!$installation?.$id || !selectedRepository || !branch}>
+        <!-- A broken installation fails every call this needs, so offer the
+             reconnect above instead of a submit that cannot succeed. -->
+        <Button
+            submit
+            size="s"
+            disabled={!!installationErrorKind ||
+                !$installation?.$id ||
+                !selectedRepository ||
+                !branch}>
             Create
         </Button>
     </svelte:fragment>

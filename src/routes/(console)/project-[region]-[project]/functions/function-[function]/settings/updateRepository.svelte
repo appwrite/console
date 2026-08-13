@@ -7,17 +7,19 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Query, Runtime, type Models, type ProjectKeyScopes } from '@appwrite.io/console';
-    import { onMount } from 'svelte';
+    import { onMount, untrack } from 'svelte';
     import DisconnectRepo from './disconnectRepo.svelte';
     import { installation, repository as repositoryStore, sortBranches } from '$lib/stores/vcs';
     import {
+        Alert,
         Empty,
         Fieldset,
         Icon,
         Layout,
         Skeleton,
         Card as PinkCard,
-        Selector
+        Selector,
+        Typography
     } from '@appwrite.io/pink-svelte';
     import Card from '$lib/components/card.svelte';
     import { IconGithub } from '@appwrite.io/pink-icons-svelte';
@@ -25,53 +27,127 @@
         ConnectGit,
         ConnectRepoModal,
         RepositoryCard,
-        BranchSelector
+        BranchSelector,
+        InstallationError
     } from '$lib/components/git';
+    import {
+        getVcsInstallationErrorKind,
+        type VcsInstallationErrorKind
+    } from '$lib/helpers/vcsError';
     import { isValueOfStringEnum } from '$lib/helpers/types';
     import { page } from '$app/state';
     import SelectRootModal from '$lib/components/git/selectRootModal.svelte';
 
-    export let func: Models.Function;
-    export let installations: Models.InstallationList;
+    type Props = {
+        func: Models.Function;
+        installations: Models.InstallationList;
+    };
 
-    let selectedBranch = func?.providerBranch;
-    let silentMode = func?.providerSilentMode ?? false;
-    let selectedDir = func?.providerRootDirectory;
-    let showDisconnect = false;
-    let showConnectRepo = false;
-    let showSelectRoot = false;
-    let repository: Models.ProviderRepository | null | false = false;
+    let { func, installations }: Props = $props();
+
+    /**
+     * Four states, deliberately not three.
+     *
+     * `disconnected` means the function has no repository. `error` means it has
+     * one we could not read. This used to be a single `null` repository, so a
+     * repository that could not be fetched rendered as "No repository is
+     * connected to this function yet" and invited the user to connect a
+     * repository that is already connected. The failure is almost always the
+     * Git installation's OAuth token, which is what the user actually has to
+     * fix.
+     */
+    type RepositoryStatus = 'loading' | 'connected' | 'disconnected' | 'error';
+
+    let status = $state<RepositoryStatus>('loading');
+    let repository = $state<Models.ProviderRepository | null>(null);
+    /** Populated only while `status === 'error'`; never conflated with "no repository". */
+    let repositoryError = $state<{
+        kind: VcsInstallationErrorKind | null;
+        message: string;
+    } | null>(null);
+
+    // Seeded from the function once: these are the user's in-progress edits, so
+    // they must not silently track the prop while the form is being filled in.
+    let selectedBranch = $state(untrack(() => func?.providerBranch));
+    let silentMode = $state(untrack(() => func?.providerSilentMode ?? false));
+    let selectedDir = $state(untrack(() => func?.providerRootDirectory));
+    let showDisconnect = $state(false);
+    let showConnectRepo = $state(false);
+    let showSelectRoot = $state(false);
+
+    /**
+     * The installation the failed lookup actually used, so the alert can name
+     * the account that needs reconnecting rather than whichever installation
+     * happens to be selected.
+     */
+    const errorInstallation = $derived(
+        installations?.installations?.find((item) => item.$id === func?.installationId) ??
+            $installation
+    );
+
+    /**
+     * The function document stores the provider's repository id but never its
+     * name, so this is as much identity as we can show without a successful
+     * lookup. Showing it keeps the card honest about still being connected.
+     */
+    const connectedRepositoryLabel = $derived(
+        func?.providerRepositoryId
+            ? `Repository ID: ${func.providerRepositoryId}`
+            : 'Connected repository'
+    );
+
+    const connectedRepositoryDetails = $derived(
+        [
+            func?.providerBranch ? `Branch: ${func.providerBranch}` : null,
+            func?.providerRootDirectory ? `Root directory: ${func.providerRootDirectory}` : null
+        ]
+            .filter(Boolean)
+            .join(' • ')
+    );
 
     onMount(() => {
         selectedBranch = func?.providerBranch;
         silentMode = func?.providerSilentMode ?? false;
         selectedDir = func?.providerRootDirectory;
-        const inst = installations?.installations.find(
-            (installation) => installation.$id === func?.installationId
-        );
+        const inst = installations?.installations.find((item) => item.$id === func?.installationId);
         installation.set(inst ?? installations?.installations[0]);
         loadRepository();
     });
 
     async function loadRepository() {
+        if (!func?.installationId || !func?.providerRepositoryId) {
+            repository = null;
+            repositoryError = null;
+            status = 'disconnected';
+            return;
+        }
+
+        status = 'loading';
+        repositoryError = null;
+
         try {
-            if (func.installationId && func.providerRepositoryId) {
-                repository = await sdk
-                    .forProject(page.params.region, page.params.project)
-                    .vcs.getRepository({
-                        installationId: func.installationId,
-                        providerRepositoryId: func.providerRepositoryId
-                    });
-                repositoryStore.set(repository);
-            }
-        } catch (err) {
-            console.warn(err);
-        } finally {
-            if (repository === false) {
-                repository = null;
-            }
+            const loaded = await sdk
+                .forProject(page.params.region, page.params.project)
+                .vcs.getRepository({
+                    installationId: func.installationId,
+                    providerRepositoryId: func.providerRepositoryId
+                });
+            repository = loaded;
+            repositoryStore.set(loaded);
+            status = 'connected';
+        } catch (error) {
+            // The function still points at a repository, so this is not a
+            // disconnection. Report the lookup failure and keep the connection
+            // visible instead of blanking the card.
+            repository = null;
+            repositoryError = {
+                kind: getVcsInstallationErrorKind(error),
+                message: error?.message ?? ''
+            };
+            status = 'error';
         }
     }
+
     async function updateConfiguration() {
         try {
             if (!isValueOfStringEnum(Runtime, func.runtime)) {
@@ -112,14 +188,18 @@
             trackError(error, Submit.FunctionUpdateConfiguration);
         }
     }
-    $: if (func?.installationId && func?.providerRepositoryId) {
-        selectedBranch = func?.providerBranch ?? 'main';
-    }
 
-    $: isUpdateButtonEnabled =
+    $effect(() => {
+        if (func?.installationId && func?.providerRepositoryId) {
+            selectedBranch = func?.providerBranch ?? 'main';
+        }
+    });
+
+    const isUpdateButtonEnabled = $derived(
         selectedBranch !== func?.providerBranch ||
-        silentMode !== func?.providerSilentMode ||
-        selectedDir !== func?.providerRootDirectory;
+            silentMode !== func?.providerSilentMode ||
+            selectedDir !== func?.providerRootDirectory
+    );
 
     async function connect(selectedInstallationId: string, selectedRepository: string) {
         let nextBranch = func?.providerBranch ?? 'main';
@@ -178,11 +258,11 @@
 </script>
 
 <Form onSubmit={updateConfiguration}>
-    <CardGrid hideFooter={!repository}>
+    <CardGrid hideFooter={status !== 'connected'}>
         <svelte:fragment slot="title">Git repository</svelte:fragment>
         Automatically deploy changes for every commit pushed to your Git repository.
         <svelte:fragment slot="aside">
-            {#if repository === false}
+            {#if status === 'loading'}
                 <Layout.Stack gap="xl">
                     <Card padding="xs" radius="s" variant="secondary">
                         <Layout.Stack
@@ -218,7 +298,7 @@
                         </Layout.Stack>
                     </Fieldset>
                 </Layout.Stack>
-            {:else if repository}
+            {:else if status === 'connected'}
                 <Layout.Stack gap="xl">
                     <RepositoryCard {repository} on:disconnect={() => (showDisconnect = true)} />
                     <Fieldset legend="Branch">
@@ -246,6 +326,44 @@
                                 bind:checked={silentMode} />
                         </Layout.Stack>
                     </Fieldset>
+                </Layout.Stack>
+            {:else if status === 'error'}
+                <Layout.Stack gap="xl">
+                    <Card padding="xs" radius="s" variant="secondary">
+                        <Layout.Stack direction="row" alignItems="flex-start" gap="s">
+                            <Icon icon={IconGithub} color="--fgcolor-neutral-primary" />
+                            <Layout.Stack gap="xxxs">
+                                <Typography.Text variant="m-400" color="--fgcolor-neutral-primary">
+                                    {connectedRepositoryLabel}
+                                </Typography.Text>
+                                {#if connectedRepositoryDetails}
+                                    <Typography.Caption
+                                        variant="400"
+                                        color="--fgcolor-neutral-tertiary">
+                                        {connectedRepositoryDetails}
+                                    </Typography.Caption>
+                                {/if}
+                            </Layout.Stack>
+                        </Layout.Stack>
+                    </Card>
+
+                    {#if repositoryError?.kind}
+                        <InstallationError
+                            kind={repositoryError.kind}
+                            provider={errorInstallation?.provider}
+                            organization={errorInstallation?.organization}
+                            onRetry={loadRepository} />
+                    {:else}
+                        <Alert.Inline
+                            status="warning"
+                            title="Could not load the connected repository">
+                            {repositoryError?.message ||
+                                'This function is still connected to a Git repository, but its details could not be loaded.'}
+                            <svelte:fragment slot="actions">
+                                <Button compact on:click={loadRepository}>Try again</Button>
+                            </svelte:fragment>
+                        </Alert.Inline>
+                    {/if}
                 </Layout.Stack>
             {:else if func.installationId || installations?.total}
                 <PinkCard.Base padding="none" border="dashed">
