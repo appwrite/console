@@ -28,6 +28,7 @@
         installCommand = adapterData?.installCommand ?? '';
         buildCommand = adapterData?.buildCommand ?? '';
         outputDirectory = adapterData?.outputDirectory ?? '';
+        startCommand = '';
         lastAdapterDefaultsKey = adapterDefaultsKey;
     }
 </script>

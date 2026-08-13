@@ -94,6 +94,7 @@
                 installCommand = adapter.installCommand || '';
                 buildCommand = adapter.buildCommand || '';
                 outputDirectory = adapter.outputDirectory || '';
+                startCommand = '';
             }
         }
     });
