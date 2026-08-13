@@ -45,6 +45,7 @@
     let domain = $state('');
     let rootDir = $state(data.repository?.rootDirectory || '');
     let buildCommand = $state('');
+    let startCommand = $state('');
     let installCommand = $state('');
     let outputDirectory = $state('');
     let domainIsValid = $state(false);
@@ -80,6 +81,11 @@
         }))
     );
 
+    const primaryAdapter = $derived.by(
+        () => data.frameworks.frameworks.find((f) => f.key === framework)?.adapters?.[0]
+    );
+    const shouldShowStartCommand = $derived(primaryAdapter?.key === Adapter.Ssr);
+
     $effect(() => {
         if (framework && data.frameworks && !hasCustomCommands) {
             const fw = data.frameworks.frameworks.find((f) => f.key === framework);
@@ -103,10 +109,11 @@
         // Build configuration - use from URL params or defaults
         installCommand = page.url.searchParams.get('install') || '';
         buildCommand = page.url.searchParams.get('build') || '';
+        startCommand = page.url.searchParams.get('start') || '';
         outputDirectory = page.url.searchParams.get('output') || '';
 
         // Check if custom commands were provided via URL
-        hasCustomCommands = !!(installCommand || buildCommand || outputDirectory);
+        hasCustomCommands = !!(installCommand || buildCommand || startCommand || outputDirectory);
 
         // If no custom commands, auto-fill from framework defaults
         if (!hasCustomCommands && data.frameworks) {
@@ -145,6 +152,7 @@
                 buildRuntime: selectedFramework.buildRuntime,
                 installCommand: installCommand || undefined,
                 buildCommand: buildCommand || undefined,
+                startCommand: shouldShowStartCommand ? startCommand || undefined : undefined,
                 outputDirectory: outputDirectory || undefined,
                 adapter: framework === Framework.Other ? Adapter.Static : undefined,
                 providerSilentMode: false
@@ -273,6 +281,12 @@
                         label="Build command"
                         placeholder={buildCommand || 'npm run build'}
                         bind:value={buildCommand} />
+                    {#if shouldShowStartCommand}
+                        <Input.Text
+                            label="Start command"
+                            placeholder={startCommand || 'npm run start'}
+                            bind:value={startCommand} />
+                    {/if}
                     <Input.Text
                         label="Output directory"
                         placeholder={outputDirectory || 'dist'}
