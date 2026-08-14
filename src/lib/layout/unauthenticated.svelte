@@ -7,7 +7,7 @@
     import LoginLight from '$lib/images/login/login-light-mode.png';
     import { app } from '$lib/stores/app';
     import { Typography, Layout, Avatar } from '@appwrite.io/pink-svelte';
-    import { getCampaignImageUrl } from '$routes/(public)/card/helpers';
+    import { getCampaignImageUrl } from '$lib/helpers/campaign';
     import { isSmallViewport } from '$lib/stores/viewport';
     import type { Models } from '@appwrite.io/console';
 
