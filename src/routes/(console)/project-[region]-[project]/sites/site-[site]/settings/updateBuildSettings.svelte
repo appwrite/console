@@ -7,15 +7,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Adapter, BuildRuntime, Framework, type Models } from '@appwrite.io/console';
-    import {
-        Accordion,
-        Card,
-        Fieldset,
-        Icon,
-        InlineCode,
-        Layout,
-        Tooltip
-    } from '@appwrite.io/pink-svelte';
+    import { Card, Fieldset, Icon, InlineCode, Layout, Tooltip } from '@appwrite.io/pink-svelte';
     import { iconPath } from '$lib/stores/app';
     import { Link } from '$lib/elements';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
@@ -89,10 +81,10 @@
                 selectedFramework.adapters[0];
             installCommand = data.installCommand;
             buildCommand = data.buildCommand;
+            startCommand = '';
             outputDirectory = data.outputDirectory;
             adapter = data.key as Adapter;
             fallback = data.fallbackFile;
-            startCommand = '';
         } else if (hasFrameworkSelectionChanged) {
             const data =
                 selectedFramework.adapters.find((a) => a.key === adapter) ??
@@ -105,13 +97,13 @@
             buildCommand = isOriginalAdapter
                 ? (site?.buildCommand ?? frameworkAdapterData.buildCommand)
                 : data.buildCommand;
+            startCommand = isOriginalAdapter ? (site?.startCommand ?? '') : '';
             outputDirectory = isOriginalAdapter
                 ? (site?.outputDirectory ?? frameworkAdapterData.outputDirectory)
                 : data.outputDirectory;
             fallback = isOriginalAdapter
                 ? (site?.fallbackFile ?? data.fallbackFile)
                 : data.fallbackFile;
-            startCommand = isOriginalAdapter ? (site?.startCommand ?? '') : '';
         }
 
         lastFrameworkAdapterKey = `${selectedFramework.key}:${adapter ?? ''}`;
@@ -335,6 +327,15 @@
                                 Reset
                             </Button>
                         </Layout.Stack>
+                        {#if adapter === Adapter.Ssr}
+                            <Layout.Stack gap="s" direction="row" alignItems="flex-end">
+                                <InputText
+                                    id="startCommand"
+                                    label="Start command"
+                                    bind:value={startCommand}
+                                    placeholder="Enter start command" />
+                            </Layout.Stack>
+                        {/if}
                         <Layout.Stack gap="s" direction="row" alignItems="flex-end">
                             <InputText
                                 id="outputDirectory"
@@ -365,19 +366,6 @@
                                     </span>
                                 </Tooltip>
                             </InputText>
-                        {/if}
-                        {#if adapter === Adapter.Ssr}
-                            <Accordion title="Advanced">
-                                <Layout.Stack gap="l">
-                                    Command used to start your SSR server after a successful deploy.
-                                    Leave it empty to use the framework default.
-                                    <InputText
-                                        id="startCommand"
-                                        label="Start command"
-                                        bind:value={startCommand}
-                                        placeholder="Enter start command" />
-                                </Layout.Stack>
-                            </Accordion>
                         {/if}
                     </Layout.Stack>
                 </Fieldset>

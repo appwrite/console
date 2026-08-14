@@ -17,6 +17,7 @@
     export let isLoading = false;
     export let installCommand = '';
     export let buildCommand = '';
+    export let startCommand = '';
     export let outputDirectory = '';
 
     let frameworkId = selectedFramework.key;
@@ -27,6 +28,7 @@
         installCommand = adapterData?.installCommand ?? '';
         buildCommand = adapterData?.buildCommand ?? '';
         outputDirectory = adapterData?.outputDirectory ?? '';
+        startCommand = '';
         lastAdapterDefaultsKey = adapterDefaultsKey;
     }
 </script>
@@ -83,6 +85,15 @@
                                 Reset
                             </Button>
                         </Layout.Stack>
+                        {#if adapterData?.key === 'ssr'}
+                            <Layout.Stack gap="s" direction="row" alignItems="flex-end">
+                                <InputText
+                                    id="startCommand"
+                                    label="Start command"
+                                    bind:value={startCommand}
+                                    placeholder="Enter start command" />
+                            </Layout.Stack>
+                        {/if}
                         <Layout.Stack gap="s" direction="row" alignItems="flex-end">
                             <InputText
                                 id="outputDirectory"

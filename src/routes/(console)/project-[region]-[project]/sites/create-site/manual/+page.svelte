@@ -43,6 +43,7 @@
     let adapter = framework?.adapters[0];
     let installCommand = adapter?.installCommand;
     let buildCommand = adapter?.buildCommand;
+    let startCommand = '';
     let outputDirectory = adapter?.outputDirectory;
     let variables: Partial<Models.Variable>[] = [];
     let files: FileList;
@@ -77,6 +78,7 @@
                 buildRuntime,
                 installCommand: installCommand || undefined,
                 buildCommand: buildCommand || undefined,
+                startCommand: startCommand || undefined,
                 outputDirectory: outputDirectory || undefined
             });
 
@@ -251,6 +253,7 @@
             <Configuration
                 bind:installCommand
                 bind:buildCommand
+                bind:startCommand
                 bind:outputDirectory
                 bind:selectedFramework={framework}
                 bind:variables

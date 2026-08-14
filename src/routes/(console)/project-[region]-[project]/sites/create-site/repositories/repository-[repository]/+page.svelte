@@ -43,6 +43,7 @@
     let rootDir = './';
     let installCommand = adapter?.installCommand;
     let buildCommand = adapter?.buildCommand;
+    let startCommand = '';
     let outputDirectory = adapter?.outputDirectory;
     let variables: Partial<Models.Variable>[] = [];
     let silentMode = false;
@@ -121,6 +122,7 @@
                 buildRuntime,
                 installCommand: installCommand || undefined,
                 buildCommand: buildCommand || undefined,
+                startCommand: startCommand || undefined,
                 outputDirectory: outputDirectory || undefined,
                 installationId: data.installation.$id,
                 providerRepositoryId: data.repository.id,
@@ -219,6 +221,7 @@
                 <Configuration
                     bind:installCommand
                     bind:buildCommand
+                    bind:startCommand
                     bind:outputDirectory
                     bind:selectedFramework={framework}
                     bind:variables
