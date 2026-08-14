@@ -94,7 +94,6 @@
                 installCommand = adapter.installCommand || '';
                 buildCommand = adapter.buildCommand || '';
                 outputDirectory = adapter.outputDirectory || '';
-                startCommand = '';
             }
         }
     });
@@ -262,7 +261,8 @@
                         label="Framework"
                         placeholder="Select framework"
                         bind:value={framework}
-                        options={frameworkSelectOptions} />
+                        options={frameworkSelectOptions}
+                        on:change={() => (startCommand = '')} />
                 </Layout.Stack>
             </Fieldset>
 
