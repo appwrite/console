@@ -3,16 +3,15 @@
     import { Fieldset, Layout, Accordion } from '@appwrite.io/pink-svelte';
     import type { Models } from '@appwrite.io/console';
     import { iconPath } from '$lib/stores/app';
-    import { getFrameworkIcon, type FrameworkAdapterWithStartCommand } from '$lib/stores/sites';
+    import { getFrameworkIcon } from '$lib/stores/sites';
     import { EnvironmentVariables } from '$lib/components/variables';
 
     export let frameworks: Models.Framework[];
     export let selectedFramework: Models.Framework;
     $: frameworkData = frameworks.find((framework) => framework.key === selectedFramework?.key);
-    $: adapterData = (frameworkData?.adapters.find((adapter) => adapter.key === 'ssr') ??
-        frameworkData?.adapters.find(
-            (adapter) => adapter.key === 'static'
-        )) as FrameworkAdapterWithStartCommand;
+    $: adapterData =
+        frameworkData?.adapters.find((adapter) => adapter.key === 'ssr') ??
+        frameworkData?.adapters.find((adapter) => adapter.key === 'static');
 
     export let variables: Partial<Models.Variable>[] = [];
     export let isLoading = false;
@@ -28,8 +27,8 @@
     $: if (frameworkData && adapterDefaultsKey !== lastAdapterDefaultsKey) {
         installCommand = adapterData?.installCommand ?? '';
         buildCommand = adapterData?.buildCommand ?? '';
-        startCommand = adapterData?.startCommand ?? '';
         outputDirectory = adapterData?.outputDirectory ?? '';
+        startCommand = '';
         lastAdapterDefaultsKey = adapterDefaultsKey;
     }
 </script>
@@ -92,16 +91,7 @@
                                     id="startCommand"
                                     label="Start command"
                                     bind:value={startCommand}
-                                    placeholder={adapterData?.startCommand ||
-                                        'Enter start command'} />
-                                <Button
-                                    secondary
-                                    size="s"
-                                    disabled={(adapterData?.startCommand ?? '') ===
-                                        (startCommand ?? '')}
-                                    on:click={() => (startCommand = adapterData?.startCommand)}>
-                                    Reset
-                                </Button>
+                                    placeholder="Enter start command" />
                             </Layout.Stack>
                         {/if}
                         <Layout.Stack gap="s" direction="row" alignItems="flex-end">

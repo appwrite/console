@@ -32,7 +32,6 @@
         mergeVariables,
         validateVariables
     } from '$lib/helpers/variables';
-    import type { FrameworkAdapterWithStartCommand } from '$lib/stores/sites';
 
     export let data;
     let showExitModal = false;
@@ -43,12 +42,12 @@
     let name = '';
     let id = ID.unique();
     let framework: Models.Framework = data.frameworks.frameworks.find((f) => f.key === 'other');
-    let adapter = framework?.adapters[0] as FrameworkAdapterWithStartCommand;
+    let adapter = framework?.adapters[0];
     let branch: string;
     let rootDir = './';
     let installCommand = adapter?.installCommand;
     let buildCommand = adapter?.buildCommand;
-    let startCommand = adapter?.startCommand;
+    let startCommand = '';
     let outputDirectory = adapter?.outputDirectory;
     let variables: Partial<Models.Variable>[] = [];
     let silentMode = false;
@@ -87,10 +86,9 @@
             if (!framework) {
                 framework = data.frameworks.frameworks.find((f) => f.key === 'other');
             }
-            adapter = framework?.adapters[0] as FrameworkAdapterWithStartCommand;
+            adapter = framework?.adapters[0];
             installCommand = adapter?.installCommand;
             buildCommand = adapter?.buildCommand;
-            startCommand = adapter?.startCommand;
             outputDirectory = adapter?.outputDirectory;
             const detectedVariables = normalizeDetectedVariables(response?.variables);
             if (detectedVariables.length) {

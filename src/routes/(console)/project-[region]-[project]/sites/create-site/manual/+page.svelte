@@ -26,7 +26,6 @@
     import { currentPlan } from '$lib/stores/organization';
     import Domain from '../domain.svelte';
     import { uploader } from '$lib/stores/uploader';
-    import type { FrameworkAdapterWithStartCommand } from '$lib/stores/sites';
     import { validateVariables } from '$lib/helpers/variables';
 
     export let data;
@@ -42,10 +41,10 @@
     let framework: Models.Framework =
         data.frameworks.frameworks?.find((f) => f.key === 'other') ??
         data.frameworks.frameworks?.[0];
-    let adapter = framework?.adapters[0] as FrameworkAdapterWithStartCommand;
+    let adapter = framework?.adapters[0];
     let installCommand = adapter?.installCommand;
     let buildCommand = adapter?.buildCommand;
-    let startCommand = adapter?.startCommand;
+    let startCommand = '';
     let outputDirectory = adapter?.outputDirectory;
     let variables: Partial<Models.Variable>[] = [];
     let files: FileList;

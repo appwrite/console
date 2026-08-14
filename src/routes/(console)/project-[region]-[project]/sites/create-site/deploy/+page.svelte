@@ -27,7 +27,6 @@
     import { writable } from 'svelte/store';
     import { getLatestTag } from '$lib/helpers/github';
     import Link from '$lib/elements/link.svelte';
-    import type { FrameworkAdapterWithStartCommand } from '$lib/stores/sites';
     import { validateVariables } from '$lib/helpers/variables';
 
     let {
@@ -95,7 +94,6 @@
                 const adapter = fw.adapters[0];
                 installCommand = adapter.installCommand || '';
                 buildCommand = adapter.buildCommand || '';
-                startCommand = (adapter as FrameworkAdapterWithStartCommand).startCommand || '';
                 outputDirectory = adapter.outputDirectory || '';
             }
         }
@@ -125,7 +123,6 @@
                 const adapter = fw.adapters[0];
                 installCommand = adapter.installCommand || '';
                 buildCommand = adapter.buildCommand || '';
-                startCommand = (adapter as FrameworkAdapterWithStartCommand).startCommand || '';
                 outputDirectory = adapter.outputDirectory || '';
             }
         }
@@ -272,7 +269,8 @@
                         label="Framework"
                         placeholder="Select framework"
                         bind:value={framework}
-                        options={frameworkSelectOptions} />
+                        options={frameworkSelectOptions}
+                        on:change={() => (startCommand = '')} />
                 </Layout.Stack>
             </Fieldset>
 
