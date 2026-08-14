@@ -27,7 +27,11 @@
     import Configuration from '../../configuration.svelte';
     import Domain from '../../domain.svelte';
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
-    import { normalizeDetectedVariables, mergeVariables } from '$lib/helpers/variables';
+    import {
+        normalizeDetectedVariables,
+        mergeVariables,
+        validateVariables
+    } from '$lib/helpers/variables';
 
     export let data;
     let showExitModal = false;
@@ -111,6 +115,13 @@
             return;
         }
         try {
+            // Reject an unusable key before the resource is created, so a
+            // rejected variable can't leave a half-configured resource behind.
+            const validationError = validateVariables(variables);
+            if (validationError) {
+                throw new Error(validationError);
+            }
+
             const fr = Object.values(Framework).find((f) => f === framework.key);
             const buildRuntime = Object.values(BuildRuntime).find(
                 (f) => f === framework.buildRuntime

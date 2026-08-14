@@ -26,6 +26,7 @@
     import { currentPlan } from '$lib/stores/organization';
     import Domain from '../domain.svelte';
     import { uploader } from '$lib/stores/uploader';
+    import { validateVariables } from '$lib/helpers/variables';
 
     export let data;
     let showExitModal = false;
@@ -59,6 +60,13 @@
         let site: Models.Site | null = null;
 
         try {
+            // Reject an unusable key before the resource is created, so a
+            // rejected variable can't leave a half-configured resource behind.
+            const validationError = validateVariables(variables);
+            if (validationError) {
+                throw new Error(validationError);
+            }
+
             if (!domainIsValid) {
                 addNotification({
                     type: 'error',

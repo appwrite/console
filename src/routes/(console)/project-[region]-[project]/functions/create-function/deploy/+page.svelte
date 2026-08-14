@@ -25,6 +25,7 @@
     import { getLatestTag } from '$lib/helpers/github';
     import { writable } from 'svelte/store';
     import Link from '$lib/elements/link.svelte';
+    import { validateVariables } from '$lib/helpers/variables';
 
     let {
         data
@@ -97,6 +98,13 @@
         $isSubmitting = true;
 
         try {
+            // Reject an unusable key before the resource is created, so a
+            // rejected variable can't leave a half-configured resource behind.
+            const validationError = validateVariables(variables);
+            if (validationError) {
+                throw new Error(validationError);
+            }
+
             if (!latestTag) {
                 latestTag = await getLatestTag(data.repository.owner, data.repository.name);
             }
