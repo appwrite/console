@@ -25,9 +25,12 @@
                     emailVerification: !$user.emailVerification
                 });
             await invalidate(Dependencies.USER);
+
             addNotification({
-                message: `${$user.name || $user.email || $user.phone || 'The account'} has been ${
-                    !$user.emailVerification ? 'unverified' : 'verified'
+                message: `${
+                    $user.name && $user.name.trim() !== ''
+                        ? `The email for ${$user.name} ${!$user.emailVerification ? 'is no longer verified' : 'has been verified'}`
+                        : `The email ${!$user.emailVerification ? 'is no longer verified' : 'has been verified'}`
                 }`,
                 type: 'success'
             });
@@ -50,9 +53,12 @@
                     phoneVerification: !$user.phoneVerification
                 });
             await invalidate(Dependencies.USER);
+
             addNotification({
-                message: `${$user.name || $user.email || $user.phone || 'The account'} has been ${
-                    $user.phoneVerification ? 'unverified' : 'verified'
+                message: `${
+                    $user.name && $user.name.trim() !== ''
+                        ? `The phone for ${$user.name} ${!$user.phoneVerification ? 'is no longer verified' : 'has been verified'}`
+                        : `The phone ${!$user.phoneVerification ? 'is no longer verified' : 'has been verified'}`
                 }`,
                 type: 'success'
             });
