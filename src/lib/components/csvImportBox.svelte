@@ -39,7 +39,7 @@
 
     async function showCompletionNotification(database: string, table: string, payload: Payload) {
         const isSuccess = payload.status === 'completed';
-        const isError = !isSuccess && !!payload.errors;
+        const isError = !isSuccess && payload.status === 'failed';
 
         if (!isSuccess && !isError) return;
 
@@ -118,6 +118,9 @@
 
         if (status === 'completed' || status === 'failed') {
             await showCompletionNotification(databaseId, tableId, importData);
+            const next = new Map(importItems);
+            next.delete(importData.$id);
+            importItems = next;
         }
     }
 
