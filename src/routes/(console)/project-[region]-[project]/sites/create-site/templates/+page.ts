@@ -37,6 +37,7 @@ export const load = async ({ url, params }) => {
         'Angular',
         'Analog',
         'Vite',
+        'React Native',
         'Other'
     ];
 
