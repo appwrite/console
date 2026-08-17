@@ -48,7 +48,6 @@
         type ResourcePage,
         type ResourceNameMap
     } from '$lib/helpers/oauth2-authorization-details';
-    import { resolveOAuth2AppLogoUrl } from '$lib/helpers/oauth2-app-logo';
     import ResourceSelector from './resource-selector.svelte';
 
     export type OAuth2Flow = 'authorization' | 'device';
@@ -111,7 +110,6 @@
     );
 
     const redirectHost = $derived(hostnameOf(grant.redirectUri));
-    const appLogoUrl = $derived(resolveOAuth2AppLogoUrl(app));
     const appInitial = $derived((app.name || '?').charAt(0).toUpperCase());
     const accountInitial = $derived((accountLabel || '?').charAt(0).toUpperCase());
 
@@ -495,8 +493,8 @@
     <div class="consent">
         <header class="header">
             <div class="identity">
-                {#if appLogoUrl}
-                    <img src={appLogoUrl} alt={app.name} class="avatar" />
+                {#if app.logoUri}
+                    <img src={app.logoUri} alt={app.name} class="avatar" />
                 {:else}
                     <div class="avatar placeholder">{appInitial}</div>
                 {/if}
@@ -907,10 +905,7 @@
         flex-shrink: 0;
         border: 1px solid var(--border-neutral-strong);
         background: var(--bgcolor-neutral-primary);
-    }
-
-    /* Keep wordmarks readable inside the square avatar (cover crops them). */
-    img.avatar {
+        /* Wide wordmarks are common as logoUri; cover would crop them. */
         object-fit: contain;
         padding: 0.4rem;
         box-sizing: border-box;
