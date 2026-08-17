@@ -104,7 +104,9 @@
                     async: true,
                     xpath: path,
                     method,
-                    headers: headersObject,
+                    // Omit empty {} — utopia-http preserves it as stdClass and cloud
+                    // 1.9.6 rejects it as an invalid headers string (see appwrite#13237).
+                    headers: Object.keys(headersObject).length ? headersObject : undefined,
                     scheduledAt: isScheduled ? dateTime.toISOString() : undefined
                 });
             await goto(
