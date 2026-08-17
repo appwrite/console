@@ -5,6 +5,7 @@
     import { Dependencies } from '$lib/constants';
     import { Button, Form } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
+    import { canWriteProjects } from '$lib/stores/roles';
     import { sdk } from '$lib/stores/sdk';
     import { Selector } from '@appwrite.io/pink-svelte';
     import type { Models } from '@appwrite.io/console';
@@ -63,25 +64,29 @@
                 id="mfaFactorTotp"
                 label="TOTP"
                 description="Time-based codes from an authenticator app"
+                disabled={!$canWriteProjects}
                 bind:checked={totp} />
             <Selector.Checkbox
                 id="mfaFactorEmail"
                 label="Email"
                 description="Codes sent to the user's verified email address"
+                disabled={!$canWriteProjects}
                 bind:checked={email} />
             <Selector.Checkbox
                 id="mfaFactorPhone"
                 label="Phone"
                 description="Codes sent to the user's verified phone number over SMS"
+                disabled={!$canWriteProjects}
                 bind:checked={phone} />
             <Selector.Checkbox
                 id="mfaFactorCustom"
                 label="Custom"
                 description="Appwrite generates and verifies the code, and you deliver it through your own channel"
+                disabled={!$canWriteProjects}
                 bind:checked={custom} />
         </svelte:fragment>
         <svelte:fragment slot="actions">
-            <Button disabled={isSubmitDisabled} submit>Update</Button>
+            <Button disabled={!$canWriteProjects || isSubmitDisabled} submit>Update</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>
