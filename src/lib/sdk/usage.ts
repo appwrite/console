@@ -37,6 +37,11 @@ const executionsBreakdownLimit = 25;
 /**
  * `UsageProject.executionsBreakdown` was dropped in SDK 16; the per-resource split now comes from
  * the dimensional usage API, which returns bare resource IDs, so names are resolved separately.
+ *
+ * Scoped to `functions.executions` rather than the umbrella `executions` metric, which also counts
+ * site executions — those resolve to no name here and their rows link to a function that does not exist.
+ * Omitting `interval` makes each point a whole-window aggregate per resource, so the limit is a
+ * top-N-by-total rather than a truncation of the underlying data.
  */
 export async function listExecutionsBreakdown(
     region: string,
@@ -47,7 +52,7 @@ export async function listExecutionsBreakdown(
     const project = sdk.forProject(region, projectId);
 
     const events = await project.usage.listEvents({
-        metrics: [UsageEventMetric.Executions],
+        metrics: [UsageEventMetric.FunctionsExecutions],
         dimensions: [UsageEventDimension.ResourceId],
         startAt,
         endAt,

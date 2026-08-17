@@ -257,8 +257,7 @@
             const { rows, ids } = generateFakeRecords($randomDataModalState.value, fields);
             documentIds = ids;
 
-            const dbType = data.database?.type;
-            const isVectorsDb = dbType === 'vectorsdb';
+            const isVectorsDb = databaseType === 'vectorsdb';
             const dimension = collection?.dimension ?? DEFAULT_VECTOR_DIMENSION;
 
             // For vectorsdb, wrap fields in metadata and add empty embeddings

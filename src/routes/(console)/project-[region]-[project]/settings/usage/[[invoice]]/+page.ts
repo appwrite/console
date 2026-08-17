@@ -1,4 +1,5 @@
 import { sdk } from '$lib/stores/sdk';
+import { Submit, trackError } from '$lib/actions/analytics';
 import type { PageLoad } from './$types';
 import { accumulateUsage, listExecutionsBreakdown, type ExecutionsBreakdown } from '$lib/sdk/usage';
 import { type Models, Query } from '@appwrite.io/console';
@@ -35,12 +36,19 @@ export const load: PageLoad = async ({ params, parent }) => {
         }
     }
 
-    const [invoices, usage] = await Promise.all([
+    const [invoices, usage, executionsBreakdown] = await Promise.all([
         sdk.forConsole.organizations.listInvoices({
             organizationId: organization.$id,
             queries: [Query.orderDesc('from')]
         }),
-        sdk.forProject(region, project).project.getUsage({ startDate, endDate })
+        sdk.forProject(region, project).project.getUsage({ startDate, endDate }),
+        listExecutionsBreakdown(region, project, startDate, endDate).catch(
+            (error): ExecutionsBreakdown[] => {
+                // supplementary to the executions chart, so never fail the page for it
+                trackError(error, Submit.ProjectUsageExecutionsBreakdown);
+                return [];
+            }
+        )
     ]);
 
     if (currentAggregation) {
@@ -65,13 +73,6 @@ export const load: PageLoad = async ({ params, parent }) => {
     }
 
     usage.users = accumulateUsage(usage.users, usage.usersTotal);
-
-    let executionsBreakdown: ExecutionsBreakdown[] = [];
-    try {
-        executionsBreakdown = await listExecutionsBreakdown(region, project, startDate, endDate);
-    } catch {
-        // supplementary — a server without the usage events API still renders the rest of the page
-    }
 
     return {
         usage,
