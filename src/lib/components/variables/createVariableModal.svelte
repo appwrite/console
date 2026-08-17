@@ -8,6 +8,7 @@
     import { Link } from '$lib/elements';
     import { page } from '$app/state';
     import { IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
+    import { validateVariables } from '$lib/helpers/variables';
 
     export type ProductLabel = 'site' | 'function';
 
@@ -39,13 +40,13 @@
                 newVariables = newVariables.map((variable) => ({ ...variable, secret: true }));
             }
 
-            newVariables.forEach((variable) => {
-                if (('' + variable.value).length > 8192) {
-                    throw new Error(
-                        `Variable ${variable.key} is longer than 8192 allowed characters`
-                    );
-                }
-            });
+            const validationError = validateVariables(
+                newVariables.filter((variable) => variable.key || variable.value)
+            );
+            if (validationError) {
+                throw new Error(validationError);
+            }
+
             const updatedVariables = [...variables];
             newVariables.forEach((newVar) => {
                 if (!newVar.key) {

@@ -27,7 +27,7 @@
     import { writable } from 'svelte/store';
     import { getLatestTag } from '$lib/helpers/github';
     import Link from '$lib/elements/link.svelte';
-    import type { FrameworkAdapterWithStartCommand } from '$lib/stores/sites';
+    import { validateVariables } from '$lib/helpers/variables';
 
     let {
         data
@@ -94,7 +94,6 @@
                 const adapter = fw.adapters[0];
                 installCommand = adapter.installCommand || '';
                 buildCommand = adapter.buildCommand || '';
-                startCommand = (adapter as FrameworkAdapterWithStartCommand).startCommand || '';
                 outputDirectory = adapter.outputDirectory || '';
             }
         }
@@ -124,7 +123,6 @@
                 const adapter = fw.adapters[0];
                 installCommand = adapter.installCommand || '';
                 buildCommand = adapter.buildCommand || '';
-                startCommand = (adapter as FrameworkAdapterWithStartCommand).startCommand || '';
                 outputDirectory = adapter.outputDirectory || '';
             }
         }
@@ -147,6 +145,13 @@
         $isSubmitting = true;
 
         try {
+            // Reject an unusable key before the resource is created, so a
+            // rejected variable can't leave a half-configured resource behind.
+            const validationError = validateVariables(variables);
+            if (validationError) {
+                throw new Error(validationError);
+            }
+
             // Create site with build configuration
             let site = await sdk.forProject(page.params.region, page.params.project).sites.create({
                 siteId: id || ID.unique(),
@@ -264,7 +269,8 @@
                         label="Framework"
                         placeholder="Select framework"
                         bind:value={framework}
-                        options={frameworkSelectOptions} />
+                        options={frameworkSelectOptions}
+                        on:change={() => (startCommand = '')} />
                 </Layout.Stack>
             </Fieldset>
 

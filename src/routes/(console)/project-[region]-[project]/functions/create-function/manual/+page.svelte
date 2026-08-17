@@ -28,6 +28,7 @@
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { currentPlan } from '$lib/stores/organization';
     import { uploader } from '$lib/stores/uploader';
+    import { validateVariables } from '$lib/helpers/variables';
 
     export let data;
 
@@ -69,6 +70,13 @@
         let func: Models.Function | null = null;
 
         try {
+            // Reject an unusable key before the resource is created, so a
+            // rejected variable can't leave a half-configured resource behind.
+            const validationError = validateVariables(variables);
+            if (validationError) {
+                throw new Error(validationError);
+            }
+
             func = await sdk.forProject(page.params.region, page.params.project).functions.create({
                 functionId: id || ID.unique(),
                 name,
