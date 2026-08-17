@@ -3,7 +3,7 @@
     import { columns, getDatabaseTypeTitle } from './store';
     import { Id } from '$lib/components';
     import type { Models } from '@appwrite.io/console';
-    import { useTerminology } from '$database/(entity)';
+    import { toDatabaseType, useTerminology } from '$database/(entity)';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
     import { resolveRoute, withPath } from '$lib/stores/navigation';
     import { IconExclamation } from '@appwrite.io/pink-icons-svelte';
@@ -35,7 +35,7 @@
     }
 
     function getEntityUrl(database: Models.Database, entityId: string) {
-        const terminology = useTerminology(database.type);
+        const terminology = useTerminology(toDatabaseType(database.type));
         const entityType = terminology.entity.lower.singular;
 
         return withPath(

@@ -1,6 +1,6 @@
 import { sdk } from '$lib/stores/sdk';
 import type { PageLoad } from './$types';
-import { accumulateUsage } from '$lib/sdk/usage';
+import { accumulateUsage, listExecutionsBreakdown, type ExecutionsBreakdown } from '$lib/sdk/usage';
 import { type Models, Query } from '@appwrite.io/console';
 
 export const load: PageLoad = async ({ params, parent }) => {
@@ -66,10 +66,18 @@ export const load: PageLoad = async ({ params, parent }) => {
 
     usage.users = accumulateUsage(usage.users, usage.usersTotal);
 
+    let executionsBreakdown: ExecutionsBreakdown[] = [];
+    try {
+        executionsBreakdown = await listExecutionsBreakdown(region, project, startDate, endDate);
+    } catch {
+        // supplementary — a server without the usage events API still renders the rest of the page
+    }
+
     return {
         usage,
         invoices,
         currentInvoice,
-        currentAggregation
+        currentAggregation,
+        executionsBreakdown
     };
 };

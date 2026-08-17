@@ -1,4 +1,12 @@
-import type { Models } from '@appwrite.io/console';
+import {
+    Query,
+    UsageEventDimension,
+    UsageEventMetric,
+    UsageOrderBy,
+    UsageOrderDirection,
+    type Models
+} from '@appwrite.io/console';
+import { sdk } from '$lib/stores/sdk';
 
 export function accumulateUsage(usage: Models.Metric[], base: number): Models.Metric[] {
     const accumulation = usage.reduce(
@@ -16,6 +24,59 @@ export function accumulateUsage(usage: Models.Metric[], base: number): Models.Me
     );
 
     return accumulation.metrics;
+}
+
+export type ExecutionsBreakdown = {
+    resourceId: string;
+    name?: string;
+    value: number;
+};
+
+const executionsBreakdownLimit = 25;
+
+/**
+ * `UsageProject.executionsBreakdown` was dropped in SDK 16; the per-resource split now comes from
+ * the dimensional usage API, which returns bare resource IDs, so names are resolved separately.
+ */
+export async function listExecutionsBreakdown(
+    region: string,
+    projectId: string,
+    startAt: string,
+    endAt: string
+): Promise<ExecutionsBreakdown[]> {
+    const project = sdk.forProject(region, projectId);
+
+    const events = await project.usage.listEvents({
+        metrics: [UsageEventMetric.Executions],
+        dimensions: [UsageEventDimension.ResourceId],
+        startAt,
+        endAt,
+        orderBy: UsageOrderBy.Value,
+        orderDir: UsageOrderDirection.Desc,
+        limit: executionsBreakdownLimit
+    });
+
+    const totals = new Map<string, number>();
+    for (const metric of events.metrics) {
+        for (const point of metric.points) {
+            if (!point.resourceId) continue;
+            totals.set(point.resourceId, (totals.get(point.resourceId) ?? 0) + point.value);
+        }
+    }
+
+    if (totals.size === 0) return [];
+
+    const resourceIds = [...totals.keys()];
+    const functions = await project.functions.list({
+        queries: [Query.equal('$id', resourceIds), Query.limit(resourceIds.length)]
+    });
+    const names = new Map(functions.functions.map((func) => [func.$id, func.name]));
+
+    return resourceIds.map((resourceId) => ({
+        resourceId,
+        name: names.get(resourceId),
+        value: totals.get(resourceId)
+    }));
 }
 
 export type Metric = {

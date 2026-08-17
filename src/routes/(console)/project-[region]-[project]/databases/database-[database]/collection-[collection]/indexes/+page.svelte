@@ -6,6 +6,7 @@
         Indexes,
         EmptySheet,
         EmptySheetCards,
+        toDatabaseType,
         useDatabaseSdk
     } from '$database/(entity)';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
@@ -15,7 +16,8 @@
 
     let createIndexRef: CreateIndexForm;
 
-    const databaseSdk = useDatabaseSdk(page.params.region, page.params.project, data.database.type);
+    const databaseType = $derived(toDatabaseType(data.database.type));
+    const databaseSdk = useDatabaseSdk(page.params.region, page.params.project, databaseType);
 
     async function onCreateIndex(index: CreateIndexesCallbackType) {
         await databaseSdk.createIndex({
@@ -46,14 +48,14 @@
     {#snippet createIndexForm()}
         <CreateIndexForm
             entity={data.collection}
-            databaseType={data.database.type}
+            {databaseType}
             {onCreateIndex}
             showCreateIndex={true}
             bind:this={createIndexRef} />
     {/snippet}
 
     {#snippet emptyIndexesSheetView(toggle)}
-        <EmptySheet mode="indexes" type={data.database.type}>
+        <EmptySheet mode="indexes" type={databaseType}>
             {#snippet actions()}
                 <EmptySheetCards
                     icon={IconPlus}

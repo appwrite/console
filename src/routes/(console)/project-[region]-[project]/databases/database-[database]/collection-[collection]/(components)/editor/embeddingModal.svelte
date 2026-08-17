@@ -27,7 +27,7 @@
         try {
             const response = await sdk
                 .forProject(page.params.region, page.params.project)
-                .vectorsDB.createTextEmbeddings({ texts: [content.trim()] });
+                .embeddings.createTextEmbeddings({ texts: [content.trim()] });
 
             const embedding = response?.embeddings?.[0]?.embedding;
             if (embedding?.length) {
