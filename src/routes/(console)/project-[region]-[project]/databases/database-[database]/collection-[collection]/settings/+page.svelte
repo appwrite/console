@@ -7,6 +7,7 @@
         UpdatePermissions,
         UpdateSecurity,
         UpdateStatus,
+        toDatabaseType,
         useDatabaseSdk
     } from '$database/(entity)';
     import type { PageProps } from './$types';
@@ -17,7 +18,11 @@
 
     const collection = $derived(data.collection);
 
-    const databaseSdk = useDatabaseSdk(page.params.region, page.params.project, data.database.type);
+    const databaseSdk = useDatabaseSdk(
+        page.params.region,
+        page.params.project,
+        toDatabaseType(data.database.type)
+    );
 
     const entityParams = $derived({
         databaseId: page.params.database,

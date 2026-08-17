@@ -41,6 +41,9 @@ export const load: PageLoad = async ({ depends, params }) => {
     ) as Partial<Record<ProjectPolicyId | EmailPolicyId, ProjectPolicy>>;
 
     return {
+        mfaFactorsPolicy: policiesById[ProjectPolicyId.Mfafactors] as
+            | Models.PolicyMfaFactors
+            | undefined,
         membershipPrivacyPolicy: policiesById[
             ProjectPolicyId.Membershipprivacy
         ] as Models.PolicyMembershipPrivacy,

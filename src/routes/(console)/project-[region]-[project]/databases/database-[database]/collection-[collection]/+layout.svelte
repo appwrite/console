@@ -49,6 +49,7 @@
     import {
         SideSheet,
         EditRecordPermissions,
+        toDatabaseType,
         useDatabaseSdk,
         DEFAULT_VECTOR_DIMENSION,
         type Field,
@@ -77,6 +78,7 @@
     let editRecordPermissions: EditRecordPermissions;
 
     $: collection = data.collection;
+    $: databaseType = toDatabaseType(data.database.type);
     $: basePath = resolveRoute(
         '/(console)/project-[region]-[project]/databases/database-[database]/collection-[collection]',
         page.params
@@ -189,11 +191,7 @@
     });
 
     async function handleCreateIndex(index: Index) {
-        const databaseSdk = useDatabaseSdk(
-            page.params.region,
-            page.params.project,
-            data.database.type
-        );
+        const databaseSdk = useDatabaseSdk(page.params.region, page.params.project, databaseType);
 
         await databaseSdk.createIndex({
             databaseId: page.params.database,
@@ -259,8 +257,7 @@
             const { rows, ids } = generateFakeRecords($randomDataModalState.value, fields);
             documentIds = ids;
 
-            const dbType = data.database?.type;
-            const isVectorsDb = dbType === 'vectorsdb';
+            const isVectorsDb = databaseType === 'vectorsdb';
             const dimension = collection?.dimension ?? DEFAULT_VECTOR_DIMENSION;
 
             // For vectorsdb, wrap fields in metadata and add empty embeddings
@@ -344,7 +341,7 @@
     }}>
     <CreateIndex
         entity={collection}
-        databaseType={data.database.type}
+        {databaseType}
         bind:this={createIndex}
         bind:showCreateIndex={$showCreateIndexSheet.show}
         externalFieldKey={$showCreateIndexSheet.column}

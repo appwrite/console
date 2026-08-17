@@ -38,7 +38,7 @@
     import { invalidate } from '$app/navigation';
     import { hash } from '$lib/helpers/string';
     import { Dependencies } from '$lib/constants';
-    import { EmptySheet, EmptySheetCards } from '$database/(entity)';
+    import { EmptySheet, EmptySheetCards, toDatabaseType } from '$database/(entity)';
     import {
         isCollectionsJsonImportInProgress,
         noSqlDocument,
@@ -54,6 +54,8 @@
     const { data }: PageProps = $props();
 
     const filterColumns = writable<Column[]>([]);
+
+    const databaseType = $derived(toDatabaseType(data.database.type));
 
     let isRefreshing = $state(false);
     let showImportJson = $state(false);
@@ -105,7 +107,8 @@
                 .migrations.createJSONImport({
                     bucketId: pendingFile.bucketId,
                     fileId: pendingFile.$id,
-                    resourceId: `${page.params.database}:${page.params.collection}`,
+                    databaseId: page.params.database,
+                    collectionId: page.params.collection,
                     internalFile: pendingLocalFile,
                     onDuplicate: importOnDuplicate
                 });
@@ -328,7 +331,7 @@
                 {/snippet}
             </EmptySheet>
         {:else}
-            <EmptySheet mode="records" type={data.database.type} showActions={$canWriteRows}>
+            <EmptySheet mode="records" type={databaseType} showActions={$canWriteRows}>
                 {#snippet actions()}
                     <EmptySheetCards
                         icon={IconViewBoards}

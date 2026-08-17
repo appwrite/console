@@ -1,6 +1,7 @@
 import { sdk } from '$lib/stores/sdk';
+import { Submit, trackError } from '$lib/actions/analytics';
 import type { PageLoad } from './$types';
-import { accumulateUsage } from '$lib/sdk/usage';
+import { accumulateUsage, listExecutionsBreakdown, type ExecutionsBreakdown } from '$lib/sdk/usage';
 import { type Models, Query } from '@appwrite.io/console';
 
 export const load: PageLoad = async ({ params, parent }) => {
@@ -35,12 +36,19 @@ export const load: PageLoad = async ({ params, parent }) => {
         }
     }
 
-    const [invoices, usage] = await Promise.all([
+    const [invoices, usage, executionsBreakdown] = await Promise.all([
         sdk.forConsole.organizations.listInvoices({
             organizationId: organization.$id,
             queries: [Query.orderDesc('from')]
         }),
-        sdk.forProject(region, project).project.getUsage({ startDate, endDate })
+        sdk.forProject(region, project).project.getUsage({ startDate, endDate }),
+        listExecutionsBreakdown(region, project, startDate, endDate).catch(
+            (error): ExecutionsBreakdown[] => {
+                // supplementary to the executions chart, so never fail the page for it
+                trackError(error, Submit.ProjectUsageExecutionsBreakdown);
+                return [];
+            }
+        )
     ]);
 
     if (currentAggregation) {
@@ -70,6 +78,7 @@ export const load: PageLoad = async ({ params, parent }) => {
         usage,
         invoices,
         currentInvoice,
-        currentAggregation
+        currentAggregation,
+        executionsBreakdown
     };
 };
