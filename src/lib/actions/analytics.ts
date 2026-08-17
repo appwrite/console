@@ -283,6 +283,7 @@ export enum Submit {
     AuthCorporateEmailsUpdate = 'submit_auth_corporate_emails_update',
     AuthSessionAlertsUpdate = 'submit_auth_session_alerts_update',
     AuthMembershipPrivacyUpdate = 'submit_auth_membership_privacy_update',
+    AuthMfaFactorsUpdate = 'submit_auth_mfa_factors_update',
     AuthMockNumbersUpdate = 'submit_auth_mock_numbers_update',
     AuthInvalidateSession = 'submit_auth_invalidate_session',
     SessionsLengthUpdate = 'submit_sessions_length_update',
