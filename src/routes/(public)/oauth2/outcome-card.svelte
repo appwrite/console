@@ -3,6 +3,7 @@
     import { Card, Typography, Icon } from '@appwrite.io/pink-svelte';
     import { IconCheck, IconX, IconLockClosed } from '@appwrite.io/pink-icons-svelte';
     import { Button } from '$lib/elements/forms';
+    import { resolveOAuth2AppLogoUrl } from '$lib/helpers/oauth2-app-logo';
     import type { OAuth2Flow, OAuth2Outcome } from './consent-card.svelte';
 
     interface Props {
@@ -28,6 +29,7 @@
 
     const approved = $derived(outcome === 'approved');
     const appName = $derived(app?.name ?? 'the application');
+    const appLogoUrl = $derived(resolveOAuth2AppLogoUrl(app));
     const appInitial = $derived((app?.name || '?').charAt(0).toUpperCase());
     const accountInitial = $derived((accountLabel || '?').charAt(0).toUpperCase());
 
@@ -53,8 +55,8 @@
     <div class="outcome" class:approved>
         <header class="header">
             <div class="identity">
-                {#if app?.logoUri}
-                    <img src={app.logoUri} alt={appName} class="avatar" />
+                {#if appLogoUrl}
+                    <img src={appLogoUrl} alt={appName} class="avatar" />
                 {:else}
                     <div class="avatar placeholder">{appInitial}</div>
                 {/if}
@@ -161,7 +163,10 @@
         flex-shrink: 0;
         border: 1px solid var(--border-neutral-strong);
         background: var(--bgcolor-neutral-primary);
-        /* Wide wordmarks are common as logoUri; cover would crop them. */
+    }
+
+    /* Keep wordmarks readable inside the square avatar (cover crops them). */
+    img.avatar {
         object-fit: contain;
         padding: 0.4rem;
         box-sizing: border-box;
