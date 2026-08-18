@@ -10,6 +10,8 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { installation, repository } from '$lib/stores/vcs';
+    import { getProviderRepositoryUrl } from '$lib/stores/git';
+    import IconOrigin from '$lib/components/git/IconOrigin.svelte';
     import {
         Adapter,
         BuildRuntime,
@@ -160,10 +162,15 @@
                     alignItems="center"
                     gap="xs">
                     <Layout.Stack direction="row" alignItems="center" gap="s" inline>
-                        <Icon icon={IconGithub} />
+                        <Icon
+                            icon={$installation?.provider === 'origin' ? IconOrigin : IconGithub} />
                         <Link
                             external
-                            href={`https://github.com/${$repository?.organization}/${$repository?.name}`}>
+                            href={getProviderRepositoryUrl(
+                                $installation?.provider ?? 'github',
+                                $repository?.organization,
+                                $repository?.name
+                            )}>
                             <Layout.Stack direction="row" alignItems="center" gap="s" inline>
                                 {$repository?.organization}/{$repository?.name}
                             </Layout.Stack>
