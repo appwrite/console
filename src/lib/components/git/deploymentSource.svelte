@@ -20,6 +20,7 @@
         Typography
     } from '@appwrite.io/pink-svelte';
     import Button from '$lib/elements/forms/button.svelte';
+    import IconOrigin from './IconOrigin.svelte';
 
     let {
         deployment,
@@ -34,6 +35,12 @@
     } = $props();
 
     let repository = $state<Models.ProviderRepository | null>(null);
+
+    // The deployment's server-supplied URLs carry the provider; the model has
+    // no provider field of its own.
+    const isOrigin = $derived(
+        (deployment?.providerRepositoryUrl ?? '').toLowerCase().includes('cursor.com')
+    );
 
     async function loadRepository() {
         if (!resource?.installationId || !resource?.providerRepositoryId || !region || !project) {
@@ -66,7 +73,11 @@
                             toggle(e);
                         }}>
                         <Layout.Stack direction="row" gap="xs" alignItems="center">
-                            <Icon icon={IconGithub} size="s" /> GitHub
+                            {#if isOrigin}
+                                <Icon icon={IconOrigin} size="s" /> Origin
+                            {:else}
+                                <Icon icon={IconGithub} size="s" /> GitHub
+                            {/if}
                         </Layout.Stack>
                     </Link>
                     {#if repository?.authorized === false}
@@ -82,8 +93,10 @@
                                     To enable, add the repository to the installation settings on <Link
                                         variant="muted"
                                         external
-                                        href={`https://github.com/settings/installations/${repository.providerInstallationId}`}>
-                                        GitHub
+                                        href={isOrigin
+                                            ? 'https://cursor.com/codebase/settings/apps'
+                                            : `https://github.com/settings/installations/${repository.providerInstallationId}`}>
+                                        {isOrigin ? 'Origin' : 'GitHub'}
                                     </Link>.
                                 </Typography.Text>
                             </svelte:fragment>
@@ -97,7 +110,7 @@
                 <ActionMenu.Item.Anchor
                     href={deployment.providerRepositoryUrl}
                     external
-                    leadingIcon={IconGithub}>
+                    leadingIcon={isOrigin ? IconOrigin : IconGithub}>
                     {deployment.providerRepositoryOwner}/{deployment.providerRepositoryName}
                 </ActionMenu.Item.Anchor>
                 <ActionMenu.Item.Anchor

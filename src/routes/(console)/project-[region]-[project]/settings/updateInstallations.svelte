@@ -21,10 +21,12 @@
     import { Link as PinkLink } from '@appwrite.io/pink-svelte';
     import {
         IconExternalLink,
+        IconGit,
         IconGithub,
         IconPlus,
         IconXCircle
     } from '@appwrite.io/pink-icons-svelte';
+    import IconOrigin from '$lib/components/git/IconOrigin.svelte';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import type { ComponentType } from 'svelte';
@@ -46,6 +48,8 @@
         switch (installation.provider) {
             case 'github':
                 return `https://github.com/${installation.organization}`;
+            case 'origin':
+                return `https://cursor.com/codebase/${installation.organization}`;
             default:
                 return '';
         }
@@ -55,13 +59,17 @@
         switch (provider) {
             case 'github':
                 return IconGithub;
+            case 'origin':
+                return IconOrigin as unknown as ComponentType;
+            default:
+                return IconGit;
         }
     }
 
-    function configureGitHub() {
+    function configureProvider(provider: string = 'github') {
         const redirect = new URL(page.url);
         redirect.searchParams.append('alert', 'installation-updated');
-        const target = new URL(`${getApiEndpoint(page.params.region)}/vcs/github/authorize`);
+        const target = new URL(`${getApiEndpoint(page.params.region)}/vcs/${provider}/authorize`);
         target.searchParams.set('project', page.params.project);
         target.searchParams.set('success', redirect.toString());
         target.searchParams.set('failure', redirect.toString());
@@ -89,7 +97,7 @@
                     <FormButton
                         secondary
                         disabled={!$canWriteProjects}
-                        href={configureGitHub()}
+                        href={configureProvider()}
                         on:click={() => {
                             trackEvent(Click.SettingsInstallProviderClick);
                         }}>
@@ -140,7 +148,7 @@
                                     </button>
                                     <ActionMenu.Root slot="tooltip">
                                         <ActionMenu.Item.Anchor
-                                            href={configureGitHub()}
+                                            href={configureProvider(installation.provider)}
                                             trailingIcon={IconExternalLink}
                                             on:click={() => (showInstallationDropdown[i] = false)}>
                                             Configure
@@ -192,7 +200,7 @@
                         <FormButton
                             secondary
                             disabled={!$canWriteProjects}
-                            href={configureGitHub()}
+                            href={configureProvider()}
                             external>
                             <Icon icon={IconGithub} size="s" slot="start" />
                             Connect to GitHub

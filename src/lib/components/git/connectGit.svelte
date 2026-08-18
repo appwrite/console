@@ -1,11 +1,12 @@
 <script lang="ts">
     import { isSelfHosted } from '$lib/system';
-    import { connectGitHub, connectGitea } from '$lib/stores/git';
+    import { connectGitHub, connectGitea, connectOrigin } from '$lib/stores/git';
     import Button from '$lib/elements/forms/button.svelte';
     import { IconGithub } from '@appwrite.io/pink-icons-svelte';
     import { Alert, Card, Empty, Icon, Layout } from '@appwrite.io/pink-svelte';
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
     import IconGitea from './IconGitea.svelte';
+    import IconOrigin from './IconOrigin.svelte';
 
     export let callbackState: Record<string, string> = null;
 
@@ -15,6 +16,8 @@
         ?._APP_VCS_PROVIDERS;
     // Gitea is a self-hosted-only feature, not offered on Appwrite Cloud.
     let isGiteaEnabled = isSelfHosted && (vcsProviders?.includes('gitea') ?? false);
+    // Origin (Cursor's git hosting) is a cloud service, so no self-hosted gate.
+    let isOriginEnabled = vcsProviders?.includes('origin') ?? false;
 </script>
 
 <Layout.Stack>
@@ -49,6 +52,15 @@
                         <Icon slot="start" icon={IconGithub} />
                         Connect to GitHub
                     </Button>
+                    {#if isOriginEnabled}
+                        <Button
+                            secondary
+                            href={connectOrigin(callbackState).toString()}
+                            disabled={!isVcsEnabled}>
+                            <Icon slot="start" icon={IconOrigin} />
+                            Connect to Origin
+                        </Button>
+                    {/if}
                     {#if isGiteaEnabled}
                         <Button
                             secondary
