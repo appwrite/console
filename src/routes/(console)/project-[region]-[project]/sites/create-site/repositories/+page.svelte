@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { getVcsProvider } from '$lib/stores/git';
     import { goto } from '$app/navigation';
     import { page } from '$app/state';
     import { Click, trackEvent } from '$lib/actions/analytics.js';
@@ -70,9 +71,10 @@
                             Missing a repository?
                         </Typography.Text>
                         <Typography.Text variation="m-400">
-                            Make sure Appwrite has access to your GitHub repositories. If you chose
-                            specific repos, you may need to update your permissions to include the
-                            missing one.
+                            Make sure Appwrite has access to your {getVcsProvider(
+                                $installation?.provider
+                            ).label} repositories. If you chose specific repos, you may need to update
+                            your permissions to include the missing one.
                         </Typography.Text>
                     </Layout.Stack>
                     <Layout.Stack gap="s" direction="row">
@@ -80,11 +82,13 @@
                             href="https://appwrite.io/docs/products/sites/deploy-from-git"
                             external
                             secondary>Docs</Button>
-                        {#if $installation}
+                        {#if $installation && getVcsProvider($installation.provider).installationSettingsUrl($installation.providerInstallationId)}
                             <Button
-                                href={`https://github.com/settings/installations/${$installation.providerInstallationId}`}
+                                href={getVcsProvider(
+                                    $installation.provider
+                                ).installationSettingsUrl($installation.providerInstallationId)}
                                 external
-                                text>Go to GitHub</Button>
+                                text>Go to {getVcsProvider($installation.provider).label}</Button>
                         {/if}
                     </Layout.Stack>
                 {/if}

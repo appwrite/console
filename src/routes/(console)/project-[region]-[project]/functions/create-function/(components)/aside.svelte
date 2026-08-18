@@ -1,7 +1,9 @@
 <script lang="ts">
+    import { installation } from '$lib/stores/vcs';
+    import { getVcsProvider } from '$lib/stores/git';
     import { Card, SvgIcon } from '$lib/components';
     import { Icon, Layout, Skeleton, Typography } from '@appwrite.io/pink-svelte';
-    import { IconGithub, IconGitBranch } from '@appwrite.io/pink-icons-svelte';
+    import { IconGitBranch } from '@appwrite.io/pink-icons-svelte';
     import type { Models, Runtime } from '@appwrite.io/console';
 
     export let runtime: Runtime;
@@ -42,7 +44,10 @@
                     <Layout.Stack gap="xxxs">
                         <Typography.Caption variant="400">Git repository</Typography.Caption>
                         <Layout.Stack gap="xxs" alignItems="center" direction="row">
-                            <Icon size="s" icon={IconGithub} color="--fgcolor-neutral-primary" />
+                            <Icon
+                                size="s"
+                                icon={getVcsProvider($installation?.provider).icon}
+                                color="--fgcolor-neutral-primary" />
                             <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
                                 {repositoryName}
                             </Typography.Text>

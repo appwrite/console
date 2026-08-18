@@ -19,13 +19,19 @@
     import SvgIcon from '../svgIcon.svelte';
     import { Query, VCSDetectionType, type Models } from '@appwrite.io/console';
     import { getFrameworkIcon } from '$lib/stores/sites';
-    import { connectGitHub } from '$lib/stores/git';
+    import { connectVcsProvider, enabledVcsProviders, getVcsProvider } from '$lib/stores/git';
+    import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
     import { addNotification } from '$lib/stores/notifications';
     import { page } from '$app/state';
     import Card from '../card.svelte';
     import SkeletonRepoList from './skeletonRepoList.svelte';
     import { onMount, untrack, onDestroy } from 'svelte';
     import { debounce } from '$lib/helpers/debounce';
+
+    // Not in the SDK's generated types yet -- server already returns it.
+    const vcsProviders = enabledVcsProviders(
+        ($regionalConsoleVariables as { _APP_VCS_PROVIDERS?: string[] })?._APP_VCS_PROVIDERS
+    );
 
     let {
         action = $bindable('select'),
@@ -176,18 +182,27 @@
                             ...installationsMap.map((entry) => {
                                 return {
                                     label: entry.organization,
+                                    leadingIcon: getVcsProvider(entry.provider).icon,
                                     value: entry.$id
                                 };
                             }),
-                            {
-                                label: 'Add installation',
-                                leadingIcon: IconPlus,
-                                value: 'new'
-                            }
+                            ...vcsProviders.map((provider) => {
+                                return {
+                                    label:
+                                        vcsProviders.length > 1
+                                            ? `Add ${provider.label} installation`
+                                            : 'Add installation',
+                                    leadingIcon: IconPlus,
+                                    value: `new-${provider.id}`
+                                };
+                            })
                         ]}
                         on:change={() => {
-                            if (selectedInstallation === 'new') {
-                                window.location.href = connectGitHub(callbackState).toString();
+                            if (selectedInstallation?.startsWith('new-')) {
+                                window.location.href = connectVcsProvider(
+                                    selectedInstallation.slice('new-'.length),
+                                    callbackState
+                                ).toString();
                             }
                             search = '';
                             installation.set(
